@@ -1,84 +1,813 @@
 <!doctype html>
 <html lang="ja">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>基本情報技術者試験｜インタラクティブ復習</title>
-<style>
-:root{--navy:#102a5c;--blue:#2563eb;--pale:#eff6ff;--ink:#172033;--muted:#64748b;--line:#dbe3ef;--bg:#f6f8fc;--card:#fff;--ok:#087a55;--bad:#c2410c;--warn:#9a4d00}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;line-height:1.65}header{background:linear-gradient(120deg,#102a5c,#2563eb);color:#fff;padding:28px 18px 22px}header>div,main{max-width:1050px;margin:auto}h1{font-size:clamp(1.45rem,4vw,2.2rem);margin:0 0 5px;line-height:1.3}header p{margin:0;opacity:.9;font-size:.95rem}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}.stat{background:#ffffff1c;border:1px solid #ffffff38;border-radius:12px;padding:9px 12px}.stat b{display:block;font-size:1.35rem}.stat span{font-size:.78rem}main{padding:18px}.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin:4px 0 16px}button{font:inherit;cursor:pointer;border:0;border-radius:9px;padding:9px 13px;font-weight:700}.primary{background:var(--blue);color:#fff}.secondary{background:#e6eefc;color:#16429a}.danger{background:#fff0ee;color:#b42318}.tabs{display:flex;overflow-x:auto;gap:7px;padding:1px 0 10px}.tab{white-space:nowrap;background:#eaf0fa;color:#334155}.tab.active{background:var(--navy);color:#fff}.panel{display:none}.panel.active{display:block}.intro,.box,section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:0 0 15px;box-shadow:0 2px 8px #17203308}h2{font-size:1.28rem;margin:0 0 10px;color:var(--navy)}h3{font-size:1.06rem;margin:0 0 7px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:12px}.flash{position:relative;text-align:left;min-height:148px;padding:15px;background:#fff;border:1px solid #cbd9ee;border-radius:12px;color:var(--ink)}.flash:hover{border-color:var(--blue);box-shadow:0 3px 12px #2563eb22}.flash .hint{font-size:.8rem;color:var(--muted);font-weight:400}.flash .back{display:none;margin-top:10px;font-size:.91rem}.flash.open .back{display:block}.flash.open .hint{color:var(--blue)}.label{display:inline-block;border-radius:99px;padding:2px 8px;background:var(--pale);color:#1d4ed8;font-size:.75rem;margin-bottom:7px}.key{font-weight:800;color:#1e3a8a}.point{margin-top:7px;padding-top:7px;border-top:1px dashed var(--line);font-size:.87rem}.quizbox{padding:15px;border:1px solid var(--line);border-radius:12px;margin:12px 0;background:#fff}.qmeta{font-size:.78rem;color:var(--muted)}.question{font-weight:750;margin:5px 0 10px}.choices{display:grid;gap:7px}.choice{text-align:left;border:1px solid #cbd5e1;background:#fff;color:var(--ink);font-weight:500}.choice:hover:not(:disabled){border-color:var(--blue);background:var(--pale)}.choice.correct{background:#ecfdf5;border-color:#34d399;color:#065f46}.choice.wrong{background:#fff1f0;border-color:#fb7185;color:#9f1239}.feedback{margin-top:9px;padding:9px 11px;border-radius:8px;font-size:.9rem;display:none}.feedback.show{display:block}.feedback.ok{background:#ecfdf5;color:#065f46}.feedback.ng{background:#fff1f0;color:#9f1239}.formula{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:10px;overflow:auto}.tablewrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.9rem}th,td{border:1px solid var(--line);padding:9px;text-align:left;vertical-align:top}th{background:#eff6ff}.note{border-left:4px solid #f59e0b;background:#fffbeb;padding:10px 12px;border-radius:7px;font-size:.9rem}.hidden{display:none!important}.empty{color:var(--muted);padding:10px 0}.todaybar{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}.small{font-size:.86rem;color:var(--muted)}footer{text-align:center;color:var(--muted);font-size:.82rem;padding:8px 0 25px}@media(max-width:600px){main{padding:12px}header{padding:22px 14px 18px}.stats{gap:6px}.stat{padding:8px}.stat b{font-size:1.15rem}.box,section{padding:14px}.toolbar button{font-size:.88rem;padding:8px 10px}}
-</style>
-</head>
-<body>
-<header><div><h1>基本情報技術者試験｜毎日10分の復習</h1><p>ノート内容を、用語カード・4択クイズ・苦手復習で定着させる教材</p><div class="stats"><div class="stat"><b id="answered">0</b><span>解答数</span></div><div class="stat"><b id="accuracy">—</b><span>正答率</span></div><div class="stat"><b id="mastered">0</b><span>学習済み問題</span></div></div></div></header>
-<main>
-<div class="toolbar"><button class="primary" id="todayBtn">今日の10問を出題</button><button class="secondary" id="weakBtn">苦手問題だけ</button><button class="secondary" id="allBtn">全問題を表示</button><button class="danger" id="resetBtn">進捗をリセット</button></div>
-<div class="tabs" id="tabs"></div>
-<div id="todayArea" class="box hidden"></div>
-<div id="content"></div>
-<footer>進捗・苦手問題は、このブラウザ内（localStorage）に保存されます。</footer>
-</main>
-<script>
-const data={
- security:{name:'セキュリティ',cards:[
- ['リスク移転','一言：損失の負担を第三者へ移す。','保険への加入などにより、損失発生時の負担を保険会社などへ移す方法。','リスク保有は、自分（自社）が損失を引き受ける。'],
- ['リスク保有','一言：損失の負担を自ら引き受ける。','損失に備えて資金を積み立てるなど、自らの資金で対応する。','リスク移転は第三者へ負担を移す。'],
- ['セキュアブート','一言：正規のOSだけを起動する。','起動時に電子署名等を検証し、信頼できるOSやブートローダだけを実行する。','BIOS／UEFIパスワードは設定変更等を制限する仕組み。'],
- ['BIOS／UEFIパスワード','一言：PCの起動・設定変更を制限する。','BIOS／UEFIの設定画面へのアクセスや、起動を制限する。','HDDパスワードは記憶装置そのものへのアクセスを制限する。'],
- ['HDDパスワード','一言：記憶装置へのアクセスを制限する。','HDD・SSDを別のPCへ接続しても、データを読み出しにくくする。','セキュアブートは起動するプログラムの正当性を確認する。'],
- ['WPA','一言：無線LANの暗号化・認証方式。','無線LAN通信を保護する規格群。利用時はWPA2またはWPA3を選ぶ。','有線LANの規格ではない。'],
- ['水飲み場型攻撃','一言：標的が訪れるサイトを改ざんして待ち伏せする。','利用者がよく使うWebサイトを改ざんし、訪問者をマルウェア感染などへ誘導する。','標的へ直接メールを送る標的型メール攻撃とは入口が異なる。'],
- ['ゼロデイ攻撃','一言：修正前の脆弱性を悪用する。','修正プログラムが提供される前、または対策が十分でない脆弱性を悪用する。','水飲み場型攻撃は攻撃の入口、ゼロデイ攻撃は脆弱性の悪用時期に着目する。']
- ],questions:[
- ['損失発生時の負担を保険会社などに移す方法はどれか。',['リスク保有','リスク移転','リスク回避','リスク分散'],1,'リスク移転は、保険などにより損失の負担を第三者へ移す方法です。'],
- ['正規で信頼できるOSだけを起動する仕組みはどれか。',['セキュアブート','HDDパスワード','WPA','リスク保有'],0,'セキュアブートは、起動時にプログラムの正当性を確認します。'],
- ['無線LANの暗号化・認証方式の規格群はどれか。',['WPA','HDDパスワード','BIOSパスワード','HRテック'],0,'WPAは無線LANを保護するための規格です。'],
- ['標的がよく訪れるWebサイトを改ざんして感染を狙う攻撃はどれか。',['ゼロデイ攻撃','水飲み場型攻撃','モデル反転攻撃','総当たり攻撃'],1,'水飲み場型攻撃は、標的が水飲み場へ集まるように、利用サイトで待ち伏せします。']
- ]},
- ai:{name:'AI・暗号',cards:[
- ['適応的選択文書（メッセージ）攻撃','一言：結果を見ながら次の文書を選び、署名偽造を狙う。','デジタル署名に対し、過去の問い合わせ結果を利用して次に署名させる文書を選択する攻撃。','ノートの表記は読取り上の確認を含む。用語の表記は「適応的選択文書攻撃」等で要確認。'],
- ['敵対的サンプル攻撃','一言：入力をわずかに変えてAIを誤判定させる。','画像などに人には気づきにくい小さな変更を加え、AIの分類結果を誤らせる。','モデル反転攻撃は、AIから学習データの情報を推測する。'],
- ['モデル反転攻撃','一言：AIの出力から学習データを推測する。','AIモデルの出力などを手掛かりに、学習に使われた個人情報や特徴を復元・推測しようとする。','敵対的サンプル攻撃は、AIを誤判定させる入力を作る。'],
- ['活性化関数','一言：ニューロンの出力の強さを決める。','ニューラルネットワークで非線形性を加え、曲がった複雑な境界を表現可能にする。','活性化関数がなければ、層を増やしても線形な表現にとどまりやすい。']
- ],questions:[
- ['画像をわずかに改変し、AIに誤認識させる攻撃はどれか。',['モデル反転攻撃','敵対的サンプル攻撃','水飲み場型攻撃','ゼロデイ攻撃'],1,'敵対的サンプル攻撃は、AIを誤判定させるよう入力を加工します。'],
- ['AIの出力を手掛かりに、学習データの個人情報等を推測する攻撃はどれか。',['モデル反転攻撃','敵対的サンプル攻撃','フィッシング','DoS攻撃'],0,'モデル反転攻撃は、モデルから学習データの特徴を推測することを狙います。'],
- ['ニューラルネットワークが複雑な境界を表現するために重要なものはどれか。',['活性化関数','固定費','WPA','プル型通信'],0,'活性化関数が非線形性を加え、複雑なパターンを扱えるようにします。']
- ]},
- system:{name:'構成・データ',cards:[
- ['マイクロサービスアーキテクチャ','一言：小さく独立したサービスを連携させる。','機能を小さなサービスに分割するため、サービス単位で変更・拡張・配備しやすい。','モノリシックは多くの機能を一つのアプリケーションにまとめる。'],
- ['モノリシックアーキテクチャ','一言：機能を一つのアプリケーションにまとめる。','構成は比較的単純だが、一部の変更がアプリケーション全体に影響し得る。','マイクロサービスは機能を独立したサービスに分割する。'],
- ['プル型コミュニケーション','一言：受け取る側が情報を取りに行く。','利用者や受信側が必要なときにサーバから情報を取得する。例：Webページを開く。','プッシュ型は送信側が利用者へ通知などを送る。'],
- ['非構造化データ','一言：決まった形式に整理されていないデータ。','画像、音声、動画、自由記述文など。','構造化データは表形式など、項目・形式が定められている。'],
- ['構造化データ','一言：決まった項目・形式で整理されたデータ。','データベースの表のように、検索・集計・比較をしやすい。','非構造化データは画像・音声など形式が定まらない。'],
- ['HRテック','一言：人事にAIやクラウドを活用する。','採用、人事、勤怠、評価、人材育成などを効率化・高度化する。','フィンテックは金融分野に技術を活用する。']
- ],questions:[
- ['受信側が自分から情報を取得しに行く方式はどれか。',['プル型','プッシュ型','マイクロサービス','WPA'],0,'プル型は、利用者側から情報を取得します。'],
- ['機能を小さく独立したサービスに分割する構成はどれか。',['モノリシック','マイクロサービス','ゼロデイ','構造化データ'],1,'マイクロサービスはサービスを小さく分割して連携させます。'],
- ['画像・音声・自由記述文などに該当するデータはどれか。',['構造化データ','非構造化データ','正規化データ','暗号化データ'],1,'画像や音声は通常、表のような決まった形式を持たない非構造化データです。'],
- ['人事・採用・勤怠などにAIやクラウドを活用する概念はどれか。',['HRテック','WPA','ERP','BIOS'],0,'HRテックはHuman Resources Technologyの略です。']
- ]},
- management:{name:'経営・計算',cards:[
- ['変動費率','一言：売上高に占める変動費の割合。','変動費率 ＝ 変動費 ÷ 売上高。売上に応じて変化する費用の割合を見る。','固定費は売上の増減にかかわらず、短期的には一定とみなす費用。'],
- ['利益','一言：売上から費用を引いた残り。','利益 ＝ 売上高 −（固定費 ＋ 変動費）。','限界利益は売上高から変動費だけを引いた額。'],
- ['限界利益','一言：売上高から変動費を引いた額。','限界利益 ＝ 売上高 − 変動費。固定費の回収と利益の確保に充てられる。','利益は限界利益から固定費を引いたもの。']
- ],questions:[
- ['変動費率の式として正しいものはどれか。',['変動費 ÷ 売上高','売上高 ÷ 変動費','固定費 ÷ 売上高','売上高 − 変動費'],0,'変動費率は、売上高に対する変動費の割合です。'],
- ['売上高1,000万円、変動費600万円のとき、限界利益は何万円か。',['400万円','600万円','1,000万円','1,600万円'],0,'限界利益＝売上高−変動費＝1,000−600＝400万円です。'],
- ['売上高1,000万円、変動費600万円、固定費300万円のとき、利益は何万円か。',['100万円','400万円','300万円','700万円'],0,'利益＝1,000−（600＋300）＝100万円です。']
- ]}
-};
-const KEY='kihonjohoReviewV2';let state=JSON.parse(localStorage.getItem(KEY)||'{"total":0,"correct":0,"seen":{},"wrong":{}}');let mode='all',today=[];
-const allQs=Object.entries(data).flatMap(([cat,v])=>v.questions.map((q,i)=>({cat,i,q,id:cat+'-'+i})));
-function save(){localStorage.setItem(KEY,JSON.stringify(state));updateStats()}function updateStats(){document.querySelector('#answered').textContent=state.total;document.querySelector('#accuracy').textContent=state.total?Math.round(state.correct/state.total*100)+'%':'—';document.querySelector('#mastered').textContent=Object.keys(state.seen).length}
-function esc(s){return String(s).replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]))}
-function renderTabs(){const el=document.querySelector('#tabs');el.innerHTML=Object.entries(data).map(([k,v],i)=>`<button class="tab ${i===0?'active':''}" data-tab="${k}">${v.name}</button>`).join('');el.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{el.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));document.querySelector('#p-'+b.dataset.tab).classList.add('active')})}
-function cardHtml(c){return `<button class="flash"><span class="label">用語カード</span><br><span class="key">${esc(c[0])}</span><div class="hint">タップして答え・解説を表示</div><div class="back"><strong>${esc(c[1])}</strong><br>${esc(c[2])}<div class="point"><b>混同注意：</b>${esc(c[3])}</div></div></button>`}
-function qHtml(item,n){const [text,opts,ans,ex]=item.q;return `<div class="quizbox" id="q-${item.id}"><div class="qmeta">問題 ${n} ｜ ${data[item.cat].name}</div><div class="question">${esc(text)}</div><div class="choices">${opts.map((o,i)=>`<button class="choice" data-i="${i}">${'アイウエ'[i]}. ${esc(o)}</button>`).join('')}</div><div class="feedback"></div></div>`}
-function renderContent(){let html='';Object.entries(data).forEach(([k,v],idx)=>{let qs=v.questions.map((q,i)=>({cat:k,i,q,id:k+'-'+i}));if(mode==='weak')qs=qs.filter(x=>state.wrong[x.id]);html+=`<div class="panel ${idx===0?'active':''}" id="p-${k}"><section><h2>${v.name}｜用語カード</h2><p class="small">カードを押して、意味・ポイント・混同しやすい用語を確認します。</p><div class="cards">${v.cards.map(cardHtml).join('')}</div></section><section><h2>${v.name}｜4択クイズ</h2>${qs.length?qs.map((x,i)=>qHtml(x,i+1)).join(''):'<p class="empty">この分野には、まだ苦手問題がありません。全問題を解いて判定してください。</p>'}</section></div>`});document.querySelector('#content').innerHTML=html;bindInteractions()}
-function bindInteractions(){document.querySelectorAll('.flash').forEach(b=>b.onclick=()=>b.classList.toggle('open'));document.querySelectorAll('.quizbox').forEach(box=>{box.querySelectorAll('.choice').forEach(btn=>btn.onclick=()=>answer(box,btn))})}
-function answer(box,btn){if(box.dataset.done)return;box.dataset.done='1';const id=box.id.slice(2);const item=allQs.find(x=>x.id===id);const ans=item.q[2],picked=+btn.dataset.i;const buttons=[...box.querySelectorAll('.choice')];buttons.forEach((b,i)=>{b.disabled=true;if(i===ans)b.classList.add('correct')});const fb=box.querySelector('.feedback');state.total++;state.seen[id]=true;if(picked===ans){state.correct++;delete state.wrong[id];fb.className='feedback show ok';fb.innerHTML='<b>正解！</b> '+esc(item.q[3])}else{btn.classList.add('wrong');state.wrong[id]=(state.wrong[id]||0)+1;fb.className='feedback show ng';fb.innerHTML='<b>不正解。</b> '+esc(item.q[3])}save()}
-function renderToday(){const area=document.querySelector('#todayArea');if(!today.length){area.classList.add('hidden');return}area.classList.remove('hidden');area.innerHTML=`<div class="todaybar"><div><h2>今日の10問</h2><p class="small">ランダム出題です。解答状況は通常の進捗にも反映されます。</p></div><button class="secondary" id="closeToday">閉じる</button></div>${today.map((x,i)=>qHtml(x,i+1)).join('')}`;area.querySelector('#closeToday').onclick=()=>{today=[];renderToday()};area.querySelectorAll('.quizbox').forEach(box=>box.querySelectorAll('.choice').forEach(btn=>btn.onclick=()=>answer(box,btn)))}
-document.querySelector('#todayBtn').onclick=()=>{today=[...allQs].sort(()=>Math.random()-.5).slice(0,Math.min(10,allQs.length));renderToday();document.querySelector('#todayArea').scrollIntoView({behavior:'smooth',block:'start'})};document.querySelector('#weakBtn').onclick=()=>{mode='weak';renderContent();renderTabs()};document.querySelector('#allBtn').onclick=()=>{mode='all';renderContent();renderTabs()};document.querySelector('#resetBtn').onclick=()=>{if(confirm('解答数・正答率・苦手問題をすべて削除します。よろしいですか？')){state={total:0,correct:0,seen:{},wrong:{}};save();mode='all';renderContent();renderTabs()}};
-renderTabs();renderContent();updateStats();
-</script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>基本情報技術者試験｜インタラクティブ復習</title>
+    <style>
+      :root {
+        --navy: #102a5c;
+        --blue: #2563eb;
+        --pale: #eff6ff;
+        --ink: #172033;
+        --muted: #64748b;
+        --line: #dbe3ef;
+        --bg: #f6f8fc;
+        --card: #fff;
+        --ok: #087a55;
+        --bad: #c2410c;
+        --warn: #9a4d00;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI",
+          "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+        line-height: 1.65;
+      }
+      header {
+        background: linear-gradient(120deg, #102a5c, #2563eb);
+        color: #fff;
+        padding: 28px 18px 22px;
+      }
+      header > div,
+      main {
+        max-width: 1050px;
+        margin: auto;
+      }
+      h1 {
+        font-size: clamp(1.45rem, 4vw, 2.2rem);
+        margin: 0 0 5px;
+        line-height: 1.3;
+      }
+      header p {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 0.95rem;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 18px;
+      }
+      .stat {
+        background: #ffffff1c;
+        border: 1px solid #ffffff38;
+        border-radius: 12px;
+        padding: 9px 12px;
+      }
+      .stat b {
+        display: block;
+        font-size: 1.35rem;
+      }
+      .stat span {
+        font-size: 0.78rem;
+      }
+      main {
+        padding: 18px;
+      }
+      .toolbar {
+        display: flex;
+        gap: 9px;
+        flex-wrap: wrap;
+        margin: 4px 0 16px;
+      }
+      button {
+        font: inherit;
+        cursor: pointer;
+        border: 0;
+        border-radius: 9px;
+        padding: 9px 13px;
+        font-weight: 700;
+      }
+      .primary {
+        background: var(--blue);
+        color: #fff;
+      }
+      .secondary {
+        background: #e6eefc;
+        color: #16429a;
+      }
+      .danger {
+        background: #fff0ee;
+        color: #b42318;
+      }
+      .tabs {
+        display: flex;
+        overflow-x: auto;
+        gap: 7px;
+        padding: 1px 0 10px;
+      }
+      .tab {
+        white-space: nowrap;
+        background: #eaf0fa;
+        color: #334155;
+      }
+      .tab.active {
+        background: var(--navy);
+        color: #fff;
+      }
+      .panel {
+        display: none;
+      }
+      .panel.active {
+        display: block;
+      }
+      .intro,
+      .box,
+      section {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 18px;
+        margin: 0 0 15px;
+        box-shadow: 0 2px 8px #17203308;
+      }
+      h2 {
+        font-size: 1.28rem;
+        margin: 0 0 10px;
+        color: var(--navy);
+      }
+      h3 {
+        font-size: 1.06rem;
+        margin: 0 0 7px;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+        gap: 12px;
+      }
+      .flash {
+        position: relative;
+        text-align: left;
+        min-height: 148px;
+        padding: 15px;
+        background: #fff;
+        border: 1px solid #cbd9ee;
+        border-radius: 12px;
+        color: var(--ink);
+      }
+      .flash:hover {
+        border-color: var(--blue);
+        box-shadow: 0 3px 12px #2563eb22;
+      }
+      .flash .hint {
+        font-size: 0.8rem;
+        color: var(--muted);
+        font-weight: 400;
+      }
+      .flash .back {
+        display: none;
+        margin-top: 10px;
+        font-size: 0.91rem;
+      }
+      .flash.open .back {
+        display: block;
+      }
+      .flash.open .hint {
+        color: var(--blue);
+      }
+      .label {
+        display: inline-block;
+        border-radius: 99px;
+        padding: 2px 8px;
+        background: var(--pale);
+        color: #1d4ed8;
+        font-size: 0.75rem;
+        margin-bottom: 7px;
+      }
+      .key {
+        font-weight: 800;
+        color: #1e3a8a;
+      }
+      .point {
+        margin-top: 7px;
+        padding-top: 7px;
+        border-top: 1px dashed var(--line);
+        font-size: 0.87rem;
+      }
+      .quizbox {
+        padding: 15px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        margin: 12px 0;
+        background: #fff;
+      }
+      .qmeta {
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+      .question {
+        font-weight: 750;
+        margin: 5px 0 10px;
+      }
+      .choices {
+        display: grid;
+        gap: 7px;
+      }
+      .choice {
+        text-align: left;
+        border: 1px solid #cbd5e1;
+        background: #fff;
+        color: var(--ink);
+        font-weight: 500;
+      }
+      .choice:hover:not(:disabled) {
+        border-color: var(--blue);
+        background: var(--pale);
+      }
+      .choice.correct {
+        background: #ecfdf5;
+        border-color: #34d399;
+        color: #065f46;
+      }
+      .choice.wrong {
+        background: #fff1f0;
+        border-color: #fb7185;
+        color: #9f1239;
+      }
+      .feedback {
+        margin-top: 9px;
+        padding: 9px 11px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+      }
+      .feedback.ok {
+        background: #ecfdf5;
+        color: #065f46;
+      }
+      .feedback.ng {
+        background: #fff1f0;
+        color: #9f1239;
+      }
+      .formula {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        background: #f8fafc;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px;
+        overflow: auto;
+      }
+      .tablewrap {
+        overflow-x: auto;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 0.9rem;
+      }
+      th,
+      td {
+        border: 1px solid var(--line);
+        padding: 9px;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        background: #eff6ff;
+      }
+      .note {
+        border-left: 4px solid #f59e0b;
+        background: #fffbeb;
+        padding: 10px 12px;
+        border-radius: 7px;
+        font-size: 0.9rem;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .empty {
+        color: var(--muted);
+        padding: 10px 0;
+      }
+      .todaybar {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .small {
+        font-size: 0.86rem;
+        color: var(--muted);
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.82rem;
+        padding: 8px 0 25px;
+      }
+      @media (max-width: 600px) {
+        main {
+          padding: 12px;
+        }
+        header {
+          padding: 22px 14px 18px;
+        }
+        .stats {
+          gap: 6px;
+        }
+        .stat {
+          padding: 8px;
+        }
+        .stat b {
+          font-size: 1.15rem;
+        }
+        .box,
+        section {
+          padding: 14px;
+        }
+        .toolbar button {
+          font-size: 0.88rem;
+          padding: 8px 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>基本情報技術者試験｜毎日10分の復習</h1>
+        <p>ノート内容を、用語カード・4択クイズ・苦手復習で定着させる教材</p>
+        <div class="stats">
+          <div class="stat"><b id="answered">0</b><span>解答数</span></div>
+          <div class="stat"><b id="accuracy">—</b><span>正答率</span></div>
+          <div class="stat">
+            <b id="mastered">0</b><span>学習済み問題</span>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main>
+      <div class="toolbar">
+        <button class="primary" id="todayBtn">今日の10問を出題</button
+        ><button class="secondary" id="weakBtn">苦手問題だけ</button
+        ><button class="secondary" id="allBtn">全問題を表示</button
+        ><button class="danger" id="resetBtn">進捗をリセット</button>
+      </div>
+      <div class="tabs" id="tabs"></div>
+      <div id="todayArea" class="box hidden"></div>
+      <div id="content"></div>
+      <footer>
+        進捗・苦手問題は、このブラウザ内（localStorage）に保存されます。
+      </footer>
+    </main>
+    <script>
+      const data = {
+        security: {
+          name: "セキュリティ",
+          cards: [
+            [
+              "リスク移転",
+              "一言：損失の負担を第三者へ移す。",
+              "保険への加入などにより、損失発生時の負担を保険会社などへ移す方法。",
+              "リスク保有は、自分（自社）が損失を引き受ける。",
+            ],
+            [
+              "リスク保有",
+              "一言：損失の負担を自ら引き受ける。",
+              "損失に備えて資金を積み立てるなど、自らの資金で対応する。",
+              "リスク移転は第三者へ負担を移す。",
+            ],
+            [
+              "セキュアブート",
+              "一言：正規のOSだけを起動する。",
+              "起動時に電子署名等を検証し、信頼できるOSやブートローダだけを実行する。",
+              "BIOS／UEFIパスワードは設定変更等を制限する仕組み。",
+            ],
+            [
+              "BIOS／UEFIパスワード",
+              "一言：PCの起動・設定変更を制限する。",
+              "BIOS／UEFIの設定画面へのアクセスや、起動を制限する。",
+              "HDDパスワードは記憶装置そのものへのアクセスを制限する。",
+            ],
+            [
+              "HDDパスワード",
+              "一言：記憶装置へのアクセスを制限する。",
+              "HDD・SSDを別のPCへ接続しても、データを読み出しにくくする。",
+              "セキュアブートは起動するプログラムの正当性を確認する。",
+            ],
+            [
+              "WPA",
+              "一言：無線LANの暗号化・認証方式。",
+              "無線LAN通信を保護する規格群。利用時はWPA2またはWPA3を選ぶ。",
+              "有線LANの規格ではない。",
+            ],
+            [
+              "水飲み場型攻撃",
+              "一言：標的が訪れるサイトを改ざんして待ち伏せする。",
+              "利用者がよく使うWebサイトを改ざんし、訪問者をマルウェア感染などへ誘導する。",
+              "標的へ直接メールを送る標的型メール攻撃とは入口が異なる。",
+            ],
+            [
+              "ゼロデイ攻撃",
+              "一言：修正前の脆弱性を悪用する。",
+              "修正プログラムが提供される前、または対策が十分でない脆弱性を悪用する。",
+              "水飲み場型攻撃は攻撃の入口、ゼロデイ攻撃は脆弱性の悪用時期に着目する。",
+            ],
+          ],
+          questions: [
+            [
+              "損失発生時の負担を保険会社などに移す方法はどれか。",
+              ["リスク保有", "リスク移転", "リスク回避", "リスク分散"],
+              1,
+              "リスク移転は、保険などにより損失の負担を第三者へ移す方法です。",
+            ],
+            [
+              "正規で信頼できるOSだけを起動する仕組みはどれか。",
+              ["セキュアブート", "HDDパスワード", "WPA", "リスク保有"],
+              0,
+              "セキュアブートは、起動時にプログラムの正当性を確認します。",
+            ],
+            [
+              "無線LANの暗号化・認証方式の規格群はどれか。",
+              ["WPA", "HDDパスワード", "BIOSパスワード", "HRテック"],
+              0,
+              "WPAは無線LANを保護するための規格です。",
+            ],
+            [
+              "標的がよく訪れるWebサイトを改ざんして感染を狙う攻撃はどれか。",
+              [
+                "ゼロデイ攻撃",
+                "水飲み場型攻撃",
+                "モデル反転攻撃",
+                "総当たり攻撃",
+              ],
+              1,
+              "水飲み場型攻撃は、標的が水飲み場へ集まるように、利用サイトで待ち伏せします。",
+            ],
+          ],
+        },
+        ai: {
+          name: "AI・暗号",
+          cards: [
+            [
+              "適応的選択文書（メッセージ）攻撃",
+              "一言：結果を見ながら次の文書を選び、署名偽造を狙う。",
+              "デジタル署名に対し、過去の問い合わせ結果を利用して次に署名させる文書を選択する攻撃。",
+              "ノートの表記は読取り上の確認を含む。用語の表記は「適応的選択文書攻撃」等で要確認。",
+            ],
+            [
+              "敵対的サンプル攻撃",
+              "一言：入力をわずかに変えてAIを誤判定させる。",
+              "画像などに人には気づきにくい小さな変更を加え、AIの分類結果を誤らせる。",
+              "モデル反転攻撃は、AIから学習データの情報を推測する。",
+            ],
+            [
+              "モデル反転攻撃",
+              "一言：AIの出力から学習データを推測する。",
+              "AIモデルの出力などを手掛かりに、学習に使われた個人情報や特徴を復元・推測しようとする。",
+              "敵対的サンプル攻撃は、AIを誤判定させる入力を作る。",
+            ],
+            [
+              "活性化関数",
+              "一言：ニューロンの出力の強さを決める。",
+              "ニューラルネットワークで非線形性を加え、曲がった複雑な境界を表現可能にする。",
+              "活性化関数がなければ、層を増やしても線形な表現にとどまりやすい。",
+            ],
+          ],
+          questions: [
+            [
+              "画像をわずかに改変し、AIに誤認識させる攻撃はどれか。",
+              [
+                "モデル反転攻撃",
+                "敵対的サンプル攻撃",
+                "水飲み場型攻撃",
+                "ゼロデイ攻撃",
+              ],
+              1,
+              "敵対的サンプル攻撃は、AIを誤判定させるよう入力を加工します。",
+            ],
+            [
+              "AIの出力を手掛かりに、学習データの個人情報等を推測する攻撃はどれか。",
+              [
+                "モデル反転攻撃",
+                "敵対的サンプル攻撃",
+                "フィッシング",
+                "DoS攻撃",
+              ],
+              0,
+              "モデル反転攻撃は、モデルから学習データの特徴を推測することを狙います。",
+            ],
+            [
+              "ニューラルネットワークが複雑な境界を表現するために重要なものはどれか。",
+              ["活性化関数", "固定費", "WPA", "プル型通信"],
+              0,
+              "活性化関数が非線形性を加え、複雑なパターンを扱えるようにします。",
+            ],
+          ],
+        },
+        system: {
+          name: "構成・データ",
+          cards: [
+            [
+              "マイクロサービスアーキテクチャ",
+              "一言：小さく独立したサービスを連携させる。",
+              "機能を小さなサービスに分割するため、サービス単位で変更・拡張・配備しやすい。",
+              "モノリシックは多くの機能を一つのアプリケーションにまとめる。",
+            ],
+            [
+              "モノリシックアーキテクチャ",
+              "一言：機能を一つのアプリケーションにまとめる。",
+              "構成は比較的単純だが、一部の変更がアプリケーション全体に影響し得る。",
+              "マイクロサービスは機能を独立したサービスに分割する。",
+            ],
+            [
+              "プル型コミュニケーション",
+              "一言：受け取る側が情報を取りに行く。",
+              "利用者や受信側が必要なときにサーバから情報を取得する。例：Webページを開く。",
+              "プッシュ型は送信側が利用者へ通知などを送る。",
+            ],
+            [
+              "非構造化データ",
+              "一言：決まった形式に整理されていないデータ。",
+              "画像、音声、動画、自由記述文など。",
+              "構造化データは表形式など、項目・形式が定められている。",
+            ],
+            [
+              "構造化データ",
+              "一言：決まった項目・形式で整理されたデータ。",
+              "データベースの表のように、検索・集計・比較をしやすい。",
+              "非構造化データは画像・音声など形式が定まらない。",
+            ],
+            [
+              "HRテック",
+              "一言：人事にAIやクラウドを活用する。",
+              "採用、人事、勤怠、評価、人材育成などを効率化・高度化する。",
+              "フィンテックは金融分野に技術を活用する。",
+            ],
+          ],
+          questions: [
+            [
+              "受信側が自分から情報を取得しに行く方式はどれか。",
+              ["プル型", "プッシュ型", "マイクロサービス", "WPA"],
+              0,
+              "プル型は、利用者側から情報を取得します。",
+            ],
+            [
+              "機能を小さく独立したサービスに分割する構成はどれか。",
+              ["モノリシック", "マイクロサービス", "ゼロデイ", "構造化データ"],
+              1,
+              "マイクロサービスはサービスを小さく分割して連携させます。",
+            ],
+            [
+              "画像・音声・自由記述文などに該当するデータはどれか。",
+              [
+                "構造化データ",
+                "非構造化データ",
+                "正規化データ",
+                "暗号化データ",
+              ],
+              1,
+              "画像や音声は通常、表のような決まった形式を持たない非構造化データです。",
+            ],
+            [
+              "人事・採用・勤怠などにAIやクラウドを活用する概念はどれか。",
+              ["HRテック", "WPA", "ERP", "BIOS"],
+              0,
+              "HRテックはHuman Resources Technologyの略です。",
+            ],
+          ],
+        },
+        management: {
+          name: "経営・計算",
+          cards: [
+            [
+              "変動費率",
+              "一言：売上高に占める変動費の割合。",
+              "変動費率 ＝ 変動費 ÷ 売上高。売上に応じて変化する費用の割合を見る。",
+              "固定費は売上の増減にかかわらず、短期的には一定とみなす費用。",
+            ],
+            [
+              "利益",
+              "一言：売上から費用を引いた残り。",
+              "利益 ＝ 売上高 −（固定費 ＋ 変動費）。",
+              "限界利益は売上高から変動費だけを引いた額。",
+            ],
+            [
+              "限界利益",
+              "一言：売上高から変動費を引いた額。",
+              "限界利益 ＝ 売上高 − 変動費。固定費の回収と利益の確保に充てられる。",
+              "利益は限界利益から固定費を引いたもの。",
+            ],
+          ],
+          questions: [
+            [
+              "変動費率の式として正しいものはどれか。",
+              [
+                "変動費 ÷ 売上高",
+                "売上高 ÷ 変動費",
+                "固定費 ÷ 売上高",
+                "売上高 − 変動費",
+              ],
+              0,
+              "変動費率は、売上高に対する変動費の割合です。",
+            ],
+            [
+              "売上高1,000万円、変動費600万円のとき、限界利益は何万円か。",
+              ["400万円", "600万円", "1,000万円", "1,600万円"],
+              0,
+              "限界利益＝売上高−変動費＝1,000−600＝400万円です。",
+            ],
+            [
+              "売上高1,000万円、変動費600万円、固定費300万円のとき、利益は何万円か。",
+              ["100万円", "400万円", "300万円", "700万円"],
+              0,
+              "利益＝1,000−（600＋300）＝100万円です。",
+            ],
+          ],
+        },
+      };
+      const KEY = "kihonjohoReviewV2";
+      let state = JSON.parse(
+        localStorage.getItem(KEY) ||
+          '{"total":0,"correct":0,"seen":{},"wrong":{}}',
+      );
+      let mode = "all",
+        today = [];
+      const allQs = Object.entries(data).flatMap(([cat, v]) =>
+        v.questions.map((q, i) => ({ cat, i, q, id: cat + "-" + i })),
+      );
+      function save() {
+        localStorage.setItem(KEY, JSON.stringify(state));
+        updateStats();
+      }
+      function updateStats() {
+        document.querySelector("#answered").textContent = state.total;
+        document.querySelector("#accuracy").textContent = state.total
+          ? Math.round((state.correct / state.total) * 100) + "%"
+          : "—";
+        document.querySelector("#mastered").textContent = Object.keys(
+          state.seen,
+        ).length;
+      }
+      function esc(s) {
+        return String(s).replace(
+          /[&<>"']/g,
+          (x) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[x],
+        );
+      }
+      function renderTabs() {
+        const el = document.querySelector("#tabs");
+        el.innerHTML = Object.entries(data)
+          .map(
+            ([k, v], i) =>
+              `<button class="tab ${i === 0 ? "active" : ""}" data-tab="${k}">${v.name}</button>`,
+          )
+          .join("");
+        el.querySelectorAll(".tab").forEach(
+          (b) =>
+            (b.onclick = () => {
+              el.querySelectorAll(".tab").forEach((x) =>
+                x.classList.remove("active"),
+              );
+              b.classList.add("active");
+              document
+                .querySelectorAll(".panel")
+                .forEach((x) => x.classList.remove("active"));
+              document
+                .querySelector("#p-" + b.dataset.tab)
+                .classList.add("active");
+            }),
+        );
+      }
+      function cardHtml(c) {
+        return `<button class="flash"><span class="label">用語カード</span><br><span class="key">${esc(c[0])}</span><div class="hint">タップして答え・解説を表示</div><div class="back"><strong>${esc(c[1])}</strong><br>${esc(c[2])}<div class="point"><b>混同注意：</b>${esc(c[3])}</div></div></button>`;
+      }
+      function qHtml(item, n) {
+        const [text, opts, ans, ex] = item.q;
+        return `<div class="quizbox" id="q-${item.id}"><div class="qmeta">問題 ${n} ｜ ${data[item.cat].name}</div><div class="question">${esc(text)}</div><div class="choices">${opts.map((o, i) => `<button class="choice" data-i="${i}">${"アイウエ"[i]}. ${esc(o)}</button>`).join("")}</div><div class="feedback"></div></div>`;
+      }
+      function renderContent() {
+        let html = "";
+        Object.entries(data).forEach(([k, v], idx) => {
+          let qs = v.questions.map((q, i) => ({
+            cat: k,
+            i,
+            q,
+            id: k + "-" + i,
+          }));
+          if (mode === "weak") qs = qs.filter((x) => state.wrong[x.id]);
+          html += `<div class="panel ${idx === 0 ? "active" : ""}" id="p-${k}"><section><h2>${v.name}｜用語カード</h2><p class="small">カードを押して、意味・ポイント・混同しやすい用語を確認します。</p><div class="cards">${v.cards.map(cardHtml).join("")}</div></section><section><h2>${v.name}｜4択クイズ</h2>${qs.length ? qs.map((x, i) => qHtml(x, i + 1)).join("") : '<p class="empty">この分野には、まだ苦手問題がありません。全問題を解いて判定してください。</p>'}</section></div>`;
+        });
+        document.querySelector("#content").innerHTML = html;
+        bindInteractions();
+      }
+      function bindInteractions() {
+        document
+          .querySelectorAll(".flash")
+          .forEach((b) => (b.onclick = () => b.classList.toggle("open")));
+        document.querySelectorAll(".quizbox").forEach((box) => {
+          box
+            .querySelectorAll(".choice")
+            .forEach((btn) => (btn.onclick = () => answer(box, btn)));
+        });
+      }
+      function answer(box, btn) {
+        if (box.dataset.done) return;
+        box.dataset.done = "1";
+        const id = box.id.slice(2);
+        const item = allQs.find((x) => x.id === id);
+        const ans = item.q[2],
+          picked = +btn.dataset.i;
+        const buttons = [...box.querySelectorAll(".choice")];
+        buttons.forEach((b, i) => {
+          b.disabled = true;
+          if (i === ans) b.classList.add("correct");
+        });
+        const fb = box.querySelector(".feedback");
+        state.total++;
+        state.seen[id] = true;
+        if (picked === ans) {
+          state.correct++;
+          delete state.wrong[id];
+          fb.className = "feedback show ok";
+          fb.innerHTML = "<b>正解！</b> " + esc(item.q[3]);
+        } else {
+          btn.classList.add("wrong");
+          state.wrong[id] = (state.wrong[id] || 0) + 1;
+          fb.className = "feedback show ng";
+          fb.innerHTML = "<b>不正解。</b> " + esc(item.q[3]);
+        }
+        save();
+        /* ここを追加：Supabaseへ正答・誤答を同期 */
+        if (window.recordAnswer) {
+          window.recordAnswer(item.id, item.cat, picked === ans);
+        }
+      }
+      function renderToday() {
+        const area = document.querySelector("#todayArea");
+        if (!today.length) {
+          area.classList.add("hidden");
+          return;
+        }
+        area.classList.remove("hidden");
+        area.innerHTML = `<div class="todaybar"><div><h2>今日の10問</h2><p class="small">ランダム出題です。解答状況は通常の進捗にも反映されます。</p></div><button class="secondary" id="closeToday">閉じる</button></div>${today.map((x, i) => qHtml(x, i + 1)).join("")}`;
+        area.querySelector("#closeToday").onclick = () => {
+          today = [];
+          renderToday();
+        };
+        area
+          .querySelectorAll(".quizbox")
+          .forEach((box) =>
+            box
+              .querySelectorAll(".choice")
+              .forEach((btn) => (btn.onclick = () => answer(box, btn))),
+          );
+      }
+      document.querySelector("#todayBtn").onclick = () => {
+        today = [...allQs]
+          .sort(() => Math.random() - 0.5)
+          .slice(0, Math.min(10, allQs.length));
+        renderToday();
+        document
+          .querySelector("#todayArea")
+          .scrollIntoView({ behavior: "smooth", block: "start" });
+      };
+      document.querySelector("#weakBtn").onclick = () => {
+        mode = "weak";
+        renderContent();
+        renderTabs();
+      };
+      document.querySelector("#allBtn").onclick = () => {
+        mode = "all";
+        renderContent();
+        renderTabs();
+      };
+      document.querySelector("#resetBtn").onclick = () => {
+        if (
+          confirm(
+            "解答数・正答率・苦手問題をすべて削除します。よろしいですか？",
+          )
+        ) {
+          state = { total: 0, correct: 0, seen: {}, wrong: {} };
+          save();
+          mode = "all";
+          renderContent();
+          renderTabs();
+        }
+      };
+      renderTabs();
+      renderContent();
+      updateStats();
+    </script>
+    <script src="../../assets/js/fe-study-sync.js"></script>
+  </body>
 </html>
