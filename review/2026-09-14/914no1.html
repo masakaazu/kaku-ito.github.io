@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>基本情報 復習教材｜AI・メモリ・ネットワーク</title>
+    <style>
+      :root {
+        --navy: #13233a;
+        --blue: #1769aa;
+        --sky: #eaf5ff;
+        --mint: #e7f7ef;
+        --amber: #fff5dc;
+        --red: #b42318;
+        --line: #d7e1ea;
+        --ink: #17212b;
+        --muted: #586777;
+        --card: #fff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #f4f7fa;
+        color: var(--ink);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
+          "Noto Sans JP", sans-serif;
+        line-height: 1.65;
+      }
+      header {
+        background: linear-gradient(135deg, var(--navy), #1a5d90);
+        color: #fff;
+        padding: 28px max(18px, calc((100% - 1100px) / 2)) 22px;
+      }
+      h1 {
+        font-size: clamp(1.45rem, 4vw, 2.1rem);
+        margin: 0 0 4px;
+      }
+      header p {
+        margin: 0;
+        color: #dceeff;
+      }
+      .stats {
+        max-width: 1100px;
+        margin: 16px auto 0;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+      .stat {
+        background: #ffffff17;
+        border: 1px solid #ffffff32;
+        border-radius: 12px;
+        padding: 10px;
+        text-align: center;
+      }
+      .stat b {
+        display: block;
+        font-size: 1.3rem;
+      }
+      main {
+        max-width: 1100px;
+        margin: auto;
+        padding: 18px;
+      }
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      .btn {
+        border: 0;
+        border-radius: 10px;
+        padding: 10px 14px;
+        background: var(--blue);
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 0.94rem;
+      }
+      .btn.alt {
+        background: #fff;
+        color: var(--blue);
+        border: 1px solid var(--blue);
+      }
+      .btn.warn {
+        background: #fff;
+        color: var(--red);
+        border: 1px solid #edb4af;
+      }
+      .tabs {
+        display: flex;
+        gap: 7px;
+        overflow-x: auto;
+        padding-bottom: 8px;
+      }
+      .tab {
+        white-space: nowrap;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 999px;
+        padding: 8px 13px;
+        cursor: pointer;
+        font-weight: 700;
+      }
+      .tab.active {
+        color: #fff;
+        background: var(--navy);
+        border-color: var(--navy);
+      }
+      .panel {
+        display: none;
+      }
+      .panel.active {
+        display: block;
+      }
+      .box,
+      .card,
+      .quiz {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 18px;
+        margin: 14px 0;
+        box-shadow: 0 2px 8px #18314a08;
+      }
+      .box.note {
+        background: var(--amber);
+        border-color: #efd89c;
+      }
+      .box.key {
+        background: var(--sky);
+        border-color: #b9ddf9;
+      }
+      .box h2,
+      .box h3 {
+        margin-top: 0;
+      }
+      h2 {
+        font-size: 1.35rem;
+      }
+      h3 {
+        font-size: 1.08rem;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+        gap: 12px;
+      }
+      .flash {
+        min-height: 170px;
+        cursor: pointer;
+        perspective: 800px;
+      }
+      .flash .inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: 135px;
+        transition: 0.45s;
+        transform-style: preserve-3d;
+      }
+      .flash.flip .inner {
+        transform: rotateY(180deg);
+      }
+      .face {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        border-radius: 12px;
+        padding: 16px;
+      }
+      .front {
+        background: #fff;
+        border: 1px solid var(--line);
+      }
+      .back {
+        background: var(--mint);
+        border: 1px solid #a9ddc1;
+        transform: rotateY(180deg);
+        overflow: auto;
+      }
+      .tag {
+        display: inline-block;
+        font-size: 0.76rem;
+        background: #dcecff;
+        color: #174a73;
+        border-radius: 99px;
+        padding: 2px 8px;
+        margin-bottom: 8px;
+        font-weight: 700;
+      }
+      .term {
+        font-size: 1.15rem;
+        font-weight: 800;
+      }
+      small {
+        color: var(--muted);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.93rem;
+      }
+      th,
+      td {
+        border: 1px solid var(--line);
+        padding: 9px;
+        vertical-align: top;
+        text-align: left;
+      }
+      th {
+        background: #edf5fb;
+      }
+      code {
+        background: #edf1f5;
+        padding: 1px 5px;
+        border-radius: 4px;
+      }
+      .formula {
+        background: #172c45;
+        color: #fff;
+        padding: 13px;
+        border-radius: 10px;
+        overflow: auto;
+        font-family: ui-monospace, monospace;
+      }
+      .options {
+        display: grid;
+        gap: 8px;
+      }
+      .option {
+        width: 100%;
+        text-align: left;
+        padding: 10px;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        background: #fff;
+        cursor: pointer;
+        font: inherit;
+      }
+      .option:hover:not(:disabled) {
+        border-color: var(--blue);
+        background: #f2f9ff;
+      }
+      .option.correct {
+        background: #dff5e8;
+        border-color: #34a264;
+      }
+      .option.wrong {
+        background: #ffebe9;
+        border-color: #dc5a50;
+      }
+      .feedback {
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 8px;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+      }
+      .feedback.ok {
+        background: #e2f7ea;
+      }
+      .feedback.ng {
+        background: #ffebe9;
+      }
+      .qmeta {
+        color: var(--muted);
+        font-size: 0.86rem;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .today {
+        border: 2px solid #3e8bcc;
+      }
+      .today h2 {
+        color: #125c99;
+      }
+      .check {
+        font-weight: 700;
+        color: #276847;
+      }
+      .bad {
+        font-weight: 700;
+        color: var(--red);
+      }
+      ul {
+        padding-left: 1.25em;
+      }
+      @media (max-width: 580px) {
+        main {
+          padding: 12px;
+        }
+        .box,
+        .card,
+        .quiz {
+          padding: 14px;
+        }
+        table {
+          font-size: 0.82rem;
+        }
+        .stats {
+          gap: 6px;
+        }
+        .stat {
+          padding: 8px;
+        }
+        .toolbar .btn {
+          flex: 1;
+        }
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>基本情報技術者試験　復習教材</h1>
+      <p>
+        ニューラルネットワーク・半導体メモリ・稼働率・ネットワーク・OSI参照モデル
+      </p>
+      <div class="stats">
+        <div class="stat"><b id="answered">0</b>解答数</div>
+        <div class="stat"><b id="rate">—</b>正答率</div>
+        <div class="stat"><b id="learned">0</b>学習済み問題数</div>
+      </div>
+    </header>
+    <main>
+      <div class="toolbar">
+        <button class="btn" id="todayBtn">今日の10問を始める</button
+        ><button class="btn alt" id="weakBtn">苦手問題だけ</button
+        ><button class="btn warn" id="resetBtn">進捗をリセット</button>
+      </div>
+      <nav class="tabs" id="tabs"></nav>
+      <section id="todayArea" class="box today hidden"></section>
+      <div id="panels"></div>
+    </main>
+    <script>
+      const sections = [
+        {
+          id: "ai",
+          name: "AI・活性化関数",
+          intro:
+            "ニューロンの「重み付き和」を、次へ渡す出力値に変換する関数。非線形性を入れることで、直線だけでは分けられない複雑な境界を学習できる。",
+          cards: [
+            [
+              "活性化関数",
+              "一言：ニューロンの出力の仕方を決める関数",
+              "試験：入力の重み付き和を変換して次のニューロンへ渡す値を決定する。違い：重みは入力の重要度、活性化関数は合計値をどう出力するかのルール。",
+            ],
+            [
+              "ReLU関数",
+              "一言：負なら0、正ならそのまま出す関数",
+              "式：f(x)=max(0,x)。例：x=-3→0、x=2.5→2.5。深層学習で広く用いられる。",
+            ],
+            [
+              "シグモイド関数",
+              "一言：値を0〜1に収めるS字関数",
+              "式：f(x)=1/(1+e^-x)。出力を確率のように扱いやすい。大きい正負の入力では傾きが小さくなり学習が進みにくい場合がある。",
+            ],
+            [
+              "tanh関数",
+              "一言：値を-1〜1に収めるS字関数",
+              "シグモイドとの違い：出力の中心が0。負の値も表せる。",
+            ],
+            [
+              "非線形性",
+              "一言：曲がった・複雑な境界を作れる性質",
+              "活性化関数がなければ、層を重ねても全体としては実質的に線形変換の組合せになり、複雑な分類が難しい。",
+            ],
+          ],
+          extra: `<div class="box key"><h3>実例：AND・XORで考える</h3><p>入力が「勉強時間」と「演習正答率」だとします。単純に「合計が一定以上なら合格見込み」と決めるのは直線的な境界です。現実には「正答率が低ければ、勉強時間だけ長くても不十分」などの曲線的な判断があり得ます。活性化関数を含む多層ネットワークは、こうした非線形の関係を表現できます。</p><p><b>XOR（排他的論理和）</b>は、入力が片方だけ1のとき1になる問題です。1本の直線では0と1を分けられませんが、中間層と活性化関数を使うことで表現できます。</p></div><div class="box"><h3>関数の使い分け（試験向け）</h3><table><tr><th>関数</th><th>出力範囲</th><th>覚え方</th></tr><tr><td>ReLU</td><td>0以上</td><td>負を0に「切る」</td></tr><tr><td>シグモイド</td><td>0〜1</td><td>確率のような出力</td></tr><tr><td>tanh</td><td>-1〜1</td><td>0を中心に正負を出す</td></tr></table></div>`,
+          qs: [
+            [
+              "活性化関数の役割として最も適切なものは？",
+              [
+                "各入力の重要度を事前に決める",
+                "重み付き和を変換し、次層へ渡す出力を決める",
+                "訓練データを増やす",
+                "誤差を必ず0にする",
+              ],
+              1,
+              "活性化関数はニューロン内の値を変換し、出力を決める。入力の重要度を表すのは重み。",
+            ],
+            [
+              "ReLU関数 f(x)=max(0,x) に x=-2 を入力した出力は？",
+              ["-2", "0", "0.5", "2"],
+              1,
+              "ReLUは負の値を0にし、正の値はそのまま出力する。",
+            ],
+            [
+              "活性化関数を使う主な利点は？",
+              [
+                "必ず計算量が0になる",
+                "非線形で複雑な境界を学習できる",
+                "入力データが不要になる",
+                "重みの学習が不要になる",
+              ],
+              1,
+              "非線形な変換を層ごとに加えることで、複雑な関係を表現できる。",
+            ],
+          ],
+        },
+        {
+          id: "memory",
+          name: "半導体メモリ",
+          intro:
+            "電源を切ると消える「揮発性」と、消えない「不揮発性」を最初に分ける。DRAMとSRAMの違い、EEPROMとフラッシュメモリの関係が頻出。",
+          cards: [
+            [
+              "EEPROM",
+              "一言：電気で消去・書換えできる不揮発性ROM",
+              "Electrically Erasable Programmable ROM。試験：電源を切っても保持。フラッシュメモリはEEPROMの一種。",
+            ],
+            [
+              "SDRAM",
+              "一言：クロックに同期して動くDRAM",
+              "Synchronous Dynamic RAM。揮発性。コンデンサの電荷で記憶するのでリフレッシュが必要。主記憶に使われる。",
+            ],
+            [
+              "SRAM",
+              "一言：高速・高価な揮発性RAM",
+              "Static RAM。フリップフロップ回路で記憶し、リフレッシュ不要。キャッシュメモリに使う。",
+            ],
+            [
+              "フラッシュメモリ",
+              "一言：ブロック単位で消去する不揮発性メモリ",
+              "EEPROMの一種。USBメモリ、SDカード、SSDで使われる。バイト単位ではなくブロック単位で消去・書換えする。",
+            ],
+            [
+              "リフレッシュ",
+              "一言：DRAMの電荷を定期的に補充する処理",
+              "DRAMはコンデンサの電荷が自然に失われるため必要。SRAMには不要。",
+            ],
+          ],
+          extra: `<div class="box"><h3>深掘り：メモリの全体像</h3><table><tr><th>種類</th><th>記憶方式</th><th>揮発性</th><th>速度・コスト</th><th>主用途</th></tr><tr><td>SRAM</td><td>フリップフロップ</td><td>揮発性</td><td>高速・高価・低密度</td><td>CPUキャッシュ</td></tr><tr><td>DRAM / SDRAM</td><td>コンデンサの電荷</td><td>揮発性</td><td>SRAMより低速・安価・高密度</td><td>主記憶</td></tr><tr><td>EEPROM</td><td>電気的に書換え可能なROM</td><td>不揮発性</td><td>—</td><td>設定情報など</td></tr><tr><td>フラッシュ</td><td>EEPROMの一種</td><td>不揮発性</td><td>大容量化しやすい</td><td>USB・SD・SSD</td></tr></table></div><div class="box note"><h3>混同防止</h3><ul><li><b>SRAMのS</b>は Synchronous ではなく Static。SDRAMのSは Synchronous。</li><li><b>SRAMは不揮発性ではない。</b>「Static」はデータが永久に残る意味ではなく、リフレッシュが不要という意味。</li><li>SSDは半導体メモリ（主にNAND型フラッシュ）を記憶媒体に使う補助記憶装置。</li></ul></div>`,
+          qs: [
+            [
+              "電荷の有無で情報を記憶し、リフレッシュが必要なメモリは？",
+              ["SRAM", "SDRAM", "EEPROM", "フラッシュメモリ"],
+              1,
+              "SDRAMはDRAMの一種で、コンデンサの電荷を使う。電荷が失われるためリフレッシュが必要。",
+            ],
+            [
+              "SRAMの説明として正しいものは？",
+              [
+                "不揮発性でUSBメモリに使う",
+                "コンデンサを使いリフレッシュが必要",
+                "フリップフロップで記憶しキャッシュに使う",
+                "ブロック単位で消去する",
+              ],
+              2,
+              "SRAMはフリップフロップ回路で記憶する揮発性メモリ。高速なのでキャッシュメモリに用いる。",
+            ],
+            [
+              "フラッシュメモリの説明として最も適切なものは？",
+              [
+                "EEPROMの一種で、一般にブロック単位で消去する",
+                "電源を切ると内容が消える主記憶",
+                "リフレッシュが必須のRAM",
+                "機械的に回転する記憶装置",
+              ],
+              0,
+              "フラッシュメモリは不揮発性でEEPROMの一種。USBメモリ、SDカード、SSDなどで用いられる。",
+            ],
+          ],
+        },
+        {
+          id: "reliability",
+          name: "稼働率・構成",
+          intro:
+            "「どれか1台が動けばよい」は並列、「全てが動く必要がある」は直列。式と日本語を結び付ける。",
+          cards: [
+            [
+              "直列システム",
+              "一言：全構成要素が動かないと動かない",
+              "稼働率：A=A₁×A₂×…×Aₙ。要素が増えるほど全体稼働率は下がりやすい。",
+            ],
+            [
+              "並列システム",
+              "一言：少なくとも1台が動けばよい",
+              "稼働率：A=1−(1−A₁)(1−A₂)…(1−Aₙ)。冗長化により可用性を上げる。",
+            ],
+            [
+              "冗長化",
+              "一言：故障に備えて予備を用意すること",
+              "目的は障害が起きてもサービスを継続すること。並列構成が代表。",
+            ],
+            [
+              "2層C/S",
+              "一言：クライアントとDBサーバ中心の構成",
+              "クライアントが画面と業務処理の多くを担当し、サーバがDBアクセスを担当する。",
+            ],
+            [
+              "3層C/S",
+              "一言：画面・業務処理・データを分離",
+              "クライアント＝画面/入力、APサーバ＝業務処理、DBサーバ＝データ管理。保守・拡張しやすい。",
+            ],
+          ],
+          extra: `<div class="box key"><h3>式と例題</h3><p class="formula">直列：A = A₁ × A₂ × … × Aₙ\n並列：A = 1 − (1−A₁)(1−A₂)…(1−Aₙ)</p><p>例：稼働率0.99の機器2台を並列にすると、<code>1 − (1−0.99)² = 0.9999</code>、すなわち <b>99.99%</b>。両方とも停止する確率を全体から引く、と考える。</p></div>`,
+          qs: [
+            [
+              "稼働率0.9の装置AとBを直列接続した全体の稼働率は？",
+              ["0.81", "0.9", "0.99", "0.19"],
+              0,
+              "直列は両方の正常動作が必要なので、0.9×0.9=0.81。",
+            ],
+            [
+              "「2台のうち少なくとも1台が稼働すればよい」構成は？",
+              ["直列構成", "並列構成", "単一構成", "集中構成"],
+              1,
+              "少なくとも1台でよいのは並列構成。冗長化に用いて可用性を高める。",
+            ],
+            [
+              "3層クライアントサーバシステムで業務処理を主に担当するのは？",
+              ["クライアント", "アプリケーションサーバ", "DBサーバ", "ルータ"],
+              1,
+              "画面・入力はクライアント、業務処理はAPサーバ、データ管理はDBサーバ。",
+            ],
+          ],
+        },
+        {
+          id: "network",
+          name: "ネットワーク・セキュリティ",
+          intro:
+            "DNSとDHCP、ネットワーク確認コマンド、C&C・ボット、DNSキャッシュポイズニングを整理する。",
+          cards: [
+            [
+              "DNS",
+              "一言：名前をIPアドレスへ対応付ける仕組み",
+              "Domain Name System。例：www.example.comのようなドメイン名をIPアドレスへ名前解決する。",
+            ],
+            [
+              "DHCP",
+              "一言：ネットワーク設定を自動配布する仕組み",
+              "Dynamic Host Configuration Protocol。IPアドレス、サブネットマスク、デフォルトゲートウェイ、DNSサーバ等を自動設定する。",
+            ],
+            [
+              "C&Cサーバ",
+              "一言：攻撃者がボットへ命令を送る拠点",
+              "Command and Control server。情報窃取、DDoS、スパム送信などを指示する。",
+            ],
+            [
+              "ボット",
+              "一言：攻撃者に遠隔操作される感染端末",
+              "マルウェアに感染したPCやIoT機器。多数集まったものをボットネットという。",
+            ],
+            [
+              "DNSキャッシュポイズニング",
+              "一言：DNSキャッシュに偽の対応を入れる攻撃",
+              "目的：正しいドメイン名でアクセスした利用者を偽サイトへ誘導する。対策例：DNSSEC、適切なDNSサーバ設定・更新。",
+            ],
+            [
+              "FQDN",
+              "一言：省略のない完全なドメイン名",
+              "Fully Qualified Domain Name。例：www.example.co.jp。ホスト名からトップレベルドメインまでを完全に指定する。",
+            ],
+          ],
+          extra: `<div class="box"><h3>Windowsでの確認コマンド</h3><table><tr><th>コマンド</th><th>何を確認するか</th><th>覚え方</th></tr><tr><td><code>arp -a</code></td><td>ARPテーブル（IPアドレスとMACアドレスの対応）</td><td>ARP = IPからMACを調べる</td></tr><tr><td><code>tracert 宛先</code></td><td>宛先までの経路・中継ルータ</td><td>trace = 経路を追跡</td></tr><tr><td><code>ipconfig</code></td><td>IP、サブネットマスク、デフォルトゲートウェイ等</td><td>IPの設定を確認</td></tr><tr><td><code>ipconfig /all</code></td><td>上記に加えMAC、DNS、DHCP情報等</td><td>all = 詳細表示</td></tr><tr><td><code>ping 宛先</code></td><td>ICMPエコーにより到達性・応答時間・損失を確認</td><td>まず「届くか」を見る</td></tr></table></div><div class="box note"><h3>障害切り分けの例</h3><p>Webサイトが開けないとき、<code>ipconfig</code>で自分のIP設定、<code>ping</code>でデフォルトゲートウェイやIPアドレスへの到達性、<code>nslookup</code>（追加知識）でDNS名前解決、<code>tracert</code>で途中経路を順に確認する。ping成功だけでWeb通信の正常までは断定できない。</p></div>`,
+          qs: [
+            [
+              "DHCPが端末へ自動設定する情報として適切なものは？",
+              [
+                "IPアドレスやデフォルトゲートウェイ",
+                "Webページの内容",
+                "CPUクロック周波数",
+                "データベースの表定義",
+              ],
+              0,
+              "DHCPはIPアドレスなどのネットワーク設定を自動配布する。",
+            ],
+            [
+              "ARPの役割として適切なものは？",
+              [
+                "ドメイン名をIPアドレスに変換する",
+                "IPアドレスに対応するMACアドレスを調べる",
+                "通信経路を暗号化する",
+                "IPアドレスを自動割当てする",
+              ],
+              1,
+              "DNSは名前→IP、ARPは（同一LAN内で）IP→MAC、DHCPはIP設定の自動配布。",
+            ],
+            [
+              "DNSキャッシュポイズニングの説明は？",
+              [
+                "DNSキャッシュへ偽の対応情報を登録させる攻撃",
+                "端末の電源を止める攻撃",
+                "無線LANの電波を強くする攻撃",
+                "ファイルを圧縮する処理",
+              ],
+              0,
+              "偽の名前解決結果をキャッシュさせ、利用者を不正なサイトへ誘導する。",
+            ],
+          ],
+        },
+        {
+          id: "osi",
+          name: "OSI参照モデル",
+          intro:
+            "OSI参照モデルは通信機能を7層に分けた考え方。試験では各層の役割と代表的な装置・プロトコルを対応させる。",
+          cards: [
+            [
+              "第7層：アプリケーション層",
+              "一言：利用者に近い通信サービス",
+              "HTTP、SMTP、FTP、DNSなど。Web閲覧・メール送信といったアプリケーション向けの機能。",
+            ],
+            [
+              "第6層：プレゼンテーション層",
+              "一言：データの表現形式を整える",
+              "文字コード変換、圧縮、暗号化など。実装上は第5〜7層の機能が一体化することも多い。",
+            ],
+            [
+              "第5層：セション層",
+              "一言：通信の開始・維持・終了を管理",
+              "対話（セション）の確立、同期、切断を扱う。",
+            ],
+            [
+              "第4層：トランスポート層",
+              "一言：端末間の通信を制御",
+              "TCP・UDP、ポート番号。TCPは信頼性、UDPは軽量・高速性を重視。",
+            ],
+            [
+              "第3層：ネットワーク層",
+              "一言：異なるネットワーク間へ届ける",
+              "IPアドレス、ルーティング。代表装置はルータ、L3スイッチ。",
+            ],
+            [
+              "第2層：データリンク層",
+              "一言：同一LAN内でフレームを届ける",
+              "MACアドレス、イーサネット、ARP。代表装置はL2スイッチ、ブリッジ。",
+            ],
+            [
+              "第1層：物理層",
+              "一言：ビットを電気・光・電波で送る",
+              "ケーブル、コネクタ、電気・光信号、無線。代表装置はリピータ、ハブ。",
+            ],
+          ],
+          extra: `<div class="box"><h3>各層と代表装置の整理</h3><table><tr><th>層</th><th>主な仕事</th><th>代表例</th><th>代表装置</th></tr><tr><td>7 アプリケーション</td><td>利用者向け通信サービス</td><td>HTTP、SMTP、DNS</td><td>プロキシ、ゲートウェイ<br><small>※厳密には複数層の機能を持つ製品が多い</small></td></tr><tr><td>6 プレゼンテーション</td><td>暗号化・圧縮・形式変換</td><td>TLS/SSL、文字コード</td><td>専用装置としては固定しにくい</td></tr><tr><td>5 セション</td><td>通信の開始・維持・終了</td><td>セション管理</td><td>専用装置としては固定しにくい</td></tr><tr><td>4 トランスポート</td><td>端末間の通信制御</td><td>TCP、UDP、ポート番号</td><td>L4スイッチ、ロードバランサ</td></tr><tr><td>3 ネットワーク</td><td>IP・経路選択</td><td>IP、ICMP、ルーティング</td><td><b>ルータ、L3スイッチ</b></td></tr><tr><td>2 データリンク</td><td>MAC・フレーム転送</td><td>Ethernet、ARP</td><td><b>L2スイッチ、ブリッジ</b></td></tr><tr><td>1 物理</td><td>信号・媒体</td><td>ケーブル、光、電波</td><td><b>リピータ、ハブ</b></td></tr></table></div><div class="box note"><h3>試験での注意</h3><p>「スイッチ」とだけ書かれている場合は、文脈を確認する。<b>L2スイッチ</b>はMACアドレスでフレームを転送する第2層、<b>L3スイッチ</b>はIPアドレスで経路選択も行う第3層。現実の機器は複数層の機能を持つことがあるが、試験では代表的な対応で答える。</p></div>`,
+          qs: [
+            [
+              "OSI参照モデルで、IPアドレスとルーティングを主に扱う層は？",
+              [
+                "物理層",
+                "データリンク層",
+                "ネットワーク層",
+                "アプリケーション層",
+              ],
+              2,
+              "IPアドレスと経路選択は第3層のネットワーク層。代表装置はルータやL3スイッチ。",
+            ],
+            [
+              "MACアドレスを基にフレームを転送する代表的な装置は？",
+              ["リピータ", "L2スイッチ", "ルータ", "L4スイッチ"],
+              1,
+              "L2スイッチはデータリンク層でMACアドレスを参照して転送する。",
+            ],
+            [
+              "TCP、UDP、ポート番号に関係するOSI層は？",
+              [
+                "トランスポート層",
+                "セション層",
+                "物理層",
+                "プレゼンテーション層",
+              ],
+              0,
+              "TCP/UDPとポート番号は第4層のトランスポート層。",
+            ],
+          ],
+        },
+      ];
+      const allQs = sections.flatMap((s) =>
+        s.qs.map((q, i) => ({
+          section: s.id,
+          num: i,
+          id: `914no1-${s.id}-q${String(i + 1).padStart(2, "0")}`,
+          ...{ q: q[0], opts: q[1], ans: q[2], exp: q[3] },
+        })),
+      );
+      const key = "fe_review_v1";
+      let state = JSON.parse(
+        localStorage.getItem(key) || '{"answers":{},"wrong":[]}',
+      );
+      function save() {
+        localStorage.setItem(key, JSON.stringify(state));
+        updateStats();
+      }
+      function updateStats() {
+        let vals = Object.values(state.answers),
+          correct = vals.filter((x) => x).length;
+        answered.textContent = vals.length;
+        rate.textContent = vals.length
+          ? Math.round((correct / vals.length) * 100) + "%"
+          : "—";
+        learned.textContent = new Set(Object.keys(state.answers)).size;
+      }
+      function card(t) {
+        return `<div class="card flash" tabindex="0" role="button" aria-label="${t[0]}のカード。クリックで解説表示"><div class="inner"><div class="face front"><span class="tag">タップで答えを見る</span><div class="term">${t[0]}</div><p>${t[1]}</p></div><div class="face back"><span class="tag">解説</span><div class="term">${t[0]}</div><p>${t[2]}</p></div></div></div>`;
+      }
+      function quiz(x, id) {
+        let prior = state.answers[x.id];
+        return `<div class="quiz" id="wrap-${id}"><div class="qmeta">${sections.find((s) => s.id === x.section)?.name || "今日の10問"}</div><h3>Q. ${x.q}</h3><div class="options">${x.opts.map((o, i) => `<button class="option ${prior !== undefined ? (i === x.ans ? "correct" : i === prior ? "wrong" : "") : ""}" data-qid="${id}" data-question-id="${x.id}" data-choice="${i}" ${prior !== undefined ? "disabled" : ""}>${"ア".charCodeAt ? String.fromCharCode(0x30a2 + i) : i}. ${o}</button>`).join("")}</div><div class="feedback ${prior !== undefined ? "show " + (prior === x.ans ? "ok" : "ng") : ""}">${prior !== undefined ? (prior === x.ans ? "<b>正解！</b> " : "<b>不正解。</b> ") + x.exp : ""}</div></div>`;
+      }
+      function render() {
+        tabs.innerHTML = sections
+          .map(
+            (s, i) =>
+              `<button class="tab ${i === 0 ? "active" : ""}" data-tab="${s.id}">${s.name}</button>`,
+          )
+          .join("");
+        panels.innerHTML = sections
+          .map(
+            (s, i) =>
+              `<section class="panel ${i === 0 ? "active" : ""}" id="panel-${s.id}"><div class="box key"><h2>${s.name}</h2><p>${s.intro}</p></div><h2>用語カード</h2><div class="grid">${s.cards.map(card).join("")}</div><h2>プラスアルファ</h2>${s.extra}<h2>確認クイズ（3問）</h2>${s.qs.map((q, n) => { const question = allQs.find((item) => item.section === s.id && item.num === n); return quiz(question, question.id); }).join("")}</section>`,
+          )
+          .join("");
+        bind();
+      }
+      function bind() {
+        document.querySelectorAll(".tab").forEach(
+          (b) =>
+            (b.onclick = () => {
+              document
+                .querySelectorAll(".tab,.panel")
+                .forEach((e) => e.classList.remove("active"));
+              b.classList.add("active");
+              document
+                .querySelector("#panel-" + b.dataset.tab)
+                .classList.add("active");
+              todayArea.classList.add("hidden");
+            }),
+        );
+        document.querySelectorAll(".flash").forEach((c) => {
+          c.onclick = () => c.classList.toggle("flip");
+          c.onkeydown = (e) => {
+            if (e.key === "Enter" || e.key === " ") c.classList.toggle("flip");
+          };
+        });
+        document
+          .querySelectorAll(".option")
+          .forEach((b) => (b.onclick = answer));
+      }
+      function answer(e) {
+        let b = e.currentTarget,
+          instanceId = b.dataset.qid,
+          questionId = b.dataset.questionId,
+          choice = +b.dataset.choice;
+        let x = currentQuestion(questionId);
+        if (!x) return;
+        state.answers[questionId] = choice === x.ans;
+        if (choice !== x.ans && !state.wrong.includes(questionId)) state.wrong.push(questionId);
+        if (choice === x.ans) state.wrong = state.wrong.filter((v) => v !== questionId);
+        save();
+        if (window.recordAnswer) {
+          const category = sections.find((section) => section.id === x.section)?.name || x.section;
+          window.recordAnswer(questionId, category, choice === x.ans);
+        }
+        let wrap = document.getElementById("wrap-" + instanceId);
+        wrap.querySelectorAll(".option").forEach((z) => {
+          z.disabled = true;
+          let c = +z.dataset.choice;
+          if (c === x.ans) z.classList.add("correct");
+          else if (c === choice) z.classList.add("wrong");
+        });
+        let f = wrap.querySelector(".feedback");
+        f.className = "feedback show " + (choice === x.ans ? "ok" : "ng");
+        f.innerHTML =
+          (choice === x.ans ? "<b>正解！</b> " : "<b>不正解。</b> ") + x.exp;
+      }
+      function currentQuestion(id) {
+        return allQs.find((question) => question.id === id) || null;
+      }
+      todayBtn.onclick = () => {
+        window.todayQs = [...allQs]
+          .sort(() => Math.random() - 0.5)
+          .slice(0, Math.min(10, allQs.length));
+        todayArea.classList.remove("hidden");
+        todayArea.innerHTML =
+          "<h2>今日の10問</h2><p>全分野からランダム出題。解き終えたら「苦手問題だけ」で復習しよう。</p>" +
+          window.todayQs.map((x, i) => quiz(x, "today-" + i)).join("");
+        document
+          .querySelectorAll(".option")
+          .forEach((b) => (b.onclick = answer));
+        todayArea.scrollIntoView({ behavior: "smooth" });
+      };
+      weakBtn.onclick = () => {
+        let qs = allQs.filter((x, i) =>
+          state.wrong.includes(x.id),
+        );
+        todayArea.classList.remove("hidden");
+        todayArea.innerHTML =
+          "<h2>苦手問題</h2>" +
+          (qs.length
+            ? "<p>過去に間違えた問題です。正解すると苦手リストから外れます。</p>" +
+              qs.map((x) => quiz(x, x.section + "-" + x.num)).join("")
+            : '<p class="check">苦手問題はありません。各分野のクイズ、または「今日の10問」に取り組みましょう。</p>');
+        document
+          .querySelectorAll(".option")
+          .forEach((b) => (b.onclick = answer));
+        todayArea.scrollIntoView({ behavior: "smooth" });
+      };
+      resetBtn.onclick = () => {
+        if (
+          confirm(
+            "解答履歴・正答率・苦手問題をすべて削除します。よろしいですか？",
+          )
+        ) {
+          state = { answers: {}, wrong: [] };
+          save();
+          render();
+          todayArea.classList.add("hidden");
+        }
+      };
+      render();
+      updateStats();
+    </script>
+    <script src="../../../assets/js/fe-study-sync.js"></script>
+  </body>
+</html>

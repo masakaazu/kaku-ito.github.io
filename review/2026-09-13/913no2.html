@@ -98,6 +98,10 @@
         background: #fff0ee;
         color: #b42318;
       }
+      .toolbar button.active {
+        outline: 3px solid #93c5fd;
+        outline-offset: 2px;
+      }
       .tabs {
         display: flex;
         overflow-x: auto;
@@ -359,7 +363,7 @@
       <div id="todayArea" class="box hidden"></div>
       <div id="content"></div>
       <footer>
-        進捗・苦手問題は、このブラウザ内（localStorage）に保存されます。
+        画面の進捗はこのブラウザに保存され、正答・誤答はログイン中にクラウドへ同期されます。
       </footer>
     </main>
     <script>
@@ -635,6 +639,7 @@
       );
       let mode = "all",
         today = [];
+      let weakQuestionIds = new Set();
       const allQs = Object.entries(data).flatMap(([cat, v]) =>
         v.questions.map((q, i) => ({ cat, i, q, id: cat + "-" + i })),
       );
@@ -704,7 +709,8 @@
             q,
             id: k + "-" + i,
           }));
-          if (mode === "weak") qs = qs.filter((x) => state.wrong[x.id]);
+          if (mode === "weak")
+            qs = qs.filter((x) => weakQuestionIds.has(x.id));
           html += `<div class="panel ${idx === 0 ? "active" : ""}" id="p-${k}"><section><h2>${v.name}｜用語カード</h2><p class="small">カードを押して、意味・ポイント・混同しやすい用語を確認します。</p><div class="cards">${v.cards.map(cardHtml).join("")}</div></section><section><h2>${v.name}｜4択クイズ</h2>${qs.length ? qs.map((x, i) => qHtml(x, i + 1)).join("") : '<p class="empty">この分野には、まだ苦手問題がありません。全問題を解いて判定してください。</p>'}</section></div>`;
         });
         document.querySelector("#content").innerHTML = html;
@@ -749,7 +755,11 @@
         save();
         /* ここを追加：Supabaseへ正答・誤答を同期 */
         if (window.recordAnswer) {
-          window.recordAnswer(item.id, item.cat, picked === ans);
+          window.recordAnswer(
+            "913no2-" + item.id,
+            item.cat,
+            picked === ans,
+          );
         }
       }
       function renderToday() {
@@ -781,20 +791,89 @@
           .querySelector("#todayArea")
           .scrollIntoView({ behavior: "smooth", block: "start" });
       };
-      document.querySelector("#weakBtn").onclick = () => {
+      function getLocalWeakQuestionIds() {
+        return Object.keys(state.wrong).filter(
+          (id) => Number(state.wrong[id]) > 0,
+        );
+      }
+
+      function normalizeCloudQuestionId(questionId) {
+        const id = String(questionId || "");
+        return id.startsWith("913no2-") ? id.slice("913no2-".length) : id;
+      }
+
+      async function getCloudAnswerStats() {
+        for (let attempt = 0; attempt < 4; attempt++) {
+          if (typeof window.getReviewAnswerStats === "function") {
+            const rows = await window.getReviewAnswerStats();
+            if (rows.length || attempt === 3) return rows;
+          }
+          await new Promise((resolve) => setTimeout(resolve, 250));
+        }
+        return [];
+      }
+
+      async function loadWeakQuestionIds() {
+        const ids = new Set(getLocalWeakQuestionIds());
+
+        try {
+          const rows = await getCloudAnswerStats();
+          rows.forEach((row) => {
+            const id = normalizeCloudQuestionId(row.question_id);
+            const exists = allQs.some((item) => item.id === id);
+            const isWeak =
+              typeof window.isWeakReviewQuestion === "function"
+                ? window.isWeakReviewQuestion(row)
+                : (row.wrong_count || 0) > (row.correct_count || 0);
+
+            if (exists && isWeak) ids.add(id);
+          });
+        } catch (error) {
+          console.error("苦手問題のクラウド読込に失敗しました", error);
+        }
+
+        return ids;
+      }
+
+      document.querySelector("#weakBtn").onclick = async function () {
+        this.disabled = true;
+        this.textContent = "苦手問題を読込中...";
+
+        weakQuestionIds = await loadWeakQuestionIds();
         mode = "weak";
         renderContent();
         renderTabs();
+
+        const firstWeak = allQs.find((item) =>
+          weakQuestionIds.has(item.id),
+        );
+
+        if (firstWeak) {
+          document
+            .querySelector(`[data-tab="${firstWeak.cat}"]`)
+            ?.click();
+          this.textContent = `苦手問題だけ (${weakQuestionIds.size})`;
+        } else {
+          this.textContent = "苦手問題なし";
+        }
+
+        this.classList.add("active");
+        document.querySelector("#allBtn").classList.remove("active");
+        this.disabled = false;
       };
+
       document.querySelector("#allBtn").onclick = () => {
         mode = "all";
         renderContent();
         renderTabs();
+        document.querySelector("#weakBtn").classList.remove("active");
+        document.querySelector("#weakBtn").textContent = "苦手問題だけ";
+        document.querySelector("#allBtn").classList.add("active");
       };
       document.querySelector("#resetBtn").onclick = () => {
         if (
           confirm(
-            "解答数・正答率・苦手問題をすべて削除します。よろしいですか？",
+            "この端末の解答数・正答率・苦手表示を削除します。クラウドの回答履歴は削除されません。よろしいですか？",
           )
         ) {
           state = { total: 0, correct: 0, seen: {}, wrong: {} };
