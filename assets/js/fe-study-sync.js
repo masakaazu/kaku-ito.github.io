@@ -410,5 +410,33 @@
     );
   };
 
+  window.resetReviewProgress = async function () {
+    if (!currentUser || !supabaseClient) {
+      return { ok: false, reason: "not-logged-in" };
+    }
+
+    const reviewDate = getReviewDate();
+
+    const result = await supabaseClient
+      .from(ANSWERS_TABLE)
+      .update({
+        correct_count: 0,
+        wrong_count: 0,
+        last_answer_correct: null,
+        last_answered_at: new Date().toISOString()
+      })
+      .eq("user_id", currentUser.id)
+      .eq("review_date", reviewDate);
+
+    if (result.error) {
+      console.error("[fe-study-sync] reset failed", result.error);
+      showSyncMessage("クラウドの進捗リセットに失敗しました。", "error");
+      return { ok: false, reason: "error", error: result.error };
+    }
+
+    showSyncMessage("クラウドの進捗をリセットしました。", "success");
+    return { ok: true };
+  };
+
   initialize();
 })();

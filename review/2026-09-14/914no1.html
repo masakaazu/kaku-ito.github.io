@@ -806,16 +806,34 @@
           .forEach((b) => (b.onclick = answer));
         todayArea.scrollIntoView({ behavior: "smooth" });
       };
-      resetBtn.onclick = () => {
-        if (
-          confirm(
-            "解答履歴・正答率・苦手問題をすべて削除します。よろしいですか？",
-          )
-        ) {
-          state = { answers: {}, wrong: [] };
-          save();
-          render();
-          todayArea.classList.add("hidden");
+      resetBtn.onclick = async () => {
+        const confirmed = confirm(
+          "この端末の解答履歴・正答率・苦手問題をリセットします。\n" +
+            "ログイン中は、クラウド側の正答数・誤答数も0に戻ります（履歴の行は削除されません）。\n" +
+            "よろしいですか？",
+        );
+
+        if (!confirmed) return;
+
+        state = { answers: {}, wrong: [] };
+        save();
+        render();
+        todayArea.classList.add("hidden");
+
+        if (window.resetReviewProgress) {
+          resetBtn.disabled = true;
+          resetBtn.textContent = "クラウドをリセット中...";
+
+          const result = await window.resetReviewProgress();
+
+          resetBtn.disabled = false;
+          resetBtn.textContent = "進捗をリセット";
+
+          if (!result.ok && result.reason === "error") {
+            alert(
+              "クラウド側のリセットに失敗しました。通信状態を確認して、もう一度お試しください。",
+            );
+          }
         }
       };
       render();

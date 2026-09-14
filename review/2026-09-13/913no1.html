@@ -949,30 +949,49 @@
           .getElementById("todayArea")
           .scrollIntoView({ behavior: "smooth", block: "start" });
       };
-      document.getElementById("resetBtn").onclick = () => {
-        if (
-          confirm(
-            "このブラウザに保存した解答履歴・苦手問題をすべて消します。よろしいですか？",
-          )
-        ) {
-          state = { answered: 0, correct: 0, seen: [], wrong: [] };
-          save();
-          weakMode = false;
-          document.getElementById("weakBtn").classList.remove("active");
-          document.getElementById("weakBtn").textContent = "苦手問題だけ";
-          document.getElementById("todayArea").style.display = "none";
-          renderQuiz(
-            "cloudQuiz",
-            questions.filter((q) => q.cat === "cloud"),
-          );
-          renderQuiz(
-            "systemQuiz",
-            questions.filter((q) => q.cat === "system"),
-          );
-          renderQuiz(
-            "dataQuiz",
-            questions.filter((q) => q.cat === "data"),
-          );
+      document.getElementById("resetBtn").onclick = async () => {
+        const confirmed = confirm(
+          "この端末の解答履歴・正答率・苦手問題をリセットします。\n" +
+            "ログイン中は、クラウド側の正答数・誤答数も0に戻ります（履歴の行は削除されません）。\n" +
+            "よろしいですか？",
+        );
+
+        if (!confirmed) return;
+
+        const resetButton = document.getElementById("resetBtn");
+        state = { answered: 0, correct: 0, seen: [], wrong: [] };
+        save();
+        weakMode = false;
+        document.getElementById("weakBtn").classList.remove("active");
+        document.getElementById("weakBtn").textContent = "苦手問題だけ";
+        document.getElementById("todayArea").style.display = "none";
+        renderQuiz(
+          "cloudQuiz",
+          questions.filter((q) => q.cat === "cloud"),
+        );
+        renderQuiz(
+          "systemQuiz",
+          questions.filter((q) => q.cat === "system"),
+        );
+        renderQuiz(
+          "dataQuiz",
+          questions.filter((q) => q.cat === "data"),
+        );
+
+        if (window.resetReviewProgress) {
+          resetButton.disabled = true;
+          resetButton.textContent = "クラウドをリセット中...";
+
+          const result = await window.resetReviewProgress();
+
+          resetButton.disabled = false;
+          resetButton.textContent = "進捗をリセット";
+
+          if (!result.ok && result.reason === "error") {
+            alert(
+              "クラウド側のリセットに失敗しました。通信状態を確認して、もう一度お試しください。",
+            );
+          }
         }
       };
     </script>
