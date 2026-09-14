@@ -52,19 +52,18 @@ kaku-ito.github.io/
 review/YYYY-MM-DD/ファイル名.html
 ```
 
-この階層からルートの `assets/js` までは3階層戻る必要がある。
+この階層からルートの `assets/js` までは2階層戻る必要がある。
 
 ```html
-<script src="../../../assets/js/fe-study-sync.js"></script>
+<script src="../../assets/js/fe-study-sync.js"></script>
 ```
 
 パスの数え方:
 
 ```text
 ファイル自身から見て
-../      → review/YYYY-MM-DD/
-../../   → review/
-../../../ → ルート（assets/js/ がある場所）
+../     → review/
+../../  → ルート（assets/js/ がある場所）
 ```
 
 HTMLを別の階層へ置く場合は、実際のフォルダの深さに応じて `../` の数を調整する。**必ずブラウザで読み込みエラーが出ないことを確認してから確定する。**
@@ -177,7 +176,7 @@ WBSと復習HTMLは同じGitHub Pagesドメイン（`https://kaku-ito.github.io/
 3. 問題ごとに固定問題IDを設定する（教材名を含める）
 4. 既存の回答判定関数を開き、実際の変数名を確認する
 5. 判定関数の内側、save() の直後に recordAnswer(...) を1行追加する
-6. HTML末尾で共通JS（../../../assets/js/fe-study-sync.js）を読み込む
+6. HTML末尾で共通JS（../../assets/js/fe-study-sync.js）を読み込む
 7. review/index.html または日付別index.htmlからリンクする
 8. ローカルまたは公開URLで、表示・回答・同期メッセージを確認する
 9. Safariコンソールでエラーが出ていないか確認する
