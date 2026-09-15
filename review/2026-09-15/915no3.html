@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>FE復習教材｜CPUスケジューリングと記憶管理</title>
+    <style>
+      :root {
+        --navy: #12233f;
+        --blue: #2673d9;
+        --pale: #eef5ff;
+        --green: #16856a;
+        --red: #c53c4b;
+        --ink: #1d2939;
+        --muted: #667085;
+        --line: #d8e2ef;
+        --card: #fff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #f5f8fc;
+        color: var(--ink);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP",
+          sans-serif;
+        line-height: 1.6;
+      }
+      .wrap {
+        width: min(100%, 980px);
+        margin: auto;
+        padding: 18px;
+      }
+      .hero {
+        background: linear-gradient(125deg, #112c52, #2673d9);
+        color: #fff;
+        padding: 25px;
+        border-radius: 18px;
+        box-shadow: 0 8px 20px #17376233;
+      }
+      .hero h1 {
+        font-size: clamp(1.45rem, 5vw, 2.2rem);
+        margin: 0;
+      }
+      .hero p {
+        margin: 0.35rem 0 0;
+        color: #e7f1ff;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 9px;
+        margin: 16px 0;
+      }
+      .stat {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        padding: 12px;
+        text-align: center;
+      }
+      .stat strong {
+        display: block;
+        font-size: 1.32rem;
+        color: var(--blue);
+      }
+      .stat span {
+        font-size: 0.76rem;
+        color: var(--muted);
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        overflow: auto;
+        margin: 12px 0;
+      }
+      .tab,
+      button {
+        font: inherit;
+        border: 0;
+        border-radius: 10px;
+        padding: 10px 13px;
+        cursor: pointer;
+      }
+      .tab {
+        white-space: nowrap;
+        background: #e4edf9;
+        color: #315177;
+      }
+      .tab.active {
+        background: var(--navy);
+        color: #fff;
+      }
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin: 12px 0;
+      }
+      .toolbar button {
+        background: #fff;
+        border: 1px solid var(--line);
+        color: var(--navy);
+        font-weight: 700;
+      }
+      .toolbar .warn {
+        color: var(--red);
+      }
+      .section {
+        display: none;
+      }
+      .section.active {
+        display: block;
+      }
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        padding: 17px;
+        margin: 13px 0;
+      }
+      .panel h2 {
+        font-size: 1.15rem;
+        margin: 0 0 9px;
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin-top: 0;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(235px, 1fr));
+        gap: 11px;
+      }
+      .flash {
+        min-height: 166px;
+        perspective: 900px;
+        cursor: pointer;
+      }
+      .flash-inner {
+        height: 100%;
+        min-height: 166px;
+        position: relative;
+        transition: transform 0.45s;
+        transform-style: preserve-3d;
+      }
+      .flash.flip .flash-inner {
+        transform: rotateY(180deg);
+      }
+      .face {
+        position: absolute;
+        inset: 0;
+        padding: 16px;
+        border-radius: 13px;
+        backface-visibility: hidden;
+        border: 1px solid var(--line);
+        background: #fff;
+      }
+      .back {
+        transform: rotateY(180deg);
+        background: var(--pale);
+        overflow: auto;
+      }
+      .term {
+        font-weight: 800;
+        font-size: 1.13rem;
+        color: var(--navy);
+      }
+      .tap {
+        position: absolute;
+        bottom: 10px;
+        right: 13px;
+        color: var(--blue);
+        font-size: 0.78rem;
+      }
+      .label {
+        font-size: 0.75rem;
+        color: var(--green);
+        font-weight: 700;
+      }
+      .q {
+        border-top: 1px solid var(--line);
+        padding: 14px 0;
+      }
+      .q:first-of-type {
+        border-top: 0;
+      }
+      .q p {
+        font-weight: 700;
+        margin: 0 0 8px;
+      }
+      .choices {
+        display: grid;
+        gap: 7px;
+      }
+      .choice {
+        background: #fff;
+        border: 1px solid var(--line);
+        text-align: left;
+      }
+      .choice:hover {
+        background: #f4f8ff;
+      }
+      .choice:disabled {
+        cursor: default;
+      }
+      .choice.correct {
+        background: #e5f6ef;
+        border-color: #42a77f;
+      }
+      .choice.wrong {
+        background: #fff0f1;
+        border-color: #df6b76;
+      }
+      .feedback {
+        margin: 9px 0 0;
+        padding: 9px 11px;
+        border-radius: 8px;
+        background: #f4f6f8;
+        font-size: 0.92rem;
+      }
+      .feedback.ok {
+        background: #e5f6ef;
+      }
+      .feedback.ng {
+        background: #fff0f1;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .note {
+        border-left: 4px solid #e6a600;
+        background: #fff9e7;
+        padding: 10px 13px;
+        border-radius: 5px;
+        font-size: 0.92rem;
+      }
+      .today-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+      }
+      .today-head button {
+        background: var(--blue);
+        color: white;
+        font-weight: 700;
+      }
+      .empty {
+        color: var(--muted);
+        padding: 12px;
+        background: #f8fafc;
+        border-radius: 10px;
+      }
+      @media (max-width: 520px) {
+        .wrap {
+          padding: 12px;
+        }
+        .hero {
+          border-radius: 14px;
+          padding: 18px;
+        }
+        .stats {
+          gap: 6px;
+        }
+        .stat {
+          padding: 9px 4px;
+        }
+        .stat strong {
+          font-size: 1.1rem;
+        }
+        .panel {
+          padding: 14px;
+        }
+        .cards {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <header class="hero">
+        <h1>CPUスケジューリングと記憶管理</h1>
+        <p>基本情報技術者試験｜毎日5〜10分の復習</p>
+      </header>
+      <section class="stats" aria-label="学習進捗">
+        <div class="stat">
+          <strong id="answers">0</strong><span>解答数</span>
+        </div>
+        <div class="stat"><strong id="rate">—</strong><span>正答率</span></div>
+        <div class="stat">
+          <strong id="learned">0</strong><span>学習済み問題数</span>
+        </div>
+      </section>
+      <nav class="tabs">
+        <button class="tab active" data-tab="cpu">CPU・割込み</button
+        ><button class="tab" data-tab="memory">記憶管理</button
+        ><button class="tab" data-tab="today">今日の10問</button>
+      </nav>
+      <div class="toolbar">
+        <button id="weakBtn">苦手問題だけ出す</button
+        ><button id="allBtn">全問題に戻す</button
+        ><button id="resetBtn" class="warn">進捗をリセット</button>
+      </div>
+      <section class="section active" id="cpu">
+        <div class="panel">
+          <h2>用語カード</h2>
+          <p class="hint">カードをタップして裏面の解説を確認します。</p>
+          <div class="cards" id="cpuCards"></div>
+        </div>
+        <div class="panel">
+          <h2>4択クイズ</h2>
+          <div id="cpuQuiz"></div>
+        </div>
+      </section>
+      <section class="section" id="memory">
+        <div class="panel">
+          <h2>用語カード</h2>
+          <p class="hint">カードをタップして裏面の解説を確認します。</p>
+          <div class="cards" id="memoryCards"></div>
+        </div>
+        <div class="panel">
+          <h2>4択クイズ</h2>
+          <div id="memoryQuiz"></div>
+        </div>
+      </section>
+      <section class="section" id="today">
+        <div class="panel">
+          <div class="today-head">
+            <div>
+              <h2>今日の10問</h2>
+              <p class="hint">全10問をシャッフルして出題します。</p>
+            </div>
+            <button id="shuffleBtn">並び替える</button>
+          </div>
+          <div id="todayQuiz"></div>
+        </div>
+      </section>
+      <section class="panel">
+        <h2>ノートの要確認箇所</h2>
+        <div class="note">
+          「レディスパッチャ」は、文脈からはCPUの割当てを実行する<strong>ディスパッチャ</strong>を指すと考えられますが、手書き文字がやや不明瞭です。また、固定区画方式・可変区画方式の説明の一部も判読が難しいため、教材では一般的な意味で整理しています。
+        </div>
+      </section>
+    </main>
+    <script>
+      const cards = {
+        cpu: [
+          [
+            "ディスパッチャ",
+            "一言でいうと",
+            "CPUを次に実行するプロセスへ引き渡す機能。",
+            "試験で問われやすいポイント",
+            "スケジューラが選んだプロセスにCPUを割り当て、必要ならコンテキストを切り替える。",
+            "混同しやすい用語との違い",
+            "スケジューラは「誰を選ぶか」、ディスパッチャは「実際にCPUを渡す」。",
+          ],
+          [
+            "到着順方式（FCFS）",
+            "一言でいうと",
+            "到着した順番にCPUを割り当てる方式。",
+            "試験で問われやすいポイント",
+            "公平で分かりやすいが、長い処理が先頭にいると短い処理も待たされる。",
+            "混同しやすい用語との違い",
+            "優先度順方式は優先度、ラウンドロビン方式は時間片を基準にする。",
+          ],
+          [
+            "優先度順方式",
+            "一言でいうと",
+            "優先度が高いタスクを先に実行する方式。",
+            "試験で問われやすいポイント",
+            "低優先度のタスクが長く実行されない飢餓状態に注意。",
+            "混同しやすい用語との違い",
+            "到着順方式は到着時刻だけで順番を決める。",
+          ],
+          [
+            "ラウンドロビン方式",
+            "一言でいうと",
+            "一定時間ずつ順番にCPUを割り当てる方式。",
+            "試験で問われやすいポイント",
+            "タイムクォンタム（時間片）を使い、対話型処理に向く。",
+            "混同しやすい用語との違い",
+            "FCFSは基本的に処理が終わるまで次に回さない。",
+          ],
+          [
+            "プリエンプティブ方式",
+            "一言でいうと",
+            "実行中でも中断して、別のタスクにCPUを渡せる方式。",
+            "試験で問われやすいポイント",
+            "高優先度タスクの到着などに素早く対応できる。",
+            "混同しやすい用語との違い",
+            "ノンプリエンプティブ方式では原則として実行中のタスクを途中で中断しない。",
+          ],
+          [
+            "割込み",
+            "一言でいうと",
+            "CPUに現在の処理を一時停止させ、別の処理を行わせる仕組み。",
+            "試験で問われやすいポイント",
+            "内部割込みの例はプログラム割込み・SVC割込み。外部割込みの例はタイマ・入出力・機械チェック・コンソール。",
+            "混同しやすい用語との違い",
+            "SVC割込みはプログラムからOSのサービスを要求するための内部割込み。",
+          ],
+        ],
+        memory: [
+          [
+            "固定区画方式",
+            "一言でいうと",
+            "主記憶をあらかじめ固定サイズの区画に分けて管理する方式。",
+            "試験で問われやすいポイント",
+            "管理が比較的単純で高速だが、区画内の使われない領域による内部断片化が起きやすい。",
+            "混同しやすい用語との違い",
+            "可変区画方式は必要な大きさに応じて区画を割り当てる。",
+          ],
+          [
+            "可変区画方式",
+            "一言でいうと",
+            "プログラムに必要な大きさに応じて区画を割り当てる方式。",
+            "試験で問われやすいポイント",
+            "外部断片化が発生し得る。空き領域をまとめるコンパクションが必要になる場合がある。",
+            "混同しやすい用語との違い",
+            "固定区画方式は区画の大きさが固定。",
+          ],
+          [
+            "オーバレイ方式",
+            "一言でいうと",
+            "主記憶に入り切らないプログラムを部分ごとに入れ替えて実行する方式。",
+            "試験で問われやすいポイント",
+            "主記憶容量より大きいプログラムを実行するための方法。",
+            "混同しやすい用語との違い",
+            "仮想記憶はOSと補助記憶を利用して主記憶を大きく見せる仕組み。",
+          ],
+          [
+            "スワッピング",
+            "一言でいうと",
+            "プロセス全体を主記憶と補助記憶の間で退避・復帰すること。",
+            "試験で問われやすいポイント",
+            "中断したプログラムを補助記憶へ退避するのがスワップアウト。",
+            "混同しやすい用語との違い",
+            "ページングは通常、固定長のページ単位で入出しする。",
+          ],
+          [
+            "仮想記憶",
+            "一言でいうと",
+            "主記憶と補助記憶を組み合わせ、主記憶を大きく見せる仕組み。",
+            "試験で問われやすいポイント",
+            "実行に必要な部分だけを主記憶に置ける。",
+            "混同しやすい用語との違い",
+            "物理メモリは実際の主記憶そのもの。",
+          ],
+          [
+            "ページング・ページフォールト・スラッシング",
+            "一言でいうと",
+            "ページ単位で管理し、必要なページがないとページフォールトが起きる。頻繁なページ入出しはスラッシング。",
+            "試験で問われやすいポイント",
+            "ページフォールト後、補助記憶からページインする。ページイン／アウトが多すぎると処理効率が低下する。",
+            "混同しやすい用語との違い",
+            "スワッピングはプロセス単位、ページングはページ単位が基本。",
+          ],
+        ],
+      };
+      const qs = {
+        cpu: [
+          [
+            "CPUを次に実行するプロセスへ実際に引き渡す機能はどれか。",
+            ["ディスパッチャ", "スプーラ", "リンカ", "ローダ"],
+            0,
+            "スケジューラの選択を受け、ディスパッチャがCPUを実際に割り当てます。",
+          ],
+          [
+            "到着した順番に実行するスケジューリング方式はどれか。",
+            [
+              "優先度順方式",
+              "到着順方式",
+              "ラウンドロビン方式",
+              "最短ジョブ優先方式",
+            ],
+            1,
+            "到着順方式（FCFS）は、到着時刻の順に処理します。",
+          ],
+          [
+            "一定時間ごとに実行中のタスクを切り替える方式はどれか。",
+            [
+              "到着順方式",
+              "優先度順方式",
+              "ラウンドロビン方式",
+              "固定区画方式",
+            ],
+            2,
+            "ラウンドロビン方式は時間片（タイムクォンタム）を順番に割り当てます。",
+          ],
+          [
+            "実行中の低優先度タスクを中断し、高優先度タスクへCPUを渡せる方式はどれか。",
+            [
+              "ノンプリエンプティブ方式",
+              "プリエンプティブ方式",
+              "オーバレイ方式",
+              "スワッピング",
+            ],
+            1,
+            "途中で実行を中断できるのがプリエンプティブ方式です。",
+          ],
+          [
+            "外部割込みの例として最も適切なものはどれか。",
+            [
+              "SVC割込み",
+              "プログラム割込み",
+              "タイマ割込み",
+              "ゼロ除算による割込み",
+            ],
+            2,
+            "タイマ割込みは外部割込みです。SVCやプログラム割込みは内部割込みに分類されます。",
+          ],
+        ],
+        memory: [
+          [
+            "固定区画方式で生じやすい問題はどれか。",
+            ["内部断片化", "ページフォールト", "飢餓状態", "デッドロック"],
+            0,
+            "固定サイズの区画では、割り当てた区画内に使われない部分が残る内部断片化が起きやすくなります。",
+          ],
+          [
+            "必要な大きさに応じて主記憶の区画を割り当てる方式はどれか。",
+            [
+              "固定区画方式",
+              "可変区画方式",
+              "ラウンドロビン方式",
+              "到着順方式",
+            ],
+            1,
+            "可変区画方式は必要量に応じた区画を割り当てます。外部断片化に注意します。",
+          ],
+          [
+            "主記憶容量より大きいプログラムを、部分を入れ替えながら実行する方式はどれか。",
+            [
+              "オーバレイ方式",
+              "スプーリング",
+              "ラウンドロビン方式",
+              "優先度順方式",
+            ],
+            0,
+            "オーバレイ方式はプログラムを部分に分け、必要な部分を主記憶に置きます。",
+          ],
+          [
+            "中断したプロセスを補助記憶へ退避する操作はどれか。",
+            [
+              "ページイン",
+              "スワップアウト",
+              "ページフォールト",
+              "コンパクション",
+            ],
+            1,
+            "スワップアウトは主記憶から補助記憶への退避です。",
+          ],
+          [
+            "ページインとページアウトが頻繁に発生して処理効率が低下する現象はどれか。",
+            [
+              "スラッシング",
+              "スプーリング",
+              "フラグメンテーション",
+              "ポーリング",
+            ],
+            0,
+            "スラッシングではページ入出しに時間を取られ、有効な処理が進みにくくなります。",
+          ],
+        ],
+      };
+      const key = "fe_cpu_memory_review_v1";
+      let state = JSON.parse(
+        localStorage.getItem(key) ||
+          '{"answers":0,"correct":0,"seen":[],"wrong":[]}',
+      );
+      let weak = false;
+      function save() {
+        localStorage.setItem(key, JSON.stringify(state));
+        updateStats();
+      }
+      function updateStats() {
+        document.querySelector("#answers").textContent = state.answers;
+        document.querySelector("#rate").textContent = state.answers
+          ? Math.round((state.correct / state.answers) * 100) + "%"
+          : "—";
+        document.querySelector("#learned").textContent = state.seen.length;
+      }
+      function cardHTML(c) {
+        return `<article class="flash" tabindex="0"><div class="flash-inner"><div class="face"><div class="term">${c[0]}</div><p>意味やポイントを思い出してからタップ。</p><span class="tap">タップして答えを見る</span></div><div class="face back"><div class="label">${c[1]}</div><div>${c[2]}</div><div class="label">${c[3]}</div><div>${c[4]}</div><div class="label">${c[5]}</div><div>${c[6]}</div></div></div></article>`;
+      }
+      function renderCards() {
+        for (const k of ["cpu", "memory"]) {
+          document.querySelector("#" + k + "Cards").innerHTML = cards[k]
+            .map(cardHTML)
+            .join("");
+        }
+        document
+          .querySelectorAll(".flash")
+          .forEach((x) =>
+            x.addEventListener("click", () => x.classList.toggle("flip")),
+          );
+      }
+      function renderQuiz(target, list) {
+        let filtered = weak
+          ? list.filter((_, i) => state.wrong.includes(target + "-" + i))
+          : list;
+        if (!filtered.length) {
+          document.querySelector("#" + target + "Quiz").innerHTML =
+            '<div class="empty">苦手問題はまだありません。クイズに答えると、間違えた問題がここに表示されます。</div>';
+          return;
+        }
+        document.querySelector("#" + target + "Quiz").innerHTML = filtered
+          .map((q) => questionHTML(q, target))
+          .join("");
+        bindQuestions();
+      }
+      function questionHTML(q, id) {
+        let original =
+          id === "cpu" || id === "memory" ? qs[id].indexOf(q) : q._id;
+        return `<article class="q" data-id="${id === "today" ? original : id + "-" + original}"><p>${q[0]}</p><div class="choices">${q[1].map((x, i) => `<button class="choice" data-choice="${i}">${String.fromCharCode(65 + i)}. ${x}</button>`).join("")}</div><div class="feedback hidden"></div></article>`;
+      }
+      function bindQuestions() {
+        document
+          .querySelectorAll(".q")
+          .forEach((el) =>
+            el
+              .querySelectorAll(".choice")
+              .forEach((b) => b.addEventListener("click", () => answer(el, b))),
+          );
+      }
+      function answer(el, btn) {
+        if (el.dataset.done) return;
+        el.dataset.done = "1";
+        let id = el.dataset.id;
+        let group = id.startsWith("cpu") ? "cpu" : "memory";
+        let index = Number(id.split("-").pop());
+        let q = qs[group][index];
+        let ok = Number(btn.dataset.choice) === q[2];
+        state.answers++;
+        if (ok) state.correct++;
+        if (!state.seen.includes(id)) state.seen.push(id);
+        if (ok) state.wrong = state.wrong.filter((x) => x !== id);
+        else if (!state.wrong.includes(id)) state.wrong.push(id);
+        el.querySelectorAll(".choice").forEach((b, i) => {
+          b.disabled = true;
+          if (i === q[2]) b.classList.add("correct");
+          if (b === btn && !ok) b.classList.add("wrong");
+        });
+        let f = el.querySelector(".feedback");
+        f.className = "feedback " + (ok ? "ok" : "ng");
+        f.textContent = (ok ? "正解！ " : "不正解。 ") + q[3];
+        save();
+        if (window.recordAnswer) {
+          const questionId = `915no3-${group}-q${String(index + 1).padStart(2, "0")}`;
+          window.recordAnswer(questionId, group, ok);
+        }
+      }
+      function renderAll() {
+        renderQuiz("cpu", qs.cpu);
+        renderQuiz("memory", qs.memory);
+        renderToday();
+      }
+      function renderToday() {
+        let all = [
+          ...qs.cpu.map((q, i) => Object.assign([...q], { _id: "cpu-" + i })),
+          ...qs.memory.map((q, i) =>
+            Object.assign([...q], { _id: "memory-" + i }),
+          ),
+        ];
+        for (let i = all.length - 1; i > 0; i--) {
+          let j = Math.floor(Math.random() * (i + 1));
+          [all[i], all[j]] = [all[j], all[i]];
+        }
+        document.querySelector("#todayQuiz").innerHTML = all
+          .map((q) => questionHTML(q, "today"))
+          .join("");
+        bindQuestions();
+      }
+      document.querySelectorAll(".tab").forEach((b) =>
+        b.addEventListener("click", () => {
+          document
+            .querySelectorAll(".tab,.section")
+            .forEach((x) => x.classList.remove("active"));
+          b.classList.add("active");
+          document.querySelector("#" + b.dataset.tab).classList.add("active");
+        }),
+      );
+      document.querySelector("#weakBtn").onclick = () => {
+        weak = true;
+        renderAll();
+      };
+      document.querySelector("#allBtn").onclick = () => {
+        weak = false;
+        renderAll();
+      };
+      document.querySelector("#shuffleBtn").onclick = renderToday;
+      document.querySelector("#resetBtn").onclick = async () => {
+        if (
+          confirm("保存された解答履歴・正答率・苦手問題をすべて消しますか？")
+        ) {
+          state = { answers: 0, correct: 0, seen: [], wrong: [] };
+          save();
+          renderAll();
+
+          if (window.resetReviewProgress) {
+            const resetButton = document.querySelector("#resetBtn");
+            resetButton.disabled = true;
+            resetButton.textContent = "クラウドをリセット中...";
+
+            const result = await window.resetReviewProgress();
+
+            resetButton.disabled = false;
+            resetButton.textContent = "進捗をリセット";
+
+            if (!result.ok && result.reason === "error") {
+              alert(
+                "クラウド側のリセットに失敗しました。通信状態を確認して、もう一度お試しください。",
+              );
+            }
+          }
+        }
+      };
+      renderCards();
+      renderAll();
+      updateStats();
+    </script>
+    <script src="../../assets/js/fe-study-sync.js"></script>
+  </body>
+</html>

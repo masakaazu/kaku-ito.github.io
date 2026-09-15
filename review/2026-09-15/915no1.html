@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>基本情報 復習教材｜CPU・主記憶・キャッシュ</title>
+    <style>
+      :root {
+        --navy: #17324d;
+        --blue: #1976d2;
+        --pale: #eef6ff;
+        --pink: #e83e8c;
+        --good: #087f5b;
+        --bad: #c92a2a;
+        --line: #d9e2ec;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #f5f7fa;
+        color: #172b3a;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
+          "Noto Sans JP", sans-serif;
+        line-height: 1.65;
+      }
+      .wrap {
+        max-width: 920px;
+        margin: auto;
+        padding: 16px;
+      }
+      header {
+        background: linear-gradient(135deg, var(--navy), #245b86);
+        color: #fff;
+        padding: 24px 18px;
+        border-radius: 16px;
+      }
+      h1 {
+        font-size: 1.42rem;
+        line-height: 1.35;
+        margin: 0 0 5px;
+      }
+      header p {
+        margin: 0;
+        color: #e4f2ff;
+        font-size: 0.9rem;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin: 14px 0;
+      }
+      .stat {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px;
+        text-align: center;
+        box-shadow: 0 1px 3px #0000000a;
+      }
+      .stat b {
+        display: block;
+        font-size: 1.25rem;
+        color: var(--blue);
+      }
+      .stat span {
+        font-size: 0.76rem;
+        color: #52616b;
+      }
+      .controls {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 10px 0 18px;
+      }
+      button {
+        border: 0;
+        border-radius: 9px;
+        padding: 10px 13px;
+        background: var(--blue);
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 0.88rem;
+      }
+      button.secondary {
+        background: #fff;
+        color: var(--navy);
+        border: 1px solid #adc4d7;
+      }
+      button.danger {
+        background: #fff0f0;
+        color: var(--bad);
+        border: 1px solid #f0b6b6;
+      }
+      button.active {
+        background: var(--pink);
+        color: #fff;
+        border-color: var(--pink);
+      }
+      button:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+      .tabs {
+        display: flex;
+        gap: 7px;
+        margin: 0 0 12px;
+      }
+      .tab {
+        flex: 1;
+        background: #e8eff5;
+        color: var(--navy);
+      }
+      .tab.active {
+        background: var(--navy);
+        color: #fff;
+      }
+      .panel {
+        display: none;
+      }
+      .panel.active {
+        display: block;
+      }
+      .box {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        padding: 16px;
+        margin: 12px 0;
+      }
+      h2 {
+        font-size: 1.15rem;
+        margin: 0 0 9px;
+        color: var(--navy);
+      }
+      h3 {
+        font-size: 1rem;
+        margin: 20px 0 8px;
+      }
+      .hint {
+        background: var(--pale);
+        border-left: 4px solid var(--blue);
+        padding: 10px 12px;
+        border-radius: 5px;
+        font-size: 0.9rem;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 10px;
+      }
+      .card {
+        min-height: 160px;
+        background: #fff;
+        border: 2px solid #cfe0ed;
+        border-radius: 13px;
+        padding: 14px;
+        text-align: left;
+        color: inherit;
+        position: relative;
+      }
+      .card:hover {
+        border-color: var(--blue);
+      }
+      .card .front {
+        font-size: 1.07rem;
+        font-weight: 800;
+        color: var(--navy);
+      }
+      .card .tap {
+        position: absolute;
+        bottom: 9px;
+        right: 12px;
+        color: var(--blue);
+        font-size: 0.75rem;
+      }
+      .card .back {
+        display: none;
+        font-size: 0.88rem;
+      }
+      .card.open .front,
+      .card.open .tap {
+        display: none;
+      }
+      .card.open .back {
+        display: block;
+      }
+      .back strong {
+        color: var(--pink);
+      }
+      .q {
+        border-top: 1px solid var(--line);
+        padding: 15px 0;
+      }
+      .q:first-child {
+        border-top: 0;
+      }
+      .q p {
+        margin: 0 0 9px;
+        font-weight: 700;
+      }
+      .choices {
+        display: grid;
+        gap: 7px;
+      }
+      .choice {
+        background: #f8fafc;
+        border: 1px solid #cbd8e3;
+        color: #172b3a;
+        text-align: left;
+      }
+      .choice:hover:not(:disabled) {
+        background: #e7f2ff;
+      }
+      .choice.correct {
+        background: #d9f5e9;
+        border-color: var(--good);
+        color: #075a40;
+      }
+      .choice.wrong {
+        background: #ffe1e1;
+        border-color: var(--bad);
+        color: #8b1e1e;
+      }
+      .explain {
+        display: none;
+        margin: 9px 0 0;
+        padding: 9px 11px;
+        border-radius: 7px;
+        background: #f0f5f8;
+        font-size: 0.88rem;
+      }
+      .explain.show {
+        display: block;
+      }
+      .result {
+        font-weight: 800;
+      }
+      .ok {
+        color: var(--good);
+      }
+      .ng {
+        color: var(--bad);
+      }
+      .todayQ {
+        display: none;
+      }
+      .todayQ.show {
+        display: block;
+      }
+      .todayQ .q {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+        margin: 10px 0;
+        background: #fff;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.86rem;
+      }
+      th,
+      td {
+        border: 1px solid var(--line);
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background: #eaf3fa;
+        color: var(--navy);
+      }
+      footer {
+        font-size: 0.78rem;
+        color: #52616b;
+        margin: 20px 4px;
+      }
+      @media (max-width: 520px) {
+        .wrap {
+          padding: 10px;
+        }
+        .stats {
+          gap: 5px;
+        }
+        .stat {
+          padding: 8px 3px;
+        }
+        .stat b {
+          font-size: 1.08rem;
+        }
+        header {
+          padding: 20px 14px;
+        }
+        .controls button {
+          flex: 1;
+          padding: 9px 7px;
+        }
+        .cards {
+          grid-template-columns: 1fr;
+        }
+        .q {
+          padding: 13px 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <header>
+        <h1>基本情報技術者｜CPU・記憶装置</h1>
+        <p>ノート復習用：カード→4択→苦手問題→今日の10問</p>
+      </header>
+      <section class="stats" aria-label="学習状況">
+        <div class="stat"><b id="answered">0</b><span>解答数</span></div>
+        <div class="stat"><b id="rate">—</b><span>正答率</span></div>
+        <div class="stat"><b id="learned">0</b><span>学習済み問題数</span></div>
+      </section>
+      <div class="controls">
+        <button id="weakBtn" class="secondary">苦手問題だけ</button
+        ><button id="todayBtn">今日の10問</button
+        ><button id="resetBtn" class="danger">進捗をリセット</button>
+      </div>
+      <nav class="tabs">
+        <button class="tab active" data-tab="cpu">CPU・命令実行</button
+        ><button class="tab" data-tab="memory">記憶装置・キャッシュ</button>
+      </nav>
+      <section id="cpu" class="panel active">
+        <div class="box">
+          <h2>用語カード</h2>
+          <p class="hint">
+            カードをタップして裏面を表示。試験での区別を意識して確認しよう。
+          </p>
+          <div class="cards" id="cpuCards"></div>
+        </div>
+        <div class="box">
+          <h2>4択クイズ（CPU）</h2>
+          <div id="cpuQuiz"></div>
+        </div>
+      </section>
+      <section id="memory" class="panel">
+        <div class="box">
+          <h2>用語カード</h2>
+          <div class="cards" id="memoryCards"></div>
+        </div>
+        <div class="box">
+          <h2>4択クイズ（記憶装置）</h2>
+          <div id="memoryQuiz"></div>
+        </div>
+      </section>
+      <section id="today" class="panel">
+        <div class="box">
+          <h2>今日の10問</h2>
+          <p class="hint">
+            全10問を毎回ランダムな順番で出題します。正誤と履歴は通常クイズと共通です。
+          </p>
+          <div id="todayQuiz"></div>
+        </div>
+      </section>
+      <footer>学習履歴はこのブラウザの localStorage に保存されます。</footer>
+    </main>
+    <script>
+      const cards = {
+        cpu: [
+          [
+            "プログラム内蔵方式",
+            "<strong>一言：</strong>プログラムを主記憶装置に格納して実行する方式。<br><strong>試験：</strong>命令とデータを同じ主記憶に置く考え方。<br><strong>違い：</strong>逐次制御方式は「命令を順番に実行する」仕組みであり、内蔵方式そのものとは別の観点。",
+          ],
+          [
+            "逐次制御方式",
+            "<strong>一言：</strong>命令を原則として先頭から順番に取り出して実行する方式。<br><strong>試験：</strong>分岐命令があると、次に実行する命令の位置は変わる。<br><strong>違い：</strong>パイプラインは複数命令の処理段階を重ねて高速化する技法。",
+          ],
+          [
+            "レジスタ",
+            "<strong>一言：</strong>CPU内部にある、非常に高速・小容量の記憶装置。<br><strong>試験：</strong>命令、アドレス、演算途中の値などを一時保持する。<br><strong>違い：</strong>キャッシュメモリはCPUと主記憶の間に置く高速メモリ。",
+          ],
+          [
+            "CPI / MIPS",
+            "<strong>一言：</strong>CPIは1命令当たりのクロック数、MIPSは1秒当たりの命令実行数（百万命令単位）。<br><strong>試験：</strong>CPIが小さいほど、同一クロック周波数では高速。<br><strong>違い：</strong>MIPSは命令の種類や処理内容に依存し、異なるCPU間の単純比較には注意。",
+          ],
+          [
+            "CISC と RISC",
+            "<strong>一言：</strong>CISCは複雑な命令を多く持つ思想、RISCは単純な命令を高速に実行する思想。<br><strong>試験：</strong>RISCは命令形式を単純化し、パイプライン処理と相性がよい。<br><strong>違い：</strong>「CISC=遅い、RISC=必ず速い」とは断定できない。",
+          ],
+        ],
+        memory: [
+          [
+            "主記憶装置",
+            "<strong>一言：</strong>実行中のプログラムやデータを置く、CPUが直接アクセスする記憶装置。<br><strong>試験：</strong>狭義のメモリはDRAMを指すことが多い。<br><strong>違い：</strong>補助記憶装置（SSD・HDDなど）は電源を切っても内容を保持し、容量が大きい。",
+          ],
+          [
+            "DRAM と SRAM",
+            "<strong>一言：</strong>DRAMは主記憶に使われやすく大容量・安価、SRAMは高速でキャッシュに使われやすい。<br><strong>試験：</strong>DRAMは定期的な再書込み（リフレッシュ）が必要。<br><strong>違い：</strong>SRAMはリフレッシュ不要だが、一般に高価で集積度が低い。",
+          ],
+          [
+            "ROM の種類",
+            "<strong>一言：</strong>マスクROMは製造時に書込み、PROMは一度だけ書込み、EPROMは紫外線で消去、EEPROMは電気的に消去・書換え。<br><strong>試験：</strong>フラッシュメモリはEEPROMの一種で、ブロック単位で消去する。<br><strong>違い：</strong>ROMは広義には不揮発性メモリを指すが、書換え可能な種類もある。",
+          ],
+          [
+            "キャッシュメモリ",
+            "<strong>一言：</strong>CPUと主記憶の速度差を埋める高速・小容量メモリ。<br><strong>試験：</strong>局所性を利用し、よく使うデータを保持する。<br><strong>違い：</strong>レジスタより一般に容量は大きいが、CPU内部のレジスタほど用途は限定的ではない。",
+          ],
+          [
+            "ライトスルー / ライトバック",
+            "<strong>一言：</strong>ライトスルーはキャッシュと主記憶へ同時に書込み、ライトバックはキャッシュだけに書込み後で主記憶へ反映。<br><strong>試験：</strong>ライトバックは主記憶への書込み回数を減らせる。<br><strong>違い：</strong>ライトスルーは主記憶との整合性を保ちやすい。",
+          ],
+        ],
+      };
+      const qs = [
+        {
+          cat: "cpu",
+          q: "プログラム内蔵方式の説明として適切なものはどれか。",
+          c: [
+            "プログラムを主記憶装置に格納して実行する",
+            "命令を必ず並列に実行する",
+            "演算結果を補助記憶だけに保存する",
+            "CPUを使わずに命令を実行する",
+          ],
+          a: 0,
+          e: "プログラム内蔵方式では、実行対象のプログラムを主記憶装置に格納する。",
+        },
+        {
+          cat: "cpu",
+          q: "逐次制御方式で、次に実行する命令の順序を変更する代表例はどれか。",
+          c: ["分岐命令", "加算命令", "論理積命令", "ロード命令"],
+          a: 0,
+          e: "原則は順番に実行するが、条件分岐や無条件分岐により次の命令位置を変更できる。",
+        },
+        {
+          cat: "cpu",
+          q: "CPU内部で命令や演算途中のデータを一時的に保持するものはどれか。",
+          c: ["レジスタ", "SSD", "主記憶装置", "光ディスク"],
+          a: 0,
+          e: "レジスタはCPU内の高速・小容量な記憶装置である。",
+        },
+        {
+          cat: "cpu",
+          q: "CPIが表すものはどれか。",
+          c: [
+            "1命令当たりに必要なクロック数",
+            "1秒当たりの百万命令数",
+            "CPUの記憶容量",
+            "主記憶のアクセス時間",
+          ],
+          a: 0,
+          e: "CPI（Clock cycles Per Instruction）は、1命令を実行する平均クロック数を表す。",
+        },
+        {
+          cat: "cpu",
+          q: "RISCの説明として最も適切なものはどれか。",
+          c: [
+            "単純な命令を中心にし、高速実行を目指す",
+            "複雑な命令を1個だけ持つ",
+            "主記憶を使用しない",
+            "命令を順番に実行できない",
+          ],
+          a: 0,
+          e: "RISCは命令を単純化し、パイプラインなどで効率よく実行する設計思想である。",
+        },
+        {
+          cat: "memory",
+          q: "主記憶装置として一般的に用いられるメモリはどれか。",
+          c: ["DRAM", "SRAM", "マスクROM", "DVD-ROM"],
+          a: 0,
+          e: "主記憶には大容量・低コストのDRAMが広く用いられる。",
+        },
+        {
+          cat: "memory",
+          q: "DRAMの特徴として正しいものはどれか。",
+          c: [
+            "内容維持のため定期的なリフレッシュが必要",
+            "電源を切っても内容を保持する",
+            "キャッシュ専用である",
+            "紫外線で消去する",
+          ],
+          a: 0,
+          e: "DRAMは記憶内容を維持するため、リフレッシュ動作が必要となる。",
+        },
+        {
+          cat: "memory",
+          q: "電気的に消去・書換えが可能なROMはどれか。",
+          c: ["EEPROM", "PROM", "マスクROM", "EPROM"],
+          a: 0,
+          e: "EEPROMは電気的に消去・書換えできる。EPROMは紫外線で消去する。",
+        },
+        {
+          cat: "memory",
+          q: "キャッシュメモリを置く主な目的はどれか。",
+          c: [
+            "CPUと主記憶装置の速度差を埋める",
+            "補助記憶を永久保存する",
+            "CPUの命令数を増やす",
+            "ネットワークを暗号化する",
+          ],
+          a: 0,
+          e: "高速なキャッシュに頻繁に使うデータを置き、主記憶アクセスを減らして高速化する。",
+        },
+        {
+          cat: "memory",
+          q: "ライトバック方式の説明として適切なものはどれか。",
+          c: [
+            "キャッシュ更新時は主記憶へ直ちに書かず、後で反映する",
+            "常にキャッシュと主記憶へ同時に書き込む",
+            "読込み専用の方式である",
+            "キャッシュを使用しない方式である",
+          ],
+          a: 0,
+          e: "ライトバックはキャッシュ上の更新を遅延して主記憶へ書き戻す。即時反映はライトスルー方式。",
+        },
+      ];
+      const key = "fe_cpu_memory_v1";
+      let state = JSON.parse(
+        localStorage.getItem(key) || '{"answers":{},"wrong":[]}',
+      );
+      function save() {
+        localStorage.setItem(key, JSON.stringify(state));
+        updateStats();
+      }
+      function updateStats() {
+        const v = Object.values(state.answers),
+          n = v.length,
+          ok = v.filter(Boolean).length;
+        answered.textContent = n;
+        rate.textContent = n ? Math.round((ok / n) * 100) + "%" : "—";
+        learned.textContent = n;
+      }
+      function cardHTML(x) {
+        return `<button class="card" onclick="this.classList.toggle('open')"><span class="front">${x[0]}</span><span class="back">${x[1]}</span><span class="tap">タップして解説を見る</span></button>`;
+      }
+      cpuCards.innerHTML = cards.cpu.map(cardHTML).join("");
+      memoryCards.innerHTML = cards.memory.map(cardHTML).join("");
+      function renderQuiz(target, list, mode = false) {
+        target.innerHTML = "";
+        if (!list.length) {
+          target.innerHTML =
+            '<p class="hint">苦手問題はまだありません。通常クイズで間違えた問題がここに表示されます。</p>';
+          return;
+        }
+        list.forEach((item, order) => {
+          const i = qs.indexOf(item),
+            done = Object.hasOwn(state.answers, i),
+            correct = state.answers[i];
+          const d = document.createElement("div");
+          d.className = mode ? "todayQ show" : "q";
+          d.innerHTML = `<div class="q"><p>${mode ? `第${order + 1}問　` : ""}${item.q}</p><div class="choices">${item.c.map((v, j) => `<button class="choice ${done ? (j === item.a ? "correct" : !correct && j === state.selected?.[i] ? "wrong" : "") : ""}" ${done ? "disabled" : ""} data-i="${i}" data-j="${j}">${String.fromCharCode(65 + j)}. ${v}</button>`).join("")}</div><div class="explain ${done ? "show" : ""}"><span class="result ${correct ? "ok" : "ng"}">${done ? (correct ? "正解！" : "不正解") : ""}</span>　${item.e}</div></div>`;
+          target.appendChild(d);
+        });
+        target
+          .querySelectorAll(".choice:not(:disabled)")
+          .forEach(
+            (b) => (b.onclick = () => answer(+b.dataset.i, +b.dataset.j)),
+          );
+      }
+      function answer(i, j) {
+        const item = qs[i],
+          ok = j === item.a;
+        state.answers[i] = ok;
+        state.selected = state.selected || {};
+        state.selected[i] = j;
+        if (!ok && !state.wrong.includes(i)) state.wrong.push(i);
+        if (ok) state.wrong = state.wrong.filter((x) => x !== i);
+        save();
+        if (window.recordAnswer) {
+          const questionId = `915no1-${item.cat}-q${String(i + 1).padStart(2, "0")}`;
+          window.recordAnswer(questionId, item.cat, ok);
+        }
+        renderAll();
+      }
+      function renderAll() {
+        renderQuiz(
+          cpuQuiz,
+          qs.filter((x) => x.cat === "cpu"),
+        );
+        renderQuiz(
+          memoryQuiz,
+          qs.filter((x) => x.cat === "memory"),
+        );
+        if (document.body.dataset.weak === "1") {
+          renderQuiz(
+            todayQuiz,
+            qs.filter((x, i) => state.wrong.includes(i)),
+          );
+        } else {
+          let order = [...qs].sort(() => Math.random() - 0.5);
+          renderQuiz(todayQuiz, order, true);
+        }
+      }
+      document.querySelectorAll(".tab").forEach(
+        (b) =>
+          (b.onclick = () => {
+            document
+              .querySelectorAll(".tab,.panel")
+              .forEach((x) => x.classList.remove("active"));
+            b.classList.add("active");
+            document.getElementById(b.dataset.tab).classList.add("active");
+          }),
+      );
+      todayBtn.onclick = () => {
+        document.body.dataset.weak = "0";
+        weakBtn.classList.remove("active");
+        document.querySelector('[data-tab="cpu"]').classList.remove("active");
+        document
+          .querySelectorAll(".panel")
+          .forEach((x) => x.classList.remove("active"));
+        today.classList.add("active");
+        renderAll();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+      weakBtn.onclick = () => {
+        document.body.dataset.weak =
+          document.body.dataset.weak === "1" ? "0" : "1";
+        weakBtn.classList.toggle("active", document.body.dataset.weak === "1");
+        todayBtn.click();
+        if (document.body.dataset.weak === "1") {
+          weakBtn.classList.add("active");
+          renderAll();
+        }
+      };
+      resetBtn.onclick = async () => {
+        if (
+          confirm(
+            "この端末の解答履歴・正答率・苦手問題をリセットします。\n" +
+              "ログイン中は、クラウド側の正答数・誤答数も0に戻ります（履歴の行は削除されません）。\n" +
+              "よろしいですか？",
+          )
+        ) {
+          state = { answers: {}, wrong: [] };
+          save();
+          renderAll();
+
+          if (window.resetReviewProgress) {
+            resetBtn.disabled = true;
+            resetBtn.textContent = "クラウドをリセット中...";
+
+            const result = await window.resetReviewProgress();
+
+            resetBtn.disabled = false;
+            resetBtn.textContent = "進捗をリセット";
+
+            if (!result.ok && result.reason === "error") {
+              alert(
+                "クラウド側のリセットに失敗しました。通信状態を確認して、もう一度お試しください。",
+              );
+            }
+          }
+        }
+      };
+      updateStats();
+      renderAll();
+    </script>
+    <script src="../../assets/js/fe-study-sync.js"></script>
+  </body>
+</html>
