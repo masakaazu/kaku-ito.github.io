@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>基本情報 復習教材｜セキュリティ・戦略・数学・AI</title>
+    <style>
+      :root {
+        --bg: #f5f7fb;
+        --paper: #fff;
+        --ink: #18233a;
+        --muted: #63708a;
+        --primary: #2155c5;
+        --accent: #e87325;
+        --good: #137a4a;
+        --bad: #ba2b37;
+        --line: #dbe2ef;
+        --soft: #eaf0ff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP",
+          sans-serif;
+        line-height: 1.65;
+      }
+      .wrap {
+        max-width: 1050px;
+        margin: auto;
+        padding: 20px;
+      }
+      header {
+        background: linear-gradient(120deg, #193d91, #2d6edf);
+        color: #fff;
+        border-radius: 18px;
+        padding: 24px;
+        box-shadow: 0 8px 28px #1b3c8324;
+      }
+      h1 {
+        font-size: clamp(1.35rem, 3vw, 2rem);
+        margin: 0 0 6px;
+      }
+      h2 {
+        font-size: 1.25rem;
+        margin: 0 0 12px;
+      }
+      h3 {
+        font-size: 1.05rem;
+        margin: 0 0 8px;
+      }
+      .sub {
+        margin: 0;
+        opacity: 0.92;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 18px;
+      }
+      .stat {
+        background: #ffffff1d;
+        border: 1px solid #ffffff42;
+        border-radius: 12px;
+        padding: 10px;
+        text-align: center;
+      }
+      .stat b {
+        display: block;
+        font-size: 1.35rem;
+      }
+      .toolbar,
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 18px 0;
+      }
+      .tabs button,
+      .toolbar button {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 9px 14px;
+        background: #fff;
+        color: var(--ink);
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .tabs button.active {
+        background: var(--primary);
+        color: #fff;
+        border-color: var(--primary);
+      }
+      .toolbar button.primary {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      .toolbar button.danger {
+        color: var(--bad);
+      }
+      .panel {
+        display: none;
+      }
+      .panel.active {
+        display: block;
+      }
+      .box {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px;
+        margin: 14px 0;
+        box-shadow: 0 3px 12px #1b31570a;
+      }
+      .lead {
+        background: var(--soft);
+        border-left: 5px solid var(--primary);
+        padding: 12px 14px;
+        border-radius: 8px;
+        margin: 0 0 12px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(235px, 1fr));
+        gap: 12px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        padding: 14px;
+        cursor: pointer;
+        min-height: 154px;
+        transition: 0.18s;
+      }
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 7px 18px #172d5420;
+      }
+      .card .hint {
+        color: var(--primary);
+        font-size: 0.86rem;
+        font-weight: 700;
+      }
+      .card .answer {
+        display: none;
+        margin-top: 10px;
+        border-top: 1px dashed var(--line);
+        padding-top: 10px;
+        font-size: 0.92rem;
+      }
+      .card.open .answer {
+        display: block;
+      }
+      .tag {
+        display: inline-block;
+        font-size: 0.75rem;
+        border-radius: 99px;
+        background: #edf1f8;
+        color: #4b5870;
+        padding: 2px 8px;
+        margin-right: 4px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 0.92rem;
+      }
+      th,
+      td {
+        border: 1px solid var(--line);
+        padding: 9px;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        background: #eef3ff;
+      }
+      details {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin: 8px 0;
+        background: #fff;
+      }
+      summary {
+        cursor: pointer;
+        font-weight: 700;
+      }
+      .quiz-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: center;
+      }
+      .question {
+        font-weight: 700;
+        margin: 12px 0;
+      }
+      .options {
+        display: grid;
+        gap: 8px;
+      }
+      .option {
+        width: 100%;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 10px;
+        padding: 10px;
+        text-align: left;
+        cursor: pointer;
+        font: inherit;
+      }
+      .option:hover:not(:disabled) {
+        border-color: var(--primary);
+        background: #f5f8ff;
+      }
+      .option:disabled {
+        cursor: default;
+      }
+      .option.correct {
+        border-color: var(--good);
+        background: #e9f8ef;
+      }
+      .option.wrong {
+        border-color: var(--bad);
+        background: #fff0f1;
+      }
+      .feedback {
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 9px;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+      }
+      .feedback.good {
+        background: #e9f8ef;
+        color: #075b33;
+      }
+      .feedback.bad {
+        background: #fff0f1;
+        color: #8e1723;
+      }
+      .empty {
+        color: var(--muted);
+        padding: 18px;
+        text-align: center;
+      }
+      .note {
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+      .formula {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        background: #f1f4f9;
+        padding: 10px;
+        border-radius: 8px;
+        overflow: auto;
+      }
+      @media (max-width: 620px) {
+        .wrap {
+          padding: 12px;
+        }
+        header {
+          padding: 18px;
+          border-radius: 14px;
+        }
+        .stats {
+          gap: 6px;
+        }
+        .stat {
+          padding: 8px;
+          font-size: 0.82rem;
+        }
+        .stat b {
+          font-size: 1.12rem;
+        }
+        .box {
+          padding: 14px;
+        }
+        table {
+          font-size: 0.8rem;
+        }
+        th,
+        td {
+          padding: 7px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>基本情報技術者試験｜復習教材</h1>
+        <p class="sub">
+          セキュリティ／信頼性設計／システム戦略／数学／AI・機械学習　—
+          1日5〜10分
+        </p>
+        <div class="stats">
+          <div class="stat">解答数<b id="answered">0</b></div>
+          <div class="stat">正答率<b id="rate">—</b></div>
+          <div class="stat">学習済み問題数<b id="learned">0</b></div>
+        </div>
+      </header>
+      <nav class="tabs" id="tabs"></nav>
+      <div class="toolbar">
+        <button class="primary" id="todayBtn">今日の10問</button
+        ><button id="weakBtn">苦手問題だけ</button
+        ><button id="allBtn">全問題を表示</button
+        ><button class="danger" id="resetBtn">進捗をリセット</button>
+      </div>
+      <main id="content"></main>
+    </div>
+    <script>
+      const domains = [
+        {
+          id: "security",
+          name: "セキュリティ",
+          intro: "攻撃の手口と、それを検知・防止する仕組みを区別して覚える。",
+          cards: [
+            [
+              "IDS",
+              "一言：不正侵入を見つける仕組み。",
+              "Intrusion Detection System。ネットワークやサーバを監視して不正アクセスの兆候を検知・通知する。通常、遮断はしない。",
+              "IPSとの違い：IPSは検知に加えて通信を遮断する。",
+            ],
+            [
+              "IPS",
+              "一言：不正侵入を防ぐ仕組み。",
+              "Intrusion Prevention System。不正な通信を検知し、遮断などにより攻撃を防止する。",
+              "IDSとの違い：IDSは主に検知・通知、IPSは防止も行う。",
+            ],
+            [
+              "WAF",
+              "一言：Webアプリを守る壁。",
+              "Web Application Firewall。SQLインジェクションやXSSなど、Webアプリケーション層への攻撃対策に用いる。",
+              "ファイアウォールとの違い：WAFはHTTPなどWeb通信の内容を対象にする。",
+            ],
+            [
+              "ブルートフォース攻撃",
+              "一言：全パターンを総当たりする。",
+              "考えられるパスワード文字列を可能な限り全て試す攻撃。長く複雑なパスワードや多要素認証が対策となる。",
+              "辞書攻撃との違い：辞書攻撃は辞書語など候補を絞る。",
+            ],
+            [
+              "辞書攻撃",
+              "一言：よくある単語を試す。",
+              "辞書の単語、氏名、生年月日、よく使われるパスワードなどを候補にログインを試みる攻撃。",
+              "ブルートフォース攻撃との違い：全探索ではなく候補を絞る。",
+            ],
+            [
+              "パスワードリスト攻撃",
+              "一言：漏えいしたID・パスワードの使い回しを狙う。",
+              "他サービスから漏えいしたIDとパスワードの組を用い、別サービスへのログインを試みる。サービスごとに異なるパスワードを使うことが重要。",
+              "リバースブルートフォースとの違い：ID・パスワードの組を使う。",
+            ],
+            [
+              "リバースブルートフォース攻撃",
+              "一言：一つのパスワードで多くのIDを試す。",
+              "よく使われる一つのパスワードに対して、多数のIDを順に試す攻撃。",
+              "通常の総当たりとの違い：パスワード候補を固定しIDを変える。",
+            ],
+            [
+              "ランサムウェア",
+              "一言：データを人質に身代金を要求するマルウェア。",
+              "感染したPC・サーバのデータを暗号化し、復号と引換えに金銭を要求する。オフラインを含むバックアップが重要。",
+              "ウイルスとの違い：マルウェアの一種で、金銭要求が特徴。",
+            ],
+            [
+              "WORM",
+              "一言：一度だけ書き込み、何度も読み出す。",
+              "Write Once Read Many。一度書き込むと変更・削除しにくい記録方式。監査ログや証跡の改ざん防止に役立つ。",
+              "通常の記憶媒体との違い：原則として追記・改変ができない。",
+            ],
+            [
+              "要確認：ジョーアカウント攻撃",
+              "ノートの「ジョーアカウント攻撃」は用語表記を要確認。",
+              "一般的な基本情報の標準用語として断定せず、教科書・問題集の原文を確認する。類似概念として、実在しないIDや利用されていないアカウントを試す攻撃・アカウント列挙がある。",
+              "試験では正式な用語・定義を原典で確認する。",
+            ],
+          ],
+          quiz: [
+            [
+              "IDSの説明として最も適切なものは？",
+              [
+                "不正通信を検知して通知する",
+                "不正通信を必ず削除する",
+                "データを暗号化する",
+                "利用者を認証する",
+              ],
+              0,
+              "IDSは主に侵入の検知・通知を行う。遮断まで行うのはIPS。",
+            ],
+            [
+              "漏えいした他サービスのID・パスワードの組を使う攻撃は？",
+              [
+                "辞書攻撃",
+                "パスワードリスト攻撃",
+                "SQLインジェクション",
+                "標的型攻撃",
+              ],
+              1,
+              "パスワードの使い回しを狙うのがパスワードリスト攻撃。",
+            ],
+            [
+              "WORMの特徴は？",
+              [
+                "何度でも書換え可能",
+                "一度書き込み、何度も読み出す",
+                "読み出し専用で書込み不可",
+                "暗号化専用の装置",
+              ],
+              1,
+              "WORMはWrite Once Read Manyの略。改ざん防止に役立つ。",
+            ],
+          ],
+        },
+        {
+          id: "reliability",
+          name: "信頼性設計",
+          intro:
+            "障害時の「安全」「継続」、人の「誤操作防止」を分けて理解する。",
+          cards: [
+            [
+              "フェールセーフ",
+              "一言：故障したら安全側へ。",
+              "障害発生時に、安全を優先するように動作させる設計。例：異常時に危険な機械を停止する。",
+              "フェールソフトとの違い：継続より安全を優先する。",
+            ],
+            [
+              "フェールソフト",
+              "一言：機能を落としても継続する。",
+              "障害発生時に、性能・機能を一部低下させながらサービスを継続する設計。",
+              "フォールトトレラントとの違い：故障への耐性を持つ構成そのものを指す語ではない。",
+            ],
+            [
+              "フェールプルーフ",
+              "一言：人が間違えても危険にしない。",
+              "利用者の誤操作があっても危険な状態や重大な障害が起こらないようにする設計。例：扉が開いた電子レンジは加熱しない。",
+              "フェールセーフとの違い：対象は主に人の誤操作。",
+            ],
+            [
+              "フォールトトレラント",
+              "一言：一部が壊れても動き続ける。",
+              "装置・部品の一部に故障が起きても、システム全体として処理を継続できる設計。冗長化や二重化が例。",
+              "フェールソフトとの違い：障害耐性を実現するシステム構成・性質に着目する。",
+            ],
+          ],
+          quiz: [
+            [
+              "異常時に機械を停止させ、安全を確保する設計は？",
+              [
+                "フェールセーフ",
+                "フェールソフト",
+                "フェールプルーフ",
+                "リバースブルートフォース",
+              ],
+              0,
+              "フェールセーフは、障害時に安全側へ動作させる。",
+            ],
+            [
+              "一部機能を停止しつつ、サービス提供を続ける設計は？",
+              ["フェールセーフ", "フェールソフト", "フェールプルーフ", "WORM"],
+              1,
+              "フェールソフトは性能・機能を低下させながら継続する。",
+            ],
+            [
+              "利用者の誤操作で危険が生じないようにする設計は？",
+              ["フェールプルーフ", "フォールトトレラント", "IDS", "RFP"],
+              0,
+              "フェールプルーフは誤操作への対策である。",
+            ],
+          ],
+        },
+        {
+          id: "strategy",
+          name: "システム戦略",
+          intro: "発注側と提供側、依頼文書の用途を流れで覚える。",
+          cards: [
+            [
+              "ベンダ",
+              "一言：IT製品・サービスを売る／提供する側。",
+              "vendorは売り手・販売業者の意味。ITでは、システム、ソフトウェア、機器、クラウドなどを顧客へ提供・開発・導入する企業をいう。",
+              "ユーザ企業との違い：ユーザ企業は購入・利用・発注する側。",
+            ],
+            [
+              "システム管理基準",
+              "一言：情報システムを適切に管理するための基準。",
+              "情報システムの企画、開発、運用、保守で、信頼性・安全性・効率性を確保するための管理の考え方。",
+              "監査基準との違い：管理基準は管理の実施側の基準。",
+            ],
+            [
+              "RFI",
+              "一言：情報をください。",
+              "Request For Information（情報提供依頼書）。製品、技術、実績などの情報をベンダから集める文書。",
+              "RFPとの違い：RFIは情報収集段階。",
+            ],
+            [
+              "RFP",
+              "一言：提案してください。",
+              "Request For Proposal（提案依頼書）。実現したい要件を示し、ベンダにシステムの提案・見積りを依頼する文書。",
+              "RFQとの違い：RFPは解決策の提案、RFQは価格中心の見積り。",
+            ],
+            [
+              "RFQ",
+              "一言：見積りをください。",
+              "Request For Quotation（見積依頼書）。仕様や数量を明確にし、主に価格の見積りを依頼する文書。",
+              "RFI→RFP→RFQの流れで覚える。",
+            ],
+            [
+              "コンジョイント分析",
+              "一言：商品要素のどれが購買意欲に効くか調べる。",
+              "価格、色、容量、保証などの要素が、顧客の選好・購入意向にどの程度影響するかを分析する手法。",
+              "単純なアンケートとの違い：複数属性の組合せによる選好を分析する。",
+            ],
+            [
+              "フォーラム標準",
+              "一言：業界団体などの合意で作る標準。",
+              "特定の企業・業界団体・フォーラムが合意して策定する標準規格。",
+              "公的標準との違い：国際機関や公的機関が定めるものではない。",
+            ],
+          ],
+          quiz: [
+            [
+              "システムの利用・発注側の企業に対し、開発・提供側の企業を何という？",
+              ["ベンダ", "ユーザ企業", "利用者", "監査人"],
+              0,
+              "ベンダはIT製品やシステムを提供・開発・導入する売り手側。",
+            ],
+            [
+              "製品・技術・実績について情報を集めるための依頼書は？",
+              ["RFI", "RFP", "RFQ", "WORM"],
+              0,
+              "RFIは情報提供依頼書。",
+            ],
+            [
+              "要件を示して具体的なシステム提案を依頼する文書は？",
+              ["RFI", "RFP", "RFQ", "IDS"],
+              1,
+              "RFPは提案依頼書。見積価格中心ならRFQ。",
+            ],
+          ],
+        },
+        {
+          id: "math",
+          name: "数学・アルゴリズム",
+          intro:
+            "順序を区別するかどうかと、最短経路の代表アルゴリズムを押さえる。",
+          cards: [
+            [
+              "組合せ nCr",
+              "一言：順序を区別せずに選ぶ。",
+              "n個の異なるものからr個を選ぶ方法の数。式：nCr = n! / {r!(n-r)!}。",
+              "順列との違い：組合せは選ぶ順番を区別しない。",
+            ],
+            [
+              "順列 nPr",
+              "一言：順序を区別して並べる。",
+              "n個の異なるものからr個を選び、順番を区別して並べる方法の数。式：nPr = n! / (n-r)!。",
+              "組合せとの違い：順列は順番が異なれば別の数え方。",
+            ],
+            [
+              "階乗 n!",
+              "一言：1からnまでを掛ける。",
+              "n! = n×(n-1)×…×1。例えば4! = 4×3×2×1 = 24。",
+              "0!は1である。",
+            ],
+            [
+              "最短経路問題",
+              "一言：合計コストが最小の道を求める。",
+              "グラフで、ある頂点から別の頂点までの距離・時間・コストの合計が最小となる経路を求める問題。",
+              "組合せとの違い：代表的な解法はダイクストラ法。",
+            ],
+            [
+              "ダイクストラ法",
+              "一言：最短距離を順に確定する。",
+              "辺の重みが負でないグラフにおいて、始点から各頂点への最短経路を求める代表的なアルゴリズム。",
+              "負の重みを含む場合にはそのまま適用できない。",
+            ],
+          ],
+          quiz: [
+            [
+              "5人から順序を区別せず2人を選ぶ数は？",
+              ["5", "10", "20", "25"],
+              1,
+              "5C2 = 5!/(2!×3!) = 10。",
+            ],
+            [
+              "3人を1位・2位・3位に並べるときに使う考え方は？",
+              ["組合せ", "順列", "最短経路", "教師なし学習"],
+              1,
+              "順位は順番を区別するので順列。3P3 = 6。",
+            ],
+            [
+              "最短経路問題の代表的なアルゴリズムは？",
+              [
+                "ダイクストラ法",
+                "誤差逆伝播法",
+                "コンジョイント分析",
+                "辞書攻撃",
+              ],
+              0,
+              "ダイクストラ法は、負でない重みの最短経路問題に用いる。",
+            ],
+          ],
+        },
+        {
+          id: "ai",
+          name: "AI・機械学習",
+          intro: "学習の種類、過学習、既存モデルの再利用を関連付けて覚える。",
+          cards: [
+            [
+              "教師あり学習",
+              "一言：正解付きデータで学ぶ。",
+              "入力データと正解ラベルの組を使い、分類・予測を行うモデルを学習する。例：メールを迷惑メール／通常メールに分類。",
+              "教師なし学習との違い：正解ラベルがある。",
+            ],
+            [
+              "教師なし学習",
+              "一言：正解なしで特徴・グループを見つける。",
+              "正解ラベルのないデータから、似た性質を持つデータ群や構造を見つける。例：クラスタリング。",
+              "教師あり学習との違い：正解ラベルを使わない。",
+            ],
+            [
+              "強化学習",
+              "一言：報酬を基に試行錯誤する。",
+              "行動の結果として得る報酬を基に、より良い行動を学習する方法。ゲームAIやロボット制御などに用いる。",
+              "教師あり学習との違い：各入力に正解ラベルが与えられるわけではない。",
+            ],
+            [
+              "ニューラルネットワーク",
+              "一言：脳の神経回路を模したモデル。",
+              "入力層・中間層・出力層などから構成される機械学習モデル。画像認識や音声認識などに用いる。",
+              "誤差逆伝播法との違い：誤差逆伝播法は学習時の重み更新方法。",
+            ],
+            [
+              "誤差逆伝播法",
+              "一言：誤差を後ろから伝え、重みを直す。",
+              "ニューラルネットワークの出力と正解の誤差を出力側から入力側へ伝え、結合の重みを調整する学習方法。",
+              "強化学習との違い：正解との差で重みを更新する。",
+            ],
+            [
+              "過学習",
+              "一言：練習問題を覚えすぎて初見に弱い。",
+              "学習データに過度に適合し、未知のデータに対する予測精度が低下する現象。データ増加、正則化、早期終了などで対策する。",
+              "学習不足との違い：過学習では学習データの精度は高くなりやすい。",
+            ],
+            [
+              "転移学習",
+              "一言：既存の学習済み知識を別の関連課題へ使う。",
+              "あるタスクで学習済みのモデル・知識を、別の関連するタスクに再利用する手法。少ないデータ・計算資源でも効率化しやすい。",
+              "ゼロからの学習との違い：事前学習済みモデルを土台にする。",
+            ],
+            [
+              "ファインチューニング",
+              "一言：転移先向けに追加で細かく調整する。",
+              "学習済みモデルを目的のタスクに合わせて追加学習し、重みなどを細かく調整すること。",
+              "転移学習との違い：転移学習の実現で行われる具体的な調整作業。",
+            ],
+          ],
+          quiz: [
+            [
+              "正解ラベルのないデータから、似た顧客群を発見する学習は？",
+              ["教師あり学習", "教師なし学習", "強化学習", "転移学習"],
+              1,
+              "教師なし学習はラベルなしデータからグループや構造を見つける。",
+            ],
+            [
+              "学習データへの精度は高いが、未知データの精度が低い状態は？",
+              ["転移学習", "過学習", "強化学習", "フォールトトレラント"],
+              1,
+              "過学習は学習データに適合しすぎて汎化性能が下がる。",
+            ],
+            [
+              "画像認識の学習済みモデルを、魚の種類判定に再利用する手法は？",
+              ["転移学習", "辞書攻撃", "組合せ", "フェールセーフ"],
+              0,
+              "関連タスクで得た学習済みモデルを再利用するのが転移学習。",
+            ],
+          ],
+        },
+      ];
+      const questions = domains.flatMap((d) =>
+        d.quiz.map((q, i) => ({
+          id: d.id + "-" + i,
+          domain: d.name,
+          q: q[0],
+          choices: q[1],
+          answer: q[2],
+          explain: q[3],
+        })),
+      );
+      const key = "fe_review_v1";
+      let state = JSON.parse(
+        localStorage.getItem(key) ||
+          '{"answers":{},"view":"security","mode":"study"}',
+      );
+      function save() {
+        localStorage.setItem(key, JSON.stringify(state));
+        updateStats();
+      }
+      function updateStats() {
+        let a = Object.values(state.answers),
+          correct = a.filter((x) => x.correct).length;
+        document.querySelector("#answered").textContent = a.length;
+        document.querySelector("#rate").textContent = a.length
+          ? Math.round((correct / a.length) * 100) + "%"
+          : "—";
+        document.querySelector("#learned").textContent = new Set(
+          a.map((x) => x.id),
+        ).size;
+      }
+      function tabs() {
+        let el = document.querySelector("#tabs");
+        el.innerHTML = domains
+          .map(
+            (d) =>
+              `<button class="${state.view === d.id ? "active" : ""}" data-tab="${d.id}">${d.name}</button>`,
+          )
+          .join("");
+        el.querySelectorAll("button").forEach(
+          (b) =>
+            (b.onclick = () => {
+              state.view = b.dataset.tab;
+              state.mode = "study";
+              save();
+              render();
+            }),
+        );
+      }
+      function cardHtml(c) {
+        return `<article class="card"><span class="tag">用語カード</span><h3>${c[0]}</h3><div>${c[1]}</div><div class="hint">タップして詳細を見る</div><div class="answer"><b>説明：</b>${c[2]}<br><b>混同注意：</b>${c[3]}</div></article>`;
+      }
+      function renderQuestion(x) {
+        let old = state.answers[x.id];
+        let opts = x.choices
+          .map((c, i) => {
+            let cls = "";
+            if (old) {
+              if (i === x.answer) cls = "correct";
+              else if (i === old.choice && !old.correct) cls = "wrong";
+            }
+            return `<button class="option ${cls}" data-q="${x.id}" data-i="${i}" ${old ? "disabled" : ""}>${"アエウエ"[i]}．${c}</button>`;
+          })
+          .join("");
+        return `<section class="box quiz"><div class="quiz-head"><span class="tag">${x.domain}</span>${old ? '<span class="tag">解答済み</span>' : ""}</div><div class="question">${x.q}</div><div class="options">${opts}</div><div class="feedback ${old ? "show " + (old.correct ? "good" : "bad") : ""}">${old ? (old.correct ? "正解！ " : "不正解。正解は「" + x.choices[x.answer] + "」。") + x.explain : ""}</div></section>`;
+      }
+      function study() {
+        let d = domains.find((x) => x.id === state.view);
+        return `<section class="box"><h2>${d.name}</h2><p class="lead">${d.intro}</p><h3>用語カード</h3><div class="grid">${d.cards.map(cardHtml).join("")}</div></section><section class="box"><h2>比較・ポイント</h2>${special(d.id)}</section><section><h2>4択クイズ（${d.name}）</h2>${questions
+          .filter((x) => x.domain === d.name)
+          .map(renderQuestion)
+          .join("")}</section>`;
+      }
+      function special(id) {
+        const m = {
+          security: `<table><tr><th>用語</th><th>目的・手口</th><th>対策・区別</th></tr><tr><td>IDS</td><td>不正侵入を検知・通知</td><td>遮断まで行うIPSと区別</td></tr><tr><td>IPS</td><td>不正侵入を検知して防止</td><td>不正通信を遮断する</td></tr><tr><td>パスワードリスト攻撃</td><td>漏えい済みのID・パスワードを使用</td><td>使い回さない、多要素認証</td></tr><tr><td>ランサムウェア</td><td>データを暗号化し金銭要求</td><td>バックアップ、更新、訓練</td></tr></table>`,
+          reliability: `<table><tr><th>用語</th><th>着目点</th><th>要点</th></tr><tr><td>フェールセーフ</td><td>安全</td><td>故障時は安全側に動作</td></tr><tr><td>フェールソフト</td><td>継続</td><td>機能を縮小して継続</td></tr><tr><td>フェールプルーフ</td><td>誤操作</td><td>人が間違えても危険にしない</td></tr><tr><td>フォールトトレラント</td><td>故障耐性</td><td>一部故障でも全体を継続</td></tr></table>`,
+          strategy: `<p class="formula">RFI（情報収集） → RFP（提案依頼） → RFQ（見積依頼）</p><p>発注側・利用側は<strong>ユーザ企業</strong>、提案・開発・提供側は<strong>ベンダ</strong>。</p>`,
+          math: `<p class="formula">nCr = n! / {r!(n-r)!}　… 順序を区別せず選ぶ<br>nPr = n! / (n-r)!　　 … 順序を区別して並べる</p><details><summary>例題：5人から2人を選ぶ</summary>順序を区別しないので、5C2 = 5!/(2!×3!) = 10通り。</details>`,
+          ai: `<table><tr><th>用語</th><th>特徴</th><th>例</th></tr><tr><td>教師あり学習</td><td>正解ラベルあり</td><td>迷惑メール判定</td></tr><tr><td>教師なし学習</td><td>正解ラベルなし</td><td>顧客クラスタリング</td></tr><tr><td>強化学習</td><td>報酬で試行錯誤</td><td>ゲームAI</td></tr><tr><td>転移学習</td><td>学習済み知識を再利用</td><td>既存画像モデルを魚判定へ活用</td></tr></table>`,
+        };
+        return m[id];
+      }
+      function render() {
+        tabs();
+        let c = document.querySelector("#content");
+        if (state.mode === "today") {
+          let pool = [...questions]
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 10);
+          state.today = pool.map((x) => x.id);
+          c.innerHTML =
+            "<h2>今日の10問</h2>" + pool.map(renderQuestion).join("");
+        } else if (state.mode === "weak") {
+          let pool = questions.filter(
+            (x) => state.answers[x.id] && !state.answers[x.id].correct,
+          );
+          c.innerHTML =
+            "<h2>苦手問題</h2>" +
+            (pool.length
+              ? pool.map(renderQuestion).join("")
+              : '<div class="box empty">まだ苦手問題はありません。問題を解くと、不正解だった問題がここに表示されます。</div>');
+        } else c.innerHTML = study();
+        bind();
+        updateStats();
+      }
+      function bind() {
+        document
+          .querySelectorAll(".card")
+          .forEach((e) => (e.onclick = () => e.classList.toggle("open")));
+        document.querySelectorAll(".option:not([disabled])").forEach(
+          (b) =>
+            (b.onclick = () => {
+              let x = questions.find((q) => q.id === b.dataset.q),
+                i = Number(b.dataset.i),
+                ok = i === x.answer;
+              state.answers[x.id] = {
+                id: x.id,
+                choice: i,
+                correct: ok,
+                at: Date.now(),
+              };
+              save();
+
+              if (window.recordAnswer) {
+                window.recordAnswer(`916no1-${x.id}`, x.domain, ok);
+              }
+
+              render();
+            }),
+        );
+      }
+      document.querySelector("#todayBtn").onclick = () => {
+        state.mode = "today";
+        save();
+        render();
+      };
+      document.querySelector("#weakBtn").onclick = () => {
+        state.mode = "weak";
+        save();
+        render();
+      };
+      document.querySelector("#allBtn").onclick = () => {
+        state.mode = "study";
+        save();
+        render();
+      };
+      document.querySelector("#resetBtn").onclick = async () => {
+        if (
+          confirm(
+            "解答履歴・正答率・苦手問題をすべて消します。よろしいですか？",
+          )
+        ) {
+          state = { answers: {}, view: "security", mode: "study" };
+          save();
+          render();
+
+          if (window.resetReviewProgress) {
+            const resetButton = document.querySelector("#resetBtn");
+            resetButton.disabled = true;
+            resetButton.textContent = "クラウドをリセット中...";
+
+            const result = await window.resetReviewProgress();
+
+            resetButton.disabled = false;
+            resetButton.textContent = "進捗をリセット";
+
+            if (!result.ok && result.reason === "error") {
+              alert(
+                "クラウド側のリセットに失敗しました。通信状態を確認して、もう一度お試しください。",
+              );
+            }
+          }
+        }
+      };
+      render();
+    </script>
+    <div style="padding: 18px 0 24px; text-align: center;">
+      <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:45px;">
+        <a href="index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">← 目次に戻る</a>
+        <a href="../index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">復習教材一覧</a>
+        <a href="../../index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">学習ポータルに戻る</a>
+      </div>
+    </div>
+    <script src="../../assets/js/fe-study-sync.js"></script>
+  </body>
+</html>
