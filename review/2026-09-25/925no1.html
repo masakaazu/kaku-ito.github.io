@@ -1,0 +1,865 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>基本情報技術者｜ノート復習教材</title>
+    <style>
+      :root {
+        --bg: #f5f7fb;
+        --card: #fff;
+        --ink: #1e293b;
+        --muted: #64748b;
+        --main: #2563eb;
+        --main2: #1d4ed8;
+        --ok: #15803d;
+        --ng: #b91c1c;
+        --line: #dbe3f0;
+        --warn: #92400e;
+        --warnbg: #fffbeb;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
+          "Yu Gothic", sans-serif;
+        line-height: 1.65;
+      }
+      header {
+        background: linear-gradient(135deg, #1e40af, #2563eb);
+        color: #fff;
+        padding: 20px 16px 18px;
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        box-shadow: 0 2px 10px #17255444;
+      }
+      .wrap {
+        max-width: 980px;
+        margin: auto;
+      }
+      h1 {
+        font-size: 1.28rem;
+        margin: 0 0 5px;
+      }
+      header p {
+        font-size: 0.88rem;
+        margin: 0;
+        opacity: 0.9;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 14px;
+      }
+      .stat {
+        background: #ffffff1f;
+        border: 1px solid #ffffff35;
+        border-radius: 10px;
+        padding: 7px;
+        text-align: center;
+      }
+      .stat b {
+        font-size: 1.1rem;
+        display: block;
+      }
+      .stat span {
+        font-size: 0.72rem;
+      }
+      .main {
+        padding: 18px 14px 52px;
+      }
+      .notice {
+        background: var(--warnbg);
+        border-left: 4px solid #f59e0b;
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 0.88rem;
+        color: var(--warn);
+        margin-bottom: 14px;
+      }
+      .tabs {
+        display: flex;
+        overflow: auto;
+        gap: 8px;
+        padding-bottom: 5px;
+        margin-bottom: 14px;
+      }
+      .tab {
+        white-space: nowrap;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: #334155;
+        border-radius: 999px;
+        padding: 8px 13px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .tab.active {
+        background: var(--main);
+        color: #fff;
+        border-color: var(--main);
+      }
+      .panel {
+        display: none;
+      }
+      .panel.active {
+        display: block;
+      }
+      .section-title {
+        font-size: 1.15rem;
+        margin: 12px 0 8px;
+      }
+      .lead {
+        font-size: 0.92rem;
+        color: var(--muted);
+        margin-top: 0;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 10px;
+      }
+      .flashcard {
+        background: transparent;
+        border: 0;
+        padding: 0;
+        text-align: left;
+        perspective: 900px;
+        cursor: pointer;
+        min-height: 185px;
+      }
+      .flash-inner {
+        height: 100%;
+        min-height: 185px;
+        position: relative;
+        transition: transform 0.55s;
+        transform-style: preserve-3d;
+      }
+      .flashcard.flipped .flash-inner {
+        transform: rotateY(180deg);
+      }
+      .face {
+        position: absolute;
+        inset: 0;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        padding: 14px;
+        backface-visibility: hidden;
+        box-shadow: 0 2px 7px #0f172a0d;
+      }
+      .back {
+        transform: rotateY(180deg);
+        overflow: auto;
+      }
+      .tag {
+        font-size: 0.72rem;
+        background: #dbeafe;
+        color: #1d4ed8;
+        border-radius: 999px;
+        padding: 2px 7px;
+        font-weight: 700;
+      }
+      .face h3 {
+        font-size: 1rem;
+        margin: 9px 0;
+      }
+      .tap {
+        font-size: 0.78rem;
+        color: var(--main);
+        font-weight: 700;
+        position: absolute;
+        bottom: 10px;
+      }
+      .back p {
+        font-size: 0.84rem;
+        margin: 5px 0;
+      }
+      .back strong {
+        color: #0f3c9b;
+      }
+      .compare {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        overflow: hidden;
+        font-size: 0.86rem;
+      }
+      .compare th,
+      .compare td {
+        border: 1px solid var(--line);
+        padding: 8px;
+        vertical-align: top;
+      }
+      .compare th {
+        background: #eff6ff;
+        text-align: left;
+      }
+      .quiz-box {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 15px;
+        margin: 11px 0;
+      }
+      .q-meta {
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-bottom: 5px;
+      }
+      .question {
+        font-weight: 700;
+        margin: 0 0 10px;
+      }
+      .options {
+        display: grid;
+        gap: 8px;
+      }
+      .option {
+        width: 100%;
+        text-align: left;
+        padding: 10px;
+        border-radius: 9px;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--ink);
+        cursor: pointer;
+        font: inherit;
+      }
+      .option:hover:not(:disabled) {
+        border-color: var(--main);
+        background: #eff6ff;
+      }
+      .option:disabled {
+        cursor: default;
+      }
+      .option.correct {
+        border-color: #22c55e;
+        background: #f0fdf4;
+        color: #166534;
+      }
+      .option.wrong {
+        border-color: #ef4444;
+        background: #fef2f2;
+        color: #991b1b;
+      }
+      .feedback {
+        margin: 10px 0 0;
+        padding: 9px 10px;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+      }
+      .feedback.ok {
+        background: #f0fdf4;
+        color: #166534;
+      }
+      .feedback.ng {
+        background: #fef2f2;
+        color: #991b1b;
+      }
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 14px 0;
+      }
+      .btn {
+        border: 0;
+        border-radius: 9px;
+        background: var(--main);
+        color: #fff;
+        padding: 9px 12px;
+        font-weight: 700;
+        cursor: pointer;
+        font: inherit;
+      }
+      .btn:hover {
+        background: var(--main2);
+      }
+      .btn.sub {
+        background: #e2e8f0;
+        color: #334155;
+      }
+      .btn.danger {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .empty {
+        background: #fff;
+        border: 1px dashed #94a3b8;
+        border-radius: 10px;
+        padding: 18px;
+        text-align: center;
+        color: var(--muted);
+      }
+      .formula {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 10px;
+        padding: 11px;
+        font-size: 0.9rem;
+      }
+      .formula code {
+        font-weight: 800;
+        color: #1e40af;
+      }
+      .note {
+        font-size: 0.83rem;
+        color: var(--muted);
+        margin-top: 14px;
+      }
+      @media (max-width: 520px) {
+        .main {
+          padding: 14px 10px 42px;
+        }
+        .stats {
+          gap: 5px;
+        }
+        .stat {
+          padding: 6px 3px;
+        }
+        .stat b {
+          font-size: 1rem;
+        }
+        .stat span {
+          font-size: 0.66rem;
+        }
+        .flashcard,
+        .flash-inner {
+          min-height: 205px;
+        }
+        .face {
+          padding: 12px;
+        }
+        .compare {
+          font-size: 0.78rem;
+        }
+        .compare th,
+        .compare td {
+          padding: 6px;
+        }
+        .quiz-box {
+          padding: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <h1>基本情報技術者｜ノート復習教材</h1>
+        <p>タップして用語カードを裏返す → クイズで定着</p>
+        <div class="stats">
+          <div class="stat"><b id="answered">0</b><span>解答数</span></div>
+          <div class="stat"><b id="rate">—</b><span>正答率</span></div>
+          <div class="stat"><b id="learned">0</b><span>学習済み問題</span></div>
+        </div>
+      </div>
+    </header>
+    <main class="main wrap">
+      <div class="notice">
+        <b>要確認：</b
+        >ノートの「処理時間順位方式」は一般に<strong>優先度順方式</strong>（優先度の高いタスクから実行）を指す表現と思われます。名称・説明は教材上で要確認として扱っています。
+      </div>
+      <nav class="tabs" id="tabs"></nav>
+      <section id="content"></section>
+      <p class="note">
+        学習記録はこのブラウザの localStorage
+        に保存されます。端末・ブラウザを変えると引き継がれません。
+      </p>
+    </main>
+    <script>
+      const data = {
+        memory: {
+          name: "メモリ・CPU",
+          intro:
+            "再入可能、スタック／ロールイン／ページアウト、主記憶の種類を整理します。",
+          cards: [
+            [
+              "再入可能プログラム",
+              "実行中に別タスクから呼び出されても正しい結果を返せるプログラム。",
+              "プログラム自身の命令や共有データを不用意に書き換えないように設計する。",
+              "再帰可能と混同しない。再帰可能は自分自身を呼び出せる性質、再入可能は同時・割込み実行への安全性。",
+            ],
+            [
+              "スタック",
+              "LIFO（最後に入れたものを最初に取り出す）方式の領域。",
+              "サブルーチン呼出し時に復帰先アドレス、引数、局所変数などを保持する。",
+              "キューはFIFO（先入れ先出し）。",
+            ],
+            [
+              "ロールイン／ページアウト",
+              "補助記憶と主記憶の間で、必要な内容を入れ替える仕組み。",
+              "ロールインは補助記憶から主記憶へ戻すこと。ページアウトは主記憶のページを補助記憶へ追い出すこと。",
+              "ページインは補助記憶から主記憶へページを読み込むこと。",
+            ],
+            [
+              "DRAM",
+              "電荷で情報を保持する主記憶用メモリ。",
+              "内容を維持するためリフレッシュが必要。大容量・低コストの主記憶に使われる。",
+              "SRAMはリフレッシュ不要で高速だが高価。",
+            ],
+            [
+              "SRAM",
+              "フリップフロップ回路で情報を保持するメモリ。",
+              "リフレッシュ不要で高速なため、キャッシュメモリに使われる。",
+              "DRAMより高価で、同じ面積なら容量を大きくしにくい。",
+            ],
+            [
+              "ROM",
+              "原則として読み出し専用の不揮発性メモリ。",
+              "電源を切っても内容を保持し、起動時に使うプログラムなどを格納する。",
+              "RAMは通常、読み書き可能で揮発性。",
+            ],
+          ],
+          quiz: [
+            [
+              "再入可能プログラムの説明として適切なものはどれか。",
+              [
+                "同じプログラムを複数タスクから呼び出しても正しく実行できる",
+                "自分自身を必ず呼び出す",
+                "主記憶を使わずに実行できる",
+                "電源断後も実行状態を保存する",
+              ],
+              0,
+              "再入可能とは、同時実行や割込み後の再実行にも耐え、正しい結果を得られる性質です。",
+            ],
+            [
+              "スタックに格納されるものとして最も適切なものはどれか。",
+              [
+                "印刷待ち文書を到着順に並べたもの",
+                "サブルーチンから戻る先のアドレス",
+                "ディスクの空き領域一覧",
+                "暗号化に使う公開鍵",
+              ],
+              1,
+              "サブルーチン呼出しでは、復帰先アドレスなどをスタックに退避します。",
+            ],
+            [
+              "DRAMの特徴はどれか。",
+              [
+                "リフレッシュが必要である",
+                "フリップフロップだけで記憶する",
+                "電源を切っても内容を保持する",
+                "キャッシュ専用である",
+              ],
+              0,
+              "DRAMは電荷の漏れを補うため、定期的なリフレッシュが必要です。",
+            ],
+            [
+              "SRAMが主に使われる場所はどれか。",
+              [
+                "キャッシュメモリ",
+                "DVD-ROM",
+                "磁気ディスク",
+                "バックアップテープ",
+              ],
+              0,
+              "高速でリフレッシュ不要なSRAMは、CPU近くのキャッシュに適します。",
+            ],
+            [
+              "ページアウトの説明として正しいものはどれか。",
+              [
+                "補助記憶から主記憶へページを読み込む",
+                "主記憶のページを補助記憶へ退避する",
+                "主記憶全体を初期化する",
+                "CPU内のレジスタを退避する",
+              ],
+              1,
+              "ページアウトは、主記憶のページを補助記憶へ追い出して空きを作る操作です。",
+            ],
+          ],
+        },
+        os: {
+          name: "OS・性能",
+          intro: "スケールアウトと、ノートの処理順方式を復習します。",
+          cards: [
+            [
+              "スケールアウト",
+              "サーバ台数を増やして処理能力を高めること。",
+              "負荷分散と組み合わせ、アクセス増加に対応する。",
+              "スケールアップは1台のCPU・メモリなどを強化すること。",
+            ],
+            [
+              "優先度順方式（要確認）",
+              "優先度の高いタスクを先に処理するスケジューリング方式。",
+              "緊急性が高い処理を優先できる反面、低優先度タスクが待ち続ける飢餓が起き得る。",
+              "ラウンドロビンは優先度ではなく、一定時間ずつ順番にCPUを割り当てる。",
+            ],
+            [
+              "ラウンドロビン方式",
+              "各タスクに一定の時間片を順番に割り当てる方式。",
+              "対話型システムで公平性・応答性を得やすい。",
+              "処理時間順方式は短い処理を優先する考え方。",
+            ],
+          ],
+          quiz: [
+            [
+              "サーバを複数台に増やして負荷分散する性能向上策はどれか。",
+              [
+                "スケールアウト",
+                "スケールアップ",
+                "ページアウト",
+                "ロールイン",
+              ],
+              0,
+              "台数を増やして水平方向に処理能力を拡張するのがスケールアウトです。",
+            ],
+            [
+              "ラウンドロビン方式の特徴はどれか。",
+              [
+                "最短の処理時間を優先する",
+                "全タスクに一定の時間片を順番に与える",
+                "最も高い優先度だけを実行する",
+                "到着順に完了まで実行する",
+              ],
+              1,
+              "ラウンドロビンは時間片（タイムクォンタム）ごとにタスクを巡回させます。",
+            ],
+            [
+              "スケールアップの説明として適切なものはどれか。",
+              [
+                "サーバ台数を増やす",
+                "1台のサーバのCPUやメモリを強化する",
+                "主記憶を補助記憶へ退避する",
+                "プログラムを再入可能にする",
+              ],
+              1,
+              "スケールアップは、1台の性能を垂直方向に上げる方法です。",
+            ],
+          ],
+        },
+        storage: {
+          name: "記憶装置",
+          intro: "フローティングゲートと同期DRAMを押さえます。",
+          cards: [
+            [
+              "EEPROM",
+              "電気的に内容を書き換えられる不揮発性メモリ。",
+              "フローティングゲートに電荷を蓄え、電源を切っても情報を保持する。",
+              "EPROMは紫外線で消去する方式。フラッシュメモリはEEPROMの一種で、まとまった単位で消去できる。",
+            ],
+            [
+              "SDRAM",
+              "クロックに同期して動作するDRAM。",
+              "同期動作により高速・効率的な転送を行える。",
+              "DRAMの一種。SRAMではない。",
+            ],
+          ],
+          quiz: [
+            [
+              "EEPROMの特徴として適切なものはどれか。",
+              [
+                "電気的に書換え可能な不揮発性メモリ",
+                "紫外線だけで書換える揮発性メモリ",
+                "リフレッシュが必須の主記憶",
+                "磁気を使う補助記憶",
+              ],
+              0,
+              "EEPROMは電気的に消去・書換えでき、電源断後も内容を保持します。",
+            ],
+            [
+              "SDRAMの説明として適切なものはどれか。",
+              [
+                "クロックに同期して動作するDRAM",
+                "フリップフロップで構成されるSRAM",
+                "読み出し専用のROM",
+                "補助記憶にだけ使われる磁気メモリ",
+              ],
+              0,
+              "SDRAMはSynchronous DRAMの略で、クロック同期型のDRAMです。",
+            ],
+            [
+              "フローティングゲートが関連する記憶装置はどれか。",
+              ["EEPROM", "DRAM", "SRAM", "磁気ディスク"],
+              0,
+              "EEPROMやフラッシュメモリでは、フローティングゲートに蓄積した電荷を利用します。",
+            ],
+          ],
+        },
+        security: {
+          name: "セキュリティ",
+          intro: "マルウェア、本人認証、暗号方式を整理します。",
+          cards: [
+            [
+              "マルウェア",
+              "悪意をもって動作するソフトウェアの総称。",
+              "ウイルス、ワーム、トロイの木馬などを含む総称として問われる。",
+              "ウイルスやワームはマルウェアの種類。",
+            ],
+            [
+              "コンペア法",
+              "検体のハッシュ値を既知マルウェアのハッシュ値と照合する検出法。",
+              "既知のマルウェアを高速に見つけやすい。未知・改変型には弱い。",
+              "ビヘイビア法は実行時の不審な振る舞いを監視する。",
+            ],
+            [
+              "サンドボックス",
+              "隔離された環境でプログラムを実行し、動作を観察・記録する仕組み。",
+              "実システムへの影響を抑えながら、未知の不審ファイルを分析する。",
+              "本番環境そのものではない。",
+            ],
+            [
+              "生体認証の注意点",
+              "本人を誤って拒否する確率と、他人を誤って受け入れる確率の両方を見る。",
+              "利便性だけでなく、FRR（本人拒否率）とFAR（他人受入率）のバランスを検討する。",
+              "パスワード認証とは誤り方の種類が異なる。",
+            ],
+            [
+              "トロイの木馬",
+              "有用なソフトを装って侵入し、裏で悪意ある動作をするマルウェア。",
+              "自己増殖を必須としない。出所不明ソフトを実行しないことが対策。",
+              "ワームは単独で自己増殖・拡散する性質をもつ。",
+            ],
+            [
+              "ワーム",
+              "自分自身を複製し、他のシステムへ広がるマルウェア。",
+              "ネットワークを通じて拡散することがある。",
+              "トロイの木馬は正規ソフトを装うことが中心。",
+            ],
+            [
+              "AES",
+              "共通鍵暗号方式の代表例。",
+              "同じ秘密鍵（共通鍵）で暗号化・復号する。高速で大量データの暗号化に向く。",
+              "RSAは公開鍵暗号方式。",
+            ],
+            [
+              "RSA",
+              "公開鍵暗号方式の代表例。",
+              "公開鍵と秘密鍵の組を使う。鍵配送や電子署名などに利用される。",
+              "AESのような共通鍵暗号方式と役割が異なる。",
+            ],
+          ],
+          quiz: [
+            [
+              "既知のマルウェアのハッシュ値と検体のハッシュ値を照合する方式はどれか。",
+              [
+                "コンペア法",
+                "サンドボックス法",
+                "総当たり法",
+                "ラウンドロビン法",
+              ],
+              0,
+              "コンペア法は、既知パターン（ハッシュ値など）との一致を調べます。",
+            ],
+            [
+              "サンドボックスの目的として適切なものはどれか。",
+              [
+                "隔離環境で不審なプログラムの動作を観察する",
+                "本番サーバの性能を高める",
+                "暗号鍵を生成する",
+                "利用者の優先度を決める",
+              ],
+              0,
+              "隔離環境で実行するため、実システムへの影響を抑えて分析できます。",
+            ],
+            [
+              "AESの分類はどれか。",
+              [
+                "共通鍵暗号方式",
+                "公開鍵暗号方式",
+                "ハッシュ関数",
+                "生体認証方式",
+              ],
+              0,
+              "AESは同じ秘密鍵で暗号化・復号する共通鍵暗号です。",
+            ],
+            [
+              "RSAの分類はどれか。",
+              ["公開鍵暗号方式", "共通鍵暗号方式", "誤り訂正方式", "圧縮方式"],
+              0,
+              "RSAは公開鍵と秘密鍵を使う公開鍵暗号方式です。",
+            ],
+            [
+              "トロイの木馬の説明として適切なものはどれか。",
+              [
+                "有用なソフトを装い、裏で悪意ある動作をする",
+                "自分自身を複製して拡散することが必須である",
+                "DRAMの内容を保持する回路である",
+                "暗号文を復号する公開鍵である",
+              ],
+              0,
+              "トロイの木馬は正規・有用なソフトに見せかける手口が特徴です。",
+            ],
+          ],
+        },
+      };
+      const allQuestions = Object.entries(data).flatMap(([cat, x]) =>
+        x.quiz.map((q, i) => ({ cat, key: cat, i, q })),
+      );
+      const K = "fe_notebook_review_v1";
+      let state = JSON.parse(
+        localStorage.getItem(K) || '{"answers":[],"wrong":[]}',
+      );
+      function save() {
+        localStorage.setItem(K, JSON.stringify(state));
+        updateStats();
+      }
+      function updateStats() {
+        const a = state.answers;
+        document.querySelector("#answered").textContent = a.length;
+        document.querySelector("#rate").textContent = a.length
+          ? Math.round((a.filter((x) => x.ok).length / a.length) * 100) + "%"
+          : "—";
+        document.querySelector("#learned").textContent = new Set(
+          a.map((x) => x.id),
+        ).size;
+      }
+      function cardHtml(c) {
+        return `<button class="flashcard" aria-label="用語カードを裏返す"><div class="flash-inner"><div class="face"><span class="tag">用語カード</span><h3>${c[0]}</h3><p><strong>一言でいうと：</strong>${c[1]}</p><span class="tap">タップして解説を見る</span></div><div class="face back"><span class="tag">解説</span><p><strong>試験で問われやすいポイント：</strong>${c[2]}</p><p><strong>混同しやすい用語との違い：</strong>${c[3]}</p></div></div></button>`;
+      }
+      function qHtml(item, n) {
+        const [q, ops, ans, ex] = item.q;
+        const id = `925no1-${item.key}-${item.i}`;
+        return `<article class="quiz-box" data-id="${id}" data-answer="${ans}"><div class="q-meta">問題 ${n}｜${data[item.key].name}</div><p class="question">${q}</p><div class="options">${ops.map((o, i) => `<button class="option" data-choice="${i}">${String.fromCharCode(65 + i)}. ${o}</button>`).join("")}</div><div class="feedback"></div></article>`;
+      }
+      function category(key) {
+        const x = data[key];
+        return `<h2 class="section-title">${x.name}</h2><p class="lead">${x.intro}</p><h3>用語カード</h3><div class="cards">${x.cards.map(cardHtml).join("")}</div>${key === "memory" ? `<h3>DRAM・SRAMの比較</h3><table class="compare"><tr><th>項目</th><th>DRAM</th><th>SRAM</th></tr><tr><td>保持方式</td><td>電荷</td><td>フリップフロップ</td></tr><tr><td>リフレッシュ</td><td>必要</td><td>不要</td></tr><tr><td>主な用途</td><td>主記憶</td><td>キャッシュメモリ</td></tr><tr><td>傾向</td><td>大容量・低コスト</td><td>高速・高価</td></tr></table>` : ""}${key === "security" ? `<h3>セキュリティ対策の比較</h3><table class="compare"><tr><th>対象</th><th>目的・手口</th><th>主な対策</th></tr><tr><td>コンペア法</td><td>既知ハッシュとの照合で検出</td><td>定義ファイルを最新に保つ</td></tr><tr><td>サンドボックス</td><td>隔離環境で挙動を分析</td><td>不審ファイルを本番で開かない</td></tr><tr><td>トロイの木馬</td><td>正規ソフトを装い悪意ある動作</td><td>出所確認・実行前スキャン</td></tr><tr><td>ワーム</td><td>自己複製してネットワーク拡散</td><td>パッチ適用・不審な通信の遮断</td></tr></table>` : ""}<h3>分野クイズ</h3><div class="toolbar"><button class="btn" data-mode="category" data-key="${key}">この分野を出題</button></div><div id="quiz-${key}"></div>`;
+      }
+      function render() {
+        const tabs = document.querySelector("#tabs");
+        tabs.innerHTML =
+          Object.entries(data)
+            .map(
+              ([k, x], i) =>
+                `<button class="tab ${i === 0 ? "active" : ""}" data-tab="${k}">${x.name}</button>`,
+            )
+            .join("") +
+          `<button class="tab" data-tab="practice">総合演習</button>`;
+        const c = document.querySelector("#content");
+        c.innerHTML =
+          Object.keys(data)
+            .map(
+              (k, i) =>
+                `<section class="panel ${i === 0 ? "active" : ""}" id="panel-${k}">${category(k)}</section>`,
+            )
+            .join("") +
+          `<section class="panel" id="panel-practice"><h2 class="section-title">総合演習</h2><p class="lead">全分野からランダムに出題します。苦手だけの再出題もできます。</p><div class="toolbar"><button class="btn" data-mode="today">今日の10問</button><button class="btn sub" data-mode="wrong">苦手問題だけ</button><button class="btn danger" id="reset">進捗をリセット</button></div><div id="quiz-practice"></div></section>`;
+        bind();
+      }
+      function bind() {
+        document
+          .querySelectorAll(".flashcard")
+          .forEach((el) => (el.onclick = () => el.classList.toggle("flipped")));
+        document.querySelectorAll(".tab").forEach(
+          (b) =>
+            (b.onclick = () => {
+              document
+                .querySelectorAll(".tab")
+                .forEach((x) => x.classList.remove("active"));
+              document
+                .querySelectorAll(".panel")
+                .forEach((x) => x.classList.remove("active"));
+              b.classList.add("active");
+              document
+                .querySelector("#panel-" + b.dataset.tab)
+                .classList.add("active");
+            }),
+        );
+        document
+          .querySelectorAll("[data-mode]")
+          .forEach(
+            (b) => (b.onclick = () => start(b.dataset.mode, b.dataset.key)),
+          );
+        document.querySelector("#reset").onclick = () => {
+          if (confirm("解答履歴・苦手問題をすべて消しますか？")) {
+            state = { answers: [], wrong: [] };
+            save();
+            document.querySelector("#quiz-practice").innerHTML = "";
+          }
+        };
+      }
+      function shuffle(a) {
+        return [...a].sort(() => Math.random() - 0.5);
+      }
+      function start(mode, key) {
+        let set;
+        if (mode === "category")
+          set = allQuestions.filter((x) => x.key === key);
+        else if (mode === "wrong") {
+          set = allQuestions.filter((x) =>
+            state.wrong.includes(x.key + "-" + x.i),
+          );
+          if (!set.length) {
+            document.querySelector("#quiz-practice").innerHTML =
+              '<div class="empty">苦手問題はまだありません。まずクイズに答えてみましょう。</div>';
+            return;
+          }
+        } else
+          set = shuffle(allQuestions).slice(
+            0,
+            Math.min(10, allQuestions.length),
+          );
+        const target =
+          mode === "category"
+            ? document.querySelector("#quiz-" + key)
+            : document.querySelector("#quiz-practice");
+        target.innerHTML = shuffle(set)
+          .map((x, i) => qHtml(x, i + 1))
+          .join("");
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        target.querySelectorAll(".quiz-box").forEach(bindQuestion);
+      }
+      function bindQuestion(box) {
+        box.querySelectorAll(".option").forEach(
+          (btn) =>
+            (btn.onclick = () => {
+              const id = box.dataset.id,
+                correct = +box.dataset.answer,
+                chosen = +btn.dataset.choice,
+                ok = chosen === correct;
+              box.querySelectorAll(".option").forEach((x) => {
+                x.disabled = true;
+                if (+x.dataset.choice === correct) x.classList.add("correct");
+                else if (x === btn && !ok) x.classList.add("wrong");
+              });
+              const item = allQuestions.find(
+                (x) => `925no1-${x.key}-${x.i}` === id,
+              );
+              const fb = box.querySelector(".feedback");
+              fb.className = "feedback show " + (ok ? "ok" : "ng");
+              fb.innerHTML = (ok ? "正解！ " : "不正解。 ") + item.q[3];
+              state.answers.push({ id, ok, time: Date.now() });
+              state.wrong = state.wrong.filter((x) => x !== id);
+              if (!ok) state.wrong.push(id);
+              save();
+
+              if (window.recordAnswer) {
+                window.recordAnswer(
+                  id,
+                  item ? item.key || "未分類" : "未分類",
+                  ok,
+                );
+              }
+            }),
+        );
+      }
+      render();
+      updateStats();
+    </script>
+    <div style="padding: 18px 0 24px; text-align: center;">
+      <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:45px;">
+        <a href="index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">← 目次に戻る</a>
+        <a href="../index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">復習教材一覧</a>
+        <a href="../../index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">学習ポータルに戻る</a>
+      </div>
+    <script src="../../assets/js/fe-study-sync.js"></script>
+  </body>
+</html>
