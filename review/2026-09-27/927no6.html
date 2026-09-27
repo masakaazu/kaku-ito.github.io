@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>基本情報｜情報セキュリティ復習教材</title>
+<style>
+:root{--bg:#f4f7fb;--paper:#fff;--ink:#182230;--muted:#637083;--main:#2563eb;--ok:#15803d;--ng:#b91c1c;--line:#dbe3ee;--soft:#eff6ff;--warn:#fff7ed}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",Meiryo,sans-serif;line-height:1.65}.wrap{max-width:980px;margin:auto;padding:16px 14px 42px}header{background:linear-gradient(135deg,#1d4ed8,#0f766e);color:#fff;padding:22px;border-radius:18px;box-shadow:0 8px 24px #1e3a8a22}h1{font-size:1.45rem;margin:0 0 5px}header p{margin:0;opacity:.92;font-size:.92rem}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}.stat{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}.stat b{display:block;font-size:1.35rem;color:var(--main)}.stat span{font-size:.77rem;color:var(--muted)}.toolbar,.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.toolbar button,.tabs button,.choice,button{font:inherit}.toolbar button,.tabs button{border:1px solid var(--line);background:#fff;padding:9px 12px;border-radius:10px;cursor:pointer}.toolbar button:hover,.tabs button.active{background:var(--main);color:#fff;border-color:var(--main)}.panel{display:none;background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:10px}.panel.active{display:block}h2{font-size:1.2rem;margin:0 0 10px}h3{font-size:1.02rem;margin:20px 0 9px}.note{background:var(--warn);border-left:4px solid #f59e0b;padding:10px 12px;border-radius:8px;font-size:.9rem}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:11px}.card{border:1px solid var(--line);border-radius:13px;padding:14px;cursor:pointer;background:#fff;min-height:130px;transition:.15s}.card:hover{transform:translateY(-2px);box-shadow:0 8px 16px #0f172a12}.card .front{font-weight:700;color:#1d4ed8}.card .hint{font-size:.82rem;color:var(--muted);margin-top:5px}.card .back{display:none;margin-top:10px;border-top:1px dashed var(--line);padding-top:9px;font-size:.9rem}.card.open .back{display:block}.card.open .hint{display:none}table{border-collapse:collapse;width:100%;font-size:.9rem;background:#fff}th,td{border:1px solid var(--line);padding:9px;text-align:left;vertical-align:top}th{background:var(--soft)}.quiz-box{border:1px solid var(--line);padding:14px;border-radius:13px;margin:12px 0;background:#fff}.q-meta{font-size:.8rem;color:var(--muted)}.question{font-weight:700;margin:6px 0 10px}.choices{display:grid;gap:7px}.choice{text-align:left;border:1px solid var(--line);background:#fff;padding:10px;border-radius:9px;cursor:pointer}.choice:hover:not(:disabled){background:#f8fafc}.choice.correct{background:#dcfce7;border-color:#22c55e}.choice.wrong{background:#fee2e2;border-color:#ef4444}.explanation{display:none;margin-top:10px;padding:9px 11px;background:#f8fafc;border-radius:8px;font-size:.9rem}.explanation.show{display:block}.empty{padding:18px;background:#f8fafc;border-radius:10px;color:var(--muted)}.today-nav{display:flex;gap:8px;margin-top:12px}.today-nav button,#reset{border:0;background:var(--main);color:#fff;padding:9px 13px;border-radius:9px;cursor:pointer}.today-nav button:disabled{opacity:.5}.today-progress{font-size:.87rem;color:var(--muted)}footer{font-size:.8rem;color:var(--muted);margin-top:18px}@media(max-width:560px){.wrap{padding:10px}.stats{gap:6px}.stat{padding:9px}.toolbar button,.tabs button{padding:8px 9px;font-size:.86rem}.panel{padding:13px}table{font-size:.8rem}th,td{padding:7px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><h1>基本情報｜情報セキュリティ復習教材</h1><p>ノート内容を中心に整理。カード → クイズ → 苦手問題で、毎日5〜10分復習。</p></header>
+<section class="stats" aria-label="学習状況"><div class="stat"><b id="answered">0</b><span>解答数</span></div><div class="stat"><b id="rate">—</b><span>正答率</span></div><div class="stat"><b id="learned">0</b><span>学習済み問題数</span></div></section>
+<nav class="toolbar"><button id="todayBtn">今日の10問</button><button id="weakBtn">苦手問題のみ</button><button id="allBtn">全問題</button><button id="reset">進捗をリセット</button></nav>
+<nav class="tabs"><button class="tab active" data-tab="threat">脅威・攻撃</button><button class="tab" data-tab="crypto">暗号・認証</button><button class="tab" data-tab="network">ネットワーク防御</button><button class="tab" data-tab="quiz">分野別クイズ</button><button class="tab" data-tab="today">今日の10問</button></nav>
+
+<section id="threat" class="panel active"><h2>脅威・攻撃</h2><p class="note">ノートには「サイバー攻撃」「脆弱性」「なりすまし」「PCへの攻撃」がまとめられています。語句の一部は判読しづらいため、以下では読めた範囲を優先しています。</p><div class="cards" id="threatCards"></div><h3>目的・手口・対策</h3><table><thead><tr><th>分類</th><th>目的・手口</th><th>代表的な対策</th></tr></thead><tbody><tr><td>パスワード攻撃</td><td>総当たりや辞書的な候補でパスワードを試す。</td><td>長く固有のパスフレーズ、多要素認証、試行回数制限。</td></tr><tr><td>SQLインジェクション</td><td>入力欄に不正なSQLを混ぜ、DBを不正操作する。</td><td>プレースホルダを使う、入力値検証、権限を最小化。</td></tr><tr><td>フィッシング</td><td>偽サイトや偽メールで認証情報を盗む。</td><td>URL・送信元確認、多要素認証、教育。</td></tr><tr><td>DoS/DDoS</td><td>大量通信でサービスを利用不能にする。DDoSは複数端末から行う。</td><td>CDN/WAF、通信制限、冗長化、監視。</td></tr><tr><td>ランサムウェア</td><td>データを暗号化し、復号と引換えに金銭を要求する。</td><td>オフラインを含むバックアップ、更新、添付ファイル警戒。</td></tr></tbody></table></section>
+
+<section id="crypto" class="panel"><h2>暗号・ハッシュ・電子署名</h2><div class="cards" id="cryptoCards"></div><h3>混同しやすいポイント</h3><table><thead><tr><th>仕組み</th><th>主な目的</th><th>鍵・値の使い方</th><th>ポイント</th></tr></thead><tbody><tr><td>共通鍵暗号方式</td><td>機密性</td><td>暗号化・復号に同じ秘密鍵</td><td>高速だが、鍵配送・管理が課題。</td></tr><tr><td>公開鍵暗号方式</td><td>機密性・鍵配送</td><td>受信者の公開鍵で暗号化し、受信者の秘密鍵で復号</td><td>秘密鍵を共有しなくてよいが、共通鍵暗号より一般に処理が重い。</td></tr><tr><td>ハッシュ関数</td><td>完全性確認</td><td>入力から固定長のハッシュ値を計算</td><td>原則として元データへ戻せない。一方向関数。</td></tr><tr><td>ディジタル署名</td><td>改ざん検出・送信者確認・否認防止</td><td>送信者の秘密鍵で署名、送信者の公開鍵で検証</td><td>「受信者の公開鍵で暗号化」と混同しない。</td></tr></tbody></table><p class="note">ノートの「公開鍵基盤、PKI、認証機関」は、安全に公開鍵を利用するための仕組みとして記載されています。PKIでは認証局（CA）が証明書を発行し、公開鍵と本人性の結び付きを確認しやすくします。</p></section>
+
+<section id="network" class="panel"><h2>ネットワーク防御</h2><div class="cards" id="networkCards"></div><h3>配置イメージ</h3><pre style="overflow:auto;background:#0f172a;color:#e2e8f0;padding:14px;border-radius:10px">インターネット
+      │
+ [ファイアウォール] ── 通信を許可・遮断
+      │
+     DMZ ── 公開Webサーバ / メールサーバ など
+      │
+   内部ネットワーク ── 社内PC・業務サーバ
+
+プロキシサーバ：内部から外部へのアクセスを代理し、制御・記録する。</pre></section>
+
+<section id="quiz" class="panel"><h2>分野別クイズ</h2><p>タブで分野を選んだ後、下のクイズを解いてください。回答直後に解説が出ます。</p><div id="quizArea"></div></section>
+<section id="today" class="panel"><h2>今日の10問</h2><p class="today-progress" id="todayProgress"></p><div id="todayArea"></div><div class="today-nav"><button id="prevToday">前へ</button><button id="nextToday">次へ</button></div></section>
+<footer>学習データはこのブラウザの localStorage に保存されます。別のブラウザ・端末には引き継がれません。</footer>
+</div>
+<script>
+const cards={
+threat:[
+['パスワードクラック','一言でいうと：パスワードを不正に解読・推測する攻撃。','試験ポイント：辞書攻撃・総当たり攻撃などの手法と対策を結び付ける。','違い：フィッシングは利用者をだまして自ら入力させる手口。'],
+['脆弱性','一言でいうと：ソフトウェアや設定にあるセキュリティ上の弱点。','試験ポイント：発見後はパッチ適用や設定見直しでリスクを下げる。','違い：脅威は害を与える要因、脆弱性は攻撃され得る弱点。'],
+['SQLインジェクション','一言でいうと：入力値にSQLを混入させるWeb攻撃。','試験ポイント：プレースホルダ（バインド変数）でSQL文と値を分離する。','違い：クロスサイトスクリプティングは主にブラウザでスクリプトを実行させる攻撃。'],
+['DNSキャッシュポイズニング','一言でいうと：DNSのキャッシュを汚染し、偽のIPアドレスへ誘導する攻撃。','試験ポイント：正しいURLでも偽サイトへ誘導され得る。','違い：フィッシングはメール等で偽サイトへ誘導する社会的手口。'],
+['フィッシング','一言でいうと：正規組織を装い、ID・パスワード等を盗む詐欺。','試験ポイント：偽Webサイト、偽メール、SMSなどが入口になる。','違い：なりすましは他者のIDなどを使って本人のように振る舞う行為。'],
+['DoS／DDoS攻撃','一言でいうと：大量の要求等でサービスを停止・低下させる攻撃。','試験ポイント：DDoSは多数の端末を使う分散型DoS。','違い：ランサムウェアはデータを暗号化して金銭を要求する。']
+],
+crypto:[
+['共通鍵暗号方式','一言でいうと：暗号化と復号に同じ鍵を使う方式。','試験ポイント：高速だが、相手に秘密鍵を安全に渡す鍵配送問題がある。','違い：公開鍵暗号方式では公開鍵と秘密鍵の異なる鍵を使う。'],
+['公開鍵暗号方式','一言でいうと：公開鍵と秘密鍵のペアを使う暗号方式。','試験ポイント：機密に送るなら受信者の公開鍵で暗号化する。','違い：電子署名では送信者の秘密鍵を使って署名する。'],
+['ハッシュ関数','一言でいうと：データから固定長の要約値（ハッシュ値）を得る一方向関数。','試験ポイント：SHA-256など。改ざん検出に使える。','違い：暗号化は鍵があれば復号できるが、ハッシュは元に戻す目的ではない。'],
+['ディジタル署名','一言でいうと：送信者の秘密鍵を使い、送信者確認と改ざん検出を行う技術。','試験ポイント：検証には送信者の公開鍵を用いる。','違い：機密性のための暗号化では、受信者の公開鍵を使う。'],
+['公開鍵基盤（PKI）','一言でいうと：公開鍵を安心して使うための証明書・認証局などの仕組み。','試験ポイント：認証局（CA）が公開鍵証明書を発行する。','違い：公開鍵暗号方式そのものではなく、運用を支える基盤。']
+],
+network:[
+['ファイアウォール','一言でいうと：通信ルールに従い、通す通信と遮断する通信を制御する仕組み。','試験ポイント：内部ネットワークと外部ネットワークの境界に置く。','違い：プロキシは通信を代理するサーバで、用途・配置が異なる。'],
+['パケットフィルタリング','一言でいうと：IPアドレス、ポート番号、プロトコル等で通信を許可・遮断する方式。','試験ポイント：ファイアウォールの代表的な実現方法。','違い：アプリケーションの内容まで細かく見る方式とは監視範囲が異なる。'],
+['プロキシサーバ','一言でいうと：内部利用者に代わって外部サーバへ接続する代理サーバ。','試験ポイント：アクセス制御、ログ記録、キャッシュなどに利用できる。','違い：リバースプロキシは外部から内部サーバへのアクセスを代理する。'],
+['DMZ','一言でいうと：内部ネットワークと外部ネットワークの間に置く隔離領域。','試験ポイント：Web・メールなど外部公開サーバを置き、内部への影響を抑える。','違い：内部LANそのものではない。'],
+['WAF','一言でいうと：Webアプリケーションへの攻撃を検知・防御する仕組み。','試験ポイント：SQLインジェクションやXSSなど、Web層の攻撃対策として問われる。','違い：一般的なファイアウォールは主にネットワーク通信の制御を行う。']
+]};
+const questions=[
+{cat:'脅威・攻撃',q:'SQLインジェクションへの対策として最も適切なものはどれか。',c:['入力値をSQL文に文字列連結する','プレースホルダを利用してSQL文と値を分離する','パスワードを定期的に変更するだけにする','DNSキャッシュを削除する'],a:1,e:'プレースホルダ（バインド変数）により、入力値をSQLの命令として解釈させにくくする。'},
+{cat:'脅威・攻撃',q:'DDoS攻撃の説明として適切なものはどれか。',c:['1台の端末が秘密鍵を盗む攻撃','多数の端末から大量通信を送りサービスを妨害する攻撃','DNS名を暗号化する技術','データをハッシュ化する処理'],a:1,e:'DDoSはDistributed Denial of Serviceの略で、多数の端末から分散して行うDoS攻撃。'},
+{cat:'脅威・攻撃',q:'正規サイトに見せかけた偽サイトへ誘導し、認証情報を入力させて盗む手口はどれか。',c:['フィッシング','パケットフィルタリング','電子署名','ハッシュ化'],a:0,e:'フィッシングは、メールやSMS、偽サイトなどで利用者をだまして情報を入力させる。'},
+{cat:'脅威・攻撃',q:'DNSキャッシュポイズニングの結果として起こり得ることはどれか。',c:['正しいドメイン名でも偽サイトのIPアドレスへ誘導される','パスワードが自動的に強くなる','通信が必ず暗号化される','サーバのディスク容量が増える'],a:0,e:'DNSの名前解決情報が改ざんされると、正しいURLを使っても攻撃者側へ誘導され得る。'},
+{cat:'暗号・認証',q:'共通鍵暗号方式の特徴として適切なものはどれか。',c:['暗号化と復号に同じ鍵を使う','暗号化に秘密鍵、復号に公開鍵を使う','鍵を一切使わない','必ず電子署名と同じ目的で使う'],a:0,e:'共通鍵暗号方式は同一の秘密鍵を共有して暗号化と復号を行う。'},
+{cat:'暗号・認証',q:'受信者だけが読めるように公開鍵暗号方式で暗号化するとき、送信者が用いる鍵はどれか。',c:['送信者の秘密鍵','送信者の公開鍵','受信者の秘密鍵','受信者の公開鍵'],a:3,e:'機密性を守る暗号化では、受信者の公開鍵で暗号化し、受信者の秘密鍵で復号する。'},
+{cat:'暗号・認証',q:'ディジタル署名の検証に用いる鍵として適切なものはどれか。',c:['送信者の公開鍵','送信者の秘密鍵','受信者の公開鍵','受信者の秘密鍵'],a:0,e:'署名は送信者の秘密鍵で作成し、検証は対応する送信者の公開鍵で行う。'},
+{cat:'暗号・認証',q:'ハッシュ関数を用いる主な目的として適切なものはどれか。',c:['データを必ず元に戻せるようにする','データの改ざんを検出する','通信を代理する','IPアドレスを変換する'],a:1,e:'元データと受信データのハッシュ値を比べることで、完全性（改ざんの有無）を確認できる。'},
+{cat:'暗号・認証',q:'PKIの説明として最も適切なものはどれか。',c:['公開鍵を安全に利用するため、証明書や認証局などを用いる仕組み','パスワードを総当たりで調べる手法','Webアクセスを代理するサーバ','ネットワークを物理的に分離する区域'],a:0,e:'PKI（公開鍵基盤）は、証明書や認証局を使って公開鍵と本人性の対応を扱う。'},
+{cat:'ネットワーク防御',q:'ファイアウォールの主な役割として最も適切なものはどれか。',c:['通信ルールに基づいて許可・遮断を行う','暗号文を必ず復号する','DNSの名前解決を行う','データベースを設計する'],a:0,e:'ファイアウォールはIPアドレス、ポート番号、プロトコルなどの条件で通信を制御する。'},
+{cat:'ネットワーク防御',q:'DMZに配置するものとして適切な例はどれか。',c:['外部公開するWebサーバ','社内の全従業員PC','個人のUSBメモリ','暗号鍵だけを保管する紙'],a:0,e:'DMZは外部公開サーバを内部LANから分離して置くための領域。'},
+{cat:'ネットワーク防御',q:'プロキシサーバの説明として適切なものはどれか。',c:['利用者に代わって外部サーバへ接続する代理サーバ','データを一方向に変換する関数','複数端末からDoSを行う仕組み','公開鍵を発行する暗号方式'],a:0,e:'プロキシサーバは内部から外部へのアクセスを代理し、アクセス制御やログ取得に利用できる。'},
+{cat:'ネットワーク防御',q:'WebアプリケーションへのSQLインジェクションやXSSなどの攻撃対策として特に用いられるものはどれか。',c:['WAF','DMZ','ハッシュ関数','共通鍵'],a:0,e:'WAFはWebアプリケーション層への攻撃を検知・防御する。'}
+];
+const key='fe_security_review_v1';let state=JSON.parse(localStorage.getItem(key)||'{"answers":{},"wrong":[]}');let mode='all',today=[],todayIndex=0;
+function save(){localStorage.setItem(key,JSON.stringify(state));updateStats()}function updateStats(){let arr=Object.values(state.answers),right=arr.filter(x=>x).length;document.getElementById('answered').textContent=arr.length;document.getElementById('rate').textContent=arr.length?Math.round(right/arr.length*100)+'%':'—';document.getElementById('learned').textContent=Object.keys(state.answers).length}
+function cardHTML(item){return `<article class="card"><div class="front">${item[0]}</div><div class="hint">タップして解説を表示</div><div class="back"><div>${item[1]}</div><div>${item[2]}</div><div>${item[3]}</div></div></article>`}
+Object.entries(cards).forEach(([id,items])=>{document.getElementById(id+'Cards').innerHTML=items.map(cardHTML).join('')});document.addEventListener('click',e=>{let c=e.target.closest('.card');if(c)c.classList.toggle('open')});
+function renderQuestion(q,index,target,compact=false){let prior=state.answers[index],answered=prior!==undefined;let html=`<div class="quiz-box"><div class="q-meta">${q.cat}　問題 ${index+1}</div><div class="question">${q.q}</div><div class="choices">${q.c.map((x,i)=>{let className=answered&&i===q.a?'correct':'';return `<button class="choice ${className}" data-i="${i}" ${answered?'disabled':''}>${String.fromCharCode(65+i)}. ${x}</button>`}).join('')}</div><div class="explanation ${answered?'show':''}"><b>${prior===q.a?'正解':'不正解'}</b>：${q.e}</div></div>`;target.innerHTML=html;target.querySelectorAll('.choice').forEach(b=>b.onclick=()=>answer(q,index,+b.dataset.i,target,compact));}
+function answer(q,index,selected,target,compact){state.answers[index]=selected===q.a;if(selected!==q.a&&!state.wrong.includes(index))state.wrong.push(index);if(selected===q.a)state.wrong=state.wrong.filter(x=>x!==index);save();if(compact){renderToday()}else renderQuizzes()}
+function filtered(){if(mode==='weak')return questions.map((q,i)=>[q,i]).filter(([,i])=>state.wrong.includes(i));return questions.map((q,i)=>[q,i])}
+function renderQuizzes(){let area=document.getElementById('quizArea'),list=filtered();if(!list.length){area.innerHTML='<div class="empty">該当する問題はありません。苦手問題が解消されています。</div>';return}area.innerHTML='';list.forEach(([q,i])=>{let d=document.createElement('div');area.appendChild(d);renderQuestion(q,i,d)})}
+function makeToday(){let pool=[...questions.keys()];for(let i=pool.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}today=pool.slice(0,Math.min(10,pool.length));todayIndex=0;renderToday()}
+function renderToday(){if(!today.length)makeToday();let idx=today[todayIndex],area=document.getElementById('todayArea');document.getElementById('todayProgress').textContent=`${todayIndex+1} / ${today.length} 問目（毎回ランダムに10問を選出）`;renderQuestion(questions[idx],idx,area,true);document.getElementById('prevToday').disabled=todayIndex===0;document.getElementById('nextToday').disabled=todayIndex===today.length-1}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(b.dataset.tab).classList.add('active');if(b.dataset.tab==='quiz')renderQuizzes();if(b.dataset.tab==='today')renderToday()});
+document.getElementById('weakBtn').onclick=()=>{mode='weak';renderQuizzes();document.querySelector('[data-tab="quiz"]').click()};document.getElementById('allBtn').onclick=()=>{mode='all';renderQuizzes();document.querySelector('[data-tab="quiz"]').click()};document.getElementById('todayBtn').onclick=()=>{makeToday();document.querySelector('[data-tab="today"]').click()};document.getElementById('prevToday').onclick=()=>{if(todayIndex>0){todayIndex--;renderToday()}};document.getElementById('nextToday').onclick=()=>{if(todayIndex<today.length-1){todayIndex++;renderToday()}};document.getElementById('reset').onclick=()=>{if(confirm('解答履歴・正答率・苦手問題をすべて消去しますか？')){state={answers:{},wrong:[]};save();renderQuizzes();renderToday()}};updateStats();renderQuizzes();makeToday();
+</script>
+<div style="padding: 18px 0 24px; text-align: center;"><div style="display:flex; flex-wrap:wrap; justify-content:center; gap:45px;"><a href="index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">← 目次に戻る</a><a href="../index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">復習教材一覧</a><a href="../../index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">学習ポータルに戻る</a></div></div>
+</body>
+</html>

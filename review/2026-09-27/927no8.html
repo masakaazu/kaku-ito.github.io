@@ -1,0 +1,840 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>基本情報 復習教材｜DB・ネットワーク</title>
+    <style>
+      :root {
+        --bg: #f5f7fb;
+        --card: #fff;
+        --ink: #172033;
+        --sub: #5e6a82;
+        --line: #dce3ef;
+        --main: #3159d6;
+        --ok: #0b8b57;
+        --ng: #cf3a4a;
+        --accent: #ffdc54;
+        --shadow: 0 6px 20px rgba(33, 52, 94, 0.1);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
+          "Yu Gothic", Meiryo, sans-serif;
+        line-height: 1.65;
+      }
+      header {
+        background: linear-gradient(125deg, #253f9e, #4976e8);
+        color: #fff;
+        padding: 24px 16px 18px;
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        box-shadow: 0 2px 10px rgba(10, 30, 90, 0.2);
+      }
+      .wrap {
+        max-width: 1080px;
+        margin: auto;
+      }
+      h1 {
+        font-size: clamp(1.3rem, 4vw, 2rem);
+        margin: 0 0 3px;
+      }
+      .lead {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 0.94rem;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 15px;
+      }
+      .stat {
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 10px;
+        padding: 7px;
+        text-align: center;
+      }
+      .stat b {
+        display: block;
+        font-size: 1.15rem;
+      }
+      .stat span {
+        font-size: 0.76rem;
+        opacity: 0.9;
+      }
+      main {
+        max-width: 1080px;
+        margin: 20px auto 60px;
+        padding: 0 14px;
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        overflow: auto;
+        padding-bottom: 5px;
+      }
+      .tab,
+      button {
+        font: inherit;
+        cursor: pointer;
+      }
+      .tab {
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--sub);
+        padding: 9px 13px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+      .tab.active {
+        background: var(--main);
+        color: #fff;
+        border-color: var(--main);
+      }
+      .panel {
+        display: none;
+      }
+      .panel.active {
+        display: block;
+      }
+      .box {
+        background: var(--card);
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+        padding: 18px;
+        margin-top: 16px;
+      }
+      h2 {
+        font-size: 1.25rem;
+        margin: 0 0 8px;
+      }
+      h3 {
+        font-size: 1.02rem;
+        margin: 17px 0 8px;
+      }
+      .note {
+        font-size: 0.9rem;
+        color: var(--sub);
+        margin: 0;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 12px;
+        margin-top: 12px;
+      }
+      .flash {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fff;
+        padding: 15px;
+        text-align: left;
+        min-height: 170px;
+        transition: 0.15s;
+        position: relative;
+      }
+      .flash:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+      }
+      .flash .back {
+        display: none;
+        margin-top: 10px;
+        border-top: 1px dashed var(--line);
+        padding-top: 10px;
+      }
+      .flash.open .back {
+        display: block;
+      }
+      .flash .hint {
+        position: absolute;
+        right: 12px;
+        bottom: 9px;
+        color: var(--main);
+        font-size: 0.78rem;
+      }
+      .badge {
+        display: inline-block;
+        background: #e9efff;
+        color: #2448bd;
+        border-radius: 999px;
+        padding: 2px 8px;
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 0.92rem;
+        margin-top: 10px;
+      }
+      th,
+      td {
+        border: 1px solid var(--line);
+        padding: 9px;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        background: #eef3ff;
+      }
+      .formula {
+        background: #fff8d6;
+        border-left: 4px solid #f1bd1c;
+        padding: 11px;
+        border-radius: 7px;
+        margin: 10px 0;
+      }
+      .question {
+        border-top: 1px solid var(--line);
+        padding: 16px 0;
+      }
+      .question:first-of-type {
+        border-top: 0;
+      }
+      .choices {
+        display: grid;
+        gap: 7px;
+        margin-top: 10px;
+      }
+      .choice {
+        border: 1px solid var(--line);
+        background: #fff;
+        padding: 9px 10px;
+        border-radius: 9px;
+        text-align: left;
+      }
+      .choice:hover:not(:disabled) {
+        border-color: var(--main);
+        background: #f3f6ff;
+      }
+      .choice.correct {
+        background: #e5f8ef;
+        border-color: var(--ok);
+        color: #075d3a;
+      }
+      .choice.wrong {
+        background: #ffeaed;
+        border-color: var(--ng);
+        color: #8e2030;
+      }
+      .choice:disabled {
+        cursor: default;
+      }
+      .feedback {
+        margin: 9px 0 0;
+        padding: 9px;
+        border-radius: 8px;
+        font-size: 0.92rem;
+      }
+      .feedback.ok {
+        background: #e5f8ef;
+        color: #075d3a;
+      }
+      .feedback.ng {
+        background: #ffeaed;
+        color: #8e2030;
+      }
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
+      .primary,
+      .secondary,
+      .danger {
+        border: none;
+        padding: 10px 13px;
+        border-radius: 9px;
+        font-weight: 700;
+      }
+      .primary {
+        background: var(--main);
+        color: white;
+      }
+      .secondary {
+        background: #e8edf8;
+        color: #22345f;
+      }
+      .danger {
+        background: #ffeaed;
+        color: #a02035;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .quiz-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        align-items: center;
+      }
+      .small {
+        font-size: 0.85rem;
+        color: var(--sub);
+      }
+      details {
+        margin-top: 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 9px 12px;
+        background: #fff;
+      }
+      summary {
+        cursor: pointer;
+        font-weight: 700;
+      }
+      @media (max-width: 540px) {
+        header {
+          position: static;
+        }
+        .box {
+          padding: 14px;
+        }
+        .stats {
+          gap: 6px;
+        }
+        .stat {
+          padding: 6px;
+        }
+        .stat b {
+          font-size: 1rem;
+        }
+        table {
+          font-size: 0.82rem;
+        }
+        th,
+        td {
+          padding: 7px;
+        }
+        .toolbar button {
+          flex: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <h1>基本情報 復習教材</h1>
+        <p class="lead">
+          ノート整理：データベース・SQL・ネットワーク／毎日5〜10分
+        </p>
+        <div class="stats">
+          <div class="stat"><b id="answered">0</b><span>解答数</span></div>
+          <div class="stat"><b id="rate">—</b><span>正答率</span></div>
+          <div class="stat">
+            <b id="learned">0</b><span>学習済み問題数</span>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main>
+      <nav class="tabs" aria-label="分野">
+        <button class="tab active" data-tab="db">データベース・SQL</button
+        ><button class="tab" data-tab="net">ネットワーク</button
+        ><button class="tab" data-tab="osi">OSI・TCP/IP</button
+        ><button class="tab" data-tab="quiz">クイズ</button>
+      </nav>
+      <section id="db" class="panel active">
+        <div class="box">
+          <h2>データベース・SQL</h2>
+          <p class="note">
+            ノートの「外部データベースシステム」「関係演算子」「DDL/DML」「SQLの実行順序」を復習します。
+          </p>
+          <div class="cards" id="dbCards"></div>
+        </div>
+        <div class="box">
+          <h2>SQLの実行順序</h2>
+          <p>
+            SQLは書く順と内部で処理される順が異なります。基本形は次の順です。
+          </p>
+          <div class="formula">
+            <b>FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY</b>
+          </div>
+          <p class="note">
+            FROMで表を決め、WHEREで行を絞り、GROUP
+            BYでグループ化し、HAVINGでグループを絞り、SELECTで表示列を決め、ORDER
+            BYで並べ替えます。
+          </p>
+          <details>
+            <summary>
+              例：部署ごとの平均給与が30万円以上の部署名と平均給与
+            </summary>
+            <pre>
+SELECT department, AVG(salary)
+FROM employee
+GROUP BY department
+HAVING AVG(salary) &gt;= 300000
+ORDER BY AVG(salary) DESC;</pre
+            >
+          </details>
+        </div>
+      </section>
+      <section id="net" class="panel">
+        <div class="box">
+          <h2>ネットワーク機器・LAN</h2>
+          <p class="note">
+            有線LAN（イーサネット）と、機器が扱うOSI層を整理します。
+          </p>
+          <div class="cards" id="netCards"></div>
+        </div>
+        <div class="box">
+          <h2>CSMA/CD方式</h2>
+          <p>
+            <b>一言でいうと：</b
+            >共有型の有線LANで、通信路が空いているか確認してから送信し、衝突を検出したら送信をやり直す方式です。
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>流れ</th>
+                <th>内容</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Carrier Sense</td>
+                <td>通信路を監視する</td>
+              </tr>
+              <tr>
+                <td>Multiple Access</td>
+                <td>複数の端末が同じ通信路を共有する</td>
+              </tr>
+              <tr>
+                <td>Collision Detection</td>
+                <td>衝突を検出し、再送する</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="note">
+            要確認：ノートには「空いているタイミングで通信する」とあります。現在主流のスイッチングハブによる全二重通信では、通常CSMA/CDは使われません。
+          </p>
+        </div>
+      </section>
+      <section id="osi" class="panel">
+        <div class="box">
+          <h2>OSI基本参照モデル</h2>
+          <p class="note">
+            通信の機能を7層に分けて考えるモデルです。上ほどアプリケーションに近く、下ほど物理的な通信に近くなります。
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>層</th>
+                <th>役割</th>
+                <th>ノートの要点</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>第7層 アプリケーション</td>
+                <td>利用者向けの通信サービス</td>
+                <td>アプリケーション固有のルール</td>
+              </tr>
+              <tr>
+                <td>第6層 プレゼンテーション</td>
+                <td>データ表現の変換</td>
+                <td>文字コード、暗号化、圧縮、解凍</td>
+              </tr>
+              <tr>
+                <td>第5層 セッション</td>
+                <td>通信の開始・維持・終了</td>
+                <td>接続確認、切断時の対応</td>
+              </tr>
+              <tr>
+                <td>第4層 トランスポート</td>
+                <td>端末間の信頼性ある配送</td>
+                <td>データを送る際の信頼性</td>
+              </tr>
+              <tr>
+                <td>第3層 ネットワーク</td>
+                <td>ネットワーク間の宛先配送</td>
+                <td>送信元IPから送信先IPへ</td>
+              </tr>
+              <tr>
+                <td>第2層 データリンク</td>
+                <td>同一ネットワーク内の通信</td>
+                <td>ノード間の通信</td>
+              </tr>
+              <tr>
+                <td>第1層 物理</td>
+                <td>ビットを物理媒体で伝える</td>
+                <td>電圧レベル、ケーブル</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="box">
+          <h2>TCP/IPモデルとの対応</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>TCP/IPモデル</th>
+                <th>OSI参照モデル</th>
+                <th>例</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>アプリケーション層</td>
+                <td>第5〜7層</td>
+                <td>HTTP、DNS</td>
+              </tr>
+              <tr>
+                <td>トランスポート層</td>
+                <td>第4層</td>
+                <td>TCP、UDP</td>
+              </tr>
+              <tr>
+                <td>インターネット層</td>
+                <td>第3層</td>
+                <td>IP</td>
+              </tr>
+              <tr>
+                <td>ネットワークインタフェース層</td>
+                <td>第1〜2層</td>
+                <td>Ethernet</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section id="quiz" class="panel">
+        <div class="box">
+          <div class="quiz-head">
+            <div>
+              <h2 id="quizTitle">クイズ</h2>
+              <p class="note" id="quizNote">
+                分野を選ぶか、「今日の10問」を開始してください。
+              </p>
+            </div>
+            <span class="badge" id="countBadge">0問</span>
+          </div>
+          <div class="toolbar">
+            <button class="primary" id="todayBtn">今日の10問</button
+            ><button class="secondary" data-load="all">全問題</button
+            ><button class="secondary" data-load="db">DB・SQL</button
+            ><button class="secondary" data-load="net">ネットワーク</button
+            ><button class="secondary" id="weakBtn">苦手問題</button
+            ><button class="danger" id="resetBtn">進捗をリセット</button>
+          </div>
+          <div id="quizArea"></div>
+        </div>
+      </section>
+    </main>
+    <script>
+      const cards = {
+        db: [
+          [
+            "外部データベースシステム",
+            "複数のデータベースをまとめて扱う仕組み。",
+            "複数DBにまたがる処理の整合性を保つには、全体でコミット可能か確認する。",
+            "分散データベースそのもの（データの配置形態）と、複数DBを統合して扱う仕組みを混同しない。",
+          ],
+          [
+            "関係演算：選択",
+            "表から条件に合う<strong>行</strong>を取り出す。",
+            "WHERE句の働きに対応する。",
+            "射影は列を取り出す操作。",
+          ],
+          [
+            "関係演算：射影",
+            "表から必要な<strong>列</strong>を取り出す。",
+            "SELECT句で列を選ぶ働きに対応する。",
+            "選択は行、射影は列。",
+          ],
+          [
+            "関係演算：結合",
+            "複数の表を共通項目で結び付ける。",
+            "JOINを使う問題で問われやすい。結合条件を忘れると意図しない組合せになる。",
+            "選択・射影は1表内の絞込み、結合は表同士をつなぐ。",
+          ],
+          [
+            "DDL",
+            "データベースの構造を定義・変更するSQL。",
+            "CREATE、DROP、ALTER、TRUNCATEを区別する。",
+            "DMLは表の中のデータを操作する。",
+          ],
+          [
+            "DML",
+            "表に格納されたデータを検索・追加・更新・削除するSQL。",
+            "SELECT、INSERT、UPDATE、DELETEを区別する。",
+            "DDLは表などの定義を操作する。",
+          ],
+        ],
+        net: [
+          [
+            "NIC（ネットワークインタフェースカード）",
+            "端末をネットワークへ接続するための装置・部品。",
+            "物理層・データリンク層に関係し、MACアドレスを持つ。",
+            "ルータは異なるネットワーク間を中継する。",
+          ],
+          [
+            "ブリッジ／スイッチングハブ",
+            "MACアドレスを基に、同一LAN内でフレームを適切なポートへ転送する。",
+            "OSI第2層（データリンク層）の機器として問われやすい。",
+            "リピータハブは第1層、ルータは第3層。",
+          ],
+          [
+            "ルータ",
+            "IPアドレスを基に、異なるネットワーク間でパケットを中継する。",
+            "OSI第3層（ネットワーク層）。経路選択を行う。",
+            "スイッチングハブはMACアドレスで第2層の転送を行う。",
+          ],
+          [
+            "ゲートウェイ",
+            "異なるプロトコルや方式のネットワーク間を接続・変換する装置。",
+            "試験では「第4層以上のプロトコル変換を行う装置」として扱われることが多い。",
+            "ルータは主にIPに基づく第3層の中継。",
+          ],
+          [
+            "MACアドレス",
+            "LAN内でNICなどを識別するためのアドレス。",
+            "スイッチングハブはMACアドレスを学習して転送先を判断する。",
+            "IPアドレスはネットワーク層で使う論理的なアドレス。",
+          ],
+        ],
+      };
+      const questions = [
+        {
+          id: "q1",
+          cat: "db",
+          q: "関係演算で、条件に合う「行」を取り出す操作はどれか。",
+          a: ["選択", "射影", "結合", "除算"],
+          correct: 0,
+          e: "選択は条件に合う行を取り出す操作です。射影は列を取り出します。",
+        },
+        {
+          id: "q2",
+          cat: "db",
+          q: "表から社員番号と氏名だけを取り出す操作に最も対応するものはどれか。",
+          a: ["選択", "射影", "結合", "直積"],
+          correct: 1,
+          e: "必要な列を取り出すので射影です。SQLではSELECTで列を指定します。",
+        },
+        {
+          id: "q3",
+          cat: "db",
+          q: "表の定義を削除するSQL文として適切なものはどれか。",
+          a: ["DELETE", "DROP", "UPDATE", "INSERT"],
+          correct: 1,
+          e: "DROPは表などの定義を削除するDDLです。DELETEは表内の行を削除するDMLです。",
+        },
+        {
+          id: "q4",
+          cat: "db",
+          q: "SQLの内部的な実行順序として正しいものはどれか。",
+          a: [
+            "SELECT → FROM → WHERE → ORDER BY",
+            "FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY",
+            "FROM → SELECT → WHERE → HAVING → GROUP BY → ORDER BY",
+            "WHERE → FROM → SELECT → GROUP BY → HAVING → ORDER BY",
+          ],
+          correct: 1,
+          e: "FROMで対象表を決めてから、WHERE、GROUP BY、HAVING、SELECT、ORDER BYの順です。",
+        },
+        {
+          id: "q5",
+          cat: "db",
+          q: "GROUP BYで作られたグループを条件で絞り込む句はどれか。",
+          a: ["WHERE", "HAVING", "ORDER BY", "FROM"],
+          correct: 1,
+          e: "WHEREはグループ化前の行、HAVINGはグループ化後のグループを絞ります。",
+        },
+        {
+          id: "q6",
+          cat: "net",
+          q: "MACアドレスを基に、同一LAN内でフレームを転送する機器はどれか。",
+          a: ["ルータ", "スイッチングハブ", "リピータハブ", "ゲートウェイ"],
+          correct: 1,
+          e: "スイッチングハブ（ブリッジ）はMACアドレスを利用する第2層の機器です。",
+        },
+        {
+          id: "q7",
+          cat: "net",
+          q: "IPアドレスを基に、異なるネットワーク間でパケットを中継する機器はどれか。",
+          a: ["NIC", "ブリッジ", "ルータ", "リピータ"],
+          correct: 2,
+          e: "ルータはネットワーク層（第3層）でIPアドレスを使って経路を選択します。",
+        },
+        {
+          id: "q8",
+          cat: "net",
+          q: "CSMA/CD方式の説明として適切なものはどれか。",
+          a: [
+            "送信前に通信路を監視し、衝突時には再送する",
+            "暗号鍵を交換して通信を保護する",
+            "IPアドレスを自動的に割り当てる",
+            "受信確認だけを行い、衝突は無視する",
+          ],
+          correct: 0,
+          e: "CSMA/CDは通信路を監視してから送信し、衝突を検出した場合に再送する方式です。",
+        },
+        {
+          id: "q9",
+          cat: "net",
+          q: "OSI基本参照モデルで、文字コード変換や暗号化・圧縮に関係する層はどれか。",
+          a: [
+            "物理層",
+            "ネットワーク層",
+            "プレゼンテーション層",
+            "アプリケーション層",
+          ],
+          correct: 2,
+          e: "プレゼンテーション層はデータの表現形式を扱い、文字コード・暗号化・圧縮などを担います。",
+        },
+        {
+          id: "q10",
+          cat: "net",
+          q: "OSI基本参照モデルで、ノード間の通信とMACアドレスに最も関係する層はどれか。",
+          a: ["物理層", "データリンク層", "トランスポート層", "セッション層"],
+          correct: 1,
+          e: "データリンク層は同一ネットワーク内のノード間通信を扱い、MACアドレスを利用します。",
+        },
+        {
+          id: "q11",
+          cat: "net",
+          q: "TCP/IPモデルで、OSI参照モデルのネットワーク層におおむね対応するものはどれか。",
+          a: [
+            "アプリケーション層",
+            "トランスポート層",
+            "インターネット層",
+            "ネットワークインタフェース層",
+          ],
+          correct: 2,
+          e: "TCP/IPのインターネット層は、OSIのネットワーク層に対応し、IPを扱います。",
+        },
+        {
+          id: "q12",
+          cat: "net",
+          q: "異なるプロトコル体系のネットワーク間で変換・接続を行う装置はどれか。",
+          a: ["NIC", "リピータ", "ブリッジ", "ゲートウェイ"],
+          correct: 3,
+          e: "ゲートウェイは異なるプロトコルや方式の間を変換して接続します。",
+        },
+      ];
+      const KEY = "basicITReviewDbNet_v1";
+      let history = JSON.parse(localStorage.getItem(KEY) || "{}");
+      let current = [];
+      function save() {
+        localStorage.setItem(KEY, JSON.stringify(history));
+        stats();
+      }
+      function stats() {
+        const v = Object.values(history),
+          answered = v.length,
+          correct = v.filter((x) => x.correct).length;
+        document.getElementById("answered").textContent = answered;
+        document.getElementById("rate").textContent = answered
+          ? Math.round((correct / answered) * 100) + "%"
+          : "—";
+        document.getElementById("learned").textContent = answered;
+      }
+      function cardHTML(x) {
+        return `<button class="flash" type="button"><span class="badge">用語カード</span><h3>${x[0]}</h3><div class="back"><p><b>一言でいうと：</b>${x[1]}</p><p><b>試験で問われやすいポイント：</b>${x[2]}</p><p><b>混同しやすい用語との違い：</b>${x[3]}</p></div><span class="hint">クリックして解説を表示</span></button>`;
+      }
+      document.getElementById("dbCards").innerHTML = cards.db
+        .map(cardHTML)
+        .join("");
+      document.getElementById("netCards").innerHTML = cards.net
+        .map(cardHTML)
+        .join("");
+      document.addEventListener("click", (e) => {
+        const c = e.target.closest(".flash");
+        if (c) c.classList.toggle("open");
+      });
+      document.querySelectorAll(".tab").forEach(
+        (b) =>
+          (b.onclick = () => {
+            document
+              .querySelectorAll(".tab,.panel")
+              .forEach((x) => x.classList.remove("active"));
+            b.classList.add("active");
+            document.getElementById(b.dataset.tab).classList.add("active");
+          }),
+      );
+      function showQuiz(list, title) {
+        current = list;
+        document.getElementById("quizTitle").textContent = title;
+        document.getElementById("countBadge").textContent = list.length + "問";
+        document.getElementById("quizNote").textContent = list.length
+          ? "選択肢を押すとすぐに採点・解説を表示します。"
+          : "苦手問題はまだありません。まず通常の問題を解いてください。";
+        const area = document.getElementById("quizArea");
+        area.innerHTML = list
+          .map(
+            (x, i) =>
+              `<div class="question" data-id="${x.id}"><b>Q${i + 1}. ${x.q}</b><div class="choices">${x.a.map((a, j) => `<button class="choice" data-answer="${j}">${String.fromCharCode(65 + j)}. ${a}</button>`).join("")}</div><div class="feedback hidden"></div></div>`,
+          )
+          .join("");
+      }
+      function load(type) {
+        let list =
+          type === "all" ? questions : questions.filter((q) => q.cat === type);
+        showQuiz(
+          list,
+          type === "db"
+            ? "DB・SQLクイズ"
+            : type === "net"
+              ? "ネットワーククイズ"
+              : "全問題クイズ",
+        );
+      }
+      document
+        .querySelectorAll("[data-load]")
+        .forEach((b) => (b.onclick = () => load(b.dataset.load)));
+      document.getElementById("todayBtn").onclick = () => {
+        const a = [...questions]
+          .sort(() => Math.random() - 0.5)
+          .slice(0, Math.min(10, questions.length));
+        showQuiz(a, "今日の10問");
+      };
+      document.getElementById("weakBtn").onclick = () => {
+        const a = questions.filter(
+          (q) => history[q.id] && !history[q.id].correct,
+        );
+        showQuiz(a, "苦手問題");
+      };
+      document.getElementById("quizArea").onclick = (e) => {
+        const b = e.target.closest(".choice");
+        if (!b || b.disabled) return;
+        const box = b.closest(".question"),
+          q = questions.find((x) => x.id === box.dataset.id),
+          n = Number(b.dataset.answer),
+          ok = n === q.correct;
+        box.querySelectorAll(".choice").forEach((x, i) => {
+          x.disabled = true;
+          if (i === q.correct) x.classList.add("correct");
+          else if (i === n) x.classList.add("wrong");
+        });
+        const f = box.querySelector(".feedback");
+        f.className = "feedback " + (ok ? "ok" : "ng");
+        f.innerHTML = (ok ? "正解！ " : "不正解。 ") + "<b>解説：</b>" + q.e;
+        history[q.id] = { correct: ok, at: Date.now() };
+        save();
+      };
+      document.getElementById("resetBtn").onclick = () => {
+        if (confirm("解答履歴・正答率・苦手問題をすべて消去しますか？")) {
+          history = {};
+          save();
+          showQuiz([], "クイズ");
+        }
+      };
+      stats();
+      showQuiz([], "クイズ");
+    </script>
+    <div style="padding: 18px 0 24px; text-align: center;"><div style="display:flex; flex-wrap:wrap; justify-content:center; gap:45px;"><a href="index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">← 目次に戻る</a><a href="../index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">復習教材一覧</a><a href="../../index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">学習ポータルに戻る</a></div></div>
+  </body>
+</html>

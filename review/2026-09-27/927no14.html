@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>基本情報 復習教材｜法規・標準化・NoSQL・SDN</title>
+    <style>
+      :root {
+        --bg: #f5f7fb;
+        --card: #fff;
+        --ink: #172033;
+        --muted: #65708a;
+        --line: #dce3f0;
+        --accent: #315efb;
+        --good: #138a5b;
+        --bad: #cf3c3c;
+        --warn: #a86b00;
+        --shadow: 0 8px 22px rgba(22, 36, 70, 0.08);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic",
+          Meiryo, sans-serif;
+        line-height: 1.65;
+      }
+      button {
+        font: inherit;
+      }
+      header {
+        background: linear-gradient(125deg, #172b67, #315efb);
+        color: #fff;
+        padding: 24px 16px 20px;
+      }
+      .wrap {
+        max-width: 980px;
+        margin: auto;
+      }
+      h1 {
+        font-size: 1.45rem;
+        line-height: 1.35;
+        margin: 0 0 5px;
+      }
+      .sub {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 0.92rem;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 9px;
+        margin-top: 17px;
+      }
+      .stat {
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 12px;
+        padding: 10px;
+        text-align: center;
+      }
+      .stat b {
+        display: block;
+        font-size: 1.3rem;
+      }
+      .stat span {
+        font-size: 0.77rem;
+      }
+      main {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 16px;
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        overflow: auto;
+        padding: 2px 0 12px;
+      }
+      .tab {
+        flex: 0 0 auto;
+        border: 1px solid #cfd8ea;
+        background: #fff;
+        color: #32415e;
+        border-radius: 999px;
+        padding: 8px 13px;
+        cursor: pointer;
+      }
+      .tab.active {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      .panel {
+        display: none;
+      }
+      .panel.active {
+        display: block;
+      }
+      .card {
+        background: var(--card);
+        box-shadow: var(--shadow);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 17px;
+        margin-bottom: 15px;
+      }
+      h2 {
+        font-size: 1.18rem;
+        margin: 0 0 10px;
+      }
+      h3 {
+        font-size: 1rem;
+        margin: 20px 0 8px;
+      }
+      .note {
+        font-size: 0.9rem;
+        color: var(--muted);
+        margin: 0;
+      }
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 10px 0 16px;
+      }
+      .action {
+        border: 0;
+        background: var(--accent);
+        color: #fff;
+        border-radius: 9px;
+        padding: 9px 12px;
+        cursor: pointer;
+      }
+      .action.subtle {
+        background: #e9eefc;
+        color: #244abf;
+      }
+      .action.danger {
+        background: #fff0f0;
+        color: #ae2222;
+        border: 1px solid #f3b8b8;
+      }
+      .flash {
+        border: 1px solid #cbd6ff;
+        background: #f3f6ff;
+        border-radius: 10px;
+        padding: 13px;
+        margin: 12px 0;
+      }
+      .flash .answer {
+        display: none;
+        margin-top: 9px;
+        border-top: 1px solid #d6e0ff;
+        padding-top: 9px;
+      }
+      .flash.open .answer {
+        display: block;
+      }
+      .term {
+        border-top: 1px solid var(--line);
+        padding: 12px 0;
+      }
+      .term:first-of-type {
+        border-top: 0;
+      }
+      .term button {
+        width: 100%;
+        border: 0;
+        background: #f4f6fa;
+        border-radius: 9px;
+        padding: 10px;
+        text-align: left;
+        cursor: pointer;
+        color: var(--ink);
+        font-weight: 700;
+      }
+      .term .detail {
+        display: none;
+        padding: 10px 5px 0;
+      }
+      .term.open .detail {
+        display: block;
+      }
+      .detail p {
+        margin: 6px 0;
+        font-size: 0.92rem;
+      }
+      .label {
+        font-weight: 700;
+        color: #284db7;
+      }
+      .quiz-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .badge {
+        font-size: 0.8rem;
+        border-radius: 999px;
+        background: #edf1fa;
+        color: #41506b;
+        padding: 4px 8px;
+      }
+      .question {
+        font-weight: 700;
+        margin: 12px 0;
+      }
+      .choices {
+        display: grid;
+        gap: 8px;
+      }
+      .choice {
+        background: #fff;
+        border: 1px solid #cfd8ea;
+        border-radius: 9px;
+        padding: 10px;
+        text-align: left;
+        cursor: pointer;
+        color: var(--ink);
+      }
+      .choice:hover {
+        border-color: var(--accent);
+      }
+      .choice:disabled {
+        cursor: default;
+      }
+      .choice.correct {
+        border-color: var(--good);
+        background: #ecfbf4;
+      }
+      .choice.wrong {
+        border-color: var(--bad);
+        background: #fff0f0;
+      }
+      .feedback {
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 9px;
+        font-size: 0.92rem;
+        display: none;
+      }
+      .feedback.show {
+        display: block;
+      }
+      .feedback.good {
+        background: #eafaf3;
+        color: #075c39;
+      }
+      .feedback.bad {
+        background: #fff0f0;
+        color: #912222;
+      }
+      .empty {
+        color: var(--muted);
+        padding: 14px 0;
+      }
+      .compare {
+        overflow: auto;
+      }
+      .compare table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+      }
+      .compare th,
+      .compare td {
+        border: 1px solid var(--line);
+        padding: 8px;
+        vertical-align: top;
+      }
+      .compare th {
+        background: #eef2fb;
+        text-align: left;
+      }
+      .foot {
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin: 20px 0 8px;
+      }
+      .hidden {
+        display: none !important;
+      }
+      @media (max-width: 560px) {
+        header {
+          padding: 19px 14px;
+        }
+        .stats {
+          gap: 6px;
+        }
+        .stat {
+          padding: 8px 4px;
+        }
+        .stat b {
+          font-size: 1.12rem;
+        }
+        .stat span {
+          font-size: 0.69rem;
+        }
+        main {
+          padding: 12px;
+        }
+        .card {
+          padding: 14px;
+        }
+        .choice {
+          padding: 11px;
+        }
+        .compare table {
+          min-width: 620px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <h1>基本情報技術者｜復習教材</h1>
+        <p class="sub">
+          セキュリティ関連法規・労働関連法規・標準化・NoSQL・MACアドレス・OpenFlow／SDN
+        </p>
+        <div class="stats">
+          <div class="stat"><b id="answered">0</b><span>解答数</span></div>
+          <div class="stat"><b id="rate">—</b><span>正答率</span></div>
+          <div class="stat">
+            <b id="learned">0</b><span>学習済み問題数</span>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main>
+      <div class="toolbar">
+        <button class="action" id="todayBtn">今日の10問</button
+        ><button class="action subtle" id="weakBtn">苦手問題だけ</button
+        ><button class="action subtle" id="allBtn">全問題を表示</button
+        ><button class="action danger" id="resetBtn">進捗をリセット</button>
+      </div>
+      <div class="tabs" id="tabs"></div>
+      <section id="panels"></section>
+      <p class="foot">
+        この教材は添付ノートを優先して整理しています。内容の正確性確認が必要な箇所は「要確認」と明記しました。
+      </p>
+    </main>
+    <script>
+      const data = [
+        {
+          key: "laws",
+          name: "法規",
+          summary:
+            "情報セキュリティと労働に関する代表的な法律・契約を区別する。",
+          terms: [
+            [
+              "不正アクセス禁止法",
+              "不正アクセス行為と、それを助長する行為を禁止する法律。",
+              "他人のID・パスワードを無断利用してシステムへ入ることが中心。",
+              "個人情報保護法は「個人情報の取扱い」、不正アクセス禁止法は「不正な侵入・助長行為」。",
+            ],
+            [
+              "サイバーセキュリティ基本法",
+              "サイバーセキュリティに関する施策の基本理念・国や関係者の役割などを定める法律。",
+              "個別の不正行為を直接処罰する法律ではなく、施策の基本的な枠組みを定める。",
+              "不正アクセス禁止法のような個別行為の禁止とは役割が異なる。",
+            ],
+            [
+              "個人情報保護法",
+              "氏名・生年月日など、個人を識別できる情報を保護するための法律。",
+              "事業者の利用目的、適正な取得・利用、安全管理などが問われやすい。",
+              "プライバシー全般を抽象的に守る法律ではなく、「個人情報」の取扱いを規律する。",
+            ],
+            [
+              "労働者派遣契約",
+              "派遣元企業が雇用する労働者を派遣先企業の指揮命令の下で働かせる形態。",
+              "雇用関係は派遣元、日々の指揮命令は派遣先。",
+              "請負契約では受注企業が自ら労働者へ指揮命令する。",
+            ],
+            [
+              "請負契約",
+              "請負企業が仕事の完成を約束し、発注企業が成果物に対して報酬を支払う契約。",
+              "成果物の完成責任を負い、発注者が作業者へ直接指揮命令しない。",
+              "派遣では派遣先が指揮命令するが、請負では請負側が管理する。",
+            ],
+            [
+              "労働基準法",
+              "賃金、労働時間など、労働者に適用される労働条件の最低基準を定める法律。",
+              "最低基準であり、これを下回る労働条件は認められない。",
+              "労働契約法は労働契約に関する基本的なルールを扱う。",
+            ],
+            [
+              "シュリンクラップ契約",
+              "ソフトウェアの包装を開封することなどで、使用許諾条件に同意したとみなす契約。",
+              "パッケージソフトで典型的。実際の条件はライセンス条項を確認する。",
+              "クリックラップ契約は画面上で「同意」をクリックする方式。",
+            ],
+          ],
+          compare: [
+            ["用語", "目的・対象", "混同しやすい点"],
+            [
+              "不正アクセス禁止法",
+              "不正侵入・助長行為を禁止",
+              "個人情報そのものの取扱いを規律する法律ではない",
+            ],
+            [
+              "個人情報保護法",
+              "個人情報の適正な取扱い・保護",
+              "不正アクセスの処罰規定とは目的が異なる",
+            ],
+            ["派遣", "派遣先が指揮命令", "雇用主は派遣元"],
+            ["請負", "成果物の完成責任", "発注者が作業者に直接指揮命令しない"],
+          ],
+        },
+        {
+          key: "standards",
+          name: "標準化",
+          summary: "標準化団体の役割と、規格・RFCの違いを押さえる。",
+          terms: [
+            [
+              "ISO",
+              "国際標準化機構。国際標準の策定を行う組織。",
+              "ISO/IEC 27001のような国際規格が代表例。",
+              "JISは日本国内の国家規格。",
+            ],
+            [
+              "JIS",
+              "日本産業規格。日本における産業標準。",
+              "以前の名称は日本工業規格。試験ではISOとの対応関係を問われることがある。",
+              "ISOは国際規格、JISは日本の規格。",
+            ],
+            [
+              "IEEE",
+              "電気・電子・情報工学分野の学会で、LANなどの規格を策定する。",
+              "IEEE 802.3（Ethernet）、IEEE 802.11（無線LAN）が代表例。",
+              "IETFは主にインターネット技術の標準化を扱う。",
+            ],
+            [
+              "IETF",
+              "インターネットで利用される技術の標準化を進める団体。",
+              "技術仕様はRFCとして公開される。",
+              "IEEEのLAN規格と役割を混同しない。",
+            ],
+            [
+              "RFC",
+              "IETFなどで公開される技術文書群。",
+              "すべてが同じ強さの標準ではないが、インターネット技術仕様として重要。",
+              "「規格を決める組織」はIETF、「公開文書」はRFC。",
+            ],
+          ],
+          compare: [
+            ["組織・文書", "主な対象", "覚え方"],
+            ["ISO", "国際標準", "International"],
+            ["JIS", "日本の産業標準", "Japan"],
+            ["IEEE", "電気・電子・LAN規格", "Ethernet・無線LAN"],
+            ["IETF", "インターネット技術", "RFCを公開"],
+            ["RFC", "技術仕様の文書", "IETFそのものではない"],
+          ],
+        },
+        {
+          key: "dbnet",
+          name: "NoSQL・ネットワーク",
+          summary:
+            "NoSQLのデータモデル、MACアドレス、SDNの制御分離を整理する。",
+          terms: [
+            [
+              "キーバリュー型データベース",
+              "キーと値を対応付けてデータを格納するNoSQL。",
+              "単純な検索に向き、キーを指定して値を取り出す。",
+              "リレーショナルDBの表・列・結合を中心にした構造とは異なる。",
+            ],
+            [
+              "ドキュメント型データベース",
+              "XMLやJSONなど、文書形式に近い構造でデータを格納するNoSQL。",
+              "項目構造が変化しやすいデータを扱いやすい。",
+              "キーと値だけの単純な構造とは区別する。",
+            ],
+            [
+              "グラフ型データベース",
+              "ノードとエッジで、データ間の関係性を表現するNoSQL。",
+              "人間関係、経路、推薦など「つながり」の探索に向く。",
+              "表の外部キーによる結合とは異なる表現方式。",
+            ],
+            [
+              "カラム指向型データベース",
+              "列（カラム）単位を重視してデータを扱うデータベース。",
+              "ノートでは「キーバリュー型にカラムを追加」とある。厳密な実装・分類は製品により異なるため要確認。",
+              "一般的な行指向のRDBとの違いを意識する。",
+            ],
+            [
+              "MACアドレス",
+              "ネットワーク機器のNICなどに割り当てられる物理アドレス。",
+              "先頭24ビットはベンダを識別するOUI。残り24ビットはベンダが割り当てる部分。",
+              "IPアドレスはネットワーク上の論理アドレスであり、MACアドレスとは役割が異なる。",
+            ],
+            [
+              "OUI",
+              "Organizationally Unique Identifier。MACアドレス先頭24ビットのベンダ識別子。",
+              "IEEEが管理・割当てを行う識別子として覚える。",
+              "MACアドレス全体ではなく先頭24ビット。",
+            ],
+            [
+              "SDN",
+              "Software-Defined Networking。ネットワークの制御をソフトウェアで柔軟に行う考え方。",
+              "制御プレーンと転送プレーンを分離し、集中管理しやすくする。",
+              "OpenFlowはSDNで用いられる代表的なプロトコルの一つ。",
+            ],
+            [
+              "OpenFlow",
+              "SDNにおいて、コントローラがスイッチの転送動作を制御するためのプロトコル。",
+              "全体を見て制御するのはコントローラ、実際にパケットを転送するのはスイッチ。",
+              "OpenFlow＝SDN全体ではなく、SDNを実現する技術の一つ。",
+            ],
+          ],
+          compare: [
+            ["用語", "役割", "試験のポイント"],
+            ["キー・バリュー型", "キーで値を取り出す", "単純な対応付け"],
+            ["ドキュメント型", "JSON/XMLなどの文書構造", "柔軟な項目構造"],
+            ["グラフ型", "ノード・エッジで関係を表現", "関係性・経路探索"],
+            ["SDNコントローラ", "ネットワーク全体を見て制御", "制御プレーン"],
+            ["スイッチ", "パケットを実際に転送", "転送プレーン"],
+          ],
+        },
+      ];
+      const questions = [
+        [
+          "laws",
+          "他人のID・パスワードを無断で使ってシステムへ侵入する行為の禁止と最も関係が深い法律は？",
+          [
+            "個人情報保護法",
+            "不正アクセス禁止法",
+            "労働基準法",
+            "サイバーセキュリティ基本法",
+          ],
+          1,
+          "不正アクセス禁止法は、不正なログインなどの不正アクセス行為やその助長行為を禁止する。",
+        ],
+        [
+          "laws",
+          "派遣の説明として正しいものはどれ？",
+          [
+            "派遣先が雇用主である",
+            "派遣元が雇用し、派遣先が指揮命令する",
+            "発注者が請負企業の作業者へ直接指揮命令する",
+            "成果物完成だけを約束する契約である",
+          ],
+          1,
+          "派遣では雇用関係は派遣元、日々の指揮命令は派遣先にある。",
+        ],
+        [
+          "laws",
+          "請負契約で適切なものはどれ？",
+          [
+            "発注者が作業者へ直接指揮命令する",
+            "請負企業が仕事の完成責任を負う",
+            "雇用関係は発注者と作業者に生じる",
+            "包装を開封して同意する契約である",
+          ],
+          1,
+          "請負では請負側が作業を管理し、成果物の完成責任を負う。",
+        ],
+        [
+          "laws",
+          "シュリンクラップ契約の説明として適切なものはどれ？",
+          [
+            "画面上の同意ボタンだけで成立する契約",
+            "パッケージ開封などで使用許諾に同意したとみなす契約",
+            "派遣労働者の雇用条件を定める契約",
+            "個人情報の取得目的を定める法律",
+          ],
+          1,
+          "シュリンクラップ契約は、パッケージの開封などを同意の意思表示とする方式。",
+        ],
+        [
+          "laws",
+          "労働基準法が定めるものとして最も適切なものはどれ？",
+          [
+            "LANの通信規格",
+            "労働条件の最低基準",
+            "個人情報の暗号化方式",
+            "インターネットのRFC",
+          ],
+          1,
+          "賃金、労働時間などに関する労働条件の最低基準を定める。",
+        ],
+        [
+          "standards",
+          "LANの標準規格（IEEE 802シリーズなど）と関係が深い組織は？",
+          ["ISO", "JIS", "IEEE", "IETF"],
+          2,
+          "IEEEは電気・電子・情報工学分野の学会で、LAN規格などを策定する。",
+        ],
+        [
+          "standards",
+          "インターネット技術の仕様文書として公開されるものは？",
+          ["JIS", "RFC", "OUI", "MAC"],
+          1,
+          "RFCはIETFなどにより公開されるインターネット技術に関する文書群。",
+        ],
+        [
+          "standards",
+          "日本の産業標準として適切なものは？",
+          ["ISO", "JIS", "IEEE", "RFC"],
+          1,
+          "JISは日本産業規格。ISOは国際規格である。",
+        ],
+        [
+          "standards",
+          "組織と文書の組合せとして正しいものは？",
+          ["IETF―RFC", "IEEE―JIS", "ISO―OUI", "JIS―OpenFlow"],
+          0,
+          "IETFはインターネット技術の標準化を進め、RFCを公開する。",
+        ],
+        [
+          "dbnet",
+          "JSON形式などでデータを格納しやすいNoSQLは？",
+          ["キーバリュー型", "ドキュメント型", "グラフ型", "行指向型"],
+          1,
+          "ドキュメント型はJSONやXMLのような文書構造でデータを扱う。",
+        ],
+        [
+          "dbnet",
+          "データ間の関係性をノードとエッジで表現するNoSQLは？",
+          ["キーバリュー型", "ドキュメント型", "グラフ型", "カラム指向型"],
+          2,
+          "グラフ型は関係性・経路・つながりを表現・探索する用途に向く。",
+        ],
+        [
+          "dbnet",
+          "MACアドレスの先頭24ビットに該当するものは？",
+          ["IPアドレス", "OUI", "ポート番号", "サブネットマスク"],
+          1,
+          "OUIはMACアドレス先頭24ビットのベンダ識別子である。",
+        ],
+        [
+          "dbnet",
+          "SDNにおいてネットワーク全体を見て制御を行うものは？",
+          ["スイッチ", "NIC", "コントローラ", "ルータのMACアドレス"],
+          2,
+          "SDNではコントローラが制御を担当し、スイッチがパケット転送を担当する。",
+        ],
+        [
+          "dbnet",
+          "OpenFlowの説明として最も適切なものは？",
+          [
+            "RDBの問合せ言語",
+            "コントローラがスイッチの転送動作を制御するためのプロトコル",
+            "MACアドレスを割り当てる規格",
+            "JSONを格納するNoSQL",
+          ],
+          1,
+          "OpenFlowはSDNでコントローラとスイッチの連携に用いられる代表的なプロトコル。",
+        ],
+        [
+          "dbnet",
+          "MACアドレスとIPアドレスの説明として正しいものは？",
+          [
+            "MACは論理アドレス、IPは物理アドレス",
+            "MACはNICなどに割り当てられる物理アドレス、IPは論理アドレス",
+            "両方とも先頭24ビットがOUI",
+            "両方ともベンダが必ず割り当てる",
+          ],
+          1,
+          "MACアドレスはデータリンク層で用いられる物理アドレス、IPアドレスはネットワーク層の論理アドレス。",
+        ],
+      ];
+      const storage = "feReview_v1";
+      let state = JSON.parse(
+        localStorage.getItem(storage) ||
+          '{"answers":0,"correct":0,"seen":[],"wrong":[]}',
+      );
+      let mode = "all";
+      let active = "laws";
+      function save() {
+        localStorage.setItem(storage, JSON.stringify(state));
+        stats();
+      }
+      function stats() {
+        document.querySelector("#answered").textContent = state.answers;
+        document.querySelector("#rate").textContent = state.answers
+          ? Math.round((state.correct / state.answers) * 100) + "%"
+          : "—";
+        document.querySelector("#learned").textContent = state.seen.length;
+      }
+      function esc(s) {
+        return s.replace(
+          /[&<>]/g,
+          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c],
+        );
+      }
+      function render() {
+        const tabs = document.querySelector("#tabs"),
+          panels = document.querySelector("#panels");
+        tabs.innerHTML = data
+          .map(
+            (x) =>
+              `<button class="tab ${x.key === active ? "active" : ""}" data-tab="${x.key}">${x.name}</button>`,
+          )
+          .join("");
+        panels.innerHTML = data
+          .map(
+            (x) =>
+              `<section class="panel ${x.key === active ? "active" : ""}" id="p-${x.key}"><div class="card"><h2>${x.name}</h2><p class="note">${x.summary}</p><div class="flash" id="flash-${x.key}"><b>30秒チェック：</b> ${x.key === "laws" ? "派遣と請負の最大の違いは「誰が指揮命令するか」。" : x.key === "standards" ? "IETF＝インターネット技術、RFC＝技術文書。" : "SDNは制御（コントローラ）と転送（スイッチ）を分離。"}<div class="answer">答え：${x.key === "laws" ? "派遣先が指揮命令するのが派遣。請負は請負側が管理し成果物完成に責任を持つ。" : x.key === "standards" ? "IEEEはLAN、IETFはインターネット、ISOは国際、JISは日本。" : "MAC先頭24ビットはOUI。OpenFlowはコントローラがスイッチを制御する仕組み。"}</div><button class="action subtle reveal" style="margin-top:9px">答えを見る</button></div><h3>用語カード（タップで展開）</h3>${x.terms.map((t) => `<div class="term"><button>${t[0]} <span style="float:right">＋</span></button><div class="detail"><p><span class="label">一言でいうと：</span>${t[1]}</p><p><span class="label">試験で問われやすいポイント：</span>${t[2]}</p><p><span class="label">混同しやすい用語との違い：</span>${t[3]}</p></div></div>`).join("")}</div><div class="card"><h3>比較表</h3><div class="compare"><table>${x.compare.map((r, i) => `<tr>${r.map((c) => (i ? `<td>${c}</td>` : `<th>${c}</th>`)).join("")}</tr>`).join("")}</table></div></div><div class="card"><div class="quiz-head"><h2>4択クイズ</h2><span class="badge" id="count-${x.key}"></span></div><div id="quiz-${x.key}"></div></div></section>`,
+          )
+          .join("");
+        document.querySelectorAll(".tab").forEach(
+          (b) =>
+            (b.onclick = () => {
+              active = b.dataset.tab;
+              render();
+            }),
+        );
+        document
+          .querySelectorAll(".term button")
+          .forEach(
+            (b) => (b.onclick = () => b.parentElement.classList.toggle("open")),
+          );
+        document
+          .querySelectorAll(".reveal")
+          .forEach(
+            (b) => (b.onclick = () => b.parentElement.classList.add("open")),
+          );
+        data.forEach((x) => renderQuiz(x.key));
+      }
+      function selected() {
+        let q = questions.filter((x) =>
+          mode === "today"
+            ? todaySet.includes(x)
+            : mode === "weak"
+              ? state.wrong.includes(questions.indexOf(x))
+              : true,
+        );
+        return q;
+      }
+      let todaySet = [];
+      function makeToday() {
+        let shuffled = [...questions].sort(() => Math.random() - 0.5);
+        todaySet = shuffled.slice(0, Math.min(10, questions.length));
+        mode = "today";
+        active = "laws";
+        render();
+      }
+      function renderQuiz(key) {
+        let qs = selected().filter((q) => q[0] === key),
+          box = document.querySelector("#quiz-" + key);
+        document.querySelector("#count-" + key).textContent =
+          qs.length + "問表示";
+        if (!qs.length) {
+          box.innerHTML =
+            '<p class="empty">この分野に表示する問題はありません。苦手問題を増やすには通常モードで解答してください。</p>';
+          return;
+        }
+        box.innerHTML = qs
+          .map((q) => {
+            let i = questions.indexOf(q);
+            return `<div class="q" data-i="${i}"><p class="question">Q. ${q[1]}</p><div class="choices">${q[2].map((c, j) => `<button class="choice" data-choice="${j}">${String.fromCharCode(65 + j)}. ${c}</button>`).join("")}</div><div class="feedback"></div></div>`;
+          })
+          .join(
+            '<hr style="border:0;border-top:1px solid var(--line);margin:17px 0">',
+          );
+        box
+          .querySelectorAll(".q")
+          .forEach((el) =>
+            el
+              .querySelectorAll(".choice")
+              .forEach(
+                (b) => (b.onclick = () => answer(el, +b.dataset.choice)),
+              ),
+          );
+      }
+      function answer(el, choice) {
+        if (el.dataset.done) return;
+        el.dataset.done = "1";
+        let i = +el.dataset.i,
+          q = questions[i],
+          ok = choice === q[3];
+        state.answers++;
+        state.correct += ok ? 1 : 0;
+        if (!state.seen.includes(i)) state.seen.push(i);
+        if (ok) {
+          state.wrong = state.wrong.filter((x) => x !== i);
+        } else if (!state.wrong.includes(i)) state.wrong.push(i);
+        el.querySelectorAll(".choice").forEach((b) => {
+          b.disabled = true;
+          let n = +b.dataset.choice;
+          if (n === q[3]) b.classList.add("correct");
+          if (n === choice && !ok) b.classList.add("wrong");
+        });
+        let fb = el.querySelector(".feedback");
+        fb.className = "feedback show " + (ok ? "good" : "bad");
+        fb.innerHTML = (ok ? "正解！ " : "不正解。 ") + q[4];
+        save();
+      }
+      document.querySelector("#todayBtn").onclick = makeToday;
+      document.querySelector("#weakBtn").onclick = () => {
+        mode = "weak";
+        render();
+      };
+      document.querySelector("#allBtn").onclick = () => {
+        mode = "all";
+        render();
+      };
+      document.querySelector("#resetBtn").onclick = () => {
+        if (confirm("解答履歴・正答率・苦手問題をすべて削除しますか？")) {
+          state = { answers: 0, correct: 0, seen: [], wrong: [] };
+          save();
+          render();
+        }
+      };
+      stats();
+      render();
+    </script>
+    <div style="padding: 18px 0 24px; text-align: center;"><div style="display:flex; flex-wrap:wrap; justify-content:center; gap:45px;"><a href="index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">← 目次に戻る</a><a href="../index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">復習教材一覧</a><a href="../../index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">学習ポータルに戻る</a></div></div>
+  </body>
+</html>

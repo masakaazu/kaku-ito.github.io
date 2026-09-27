@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>基本情報 復習教材｜ページング・画像・DB</title>
+<style>
+:root{--bg:#f4f7fb;--panel:#fff;--ink:#172033;--muted:#637086;--line:#dce3ef;--brand:#2867c7;--brand2:#eaf2ff;--good:#0c8a53;--bad:#cc3d47;--warn:#9d6200;--shadow:0 8px 24px rgba(23,32,51,.08)}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;line-height:1.65}
+header{background:linear-gradient(135deg,#1b4f9c,#347bd8);color:#fff;padding:24px 16px 20px;position:sticky;top:0;z-index:5;box-shadow:0 2px 14px rgba(18,54,105,.22)}
+.wrap{max-width:1050px;margin:auto}.title{margin:0;font-size:clamp(1.25rem,3.7vw,2rem)}.sub{margin:4px 0 14px;opacity:.9;font-size:.92rem}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.26);border-radius:10px;padding:7px 10px;text-align:center;font-size:.82rem}.stat b{font-size:1.15rem;display:block}
+main{max-width:1050px;margin:20px auto 56px;padding:0 14px}.controls,.tabs,.quiz-controls{display:flex;gap:8px;flex-wrap:wrap}.controls{margin-bottom:14px}.btn,.tab{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:9px;padding:9px 12px;font:inherit;font-size:.9rem;cursor:pointer}.btn:hover,.tab:hover{border-color:var(--brand);color:var(--brand)}.btn.primary,.tab.active{background:var(--brand);border-color:var(--brand);color:#fff}.btn.danger{color:#a4232c}.tab{font-weight:700}.panel{display:none}.panel.active{display:block}.section{background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:14px;padding:17px;margin:14px 0}.section h2{font-size:1.18rem;margin:0 0 8px}.section h3{font-size:1.02rem;margin:20px 0 8px}.note{background:#fff8df;border-left:4px solid #e2ad22;padding:10px 12px;border-radius:6px;font-size:.92rem}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:12px}.card{min-height:154px;perspective:1000px;cursor:pointer}.cardInner{position:relative;width:100%;height:100%;min-height:154px;transition:transform .5s;transform-style:preserve-3d}.card.flipped .cardInner{transform:rotateY(180deg)}.face{position:absolute;inset:0;backface-visibility:hidden;border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff;box-shadow:0 3px 10px rgba(23,32,51,.05)}.back{transform:rotateY(180deg);background:var(--brand2);overflow:auto}.term{font-weight:800;font-size:1.04rem;color:var(--brand)}.hint{font-size:.8rem;color:var(--muted);margin-top:10px}.label{display:inline-block;background:#e8eef8;color:#385274;border-radius:999px;padding:2px 8px;font-size:.74rem;font-weight:700;margin-bottom:6px}table{width:100%;border-collapse:collapse;font-size:.9rem;margin-top:8px}th,td{padding:9px;border:1px solid var(--line);vertical-align:top;text-align:left}th{background:#eef4fc}.quiz-card{border-top:4px solid var(--brand)}.qhead{font-weight:800;margin-bottom:10px}.choices{display:grid;gap:8px}.choice{text-align:left;padding:10px;border:1px solid var(--line);border-radius:9px;background:#fff;font:inherit;cursor:pointer}.choice:hover:not(:disabled){border-color:var(--brand);background:#f4f8ff}.choice.correct{border-color:var(--good);background:#e9f8f0;color:#075934}.choice.wrong{border-color:var(--bad);background:#fff0f1;color:#9c2029}.choice:disabled{cursor:default}.feedback{margin-top:10px;padding:10px;border-radius:8px;display:none}.feedback.show{display:block}.feedback.ok{background:#e9f8f0;color:#075934}.feedback.ng{background:#fff0f1;color:#9c2029}.empty{padding:24px;text-align:center;color:var(--muted)}.progress{height:10px;background:#e5ebf3;border-radius:99px;overflow:hidden;margin:10px 0}.progress>div{height:100%;background:linear-gradient(90deg,#2b68c2,#63a7f2);width:0;transition:width .3s}.small{font-size:.87rem;color:var(--muted)}details{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff;margin:8px 0}summary{cursor:pointer;font-weight:700}@media(max-width:520px){header{padding-top:16px}.stats{gap:5px}.stat{font-size:.72rem;padding:6px}.stat b{font-size:1rem}.btn,.tab{padding:8px 10px;font-size:.83rem}.section{padding:13px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><h1 class="title">基本情報技術者｜復習教材</h1><p class="sub">ページング／画像形式／AR／データベース設計・正規化・復旧</p><div class="stats"><div class="stat"><b id="answered">0</b>解答数</div><div class="stat"><b id="rate">—</b>正答率</div><div class="stat"><b id="learned">0</b>学習済み問題</div></div></div></header>
+<main>
+<div class="controls"><button class="btn primary" id="todayBtn">今日の10問</button><button class="btn" id="weakBtn">苦手問題</button><button class="btn danger" id="resetBtn">進捗をリセット</button></div>
+<div class="tabs" id="tabs"></div>
+<div id="content"></div>
+</main>
+<script>
+const topics=[
+ {id:'page',name:'ページ置換',intro:'主記憶が不足したとき、どのページを追い出すかを決める方式。',cards:[
+  ['FIFO','一言でいうと','最も早く主記憶に入ったページを追い出す方式。','試験ポイント','First In, First Out（先入れ先出し）。「最初に入った」が判断基準。','混同注意','LRUは「最後に使った時刻」、LFUは「使用回数」を見る。FIFOは利用状況を見ない。'],
+  ['LIFO','一言でいうと','最後に主記憶に入ったページを追い出す方式。','試験ポイント','Last In, First Out（後入れ先出し）。','混同注意','FIFOとは追い出す対象が逆。'],
+  ['LRU','一言でいうと','最も長い間使われていないページを追い出す方式。','試験ポイント','Least Recently Used。直近の利用時刻を記録して判定する。','混同注意','LFUは利用頻度、LRUは「いつ最後に使ったか」。'],
+  ['LFU','一言でいうと','使用回数が最も少ないページを追い出す方式。','試験ポイント','Least Frequently Used。参照回数が判断基準。','混同注意','LRUは最近使われたか、LFUは何回使われたか。']
+ ],questions:[
+  ['最も長期間使われていないページを置換する方式はどれか。',['FIFO','LIFO','LRU','LFU'],2,'LRUは Least Recently Used であり、最後の使用から最も時間が経ったページを置換する。'],
+  ['ページの使用回数が最も少ないものを置換する方式はどれか。',['FIFO','LFU','LRU','LIFO'],1,'LFUは Least Frequently Used。利用頻度（回数）が最少のページを選ぶ。'],
+  ['FIFO方式で置換対象を決める基準はどれか。',['最後に使った時刻','使用回数','主記憶に入った順序','ページサイズ'],2,'FIFOは先に入ったページから追い出す。利用回数や直近の利用時刻は使わない。']
+ ]},
+ {id:'media',name:'画像・動画・AR',intro:'画像の圧縮方式・色数と、拡張現実の基本を整理する。',cards:[
+  ['BMP','一言でいうと','一般に無圧縮または圧縮効率が低く、ファイル容量が大きくなりやすい静止画形式。','試験ポイント','ノートでは「圧縮されないため容量が大きい」と整理。','混同注意','GIF・PNG・JPEGとは圧縮特性が異なる。'],
+  ['GIF','一言でいうと','256色までを扱える、可逆圧縮の画像形式。','試験ポイント','色数が少ない図・アイコンなどで特徴を問われやすい。','混同注意','JPEGはフルカラー向けの非可逆圧縮。'],
+  ['PNG','一言でいうと','フルカラーを扱え、可逆圧縮を用いる画像形式。','試験ポイント','画質を劣化させずに圧縮できる。','混同注意','JPEGは非可逆圧縮なので、保存を繰り返すと画質劣化が起こり得る。'],
+  ['JPEG','一言でいうと','フルカラーの静止画に向く、非可逆圧縮の国際標準規格。','試験ポイント','写真などのデータ量削減に向く一方、完全には元に戻せない。','混同注意','PNGは可逆圧縮。JPEGは非可逆圧縮。'],
+  ['MPEG','一言でいうと','動画を圧縮するための国際標準規格群。','試験ポイント','動画形式・映像圧縮として問われる。','混同注意','JPEGは主に静止画、MPEGは主に動画。'],
+  ['AR','一言でいうと','現実世界に仮想的な情報を重ねて表示する技術。','試験ポイント','Augmented Reality（拡張現実）。現実を置き換えるのではなく、情報を追加する。','混同注意','VRは仮想空間に没入する技術。ARは現実世界を基盤にする。']
+ ],questions:[
+  ['可逆圧縮で、フルカラーを扱える静止画形式はどれか。',['JPEG','PNG','MPEG','BMP'],1,'PNGはフルカラーに対応し、可逆圧縮を利用する。'],
+  ['写真でよく利用される、非可逆圧縮の静止画形式はどれか。',['GIF','PNG','JPEG','MPEG'],2,'JPEGはフルカラーの静止画向けで、非可逆圧縮を用いる。'],
+  ['現実の風景に案内情報などの仮想情報を重ねる技術はどれか。',['AR','VR','MPEG','LIFO'],0,'AR（Augmented Reality）は現実世界を拡張するようにデジタル情報を重ねる。'],
+  ['動画の圧縮に関する国際標準規格はどれか。',['GIF','MPEG','BMP','PNG'],1,'MPEGは動画圧縮の国際標準規格群である。']
+ ]},
+ {id:'db',name:'DB設計・正規化',intro:'スキーマ、正規化、関数従属性、ストアドプロシージャ、バックアップとロールフォワードを扱う。',cards:[
+  ['外部スキーマ','一言でいうと','利用者・アプリケーションから見たDBの見え方。','試験ポイント','ユーザごとに必要な見方を定義し、データ独立性を高める3層スキーマの一つ。','混同注意','概念スキーマはDB全体の論理構造、内部スキーマは物理的な記憶構造。'],
+  ['概念スキーマ','一言でいうと','DB全体の論理的な構造を表す見取り図。','試験ポイント','実体・属性・関係などを定義する。','混同注意','外部スキーマは利用者視点、内部スキーマは記憶媒体視点。'],
+  ['内部スキーマ','一言でいうと','DBを記憶媒体にどう物理的に格納するかを表す。','試験ポイント','レコード配置、索引など物理構造に関係する。','混同注意','概念スキーマは論理構造であり、物理的配置ではない。'],
+  ['第1正規化','一言でいうと','繰返し項目を分離し、1つの項目を原子的な値にする。','試験ポイント','列方向の重複データを別の行・表として扱える形にする。','混同注意','第2正規化は部分関数従属性の解消。'],
+  ['第2正規化','一言でいうと','複合主キーの一部だけで決まる項目を分離する。','試験ポイント','部分関数従属性をなくす。','混同注意','第3正規化は主キー以外の項目どうしの従属性（推移的従属性）をなくす。'],
+  ['第3正規化','一言でいうと','主キー以外の項目間の従属性を分離する。','試験ポイント','推移的関数従属性を解消する。','混同注意','第2正規化で扱うのは複合主キーの一部への依存。'],
+  ['部分関数従属性','一言でいうと','複合主キーの一部だけで、非キー項目の値が一意に決まる関係。','試験ポイント','第2正規化で解消する。','混同注意','主キー全体で決まる関数従属性とは区別する。'],
+  ['関数従属性','一言でいうと','主キーの値によって、他の列の値が一意に決まる関係。','試験ポイント','正規化で表を分割する根拠になる。','混同注意','部分関数従属性は、複合主キーの一部だけで決まる特別な関係。'],
+  ['ストアドプロシージャ','一言でいうと','DBMS上に保存して実行する、利用頻度の高いSQL命令群。','試験ポイント','ネットワーク負荷の軽減や処理速度の向上を目的にする。','混同注意','アプリケーション側の関数ではなく、DBMS側で実行される。'],
+  ['バックアップファイル','一言でいうと','ある時点のDBデータを保存した復旧用のコピー。','試験ポイント','障害時にまず基準となる状態へ戻す。','混同注意','ジャーナルファイルは更新履歴。'],
+  ['ジャーナルファイル','一言でいうと','DBに対する更新履歴を記録したファイル。','試験ポイント','バックアップ後の更新を反映して復旧する際に使う。','混同注意','バックアップは時点データ、ジャーナルは更新の記録。'],
+  ['ロールフォワード','一言でいうと','バックアップ復元後、ジャーナルを使って更新を再適用する復旧処理。','試験ポイント','障害直前など、より新しい状態へ進める方向の復旧。','混同注意','ロールバックは処理を取り消して以前の状態へ戻す。']
+ ],questions:[
+  ['利用者やアプリケーションから見たDBの見え方を定義するスキーマはどれか。',['外部スキーマ','概念スキーマ','内部スキーマ','物理スキーマ'],0,'外部スキーマは利用者・アプリケーションごとの視点でDBを表す。'],
+  ['複合主キーの一部だけに非キー項目が依存する状態を何というか。',['推移的関数従属性','部分関数従属性','完全関数従属性','多値従属性'],1,'部分関数従属性は第2正規化で解消する対象。'],
+  ['第3正規化の主な目的として適切なものはどれか。',['繰返し項目をなくす','部分関数従属性をなくす','主キー以外の項目間の従属性をなくす','主キーを追加する'],2,'第3正規化では、主キー以外の項目間にある推移的な従属性を分離する。'],
+  ['DB障害後、バックアップを復元し、ジャーナルの更新を再適用する処理はどれか。',['ロールバック','ロールフォワード','コミット','正規化'],1,'ロールフォワードは更新履歴を前方へ再適用して復旧する。'],
+  ['DBMS側に保存したSQL命令群を実行し、通信回数を減らす仕組みはどれか。',['ビュー','トリガ','ストアドプロシージャ','外部スキーマ'],2,'ストアドプロシージャはDBMS上に保存・実行され、ネットワーク負荷の軽減などが期待できる。']
+ ]}
+];
+const allQuestions=topics.flatMap(t=>t.questions.map((q,i)=>({id:t.id+'-'+i,topic:t.name,q:q[0],choices:q[1],answer:q[2],explain:q[3]})));
+let state=JSON.parse(localStorage.getItem('basicReviewState')||'{"answers":{},"seen":{}}');
+let active=topics[0].id, mode='topic', today=[];
+function save(){localStorage.setItem('basicReviewState',JSON.stringify(state));updateStats()}
+function updateStats(){const vals=Object.values(state.answers), total=vals.length, correct=vals.filter(Boolean).length;document.querySelector('#answered').textContent=total;document.querySelector('#rate').textContent=total?Math.round(correct/total*100)+'%':'—';document.querySelector('#learned').textContent=Object.keys(state.seen).length}
+function tabs(){document.querySelector('#tabs').innerHTML=topics.map(t=>`<button class="tab ${mode==='topic'&&active===t.id?'active':''}" data-t="${t.id}">${t.name}</button>`).join('');document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{active=b.dataset.t;mode='topic';render()})}
+function cardHTML(c){return `<div class="card"><div class="cardInner"><div class="face"><span class="label">用語カード</span><div class="term">${c[0]}</div><p>${c[1]}：${c[2]}</p><div class="hint">タップして詳細を見る</div></div><div class="face back"><div class="term">${c[0]}</div><p><b>${c[3]}</b><br>${c[4]}</p><p><b>${c[5]}</b><br>${c[6]}</p></div></div></div>`}
+function questionHTML(q,n){const prev=state.answers[q.id];const done=prev!==undefined;return `<div class="section quiz-card"><div class="qhead">Q${n}. ${q.q}</div><div class="choices">${q.choices.map((x,i)=>{let cls='choice';if(done&&i===q.answer)cls+=' correct';else if(done&&i===prev)cls+=' wrong';return `<button class="${cls}" data-q="${q.id}" data-i="${i}" ${done?'disabled':''}>${String.fromCharCode(65+i)}. ${x}</button>`}).join('')}</div><div class="feedback ${done?'show '+(prev===q.answer?'ok':'ng'):''}">${done?(prev===q.answer?'正解！ ':'不正解。 ')+'<b>解説：</b>'+q.explain:''}</div></div>`}
+function bindQuestions(){document.querySelectorAll('.choice:not(:disabled)').forEach(b=>b.onclick=()=>{const q=allQuestions.find(x=>x.id===b.dataset.q),i=Number(b.dataset.i);state.answers[q.id]=i===q.answer;state.seen[q.id]=true;save();render()})}
+function render(){tabs();let html='';if(mode==='topic'){const t=topics.find(x=>x.id===active);html+=`<section class="section"><h2>${t.name}</h2><p>${t.intro}</p><div class="cards">${t.cards.map(cardHTML).join('')}</div></section><section class="section"><h2>確認クイズ</h2><p class="small">回答は自動保存されます。各問題は初回回答後に答えと解説を表示します。</p>${t.questions.map((q,i)=>questionHTML({id:t.id+'-'+i,topic:t.name,q:q[0],choices:q[1],answer:q[2],explain:q[3]},i+1)).join('')}</section>`}else{let qs=mode==='weak'?allQuestions.filter(q=>state.answers[q.id]===false):today;if(mode==='weak'&&!qs.length)html='<section class="section empty">苦手問題はまだありません。クイズを解くと、不正解だった問題がここに表示されます。</section>';else html=`<section class="section"><h2>${mode==='weak'?'苦手問題':'今日の10問'}</h2><p class="small">${mode==='weak'?'間違えた問題だけを再出題します。':'全問題からランダムに最大10問を選びました。'}</p>${qs.map((q,i)=>questionHTML(q,i+1)).join('')}</section>`}document.querySelector('#content').innerHTML=html;document.querySelectorAll('.card').forEach(c=>c.onclick=()=>c.classList.toggle('flipped'));bindQuestions();updateStats()}
+document.querySelector('#todayBtn').onclick=()=>{mode='today';today=[...allQuestions].sort(()=>Math.random()-.5).slice(0,10);render()};document.querySelector('#weakBtn').onclick=()=>{mode='weak';render()};document.querySelector('#resetBtn').onclick=()=>{if(confirm('解答履歴・正答率・苦手問題をすべて消去しますか？')){state={answers:{},seen:{}};save();render()}};render();
+</script>
+<div style="padding: 18px 0 24px; text-align: center;"><div style="display:flex; flex-wrap:wrap; justify-content:center; gap:45px;"><a href="index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">← 目次に戻る</a><a href="../index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">復習教材一覧</a><a href="../../index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">学習ポータルに戻る</a></div></div>
+</body>
+</html>

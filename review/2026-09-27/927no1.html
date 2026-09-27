@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>基本情報 復習教材｜探索・整列・コンパイル・HTML/XML・UML</title>
+    <style>
+      :root {
+        --bg: #f6f8fc;
+        --panel: #fff;
+        --ink: #1d2737;
+        --sub: #617086;
+        --accent: #2563eb;
+        --accent2: #0f766e;
+        --ok: #15803d;
+        --ng: #dc2626;
+        --line: #d9e1ec;
+        --warn: #92400e;
+        --shadow: 0 8px 22px rgba(31, 45, 61, 0.08);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
+          "Yu Gothic", Meiryo, sans-serif;
+        line-height: 1.65;
+      }
+      .wrap {
+        max-width: 1080px;
+        margin: auto;
+        padding: 16px;
+      }
+      header {
+        background: linear-gradient(135deg, #1d4ed8, #0f766e);
+        color: #fff;
+        border-radius: 18px;
+        padding: 22px;
+        box-shadow: var(--shadow);
+      }
+      h1 {
+        font-size: clamp(1.35rem, 4vw, 2rem);
+        margin: 0 0 6px;
+      }
+      h2 {
+        font-size: 1.25rem;
+        margin: 0 0 12px;
+      }
+      h3 {
+        font-size: 1.05rem;
+        margin: 0 0 8px;
+      }
+      .muted {
+        color: var(--sub);
+      }
+      header .muted {
+        color: #dbeafe;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin: 16px 0;
+      }
+      .stat {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow);
+        border-radius: 14px;
+        padding: 12px;
+        text-align: center;
+      }
+      .stat b {
+        display: block;
+        color: var(--accent);
+        font-size: 1.35rem;
+      }
+      .stat span {
+        font-size: 0.82rem;
+        color: var(--sub);
+      }
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 14px 0;
+      }
+      .btn {
+        appearance: none;
+        border: 1px solid #bdd0f8;
+        background: #fff;
+        color: #1e3a8a;
+        border-radius: 10px;
+        padding: 9px 12px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: #eff6ff;
+      }
+      .btn.primary {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      .btn.warn {
+        color: #9a3412;
+        border-color: #fdba74;
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding: 2px 0 10px;
+      }
+      .tab {
+        white-space: nowrap;
+      }
+      .tab.active {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      .section {
+        display: none;
+      }
+      .section.active {
+        display: block;
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+        margin: 12px 0;
+        box-shadow: var(--shadow);
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(235px, 1fr));
+        gap: 12px;
+      }
+      .card {
+        position: relative;
+        min-height: 205px;
+        perspective: 1000px;
+        cursor: pointer;
+      }
+      .card-in {
+        height: 100%;
+        min-height: 205px;
+        position: relative;
+        transition: transform 0.55s;
+        transform-style: preserve-3d;
+      }
+      .card.flip .card-in {
+        transform: rotateY(180deg);
+      }
+      .face {
+        position: absolute;
+        inset: 0;
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        backface-visibility: hidden;
+        background: #fff;
+        box-shadow: var(--shadow);
+      }
+      .back {
+        transform: rotateY(180deg);
+        background: #eff6ff;
+      }
+      .tag {
+        font-size: 0.75rem;
+        background: #dbeafe;
+        color: #1e40af;
+        border-radius: 999px;
+        padding: 3px 8px;
+        display: inline-block;
+      }
+      ul {
+        padding-left: 20px;
+        margin: 8px 0;
+      }
+      .note {
+        border-left: 4px solid #f59e0b;
+        background: #fffbeb;
+        padding: 10px 12px;
+        border-radius: 8px;
+        color: var(--warn);
+      }
+      .formula {
+        background: #f1f5f9;
+        border-radius: 10px;
+        padding: 10px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        overflow: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.93rem;
+      }
+      th,
+      td {
+        border: 1px solid var(--line);
+        padding: 9px;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        background: #eff6ff;
+      }
+      .quiz {
+        border-top: 1px solid var(--line);
+        margin-top: 16px;
+        padding-top: 14px;
+      }
+      .question {
+        font-weight: 800;
+        margin-bottom: 10px;
+      }
+      .options {
+        display: grid;
+        gap: 8px;
+      }
+      .option {
+        text-align: left;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px;
+        cursor: pointer;
+      }
+      .option:hover:not(:disabled) {
+        border-color: var(--accent);
+        background: #eff6ff;
+      }
+      .option.correct {
+        background: #dcfce7;
+        border-color: #22c55e;
+        color: #14532d;
+      }
+      .option.wrong {
+        background: #fee2e2;
+        border-color: #ef4444;
+        color: #7f1d1d;
+      }
+      .feedback {
+        min-height: 28px;
+        margin-top: 10px;
+        font-weight: 700;
+      }
+      .today-box {
+        display: none;
+      }
+      .today-box.active {
+        display: block;
+      }
+      .progress {
+        height: 10px;
+        background: #e5e7eb;
+        border-radius: 999px;
+        overflow: hidden;
+        margin: 8px 0;
+      }
+      .progress > i {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, #2563eb, #14b8a6);
+        width: 0;
+        transition: width 0.3s;
+      }
+      .small {
+        font-size: 0.86rem;
+      }
+      .hidden {
+        display: none;
+      }
+      @media (max-width: 560px) {
+        .wrap {
+          padding: 11px;
+        }
+        header {
+          padding: 17px;
+        }
+        .stats {
+          gap: 7px;
+        }
+        .stat {
+          padding: 9px;
+        }
+        .stat b {
+          font-size: 1.1rem;
+        }
+        .panel {
+          padding: 13px;
+        }
+        .btn {
+          padding: 8px 10px;
+          font-size: 0.88rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>基本情報技術者試験｜ノート復習教材</h1>
+        <div class="muted">
+          探索・整列・オーダ記法／インタプリタ・コンパイラ／HTML・XML／UML
+        </div>
+      </header>
+      <div class="stats">
+        <div class="stat"><b id="answered">0</b><span>解答数</span></div>
+        <div class="stat"><b id="rate">—</b><span>正答率</span></div>
+        <div class="stat"><b id="learned">0</b><span>学習済み問題数</span></div>
+      </div>
+      <div class="toolbar">
+        <button class="btn primary" id="todayBtn">今日の10問</button>
+        <button class="btn" id="weakBtn">苦手問題だけ出す</button>
+        <button class="btn warn" id="resetBtn">進捗をリセット</button>
+      </div>
+      <div class="tabs" id="tabs"></div>
+      <main id="main"></main>
+    </div>
+    <script>
+      const STORAGE = "fe_review_algo_uml_v1";
+      const topics = [
+        {
+          id: "algo",
+          name: "探索・整列",
+          intro: "探索・整列アルゴリズムと計算量を整理する分野。",
+          cards: [
+            {
+              t: "ハッシュ探索法",
+              one: "ハッシュ関数で格納場所を計算して探す探索法。",
+              point:
+                "ハッシュ値から直接場所を求められるため、平均的には高速に探索できる。",
+              diff: "二分探索法は整列済み配列を半分ずつ絞る。ハッシュ探索はハッシュ表を利用する。",
+            },
+            {
+              t: "基本選択法（選択ソート）",
+              one: "未整列部分の最小値（または最大値）を選び、先頭側と交換する整列法。",
+              point: "比較回数はおおむね n²。交換回数は比較的少ない。",
+              diff: "挿入ソートは適切な位置へ挿入する。バブルソートは隣同士を交換する。",
+            },
+            {
+              t: "基本挿入法（挿入ソート）",
+              one: "未整列データを整列済み部分の適切な位置へ挿入する整列法。",
+              point: "ほぼ整列済みのデータでは効率がよくなることがある。",
+              diff: "選択ソートは最小値を選んで交換する。",
+            },
+            {
+              t: "シェルソート",
+              one: "離れた要素を比較・交換し、間隔を縮めながら整列する方法。",
+              point:
+                "間隔を小さくしていき、最終的に挿入ソートに近い処理を行う。",
+              diff: "単純な基本挿入法より高速化を狙った方法。",
+            },
+            {
+              t: "クイックソート",
+              one: "基準値（ピボット）でデータを二分し、再帰的に整列する方法。",
+              point:
+                "平均計算量は O(n log n)。ピボットの選び方で性能が影響を受ける。",
+              diff: "マージソートは分割後、整列済み列を併合する。",
+            },
+            {
+              t: "ヒープソート",
+              one: "ヒープ構造を使い、最大値・最小値を取り出して整列する方法。",
+              point: "計算量は O(n log n)。",
+              diff: "クイックソートはピボット、マージソートは併合を使う。",
+            },
+            {
+              t: "オーダ記法",
+              one: "データ量 n に対する処理量の増え方を O( ) で表す記法。",
+              point: "定数倍や低次の項は無視し、増加の支配的な部分を見る。",
+              diff: "実行時間そのものではなく、規模に対する増え方を比較する。",
+            },
+          ],
+          questions: [
+            {
+              q: "整列済み配列を対象に、中央の値と比較しながら探索範囲を半分に絞る探索法はどれか。",
+              o: ["線形探索法", "二分探索法", "ハッシュ探索法", "幅優先探索法"],
+              a: 1,
+              e: "二分探索法。対象データが整列済みであることが前提で、計算量は O(log n) である。",
+            },
+            {
+              q: "ハッシュ探索法の説明として最も適切なものはどれか。",
+              o: [
+                "隣接要素を交換し続ける",
+                "ハッシュ関数で格納場所を求める",
+                "配列の中央から半分に絞る",
+                "最小値を毎回末尾へ置く",
+              ],
+              a: 1,
+              e: "ハッシュ関数によってキーから格納場所を求め、探索する。",
+            },
+            {
+              q: "未整列部分から最小値を選び、先頭の未整列要素と交換する整列法はどれか。",
+              o: ["基本選択法", "基本挿入法", "マージソート", "シェルソート"],
+              a: 0,
+              e: "基本選択法（選択ソート）。最小値または最大値を選択して交換する。",
+            },
+            {
+              q: "平均的な計算量が O(n log n) である整列法はどれか。",
+              o: ["基本選択法", "基本挿入法", "クイックソート", "線形探索法"],
+              a: 2,
+              e: "クイックソートの平均計算量は O(n log n)。",
+            },
+            {
+              q: "データ量 n の増加に対して、処理量が最も増えにくいものはどれか。",
+              o: ["O(n²)", "O(n log n)", "O(n)", "O(log n)"],
+              a: 3,
+              e: "O(log n) はデータ量が増えても増加が緩やかである。",
+            },
+          ],
+        },
+        {
+          id: "lang",
+          name: "言語処理",
+          intro: "インタプリタとコンパイラの違いを確認する分野。",
+          cards: [
+            {
+              t: "インタプリタ",
+              one: "ソースプログラムを逐次解釈して実行する方式。",
+              point:
+                "一般に実行時に解釈処理を行うため、コンパイル済みの機械語より実行速度が遅くなりやすい。",
+              diff: "コンパイラは実行前にまとめて翻訳する。",
+            },
+            {
+              t: "コンパイラ",
+              one: "高水準言語のソースプログラムを、実行前にまとめて翻訳する方式。",
+              point:
+                "翻訳済みのプログラムを実行するため、実行速度は速くなりやすい。",
+              diff: "インタプリタは実行しながら逐次解釈する。",
+            },
+          ],
+          questions: [
+            {
+              q: "ソースプログラムを実行前にまとめて機械語などへ翻訳するものはどれか。",
+              o: ["インタプリタ", "コンパイラ", "デバッガ", "エディタ"],
+              a: 1,
+              e: "コンパイラは実行前にソースプログラム全体を翻訳する。",
+            },
+            {
+              q: "インタプリタ方式の説明として適切なものはどれか。",
+              o: [
+                "実行前に必ず機械語ファイルだけを作る",
+                "ソースを逐次解釈して実行する",
+                "OSをハードウェアに変換する",
+                "データベースを正規化する",
+              ],
+              a: 1,
+              e: "インタプリタはソースを逐次解釈しながら実行する。",
+            },
+            {
+              q: "一般に、翻訳済みプログラムを直接実行できる方式はどれか。",
+              o: [
+                "コンパイラ方式",
+                "インタプリタ方式のみ",
+                "手続型方式",
+                "オブジェクト方式",
+              ],
+              a: 0,
+              e: "コンパイラ方式では、あらかじめ翻訳した結果を実行できる。",
+            },
+          ],
+        },
+        {
+          id: "web",
+          name: "HTML・XML",
+          intro: "Web文書とデータ記述の基本を確認する分野。",
+          cards: [
+            {
+              t: "HTML",
+              one: "Webページの構造を記述するマークアップ言語。",
+              point:
+                "タグの種類・役割は標準として定義されている。Webサイト作成で使う。",
+              diff: "XMLは用途に合わせて独自のタグを定義でき、主にデータ記述・交換に用いる。",
+            },
+            {
+              t: "XML",
+              one: "データの構造や意味を記述・交換するためのマークアップ言語。",
+              point: "利用者・システムが用途に応じてタグを定義できる。",
+              diff: "HTMLは表示するWebページの構造を記述するための標準タグ中心。",
+            },
+          ],
+          questions: [
+            {
+              q: "Webページの構造を記述するために用いるマークアップ言語はどれか。",
+              o: ["HTML", "XML", "SQL", "C"],
+              a: 0,
+              e: "HTMLはWebページの構造を表すためのマークアップ言語である。",
+            },
+            {
+              q: "用途に応じて独自のタグを定義し、データの交換・記述に使いやすいものはどれか。",
+              o: ["HTML", "XML", "CSS", "HTTP"],
+              a: 1,
+              e: "XMLでは利用目的に合わせたタグを定義し、データ構造を表現できる。",
+            },
+            {
+              q: "HTMLとXMLの違いとして適切なものはどれか。",
+              o: [
+                "HTMLはタグを自由に定義できる",
+                "XMLはWebページの見た目だけを定義する",
+                "HTMLはWebページ、XMLはデータ記述に主に用いる",
+                "XMLはプログラミング言語である",
+              ],
+              a: 2,
+              e: "HTMLはWebページの構造、XMLはデータの構造・交換を主な用途とする。",
+            },
+          ],
+        },
+        {
+          id: "uml",
+          name: "UML・関係",
+          intro: "オブジェクト指向設計で頻出の関係を確認する分野。",
+          cards: [
+            {
+              t: "汎化（generalization）",
+              one: "下位クラスの共通部分を抽出して上位クラスを定義する関係。",
+              point: "「下位クラス is a 上位クラス」と読める。逆方向は特化。",
+              diff: "集約は全体と部分の関係。「is a」と「part of」を混同しない。",
+            },
+            {
+              t: "集約（aggregation）",
+              one: "下位クラス（部分）が集まって上位クラス（全体）を構成する関係。",
+              point:
+                "「下位クラス is part of 上位クラス」と読める。逆方向は分解。",
+              diff: "汎化は共通化による親子関係、集約は全体・部分関係。",
+            },
+          ],
+          questions: [
+            {
+              q: "「犬は動物である」のように、下位クラスと上位クラスの共通性を表す関係はどれか。",
+              o: ["汎化", "集約", "依存", "実現"],
+              a: 0,
+              e: "犬 is a 動物と読めるため、汎化の関係である。",
+            },
+            {
+              q: "「車はエンジンを部品として持つ」のような全体・部分の関係はどれか。",
+              o: ["汎化", "集約", "継承だけ", "多重化"],
+              a: 1,
+              e: "部品は全体の一部（part of）なので集約として表す。",
+            },
+            {
+              q: "汎化の逆方向としてノートに記されているものはどれか。",
+              o: ["分解", "特化", "併合", "抽象化"],
+              a: 1,
+              e: "汎化の逆は特化であり、上位概念をより具体化して下位概念へ分ける。",
+            },
+          ],
+        },
+      ];
+      const state = JSON.parse(
+        localStorage.getItem(STORAGE) || '{"attempts":{},"wrong":[]}',
+      );
+      function save() {
+        localStorage.setItem(STORAGE, JSON.stringify(state));
+        updateStats();
+      }
+      function allQs() {
+        return topics.flatMap((t) =>
+          t.questions.map((x, i) => ({
+            ...x,
+            id: t.id + "-" + i,
+            topic: t.name,
+          })),
+        );
+      }
+      function updateStats() {
+        const a = Object.values(state.attempts);
+        const total = a.reduce((s, x) => s + x.n, 0),
+          ok = a.reduce((s, x) => s + x.ok, 0);
+        document.querySelector("#answered").textContent = total;
+        document.querySelector("#rate").textContent = total
+          ? Math.round((ok / total) * 100) + "%"
+          : "—";
+        document.querySelector("#learned").textContent = a.length;
+      }
+      function cardHTML(c) {
+        return `<article class="card" tabindex="0"><div class="card-in"><div class="face"><span class="tag">タップで答えを見る</span><h3>${c.t}</h3><p>${c.one}</p></div><div class="face back"><h3>${c.t}</h3><p><b>試験ポイント：</b>${c.point}</p><p><b>違い：</b>${c.diff}</p></div></div></article>`;
+      }
+      function quizHTML(q) {
+        return `<div class="quiz" data-qid="${q.id}"><div class="question">Q. ${q.q}</div><div class="options">${q.o.map((o, i) => `<button class="option" data-index="${i}">${String.fromCharCode(65 + i)}. ${o}</button>`).join("")}</div><div class="feedback" aria-live="polite"></div></div>`;
+      }
+      function render() {
+        const tabs = document.querySelector("#tabs"),
+          main = document.querySelector("#main");
+        tabs.innerHTML = topics
+          .map(
+            (t, i) =>
+              `<button class="btn tab ${i === 0 ? "active" : ""}" data-target="${t.id}">${t.name}</button>`,
+          )
+          .join("");
+        main.innerHTML =
+          topics
+            .map(
+              (t, i) =>
+                `<section class="section ${i === 0 ? "active" : ""}" id="${t.id}"><div class="panel"><h2>${t.name}</h2><p class="muted">${t.intro}</p><div class="cards">${t.cards.map(cardHTML).join("")}</div></div><div class="panel"><h2>確認クイズ</h2><p class="small muted">選択すると、その場で正誤と解説が表示されます。</p>${t.questions.map((q, j) => quizHTML({ ...q, id: t.id + "-" + j })).join("")}</div></section>`,
+            )
+            .join("") +
+          `<section class="today-box" id="today"><div class="panel"><h2>今日の10問</h2><p class="muted">全問題からランダムに最大10問を出題します。</p><div id="todayQuestions"></div></div></section>`;
+        document.querySelectorAll(".card").forEach((c) => {
+          c.onclick = () => c.classList.toggle("flip");
+          c.onkeydown = (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              c.classList.toggle("flip");
+            }
+          };
+        });
+        document.querySelectorAll(".tab").forEach(
+          (b) =>
+            (b.onclick = () => {
+              document
+                .querySelectorAll(".tab")
+                .forEach((x) => x.classList.remove("active"));
+              document
+                .querySelectorAll(".section,.today-box")
+                .forEach((x) => x.classList.remove("active"));
+              b.classList.add("active");
+              document
+                .querySelector("#" + b.dataset.target)
+                .classList.add("active");
+            }),
+        );
+        bindQuiz();
+        updateStats();
+      }
+      function bindQuiz(root = document) {
+        root.querySelectorAll(".quiz").forEach((box) => {
+          box
+            .querySelectorAll(".option")
+            .forEach((btn) => (btn.onclick = () => answer(box, btn)));
+        });
+      }
+      function answer(box, btn) {
+        if (box.dataset.done) return;
+        box.dataset.done = "1";
+        const id = box.dataset.qid,
+          q = allQs().find((x) => x.id === id);
+        const choice = +btn.dataset.index,
+          correct = choice === q.a;
+        const rec = state.attempts[id] || { n: 0, ok: 0 };
+        rec.n++;
+        if (correct) rec.ok++;
+        state.attempts[id] = rec;
+        if (correct) {
+          state.wrong = state.wrong.filter((x) => x !== id);
+        } else if (!state.wrong.includes(id)) state.wrong.push(id);
+        box.querySelectorAll(".option").forEach((b) => {
+          b.disabled = true;
+          if (+b.dataset.index === q.a) b.classList.add("correct");
+          if (b === btn && !correct) b.classList.add("wrong");
+        });
+        box.querySelector(".feedback").innerHTML =
+          (correct ? "✓ 正解！ " : "✕ 不正解。 ") + q.e;
+        save();
+      }
+      function renderSpecial(title, qs, message) {
+        document
+          .querySelectorAll(".section,.today-box")
+          .forEach((x) => x.classList.remove("active"));
+        document
+          .querySelectorAll(".tab")
+          .forEach((x) => x.classList.remove("active"));
+        const sec = document.querySelector("#today");
+        sec.classList.add("active");
+        document.querySelector("#todayQuestions").innerHTML =
+          `<h3>${title}</h3><p class="note">${message}</p>` +
+          (qs.length
+            ? qs.map(quizHTML).join("")
+            : "<p>まだ苦手問題はありません。通常問題に挑戦しましょう。</p>");
+        bindQuiz(sec);
+      }
+      document.querySelector("#todayBtn").onclick = () => {
+        const qs = [...allQs()].sort(() => Math.random() - 0.5).slice(0, 10);
+        renderSpecial(
+          "ランダム出題",
+          qs,
+          "回答履歴はこのブラウザに保存されます。",
+        );
+      };
+      document.querySelector("#weakBtn").onclick = () => {
+        const qs = allQs().filter((q) => state.wrong.includes(q.id));
+        renderSpecial(
+          "苦手問題",
+          qs,
+          "誤答した問題だけを再出題しています。正解すると苦手リストから外れます。",
+        );
+      };
+      document.querySelector("#resetBtn").onclick = () => {
+        if (confirm("解答履歴・正答率・苦手問題をすべて削除しますか？")) {
+          state.attempts = {};
+          state.wrong = [];
+          save();
+          render();
+        }
+      };
+      render();
+    </script>
+    <div style="padding: 18px 0 24px; text-align: center;">
+      <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:45px;">
+        <a href="index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">← 目次に戻る</a>
+        <a href="../index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">復習教材一覧</a>
+        <a href="../../index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">学習ポータルに戻る</a>
+      </div>
+    </div>
+  </body>
+</html>

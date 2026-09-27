@@ -1,0 +1,853 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>基本情報｜IT戦略分野 復習教材</title>
+    <style>
+      :root {
+        --bg: #f4f7fb;
+        --card: #fff;
+        --ink: #172033;
+        --sub: #566176;
+        --primary: #2563eb;
+        --primary-light: #dbeafe;
+        --ok: #15803d;
+        --ng: #b91c1c;
+        --line: #d9e1ee;
+        --warn: #9a5b00;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic",
+          Meiryo, sans-serif;
+        line-height: 1.65;
+      }
+      header {
+        background: linear-gradient(135deg, #1d4ed8, #0f766e);
+        color: #fff;
+        padding: 22px 16px 18px;
+        box-shadow: 0 3px 12px #17203330;
+      }
+      .wrap {
+        width: min(100%, 1000px);
+        margin: auto;
+      }
+      h1 {
+        font-size: clamp(1.35rem, 5vw, 2rem);
+        margin: 0 0 4px;
+      }
+      header p {
+        margin: 0;
+        opacity: 0.92;
+        font-size: 0.93rem;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 9px;
+        margin-top: 16px;
+      }
+      .stat {
+        background: #ffffff1d;
+        border: 1px solid #ffffff45;
+        border-radius: 12px;
+        padding: 8px;
+        text-align: center;
+      }
+      .stat b {
+        font-size: 1.2rem;
+        display: block;
+      }
+      .stat span {
+        font-size: 0.76rem;
+      }
+      main {
+        padding: 16px;
+        margin: auto;
+        width: min(100%, 1000px);
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding: 2px 1px 10px;
+      }
+      .tab {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        color: var(--sub);
+        white-space: nowrap;
+        padding: 8px 13px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .tab.active {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #fff;
+      }
+      .panel {
+        display: none;
+      }
+      .panel.active {
+        display: block;
+      }
+      .box {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        padding: 16px;
+        margin-bottom: 14px;
+        box-shadow: 0 1px 2px #17203308;
+      }
+      h2 {
+        font-size: 1.2rem;
+        margin: 0 0 10px;
+      }
+      h3 {
+        font-size: 1.02rem;
+        margin: 17px 0 8px;
+      }
+      .note {
+        background: #fff7e8;
+        border-left: 4px solid #e89b20;
+        padding: 10px 12px;
+        border-radius: 6px;
+        color: #6f4700;
+        font-size: 0.93rem;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
+        gap: 11px;
+      }
+      .term {
+        padding: 0;
+        text-align: left;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fff;
+        cursor: pointer;
+        overflow: hidden;
+      }
+      .term .front {
+        padding: 14px;
+        font-weight: 800;
+        color: #123580;
+      }
+      .term .hint {
+        font-weight: 400;
+        font-size: 0.82rem;
+        color: var(--sub);
+        margin-top: 4px;
+      }
+      .term .back {
+        display: none;
+        border-top: 1px solid var(--line);
+        padding: 12px 14px;
+        background: #fbfdff;
+        font-size: 0.9rem;
+      }
+      .term.open .back {
+        display: block;
+      }
+      .tag {
+        display: inline-block;
+        background: var(--primary-light);
+        color: #17469d;
+        border-radius: 99px;
+        padding: 1px 8px;
+        font-size: 0.74rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+      }
+      dl {
+        margin: 0;
+      }
+      dt {
+        font-weight: 800;
+        margin-top: 8px;
+      }
+      dd {
+        margin: 1px 0 0;
+        color: #334155;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 0.88rem;
+      }
+      th,
+      td {
+        border: 1px solid var(--line);
+        padding: 8px;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        background: #eef5ff;
+      }
+      .formula {
+        background: #effaf6;
+        border: 1px solid #b8e5d2;
+        border-radius: 10px;
+        padding: 11px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        white-space: pre-wrap;
+      }
+      .controls {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 8px 0 14px;
+      }
+      .btn {
+        border: 0;
+        border-radius: 9px;
+        padding: 9px 12px;
+        background: var(--primary);
+        color: #fff;
+        font-weight: 750;
+        cursor: pointer;
+      }
+      .btn.sub {
+        background: #e7edf8;
+        color: #29364b;
+      }
+      .btn.danger {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .quiz-card {
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        margin: 12px 0;
+        background: #fff;
+      }
+      .qmeta {
+        font-size: 0.8rem;
+        color: var(--sub);
+        font-weight: 700;
+      }
+      .question {
+        font-weight: 800;
+        margin: 7px 0 10px;
+      }
+      .options {
+        display: grid;
+        gap: 7px;
+      }
+      .option {
+        width: 100%;
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #cbd5e1;
+        background: #fff;
+        border-radius: 9px;
+        cursor: pointer;
+        font: inherit;
+        color: inherit;
+      }
+      .option:hover:not(:disabled) {
+        background: #f3f7ff;
+        border-color: #6c9aff;
+      }
+      .option:disabled {
+        cursor: default;
+      }
+      .option.correct {
+        background: #dcfce7;
+        border-color: #22c55e;
+      }
+      .option.wrong {
+        background: #fee2e2;
+        border-color: #ef4444;
+      }
+      .feedback {
+        margin-top: 9px;
+        border-radius: 8px;
+        padding: 9px 10px;
+        font-size: 0.9rem;
+      }
+      .feedback.ok {
+        background: #dcfce7;
+        color: #14532d;
+      }
+      .feedback.ng {
+        background: #fee2e2;
+        color: #7f1d1d;
+      }
+      .hidden {
+        display: none;
+      }
+      .empty {
+        padding: 14px;
+        background: #f8fafc;
+        border: 1px dashed #94a3b8;
+        border-radius: 10px;
+        color: var(--sub);
+      }
+      footer {
+        font-size: 0.8rem;
+        color: var(--sub);
+        padding: 4px 0 25px;
+      }
+      @media (max-width: 520px) {
+        main {
+          padding: 12px;
+        }
+        .box {
+          padding: 13px;
+        }
+        .stats {
+          gap: 6px;
+        }
+        .stat {
+          padding: 7px 3px;
+        }
+        .stat b {
+          font-size: 1.08rem;
+        }
+        .stat span {
+          font-size: 0.7rem;
+        }
+        table {
+          font-size: 0.78rem;
+        }
+        th,
+        td {
+          padding: 6px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <h1>IT戦略・サービスマネジメント 復習</h1>
+        <p>基本情報技術者試験向け｜ノート内容をもとにした5〜10分教材</p>
+        <div class="stats">
+          <div class="stat"><b id="answered">0</b><span>解答数</span></div>
+          <div class="stat"><b id="accuracy">--</b><span>正答率</span></div>
+          <div class="stat">
+            <b id="studied">0</b><span>学習済み問題数</span>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main>
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-panel="terms">用語カード</button
+        ><button class="tab" data-panel="quiz">分野別クイズ</button
+        ><button class="tab" data-panel="today">今日の10問</button
+        ><button class="tab" data-panel="guide">要確認・学習ポイント</button>
+      </div>
+      <section id="terms" class="panel active">
+        <div class="box">
+          <h2>用語カード</h2>
+          <p>
+            カードをタップすると、試験で問われやすいポイントと混同しやすい用語を確認できます。
+          </p>
+          <div class="cards" id="termCards"></div>
+        </div>
+      </section>
+      <section id="quiz" class="panel">
+        <div class="box">
+          <h2>分野別4択クイズ</h2>
+          <p>回答するとすぐに正誤と解説を表示します。</p>
+          <div class="controls">
+            <button class="btn" data-filter="all">全問</button
+            ><button class="btn sub" data-filter="wrong">苦手問題だけ</button
+            ><button class="btn sub" id="resetQuiz">表示をリセット</button>
+          </div>
+          <div id="quizList"></div>
+        </div>
+      </section>
+      <section id="today" class="panel">
+        <div class="box">
+          <h2>今日の10問</h2>
+          <p>
+            全問題からランダムに最大10問を出題します。毎日少しずつ解きましょう。
+          </p>
+          <div class="controls">
+            <button class="btn" id="newToday">10問を出題する</button>
+          </div>
+          <div id="todayList">
+            <div class="empty">「10問を出題する」を押してください。</div>
+          </div>
+        </div>
+      </section>
+      <section id="guide" class="panel">
+        <div class="box">
+          <h2>要確認・学習ポイント</h2>
+          <div class="note">
+            <b>要確認：</b
+            >写真では「システム監査」の説明末尾、および「HMS」の正式名称の一部が読み取りにくいため、断定せず要確認としています。
+          </div>
+          <h3>ストラテジ分野の全体像</h3>
+          <table>
+            <tr>
+              <th>テーマ</th>
+              <th>押さえること</th>
+            </tr>
+            <tr>
+              <td>ITサービス管理</td>
+              <td>
+                ITILはサービスマネジメントのベストプラクティス集。SLAはサービス水準を利用者と提供者で合意する文書。
+              </td>
+            </tr>
+            <tr>
+              <td>統制・監査</td>
+              <td>
+                内部統制は不正や誤りを防ぐ仕組み。システム監査は独立した立場で情報システムを評価し、助言する活動。
+              </td>
+            </tr>
+            <tr>
+              <td>IT基盤・連携</td>
+              <td>
+                オンプレミスは自社所有・管理、クラウドは事業者のIT資源をネットワーク経由で利用。EDIは企業間の取引データ交換。
+              </td>
+            </tr>
+            <tr>
+              <td>製造・生活のIT</td>
+              <td>
+                JIT、セル生産方式、MRP、CAD/CAM、HEMS、IoTを用途とセットで覚える。
+              </td>
+            </tr>
+          </table>
+          <h3>頻出の区別</h3>
+          <table>
+            <tr>
+              <th>用語</th>
+              <th>何をするか</th>
+              <th>混同しやすい語</th>
+            </tr>
+            <tr>
+              <td>ITIL</td>
+              <td>ITサービス管理のベストプラクティス</td>
+              <td>SLA（合意するサービス水準）</td>
+            </tr>
+            <tr>
+              <td>システム監査</td>
+              <td>独立した立場で評価・助言</td>
+              <td>内部統制（不正・誤りを防ぐ仕組み）</td>
+            </tr>
+            <tr>
+              <td>オンプレミス</td>
+              <td>自社でIT資源を保有・運用</td>
+              <td>クラウド（外部事業者の資源を利用）</td>
+            </tr>
+            <tr>
+              <td>MRP</td>
+              <td>資材の必要量・時期を計画</td>
+              <td>JIT（必要な物を必要な時に生産）</td>
+            </tr>
+          </table>
+        </div>
+        <div class="box">
+          <h2>学習履歴</h2>
+          <p>
+            この教材の解答履歴・苦手問題は、このブラウザのlocalStorageに保存されます。
+          </p>
+          <button class="btn danger" id="resetProgress">進捗をリセット</button>
+        </div>
+      </section>
+      <footer>
+        ノート由来の主な範囲：ITIL / SLA / システム監査 / コーポレートガバナンス
+        / 内部統制 / SOA / EDI / オムニチャネル / ロングテール / IoT / JIT /
+        セル生産方式 / MRP / CAD・CAM / HEMS
+      </footer>
+    </main>
+    <script>
+      const terms = [
+        [
+          "ITIL",
+          "ITサービスマネジメントに関するベストプラクティスを体系的にまとめたもの。",
+          "ITサービスを安定して提供・改善するための考え方として問われる。",
+          "SLAはサービス水準の合意。ITILはサービス管理の実践知・枠組み。",
+        ],
+        [
+          "SLA",
+          "Service Level Agreement。サービスの品質・水準に関する合意書。",
+          "稼働率、障害時の対応時間など、具体的な水準を利用者と提供者で合意する。",
+          "ITILは管理のベストプラクティス、SLAは個別サービスの水準の約束。",
+        ],
+        [
+          "システム監査",
+          "情報システムを独立した立場で評価し、改善の助言を行う活動。",
+          "信頼性・安全性・効率性などを評価する。監査人の独立性が重要。",
+          "内部統制は不正・誤りを防止する仕組み。監査はその仕組みやシステムを評価する。",
+        ],
+        [
+          "コーポレートガバナンス",
+          "経営者が不正を行わないよう、株主や監査役などが監督する仕組み。",
+          "経営の監視・監督という視点で問われる。",
+          "内部統制は主に組織内の業務を適正に行う仕組み。",
+        ],
+        [
+          "内部統制",
+          "従業員による不正や誤りを防ぎ、業務を適正に行うための社内の仕組み。",
+          "職務分掌、承認手続、アクセス制御などが例。",
+          "コーポレートガバナンスは経営の監督、内部統制は業務の適正化。",
+        ],
+        [
+          "オンプレミス",
+          "サーバなどのIT資源を自社で保有・管理・運用する形態。",
+          "初期投資や運用負担は大きくなりやすいが、自社で統制しやすい。",
+          "クラウドは事業者が用意したIT資源をネットワーク経由で利用する。",
+        ],
+        [
+          "クラウド",
+          "クラウド事業者が用意したIT資源をネットワーク経由で利用する形態。",
+          "必要に応じて利用量を増減しやすい点が特徴。",
+          "オンプレミスは自社保有・自社運用。",
+        ],
+        [
+          "SOA",
+          "Service Oriented Architecture。サービス指向アーキテクチャ。",
+          "機能を再利用可能なサービスとして組み合わせ、システムを構築する。",
+          "単なるWebサービスそのものではなく、サービス単位で組み立てる設計思想。",
+        ],
+        [
+          "EDI",
+          "Electronic Data Interchange。企業間で受発注・請求・支払などの取引情報を電子データで交換すること。",
+          "企業間取引の事務を効率化する用途を問われる。",
+          "社内のデータ連携ではなく、主に企業間の標準化された電子取引。",
+        ],
+        [
+          "オムニチャネル",
+          "オンライン・オフラインを問わず、複数の販売チャネルを連携させて便利に買えるようにすること。",
+          "店舗・ECサイト・アプリなどを一体として利用できる例を押さえる。",
+          "単に販売経路が複数あるだけでなく、チャネル間の連携が重要。",
+        ],
+        [
+          "ロングテール",
+          "売れ筋商品の合計より、あまり売れない多数の商品群の合計が大きくなる現象。",
+          "ネット販売で品ぞろえを広く持てる場面と結び付ける。",
+          "ヒット商品の集中ではなく、ニッチ商品の積み上げ。",
+        ],
+        [
+          "IoT",
+          "Internet of Things。今までインターネットにつながっていなかった物をネットワークにつなぐこと。",
+          "センサーで収集し、遠隔監視・制御・分析に活用する例が頻出。",
+          "単なるスマホやPCのインターネット接続とは区別する。",
+        ],
+        [
+          "JIT",
+          "Just In Time。必要な物を、必要な時に、必要なだけ生産・供給する考え方。",
+          "在庫を減らす一方、需要や供給の変動には注意が必要。",
+          "MRPは資材所要量を計画する仕組み。",
+        ],
+        [
+          "セル生産方式",
+          "1人または少人数のチームが、製品の組立工程を完成まで担当する方式。",
+          "少量多品種生産や柔軟な生産に向く。",
+          "流れ作業のように工程を細分化して大人数で分担する方式と対比する。",
+        ],
+        [
+          "MRP",
+          "Material Requirements Planning。資材所要量計画。",
+          "生産計画や部品表を基に、必要な資材の量と時期を計画する。",
+          "JITは必要な時に必要な量を供給する考え方。MRPは必要資材を算出・計画する。",
+        ],
+        [
+          "CAD / CAM",
+          "CADはコンピュータを使った設計支援、CAMはコンピュータを使った製造支援。",
+          "CADは設計、CAMは製造という役割分担を問われる。",
+          "CAE（解析支援）と混同しない。",
+        ],
+        [
+          "HEMS",
+          "家庭内の電力使用量を可視化し、エネルギー消費の最適化を図る仕組み。",
+          "家電や設備をネットワークにつなぎ、表示・制御する例を押さえる。",
+          "BEMSはビル、FEMSは工場のエネルギー管理。正式名称の詳細は要確認。",
+        ],
+      ];
+      const questions = [
+        {
+          cat: "サービス管理",
+          q: "ITILの説明として最も適切なものはどれか。",
+          o: [
+            "ITサービスマネジメントのベストプラクティスを体系化したもの",
+            "サービス品質を数値で定める個別の契約書",
+            "企業間取引の電子データ交換規約",
+            "製造資材の必要量を計算する手法",
+          ],
+          a: 0,
+          e: "ITILはITサービスマネジメントのベストプラクティス集。SLAはサービス水準を定める合意です。",
+        },
+        {
+          cat: "サービス管理",
+          q: "SLAで合意する内容として適切なものはどれか。",
+          o: [
+            "監査人の独立性",
+            "サービスの稼働率や障害対応時間",
+            "資材の発注量",
+            "設計図の作成方法",
+          ],
+          a: 1,
+          e: "SLAはサービス品質・水準についての合意で、稼働率や対応時間などを定めます。",
+        },
+        {
+          cat: "統制・監査",
+          q: "システム監査の説明として最も適切なものはどれか。",
+          o: [
+            "従業員の不正を防ぐ社内ルールを作ること",
+            "独立した立場で情報システムを評価し、助言すること",
+            "企業間で受発注データを交換すること",
+            "必要な資材を発注すること",
+          ],
+          a: 1,
+          e: "システム監査は、独立した立場から信頼性・安全性・効率性などを評価し、助言します。",
+        },
+        {
+          cat: "統制・監査",
+          q: "従業員による不正や誤りを防ぎ、業務を適正に行うための社内の仕組みはどれか。",
+          o: ["コーポレートガバナンス", "内部統制", "SOA", "オムニチャネル"],
+          a: 1,
+          e: "内部統制は、組織内の不正・誤りを防ぎ、業務の適正さを確保する仕組みです。",
+        },
+        {
+          cat: "統制・監査",
+          q: "コーポレートガバナンスの目的として最も適切なものはどれか。",
+          o: [
+            "経営者を株主や監査役などが監督し、不正を抑止する",
+            "家庭の電力使用量を最適化する",
+            "IT資源をネットワーク経由で提供する",
+            "少人数で組立を完成させる",
+          ],
+          a: 0,
+          e: "コーポレートガバナンスは、経営の監視・監督を通じて不正を防ぐ仕組みです。",
+        },
+        {
+          cat: "IT基盤・連携",
+          q: "オンプレミスの説明として適切なものはどれか。",
+          o: [
+            "自社でサーバなどのIT資源を保有・運用する",
+            "事業者のIT資源をネットワーク経由で借りる",
+            "企業間取引データを交換する",
+            "複数の販売経路を連携する",
+          ],
+          a: 0,
+          e: "オンプレミスは自社でIT資源を保有・管理する形態です。",
+        },
+        {
+          cat: "IT基盤・連携",
+          q: "受発注、請求、支払などの企業間取引情報を電子データでやり取りするものはどれか。",
+          o: ["SOA", "EDI", "HEMS", "MRP"],
+          a: 1,
+          e: "EDIはElectronic Data Interchange。企業間で取引データを電子的に交換します。",
+        },
+        {
+          cat: "IT基盤・連携",
+          q: "再利用可能なサービスを組み合わせてシステムを構築する考え方はどれか。",
+          o: ["SOA", "SLA", "JIT", "CAD"],
+          a: 0,
+          e: "SOAはサービス指向アーキテクチャ。機能をサービス単位で組み合わせます。",
+        },
+        {
+          cat: "販売・IoT",
+          q: "実店舗、ECサイト、アプリなどの販売経路を連携させ、顧客が便利に購入できるようにする考え方はどれか。",
+          o: ["ロングテール", "オムニチャネル", "セル生産方式", "内部統制"],
+          a: 1,
+          e: "オムニチャネルは、オンライン・オフラインをまたいで複数チャネルを連携させる考え方です。",
+        },
+        {
+          cat: "販売・IoT",
+          q: "あまり売れない多数の商品群の売上合計が、売れ筋商品の売上を上回ることがある現象はどれか。",
+          o: ["ロングテール", "JIT", "クラウド", "コーポレートガバナンス"],
+          a: 0,
+          e: "ロングテールは、ニッチ商品の積み上げに注目する現象です。",
+        },
+        {
+          cat: "販売・IoT",
+          q: "IoTの活用例として最も適切なものはどれか。",
+          o: [
+            "工場の設備にセンサーを付け、稼働状況を遠隔監視する",
+            "紙の伝票だけで受発注を行う",
+            "全てのサーバを自社のみに置く",
+            "監査人が経営者になる",
+          ],
+          a: 0,
+          e: "IoTは、物をネットワークにつなぎ、データ収集・遠隔監視・制御などに活用します。",
+        },
+        {
+          cat: "生産・設計",
+          q: "「必要な物を、必要な時に、必要なだけ」生産・供給する考え方はどれか。",
+          o: ["MRP", "JIT", "EDI", "HEMS"],
+          a: 1,
+          e: "JIT（Just In Time）は必要な物を必要な時に必要なだけ供給する考え方です。",
+        },
+        {
+          cat: "生産・設計",
+          q: "1人または少人数のチームが、製品の組立を完成まで担当する方式はどれか。",
+          o: [
+            "セル生産方式",
+            "ライン生産方式",
+            "オムニチャネル",
+            "システム監査",
+          ],
+          a: 0,
+          e: "セル生産方式は少人数が複数工程を担い、完成まで組み立てます。",
+        },
+        {
+          cat: "生産・設計",
+          q: "生産計画や部品表を基に、必要な資材の量と時期を計画するものはどれか。",
+          o: ["SLA", "MRP", "SOA", "ITIL"],
+          a: 1,
+          e: "MRP（資材所要量計画）は、必要資材の量と時期を計画します。",
+        },
+        {
+          cat: "生産・設計",
+          q: "CADとCAMの組合せとして正しいものはどれか。",
+          o: [
+            "CAD：設計支援、CAM：製造支援",
+            "CAD：製造支援、CAM：設計支援",
+            "CAD：監査、CAM：内部統制",
+            "CAD：クラウド、CAM：オンプレミス",
+          ],
+          a: 0,
+          e: "CADはComputer Aided Design（設計支援）、CAMはComputer Aided Manufacturing（製造支援）です。",
+        },
+        {
+          cat: "生産・設計",
+          q: "家庭内の電力使用量の可視化やエネルギー消費の最適化を図る仕組みはどれか。",
+          o: ["HEMS", "EDI", "SLA", "SOA"],
+          a: 0,
+          e: "HEMSは家庭向けのエネルギー管理システムです。",
+        },
+      ];
+      const key = "itStrategyReview_v1";
+      let state = JSON.parse(
+        localStorage.getItem(key) || '{"answers":{},"today":[]}',
+      );
+      function save() {
+        localStorage.setItem(key, JSON.stringify(state));
+        updateStats();
+      }
+      function updateStats() {
+        const vals = Object.values(state.answers);
+        const correct = vals.filter((x) => x.correct).length;
+        document.querySelector("#answered").textContent = vals.length;
+        document.querySelector("#studied").textContent = new Set(
+          vals.map((x) => x.id),
+        ).size;
+        document.querySelector("#accuracy").textContent = vals.length
+          ? Math.round((correct / vals.length) * 100) + "%"
+          : "--";
+      }
+      function escape(s) {
+        return s.replace(
+          /[&<>]/g,
+          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c],
+        );
+      }
+      document.querySelector("#termCards").innerHTML = terms
+        .map(
+          (t, i) =>
+            `<button class="term" aria-expanded="false"><div class="front">${escape(t[0])}<div class="hint">タップして解説を見る</div></div><div class="back"><dl><dt>一言でいうと</dt><dd>${escape(t[1])}</dd><dt>試験で問われやすいポイント</dt><dd>${escape(t[2])}</dd><dt>混同しやすい用語との違い</dt><dd>${escape(t[3])}</dd></dl></div></button>`,
+        )
+        .join("");
+      document.querySelectorAll(".term").forEach(
+        (el) =>
+          (el.onclick = () => {
+            el.classList.toggle("open");
+            el.setAttribute("aria-expanded", el.classList.contains("open"));
+          }),
+      );
+      function render(list, target) {
+        const el = document.querySelector(target);
+        if (!list.length) {
+          el.innerHTML =
+            '<div class="empty">該当する問題はありません。全問を解くか、進捗をリセットしてください。</div>';
+          return;
+        }
+        el.innerHTML = list
+          .map(({ item: q, index: i }) => {
+            const old = state.answers[i];
+            return `<article class="quiz-card"><div class="qmeta">${q.cat}｜問題 ${i + 1}</div><div class="question">${q.q}</div><div class="options">${q.o.map((x, n) => `<button class="option ${old ? (n === q.a ? "correct" : old.choice === n ? "wrong" : "") : ""}" data-i="${i}" data-n="${n}" ${old ? "disabled" : ""}>${"ア".charCodeAt(0) + n ? String.fromCharCode("ア".charCodeAt(0) + n) : n}．${x}</button>`).join("")}</div>${old ? `<div class="feedback ${old.correct ? "ok" : "ng"}">${old.correct ? "正解！" : "不正解。"} ${q.e}</div>` : ""}</article>`;
+          })
+          .join("");
+        el.querySelectorAll(".option").forEach(
+          (b) =>
+            (b.onclick = () =>
+              answer(+b.dataset.i, +b.dataset.n, target, list)),
+        );
+      }
+      function answer(i, n, target, list) {
+        const q = questions[i];
+        state.answers[i] = {
+          id: i,
+          choice: n,
+          correct: n === q.a,
+          at: Date.now(),
+        };
+        save();
+        render(list, target);
+      }
+      function quizList(filter = "all") {
+        let l = questions.map((item, index) => ({ item, index }));
+        if (filter === "wrong")
+          l = l.filter(
+            (x) => state.answers[x.index] && !state.answers[x.index].correct,
+          );
+        render(l, "#quizList");
+      }
+      document
+        .querySelectorAll("[data-filter]")
+        .forEach((b) => (b.onclick = () => quizList(b.dataset.filter)));
+      document.querySelector("#resetQuiz").onclick = () => {
+        delete state.quiz;
+        quizList();
+      };
+      function makeToday() {
+        const a = [...questions.keys()]
+          .sort(() => Math.random() - 0.5)
+          .slice(0, Math.min(10, questions.length));
+        state.today = a;
+        save();
+        render(
+          a.map((index) => ({ item: questions[index], index })),
+          "#todayList",
+        );
+      }
+      document.querySelector("#newToday").onclick = makeToday;
+      document.querySelectorAll(".tab").forEach(
+        (t) =>
+          (t.onclick = () => {
+            document
+              .querySelectorAll(".tab")
+              .forEach((x) => x.classList.remove("active"));
+            document
+              .querySelectorAll(".panel")
+              .forEach((x) => x.classList.remove("active"));
+            t.classList.add("active");
+            document
+              .querySelector("#" + t.dataset.panel)
+              .classList.add("active");
+          }),
+      );
+      document.querySelector("#resetProgress").onclick = () => {
+        if (confirm("解答履歴・苦手問題をすべて消去します。よろしいですか？")) {
+          state = { answers: {}, today: [] };
+          save();
+          quizList();
+          document.querySelector("#todayList").innerHTML =
+            '<div class="empty">「10問を出題する」を押してください。</div>';
+        }
+      };
+      updateStats();
+      quizList();
+    </script>
+    <div style="padding: 18px 0 24px; text-align: center;"><div style="display:flex; flex-wrap:wrap; justify-content:center; gap:45px;"><a href="index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">← 目次に戻る</a><a href="../index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">復習教材一覧</a><a href="../../index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">学習ポータルに戻る</a></div></div>
+  </body>
+</html>

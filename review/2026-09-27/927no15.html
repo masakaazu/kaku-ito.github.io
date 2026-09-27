@@ -1,0 +1,890 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>基本情報｜システム構成・性能評価 復習教材</title>
+    <style>
+      :root {
+        --bg: #f6f8fc;
+        --card: #fff;
+        --ink: #172033;
+        --muted: #667085;
+        --line: #dbe2ee;
+        --main: #2563eb;
+        --good: #138a4a;
+        --bad: #d13a3a;
+        --warn: #9a6700;
+        --soft: #eaf1ff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
+          "Yu Gothic", Meiryo, sans-serif;
+        line-height: 1.65;
+      }
+      header {
+        background: linear-gradient(135deg, #153e92, #2563eb);
+        color: #fff;
+        padding: 24px 16px 20px;
+      }
+      .wrap {
+        max-width: 1020px;
+        margin: auto;
+      }
+      h1 {
+        font-size: clamp(1.35rem, 4vw, 2rem);
+        line-height: 1.35;
+        margin: 0 0 8px;
+      }
+      h2 {
+        font-size: 1.22rem;
+        margin: 0 0 12px;
+      }
+      h3 {
+        font-size: 1rem;
+        margin: 0 0 6px;
+      }
+      .lead {
+        margin: 0;
+        color: #e8efff;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 18px;
+      }
+      .stat {
+        background: #ffffff1c;
+        border: 1px solid #ffffff38;
+        border-radius: 12px;
+        padding: 10px;
+        text-align: center;
+      }
+      .stat b {
+        font-size: 1.25rem;
+        display: block;
+      }
+      .stat span {
+        font-size: 0.79rem;
+        color: #e5edff;
+      }
+      main {
+        max-width: 1020px;
+        margin: 18px auto 50px;
+        padding: 0 14px;
+      }
+      .notice {
+        background: #fff8e7;
+        border: 1px solid #f4d27d;
+        color: #704f00;
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin-bottom: 14px;
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding: 4px 0 12px;
+        position: sticky;
+        top: 0;
+        background: var(--bg);
+        z-index: 5;
+      }
+      .tab {
+        white-space: nowrap;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 999px;
+        padding: 9px 13px;
+        color: #334155;
+        cursor: pointer;
+        font-weight: 700;
+      }
+      .tab.active {
+        background: var(--main);
+        border-color: var(--main);
+        color: #fff;
+      }
+      .panel {
+        display: none;
+      }
+      .panel.active {
+        display: block;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+        gap: 12px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        padding: 15px;
+        box-shadow: 0 1px 2px #182b4d0a;
+      }
+      .term {
+        cursor: pointer;
+        min-height: 180px;
+        position: relative;
+      }
+      .term:focus {
+        outline: 3px solid #b9d0ff;
+      }
+      .term .hint {
+        color: var(--main);
+        font-size: 0.87rem;
+        font-weight: bold;
+      }
+      .term .answer {
+        display: none;
+        margin-top: 11px;
+        padding-top: 10px;
+        border-top: 1px dashed var(--line);
+      }
+      .term.open .answer {
+        display: block;
+      }
+      .tag {
+        display: inline-block;
+        font-size: 0.75rem;
+        border-radius: 999px;
+        background: var(--soft);
+        color: #174ea6;
+        padding: 2px 8px;
+        margin-bottom: 7px;
+      }
+      .qa,
+      .tools {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        padding: 15px;
+        margin-top: 14px;
+      }
+      .tools {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        align-items: center;
+      }
+      .button {
+        border: 0;
+        border-radius: 10px;
+        background: var(--main);
+        color: #fff;
+        padding: 10px 13px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .button.sub {
+        background: #eef2f7;
+        color: #283548;
+      }
+      .button.danger {
+        background: #fff0f0;
+        color: #a51f1f;
+        border: 1px solid #f2b4b4;
+      }
+      .filter {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        font-weight: 700;
+      }
+      .question {
+        padding: 15px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .question:last-child {
+        border-bottom: 0;
+      }
+      .qhead {
+        font-weight: 800;
+        margin-bottom: 10px;
+      }
+      .options {
+        display: grid;
+        gap: 8px;
+      }
+      .option {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 9px;
+        cursor: pointer;
+      }
+      .option:hover {
+        background: #f8faff;
+      }
+      .option input {
+        margin-top: 5px;
+      }
+      .feedback {
+        display: none;
+        margin-top: 9px;
+        padding: 9px 11px;
+        border-radius: 9px;
+        font-size: 0.94rem;
+      }
+      .feedback.good {
+        display: block;
+        background: #eaf9ef;
+        color: #126536;
+      }
+      .feedback.bad {
+        display: block;
+        background: #fff0f0;
+        color: #a12222;
+      }
+      .formula {
+        background: #f7faff;
+        border-left: 4px solid var(--main);
+        padding: 12px;
+        border-radius: 0 10px 10px 0;
+        margin: 10px 0;
+      }
+      .tablewrap {
+        overflow-x: auto;
+      }
+      .compare {
+        border-collapse: collapse;
+        width: 100%;
+        min-width: 600px;
+      }
+      .compare th,
+      .compare td {
+        border: 1px solid var(--line);
+        padding: 10px;
+        text-align: left;
+        vertical-align: top;
+      }
+      .compare th {
+        background: #f1f5fb;
+      }
+      .small {
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+      details {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 14px;
+        margin: 10px 0;
+      }
+      summary {
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .today-box {
+        display: none;
+      }
+      .today-box.show {
+        display: block;
+      }
+      .score {
+        font-weight: 800;
+        color: var(--main);
+      }
+      .footer-note {
+        color: var(--muted);
+        font-size: 0.86rem;
+        margin-top: 20px;
+      }
+      @media (max-width: 560px) {
+        header {
+          padding-top: 18px;
+        }
+        .stats {
+          gap: 6px;
+        }
+        .stat {
+          padding: 8px 5px;
+        }
+        .stat b {
+          font-size: 1.08rem;
+        }
+        .stat span {
+          font-size: 0.7rem;
+        }
+        .card,
+        .qa {
+          padding: 13px;
+        }
+        .tools {
+          align-items: stretch;
+        }
+        .button {
+          flex: 1;
+        }
+        .option {
+          font-size: 0.94rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <h1>基本情報技術者｜システム構成・性能評価</h1>
+        <p class="lead">
+          ノートの内容を、カード・比較表・クイズで5〜10分復習できる教材に整理しました。
+        </p>
+        <div class="stats">
+          <div class="stat"><b id="answers">0</b><span>解答数</span></div>
+          <div class="stat"><b id="rate">—</b><span>正答率</span></div>
+          <div class="stat">
+            <b id="learned">0</b><span>学習済み問題数</span>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main>
+      <div class="notice">
+        <b>ノートの要確認：</b
+        >「シンクライアントシステム」の直前にある文字は判読が曖昧です。内容からは「シンクライアントシステム」として整理しています。
+      </div>
+      <nav class="tabs" aria-label="教材の分野">
+        <button class="tab active" data-tab="model">設計・処理方式</button
+        ><button class="tab" data-tab="client">クライアント構成</button
+        ><button class="tab" data-tab="reliable">信頼性・バックアップ</button
+        ><button class="tab" data-tab="performance">性能評価</button
+        ><button class="tab" data-tab="quiz">4択クイズ</button>
+      </nav>
+      <section class="panel active" id="model">
+        <h2>設計・処理方式</h2>
+        <p class="small">
+          カードをタップ／クリックすると、試験ポイントと混同しやすい語を確認できます。
+        </p>
+        <div class="grid" id="cards-model"></div>
+        <div class="qa">
+          <h3>覚え方</h3>
+          <p>
+            <b>パー（親）→サブ（子）</b>は、汎化・特化の関係。<br /><b>バッチ</b
+            >はためてから一括、<b>リアルタイム</b>は発生の都度すぐ処理です。
+          </p>
+        </div>
+      </section>
+      <section class="panel" id="client">
+        <h2>クライアント・サーバ構成</h2>
+        <div class="grid" id="cards-client"></div>
+        <div class="qa tablewrap">
+          <h3>構成の比較</h3>
+          <table class="compare">
+            <thead>
+              <tr>
+                <th>方式</th>
+                <th>アプリケーション層を保持する場所</th>
+                <th>特徴</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>2層クライアントサーバ</td>
+                <td>クライアント</td>
+                <td>クライアント側の役割が大きい</td>
+              </tr>
+              <tr>
+                <td>3層クライアントサーバ</td>
+                <td>サーバ</td>
+                <td>表示・業務処理・DB処理を分けやすい</td>
+              </tr>
+              <tr>
+                <td>シンクライアント</td>
+                <td>主にサーバ側</td>
+                <td>端末機能を最小限にし、画面表示・入力を主に担当</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="panel" id="reliable">
+        <h2>信頼性・バックアップ</h2>
+        <div class="grid" id="cards-reliable"></div>
+        <div class="qa tablewrap">
+          <h3>バックアップの違い</h3>
+          <table class="compare">
+            <thead>
+              <tr>
+                <th>種類</th>
+                <th>対象</th>
+                <th>復元時の特徴</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>フルバックアップ</td>
+                <td>対象データすべて</td>
+                <td>バックアップ量は大きいが、基準となる完全なコピーになる</td>
+              </tr>
+              <tr>
+                <td>差分バックアップ</td>
+                <td>最後のフルバックアップ以降に変更されたデータ</td>
+                <td>復元には通常、フル＋最後の差分が必要</td>
+              </tr>
+              <tr>
+                <td>増分バックアップ</td>
+                <td>直前のバックアップ以降に変更されたデータ</td>
+                <td>
+                  バックアップ量は小さめだが、復元には複数世代が必要になり得る
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="panel" id="performance">
+        <h2>性能評価</h2>
+        <div class="grid" id="cards-performance"></div>
+        <div class="qa">
+          <h3>計算で押さえる式</h3>
+          <div class="formula">
+            <b>稼働率</b> ＝ 稼働時間 ÷（稼働時間 ＋ 故障時間）
+          </div>
+          <p>例：100時間稼働し、5時間故障した場合</p>
+          <p>稼働率 ＝ 100 ÷ (100 + 5) ＝ 0.952… → <b>約95.2%</b></p>
+          <div class="formula">
+            <b>レスポンスタイム</b> ＝
+            データ入力からデータ出力までにかかる一連の時間
+          </div>
+          <p class="small">
+            スループットは「単位時間あたりの仕事量」。レスポンスタイムは「1件の処理に対して利用者が待つ時間」と考えると区別しやすいです。
+          </p>
+        </div>
+      </section>
+      <section class="panel" id="quiz">
+        <h2>4択クイズ</h2>
+        <div class="tools">
+          <button class="button" id="todayBtn">今日の10問を出す</button
+          ><button class="button sub" id="allBtn">全問題を表示</button
+          ><label class="filter"
+            ><input type="checkbox" id="weakFilter" /> 苦手問題だけ</label
+          ><button class="button danger" id="resetBtn">進捗をリセット</button>
+        </div>
+        <p class="small" id="quizInfo">
+          各問題で選択すると、すぐに正誤と解説が表示されます。
+        </p>
+        <div id="todayBox" class="today-box qa">
+          <h3>今日の10問</h3>
+          <div id="todayQuestions"></div>
+        </div>
+        <div class="qa"><div id="questions"></div></div>
+      </section>
+      <p class="footer-note">
+        学習記録は、このブラウザの localStorage
+        に保存されます。外部ライブラリ・外部画像は使っていません。
+      </p>
+    </main>
+    <script>
+      const terms = {
+        model: [
+          [
+            "UML",
+            "一言でいうと：オブジェクト指向の分析・設計で使う、モデルを図で表すための表記法。",
+            "クラス図、シーケンス図、ユースケース図、アクティビティ図などの用途を区別する。",
+            "プログラミング言語そのものではない。設計内容を表現するためのモデリング言語。",
+          ],
+          [
+            "汎化・特化",
+            "一言でいうと：親クラスと子クラスの関係を表す考え方。",
+            "共通の性質を親クラスにまとめ、より具体的な性質を子クラスに持たせる。",
+            "集約・コンポジション（全体と部分の関係）とは異なる。",
+          ],
+          [
+            "バッチ処理",
+            "一言でいうと：処理データを一定期間ためてから、一括して処理する方式。",
+            "月次集計、給与計算のように、即時性より一括処理が向く場面で使う。",
+            "リアルタイム処理は、データ発生の都度、即時に処理する。",
+          ],
+          [
+            "リアルタイム処理",
+            "一言でいうと：データの発生に応じて、すぐに処理する方式。",
+            "オンラインでの座席予約やATMの残高更新など、即時性が必要な処理。",
+            "バッチ処理のようにデータをためて一括実行する方式ではない。",
+          ],
+        ],
+        client: [
+          [
+            "クライアントサーバシステム",
+            "一言でいうと：サービスを要求するクライアントと、提供するサーバが処理を分担する方式。",
+            "要求（request）と応答（response）の役割分担を押さえる。",
+            "P2Pのように端末同士が対等に役割を持つ方式とは異なる。",
+          ],
+          [
+            "2層クライアントサーバ",
+            "一言でいうと：クライアントがアプリケーション層を保持する構成。",
+            "ノート上の整理では「クライアントがアプリケーション層を保持」。",
+            "3層構成ではアプリケーション層をサーバ側に置く。",
+          ],
+          [
+            "3層クライアントサーバ",
+            "一言でいうと：アプリケーション層をサーバが保持する構成。",
+            "プレゼンテーション層・アプリケーション層・データ層の役割分離を問われやすい。",
+            "2層構成では、アプリケーション処理をクライアント側が持つ。",
+          ],
+          [
+            "シンクライアント",
+            "一言でいうと：端末側の機能を必要最小限にし、主な処理をサーバ側で行う方式。",
+            "端末は主に画面表示・入力を担当する。端末管理や情報漏えい対策の観点で出題される。",
+            "VDIは仮想デスクトップを提供する仕組み。DaaSはそれをクラウドサービスとして提供する形態。",
+          ],
+          [
+            "VDI / DaaS",
+            "一言でいうと：VDIは仮想デスクトップ基盤、DaaSは仮想デスクトップをサービスとして提供する形態。",
+            "ノートではVDIを自社サーバに仮想デスクトップを作成するもの、DaaSを外部事業者のクラウドで提供するものとして整理。",
+            "シンクライアントは端末の考え方・構成、VDI/DaaSは仮想デスクトップの提供方法に着目する。",
+          ],
+        ],
+        reliable: [
+          [
+            "デュアルシステム",
+            "一言でいうと：同じ処理を2組のシステムで同時に行い、結果を照合する方式。",
+            "結果照合により、処理結果の誤りを検出する点を押さえる。",
+            "デュプレックスシステムは、通常1組が稼働し、もう1組は障害時に備える。",
+          ],
+          [
+            "デュプレックスシステム",
+            "一言でいうと：同じ処理用に2組を用意し、1組は障害発生時の予備とする方式。",
+            "主系・待機系（スタンバイ）という発想で覚える。",
+            "デュアルシステムのように、2組で同時実行して結果照合する方式ではない。",
+          ],
+          [
+            "フルバックアップ",
+            "一言でいうと：対象となるデータをすべてバックアップする方式。",
+            "復元の基準となる完全なバックアップである。",
+            "差分・増分は変更分のみを対象にする。",
+          ],
+          [
+            "差分バックアップ",
+            "一言でいうと：最後のフルバックアップ以降に変更されたデータをバックアップする方式。",
+            "直前の差分ではなく、最後のフルからの累積差分である点が重要。",
+            "増分バックアップは直前のバックアップ以降の変更分を取る。",
+          ],
+          [
+            "増分バックアップ",
+            "一言でいうと：直前のバックアップ以降に変更されたデータをバックアップする方式。",
+            "日々の保存量を抑えられる一方、復元時に複数のバックアップが必要になり得る。",
+            "差分は最後のフルバックアップ以降の変更分を毎回取る。",
+          ],
+        ],
+        performance: [
+          [
+            "バスタブ曲線",
+            "一言でいうと：機械や装置の故障率と時間の関係を表した曲線。",
+            "初期故障期→偶発故障期→摩耗故障期の3期間と、故障率が浴槽形になることを押さえる。",
+            "稼働率そのものを示す曲線ではなく、故障率と時間の関係を表す。",
+          ],
+          [
+            "スループット",
+            "一言でいうと：単位時間あたりに処理できる仕事量。",
+            "「1秒間に何件」「1時間に何件」といった処理量で表す。大きいほど処理能力が高い。",
+            "レスポンスタイムは1件の入力から出力までの時間。",
+          ],
+          [
+            "ターンアラウンドタイム",
+            "一言でいうと：データ入力からデータ出力までにかかる一連の時間。",
+            "主にバッチ処理で用いられる時間指標として押さえる。",
+            "レスポンスタイムは主にオンライン処理で、利用者の応答待ち時間に注目する。",
+          ],
+          [
+            "レスポンスタイム",
+            "一言でいうと：コンピュータの処理に要する時間で、主にオンライン処理で使う指標。",
+            "利用者が要求してから応答を受け取るまでの速さを評価する。",
+            "スループットは単位時間当たりの処理量、ターンアラウンドタイムは入力から出力までの一連の時間。",
+          ],
+        ],
+      };
+      const quizzes = [
+        {
+          cat: "設計・処理方式",
+          q: "親クラスと子クラスの関係を表す概念として最も適切なものはどれか。",
+          o: [
+            "汎化・特化",
+            "差分バックアップ",
+            "デュプレックス",
+            "スループット",
+          ],
+          a: 0,
+          e: "汎化・特化は、共通性を持つ親クラスと、より具体的な子クラスの関係を表します。",
+        },
+        {
+          cat: "設計・処理方式",
+          q: "一定期間の処理データをためてから、後でまとめて処理する方式はどれか。",
+          o: ["リアルタイム処理", "バッチ処理", "デュアルシステム", "VDI"],
+          a: 1,
+          e: "バッチ処理はデータを蓄積して一括処理します。",
+        },
+        {
+          cat: "設計・処理方式",
+          q: "UMLについての説明として適切なものはどれか。",
+          o: [
+            "DBMSの一種",
+            "オブジェクト指向の分析・設計で使うモデリング言語",
+            "バックアップの方式",
+            "故障率を示す指標",
+          ],
+          a: 1,
+          e: "UMLは設計内容を図で表すためのモデリング言語です。",
+        },
+        {
+          cat: "クライアント構成",
+          q: "ノートの整理で、アプリケーション層をクライアントが保持するのはどれか。",
+          o: [
+            "2層クライアントサーバシステム",
+            "3層クライアントサーバシステム",
+            "デュアルシステム",
+            "DaaS",
+          ],
+          a: 0,
+          e: "2層構成ではクライアントがアプリケーション層を持つ形として整理します。",
+        },
+        {
+          cat: "クライアント構成",
+          q: "端末の機能を必要最小限にし、主に画面表示・入力を担当させる方式はどれか。",
+          o: [
+            "シンクライアント",
+            "フルバックアップ",
+            "デュプレックスシステム",
+            "バッチ処理",
+          ],
+          a: 0,
+          e: "シンクライアントは端末側の処理やデータ保持を抑え、主な処理をサーバ側に寄せます。",
+        },
+        {
+          cat: "クライアント構成",
+          q: "外部事業者がクラウド上で仮想デスクトップ環境を提供する形態はどれか。",
+          o: ["UML", "DaaS", "バスタブ曲線", "差分バックアップ"],
+          a: 1,
+          e: "DaaS（Desktop as a Service）は仮想デスクトップをサービスとして提供します。",
+        },
+        {
+          cat: "信頼性・バックアップ",
+          q: "同じ処理を2組のシステムで同時に実行し、結果を照合する方式はどれか。",
+          o: [
+            "デュアルシステム",
+            "デュプレックスシステム",
+            "増分バックアップ",
+            "シンクライアント",
+          ],
+          a: 0,
+          e: "デュアルシステムは2組で同時処理し、結果照合を行います。",
+        },
+        {
+          cat: "信頼性・バックアップ",
+          q: "通常は1組を稼働させ、もう1組を障害時の予備とする方式はどれか。",
+          o: [
+            "デュプレックスシステム",
+            "デュアルシステム",
+            "フルバックアップ",
+            "リアルタイム処理",
+          ],
+          a: 0,
+          e: "デュプレックスシステムは主系と待機系を用意し、障害時に切り替える考え方です。",
+        },
+        {
+          cat: "信頼性・バックアップ",
+          q: "最後のフルバックアップ以降に変更されたデータを対象とするものはどれか。",
+          o: [
+            "フルバックアップ",
+            "差分バックアップ",
+            "増分バックアップ",
+            "デュアルシステム",
+          ],
+          a: 1,
+          e: "差分バックアップは最後のフルバックアップからの変更分を対象にします。",
+        },
+        {
+          cat: "信頼性・バックアップ",
+          q: "直前のバックアップ以降に変更されたデータを対象とするものはどれか。",
+          o: [
+            "フルバックアップ",
+            "差分バックアップ",
+            "増分バックアップ",
+            "バスタブ曲線",
+          ],
+          a: 2,
+          e: "増分バックアップは直前のバックアップからの変更分だけを保存します。",
+        },
+        {
+          cat: "性能評価",
+          q: "機械や装置の故障率と時間の関係を表す曲線はどれか。",
+          o: [
+            "バスタブ曲線",
+            "ユースケース図",
+            "ターンアラウンドタイム",
+            "DaaS",
+          ],
+          a: 0,
+          e: "バスタブ曲線は初期故障・偶発故障・摩耗故障の推移を表します。",
+        },
+        {
+          cat: "性能評価",
+          q: "単位時間あたりに処理できる仕事量を表す指標はどれか。",
+          o: [
+            "スループット",
+            "レスポンスタイム",
+            "ターンアラウンドタイム",
+            "故障率",
+          ],
+          a: 0,
+          e: "スループットは「1秒間に何件処理できるか」のような処理量です。",
+        },
+        {
+          cat: "性能評価",
+          q: "データ入力からデータ出力までにかかる一連の時間で、主にバッチ処理で用いられるものはどれか。",
+          o: ["ターンアラウンドタイム", "スループット", "バスタブ曲線", "汎化"],
+          a: 0,
+          e: "ターンアラウンドタイムは投入から出力までの一連の所要時間です。",
+        },
+        {
+          cat: "性能評価",
+          q: "100時間稼働し、5時間故障したシステムの稼働率として最も近いものはどれか。",
+          o: ["約5%", "約50%", "約95.2%", "約105%"],
+          a: 2,
+          e: "稼働率＝100÷(100+5)＝約0.952なので、約95.2%です。",
+        },
+      ];
+      const key = "fe-system-review-v1";
+      let state = JSON.parse(
+        localStorage.getItem(key) ||
+          '{"answers":0,"correct":0,"seen":[],"wrong":[]}',
+      );
+      let mode = "all";
+      function save() {
+        localStorage.setItem(key, JSON.stringify(state));
+        updateStats();
+      }
+      function updateStats() {
+        document.querySelector("#answers").textContent = state.answers;
+        document.querySelector("#rate").textContent = state.answers
+          ? Math.round((state.correct / state.answers) * 100) + "%"
+          : "—";
+        document.querySelector("#learned").textContent = state.seen.length;
+      }
+      function renderCards(group) {
+        const el = document.querySelector("#cards-" + group);
+        el.innerHTML = terms[group]
+          .map(
+            (t, i) =>
+              `<article class="card term" tabindex="0" role="button" aria-label="${t[0]}の解説を表示"><span class="tag">${group === "model" ? "方式・設計" : group === "client" ? "構成" : group === "reliable" ? "信頼性" : "性能"}</span><h3>${t[0]}</h3><p class="hint">タップして解説を表示</p><div class="answer"><p>${t[1]}</p><p><b>試験ポイント：</b>${t[2]}</p><p><b>混同注意：</b>${t[3]}</p></div></article>`,
+          )
+          .join("");
+        el.querySelectorAll(".term").forEach((c) => {
+          c.addEventListener("click", () => c.classList.toggle("open"));
+          c.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              c.classList.toggle("open");
+            }
+          });
+        });
+      }
+      function shuffled(a) {
+        return [...a].sort(() => Math.random() - 0.5);
+      }
+      function questionHTML(item, index, prefix) {
+        return `<div class="question" data-id="${index}"><div class="qhead">Q${index + 1}. ${item.q}<br><span class="small">分野：${item.cat}</span></div><div class="options">${item.o.map((x, j) => `<label class="option"><input type="radio" name="${prefix}-${index}" value="${j}"><span>${String.fromCharCode(65 + j)}. ${x}</span></label>`).join("")}</div><div class="feedback" id="fb-${prefix}-${index}"></div></div>`;
+      }
+      function bind(container, items, prefix) {
+        container.querySelectorAll(".question").forEach((box, pos) => {
+          box.querySelectorAll("input").forEach((input) =>
+            input.addEventListener("change", () => {
+              if (box.dataset.done) return;
+              box.dataset.done = "1";
+              const item = items[pos];
+              const selected = Number(input.value);
+              const ok = selected === item.a;
+              state.answers++;
+              if (ok) state.correct++;
+              if (!state.seen.includes(item.q)) state.seen.push(item.q);
+              if (ok) state.wrong = state.wrong.filter((q) => q !== item.q);
+              else if (!state.wrong.includes(item.q)) state.wrong.push(item.q);
+              save();
+              const f = box.querySelector(".feedback");
+              f.className = "feedback " + (ok ? "good" : "bad");
+              f.innerHTML =
+                (ok ? "正解！ " : "不正解。 ") +
+                "<b>" +
+                item.o[item.a] +
+                "</b><br>" +
+                item.e;
+              box.querySelectorAll("input").forEach((x) => (x.disabled = true));
+            }),
+          );
+        });
+      }
+      function renderQuestions() {
+        const weak = document.querySelector("#weakFilter").checked;
+        const shown = weak
+          ? quizzes.filter((q) => state.wrong.includes(q.q))
+          : quizzes;
+        const box = document.querySelector("#questions");
+        box.innerHTML = shown.length
+          ? shown.map((q, i) => questionHTML(q, i, "all")).join("")
+          : "<p>苦手問題はまだありません。間違えた問題がここに表示されます。</p>";
+        if (shown.length) bind(box, shown, "all");
+        document.querySelector("#quizInfo").textContent = weak
+          ? "苦手として記録された問題のみ表示中です。"
+          : "全" + quizzes.length + "問を表示中です。";
+      }
+      function renderToday() {
+        const items = shuffled(quizzes).slice(0, 10);
+        const box = document.querySelector("#todayQuestions");
+        box.innerHTML = items
+          .map((q, i) => questionHTML(q, i, "today"))
+          .join("");
+        bind(box, items, "today");
+        document.querySelector("#todayBox").classList.add("show");
+        document
+          .querySelector("#todayBox")
+          .scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      document.querySelectorAll(".tab").forEach((b) =>
+        b.addEventListener("click", () => {
+          document
+            .querySelectorAll(".tab")
+            .forEach((x) => x.classList.remove("active"));
+          document
+            .querySelectorAll(".panel")
+            .forEach((x) => x.classList.remove("active"));
+          b.classList.add("active");
+          document.querySelector("#" + b.dataset.tab).classList.add("active");
+        }),
+      );
+      document
+        .querySelector("#weakFilter")
+        .addEventListener("change", renderQuestions);
+      document.querySelector("#allBtn").addEventListener("click", () => {
+        document.querySelector("#weakFilter").checked = false;
+        renderQuestions();
+      });
+      document
+        .querySelector("#todayBtn")
+        .addEventListener("click", renderToday);
+      document.querySelector("#resetBtn").addEventListener("click", () => {
+        if (confirm("解答履歴・正答率・苦手問題をすべて消去しますか？")) {
+          state = { answers: 0, correct: 0, seen: [], wrong: [] };
+          save();
+          renderQuestions();
+          document.querySelector("#todayBox").classList.remove("show");
+        }
+      });
+      ["model", "client", "reliable", "performance"].forEach(renderCards);
+      updateStats();
+      renderQuestions();
+    </script>
+    <div style="padding: 18px 0 24px; text-align: center;"><div style="display:flex; flex-wrap:wrap; justify-content:center; gap:45px;"><a href="index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">← 目次に戻る</a><a href="../index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">復習教材一覧</a><a href="../../index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">学習ポータルに戻る</a></div></div>
+  </body>
+</html>

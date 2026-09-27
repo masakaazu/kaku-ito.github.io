@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>基本情報技術者｜経営戦略 復習教材</title>
+    <style>
+      :root {
+        --bg: #f4f7fb;
+        --card: #fff;
+        --ink: #172033;
+        --muted: #59657a;
+        --line: #dbe3ef;
+        --main: #2563eb;
+        --ok: #15803d;
+        --ng: #dc2626;
+        --accent: #fff7d6;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
+          "Noto Sans JP", sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.65;
+      }
+      header {
+        padding: 26px 16px 20px;
+        background: linear-gradient(135deg, #1d4ed8, #2563eb 55%, #38bdf8);
+        color: #fff;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: auto;
+      }
+      h1 {
+        font-size: clamp(1.4rem, 4vw, 2rem);
+        margin: 0 0 6px;
+      }
+      header p {
+        margin: 0;
+        opacity: 0.94;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 18px;
+      }
+      .stat {
+        background: #ffffff20;
+        border: 1px solid #ffffff36;
+        border-radius: 12px;
+        padding: 10px;
+        text-align: center;
+      }
+      .stat b {
+        display: block;
+        font-size: 1.25rem;
+      }
+      .stat span {
+        font-size: 0.78rem;
+      }
+      main {
+        max-width: 1000px;
+        margin: 20px auto;
+        padding: 0 16px 44px;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin: 14px 0;
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+      }
+      .tab,
+      button {
+        font: inherit;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 9px 13px;
+        background: #fff;
+        color: var(--ink);
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .tab.active,
+      button.primary {
+        background: var(--main);
+        color: #fff;
+        border-color: var(--main);
+      }
+      button:hover {
+        filter: brightness(0.96);
+      }
+      button.danger {
+        color: #b91c1c;
+        border-color: #fecaca;
+      }
+      .panel {
+        display: none;
+      }
+      .panel.active {
+        display: block;
+      }
+      .section {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px;
+        margin-top: 14px;
+        box-shadow: 0 3px 12px #1720330a;
+      }
+      h2 {
+        font-size: 1.2rem;
+        margin: 0 0 8px;
+      }
+      h3 {
+        font-size: 1rem;
+        margin: 0 0 7px;
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 0.92rem;
+        margin-top: 0;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 12px;
+      }
+      .flash {
+        min-height: 205px;
+        perspective: 900px;
+        cursor: pointer;
+      }
+      .flash-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: 205px;
+        transition: transform 0.5s;
+        transform-style: preserve-3d;
+      }
+      .flash.open .flash-inner {
+        transform: rotateY(180deg);
+      }
+      .face {
+        position: absolute;
+        inset: 0;
+        padding: 15px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fff;
+        backface-visibility: hidden;
+      }
+      .back {
+        transform: rotateY(180deg);
+        background: #f8fbff;
+      }
+      .tag {
+        display: inline-block;
+        font-size: 0.72rem;
+        padding: 2px 8px;
+        border-radius: 99px;
+        background: #dbeafe;
+        color: #1d4ed8;
+        margin-bottom: 8px;
+      }
+      .back p {
+        font-size: 0.88rem;
+        margin: 5px 0;
+      }
+      .back strong {
+        color: #1e3a8a;
+      }
+      .quiz {
+        display: grid;
+        gap: 12px;
+      }
+      .question {
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        padding: 14px;
+        background: #fff;
+      }
+      .choices {
+        display: grid;
+        gap: 7px;
+        margin-top: 9px;
+      }
+      .choice {
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        padding: 9px;
+        background: #fff;
+        text-align: left;
+      }
+      .choice.correct {
+        background: #dcfce7;
+        border-color: #86efac;
+      }
+      .choice.wrong {
+        background: #fee2e2;
+        border-color: #fca5a5;
+      }
+      .choice:disabled {
+        cursor: default;
+      }
+      .feedback {
+        margin: 10px 0 0;
+        padding: 9px;
+        border-radius: 8px;
+        background: #f1f5f9;
+        font-size: 0.9rem;
+      }
+      .feedback.ok {
+        background: #dcfce7;
+      }
+      .feedback.ng {
+        background: #fee2e2;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .today-box {
+        background: var(--accent);
+        border: 1px solid #f5d86a;
+      }
+      .empty {
+        color: var(--muted);
+        padding: 12px;
+        background: #f8fafc;
+        border-radius: 10px;
+      }
+      details {
+        border-top: 1px solid var(--line);
+        padding: 10px 0;
+      }
+      summary {
+        font-weight: 700;
+        cursor: pointer;
+      }
+      footer {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 16px 35px;
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+      @media (max-width: 560px) {
+        .stats {
+          gap: 6px;
+        }
+        .stat {
+          padding: 8px 4px;
+        }
+        .section {
+          padding: 14px;
+        }
+        .flash,
+        .flash-inner {
+          min-height: 225px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <h1>基本情報技術者｜経営戦略</h1>
+        <p>ノート復習用・タップで覚えるカードと4択クイズ</p>
+        <div class="stats">
+          <div class="stat"><b id="answered">0</b><span>解答数</span></div>
+          <div class="stat"><b id="rate">0%</b><span>正答率</span></div>
+          <div class="stat">
+            <b id="learned">0</b><span>学習済み問題数</span>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main>
+      <div class="tabs" id="tabs"></div>
+      <div class="controls">
+        <button class="primary" id="todayBtn">今日の10問</button
+        ><button id="weakBtn">苦手問題</button
+        ><button id="allBtn">全問題を表示</button
+        ><button class="danger" id="resetBtn">進捗をリセット</button>
+      </div>
+      <section class="section today-box hidden" id="todayArea">
+        <h2>今日の10問</h2>
+        <p class="hint">全問題からランダムに最大10問を出題します。</p>
+        <div class="quiz" id="todayQuiz"></div>
+      </section>
+      <div id="panels"></div>
+      <section class="section">
+        <h2>学習のコツ</h2>
+        <ul>
+          <li>
+            用語カードは、まず表面だけで説明できるか確認してから裏面を開く。
+          </li>
+          <li>クイズで間違えた問題は自動で「苦手問題」として記録される。</li>
+          <li>苦手問題を解き直して正解すると、苦手記録から外れる。</li>
+        </ul>
+      </section>
+    </main>
+    <footer>
+      出典：添付ノート（経営戦略・経営管理システム）。ブラウザ内の localStorage
+      に解答履歴を保存します。
+    </footer>
+    <script>
+      const data = [
+        {
+          cat: "経営戦略手法",
+          cards: [
+            [
+              "コアコンピタンス",
+              "他社に模倣されにくい強み。",
+              "自社が競争上優位に立つ源泉を考える。",
+              "単なる得意分野ではなく、模倣困難性が重要。",
+            ],
+            [
+              "ベンチマーキング",
+              "優れた他社の製品・サービスを指標にして、経営革新を進める手法。",
+              "比較対象を基準に自社の改善点を見つける。",
+              "競合分析は広い分析活動、ベンチマーキングは優れた事例を基準にする。",
+            ],
+            [
+              "PPM",
+              "事業や製品を分類し、経営資源配分を判断する手法。",
+              "市場成長率と相対市場占有率を軸に考える。",
+              "SWOT分析は内部・外部環境を整理する分析。",
+            ],
+            [
+              "M&A",
+              "企業の合併・買収。",
+              "Merge（合併）とAcquisitions（買収）の略である。",
+              "アウトソーシングは外部へ業務を委託すること。",
+            ],
+            [
+              "アウトソーシング",
+              "業務に必要な人材やノウハウを外部から調達する方法。",
+              "自社のコア業務へ資源を集中する目的で使われる。",
+              "M&Aは企業そのものの合併・買収である。",
+            ],
+          ],
+          q: [
+            [
+              "他社が簡単にまねできない、自社の競争上の強みを何というか。",
+              [
+                "コアコンピタンス",
+                "ベンチマーキング",
+                "アウトソーシング",
+                "M&A",
+              ],
+              0,
+              "コアコンピタンスは、他社が模倣しにくい競争優位の源泉である。",
+            ],
+            [
+              "優れた他社の製品・サービスを比較の基準として、自社を改善する手法はどれか。",
+              ["PPM", "ベンチマーキング", "SWOT分析", "ニッチャー"],
+              1,
+              "ベンチマーキングは優良事例を指標にして改善する。",
+            ],
+            [
+              "事業や製品を分類して、経営資源をどこへ配分するか判断する手法はどれか。",
+              ["PPM", "4P", "SCM", "BSC"],
+              0,
+              "PPMは事業・製品ポートフォリオを扱う。",
+            ],
+            [
+              "業務に必要な人材やノウハウを外部から調達する方法はどれか。",
+              ["M&A", "アウトソーシング", "フォロワー", "ERP"],
+              1,
+              "アウトソーシングは外部委託・外部調達である。",
+            ],
+          ],
+        },
+        {
+          cat: "分析・市場戦略",
+          cards: [
+            [
+              "SWOT分析",
+              "強み・弱み・機会・脅威を整理する分析。",
+              "Strength、Weakness、Opportunity、Threat の4要素を区別する。",
+              "強み・弱みは内部環境、機会・脅威は外部環境として整理する。",
+            ],
+            [
+              "バリューチェーン分析",
+              "製品・サービスの価値がどの仕事で生み出されるかを分析する。",
+              "価値を生む活動を把握し、自社の強み・弱みを明確にする。",
+              "SWOT分析は環境要因、バリューチェーンは活動の連鎖に注目する。",
+            ],
+            [
+              "プロダクトライフサイクル",
+              "導入期・成長期・成熟期・衰退期という事業・製品の段階。",
+              "段階ごとに販売量や競争状況、戦略が変わる。",
+              "PPMは複数事業の位置付け、PLCは製品の時間的な段階。",
+            ],
+            [
+              "リーダー",
+              "市場シェア首位を維持・拡大する企業の戦略。",
+              "市場規模の拡大も含め、全方位的な戦略をとる。",
+              "フォロワーはリーダーを参考に追随する。",
+            ],
+            [
+              "チャレンジャー",
+              "市場シェアを拡大し、リーダーの地位を狙う企業の戦略。",
+              "首位企業に対抗する差別化や攻勢がポイント。",
+              "ニッチャーは特定の市場に集中する。",
+            ],
+            [
+              "ニッチャー",
+              "他社が参入しにくい特定の市場に絞る戦略。",
+              "狭い市場で専門性や独自性を高める。",
+              "チャレンジャーは広くシェア拡大を狙う。",
+            ],
+            [
+              "フォロワー",
+              "リーダーを参考にして追随する企業の戦略。",
+              "模倣だけでなく、低コストなどで効率よく追随する。",
+              "リーダーは市場の主導者である。",
+            ],
+          ],
+          q: [
+            [
+              "SWOT分析で、外部環境にあたる組合せはどれか。",
+              ["強み・弱み", "機会・脅威", "強み・機会", "弱み・脅威"],
+              1,
+              "機会（Opportunity）と脅威（Threat）は外部環境である。",
+            ],
+            [
+              "製品・サービスの価値が、どの活動で生み出されているかを分析する手法はどれか。",
+              ["バリューチェーン分析", "PPM", "BSC", "コストプラス法"],
+              0,
+              "バリューチェーン分析は、価値創造活動の連鎖を分析する。",
+            ],
+            [
+              "市場の特定領域に集中し、専門性で競争する戦略をとる企業はどれか。",
+              ["リーダー", "チャレンジャー", "ニッチャー", "フォロワー"],
+              2,
+              "ニッチャーは限定された市場（ニッチ）へ特化する。",
+            ],
+            [
+              "製品・事業の時間的な段階を、導入期・成長期・成熟期・衰退期で表す考え方はどれか。",
+              [
+                "プロダクトライフサイクル",
+                "SWOT分析",
+                "マーケティングミックス",
+                "SCM",
+              ],
+              0,
+              "プロダクトライフサイクルは製品の市場での段階を表す。",
+            ],
+          ],
+        },
+        {
+          cat: "マーケティング・価格",
+          cards: [
+            [
+              "マーケティングミックス（4P）",
+              "売り手側の視点で、製品・価格・流通・販売促進を組み合わせる考え方。",
+              "Product、Price、Place、Promotion の4要素を答えられるようにする。",
+              "4Cは買い手側の視点である。",
+            ],
+            [
+              "4C",
+              "買い手側の視点で、顧客価値・顧客負担・利便性・コミュニケーションを考える。",
+              "Customer Value、Customer Cost、Convenience、Communication の4要素。",
+              "4Pは企業（売り手）側の視点である。",
+            ],
+            [
+              "コストプラス価格決定法",
+              "製品コストに一定のマージンを加えて価格を決める方法。",
+              "原価志向型の価格設定である。",
+              "需要や競合ではなく、主にコストを基準にする。",
+            ],
+          ],
+          q: [
+            [
+              "4Pのうち、販売促進を表すものはどれか。",
+              ["Product", "Price", "Place", "Promotion"],
+              3,
+              "Promotionは広告・販売促進などを指す。",
+            ],
+            [
+              "4Cで「顧客が支払う負担」を表すものはどれか。",
+              [
+                "Customer Value",
+                "Customer Cost",
+                "Convenience",
+                "Communication",
+              ],
+              1,
+              "Customer Costは価格だけでなく時間や手間も含む顧客負担である。",
+            ],
+            [
+              "製品原価に一定の利益（マージン）を上乗せして価格を決める方法はどれか。",
+              [
+                "市場浸透価格設定",
+                "コストプラス価格決定法",
+                "差別化戦略",
+                "ベンチマーキング",
+              ],
+              1,
+              "コストプラス価格決定法はコスト志向型の価格決定法である。",
+            ],
+          ],
+        },
+        {
+          cat: "経営管理システム",
+          cards: [
+            [
+              "SCM",
+              "サプライチェーンの情報を一元管理し、コスト削減や納期短縮を目指す。",
+              "調達から生産・物流・販売までの流れを最適化する。",
+              "CRMは顧客との関係、ERPは企業全体の基幹業務を扱う。",
+            ],
+            [
+              "CRM",
+              "顧客情報や関係を一元管理し、顧客満足度の向上を目指す。",
+              "顧客ごとの対応・購買履歴などの活用がポイント。",
+              "SCMは供給連鎖、ERPは経営資源全体を扱う。",
+            ],
+            [
+              "ERP",
+              "基幹業務の情報を一元管理し、効率的な経営と意思決定を目指す。",
+              "会計・販売・生産・人事などの統合がポイント。",
+              "CRMは顧客中心、SCMは供給連鎖中心である。",
+            ],
+            [
+              "ナレッジマネジメント",
+              "社員が持つ知識や経験を共有・一元管理し、問題解決力の向上を図る。",
+              "個人の暗黙知を組織で活用できる形にする。",
+              "CRMは顧客情報、ナレッジマネジメントは組織の知識を扱う。",
+            ],
+            [
+              "BSC（バランススコアカード）",
+              "財務だけでなく、財務以外の視点も含めてバランスよく業績を評価する。",
+              "売上・利益だけに偏らない評価がポイント。",
+              "PPMは事業の資源配分、BSCは業績評価の枠組み。",
+            ],
+          ],
+          q: [
+            [
+              "サプライチェーン全体の情報を一元管理し、コスト削減や納期短縮を目指す仕組みはどれか。",
+              ["CRM", "SCM", "ERP", "BSC"],
+              1,
+              "SCMは供給連鎖（サプライチェーン）の最適化を目指す。",
+            ],
+            [
+              "顧客情報を一元管理し、顧客満足度向上を目指す仕組みはどれか。",
+              ["SCM", "CRM", "ERP", "PPM"],
+              1,
+              "CRMは顧客関係管理である。",
+            ],
+            [
+              "会計・販売・生産・人事などの基幹業務を統合管理する仕組みはどれか。",
+              ["ERP", "CRM", "BSC", "SWOT"],
+              0,
+              "ERPは企業全体の経営資源・基幹業務を統合する。",
+            ],
+            [
+              "売上や利益などの財務指標だけに偏らずに業績を評価する手法はどれか。",
+              ["BSC", "4P", "PLC", "M&A"],
+              0,
+              "BSCは財務以外の視点も組み合わせる評価手法である。",
+            ],
+          ],
+        },
+      ];
+      const storeKey = "keieiStrategyReviewV1";
+      let state = JSON.parse(
+        localStorage.getItem(storeKey) ||
+          '{"answers":0,"correct":0,"seen":[],"weak":[]}',
+      );
+      const allQ = data.flatMap((d) =>
+        d.q.map((q, i) => ({ cat: d.cat, q, i, id: d.cat + "-" + i })),
+      );
+      function save() {
+        localStorage.setItem(storeKey, JSON.stringify(state));
+        renderStats();
+      }
+      function renderStats() {
+        answered.textContent = state.answers;
+        rate.textContent = state.answers
+          ? Math.round((state.correct / state.answers) * 100) + "%"
+          : "0%";
+        learned.textContent = state.seen.length;
+      }
+      function esc(s) {
+        return s.replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      }
+      function cardHTML(c) {
+        return `<article class="flash" tabindex="0" role="button" aria-label="カードを開く"><div class="flash-inner"><div class="face"><span class="tag">用語カード</span><h3>${esc(c[0])}</h3><p>${esc(c[1])}</p><p class="hint">タップして詳しい説明を見る</p></div><div class="face back"><span class="tag">解説</span><h3>${esc(c[0])}</h3><p><strong>試験で問われやすいポイント：</strong>${esc(c[2])}</p><p><strong>混同しやすい用語との違い：</strong>${esc(c[3])}</p></div></div></article>`;
+      }
+      function questionHTML(item, n) {
+        let q = item.q;
+        return `<article class="question" data-id="${item.id}"><h3>Q${n}. ${esc(q[0])}</h3><div class="choices">${q[1].map((x, i) => `<button class="choice" data-choice="${i}">${String.fromCharCode(65 + i)}. ${esc(x)}</button>`).join("")}</div><div class="feedback hidden"></div></article>`;
+      }
+      function bindQuiz(root) {
+        root.querySelectorAll(".question").forEach((box) =>
+          box.querySelectorAll(".choice").forEach((btn) =>
+            btn.addEventListener("click", () => {
+              if (box.dataset.done) return;
+              box.dataset.done = "1";
+              let item = allQ.find((x) => x.id === box.dataset.id),
+                ans = +btn.dataset.choice,
+                ok = ans === item.q[2];
+              state.answers++;
+              if (ok) state.correct++;
+              if (!state.seen.includes(item.id)) state.seen.push(item.id);
+              if (ok) state.weak = state.weak.filter((x) => x !== item.id);
+              else if (!state.weak.includes(item.id)) state.weak.push(item.id);
+              box.querySelectorAll(".choice").forEach((b, i) => {
+                b.disabled = true;
+                if (i === item.q[2]) b.classList.add("correct");
+                if (i === ans && !ok) b.classList.add("wrong");
+              });
+              let fb = box.querySelector(".feedback");
+              fb.className = "feedback " + (ok ? "ok" : "ng");
+              fb.textContent = (ok ? "正解！ " : "不正解。 ") + item.q[3];
+              save();
+            }),
+          ),
+        );
+      }
+      function render() {
+        tabs.innerHTML = data
+          .map(
+            (d, i) =>
+              `<button class="tab ${i === 0 ? "active" : ""}" data-tab="${i}">${d.cat}</button>`,
+          )
+          .join("");
+        panels.innerHTML = data
+          .map(
+            (d, i) =>
+              `<section class="panel ${i === 0 ? "active" : ""}" data-panel="${i}"><div class="section"><h2>${d.cat}</h2><p class="hint">カードを開いて要点を確認し、その後にクイズで定着させよう。</p><div class="cards">${d.cards.map(cardHTML).join("")}</div></div><div class="section"><h2>確認クイズ</h2><div class="quiz">${d.q.map((q, j) => questionHTML({ cat: d.cat, q, i: j, id: d.cat + "-" + j }, j + 1)).join("")}</div></div></section>`,
+          )
+          .join("");
+        document.querySelectorAll(".flash").forEach((x) => {
+          x.addEventListener("click", () => x.classList.toggle("open"));
+          x.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              x.classList.toggle("open");
+            }
+          });
+        });
+        bindQuiz(panels);
+        tabs.querySelectorAll(".tab").forEach((t) =>
+          t.addEventListener("click", () => {
+            tabs
+              .querySelectorAll(".tab")
+              .forEach((x) => x.classList.remove("active"));
+            document
+              .querySelectorAll(".panel")
+              .forEach((x) => x.classList.remove("active"));
+            t.classList.add("active");
+            document
+              .querySelector(`[data-panel="${t.dataset.tab}"]`)
+              .classList.add("active");
+            todayArea.classList.add("hidden");
+          }),
+        );
+        renderStats();
+      }
+      function showSet(items, title) {
+        todayArea.classList.remove("hidden");
+        todayArea.querySelector("h2").textContent = title;
+        todayQuiz.innerHTML = items.length
+          ? items.map((x, i) => questionHTML(x, i + 1)).join("")
+          : '<p class="empty">現在、苦手問題はありません。全問正解を目指して続けましょう！</p>';
+        bindQuiz(todayQuiz);
+        todayArea.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      todayBtn.onclick = () =>
+        showSet(
+          [...allQ].sort(() => Math.random() - 0.5).slice(0, 10),
+          "今日の10問",
+        );
+      weakBtn.onclick = () =>
+        showSet(
+          allQ.filter((x) => state.weak.includes(x.id)),
+          "苦手問題",
+        );
+      allBtn.onclick = () => showSet(allQ, "全問題");
+      resetBtn.onclick = () => {
+        if (confirm("解答履歴・正答率・苦手問題をすべて消去しますか？")) {
+          state = { answers: 0, correct: 0, seen: [], weak: [] };
+          save();
+          render();
+          todayArea.classList.add("hidden");
+        }
+      };
+      render();
+    </script>
+    <div style="padding: 18px 0 24px; text-align: center;"><div style="display:flex; flex-wrap:wrap; justify-content:center; gap:45px;"><a href="index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">← 目次に戻る</a><a href="../index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">復習教材一覧</a><a href="../../index.html" style="color:#2476c9; font-weight:700; text-decoration:none;">学習ポータルに戻る</a></div></div>
+  </body>
+</html>
