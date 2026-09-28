@@ -1,0 +1,464 @@
+<script src="../assets/js/advanced-nav.js"></script>
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>昼休みAPトピック｜OS仮想化とコンテナ型仮想化</title>
+    <style>
+      :root {
+        --bg: #f5f7fb;
+        --card: #ffffff;
+        --text: #1d2939;
+        --muted: #667085;
+        --main: #2563eb;
+        --accent: #eaf2ff;
+        --good: #067647;
+        --bad: #b42318;
+        --line: #dbe3f0;
+        --warn: #fff7d6;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.7;
+      }
+      main {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 20px 16px 32px;
+      }
+      h1,
+      h2,
+      h3 {
+        margin: 0 0 8px;
+        line-height: 1.4;
+      }
+      h1 {
+        font-size: 1.6rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: flex-end;
+      }
+      h1 span.theme {
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: var(--accent);
+        color: var(--main);
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+      h1 span.category {
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+      section {
+        margin-top: 18px;
+        padding: 16px 18px;
+        border-radius: 12px;
+        background: var(--card);
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
+        border: 1px solid var(--line);
+      }
+      section.compact {
+        padding: 12px 14px;
+      }
+      p {
+        margin: 4px 0 8px;
+        font-size: 0.95rem;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        background: var(--accent);
+        color: var(--main);
+      }
+      .points {
+        margin: 6px 0 4px;
+        padding-left: 1.1em;
+      }
+      .points li {
+        margin: 2px 0;
+        font-size: 0.95rem;
+      }
+      .nav-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 10px;
+        font-size: 0.85rem;
+      }
+      .nav-links a {
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        color: var(--muted);
+        text-decoration: none;
+      }
+      .nav-links a:hover {
+        background: var(--accent);
+        color: var(--main);
+      }
+      .diagram {
+        margin: 8px 0;
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: #0f172a;
+        color: #e5e7eb;
+        font-size: 0.85rem;
+        overflow-x: auto;
+      }
+      .diagram pre {
+        margin: 0;
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        white-space: pre;
+      }
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 6px;
+      }
+      .tag {
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: var(--accent);
+        color: var(--main);
+        font-size: 0.75rem;
+      }
+      .quiz-question {
+        font-weight: 600;
+      }
+      .choices {
+        margin: 6px 0 4px;
+        padding-left: 1.1em;
+        font-size: 0.95rem;
+      }
+      .choices li {
+        margin: 2px 0;
+      }
+      .answer-box {
+        margin-top: 10px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: #ecfdf3;
+        border: 1px solid #bbf7d0;
+        font-size: 0.9rem;
+        display: none;
+      }
+      .answer-box h3 {
+        margin-top: 0;
+        font-size: 0.95rem;
+        color: var(--good);
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 6px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: none;
+        background: var(--main);
+        color: #fff;
+        font-size: 0.85rem;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: #1d4ed8;
+      }
+      .source {
+        margin-top: 14px;
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+      .today-key {
+        margin-top: 10px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: var(--warn);
+        border: 1px solid #facc15;
+        font-size: 0.9rem;
+      }
+      @media (max-width: 600px) {
+        main {
+          padding: 16px 10px 26px;
+        }
+        h1 {
+          font-size: 1.4rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <!-- ヘッダー -->
+      <header>
+        <h1>
+          <span class="theme">今日のテーマ：OS仮想化とコンテナ型仮想化</span>
+          <span class="category">テクノロジ系 / OS・仮想化 / クラウド</span>
+        </h1>
+        <p class="muted">
+          1台の物理サーバを「仮想マシン」や「コンテナ」に分割して効率よく使う仕組みを整理します。[web:5][web:17][web:7]
+        </p>
+        <div class="tag-row">
+          <span class="tag">ハイパーバイザ</span>
+          <span class="tag">Type1 / Type2</span>
+          <span class="tag">Docker</span>
+          <span class="tag">Kubernetes</span>
+          <span class="tag">クラウド・分散処理</span>
+        </div>
+        <div class="nav-links">
+          <a href="#sec1">① まず結論</a>
+          <a href="#sec2">② 仕組み</a>
+          <a href="#sec3">③ 身近な例</a>
+          <a href="#sec4">④ APでの出題</a>
+          <a href="#sec5">⑤ 試験ポイント</a>
+          <a href="#sec6">FEとのつながり</a>
+          <a href="#sec7">実務とのつながり</a>
+          <a href="#sec8">確認問題</a>
+          <a href="#sec9">今日の一言</a>
+        </div>
+      </header>
+
+      <!-- ① まず結論 -->
+      <section id="sec1">
+        <h2>① まず結論 <span class="badge">概要</span></h2>
+        <p>
+          OS仮想化は「ハイパーバイザ」というソフトウェアで1台の物理サーバ上に複数の仮想マシン（VM）を動かす技術です。[web:9][web:12][web:15]
+        </p>
+        <p>
+          コンテナ型仮想化は、ホストOSのカーネルを共有しつつアプリケーションごとに軽量な隔離環境（コンテナ）を作る技術で、VMより高速・軽量なのが特徴です。[web:7][web:10][web:19][web:16]
+        </p>
+        <p>
+          APでは「ハイパーバイザ型（VM）」と「コンテナ型」の違いを理解し、システム構成やクラウド設計の問題で適切な方式を選べることが求められます。[web:5][web:11][web:17]
+        </p>
+      </section>
+
+      <!-- ② 仕組み：なぜそうなるのか -->
+      <section id="sec2">
+        <h2>② 仕組み：ハイパーバイザとコンテナ</h2>
+        <p>
+          ハイパーバイザは、物理ハードウェアのCPU・メモリ・ストレージなどを仮想化して、それぞれが独立したサーバであるかのように見える「仮想マシン」を複数作るソフトウェアです。[web:9][web:12][web:15]
+        </p>
+        <p>
+          Type1（ベアメタル）ハイパーバイザは物理ハードウェア上で直接動作し、ゲストOSにリソースを割り当てるため高い性能と分離性を提供します。[web:6][web:9][web:12][web:15]
+        </p>
+        <p>
+          Type2（ホスト型）ハイパーバイザは、既存のホストOS上でアプリケーションとして動作し、その上でゲストOSを動かすため導入が容易ですがオーバーヘッドが増えがちです。[web:6][web:9][web:12][web:15]
+        </p>
+
+        <div class="diagram">
+          <pre>
+【ハイパーバイザ型仮想化（Type1のイメージ）】[web:9][web:12][web:15]
+物理ハードウェア
+  └ ハイパーバイザ（Type1）
+      ├ 仮想マシンA（ゲストOS + アプリ）
+      ├ 仮想マシンB（ゲストOS + アプリ）
+      └ 仮想マシンC（ゲストOS + アプリ）
+
+【コンテナ型仮想化のイメージ】[web:7][web:10][web:19][web:16]
+物理ハードウェア
+  └ ホストOS（Linuxなど）
+      └ コンテナエンジン（Dockerなど）
+          ├ コンテナ1（アプリ + 依存ライブラリ）
+          ├ コンテナ2（アプリ + 依存ライブラリ）
+          └ コンテナ3（アプリ + 依存ライブラリ）
+      （OSカーネルはコンテナ間で共有）
+      </pre
+          >
+        </div>
+
+        <p>
+          コンテナ型仮想化では、ゲストOSを個別に持たずホストOSのカーネル機能（プロセス分離・名前空間・cgroupsなど）を利用して、アプリケーションごとに隔離・リソース制御を行います。[web:7][web:16][web:19]
+        </p>
+        <p>
+          このため、コンテナはVMより起動が速く、リソース使用量も小さい一方で、ホストOSと同系統のOSで使う前提が強く、カーネルレベルの完全分離ではない点に注意が必要です。[web:7][web:10][web:13][web:16]
+        </p>
+      </section>
+
+      <!-- ③ 身近な例 -->
+      <section id="sec3">
+        <h2>③ 身近な例：クラウドと開発環境</h2>
+        <p>
+          AWSなどのクラウドIaaSでは、Type1ハイパーバイザ上で多数の仮想マシンを提供し、ユーザはそれを「仮想サーバ」として借りてOSを自由にインストールして利用します。[web:6][web:9][web:12]
+        </p>
+        <p>
+          一方、最近のWebサービス開発ではDockerコンテナを使ってアプリケーションとその依存ライブラリを1つのイメージに固め、どの環境でも同じコンテナを動かして「環境の差異による不具合」を減らします。[web:7][web:19]
+        </p>
+        <p>
+          大規模サービスでは、Kubernetesのようなコンテナオーケストレーションツールで多数のコンテナを自動デプロイ・スケール・復旧し、分散システムとして高い可用性と拡張性を実現しています。[web:10][web:13][web:16][web:19]
+        </p>
+      </section>
+
+      <!-- ④ 応用情報ではどう問われる？ -->
+      <section id="sec4">
+        <h2>④ 応用情報ではどう問われる？</h2>
+        <p>
+          APシラバスでは「仮想マシン」「ハイパーバイザ」「コンテナ」「クラウド環境の構築・管理」などがOS・仮想化・システム構成の項目として整理されており、概念・利点・注意点が問われます。[web:5][web:11][web:17]
+        </p>
+        <p>
+          午前問題では、Type1とType2の特徴やハイパーバイザ型とコンテナ型の違い（起動速度・オーバーヘッド・分離度・利用用途）を選択肢から正しく選ぶ形式の出題が想定されます。[web:9][web:12][web:7][web:10]
+        </p>
+        <p>
+          午後問題では、企業システムの更新事例を読みながら「オンプレミス物理サーバ
+          → 仮想基盤 →
+          コンテナ＋クラウド」という移行計画の妥当性や、可用性・運用性・コストの観点から構成案を説明させる問題が出される可能性があります。[web:5][web:11][web:17]
+        </p>
+        <p>
+          この知識があると、例えば「Webアプリを高頻度でデプロイし、自動スケールさせたい場合にVM方式ではなくコンテナ方式を選ぶ理由」を論理的に説明する設問に対応しやすくなります。[web:7][web:10][web:13][web:19]
+        </p>
+      </section>
+
+      <!-- ⑤ 試験で覚えるポイント -->
+      <section id="sec5" class="compact">
+        <h2>
+          ⑤ 試験で覚えるポイント <span class="badge">暗記より理解重視</span>
+        </h2>
+        <ul class="points">
+          <li>
+            ハイパーバイザ型仮想化：仮想マシン（ゲストOSごと）を作り、Type1はハードウェア上で直接動作、Type2はホストOS上で動作する。[web:9][web:12][web:6][web:15]
+          </li>
+          <li>
+            コンテナ型仮想化：ホストOSのカーネルを共有し、アプリ＋依存ライブラリをコンテナにまとめて軽量な隔離環境として動かす。[web:7][web:10][web:19][web:16]
+          </li>
+          <li>
+            VMはOSごと分離されるため互換性が高く重い、コンテナは同系統OS前提だが起動が速くリソース効率が高い、とトレードオフを整理する。[web:7][web:10][web:13]
+          </li>
+          <li>
+            クラウド・分散処理では「基盤はハイパーバイザ型VM」「アプリはコンテナ」で組み合わせて使う構成が一般的であることを押さえる。[web:6][web:9][web:10][web:19]
+          </li>
+          <li>
+            AP午後では、性能・可用性・運用性・セキュリティ・移行容易性の観点から、VMとコンテナのどちらを選ぶかを説明する問題が狙われる。[web:5][web:11][web:17]
+          </li>
+        </ul>
+      </section>
+
+      <!-- FEとのつながり -->
+      <section id="sec6">
+        <h2>FEではここまで → APではここまで</h2>
+        <p>
+          FEシラバスでは、「仮想化」「仮想マシン（VM）」「ハイパーバイザ」といった基本用語と、1台の物理サーバで複数の仮想マシンを動かす仕組みを理解することが中心です。[web:14][web:17]
+        </p>
+        <p>
+          APでは、Type1/Type2の違い、ハイパーバイザ型とコンテナ型の比較、クラウド・分散処理での活用方法、運用上のメリット・デメリットなど、設計・戦略レベルまで踏み込んだ理解が必要になります。[web:5][web:11][web:7][web:10]
+        </p>
+        <p>
+          FEで学んだ「仮想化でサーバ集約・リソース効率化ができる」という知識を出発点に、「どの仮想化方式をどのシステムで採用するとよいか」をAPで考えられるようにするイメージです。[web:14][web:5][web:17]
+        </p>
+      </section>
+
+      <!-- 実務とのつながり -->
+      <section id="sec7">
+        <h2>実務ではどう使う？（開発・運用の視点）</h2>
+        <p>
+          開発環境では、Dockerでアプリケーションと依存ライブラリをコンテナ化し、チーム全員が同じ環境を再現できるようにすることで「環境差によるバグ」を減らします。[web:7][web:19]
+        </p>
+        <p>
+          本番環境では、仮想基盤上のVMにKubernetesクラスターを構築し、コンテナ単位でWebアプリやバッチ処理をスケールアウトさせる構成が広く使われています。[web:9][web:10][web:13][web:19]
+        </p>
+        <p>
+          インフラ担当者はハイパーバイザ・ストレージ・ネットワークでVMを安定運用し、アプリケーションエンジニアはコンテナとCI/CDパイプラインでリリースを自動化するなど、VMとコンテナの役割分担を意識することが重要です。[web:6][web:9][web:10][web:16]
+        </p>
+        <p>
+          あなたのようなWeb・Javaエンジニアにとっても、Dockerfile・docker-compose・Kubernetesの基本を押さえ、どのレイヤーがVMでどのレイヤーがコンテナなのかを理解して設計・デバッグできることが、現場での強みになります。[web:7][web:10][web:19][web:16]
+        </p>
+      </section>
+
+      <!-- 1問だけ確認問題 -->
+      <section id="sec8">
+        <h2>🧠 確認問題（四択・状況判断）</h2>
+        <p class="quiz-question">
+          ある企業では、社内システムを次のように更新しようとしています。[web:5][web:7][web:10]
+        </p>
+        <p>
+          「現在は各業務システムが物理サーバ上で直接動作しており、サーバごとにOSやミドルウェアの構成がばらばらで運用コストが高い。そこで、まずType1ハイパーバイザを用いた仮想基盤を構築し、その上に共通OSを持つ仮想マシンを集約する。さらに、Webアプリケーション部分はコンテナ化してKubernetesで自動スケールさせたい。」[web:6][web:9][web:10][web:19]
+        </p>
+        <p>
+          この方針に関する説明として<strong>もっとも適切なもの</strong>を 1
+          つ選びなさい。[web:5][web:7][web:10]
+        </p>
+
+        <ol class="choices">
+          <li>
+            A.
+            Type1ハイパーバイザはホストOS上で動作するため、既存の物理サーバのOSをそのまま残せるが、コンテナとの併用はできない。
+          </li>
+          <li>
+            B.
+            Type1ハイパーバイザ上の仮想マシンで共通OSを採用し、その上にコンテナ基盤を構築することで、物理サーバとアプリケーションの両方を効率的に集約できる。
+          </li>
+          <li>
+            C.
+            コンテナはホストOSのカーネルを共有するため、Type1ハイパーバイザを使うと必ず性能低下が起きるので、仮想マシンとコンテナの併用は避けるべきである。
+          </li>
+          <li>
+            D.
+            Type2ハイパーバイザに切り替えれば、既存の物理サーバ上でコンテナを直接動かせるようになるため、Kubernetesの導入は不要になる。
+          </li>
+        </ol>
+
+        <button class="btn" onclick="showAnswer()">答えを見る</button>
+
+        <div id="answer" class="answer-box">
+          <h3>正解：B</h3>
+          <p>
+            Type1ハイパーバイザ上の仮想マシンに共通OSを導入し、そのOS上にDockerやKubernetesなどのコンテナ基盤を構築する構成は、物理サーバを仮想化で集約しつつアプリケーションをコンテナで柔軟に運用する一般的な設計です。[web:6][web:9][web:10][web:19]
+          </p>
+          <p>
+            この構成では、物理リソースの集約（VM）とアプリケーションのスケール・自動復旧（コンテナ＋Kubernetes）の両方の利点を活かせます。[web:10][web:13][web:16][web:19]
+          </p>
+
+          <h3>他の選択肢が違う理由</h3>
+          <p>
+            A：Type1ハイパーバイザはハードウェア上で直接動作するベアメタル型であり、ホストOS上で動作するのはType2です。コンテナは仮想マシンの中でも構築できるため、併用できないという説明は誤りです。[web:6][web:9][web:12][web:15]
+          </p>
+          <p>
+            C：コンテナはホストOSのカーネルを共有しますが、仮想マシンの中にホストOSを置き、その上でコンテナを動かす構成は一般的に用いられており、「必ず性能低下が起きる」「併用は避けるべき」という極端な表現は不適切です。[web:7][web:10][web:13][web:19]
+          </p>
+          <p>
+            D：Type2ハイパーバイザはホストOS上で動作するソフトウェアであり、コンテナを直接動かすための仕組みではありません。コンテナの管理と自動化にはKubernetesなどのオーケストレーションツールが必要であり、それを不要にするとする説明は誤りです。[web:6][web:9][web:10][web:13]
+          </p>
+        </div>
+      </section>
+
+      <!-- 今日の一言 -->
+      <section id="sec9" class="compact">
+        <h2>🔥 今日の一言「これだけ覚えて帰ろう」</h2>
+        <div class="today-key">
+          <p>
+            ハイパーバイザ型仮想化は「サーバそのもの」を仮想マシンとして分割し、コンテナ型仮想化は「アプリケーションの動作環境」を軽量な箱として分割する技術だと整理しよう。[web:9][web:12][web:7][web:10]
+          </p>
+          <p>
+            APでは「どの場面でVMを使い、どの場面でコンテナを使うか」を、性能・運用・クラウド設計の観点から説明できることが武器になります。[web:5][web:11][web:10][web:19]
+          </p>
+        </div>
+        <p class="source">
+          参考：IPA 応用情報技術者試験シラバス（Ver.7.2）および FE
+          シラバス、主要クラウドベンダ・コンテナ関連技術解説記事より。[web:5][web:11][web:14][web:7][web:9][web:10]
+        </p>
+      </section>
+    </main>
+
+    <script>
+      function showAnswer() {
+        const box = document.getElementById("answer");
+        box.style.display = "block";
+        box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    </script>
+  </body>
+</html>

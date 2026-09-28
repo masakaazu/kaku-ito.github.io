@@ -1,0 +1,643 @@
+<script src="../assets/js/advanced-nav.js"></script>
+昼休みの応用情報技術者試験トピック
+あなたは「応用情報技術者試験（AP）」の専属講師兼ITエンジニア向け学習アドバイザーです。
+私は応用情報技術者試験の合格を目指しています。
+毎日昼休みに、5〜10分程度で読める「応用情報技術者試験に役立つITトピック」を1つ紹介してください。
+目的は、単なる暗記ではなく、IT技術・仕組み・経営・セキュリティなどを具体的に理解し、応用情報の問題を解くための思考力を身につけることです。
+⸻ 🎯 トピックの選定 以下の分野から、日替わりで幅広く選んでください。
+テクノロジ系 • コンピュータシステム • OS・仮想化 • データベース • SQL •
+ネットワーク • セキュリティ • アルゴリズム • AI・機械学習 • IoT • クラウド •
+分散処理 • システムアーキテクチャ マネジメント系 • プロジェクトマネジメント •
+ITサービスマネジメント • SLA • ITIL • システム監査 • 品質管理 • リスク管理
+ストラテジ系 • 経営戦略 • DX • システム戦略 • 企業活動 • 財務・会計 • 法務 •
+個人情報保護 • 知的財産 • AI・IT関連政策 ⸻ 📚 今日のトピック 最初に、
+「今日のテーマ：○○」 と表示してください。 その後、 ① まず結論
+初心者でも理解できるように、テーマを2〜3文で説明。 ② 仕組み
+「なぜそうなるのか」を図や具体例を使って分かりやすく説明。 ③ 身近な例
+実際のWebサービス、スマホ、企業システムなどを例にして説明。 ④
+応用情報ではどう問われる？ 実際の試験でどのような形で出題されるのか説明。
+可能なら、 「この知識があると、こういう問題が解ける」
+という形で説明してください。 ⑤ 試験で覚えるポイント
+応用情報で得点するために重要なポイントを3〜5個に整理してください。 ⸻ 🧠
+1問だけ確認問題
+最後に、その日のテーマについて応用情報レベルの確認問題を1問出してください。
+できるだけ、 • 四択 • 計算 • 状況判断 • 午後問題を意識した長文問題
+など、テーマに適した形式にしてください。 その後に、 正解 解説
+他の選択肢が違う理由 を説明してください。 ⸻ 🔗 基本情報とのつながり
+基本情報技術者試験（FE）でも登場するテーマの場合、 「FEではここまで →
+APではここまで理解する」 という形で違いを説明してください。
+FEで学んだ知識をAPでどう応用するのかを意識してください。 ⸻ 💻 実務とのつながり
+私はITエンジニアとして働いているため、可能な場合は、
+「この知識が実際のIT開発・運用でどう使われるか」 も説明してください。 特に、 •
+プログラミング • データベース • SQL • Git • 開発工程 • テスト • システム設計 •
+セキュリティ • AI • クラウド など、実務につながる内容は積極的に扱ってください。
+⸻ 🔥 今日の一言 最後に、 「今日これだけ覚えて帰ろう」
+という重要ポイントを1〜2行でまとめてください。 ⸻ ルール •
+毎日同じ分野にならないようにする • 応用情報の試験範囲を長期的に網羅する •
+難しい専門用語は必ず噛み砕いて説明する • 単なる用語集にならないようにする •
+「なぜ」「どう使う」「試験でどう問われる」を重視する •
+最新のIT技術やニュースと関連付けられるテーマは積極的に扱う •
+ただし、ニュース紹介そのものが目的にならないようにする •
+5〜10分程度で読み終わる分量にする •
+毎日少しずつでも応用情報の理解が深まる構成にする 「今日のトピック → 仕組み →
+身近な例 → APでの出題 → FEとの違い → 実務 → 確認問題」
+の流れを基本フォーマットとしてください。 出力方式
+ノートから復習教材を作る標準(Notion 育てるメモに記載)に従ってHTML出力して
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>昼休みAPトピック｜データベースの正規化（第1〜第3正規形）</title>
+    <style>
+      :root {
+        --bg: #f5f7fb;
+        --card: #ffffff;
+        --text: #1d2939;
+        --muted: #667085;
+        --main: #2563eb;
+        --accent: #eaf2ff;
+        --good: #067647;
+        --bad: #b42318;
+        --line: #dbe3f0;
+        --warn: #fff7d6;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.6;
+      }
+      header {
+        background: #0b1120;
+        color: #e5edff;
+        padding: 12px 18px;
+        border-bottom: 1px solid #1f2937;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 18px;
+      }
+      header p {
+        margin: 2px 0 0;
+        font-size: 12px;
+        color: #9ca3af;
+      }
+      main {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 16px 12px 32px;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        border-radius: 999px;
+        padding: 4px 10px;
+        background: rgba(37, 99, 235, 0.06);
+        color: #1d4ed8;
+      }
+      .pill span.icon {
+        width: 16px;
+        height: 16px;
+        border-radius: 999px;
+        background: #1d4ed8;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+      }
+      .hero {
+        background: linear-gradient(135deg, #eff6ff, #fefce8);
+        border-radius: 16px;
+        padding: 16px 16px 14px;
+        border: 1px solid #dbeafe;
+        margin-bottom: 18px;
+      }
+      .hero h2 {
+        margin: 4px 0 8px;
+        font-size: 18px;
+      }
+      .hero p {
+        margin: 4px 0;
+        font-size: 13px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      @media (max-width: 720px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      section {
+        margin-bottom: 18px;
+        background: var(--card);
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        padding: 14px 14px 10px;
+      }
+      section h2 {
+        margin: 0 0 8px;
+        font-size: 15px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      section h2 span.tag {
+        font-size: 11px;
+        color: var(--muted);
+        background: #f3f4fb;
+        border-radius: 999px;
+        padding: 2px 8px;
+      }
+      p {
+        font-size: 13px;
+        margin: 4px 0;
+      }
+      ul {
+        margin: 4px 0 4px 18px;
+        padding: 0;
+        font-size: 13px;
+      }
+      li {
+        margin: 2px 0;
+      }
+      .card-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .mini-card {
+        flex: 1 1 180px;
+        min-width: 160px;
+        background: #f9fafb;
+        border-radius: 10px;
+        border: 1px dashed #e5e7eb;
+        padding: 8px 9px;
+        font-size: 12px;
+      }
+      .mini-card h3 {
+        margin: 0 0 4px;
+        font-size: 12px;
+      }
+      .mini-card p {
+        margin: 2px 0;
+        font-size: 12px;
+      }
+      code {
+        font-family:
+          SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+          "Courier New", monospace;
+        font-size: 12px;
+        background: #0f172a;
+        color: #e5e7eb;
+        padding: 3px 6px;
+        border-radius: 6px;
+      }
+      .example-box {
+        border-radius: 10px;
+        border: 1px dashed #cbd5e1;
+        background: #f8fafc;
+        padding: 8px 10px;
+        font-size: 12px;
+      }
+      .example-box strong {
+        color: #0f172a;
+      }
+      .table-like {
+        margin-top: 6px;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        overflow: hidden;
+        font-size: 12px;
+      }
+      .table-like .row {
+        display: grid;
+        grid-template-columns: 1.4fr 1.4fr 1.6fr;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .table-like .row div {
+        padding: 4px 6px;
+      }
+      .table-like .head {
+        background: #f1f5f9;
+        font-weight: 600;
+      }
+      .badge-good {
+        color: var(--good);
+        background: #ecfdf3;
+        border-radius: 999px;
+        padding: 2px 6px;
+        font-size: 11px;
+        display: inline-block;
+        margin-top: 2px;
+      }
+      .badge-bad {
+        color: var(--bad);
+        background: #fef3f2;
+        border-radius: 999px;
+        padding: 2px 6px;
+        font-size: 11px;
+        display: inline-block;
+        margin-top: 2px;
+      }
+      .points-list li strong {
+        color: #111827;
+      }
+      .fe-ap {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 6px;
+      }
+      @media (max-width: 720px) {
+        .fe-ap {
+          grid-template-columns: 1fr;
+        }
+      }
+      .fe-ap div {
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+        padding: 8px 10px;
+        font-size: 12px;
+        background: #f9fafb;
+      }
+      .fe-ap h3 {
+        margin: 0 0 4px;
+        font-size: 12px;
+      }
+      .qa-options {
+        margin: 6px 0 4px;
+        font-size: 13px;
+      }
+      .qa-options li {
+        margin: 3px 0;
+      }
+      .answer-box {
+        display: none;
+        margin-top: 8px;
+        border-radius: 10px;
+        border: 1px solid #dcfce7;
+        background: #f0fdf4;
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+      .answer-box h3 {
+        margin: 0 0 4px;
+        font-size: 13px;
+        color: var(--good);
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: none;
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-size: 12px;
+        cursor: pointer;
+        background: var(--main);
+        color: #ffffff;
+        margin-top: 4px;
+      }
+      .btn span.icon {
+        width: 16px;
+        height: 16px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.16);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+      }
+      .source {
+        margin-top: 6px;
+        font-size: 11px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>昼休み 応用情報トピック</h1>
+      <p>
+        AP専属講師 ×
+        ITエンジニア向け学習アドバイザー｜約5〜10分で読める理解重視メモ
+      </p>
+    </header>
+
+    <main>
+      <div class="hero">
+        <div class="pill">
+          <span class="icon">DB</span>
+          <span>テクノロジ系｜データベース</span>
+        </div>
+        <h2>今日のテーマ：データベースの正規化（第1〜第3正規形）</h2>
+        <p>
+          正規化とは、テーブルを「更新しやすく、矛盾が起きにくい形」に整理する設計手法です。[web:16][web:18]
+        </p>
+        <p>
+          応用情報では、第1〜第3正規形までを使って、業務データをどのように分割すべきかを論理的に判断する力が問われます。[web:8][web:22]
+        </p>
+      </div>
+
+      <!-- ① まず結論 -->
+      <section>
+        <h2>① まず結論 <span class="tag">ざっくり理解</span></h2>
+        <p>
+          データベースの正規化は、テーブル内の「ムダな重複」や「矛盾のもとになる依存関係」を取り除き、きれいな構造に直す作業です。[web:18][web:19]
+        </p>
+        <p>
+          第1正規形では繰り返しをなくし、第2正規形では主キーの一部だけに依存する項目を別テーブルに分け、第3正規形では主キー以外の項目同士の依存を分離します。[web:12][web:16][web:18]
+        </p>
+      </section>
+
+      <!-- ② 仕組み -->
+      <section>
+        <h2>② 仕組み <span class="tag">なぜそうするのか</span></h2>
+        <p>
+          正規化の目的は、挿入・更新・削除をしても整合性が保てるようにすることです。[web:16][web:18]
+        </p>
+        <p>
+          重複や「ある項目が別の項目に依存する関係」が残っていると、一部の行だけ更新されて矛盾が生じたり、削除したつもりが関連情報まで消えてしまう「更新異常」が起きます。[web:18][web:19]
+        </p>
+
+        <div class="card-row">
+          <div class="mini-card">
+            <h3>第1正規形：繰り返しをなくす</h3>
+            <p>
+              1行に「商品A, 商品B,
+              商品C」のような繰り返し項目を持たせず、行を分けて表現します。[web:18][web:19]
+            </p>
+            <span class="badge-good">行・列が素直な表になる</span>
+          </div>
+          <div class="mini-card">
+            <h3>第2正規形：部分関数従属の排除</h3>
+            <p>
+              複合主キーの一部だけで値が決まる項目（部分関数従属）を、別テーブルに分けます。[web:12][web:18][web:22]
+            </p>
+            <span class="badge-good">主キーに「完全に」従属</span>
+          </div>
+          <div class="mini-card">
+            <h3>第3正規形：推移的関数従属の排除</h3>
+            <p>
+              主キー以外の項目に依存する項目（推移的関数従属）を別テーブル化し、「主キー→非キー」に直接従属させます。[web:18][web:21][web:22]
+            </p>
+            <span class="badge-good">非キー同士の依存を断つ</span>
+          </div>
+        </div>
+
+        <div class="table-like">
+          <div class="row head">
+            <div>正規形</div>
+            <div>やること</div>
+            <div>更新異常の例</div>
+          </div>
+          <div class="row">
+            <div>第1正規形</div>
+            <div>繰り返し項目を行として分割</div>
+            <div>ある商品だけ単価の更新漏れ</div>
+          </div>
+          <div class="row">
+            <div>第2正規形</div>
+            <div>主キーの一部に依存する項目を分離</div>
+            <div>商品ごとの単価を複数行で重複保持</div>
+          </div>
+          <div class="row">
+            <div>第3正規形</div>
+            <div>主キー以外の項目に依存する項目を分離</div>
+            <div>顧客名を複数テーブルで別々に更新</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ③ 身近な例 -->
+      <section>
+        <h2>③ 身近な例 <span class="tag">Webサービス・業務システム</span></h2>
+        <p>
+          たとえば「受注管理システム」で、1つのテーブルに「受注番号・顧客コード・顧客名・住所・商品コード・商品名・単価・数量」を全部入れてしまうと、顧客名や住所が受注行ごとに重複します。[web:12][web:19]
+        </p>
+        <p>
+          第3正規形まで行うと「受注テーブル」「顧客テーブル」「商品テーブル」に分割され、顧客情報や商品情報を1か所だけ更新すればよくなり、Webアプリのバグも減ります。[web:12][web:15]
+        </p>
+
+        <div class="example-box">
+          <strong>例：ECサイトの注文テーブル</strong><br />
+          非正規形：<code
+            >注文(注文番号, 顧客コード, 顧客名, 住所, 商品コード, 商品名, 単価,
+            数量)</code
+          ><br />
+          第3正規形：<br />
+          ・<code>注文(注文番号, 顧客コード)</code><br />
+          ・<code>顧客(顧客コード, 顧客名, 住所)</code><br />
+          ・<code>注文明細(注文番号, 商品コード, 数量)</code><br />
+          ・<code>商品(商品コード, 商品名, 単価)</code>[web:12][web:18]
+        </div>
+      </section>
+
+      <!-- ④ 応用情報ではどう問われる？ -->
+      <section>
+        <h2>
+          ④ 応用情報ではどう問われる？ <span class="tag">出題パターン</span>
+        </h2>
+        <p>
+          AP午後Ⅰのデータベース問題では、「業務の文章＋非正規形の表」が与えられ、第1〜第3正規形まで正規化したテーブル構造を選ばせたり、ER図・SQLと組み合わせて問う出題が多いです。[web:10][web:22]
+        </p>
+        <p>
+          選択肢には「まだ部分関数従属が残っている」「推移的関数従属が残っている」など、どこかに依存関係が残ったテーブル案が紛れ込んでいるので、論理的に依存をチェックする力が重要になります。[web:19][web:22]
+        </p>
+
+        <ul class="points-list">
+          <li>
+            <strong>キー候補の読み取り</strong
+            >：「〜番号」「〜コード」「一意に識別する」が主キー候補であることが多い。[web:22]
+          </li>
+          <li>
+            <strong>複合主キーかどうか</strong
+            >：「〜ごとに付与する」「〜との組合せで識別」があれば複合主キーを疑う。[web:22]
+          </li>
+          <li>
+            <strong>依存関係の言葉</strong
+            >：「〜によって決まる」「〜に応じて」があれば関数従属を示していることが多い。[web:18][web:22]
+          </li>
+        </ul>
+      </section>
+
+      <!-- FEとのつながり -->
+      <section>
+        <h2>
+          ⑤ FEではここまで → APではここまで
+          <span class="tag">レベルの違い</span>
+        </h2>
+        <div class="fe-ap">
+          <div>
+            <h3>FE（基本情報）で求められること</h3>
+            <ul>
+              <li>
+                第1〜第3正規形の定義と、簡単な表の分割手順。[web:9][web:12][web:15]
+              </li>
+              <li>
+                「繰り返しをなくす」「主キーの一部に依存する項目を分離」「主キー以外に依存する項目を分離」の3ステップ理解。[web:12][web:19]
+              </li>
+              <li>
+                単一テーブルの問題を、機械的に3つ程度のテーブルに分割する演習。[web:9][web:12]
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3>AP（応用情報）で追加されること</h3>
+            <ul>
+              <li>
+                業務文章から「何がキーか」「何が属性か」を自分で見つける読解力。[web:10][web:22]
+              </li>
+              <li>
+                部分関数従属・推移的関数従属を文章から見抜き、複数パターンの正規化案を比較して良し悪しを判断する力。[web:13][web:19][web:22]
+              </li>
+              <li>
+                正規化したテーブルに対して、SQLやトランザクション設計を組み合わせて整合性を考える力。[web:14][web:20]
+              </li>
+            </ul>
+          </div>
+        </div>
+        <p>
+          FEで身につけた「第1〜第3正規形の機械的な手順」を、APでは「業務要件の読み取り＋依存関係の分析」にまで拡張して使えるようにするイメージです。[web:13][web:22]
+        </p>
+      </section>
+
+      <!-- 実務とのつながり -->
+      <section>
+        <h2>
+          ⑥ 実務ではどう使う？ <span class="tag">Web開発・SQL・設計</span>
+        </h2>
+        <p>
+          実務のWebアプリ開発では、正規化が不十分なテーブルだと、機能追加のたびに「同じ情報が別テーブルや別行に散らばる」状態になり、保守が難しくなります。[web:18][web:19]
+        </p>
+        <p>
+          第3正規形を意識してテーブル設計をしておくと、ORM（Hibernate,
+          JPAなど）やSQLのJOINもシンプルになり、テストやリファクタリングがしやすい構造になります。[web:16][web:21]
+        </p>
+
+        <div class="example-box">
+          <strong>Java＋SQLでの具体的なメリット</strong><br />
+          ・<code>Customer</code>エンティティで顧客を1レコードだけ持つので、変更は1か所だけ。<br />
+          ・<code>Order</code>エンティティは顧客コードと日付など最低限の項目に絞られ、履歴管理しやすい。<br />
+          ・JOIN句：<code
+            >SELECT ... FROM orders o JOIN customers c ON o.customer_code =
+            c.customer_code</code
+          >
+          のように分かりやすい形になる。<br />
+          ・Gitでの差分も「1レコードの更新」で済み、レビューしやすい。
+        </div>
+      </section>
+
+      <!-- 確認問題 -->
+      <section>
+        <h2>⑦ 確認問題 <span class="tag">AP午後レベルを意識</span></h2>
+        <p>
+          次の表「受注」を第3正規形にしたい。どの項目の関係を別テーブルにすべきかを考える四択です。
+        </p>
+
+        <div class="example-box">
+          <strong>受注テーブル（非正規形のイメージ）</strong><br />
+          <code
+            >受注(受注番号, 顧客コード, 顧客名, 住所, 商品コード, 商品名, 単価,
+            数量)</code
+          ><br />
+          業務仕様：<br />
+          ・顧客コードが決まれば顧客名と住所が一意に決まる。<br />
+          ・商品コードが決まれば商品名と単価が一意に決まる。[web:12][web:18]
+        </div>
+
+        <p>
+          <strong>問：</strong
+          >この表を第3正規形に近づけるために、最初に分離すべき関係として最も適切なのはどれか。
+        </p>
+        <ul class="qa-options">
+          <li>
+            ア：<code>(受注番号, 顧客コード, 顧客名, 住所)</code>
+            を「顧客」テーブルとして分離する。
+          </li>
+          <li>
+            イ：<code>(受注番号, 商品コード, 商品名, 単価)</code>
+            を「商品」テーブルとして分離する。
+          </li>
+          <li>
+            ウ：<code>(顧客コード, 顧客名, 住所)</code> と
+            <code>(商品コード, 商品名, 単価)</code>
+            の2つを、それぞれ別テーブルとして分離する。
+          </li>
+          <li>
+            エ：<code>(受注番号, 顧客名, 商品名)</code>
+            を「表示用キャッシュ」テーブルとして分離する。
+          </li>
+        </ul>
+
+        <button class="btn" onclick="showAnswer()">
+          <span class="icon">Q</span>
+          <span>解答・解説を表示</span>
+        </button>
+
+        <div id="answer" class="answer-box">
+          <h3>正解：ウ</h3>
+          <p>
+            <strong>理由：</strong>顧客コード → 顧客名・住所、商品コード →
+            商品名・単価 という
+            <em>主キー以外の項目に依存する項目</em
+            >（推移的関数従属）を、それぞれ別テーブルに分離するのが第3正規形の考え方です。[web:12][web:18][web:22]
+          </p>
+          <p><strong>他の選択肢が違う理由：</strong></p>
+          <ul>
+            <li>
+              ア：顧客情報だけを分離しても、商品コード →
+              商品名・単価の依存が受注テーブルに残り、第3正規形とは言いにくい。[web:18][web:19]
+            </li>
+            <li>
+              イ：商品情報だけを分離しても、顧客コード →
+              顧客名・住所の依存が残るため不十分。[web:12][web:18]
+            </li>
+            <li>
+              エ：表示用キャッシュは業務上あり得ますが、整合性を保つための正規化とは逆方向の「冗長なキャッシュ」であり、正規形としては不適切です。[web:18][web:19]
+            </li>
+          </ul>
+          <p>
+            AP午後では、このような依存関係を文章から読み取り、分離すべき関係を論理的に特定できるかが問われます。[web:10][web:22]
+          </p>
+        </div>
+      </section>
+
+      <!-- 今日の一言 -->
+      <section>
+        <h2>🔥 今日これだけ覚えて帰ろう <span class="tag">一言まとめ</span></h2>
+        <p>
+          <strong
+            >第1正規形：繰り返しをなくす、第2正規形：主キーの一部だけに依存する項目を分離、第3正規形：主キー以外に依存する項目を分離。</strong
+          >[web:12][web:18][web:19]
+        </p>
+        <p>
+          APでは「どの項目がどれに依存しているか」を業務文章から見抜き、「どのテーブルに分ければ更新異常がなくなるか」を論理的に説明できるようになろう。
+        </p>
+      </section>
+
+      <p class="source">
+        参考：IPA応用情報技術者試験シラバス（Ver.7.2）のデータベース分野「データの正規化の目的・手順」より。[web:8]
+      </p>
+    </main>
+
+    <script>
+      function showAnswer() {
+        const box = document.getElementById("answer");
+        box.style.display = "block";
+        box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    </script>
+  </body>
+</html>

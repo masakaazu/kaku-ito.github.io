@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>
+      基本情報技術者試験
+      計算問題まとめ（Part2：ネットワーク・経営分析・プロジェクト管理・誤り検出）
+    </title>
+    <style>
+      body {
+        font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 24px;
+        line-height: 1.7;
+        color: #222;
+        background: #fafafa;
+      }
+      h1 {
+        font-size: 1.6em;
+        border-bottom: 4px solid #a94442;
+        padding-bottom: 8px;
+      }
+      h2 {
+        font-size: 1.3em;
+        color: #fff;
+        background: #a94442;
+        padding: 8px 12px;
+        border-radius: 6px;
+        margin-top: 40px;
+      }
+      h3 {
+        font-size: 1.05em;
+        color: #a94442;
+        border-left: 6px solid #a94442;
+        padding-left: 8px;
+        margin-top: 24px;
+      }
+      .formula {
+        background: #fbecec;
+        border: 1px solid #eab7b7;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin: 10px 0;
+        font-weight: bold;
+      }
+      .example {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-left: 6px solid #f0a500;
+        border-radius: 6px;
+        padding: 12px 16px;
+        margin: 10px 0;
+      }
+      .example .q {
+        font-weight: bold;
+      }
+      .answer {
+        background: #f4fbf1;
+        border: 1px solid #cbe7bd;
+        border-left: 6px solid #4caf50;
+        border-radius: 6px;
+        padding: 10px 16px;
+        margin: 6px 0;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 12px 0;
+      }
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 6px 10px;
+        text-align: center;
+      }
+      th {
+        background: #f3e2e2;
+      }
+      .toc {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 16px 20px;
+      }
+      .toc a {
+        text-decoration: none;
+        color: #a94442;
+      }
+      .note {
+        font-size: 0.9em;
+        color: #555;
+      }
+      code {
+        background: #eee;
+        padding: 1px 5px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>基本情報技術者試験 計算問題まとめ（Part2）</h1>
+    <p class="note">
+      Part1（数値表現・論理演算・性能評価）に続き、「ネットワーク計算」「記憶容量」「確率・組合せ」「経営分析」「プロジェクト管理」「アルゴリズム系」「誤り検出」を整理しています。
+    </p>
+
+    <div class="toc">
+      <b>目次</b><br />
+      <a href="#s1">1. ネットワーク計算（伝送時間・回線利用率）</a><br />
+      <a href="#s2">2. 記憶容量・RAID計算</a><br />
+      <a href="#s3">3. 確率・組合せ・期待値</a><br />
+      <a href="#s4">4. 損益分岐点・変動費固定費</a><br />
+      <a href="#s5">5. 線形計画法</a><br />
+      <a href="#s6">6. 経済的発注量（EOQ）</a><br />
+      <a href="#s7">7. 減価償却</a><br />
+      <a href="#s8">8. アローダイアグラム（PERT図）・クリティカルパス</a><br />
+      <a href="#s9">9. EVM（アーンドバリューマネジメント）</a><br />
+      <a href="#s10">10. 逆ポーランド記法</a><br />
+      <a href="#s11">11. mod演算</a><br />
+      <a href="#s12">12. 誤り検出・訂正（パリティ・ハミング符号）</a>
+    </div>
+
+    <h2 id="s1">1. ネットワーク計算（伝送時間・回線利用率）</h2>
+    <div class="formula">
+      伝送時間 = データ量 ÷ (回線速度 × 回線利用率)<br />スループット = 回線速度
+      × 回線利用率
+    </div>
+    <div class="example">
+      <p class="q">
+        例題：100Mbpsの回線を利用率50%で使うとき、500Mバイト（=4,000Mビット）のファイル転送にかかる時間は？
+      </p>
+      実効速度 = 100Mbps × 0.5 = 50Mbps<br />時間 = 4,000Mビット ÷ 50Mbps = 80秒
+      <div class="answer">答え：80秒</div>
+    </div>
+    <div class="formula">
+      伝送効率を考慮する場合：実効データ量 = 総データ量 × (1 − オーバーヘッド率)
+    </div>
+    <p class="note">
+      パケット分割・ヘッダオーバーヘッド、複数端末同時接続時のスループット低下も同系統の応用問題として出やすい。
+    </p>
+
+    <h2 id="s2">2. 記憶容量・RAID計算</h2>
+    <div class="formula">
+      必要な記憶容量 = レコード長 × レコード件数 × ブロック化因数などの係数<br />RAID5の実効容量
+      ≒ (n−1) × 1台分の容量（nは台数）<br />RAID1の実効容量 =
+      1台分の容量（ミラーリング）
+    </div>
+    <div class="example">
+      <p class="q">
+        例題：1台500GBのディスク4台でRAID5を構成した場合の実効容量は？
+      </p>
+      (4−1) × 500GB = 1,500GB
+      <div class="answer">答え：1,500GB（1.5TB）</div>
+    </div>
+
+    <h2 id="s3">3. 確率・組合せ・期待値</h2>
+    <div class="formula">
+      組合せ：nCr = n! ÷ (r! × (n−r)!)<br />期待値 = Σ（事象の値 × その確率）
+    </div>
+    <div class="example">
+      <p class="q">例題：5個の異なる製品から3個を選ぶ組合せは何通りか。</p>
+      5C3 = 5! ÷ (3!×2!) = 120 ÷ (6×2) = 10
+      <div class="answer">答え：10通り</div>
+    </div>
+    <div class="example">
+      <p class="q">例題：当たり確率20%で1万円もらえるくじの期待値は？</p>
+      0.2 × 10,000 + 0.8 × 0 = 2,000
+      <div class="answer">答え：2,000円</div>
+    </div>
+
+    <h2 id="s4">4. 損益分岐点・変動費固定費</h2>
+    <div class="formula">
+      損益分岐点売上高 = 固定費 ÷ (1 − 変動費率)<br />限界利益率 = 1 − 変動費率
+    </div>
+    <div class="example">
+      <p class="q">
+        例題：固定費300万円、変動費率60%のときの損益分岐点売上高は？
+      </p>
+      300万 ÷ (1 − 0.6) = 300万 ÷ 0.4 = 750万
+      <div class="answer">答え：750万円</div>
+    </div>
+
+    <h2 id="s5">5. 線形計画法</h2>
+    <div class="formula">
+      制約条件（不等式）を満たす領域内で、目的関数（利益や費用）を最大・最小にする組合せを探す
+    </div>
+    <div class="example">
+      <p class="q">
+        例題：製品Xを1個作るのに材料Aを2、材料Bを1使う。製品Yは材料Aを1、材料Bを2使う。材料Aは在庫8、材料Bは在庫8。X,Yの利益がそれぞれ300円、200円のとき、最大利益となる生産量の組合せは？
+      </p>
+      制約：2x+y≤8, x+2y≤8, x,y≥0<br />頂点(0,0),(4,0),(0,4),(8/3,8/3)を目的関数300x+200yに代入して比較<br />x=8/3,y=8/3のとき利益=300×8/3+200×8/3=(300+200)×8/3=1333.3<br />x=4,y=0のとき利益=1200、x=0,y=4のとき利益=800
+      <div class="answer">
+        答え：交点(8/3, 8/3)付近が最大（実務では整数解に近似して検討する）
+      </div>
+    </div>
+    <p class="note">
+      試験では複雑な最適化までは求めず、グラフ上の頂点候補を目的関数に当てはめて比較する形式が多い。
+    </p>
+
+    <h2 id="s6">6. 経済的発注量（EOQ）</h2>
+    <div class="formula">
+      EOQ = √(2 × 年間需要量 × 1回あたり発注費 ÷ 単位あたり保管費)
+    </div>
+    <div class="example">
+      <p class="q">
+        例題：年間需要2,000個、1回の発注費500円、保管費（1個あたり年間）10円のときのEOQは？
+      </p>
+      EOQ = √(2×2,000×500 ÷ 10) = √200,000 = 約447
+      <div class="answer">答え：約447個</div>
+    </div>
+
+    <h2 id="s7">7. 減価償却</h2>
+    <div class="formula">
+      定額法：年間償却額 = (取得価額 − 残存価額) ÷ 耐用年数
+    </div>
+    <div class="example">
+      <p class="q">
+        例題：取得価額100万円、残存価額0円、耐用年数5年の設備の年間償却額（定額法）は？
+      </p>
+      (100万−0) ÷ 5 = 20万
+      <div class="answer">答え：20万円/年</div>
+    </div>
+
+    <h2 id="s8">8. アローダイアグラム（PERT図）・クリティカルパス</h2>
+    <div class="formula">
+      クリティカルパス =
+      最も時間のかかる経路（プロジェクト全体の最短完了日数を決める経路）
+    </div>
+    <div class="example">
+      <p class="q">
+        例題：作業経路が
+        A→B→C（合計10日）、A→D→C（合計13日）の2つある場合、クリティカルパスと最短完了日数は？
+      </p>
+      2つの経路のうち時間が長い方が全体のボトルネックになる
+      <div class="answer">
+        答え：クリティカルパスは A→D→C、最短完了日数は13日
+      </div>
+    </div>
+
+    <h2 id="s9">9. EVM（アーンドバリューマネジメント）</h2>
+    <div class="formula">
+      スケジュール差異 SV = EV − PV<br />
+      コスト差異 CV = EV − AC<br />
+      スケジュール効率 SPI = EV ÷ PV<br />
+      コスト効率 CPI = EV ÷ AC<br />
+      （EV=achieved value, PV=planned value, AC=actual cost）
+    </div>
+    <div class="example">
+      <p class="q">
+        例題：計画上の完了予定価値(PV)100万円、実際の完了価値(EV)80万円、実コスト(AC)90万円のときのSVとCVは？
+      </p>
+      SV = 80−100 = −20万円（遅延）<br />CV = 80−90 = −10万円（コスト超過）
+      <div class="answer">
+        答え：SV=−20万円、CV=−10万円（どちらも負なので遅延かつコスト超過）
+      </div>
+    </div>
+
+    <h2 id="s10">10. 逆ポーランド記法</h2>
+    <div class="formula">
+      演算子を後置し、スタックを使って左から順に計算する
+    </div>
+    <div class="example">
+      <p class="q">例題：逆ポーランド記法 3 4 + 5 * の計算結果は？</p>
+      3,4をスタックに積み、+で3+4=7を計算。7,5をスタックに積み、*で7×5=35
+      <div class="answer">答え：35</div>
+    </div>
+
+    <h2 id="s11">11. mod演算</h2>
+    <div class="formula">a mod b = a を b で割った余り</div>
+    <div class="example">
+      <p class="q">
+        例題：17 mod 5
+        の値は？また、ハッシュ関数でテーブルサイズ5に値17を格納する場合の格納位置は？
+      </p>
+      17 ÷ 5 = 3 余り2
+      <div class="answer">答え：2（余り2の位置に格納）</div>
+    </div>
+
+    <h2 id="s12">12. 誤り検出・訂正（パリティ・ハミング符号）</h2>
+    <div class="formula">
+      偶数パリティ：データ中の1の個数が偶数になるようパリティビットを付加<br />ハミング符号：複数のパリティビットの組合せで誤り位置を特定し、1ビット誤りを訂正できる
+    </div>
+    <div class="example">
+      <p class="q">
+        例題：データ 1011 に偶数パリティビットを付加する場合、パリティビットは？
+      </p>
+      1011の1の個数は3個（奇数）→ 偶数にするためパリティビットは1
+      <div class="answer">
+        答え：パリティビット=1（送信データ：10111 など、末尾に付加）
+      </div>
+    </div>
+    <p class="note">
+      CRC（巡回冗長検査）は多項式による除算の余りで誤り検出する方式として概要が問われることもある。
+    </p>
+
+    <hr />
+    <p class="note">
+      Part1（数値表現・論理演算・性能評価）とあわせて学習してください。公式を覚える際は「何を求める式か」だけでなく「単位」に注意すると計算ミスが減ります。
+    </p>
+    <div style="padding: 18px 0 24px; text-align: center">
+      <div
+        style="
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 24px;
+        "
+      >
+        <a
+          href="index.html"
+          style="color: #2476c9; font-weight: 700; text-decoration: none"
+          >目次に戻る</a
+        >
+        <a
+          href="../index.html"
+          style="color: #2476c9; font-weight: 700; text-decoration: none"
+          >復習教材一覧</a
+        >
+        <a
+          href="../../index.html"
+          style="color: #2476c9; font-weight: 700; text-decoration: none"
+          >学習ポータルに戻る</a
+        >
+      </div>
+    </div>
+    <script src="../../assets/js/review-answer-toggle.js"></script>
+  </body>
+</html>

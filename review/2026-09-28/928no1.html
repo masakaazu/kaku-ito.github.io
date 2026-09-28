@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>
+      基本情報技術者試験 計算問題まとめ（Part1：数値表現・論理演算・性能評価）
+    </title>
+    <style>
+      body {
+        font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 24px;
+        line-height: 1.7;
+        color: #222;
+        background: #fafafa;
+      }
+      h1 {
+        font-size: 1.6em;
+        border-bottom: 4px solid #2c6e91;
+        padding-bottom: 8px;
+      }
+      h2 {
+        font-size: 1.3em;
+        color: #fff;
+        background: #2c6e91;
+        padding: 8px 12px;
+        border-radius: 6px;
+        margin-top: 40px;
+      }
+      h3 {
+        font-size: 1.05em;
+        color: #2c6e91;
+        border-left: 6px solid #2c6e91;
+        padding-left: 8px;
+        margin-top: 24px;
+      }
+      .formula {
+        background: #eef6fb;
+        border: 1px solid #b8dceb;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin: 10px 0;
+        font-weight: bold;
+      }
+      .example {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-left: 6px solid #f0a500;
+        border-radius: 6px;
+        padding: 12px 16px;
+        margin: 10px 0;
+      }
+      .example .q {
+        font-weight: bold;
+      }
+      .answer {
+        background: #f4fbf1;
+        border: 1px solid #cbe7bd;
+        border-left: 6px solid #4caf50;
+        border-radius: 6px;
+        padding: 10px 16px;
+        margin: 6px 0;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 12px 0;
+      }
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 6px 10px;
+        text-align: center;
+      }
+      th {
+        background: #e8f0f5;
+      }
+      .toc {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 16px 20px;
+      }
+      .toc a {
+        text-decoration: none;
+        color: #2c6e91;
+      }
+      .note {
+        font-size: 0.9em;
+        color: #555;
+      }
+      code {
+        background: #eee;
+        padding: 1px 5px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>基本情報技術者試験 計算問題まとめ（Part1）</h1>
+    <p class="note">
+      科目Aで頻出の計算問題を「数値表現」「論理演算」「性能評価」のテーマ別に、公式・解き方・例題付きで整理しています。後半（ネットワーク・経営分析・プロジェクト管理・誤り検出など）は
+      Part2 を参照してください。
+    </p>
+
+    <div class="toc">
+      <b>目次</b><br />
+      <a href="#s1">1. 基数変換（2進数・8進数・16進数）</a><br />
+      <a href="#s2">2. 補数（1の補数・2の補数）</a><br />
+      <a href="#s3">3. 浮動小数点数</a><br />
+      <a href="#s4">4. シフト演算</a><br />
+      <a href="#s5">5. 論理演算・ビット演算</a><br />
+      <a href="#s6">6. 論理回路・真理値表</a><br />
+      <a href="#s7">7. MIPS・CPI（性能評価）</a><br />
+      <a href="#s8">8. キャッシュメモリの実効アクセス時間</a><br />
+      <a href="#s9">9. 稼働率（直列・並列・複合系）</a><br />
+      <a href="#s10">10. MTBF・MTTR・故障率</a><br />
+      <a href="#s11">11. 待ち行列理論（M/M/1）</a>
+    </div>
+
+    <h2 id="s1">1. 基数変換（2進数・8進数・16進数）</h2>
+    <h3>10進数 → 2進数</h3>
+    <div class="formula">10進数を2で割り続け、余りを下から並べる</div>
+    <div class="example">
+      <p class="q">例題：10進数の 43 を2進数に変換せよ。</p>
+      43÷2=21 余り1<br />21÷2=10 余り1<br />10÷2=5 余り0<br />5÷2=2 余り1<br />2÷2=1
+      余り0<br />1÷2=0 余り1
+      <div class="answer">答え：101011</div>
+    </div>
+    <h3>2進数 → 10進数</h3>
+    <div class="formula">各桁 × 2の桁数乗 の合計</div>
+    <div class="example">
+      <p class="q">例題：2進数 101011 を10進数に変換せよ。</p>
+      1×32 + 0×16 + 1×8 + 0×4 + 1×2 + 1×1 = 32+8+2+1
+      <div class="answer">答え：43</div>
+    </div>
+    <h3>16進数との対応</h3>
+    <table>
+      <tr>
+        <th>2進数</th>
+        <td>0000</td>
+        <td>0001</td>
+        <td>0010</td>
+        <td>...</td>
+        <td>1010</td>
+        <td>1111</td>
+      </tr>
+      <tr>
+        <th>16進数</th>
+        <td>0</td>
+        <td>1</td>
+        <td>2</td>
+        <td>...</td>
+        <td>A</td>
+        <td>F</td>
+      </tr>
+    </table>
+    <p class="note">
+      16進数は4桁の2進数を1文字にまとめたもの。例：2進数 1010 1100 → 16進数 AC
+    </p>
+
+    <h2 id="s2">2. 補数（1の補数・2の補数）</h2>
+    <div class="formula">
+      1の補数 = 全ビット反転（0⇔1）<br />2の補数 = 1の補数 + 1
+    </div>
+    <div class="example">
+      <p class="q">例題：8ビットで -5 を2の補数表現で表せ。</p>
+      5 = 00000101<br />1の補数（反転）= 11111010<br />+1 → 11111011
+      <div class="answer">答え：11111011</div>
+    </div>
+    <div class="formula">
+      nビットの2の補数表現で表せる範囲：−2<sup>n-1</sup> 〜 2<sup>n-1</sup>−1
+    </div>
+    <p class="note">
+      8ビットなら
+      -128〜127。減算は「2の補数を作って加算」で実現できるのがポイント。
+    </p>
+
+    <h2 id="s3">3. 浮動小数点数</h2>
+    <div class="formula">
+      値 = (−1)<sup>符号</sup> × 1.仮数部 × 2<sup>指数部−バイアス</sup>
+    </div>
+    <div class="example">
+      <p class="q">
+        例題：正規化された2進浮動小数点数で 0.75
+        を表すと仮数部・指数部はどうなるか（仮数を1.xxxx形式で考える）。
+      </p>
+      0.75 = 0.11(2) = 1.1 × 2<sup>-1</sup><br />よって仮数部は「1」、指数部は
+      −1
+      <div class="answer">
+        答え：仮数部 1.1、指数部 −1（IEEE754ではバイアス値を加算して格納）
+      </div>
+    </div>
+    <p class="note">
+      丸め誤差・桁落ち・情報落ちなどの用語もセットで出題されやすい。
+    </p>
+
+    <h2 id="s4">4. シフト演算</h2>
+    <div class="formula">
+      左に nビットシフト = 2<sup>n</sup> 倍<br />右に nビットシフト = 1/2<sup
+        >n</sup
+      >
+      倍（符号なしの場合）
+    </div>
+    <div class="example">
+      <p class="q">例題：2進数 00000101（5）を左に2ビットシフトすると？</p>
+      5 × 2<sup>2</sup> = 5×4 = 20 → 00010100
+      <div class="answer">答え：20（00010100）</div>
+    </div>
+
+    <h2 id="s5">5. 論理演算・ビット演算</h2>
+    <table>
+      <tr>
+        <th>A</th>
+        <th>B</th>
+        <th>AND</th>
+        <th>OR</th>
+        <th>XOR</th>
+        <th>NAND</th>
+      </tr>
+      <tr>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td>0</td>
+        <td>1</td>
+        <td>0</td>
+        <td>1</td>
+        <td>1</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>0</td>
+        <td>0</td>
+        <td>1</td>
+        <td>1</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>1</td>
+        <td>1</td>
+        <td>1</td>
+        <td>0</td>
+        <td>0</td>
+      </tr>
+    </table>
+    <div class="example">
+      <p class="q">例題：1010(2) と 0110(2) のXORは？</p>
+      1010<br />0110<br />--------<br />1100
+      <div class="answer">答え：1100</div>
+    </div>
+
+    <h2 id="s6">6. 論理回路・真理値表</h2>
+    <p>
+      ベン図・論理式（ド・モルガンの法則など）とあわせて出題される。<br />
+      ド・モルガンの法則：<code>NOT(A AND B) = (NOT A) OR (NOT B)</code>、<code
+        >NOT(A OR B) = (NOT A) AND (NOT B)</code
+      >
+    </p>
+    <div class="example">
+      <p class="q">例題：論理式 A・B + A・(NOT B) を簡単化せよ。</p>
+      A・B + A・(NOT B) = A・(B + NOT B) = A・1
+      <div class="answer">答え：A</div>
+    </div>
+
+    <h2 id="s7">7. MIPS・CPI（性能評価）</h2>
+    <div class="formula">
+      実行時間 = 命令数 × CPI ÷ クロック周波数<br />MIPS = クロック周波数 ÷ (CPI
+      × 10<sup>6</sup>)
+    </div>
+    <div class="example">
+      <p class="q">例題：クロック周波数 800MHz、平均CPIが4のCPUのMIPS値は？</p>
+      MIPS = 800×10<sup>6</sup> ÷ (4×10<sup>6</sup>) = 200
+      <div class="answer">答え：200MIPS</div>
+    </div>
+    <div class="example">
+      <p class="q">例題：100MIPSのCPUで10万命令を実行する処理時間は？</p>
+      100MIPS = 1秒間に1億命令。10万命令÷1億命令/秒 = 0.001秒
+      <div class="answer">答え：1ミリ秒</div>
+    </div>
+
+    <h2 id="s8">8. キャッシュメモリの実効アクセス時間</h2>
+    <div class="formula">
+      実効アクセス時間 = ヒット率×キャッシュのアクセス時間 +
+      (1−ヒット率)×主記憶のアクセス時間
+    </div>
+    <div class="example">
+      <p class="q">
+        例題：キャッシュのアクセス時間10ns、主記憶100ns、ヒット率90%のときの実効アクセス時間は？
+      </p>
+      0.9×10 + 0.1×100 = 9 + 10 = 19
+      <div class="answer">答え：19ns</div>
+    </div>
+
+    <h2 id="s9">9. 稼働率（直列・並列・複合系）</h2>
+    <div class="formula">
+      単体の稼働率 = MTBF ÷ (MTBF + MTTR)<br />直列システム：稼働率 = A × B<br />並列システム：稼働率
+      = 1 − (1−A) × (1−B)
+    </div>
+    <div class="example">
+      <p class="q">
+        例題：稼働率0.9の装置Aと0.8の装置Bを直列に接続した場合の稼働率は？
+      </p>
+      0.9 × 0.8 = 0.72
+      <div class="answer">答え：0.72（72%）</div>
+    </div>
+    <div class="example">
+      <p class="q">例題：同上の2台を並列に接続した場合の稼働率は？</p>
+      1 − (1−0.9)×(1−0.8) = 1 − 0.1×0.2 = 1 − 0.02 = 0.98
+      <div class="answer">答え：0.98（98%）</div>
+    </div>
+    <div class="example">
+      <p class="q">
+        例題：直列2台＋その全体に並列でもう1系統（同じ直列2台構成）を接続した場合は？
+      </p>
+      直列部分の稼働率＝0.72（上の計算）<br />並列合成：1 − (1−0.72)×(1−0.72) =
+      1 − 0.28<sup>2</sup> = 1 − 0.0784 = 0.9216
+      <div class="answer">答え：0.9216（約92.2%）</div>
+    </div>
+
+    <h2 id="s10">10. MTBF・MTTR・故障率</h2>
+    <div class="formula">
+      MTBF（平均故障間隔）＝稼働時間の合計 ÷ 故障回数<br />MTTR（平均修復時間）＝修理時間の合計
+      ÷ 故障回数<br />故障率 λ = 1 ÷ MTBF
+    </div>
+    <div class="example">
+      <p class="q">
+        例題：MTBFが3,600時間、MTTRが900時間のシステムの稼働率は？
+      </p>
+      3,600 ÷ (3,600+900) = 3,600÷4,500 = 0.8
+      <div class="answer">答え：0.8（80%）</div>
+    </div>
+
+    <h2 id="s11">11. 待ち行列理論（M/M/1）</h2>
+    <div class="formula">
+      利用率 ρ = λ ÷ μ = 到着率 × 平均サービス時間<br />
+      平均待ち時間 Wq = ρ ÷ (1−ρ) × サービス時間<br />
+      平均応答時間 W = サービス時間 ÷ (1−ρ)<br />
+      平均待ち行列長 Lq = ρ² ÷ (1−ρ)<br />
+      系内平均客数 L = ρ ÷ (1−ρ)
+    </div>
+    <div class="example">
+      <p class="q">
+        例題：ある窓口の平均サービス時間は5分、平均到着間隔は10分（λ=1/10、μ=1/5）。利用率と平均待ち時間は？
+      </p>
+      ρ = λ/μ = (1/10)/(1/5) = 5/10 = 0.5<br />
+      Wq = ρ/(1−ρ) × サービス時間 = 0.5/0.5 × 5分 = 5分
+      <div class="answer">答え：利用率0.5、平均待ち時間5分</div>
+    </div>
+    <p class="note">
+      「ρ ÷
+      (1−ρ)」という係数を暗記し、待ち時間ならサービス時間を掛ける、応答時間なら1を足してから掛ける、という運用がコツ。
+    </p>
+
+    <hr />
+    <p class="note">
+      続きは
+      Part2（ネットワーク計算・記憶容量・確率・経営分析・プロジェクト管理・誤り検出）を参照してください。
+    </p>
+    <div style="padding: 18px 0 24px; text-align: center">
+      <div
+        style="
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 24px;
+        "
+      >
+        <a
+          href="index.html"
+          style="color: #2476c9; font-weight: 700; text-decoration: none"
+          >← 目次に戻る</a
+        >
+        <a
+          href="../index.html"
+          style="color: #2476c9; font-weight: 700; text-decoration: none"
+          >復習教材一覧</a
+        >
+        <a
+          href="../../index.html"
+          style="color: #2476c9; font-weight: 700; text-decoration: none"
+          >学習ポータルに戻る</a
+        >
+      </div>
+    </div>
+    <script src="../../assets/js/review-answer-toggle.js"></script>
+  </body>
+</html>
