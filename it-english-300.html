@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT English 300</title>
+<style>
+:root {
+  --bg: #F5F5F7; --surface: #FFFFFF; --surface-alt: #FAFAFC;
+  --border: #D2D2D7; --border-light: #E5E5EA;
+  --text: #1D1D1F; --text-muted: #6E6E73; --text-faint: #AEAEB2;
+  --accent: #007AFF; --accent-hover: #0056B3; --accent-light: #E8F0FE;
+  --success: #34C759; --success-light: #E8F8EE;
+  --warning: #FF9500; --danger: #FF3B30;
+  --radius: 16px; --radius-sm: 10px; --radius-xs: 8px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.08);
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+  --transition: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+[data-theme="dark"] {
+  --bg: #000000; --surface: #1C1C1E; --surface-alt: #2C2C2E;
+  --border: #38383A; --border-light: #2C2C2E;
+  --text: #FFFFFF; --text-muted: #98989D; --text-faint: #636366;
+  --accent: #0A84FF; --accent-hover: #409CFF; --accent-light: #1C2C3E;
+  --success: #30D158; --success-light: #1B2E1F;
+  --warning: #FF9F0A; --danger: #FF453A;
+  --shadow: 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.4);
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.2);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg); color: var(--text);
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5; transition: background var(--transition), color var(--transition);
+  min-height: 100vh;
+}
+.container { max-width: 1100px; margin: 0 auto; padding: 24px 20px 80px; }
+.back-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin: 8px 0 16px; padding: 8px 12px; border-radius: 999px;
+  background: var(--surface); border: 1px solid var(--border-light);
+  color: var(--text-muted); text-decoration: none; font-size: 13px; font-weight: 600;
+  box-shadow: var(--shadow-card); transition: all var(--transition);
+}
+.back-link:hover { color: var(--accent); border-color: var(--accent); transform: translateX(-2px); }
+.header { text-align: center; padding: 40px 0 32px; }
+.header h1 {
+  font-size: clamp(28px, 5vw, 42px); font-weight: 700; letter-spacing: -0.02em;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.header .subtitle { font-size: clamp(13px, 2.5vw, 16px); color: var(--text-muted); font-weight: 400; line-height: 1.6; }
+.theme-toggle {
+  position: fixed; top: 16px; right: 16px; width: 40px; height: 40px;
+  border-radius: 50%; background: var(--surface); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  z-index: 1000; box-shadow: var(--shadow); transition: all var(--transition);
+  color: var(--text); font-size: 18px;
+}
+.theme-toggle:hover { transform: scale(1.05); }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+.stat-card {
+  background: var(--surface); border-radius: var(--radius); padding: 20px; text-align: center;
+  box-shadow: var(--shadow-card); border: 1px solid var(--border-light);
+  transition: transform var(--transition);
+}
+.stat-card:hover { transform: translateY(-2px); }
+.stat-value { font-size: clamp(22px, 4vw, 32px); font-weight: 700; letter-spacing: -0.02em; color: var(--text); }
+.stat-value.accent { color: var(--accent); }
+.stat-value.success { color: var(--success); }
+.stat-value.muted { color: var(--text-muted); }
+.stat-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
+.progress-section {
+  background: var(--surface); border-radius: var(--radius); padding: 20px;
+  margin-bottom: 24px; box-shadow: var(--shadow-card); border: 1px solid var(--border-light);
+}
+.progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.progress-title { font-size: 15px; font-weight: 600; color: var(--text); }
+.progress-percent { font-size: 15px; font-weight: 700; color: var(--accent); }
+.progress-bar { height: 8px; background: var(--border-light); border-radius: 4px; overflow: hidden; }
+.progress-fill {
+  height: 100%; background: linear-gradient(90deg, var(--accent) 0%, var(--success) 100%);
+  border-radius: 4px; transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); width: 0%;
+}
+.controls {
+  background: var(--surface); border-radius: var(--radius); padding: 20px;
+  margin-bottom: 24px; box-shadow: var(--shadow-card); border: 1px solid var(--border-light);
+}
+.search-box { position: relative; margin-bottom: 16px; }
+.search-box input {
+  width: 100%; padding: 12px 16px 12px 44px; font-size: 15px;
+  border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+  background: var(--surface-alt); color: var(--text); font-family: inherit; transition: all var(--transition);
+}
+.search-box input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-light); }
+.search-box input::placeholder { color: var(--text-faint); }
+.search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-faint); font-size: 18px; }
+.filter-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.filter-group { display: flex; flex-wrap: wrap; gap: 6px; }
+.filter-label { font-size: 12px; color: var(--text-muted); font-weight: 600; align-self: center; margin-right: 4px; min-width: 50px; }
+.chip {
+  padding: 6px 14px; font-size: 13px; font-weight: 500;
+  border: 1px solid var(--border-light); border-radius: 20px;
+  background: var(--surface); color: var(--text-muted); cursor: pointer;
+  transition: all var(--transition); white-space: nowrap; font-family: inherit;
+}
+.chip:hover { border-color: var(--accent); color: var(--accent); }
+.chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+select.sort-select {
+  padding: 6px 12px; font-size: 13px; border: 1px solid var(--border-light);
+  border-radius: 20px; background: var(--surface); color: var(--text-muted);
+  cursor: pointer; font-family: inherit; transition: all var(--transition);
+}
+select.sort-select:focus { outline: none; border-color: var(--accent); }
+.mode-tabs { display: flex; gap: 4px; background: var(--surface-alt); border-radius: var(--radius-sm); padding: 4px; margin-bottom: 24px; }
+.mode-tab {
+  flex: 1; padding: 10px; text-align: center; font-size: 14px; font-weight: 600;
+  color: var(--text-muted); cursor: pointer; border-radius: var(--radius-xs);
+  transition: all var(--transition); font-family: inherit; border: none; background: none;
+}
+.mode-tab.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow-card); }
+.word-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+.word-card {
+  background: var(--surface); border-radius: var(--radius); padding: 20px;
+  box-shadow: var(--shadow-card); border: 1px solid var(--border-light);
+  transition: all var(--transition); cursor: pointer; position: relative;
+}
+.word-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.word-card.known { opacity: 0.6; }
+.word-card.known .word-english { text-decoration: line-through; text-decoration-color: var(--success); }
+.card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.word-english { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; color: var(--text); }
+.word-reading { font-size: 13px; color: var(--text-faint); margin-bottom: 4px; }
+.word-meaning { font-size: 15px; color: var(--accent); font-weight: 600; margin-bottom: 8px; }
+.word-image { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5; }
+.card-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
+.badge { font-size: 11px; padding: 2px 8px; border-radius: 6px; font-weight: 600; white-space: nowrap; }
+.badge-l1 { background: #E8F0FE; color: #1A73E8; }
+.badge-l2 { background: #FEE8E8; color: #D93025; }
+.badge-l3 { background: #E6F4EA; color: #188038; }
+.badge-cat { background: var(--surface-alt); color: var(--text-muted); }
+.badge-imp { background: #FEF7E0; color: #B06000; }
+[data-theme="dark"] .badge-l1 { background: #1C2C3E; color: #64A5FF; }
+[data-theme="dark"] .badge-l2 { background: #3E1C1C; color: #FF6B6B; }
+[data-theme="dark"] .badge-l3 { background: #1C2E1C; color: #5DD66A; }
+[data-theme="dark"] .badge-cat { background: var(--surface-alt); color: var(--text-muted); }
+[data-theme="dark"] .badge-imp { background: #3E2E1C; color: #FFD644; }
+.card-details { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-light); }
+.word-card.expanded .card-details { display: block; }
+.detail-row { margin-bottom: 8px; font-size: 13px; line-height: 1.5; }
+.detail-label { font-weight: 600; color: var(--text-muted); min-width: 70px; display: inline-block; }
+.detail-value { color: var(--text); }
+.known-btn {
+  padding: 6px 16px; font-size: 13px; font-weight: 600; border-radius: 20px;
+  border: none; cursor: pointer; transition: all var(--transition); font-family: inherit;
+}
+.known-btn.mark { background: var(--success-light); color: var(--success); border: 1px solid var(--success); }
+.known-btn.mark:hover { background: var(--success); color: #fff; }
+.known-btn.unmark { background: var(--surface-alt); color: var(--text-muted); border: 1px solid var(--border-light); }
+.known-btn.unmark:hover { background: var(--border-light); }
+.priority-star { color: var(--warning); font-size: 14px; margin-left: 4px; }
+.flashcard-container { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.flashcard {
+  width: 100%; max-width: 500px; background: var(--surface); border-radius: var(--radius);
+  padding: 40px 32px; box-shadow: var(--shadow-lg); border: 1px solid var(--border-light);
+  text-align: center; min-height: 300px; display: flex; flex-direction: column;
+  justify-content: center; cursor: pointer; transition: all var(--transition); position: relative;
+}
+.flashcard:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.12); }
+.flashcard-word { font-size: clamp(28px, 6vw, 40px); font-weight: 700; letter-spacing: -0.02em; color: var(--text); margin-bottom: 8px; }
+.flashcard-reading { font-size: 16px; color: var(--text-faint); margin-bottom: 24px; }
+.flashcard-hidden { font-size: 14px; color: var(--text-faint); font-style: italic; }
+.flashcard-revealed { display: none; }
+.flashcard.flipped .flashcard-hidden { display: none; }
+.flashcard.flipped .flashcard-revealed { display: block; animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.flashcard-meaning { font-size: 22px; font-weight: 700; color: var(--accent); margin-bottom: 12px; }
+.flashcard-image { font-size: 15px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5; }
+.flashcard-itmeaning { font-size: 14px; color: var(--text); line-height: 1.6; margin-bottom: 16px; text-align: left; }
+.flashcard-example { font-size: 13px; color: var(--text-muted); font-style: italic; margin-top: 8px; }
+.flashcard-nav { display: flex; gap: 12px; align-items: center; }
+.nav-btn {
+  width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--border-light);
+  background: var(--surface); color: var(--text); cursor: pointer; font-size: 18px;
+  display: flex; align-items: center; justify-content: center; transition: all var(--transition); font-family: inherit;
+}
+.nav-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.nav-counter { font-size: 14px; font-weight: 600; color: var(--text-muted); min-width: 60px; text-align: center; }
+.memorize-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.memorize-card {
+  background: var(--surface); border-radius: var(--radius); padding: 24px;
+  box-shadow: var(--shadow-card); border: 1px solid var(--border-light);
+  cursor: pointer; transition: all var(--transition); text-align: center;
+  min-height: 120px; display: flex; flex-direction: column; justify-content: center; position: relative;
+}
+.memorize-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.memorize-word { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.memorize-reading { font-size: 13px; color: var(--text-faint); }
+.memorize-hidden { font-size: 13px; color: var(--text-faint); font-style: italic; margin-top: 8px; }
+.memorize-revealed { display: none; }
+.memorize-card.flipped .memorize-word { font-size: 18px; }
+.memorize-card.flipped .memorize-revealed { display: block; animation: fadeIn 0.3s ease; }
+.memorize-card.flipped .memorize-hidden { display: none; }
+.memorize-meaning { font-size: 18px; font-weight: 700; color: var(--accent); margin-top: 8px; }
+.memorize-image { font-size: 13px; color: var(--text-muted); margin-top: 6px; line-height: 1.4; }
+.memorize-actions { display: flex; gap: 8px; margin-top: 12px; justify-content: center; }
+.quiz-container { max-width: 600px; margin: 0 auto; }
+.quiz-question {
+  background: var(--surface); border-radius: var(--radius); padding: 32px;
+  box-shadow: var(--shadow-card); border: 1px solid var(--border-light);
+  text-align: center; margin-bottom: 16px;
+}
+.quiz-label { font-size: 13px; color: var(--text-muted); font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+.quiz-word { font-size: clamp(24px, 5vw, 36px); font-weight: 700; color: var(--text); margin-bottom: 24px; }
+.quiz-options { display: grid; gap: 10px; }
+.quiz-option {
+  padding: 16px 20px; background: var(--surface); border: 2px solid var(--border-light);
+  border-radius: var(--radius-sm); font-size: 15px; font-weight: 500; color: var(--text);
+  cursor: pointer; transition: all var(--transition); text-align: left; font-family: inherit;
+}
+.quiz-option:hover { border-color: var(--accent); background: var(--accent-light); }
+.quiz-option.correct { border-color: var(--success); background: var(--success-light); color: var(--success); }
+.quiz-option.wrong { border-color: var(--danger); background: rgba(255,59,48,0.1); color: var(--danger); }
+.quiz-option.disabled { pointer-events: none; }
+.quiz-result { text-align: center; padding: 20px; font-size: 16px; font-weight: 600; margin-top: 16px; }
+.quiz-score { display: flex; justify-content: center; gap: 24px; margin-bottom: 24px; }
+.score-item { text-align: center; }
+.score-value { font-size: 28px; font-weight: 700; }
+.score-value.correct { color: var(--success); }
+.score-value.wrong { color: var(--danger); }
+.score-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.random-btn {
+  padding: 10px 24px; font-size: 14px; font-weight: 600; border-radius: 20px;
+  background: var(--accent); color: #fff; border: none; cursor: pointer;
+  transition: all var(--transition); font-family: inherit;
+}
+.random-btn:hover { background: var(--accent-hover); transform: scale(1.02); }
+.empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+.empty-state-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.3; }
+.empty-state-text { font-size: 16px; font-weight: 500; }
+@media (max-width: 768px) {
+  .container { padding: 16px 12px 60px; }
+  .header { padding: 24px 0 20px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .word-list, .memorize-grid { grid-template-columns: 1fr; }
+  .filter-row { flex-direction: column; align-items: flex-start; }
+  .filter-group { width: 100%; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+  .flashcard { padding: 28px 20px; min-height: 240px; }
+}
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .stat-card { padding: 14px; }
+  .stat-value { font-size: 22px; }
+}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="theme-toggle" id="themeToggle" title="テーマ切替">夜</div>
+<div class="container">
+  <a class="back-link" href="./index.html">← 学習ポータルに戻る</a>
+  <div class="header">
+    <h1>IT English 300</h1>
+    <p class="subtitle">ITエンジニアのための<br>「意味が分からない」をなくす英単語帳</p>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-value" id="statTotal">300</div><div class="stat-label">全単語数</div></div>
+    <div class="stat-card"><div class="stat-value success" id="statKnown">0</div><div class="stat-label">覚えた</div></div>
+    <div class="stat-card"><div class="stat-value muted" id="statUnknown">300</div><div class="stat-label">未習得</div></div>
+    <div class="stat-card"><div class="stat-value accent" id="statPercent">0%</div><div class="stat-label">進捗率</div></div>
+  </div>
+  <div class="progress-section">
+    <div class="progress-header">
+      <span class="progress-title">学習進捗</span>
+      <span class="progress-percent" id="progressText">0 / 300</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+  <div class="controls">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="英単語または日本語で検索">
+    </div>
+    <div class="filter-row">
+      <div class="filter-group">
+        <span class="filter-label">LEVEL</span>
+        <button class="chip active" data-filter="level" data-value="0">全て</button>
+        <button class="chip" data-filter="level" data-value="1">L1</button>
+        <button class="chip" data-filter="level" data-value="2">L2</button>
+        <button class="chip" data-filter="level" data-value="3">L3</button>
+      </div>
+    </div>
+    <div class="filter-row">
+      <div class="filter-group">
+        <span class="filter-label">カテゴリ</span>
+        <button class="chip active" data-filter="category" data-value="all">全て</button>
+        <button class="chip" data-filter="category" data-value="01 IT基礎">01</button>
+        <button class="chip" data-filter="category" data-value="02 コンピュータ構成">02</button>
+        <button class="chip" data-filter="category" data-value="03 OS">03</button>
+        <button class="chip" data-filter="category" data-value="04 アルゴリズム">04</button>
+        <button class="chip" data-filter="category" data-value="05 プログラミング">05</button>
+        <button class="chip" data-filter="category" data-value="06 ソフトウェア開発">06</button>
+        <button class="chip" data-filter="category" data-value="07 Git/GitHub">07</button>
+        <button class="chip" data-filter="category" data-value="08 データベース">08</button>
+        <button class="chip" data-filter="category" data-value="09 ネットワーク">09</button>
+        <button class="chip" data-filter="category" data-value="10 Web">10</button>
+        <button class="chip" data-filter="category" data-value="11 セキュリティ">11</button>
+        <button class="chip" data-filter="category" data-value="12 Linux">12</button>
+        <button class="chip" data-filter="category" data-value="13 クラウド">13</button>
+        <button class="chip" data-filter="category" data-value="14 AWS/Azure">14</button>
+        <button class="chip" data-filter="category" data-value="15 Docker/Kubernetes">15</button>
+        <button class="chip" data-filter="category" data-value="16 DevOps/CI-CD">16</button>
+        <button class="chip" data-filter="category" data-value="17 システム設計">17</button>
+        <button class="chip" data-filter="category" data-value="18 インフラ">18</button>
+        <button class="chip" data-filter="category" data-value="19 AI">19</button>
+        <button class="chip" data-filter="category" data-value="20 プロジェクト管理">20</button>
+      </div>
+    </div>
+    <div class="filter-row">
+      <div class="filter-group">
+        <span class="filter-label">重要度</span>
+        <button class="chip active" data-filter="importance" data-value="0">全て</button>
+        <button class="chip" data-filter="importance" data-value="5">★★★★★</button>
+        <button class="chip" data-filter="importance" data-value="4">★★★★</button>
+        <button class="chip" data-filter="importance" data-value="3">★★★</button>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">状態</span>
+        <button class="chip active" data-filter="status" data-value="all">全て</button>
+        <button class="chip" data-filter="status" data-value="known">覚えた</button>
+        <button class="chip" data-filter="status" data-value="unknown">未習得</button>
+      </div>
+      <select class="sort-select" id="sortSelect">
+        <option value="recommended">おすすめ順</option>
+        <option value="az">A-Z</option>
+        <option value="za">Z-A</option>
+        <option value="importance">重要度順</option>
+        <option value="random">ランダム</option>
+      </select>
+    </div>
+    <div class="filter-row" style="justify-content: center; margin-top: 8px;">
+      <button class="random-btn" id="randomBtn">🎲 ランダム10語</button>
+    </div>
+  </div>
+  <div class="mode-tabs">
+    <button class="mode-tab active" data-mode="list">一覧</button>
+    <button class="mode-tab" data-mode="card">カード</button>
+    <button class="mode-tab" data-mode="memorize">暗記</button>
+    <button class="mode-tab" data-mode="quiz">クイズ</button>
+  </div>
+  <div id="contentArea"></div>
+</div>
+<script>
+const WORDS = [{"word": "Concurrent", "reading": "コンカレント", "meaning": "並行の・同時進行の", "image": "複数の処理が同じ時間帯に進む", "itMeaning": "複数の処理が完全な同時実行とは限らないが並行して進行している状態", "example": "Concurrent processing", "related": "Concurrency", "confusing": "Parallel", "difference": "Concurrent=並行、Parallel=実際に同時実行", "category": "03 OS", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Throughput", "reading": "スループット", "meaning": "処理量・スループット", "image": "単位時間あたりの処理量", "itMeaning": "単位時間あたりに処理できるデータ量や仕事量", "example": "High throughput", "related": "Performance", "confusing": "Latency", "difference": "Throughput=量、Latency=遅延", "category": "02 コンピュータ構成", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Latency", "reading": "レイテンシ", "meaning": "遅延・応答時間", "image": "データが届くまでの時間", "itMeaning": "要求を送ってから応答が返るまでの時間", "example": "Low latency", "related": "Response time", "confusing": "Throughput", "difference": "Latency=遅延、Throughput=量", "category": "09 ネットワーク", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Facility", "reading": "ファシリティ", "meaning": "施設・設備", "image": "データセンターなどの設備", "itMeaning": "データセンターやサーバー設備などの物理的インフラ", "example": "Data facility", "related": "Infrastructure", "confusing": "Utility", "difference": "Facility=設備、Utility=公共事業", "category": "01 IT基礎", "level": 1, "importance": 4, "fe": "◎", "ap": "○", "practical": "◎", "priority50": true}, {"word": "Process", "reading": "プロセス", "meaning": "プロセス・処理", "image": "実行中のプログラム", "itMeaning": "メモリ空間を持ち独立して実行されるプログラムの単位", "example": "Process ID", "related": "Thread", "confusing": "Thread", "difference": "Process=独立実行単位、Thread=プロセス内の実行単位", "category": "01 IT基礎", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Thread", "reading": "スレッド", "meaning": "スレッド", "image": "プロセス内の実行単位", "itMeaning": "プロセス内で並行実行される最小の実行単位", "example": "Multi-thread", "related": "Process", "confusing": "Process", "difference": "Thread=実行単位、Process=実体の実行開始単位", "category": "03 OS", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Resource", "reading": "リソース", "meaning": "資源・リソース", "image": "CPU・メモリ・ディスクなどの利用可能なもの", "itMeaning": "システムが利用できるCPU、メモリ、ネットワーク等の資源", "example": "Allocate resources", "related": "Allocation", "confusing": "Capacity", "difference": "Resource=利用可能なもの、Capacity=持てる量", "category": "03 OS", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Access", "reading": "アクセス", "meaning": "アクセス・接続・利用", "image": "データやシステムに入ること", "itMeaning": "情報やサービスを利用・参照・操作すること", "example": "Access control", "related": "Permission", "confusing": "Authorization", "difference": "Access=利用できるか、Authorization=許可を与えること", "category": "09 ネットワーク", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Protocol", "reading": "プロトコル", "meaning": "規約・通信手順", "image": "ネットワーク通信のルール集", "itMeaning": "通信相手が遵守する手順や形式の約束事", "example": "HTTP protocol", "related": "TCP/IP", "confusing": "Standard", "difference": "Protocol=通信規約、Standard=共通仕様", "category": "09 ネットワーク", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Buffer", "reading": "バッファ", "meaning": "緩衝領域", "image": "送受信の速度差を埋める一時保管場所", "itMeaning": "データの送受信速度差を吸収するための一時的な保管領域", "example": "Input buffer", "related": "Queue", "confusing": "Cache", "difference": "Buffer=一時待避、Cache=高速再利用用の保存領域", "category": "02 コンピュータ構成", "level": 1, "importance": 4, "fe": "◎", "ap": "○", "practical": "◎", "priority50": true}, {"word": "Cache", "reading": "キャッシュ", "meaning": "高速な一時保存", "image": "よく使うデータを近くに置く仕組み", "itMeaning": "頻繁に使うデータを高速な記憶位置に保持して再利用する仕組み", "example": "CPU cache", "related": "Buffer", "confusing": "Buffer", "difference": "Cache=再利用向けの高速保存、Buffer=速度差吸収用の一時保管", "category": "02 コンピュータ構成", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Validate", "reading": "バリデート", "meaning": "検証する・妥当性確認する", "image": "入力値が正しいか確認する", "itMeaning": "入力や処理結果が期待どおりかを確認し、正当性を検証すること", "example": "Validate input", "related": "Verification", "confusing": "Verify", "difference": "Validate=妥当性確認、Verify=確認そのもの", "category": "06 ソフトウェア開発", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Deploy", "reading": "デプロイ", "meaning": "配置する・展開する", "image": "完成したシステムを運用環境に置く", "itMeaning": "ソフトウェアや構成を実運用環境へ反映すること", "example": "Deploy to production", "related": "Release", "confusing": "Install", "difference": "Deploy=運用環境に反映、Install=導入・セットアップ", "category": "16 DevOps/CI-CD", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Allocate", "reading": "アロケート", "meaning": "割り当てる", "image": "リソースを必要な場所へ分配する", "itMeaning": "CPUやメモリ、帯域などを特定の処理や用途に割り当てること", "example": "Allocate memory", "related": "Resource", "confusing": "Assign", "difference": "Allocate=資源を割り当てる、Assign=役割を与える", "category": "03 OS", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Load", "reading": "ロード", "meaning": "負荷・読み込む", "image": "重い作業やデータを取り込む", "itMeaning": "システムへデータやプログラムを読み込むこと、または処理負荷を指す", "example": "Load balancer", "related": "Traffic", "confusing": "Throughput", "difference": "Load=負荷、Throughput=処理量", "category": "03 OS", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Scale", "reading": "スケール", "meaning": "拡張する・規模", "image": "処理できる量を増やす", "itMeaning": "処理能力や利用者数に応じて拡張または縮小すること", "example": "Scale out", "related": "Vertical scaling", "confusing": "Expand", "difference": "Scale=能力の拡張、Expand=単に大きくする", "category": "13 クラウド", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Session", "reading": "セッション", "meaning": "会話・接続期間", "image": "ユーザーとサーバーの一連のやり取り", "itMeaning": "ある利用者の認証や通信の一連の期間や状態を表す単位", "example": "User session", "related": "Cookie", "confusing": "Token", "difference": "Session=接続状態、Token=識別用の証明", "category": "09 ネットワーク", "level": 1, "importance": 4, "fe": "◎", "ap": "○", "practical": "◎", "priority50": true}, {"word": "Integrity", "reading": "インテグリティ", "meaning": "完全性・整合性", "image": "データが正しく保たれている状態", "itMeaning": "データや処理結果が改ざんや破損なく正しい状態であること", "example": "Data integrity", "related": "Consistency", "confusing": "Availability", "difference": "Integrity=正しさ、Availability=利用可能性", "category": "11 セキュリティ", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Availability", "reading": "アベイラビリティ", "meaning": "可用性・稼働率", "image": "必要な時に使える状態", "itMeaning": "システムが利用可能である割合や状態のこと", "example": "99.9% availability", "related": "Uptime", "confusing": "Reliability", "difference": "Availability=使える状態、Reliability=正しく動く状態", "category": "11 セキュリティ", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Backup", "reading": "バックアップ", "meaning": "予備保管・復元用コピー", "image": "故障時に戻すための複製", "itMeaning": "データや設定のコピーを別の場所に保管して障害時に復元できるようにすること", "example": "Daily backup", "related": "Restore", "confusing": "Archive", "difference": "Backup=復元用、Archive=長期保管用", "category": "18 インフラ", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Restore", "reading": "リストア", "meaning": "復元する", "image": "破損や障害後に戻す", "itMeaning": "バックアップや保存データから元の状態へ戻すこと", "example": "Restore from backup", "related": "Backup", "confusing": "Recovery", "difference": "Restore=元に戻す、Recovery=回復全体", "category": "18 インフラ", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Redundant", "reading": "冗長な", "meaning": "重複した・冗長な", "image": "障害に備えて重ねて持つ構成", "itMeaning": "同じ機能やデータを複数持ち、障害時の耐性を高める状態", "example": "Redundant system", "related": "Fault tolerance", "confusing": "Duplicate", "difference": "Redundant=耐障害性のための重複、Duplicate=単なるコピー", "category": "18 インフラ", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Latency", "reading": "レイテンシ", "meaning": "遅延・応答時間", "image": "データが届くまでの時間", "itMeaning": "要求を送ってから応答が返るまでの時間", "example": "Low latency network", "related": "Response time", "confusing": "Throughput", "difference": "Latency=遅延、Throughput=量", "category": "09 ネットワーク", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Tenant", "reading": "テナント", "meaning": "利用者・顧客・テナント", "image": "クラウド上の利用単位", "itMeaning": "クラウドサービスやマルチテナント環境での利用者または利用領域", "example": "Multi-tenant architecture", "related": "Isolation", "confusing": "User", "difference": "Tenant=利用者単位、User=個人利用者", "category": "13 クラウド", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Isolation", "reading": "アイソレーション", "meaning": "分離・隔離", "image": "他の領域と影響を遮断すること", "itMeaning": "他のユーザーや環境に影響を及ぼさないように分離する仕組み", "example": "Network isolation", "related": "Sandbox", "confusing": "Segmentation", "difference": "Isolation=分離そのもの、Segmentation=区切りを設けること", "category": "11 セキュリティ", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Patch", "reading": "パッチ", "meaning": "修正プログラム", "image": "不具合を直す更新", "itMeaning": "既知の不具合や脆弱性を修正するための修正パッケージ", "example": "Security patch", "related": "Hotfix", "confusing": "Upgrade", "difference": "Patch=小規模修正、Upgrade=機能向上や新バージョン化", "category": "11 セキュリティ", "level": 2, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Vulnerability", "reading": "脆弱性", "meaning": "弱点・脆弱性", "image": "攻撃に利用される欠陥", "itMeaning": "攻撃者が悪用可能な実装上または設計上の弱点", "example": "Known vulnerability", "related": "Exploit", "confusing": "Risk", "difference": "Vulnerability=弱点、Risk=被害の可能性", "category": "11 セキュリティ", "level": 2, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Exploit", "reading": "エクスプロイト", "meaning": "悪用する・脆弱性を突く", "image": "弱点を利用して攻撃を仕掛ける", "itMeaning": "脆弱性や欠陥を利用して攻撃を実行すること", "example": "Exploit the vulnerability", "related": "Exploit", "confusing": "Vulnerability", "difference": "Exploit=悪用行為、Vulnerability=弱点", "category": "11 セキュリティ", "level": 2, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Firewall", "reading": "ファイアウォール", "meaning": "防火壁・通信遮断装置", "image": "不正アクセスを通さない守りの壁", "itMeaning": "許可された通信だけを通し、危険な通信を遮断するセキュリティ機構", "example": "Network firewall", "related": "Proxy", "confusing": "IDS", "difference": "Firewall=遮断、IDS=検知", "category": "11 セキュリティ", "level": 2, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Proxy", "reading": "プロキシ", "meaning": "代理・中継", "image": "通信を中継する仲介役", "itMeaning": "クライアントとサーバー間で通信を中継する代理サーバー", "example": "Proxy server", "related": "Firewall", "confusing": "Gateway", "difference": "Proxy=中継、Gateway=異なるネットワーク間の入口", "category": "09 ネットワーク", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Gateway", "reading": "ゲートウェイ", "meaning": "入口・ゲートウェイ", "image": "ネットワークの境界をつなぐ入口", "itMeaning": "異なるネットワークやシステム間を接続する中継点", "example": "API gateway", "related": "Proxy", "confusing": "Proxy", "difference": "Gateway=接続点、Proxy=中継機能を持つ場合が多い", "category": "09 ネットワーク", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "RTO", "reading": "RTO", "meaning": "目標復旧時間", "image": "障害から復旧するまでの目標時間", "itMeaning": "システム障害発生後、どれだけの時間で業務を復旧するべきかの目標値", "example": "24-hour RTO", "related": "RPO", "confusing": "MTTR", "difference": "RTO=目標復旧時間、MTTR=実際の修復時間", "category": "18 インフラ", "level": 2, "importance": 5, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "RPO", "reading": "RPO", "meaning": "目標復旧時点", "image": "どの時点まで戻せばよいか", "itMeaning": "障害発生後にどの時点までデータを回復できればよいかの目標", "example": "1-hour RPO", "related": "RTO", "confusing": "MTTR", "difference": "RPO=許容するデータ損失範囲、RTO=復旧時間目標", "category": "18 インフラ", "level": 2, "importance": 5, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "MTTR", "reading": "MTTR", "meaning": "平均修復時間", "image": "障害を直すまでの平均時間", "itMeaning": "障害発生から修復完了までの平均所要時間", "example": "Low MTTR", "related": "RTO", "confusing": "RPO", "difference": "MTTR=修復時間、RTO=目標時間", "category": "18 インフラ", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Scalability", "reading": "スケーラビリティ", "meaning": "拡張性・伸縮性", "image": "負荷増に応じて伸びる能力", "itMeaning": "負荷が増えても性能や容量を効率よく増やせるかどうか", "example": "High scalability", "related": "Scale", "confusing": "Elasticity", "difference": "Scalability=将来の拡張性、Elasticity=自動で伸縮する性質", "category": "13 クラウド", "level": 2, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Elasticity", "reading": "エラスティシティ", "meaning": "弾力性・自動伸縮性", "image": "必要に応じて自動で伸び縮みする", "itMeaning": "需要変動に応じて自動的にリソースを増減させる性質", "example": "Elasticity of cloud", "related": "Scalability", "confusing": "Scalability", "difference": "Elasticity=自動伸縮、Scalability=拡張可能性", "category": "13 クラウド", "level": 2, "importance": 5, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Container", "reading": "コンテナ", "meaning": "コンテナ・容器", "image": "アプリと依存関係を一つにまとめた実行単位", "itMeaning": "アプリケーションと依存関係をまとめて実行できる軽量仮想化技術", "example": "Docker container", "related": "Image", "confusing": "VM", "difference": "Container=軽量仮想化、VM=ハイパーバイザによる重い仮想環境", "category": "15 Docker/Kubernetes", "level": 2, "importance": 5, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Image", "reading": "イメージ", "meaning": "イメージ・画像・実行環境", "image": "コンテナや仮想環境のテンプレート", "itMeaning": "実行環境やアプリをまとめたテンプレートやイメージデータ", "example": "Docker image", "related": "Container", "confusing": "Snapshot", "difference": "Image=実行テンプレート、Snapshot=ある時点の状態のコピー", "category": "15 Docker/Kubernetes", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Orchestration", "reading": "オーケストレーション", "meaning": "調整・自動制御", "image": "複数コンテナをまとめて管理する", "itMeaning": "複数サービスやコンテナを定義どおりに起動・接続・監視すること", "example": "Kubernetes orchestration", "related": "Automation", "confusing": "Automation", "difference": "Orchestration=複数要素の連携制御、Automation=自動化一般", "category": "15 Docker/Kubernetes", "level": 2, "importance": 5, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Cluster", "reading": "クラスター", "meaning": "集団・グループ", "image": "複数ノードが連携して動く構成", "itMeaning": "複数のサーバーやノードをまとめて一つの運用単位として扱う構成", "example": "Kubernetes cluster", "related": "Node", "confusing": "Pool", "difference": "Cluster=連携する複数ノード群、Pool=まとめて使う資源群", "category": "15 Docker/Kubernetes", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Node", "reading": "ノード", "meaning": "ノード・接点", "image": "クラスターの構成要素となる個体", "itMeaning": "分散システムやクラスターで個別に動作する計算機や要素", "example": "Worker node", "related": "Cluster", "confusing": "Host", "difference": "Node=分散システムの要素、Host=単一の計算機", "category": "15 Docker/Kubernetes", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Repository", "reading": "リポジトリ", "meaning": "保管庫・保存場所", "image": "コードやデータを管理する倉庫", "itMeaning": "ソースコードや設定ファイルを保管し、履歴管理する場所", "example": "Git repository", "related": "Commit", "confusing": "Branch", "difference": "Repository=保管庫、Branch=並行開発の枝", "category": "07 Git/GitHub", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Commit", "reading": "コミット", "meaning": "変更の確定", "image": "作業内容を履歴として保存する", "itMeaning": "現在の変更内容をリポジトリに保存し履歴として残すこと", "example": "Commit changes", "related": "Push", "confusing": "Merge", "difference": "Commit=履歴に保存、Merge=枝を統合", "category": "07 Git/GitHub", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Branch", "reading": "ブランチ", "meaning": "分岐・枝", "image": "別の作業ラインを切る", "itMeaning": "本流から分岐して独立に変更を進める開発ライン", "example": "Feature branch", "related": "Merge", "confusing": "Repository", "difference": "Branch=開発の分岐、Repository=保管場所", "category": "07 Git/GitHub", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Merge", "reading": "マージ", "meaning": "統合する", "image": "複数の変更を一つにまとめる", "itMeaning": "別々の開発ラインやコードの変更をひとつに統合すること", "example": "Merge branch", "related": "Conflict", "confusing": "Commit", "difference": "Merge=統合、Commit=保存", "category": "07 Git/GitHub", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Conflict", "reading": "コンフリクト", "meaning": "競合・衝突", "image": "同じ箇所を別々に編集して衝突する", "itMeaning": "同一ファイルや同一箇所を複数人が編集したために発生する競合", "example": "Resolve conflict", "related": "Merge", "confusing": "Issue", "difference": "Conflict=統合時の衝突、Issue=課題そのもの", "category": "07 Git/GitHub", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Pull request", "reading": "プルリクエスト", "meaning": "変更提案", "image": "レビュー依頼として変更を提案する", "itMeaning": "変更内容を他者にレビューしてもらうために提出する依頼", "example": "Create a pull request", "related": "Review", "confusing": "Commit", "difference": "Pull request=レビュー依頼、Commit=変更保存", "category": "07 Git/GitHub", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Push", "reading": "プッシュ", "meaning": "送信する・反映する", "image": "ローカルの変更を共有リポジトリへ送る", "itMeaning": "ローカルリポジトリの変更をリモートリポジトリへ反映すること", "example": "Push to GitHub", "related": "Pull", "confusing": "Deploy", "difference": "Push=共有先へ送る、Deploy=運用環境へ展開", "category": "07 Git/GitHub", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Pull", "reading": "プル", "meaning": "取得する・引っ張る", "image": "リモートの最新内容を持ってくる", "itMeaning": "リモートまたは別ブランチの最新変更をローカルへ取り込むこと", "example": "Pull latest changes", "related": "Fetch", "confusing": "Clone", "difference": "Pull=取り込む、Clone=最初にコピーする", "category": "07 Git/GitHub", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Clone", "reading": "クローン", "meaning": "複製する", "image": "リポジトリのコピーを手元に作る", "itMeaning": "既存のリポジトリをローカルに複製して作業できる状態にすること", "example": "Clone a repository", "related": "Fork", "confusing": "Branch", "difference": "Clone=複製、Fork=独自の派生リポジトリ作成", "category": "07 Git/GitHub", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Fork", "reading": "フォーク", "meaning": "分岐・派生", "image": "元のリポジトリから独自のコピーを作る", "itMeaning": "既存のリポジトリをコピーして独自に開発すること", "example": "Fork the project", "related": "Clone", "confusing": "Branch", "difference": "Fork=派生コピー、Branch=同一リポジトリ内の分岐", "category": "07 Git/GitHub", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Rebase", "reading": "リベース", "meaning": "差分を巻き戻して再適用する", "image": "履歴を整理してつなぎ直す", "itMeaning": "別ブランチの変更を現在の基点に沿って再適用し直すこと", "example": "Rebase feature branch", "related": "Merge", "confusing": "Cherry-pick", "difference": "Rebase=履歴を整える、Cherry-pick=特定の変更だけ取り込む", "category": "07 Git/GitHub", "level": 2, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Fetch", "reading": "フェッチ", "meaning": "取得する", "image": "最新情報をリモートから受け取る", "itMeaning": "リモートの変更状況やデータをローカルへ取得すること", "example": "Fetch origin", "related": "Pull", "confusing": "Clone", "difference": "Fetch=確認取得、Pull=取得して統合", "category": "07 Git/GitHub", "level": 1, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Issue", "reading": "イシュー", "meaning": "課題・問題・提案", "image": "TODOやバグ管理の単位", "itMeaning": "バグ、要望、タスクなどを管理する対象単位", "example": "Create an issue", "related": "Ticket", "confusing": "Bug", "difference": "Issue=課題全般、Bug=不具合の一種", "category": "20 プロジェクト管理", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Sprint", "reading": "スプリント", "meaning": "短期間の開発区切り", "image": "一定期間で小さな成果を出す", "itMeaning": "アジャイル開発で一定期間ごとに区切った開発単位", "example": "Two-week sprint", "related": "Agile", "confusing": "Iteration", "difference": "Sprint=開発期間の単位、Iteration=繰り返し一般", "category": "20 プロジェクト管理", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Milestone", "reading": "マイルストーン", "meaning": "節目・重要達成点", "image": "プロジェクトの大きな節目", "itMeaning": "プロジェクト内で重要な成果物や時期を表す節目", "example": "Release milestone", "related": "Delivery", "confusing": "Deadline", "difference": "Milestone=節目、Deadline=締め切り", "category": "20 プロジェクト管理", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Backlog", "reading": "バックログ", "meaning": "未処理の積み残し", "image": "やるべき作業のリスト", "itMeaning": "未着手や未完了の作業や要望の一覧", "example": "Product backlog", "related": "Issue", "confusing": "To-do", "difference": "Backlog=管理対象の優先付け済みリスト、To-do=個人的な作業リスト", "category": "20 プロジェクト管理", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Retrospective", "reading": "レトロスペクティブ", "meaning": "振り返り・振返", "image": "定期的に学びを共有する時間", "itMeaning": "成果や課題を振り返り、改善策を話し合う会議", "example": "Sprint retrospective", "related": "Feedback", "confusing": "Review", "difference": "Retrospective=改善の振り返り、Review=内容確認一般", "category": "20 プロジェクト管理", "level": 2, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Refactor", "reading": "リファクタ", "meaning": "コード整理・改善", "image": "機能は変えずに読みやすく整える", "itMeaning": "外部動作を変えずにコード構造を改善して保守しやすくすること", "example": "Refactor legacy code", "related": "Clean code", "confusing": "Rewrite", "difference": "Refactor=改善、Rewrite=全面書き換え", "category": "06 ソフトウェア開発", "level": 2, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Debug", "reading": "デバッグ", "meaning": "不具合調査・修正", "image": "バグを原因と対策で解決する", "itMeaning": "プログラムの不具合を特定し修正して正常動作を確認すること", "example": "Debug the code", "related": "Trace", "confusing": "Fix", "difference": "Debug=原因調査＋修正、Fix=単なる修正", "category": "06 ソフトウェア開発", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Test", "reading": "テスト", "meaning": "検証・試験", "image": "動作確認のための確認作業", "itMeaning": "ソフトウェアが仕様どおりに動くかを確認する検証作業", "example": "Unit test", "related": "QA", "confusing": "Debug", "difference": "Test=検証、Debug=不具合解消", "category": "06 ソフトウェア開発", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Compile", "reading": "コンパイル", "meaning": "ソースコードを機械語に変換する", "image": "人間が読めるコードを実行形式へ変換", "itMeaning": "高級言語コードを機械が実行できる形式に変換する処理", "example": "Compile the program", "related": "Build", "confusing": "Interpret", "difference": "Compile=事前変換、Interpret=逐次実行", "category": "05 プログラミング", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Interpret", "reading": "インタプリト", "meaning": "逐次実行する", "image": "一行ずつ解釈して実行する", "itMeaning": "プログラムをその場で読み解き、逐次実行する方式", "example": "Python interpreter", "related": "Compile", "confusing": "Compile", "difference": "Interpret=逐次実行、Compile=一括変換", "category": "05 プログラミング", "level": 2, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Runtime", "reading": "ランタイム", "meaning": "実行環境", "image": "プログラムが動く基盤", "itMeaning": "プログラムが実行される際に必要な実行環境やライブラリ群", "example": "Java runtime", "related": "Environment", "confusing": "Compiler", "difference": "Runtime=実行時環境、Compiler=変換ツール", "category": "05 プログラミング", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Library", "reading": "ライブラリ", "meaning": "再利用可能な部品群", "image": "よく使う機能をまとめた集まり", "itMeaning": "共通利用される機能やコードを再利用できる形にまとめた集まり", "example": "Standard library", "related": "Framework", "confusing": "Module", "difference": "Library=機能集、Framework=枠組み", "category": "05 プログラミング", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Framework", "reading": "フレームワーク", "meaning": "枠組み・基盤", "image": "アプリ開発の土台となる仕組み", "itMeaning": "開発の基盤を提供し、開発者がその枠組みの中で作る設計", "example": "React framework", "related": "Library", "confusing": "Library", "difference": "Framework=構造の提供、Library=部品の提供", "category": "05 プログラミング", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Module", "reading": "モジュール", "meaning": "部品・モジュール", "image": "一つの役割を持つ部品", "itMeaning": "特定機能を持つ独立した部品やコンポーネント", "example": "Import module", "related": "Package", "confusing": "Library", "difference": "Module=役割単位、Library=機能群", "category": "05 プログラミング", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Package", "reading": "パッケージ", "meaning": "まとめた部品群・パッケージ", "image": "機能をまとめて配布しやすくしたもの", "itMeaning": "関連するファイルやライブラリをまとめて配布・利用する単位", "example": "NPM package", "related": "Module", "confusing": "Library", "difference": "Package=配布単位、Library=利用機能群", "category": "05 プログラミング", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Dependency", "reading": "依存関係", "meaning": "依存性・依存関係", "image": "他の部品が必要な状況", "itMeaning": "ある機能やライブラリが他の部品に依存している関係", "example": "Package dependency", "related": "Module", "confusing": "Relation", "difference": "Dependency=必要とする関係、Relation=一般的な関連", "category": "05 プログラミング", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Syntax", "reading": "シンタックス", "meaning": "文法・構文", "image": "プログラムが正しく書かれている形", "itMeaning": "言語として成立する書き方やルール", "example": "Syntax error", "related": "Grammar", "confusing": "Semantics", "difference": "Syntax=形、Semantics=意味", "category": "05 プログラミング", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Semantics", "reading": "セマンティクス", "meaning": "意味論・意味", "image": "コードが何を意味するか", "itMeaning": "プログラムや言語の意味や解釈の規則", "example": "Semantic error", "related": "Syntax", "confusing": "Syntax", "difference": "Semantics=意味、Syntax=構文", "category": "05 プログラミング", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Exception", "reading": "例外", "meaning": "例外処理", "image": "通常ではないケースが起きたときの処理", "itMeaning": "通常処理では想定しない事象が発生したときに対応する仕組み", "example": "Handle exception", "related": "Error", "confusing": "Warning", "difference": "Exception=処理上の例外事象、Warning=注意", "category": "05 プログラミング", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Algorithm", "reading": "アルゴリズム", "meaning": "手順・計算方法", "image": "問題を解くための順序立てた手順", "itMeaning": "特定の問題を効率よく解くための処理手順のこと", "example": "Sorting algorithm", "related": "Complexity", "confusing": "Logic", "difference": "Algorithm=処理手順、Logic=考え方や判断の筋道", "category": "04 アルゴリズム", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Complexity", "reading": "複雑さ・計算量", "meaning": "複雑性・計算量", "image": "問題が大きくなるときの処理量の増え方", "itMeaning": "入力サイズが増えたときの計算量や設計の複雑さ", "example": "Time complexity", "related": "Algorithm", "confusing": "Performance", "difference": "Complexity=増え方、Performance=実際の速さ", "category": "04 アルゴリズム", "level": 2, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Traversal", "reading": "トラバーサル", "meaning": "走査・巡回", "image": "要素を順に見て回る処理", "itMeaning": "データ構造の全要素を順番にたどる処理", "example": "Tree traversal", "related": "Search", "confusing": "Iteration", "difference": "Traversal=構造上の巡回、Iteration=繰り返し一般", "category": "04 アルゴリズム", "level": 2, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Search", "reading": "サーチ", "meaning": "検索", "image": "条件に合うものを探す", "itMeaning": "データや要素の中から目的のものを見つけ出す操作", "example": "Binary search", "related": "Traversal", "confusing": "Lookup", "difference": "Search=探索全般、Lookup=特定の値の参照", "category": "04 アルゴリズム", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Sort", "reading": "ソート", "meaning": "並べ替え", "image": "順番を決めて整理する", "itMeaning": "要素を特定の順序に並べ替える処理", "example": "Sort array", "related": "Order", "confusing": "Filter", "difference": "Sort=並び替え、Filter=条件に合うもの抽出", "category": "04 アルゴリズム", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Queue", "reading": "キュー", "meaning": "待ち行列", "image": "順番に処理される待機列", "itMeaning": "先入れ先出しで処理される待ち行列構造", "example": "Message queue", "related": "Buffer", "confusing": "Stack", "difference": "Queue=FIFO、Stack=LIFO", "category": "04 アルゴリズム", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Stack", "reading": "スタック", "meaning": "積み重ね・スタック", "image": "最後に入れたものを先に取り出す", "itMeaning": "後入れ先出しのデータ構造", "example": "Call stack", "related": "Queue", "confusing": "Queue", "difference": "Stack=LIFO、Queue=FIFO", "category": "04 アルゴリズム", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Heap", "reading": "ヒープ", "meaning": "ヒープ構造", "image": "親子関係で管理されるデータ構造", "itMeaning": "親が子より優先度が高い木構造で管理されるデータ構造", "example": "Priority queue heap", "related": "Tree", "confusing": "Stack", "difference": "Heap=優先度管理、Stack=単純な積み重ね", "category": "04 アルゴリズム", "level": 2, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Tree", "reading": "ツリー", "meaning": "木構造", "image": "親子関係を持つ階層構造", "itMeaning": "ノードが親子関係を持つ階層データ構造", "example": "Binary tree", "related": "Node", "confusing": "Graph", "difference": "Tree=階層構造、Graph=一般的な関係ネットワーク", "category": "04 アルゴリズム", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Graph", "reading": "グラフ", "meaning": "グラフ・関係図", "image": "節点と枝で表す関係の図", "itMeaning": "ノードとエッジで関係を表すデータ構造や図", "example": "Dependency graph", "related": "Tree", "confusing": "Tree", "difference": "Graph=一般化された関係構造、Tree=階層構造", "category": "04 アルゴリズム", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Hash", "reading": "ハッシュ", "meaning": "ハッシュ値・分散", "image": "データを固定長の値に変換する", "itMeaning": "データを一定長の値へ変換して高速比較や索引作成に用いる関数", "example": "Hash map", "related": "Index", "confusing": "Encrypt", "difference": "Hash=比較用変換、Encrypt=秘匿化", "category": "08 データベース", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Index", "reading": "インデックス", "meaning": "索引・位置指定", "image": "大きなデータを効率よく探すための目次", "itMeaning": "データ検索を高速化するための参照位置一覧", "example": "Database index", "related": "Hash", "confusing": "Key", "difference": "Index=検索高速化用の表、Key=識別要素", "category": "08 データベース", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Schema", "reading": "スキーマ", "meaning": "構造定義・設計図", "image": "テーブルや項目の形式を定義する設計図", "itMeaning": "データベースやデータ構造の論理的な形式や定義のこと", "example": "Database schema", "related": "Table", "confusing": "Model", "difference": "Schema=構造定義、Model=概念的な表現", "category": "08 データベース", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Normalization", "reading": "ノーマライゼーション", "meaning": "正規化", "image": "データの重複を減らして整える", "itMeaning": "データの重複や矛盾を減らし、設計を整理すること", "example": "Database normalization", "related": "Schema", "confusing": "Denormalization", "difference": "Normalization=整理して効率化、Denormalization=性能重視で分散", "category": "08 データベース", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Query", "reading": "クエリ", "meaning": "問い合わせ・問合せ", "image": "必要なデータを取り出す要求", "itMeaning": "データベースや検索システムに対する要求文や命令", "example": "SQL query", "related": "Filter", "confusing": "Request", "difference": "Query=データ取得要求、Request=一般的な要求", "category": "08 データベース", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Transaction", "reading": "トランザクション", "meaning": "処理単位・取引", "image": "成功か失敗かを一括で扱う処理", "itMeaning": "一貫性を保つためにまとめて実行される処理単位", "example": "Database transaction", "related": "ACID", "confusing": "Session", "difference": "Transaction=処理単位、Session=接続状態", "category": "08 データベース", "level": 2, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "ACID", "reading": "エーシーアイディー", "meaning": "原子性・一貫性・独立性・耐久性", "image": "DBのトランザクション特性", "itMeaning": "データベースのトランザクションが満たすべき4つの特性", "example": "ACID properties", "related": "Transaction", "confusing": "CAP", "difference": "ACID=整合性を重視、CAP=分散環境でのトレードオフ", "category": "08 データベース", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Consistency", "reading": "一貫性", "meaning": "整合性・一致性", "image": "データの状態が筋が通った状態", "itMeaning": "データや処理結果がルールと矛盾せず一貫している状態", "example": "Strong consistency", "related": "Integrity", "confusing": "Availability", "difference": "Consistency=整合性、Availability=利用可能性", "category": "08 データベース", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Replication", "reading": "レプリケーション", "meaning": "複製・同期", "image": "同じデータを別の場所に保つ", "itMeaning": "データやサービスを複数の場所に複製し冗長性や可用性を高めること", "example": "Database replication", "related": "Backup", "confusing": "Mirroring", "difference": "Replication=複製全般、Mirroring=同一コピーを同期すること", "category": "18 インフラ", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Failover", "reading": "フェイルオーバー", "meaning": "自動切り替え", "image": "障害時に別の装置へ切り替える", "itMeaning": "障害が発生した場合に、代替ノードやシステムへ自動で切り替える動作", "example": "Automatic failover", "related": "Redundant", "confusing": "Fallback", "difference": "Failover=障害時の切替、Fallback=代替動作の戻り道", "category": "18 インフラ", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Load balancer", "reading": "ロードバランサー", "meaning": "負荷分散装置", "image": "複数サーバーへ負荷を分散させる", "itMeaning": "複数のサーバーにアクセスを均等に分散し、負荷や障害を吸収する装置", "example": "Nginx load balancer", "related": "Traffic", "confusing": "Proxy", "difference": "Load balancer=分散、Proxy=中継", "category": "09 ネットワーク", "level": 2, "importance": 5, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Bandwidth", "reading": "帯域幅", "meaning": "通信容量・帯域", "image": "一定時間にどれだけのデータを運べるか", "itMeaning": "ネットワークで一度に転送できるデータ量または送信速度の上限", "example": "High bandwidth", "related": "Throughput", "confusing": "Latency", "difference": "Bandwidth=容量、Latency=応答の遅れ", "category": "09 ネットワーク", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Routing", "reading": "ルーティング", "meaning": "経路制御", "image": "宛先に最適な経路を選ぶ", "itMeaning": "パケットを目的地へ届けるための経路選択と転送処理", "example": "Dynamic routing", "related": "Path", "confusing": "Switching", "difference": "Routing=経路決定、Switching=転送そのもの", "category": "09 ネットワーク", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Switching", "reading": "スイッチング", "meaning": "交換・転送", "image": "通信を適切な出口へ切り替える", "itMeaning": "ネットワーク上のデータを適切な宛先へ転送する処理", "example": "Packet switching", "related": "Routing", "confusing": "Routing", "difference": "Switching=転送、Routing=経路選択", "category": "09 ネットワーク", "level": 2, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Packet", "reading": "パケット", "meaning": "通信データの小包", "image": "ネットワーク上で送り出される小さなデータ単位", "itMeaning": "ネットワーク通信で送受信される小さなデータ単位", "example": "Packet loss", "related": "Frame", "confusing": "Segment", "difference": "Packet=ネットワークの基本単位、Segment=TCP層の分割単位", "category": "09 ネットワーク", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Frame", "reading": "フレーム", "meaning": "フレーム・枠組み", "image": "データリンク層で扱うまとまり", "itMeaning": "通信データをデータリンク層で扱う単位のこと", "example": "Ethernet frame", "related": "Packet", "confusing": "Packet", "difference": "Frame=リンク層の単位、Packet=ネットワーク層の単位", "category": "09 ネットワーク", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Checksum", "reading": "チェックサム", "meaning": "誤り検出用の値", "image": "データが壊れていないか確認する値", "itMeaning": "データの転送や保存時に誤りがないか確認するための値", "example": "Checksum validation", "related": "Error detection", "confusing": "Encryption", "difference": "Checksum=誤り検出、Encryption=秘匿化", "category": "09 ネットワーク", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Encryption", "reading": "暗号化", "meaning": "読み取れないようにすること", "image": "データを秘匿化して守る", "itMeaning": "平文を暗号化して第三者が内容を理解できないようにすること", "example": "SSL encryption", "related": "Hash", "confusing": "Checksum", "difference": "Encryption=秘匿化、Checksum=誤り検出", "category": "11 セキュリティ", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Decryption", "reading": "復号化", "meaning": "暗号を元に戻すこと", "image": "暗号化された情報を読み取れる形に戻す", "itMeaning": "暗号化されたデータを元の平文へ戻す処理", "example": "Decrypt data", "related": "Encryption", "confusing": "Checksum", "difference": "Decryption=復号、Encryption=暗号化", "category": "11 セキュリティ", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Key", "reading": "キー", "meaning": "鍵・識別子", "image": "暗号やテーブルの識別に使う要素", "itMeaning": "暗号化や辞書アクセスで重要な識別情報または秘密情報", "example": "Public key", "related": "Encryption", "confusing": "Index", "difference": "Key=識別子や秘密情報、Index=検索表", "category": "11 セキュリティ", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Authorization", "reading": "認可", "meaning": "許可を与えること", "image": "適切な権限があることを認める", "itMeaning": "特定の操作やリソースへのアクセスを許可する判断と付与", "example": "Authorization check", "related": "Access", "confusing": "Authentication", "difference": "Authorization=許可、Authentication=本人確認", "category": "11 セキュリティ", "level": 2, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Authentication", "reading": "認証", "meaning": "本人確認", "image": "自分が本当に本人であることを確認する", "itMeaning": "利用者やデバイスが本当にその主体であることを確認すること", "example": "Two-factor authentication", "related": "Authorization", "confusing": "Authorization", "difference": "Authentication=本人確認、Authorization=権限付与", "category": "11 セキュリティ", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Credential", "reading": "資格情報・認証情報", "meaning": "認証に使う情報", "image": "本人確認に使う秘密情報", "itMeaning": "ユーザー認証時に提示するID、パスワード、証明書等の情報", "example": "Stored credentials", "related": "Token", "confusing": "Certificate", "difference": "Credential=証明情報、Certificate=証明書そのもの", "category": "11 セキュリティ", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Token", "reading": "トークン", "meaning": "識別子・証明書", "image": "認証やアクセス制御で使う一時的な証明", "itMeaning": "利用者や要求を識別するために発行される一時的な証明情報", "example": "JWT token", "related": "Session", "confusing": "Session", "difference": "Token=証明そのもの、Session=状態の持続期間", "category": "11 セキュリティ", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Cryptography", "reading": "暗号技術", "meaning": "暗号学", "image": "情報を守るための数学と技術", "itMeaning": "情報を守るための暗号の設計と利用技術の総称", "example": "Applied cryptography", "related": "Encryption", "confusing": "Cipher", "difference": "Cryptography=理論と技術、Cipher=暗号そのもの", "category": "11 セキュリティ", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Cipher", "reading": "暗号", "meaning": "暗号方式", "image": "平文を暗号文に変換する方式", "itMeaning": "平文を暗号文へ変換するための変換方式またはアルゴリズム", "example": "AES cipher", "related": "Cryptography", "confusing": "Cryptography", "difference": "Cipher=方式、Cryptography=技術全体", "category": "11 セキュリティ", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Virtualization", "reading": "仮想化", "meaning": "仮想化・仮想環境化", "image": "1台の機器を複数の仮想環境に分ける", "itMeaning": "物理資源を仮想的なリソースに分割したりまとめたりする技術", "example": "Server virtualization", "related": "VM", "confusing": "Container", "difference": "Virtualization=仮想資源化、Container=アプリ実行単位", "category": "13 クラウド", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "VM", "reading": "VM", "meaning": "仮想マシン", "image": "ホスト上で動く仮想コンピュータ", "itMeaning": "物理ホスト上で動作する独立した仮想コンピュータ環境", "example": "Virtual machine", "related": "Virtualization", "confusing": "Container", "difference": "VM=仮想コンピュータ、Container=アプリの軽量実行環境", "category": "13 クラウド", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Hypervisor", "reading": "ハイパーバイザー", "meaning": "仮想化管理ソフトウェア", "image": "VMを実行するための制御層", "itMeaning": "複数の仮想マシンを実行するためにハードウェアを管理する基盤ソフト", "example": "Type-1 hypervisor", "related": "VM", "confusing": "Container runtime", "difference": "Hypervisor=VM制御、Container runtime=コンテナ実行基盤", "category": "13 クラウド", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "API", "reading": "API", "meaning": "アプリケーション間の接続手段", "image": "ソフトウェア同士が通信する窓口", "itMeaning": "アプリケーションやサービスが相互に機能を利用するための公開インタフェース", "example": "REST API", "related": "Interface", "confusing": "SDK", "difference": "API=通信手段、SDK=開発用ツールキット", "category": "10 Web", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "SDK", "reading": "SDK", "meaning": "ソフトウェア開発キット", "image": "開発に必要なライブラリやツールのセット", "itMeaning": "ソフトウェア開発に必要なツール、ライブラリ、ドキュメントをまとめたセット", "example": "AWS SDK", "related": "API", "confusing": "API", "difference": "SDK=開発支援セット、API=外部との接続手段", "category": "10 Web", "level": 2, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Interface", "reading": "インターフェース", "meaning": "接点・境界", "image": "異なる部分が接する面", "itMeaning": "システムや部品同士が接続しやすい定義された境界や仕様", "example": "User interface", "related": "API", "confusing": "Protocol", "difference": "Interface=接点、Protocol=通信ルール", "category": "10 Web", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Endpoint", "reading": "エンドポイント", "meaning": "通信の終点・入口", "image": "APIやサービスの接続先", "itMeaning": "ネットワーク上の通信先や、APIのアクセス先となる特定のURLや接点", "example": "API endpoint", "related": "URL", "confusing": "Host", "difference": "Endpoint=具体的な接続先、Host=サーバー名", "category": "10 Web", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Middleware", "reading": "ミドルウェア", "meaning": "中間処理ソフト", "image": "アプリとOSの間にある支え", "itMeaning": "アプリケーションと基盤ソフトウェアの間で共通機能を提供するソフトウェア", "example": "Message middleware", "related": "API", "confusing": "Framework", "difference": "Middleware=共通機能層、Framework=開発基盤", "category": "10 Web", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Serverless", "reading": "サーバーレス", "meaning": "サーバー管理不要の構成", "image": "実行時にサーバーを管理しなくてよい", "itMeaning": "サーバーの運用管理を隠蔽し、コード実行単位に集中できる仕組み", "example": "Serverless function", "related": "Cloud", "confusing": "Dedicated server", "difference": "Serverless=管理不要、Dedicated server=専用サーバー", "category": "13 クラウド", "level": 2, "importance": 5, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Microservice", "reading": "マイクロサービス", "meaning": "小さなサービス群", "image": "機能ごとに分割された独立したサービス", "itMeaning": "大きなアプリケーションを機能ごとに小さく分割したサービス群", "example": "Microservice architecture", "related": "API", "confusing": "Monolith", "difference": "Microservice=分割型、Monolith=一体型", "category": "17 システム設計", "level": 2, "importance": 5, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Monolith", "reading": "モノリス", "meaning": "一体型アーキテクチャ", "image": "全機能が一つの塊で動く", "itMeaning": "アプリケーションの機能が一つの巨大な塊として実装される構成", "example": "Monolithic application", "related": "Microservice", "confusing": "Microservice", "difference": "Monolith=一体型、Microservice=分割型", "category": "17 システム設計", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Latency budget", "reading": "レイテンシ予算", "meaning": "許容遅延予算", "image": "全体の応答時間に対する各処理の上限時間", "itMeaning": "ユーザー体験やSLAを満たすために各処理に割り当てる許容遅延の総量", "example": "Frontend latency budget", "related": "SLA", "confusing": "Bandwidth", "difference": "Latency budget=許容遅延、Bandwidth=容量", "category": "17 システム設計", "level": 3, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "SLA", "reading": "SLA", "meaning": "サービス品質約款", "image": "サービス提供の品質保証条件", "itMeaning": "サービス提供者と利用者の間で定める可用性や性能の品質保証水準", "example": "99.9% SLA", "related": "Availability", "confusing": "QoS", "difference": "SLA=契約上の保証、QoS=技術上の制御", "category": "17 システム設計", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "QoS", "reading": "QoS", "meaning": "サービス品質", "image": "ネットワークやサービスで保障する品質", "itMeaning": "通信やサービスに対して品質の目標を定め、優先度や帯域を制御する仕組み", "example": "QoS policy", "related": "SLA", "confusing": "SLA", "difference": "QoS=技術制御、SLA=契約保証", "category": "17 システム設計", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Resilience", "reading": "レジリエンス", "meaning": "回復力・耐障害性", "image": "障害が起きても立ち直れる力", "itMeaning": "故障や異常が起きてもシステムとして機能を維持または回復できる力", "example": "System resilience", "related": "Redundant", "confusing": "Reliability", "difference": "Resilience=回復力、Reliability=安定性", "category": "17 システム設計", "level": 3, "importance": 4, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Reliability", "reading": "信頼性", "meaning": "信頼性・安定性", "image": "正しくずっと動く状態", "itMeaning": "システムが意図どおりに継続して動作する安定性", "example": "High reliability", "related": "Resilience", "confusing": "Availability", "difference": "Reliability=動作の安定性、Availability=利用可能性", "category": "17 システム設計", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Design pattern", "reading": "デザインパターン", "meaning": "設計の定型解", "image": "繰り返し発生する問題に対する典型的な設計", "itMeaning": "再利用しやすい設計問題に対する汎用的な解決方法の典型", "example": "Factory pattern", "related": "Architecture", "confusing": "Algorithm", "difference": "Design pattern=設計の解法、Algorithm=処理手順", "category": "17 システム設計", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Architecture", "reading": "アーキテクチャ", "meaning": "構造・体系設計", "image": "システム全体の設計の骨格", "itMeaning": "ソフトウェアやシステムの構成と全体設計の考え方", "example": "System architecture", "related": "Design pattern", "confusing": "Layout", "difference": "Architecture=全体設計、Layout=見た目の配置", "category": "17 システム設計", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Lifecycle", "reading": "ライフサイクル", "meaning": "生存期間・ライフサイクル", "image": "対象が作られてから終わるまでの一連の流れ", "itMeaning": "システムや資産が生成から廃棄までを通る一連の段階", "example": "Application lifecycle", "related": "Management", "confusing": "Process", "difference": "Lifecycle=全段階、Process=特定の手順", "category": "17 システム設計", "level": 2, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Monitoring", "reading": "モニタリング", "meaning": "監視・観測", "image": "状態を見守って異常を検知する", "itMeaning": "システムやサービスの状態を継続的に確認して異常を早期に察知すること", "example": "Application monitoring", "related": "Alert", "confusing": "Logging", "difference": "Monitoring=状態観測、Logging=記録", "category": "16 DevOps/CI-CD", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Alert", "reading": "アラート", "meaning": "通知・警告", "image": "異常が起こったときに知らせる仕組み", "itMeaning": "監視対象で異常や閾値超過が起きたときに通知される警告", "example": "Pager alert", "related": "Monitoring", "confusing": "Notification", "difference": "Alert=警告、Notification=一般的な通知", "category": "16 DevOps/CI-CD", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Logging", "reading": "ログ出力", "meaning": "記録のこと", "image": "発生した出来事を履歴として残す", "itMeaning": "処理の経緯やイベントを記録して後から確認できるようにする仕組み", "example": "Application log", "related": "Monitoring", "confusing": "Monitoring", "difference": "Logging=記録、Monitoring=状態確認", "category": "16 DevOps/CI-CD", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Pipeline", "reading": "パイプライン", "meaning": "処理の流れ・自動化の経路", "image": "自動化されたビルドとデプロイの流れ", "itMeaning": "コードの変更からテスト、ビルド、デプロイまでを自動化する処理経路", "example": "CI/CD pipeline", "related": "Automation", "confusing": "Workflow", "difference": "Pipeline=自動化の経路、Workflow=業務の流れ全体", "category": "16 DevOps/CI-CD", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Continuous integration", "reading": "継続的インテグレーション", "meaning": "継続的な統合", "image": "コードが定期的にまとめられて検証される仕組み", "itMeaning": "小さな変更を頻繁に統合し、テストや検証を自動で回す開発手法", "example": "CI pipeline", "related": "Continuous delivery", "confusing": "Continuous deployment", "difference": "CI=統合と検証、CD=配信と展開", "category": "16 DevOps/CI-CD", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Continuous delivery", "reading": "継続的デリバリー", "meaning": "配信準備の自動化", "image": "変更を本番へ出す準備が常に整う状態", "itMeaning": "変更を安全に本番へ出せる状態を継続的に保つ仕組み", "example": "Continuous delivery pipeline", "related": "Continuous deployment", "confusing": "Continuous integration", "difference": "Delivery=本番準備まで、Deployment=実際にリリース", "category": "16 DevOps/CI-CD", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Continuous deployment", "reading": "継続的デプロイメント", "meaning": "自動的な本番展開", "image": "品質確認後に自動で本番へ反映される", "itMeaning": "テストを通過した変更を自動で本番環境へ展開する仕組み", "example": "Automated deployment", "related": "Continuous delivery", "confusing": "Continuous integration", "difference": "Deployment=自動展開、CI=統合と検証", "category": "16 DevOps/CI-CD", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Artifact", "reading": "成果物", "meaning": "ビルド結果や成果物", "image": "ビルドやデプロイで作られる成果物", "itMeaning": "ソフトウェア開発プロセスで生成される成果物や実行ファイル", "example": "Build artifact", "related": "Package", "confusing": "Asset", "difference": "Artifact=開発プロセス成果物、Asset=資産全般", "category": "16 DevOps/CI-CD", "level": 2, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Automation", "reading": "自動化", "meaning": "手作業をなくすこと", "image": "人手でやる作業を自動で処理する", "itMeaning": "繰り返し作業や手順を機械に任せて効率化すること", "example": "CI automation", "related": "Pipeline", "confusing": "Orchestration", "difference": "Automation=作業自動化、Orchestration=複数動作の調整", "category": "16 DevOps/CI-CD", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Incident", "reading": "インシデント", "meaning": "障害・インシデント", "image": "サービスに影響が出る事象", "itMeaning": "サービスの可用性や品質に影響を与える異常事象", "example": "Security incident", "related": "Alert", "confusing": "Issue", "difference": "Incident=重大事象、Issue=一般の課題", "category": "18 インフラ", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Recovery", "reading": "リカバリー", "meaning": "回復", "image": "異常後に元の状態に戻す", "itMeaning": "障害や障害発生後にサービスやデータを復旧する動作全体", "example": "Disaster recovery", "related": "Restore", "confusing": "Reset", "difference": "Recovery=回復全体、Restore=戻す動作", "category": "18 インフラ", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Database", "reading": "データベース", "meaning": "データの保管庫", "image": "大量の情報を整理して保存する仕組み", "itMeaning": "構造化されたデータを効率的に保存・検索できる管理システム", "example": "Relational database", "related": "Schema", "confusing": "Spreadsheet", "difference": "Database=管理システム、Spreadsheet=表計算ソフト", "category": "08 データベース", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Storage", "reading": "ストレージ", "meaning": "保存装置・記憶装置", "image": "データを永続的に保管する場所", "itMeaning": "データを長期に保持するための記憶媒体やサービス", "example": "Object storage", "related": "Database", "confusing": "Memory", "difference": "Storage=永続保存、Memory=一時的な実行用記憶", "category": "02 コンピュータ構成", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Memory", "reading": "メモリ", "meaning": "主記憶・記憶装置", "image": "処理中のデータを一時保存する場所", "itMeaning": "CPUが処理するためにデータや命令を一時的に保持する装置", "example": "RAM memory", "related": "Storage", "confusing": "Storage", "difference": "Memory=動作中の一時保存、Storage=永続保存", "category": "02 コンピュータ構成", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "CPU", "reading": "CPU", "meaning": "中央処理装置", "image": "計算や制御を担う頭脳", "itMeaning": "コンピュータの中で命令を解釈し演算や制御を行う主要装置", "example": "Multi-core CPU", "related": "Core", "confusing": "GPU", "difference": "CPU=汎用計算、GPU=画像計算特化", "category": "02 コンピュータ構成", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "GPU", "reading": "GPU", "meaning": "画像処理装置", "image": "大量の並列演算を得意とする装置", "itMeaning": "画像処理や大量並列演算に特化した演算装置", "example": "GPU acceleration", "related": "CPU", "confusing": "CPU", "difference": "GPU=並列計算特化、CPU=汎用制御計算", "category": "02 コンピュータ構成", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Core", "reading": "コア", "meaning": "中心・コア部", "image": "CPUの演算単位", "itMeaning": "マルチコアCPUで個別に処理を担当する演算ユニット", "example": "Four-core CPU", "related": "CPU", "confusing": "Thread", "difference": "Core=CPUの演算単位、Thread=実行スレッド", "category": "02 コンピュータ構成", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Kernel", "reading": "カーネル", "meaning": "OSの中心部", "image": "ハードウェアとアプリの間をつなぐ中心", "itMeaning": "OSの中核でリソース管理やプロセス制御を担当する部分", "example": "Linux kernel", "related": "OS", "confusing": "Shell", "difference": "Kernel=OSの中核、Shell=ユーザーとの対話層", "category": "03 OS", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Shell", "reading": "シェル", "meaning": "ユーザー対話の外側", "image": "コマンドを入力してOSを操作する窓口", "itMeaning": "ユーザーがOSに命令を入力する対話インタフェース", "example": "Bash shell", "related": "Kernel", "confusing": "Kernel", "difference": "Shell=対話界面、Kernel=中核", "category": "03 OS", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "File system", "reading": "ファイルシステム", "meaning": "ファイル管理方式", "image": "ファイルやディレクトリを整理する仕組み", "itMeaning": "OSがファイルやディレクトリを保存・検索するための構造と規則", "example": "Ext4 file system", "related": "Directory", "confusing": "Disk", "difference": "File system=管理方式、Disk=物理的な保存装置", "category": "03 OS", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Directory", "reading": "ディレクトリ", "meaning": "フォルダ・保存場所", "image": "ファイルを分類して置く場所", "itMeaning": "ファイルやサブディレクトリを整理するための階層構造", "example": "Working directory", "related": "File system", "confusing": "Folder", "difference": "Directory=OS上の管理概念、Folder=GUIの見え方", "category": "03 OS", "level": 1, "importance": 3, "fe": "◎", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Permission", "reading": "パーミッション", "meaning": "権限・許可", "image": "誰が何をできるかを決める設定", "itMeaning": "ユーザーやプロセスがファイルや操作を実行できるかどうかの権限設定", "example": "Read permission", "related": "Access", "confusing": "Authentication", "difference": "Permission=権限、Authentication=本人確認", "category": "03 OS", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Virtual memory", "reading": "仮想メモリ", "meaning": "実メモリ以上の記憶空間を見せる仕組み", "image": "主記憶が足りなくても広い空間に見せる", "itMeaning": "物理メモリより大きい記憶空間を論理的に提供する仕組み", "example": "Paging memory", "related": "Memory", "confusing": "Swap", "difference": "Virtual memory=論理メモリ空間、Swap=仮想メモリと物理メモリの置換", "category": "03 OS", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Swap", "reading": "スワップ", "meaning": "交換・仮記憶への退避", "image": "メモリ不足時に一時的に別領域へ退避する", "itMeaning": "メモリ不足時に一部データを補助記憶装置へ退避し交換する仕組み", "example": "Swap area", "related": "Virtual memory", "confusing": "Virtual memory", "difference": "Swap=実際の退避動作、Virtual memory=全体の仕組み", "category": "03 OS", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Scheduler", "reading": "スケジューラ", "meaning": "実行順序決定器", "image": "複数タスクをどの順番で動かすか決める", "itMeaning": "複数のプロセスやジョブにCPU時間を割り当てる順序を決める機構", "example": "CPU scheduler", "related": "Process", "confusing": "Executor", "difference": "Scheduler=順番決定、Executor=実行担当", "category": "03 OS", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Semaphore", "reading": "セマフォ", "meaning": "排他制御の仕組み", "image": "同時アクセスを制限して整合性を保つ", "itMeaning": "複数スレッドやプロセスの同時アクセスを制御する同期機構", "example": "Counting semaphore", "related": "Mutex", "confusing": "Mutex", "difference": "Semaphore=複数許容も可能、Mutex=排他専用", "category": "03 OS", "level": 3, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Mutex", "reading": "ミューテックス", "meaning": "相互排除", "image": "一度に1つだけ使わせる", "itMeaning": "複数スレッドが同時に共有資源へアクセスしないようにする排他制御機構", "example": "Mutex lock", "related": "Semaphore", "confusing": "Semaphore", "difference": "Mutex=一つだけ、Semaphore=複数管理も可能", "category": "03 OS", "level": 3, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Context switch", "reading": "コンテキストスイッチ", "meaning": "処理切り替え", "image": "実行中の仕事を中断して別の仕事に切り替える", "itMeaning": "CPUがあるプロセスやスレッドから別のものへ切り替える際の状態保存と復元", "example": "Context switch overhead", "related": "Scheduler", "confusing": "Process", "difference": "Context switch=切替作業、Process=実行単位", "category": "03 OS", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "DNS", "reading": "DNS", "meaning": "ドメイン名解決サービス", "image": "ドメイン名をIPアドレスに変換する仕組み", "itMeaning": "人間が読めるドメイン名をIPアドレスに変換する名前解決サービス", "example": "DNS lookup", "related": "IP", "confusing": "DHCP", "difference": "DNS=名前解決、DHCP=IP割当", "category": "09 ネットワーク", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "DHCP", "reading": "DHCP", "meaning": "動的IP割り当て", "image": "ネットワーク参加時にIPアドレスを自動割当する", "itMeaning": "ネットワーク接続時にIPアドレスなどの設定を自動で割り当てる仕組み", "example": "DHCP server", "related": "DNS", "confusing": "DNS", "difference": "DHCP=IP割当、DNS=名前解決", "category": "09 ネットワーク", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "IP", "reading": "IP", "meaning": "インターネット接続の住所", "image": "ネットワーク上の識別番号", "itMeaning": "ネットワーク上の端末を識別するアドレス", "example": "IPv4 address", "related": "DNS", "confusing": "MAC", "difference": "IP=ネットワーク層の住所、MAC=LAN内の物理アドレス", "category": "09 ネットワーク", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "MAC address", "reading": "MACアドレス", "meaning": "物理アドレス", "image": "ネットワーク機器ごとの固有識別子", "itMeaning": "NICごとに割り当てられる「ハードウェア」レベルの固有識別子", "example": "MAC filtering", "related": "IP", "confusing": "IP", "difference": "MAC=ハードウェア識別、IP=ネットワーク識別", "category": "09 ネットワーク", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "TCP", "reading": "TCP", "meaning": "信頼性の高い伝送制御プロトコル", "image": "データが確実に届くように制御する", "itMeaning": "信頼性の高い通信を保証する接続型の通信プロトコル", "example": "TCP handshake", "related": "UDP", "confusing": "UDP", "difference": "TCP=信頼性重視、UDP=高速重視", "category": "09 ネットワーク", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "UDP", "reading": "UDP", "meaning": "軽量な通信プロトコル", "image": "確実性より速さを優先する", "itMeaning": "接続を持たず、軽量で高速な通信を行うプロトコル", "example": "VoIP uses UDP", "related": "TCP", "confusing": "TCP", "difference": "UDP=高速・軽量、TCP=信頼性重視", "category": "09 ネットワーク", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "HTTP", "reading": "HTTP", "meaning": "Webで使う通信規約", "image": "ブラウザとサーバーのやり取りルール", "itMeaning": "Webブラウザとサーバーがやり取りするハイパーテキスト通信プロトコル", "example": "HTTP request", "related": "HTTPS", "confusing": "FTP", "difference": "HTTP=通常通信、HTTPS=暗号化付き通信", "category": "10 Web", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "HTTPS", "reading": "HTTPS", "meaning": "暗号化されたHTTP", "image": "Web通信を安全に守る", "itMeaning": "HTTP通信にSSL/TLSによる暗号化を追加した安全な通信", "example": "HTTPS certificate", "related": "HTTP", "confusing": "HTTP", "difference": "HTTPS=暗号化あり、HTTP=暗号化なし", "category": "10 Web", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "REST", "reading": "REST", "meaning": "状態を持たないリソース指向設計", "image": "URLでリソースを表し、HTTPで操作する", "itMeaning": "HTTPを使ってリソースを表現し、状態を持たないデザインの考え方", "example": "REST API", "related": "API", "confusing": "SOAP", "difference": "REST=軽量・リソース指向、SOAP=厳密なプロトコル", "category": "10 Web", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "SOAP", "reading": "SOAP", "meaning": "厳密なXMLベース通信規約", "image": "メッセージをXMLで交換する", "itMeaning": "Webサービス通信で使う厳密なメッセージ交換プロトコル", "example": "SOAP service", "related": "REST", "confusing": "REST", "difference": "SOAP=XML中心、REST=HTTPベースの軽量アーキテクチャ", "category": "10 Web", "level": 2, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "URL", "reading": "URL", "meaning": "リソースの住所", "image": "Web上の位置を示す文字列", "itMeaning": "インターネット上の資源を識別する一意な住所", "example": "Website URL", "related": "URI", "confusing": "IP", "difference": "URL=Web用の住所、URI=より広い識別子", "category": "10 Web", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "URI", "reading": "URI", "meaning": "識別子", "image": "何を指しているかを示す識別子", "itMeaning": "資源を識別するための文字列形式の一般概念", "example": "URI scheme", "related": "URL", "confusing": "URL", "difference": "URI=一般概念、URL=Web用のURI", "category": "10 Web", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Cookie", "reading": "クッキー", "meaning": "ブラウザ保存の情報", "image": "ユーザー情報をブラウザに保存する小さなデータ", "itMeaning": "Webサイトがブラウザに保存し、再訪問時に利用する情報", "example": "Session cookie", "related": "Session", "confusing": "Cache", "difference": "Cookie=ユーザー状態保存、Cache=データの高速再利用", "category": "10 Web", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Cache", "reading": "キャッシュ", "meaning": "一時保存・再利用", "image": "必要なデータを近くに置いて再利用する", "itMeaning": "頻繁に使うデータを高速に再利用できるように保管する仕組み", "example": "Browser cache", "related": "Cookie", "confusing": "Cookie", "difference": "Cache=再利用用保存、Cookie=状態保存用データ", "category": "10 Web", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "DOM", "reading": "DOM", "meaning": "ドキュメント構造モデル", "image": "HTMLをツリーとして扱う見え方", "itMeaning": "HTMLやXML文書をプログラムから操作できるようにしたオブジェクトモデル", "example": "DOM manipulation", "related": "HTML", "confusing": "HTML", "difference": "DOM=表現と操作モデル、HTML=文書そのもの", "category": "10 Web", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "HTML", "reading": "HTML", "meaning": "Webページの文書形式", "image": "Webコンテンツの骨格を表すマークアップ", "itMeaning": "Webページの内容や構造を記述する標準マークアップ言語", "example": "HTML document", "related": "DOM", "confusing": "CSS", "difference": "HTML=内容構造、CSS=見た目", "category": "10 Web", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "CSS", "reading": "CSS", "meaning": "見た目を制御するスタイル言語", "image": "Webページの配色やレイアウトを整える", "itMeaning": "HTML要素の見た目やレイアウトを定義するスタイル言語", "example": "Responsive CSS", "related": "HTML", "confusing": "HTML", "difference": "CSS=見た目、HTML=構造", "category": "10 Web", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "JavaScript", "reading": "ジャバスクリプト", "meaning": "Webの動的処理言語", "image": "ページに動きを与えるスクリプト言語", "itMeaning": "Webページに対話性や動的処理を追加するスクリプト言語", "example": "JavaScript event", "related": "DOM", "confusing": "Java", "difference": "JavaScript=Web用、Java=汎用言語", "category": "10 Web", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "TypeScript", "reading": "タイプスクリプト", "meaning": "型付きJavaScript", "image": "JavaScriptに型安全性を追加する", "itMeaning": "JavaScriptを拡張した型付き言語で大規模開発を支援する", "example": "TypeScript compilation", "related": "JavaScript", "confusing": "JavaScript", "difference": "TypeScript=型付き、JavaScript=型なし", "category": "10 Web", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Frontend", "reading": "フロントエンド", "meaning": "利用者側の画面と動作", "image": "ユーザーが触る部分", "itMeaning": "Webアプリや画面の利用者が直接触れる側の開発領域", "example": "Frontend engineering", "related": "Backend", "confusing": "Backend", "difference": "Frontend=利用者側、Backend=裏側", "category": "10 Web", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Backend", "reading": "バックエンド", "meaning": "サーバー側の処理", "image": "画面の裏で動く処理とデータ管理", "itMeaning": "利用者には見えないサーバー側のロジックと基盤", "example": "Backend service", "related": "Frontend", "confusing": "Frontend", "difference": "Backend=裏側、Frontend=利用者側", "category": "10 Web", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Responsive", "reading": "レスポンシブ", "meaning": "適応する・画面に応じて変わる", "image": "画面サイズに応じてレイアウトが変わる", "itMeaning": "画面サイズや端末に応じて適切な表示に変化する設計", "example": "Responsive design", "related": "UI", "confusing": "Adaptive", "difference": "Responsive=柔軟対応、Adaptive=特定条件対応", "category": "10 Web", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "UI", "reading": "UI", "meaning": "ユーザーインターフェース", "image": "利用者とシステムの接点", "itMeaning": "利用者がシステムを操作する画面や操作部品の総体", "example": "UI design", "related": "UX", "confusing": "UX", "difference": "UI=見た目と操作、UX=体験全体", "category": "10 Web", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "UX", "reading": "UX", "meaning": "ユーザー体験", "image": "利用者が感じる体験全体", "itMeaning": "サービスやアプリを利用したときにユーザーが感じる体験", "example": "UX improvement", "related": "UI", "confusing": "UI", "difference": "UX=体験、UI=画面と操作", "category": "10 Web", "level": 1, "importance": 3, "fe": "◎", "ap": "○", "practical": "◎", "priority50": false}, {"word": "SEO", "reading": "SEO", "meaning": "検索エンジン最適化", "image": "検索で上位に出るように調整する", "itMeaning": "検索エンジンで上位表示されやすいようにコンテンツを改善する手法", "example": "SEO optimization", "related": "Search", "confusing": "SEM", "difference": "SEO=自然検索最適化、SEM=広告を含む検索マーケティング", "category": "10 Web", "level": 2, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Cloud", "reading": "クラウド", "meaning": "インターネット上の仮想資源", "image": "専用設備を借りるように使う計算資源", "itMeaning": "インターネット経由で提供される計算資源やサービスの総称", "example": "Cloud service", "related": "Virtualization", "confusing": "On-premise", "difference": "Cloud=外部提供、On-premise=自社運用", "category": "13 クラウド", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "On-premise", "reading": "オンプレミス", "meaning": "自社内運用", "image": "自社の設備で運用する形態", "itMeaning": "インターネット外の自社設備やデータセンターで運用する方式", "example": "On-premise system", "related": "Cloud", "confusing": "Cloud", "difference": "On-premise=自社運用、Cloud=外部提供", "category": "13 クラウド", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "CSP", "reading": "CSP", "meaning": "クラウドサービスプロバイダ", "image": "クラウド資源を提供する会社", "itMeaning": "クラウドサービスを提供する企業や事業者", "example": "AWS CSP", "related": "Cloud", "confusing": "Provider", "difference": "CSP=クラウド提供者、Provider=一般的な提供者", "category": "13 クラウド", "level": 2, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "IaC", "reading": "IaC", "meaning": "Infrastructure as Code", "image": "インフラをコードで管理する", "itMeaning": "インフラ構成をコードとして定義・管理する仕組み", "example": "Terraform IaC", "related": "Automation", "confusing": "Config management", "difference": "IaC=インフラのコード化、Config management=設定管理", "category": "16 DevOps/CI-CD", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "CDN", "reading": "CDN", "meaning": "コンテンツ配信ネットワーク", "image": "世界中の配信ノードでコンテンツを高速配信する", "itMeaning": "コンテンツを複数の拠点に配置して高速かつ安定に配信する仕組み", "example": "CloudFront CDN", "related": "Latency", "confusing": "DNS", "difference": "CDN=配信高速化、DNS=名前解決", "category": "13 クラウド", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Tracing", "reading": "トレース", "meaning": "追跡・観測", "image": "リクエストがどこで時間を使っているか見える化する", "itMeaning": "分散システムでリクエストの流れを追跡し、どこで遅延が起きたかを観測する", "example": "Distributed tracing", "related": "Monitoring", "confusing": "Logging", "difference": "Tracing=流れの観測、Logging=イベント記録", "category": "16 DevOps/CI-CD", "level": 3, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Packet loss", "reading": "パケットロス", "meaning": "データ損失", "image": "通信途中で一部のデータが落ちること", "itMeaning": "ネットワーク上で送信されたデータパケットが途中で失われる現象", "example": "Packet loss on WAN", "related": "Latency", "confusing": "Throughput", "difference": "Packet loss=欠落、Latency=遅延", "category": "09 ネットワーク", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Checksum", "reading": "チェックサム", "meaning": "誤り検出のための値", "image": "データに誤りがないか確認する", "itMeaning": "データの破損や変化がないか確認するための比較用値", "example": "Checksum mismatch", "related": "Error detection", "confusing": "Encryption", "difference": "Checksum=誤り検出、Encryption=秘匿化", "category": "09 ネットワーク", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Encryption", "reading": "暗号化", "meaning": "データを安全に守る手段", "image": "内容が見えないように変換する", "itMeaning": "データを秘匿化して許可された相手だけが読み取れるようにする技術", "example": "At-rest encryption", "related": "Cryptography", "confusing": "Checksum", "difference": "Encryption=秘匿化、Checksum=誤り検出", "category": "11 セキュリティ", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Hashing", "reading": "ハッシュ化", "meaning": "データを固定長の値へ変換すること", "image": "同じ入力なら同じ値になる変換", "itMeaning": "データを固定長の一意な値へ変換する処理", "example": "Password hashing", "related": "Hash", "confusing": "Encryption", "difference": "Hashing=比較・索引用変換、Encryption=秘匿化", "category": "11 セキュリティ", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Certificate", "reading": "証明書", "meaning": "認証の証明書", "image": "通信相手が正しいことを示す証明書", "itMeaning": "公開鍵や識別情報を証明し、信頼できる主体であることを示すデータ", "example": "TLS certificate", "related": "Authentication", "confusing": "Credential", "difference": "Certificate=証明書、Credential=証明情報", "category": "11 セキュリティ", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Threat", "reading": "脅威", "meaning": "攻撃や危険要因", "image": "情報やシステムを脅かす要因", "itMeaning": "情報資産やシステムに害を与える可能性のある攻撃や危険要因", "example": "External threat", "related": "Risk", "confusing": "Vulnerability", "difference": "Threat=脅威そのもの、Vulnerability=弱点", "category": "11 セキュリティ", "level": 2, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Risk", "reading": "リスク", "meaning": "危険性・損失の可能性", "image": "何かが起こる可能性と影響の大小", "itMeaning": "脅威が実際に発生したときに生じ得る損失や影響の可能性", "example": "Security risk", "related": "Threat", "confusing": "Vulnerability", "difference": "Risk=危険の可能性、Vulnerability=弱点", "category": "11 セキュリティ", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Integrity", "reading": "完全性", "meaning": "改ざんされていない状態", "image": "データが正しい状態で保たれている", "itMeaning": "データや処理の結果が正しく、改ざんや破損がない状態", "example": "Data integrity", "related": "Consistency", "confusing": "Availability", "difference": "Integrity=正しさ、Availability=利用可能性", "category": "11 セキュリティ", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Availability", "reading": "可用性", "meaning": "使える状態", "image": "必要な時にサービスが利用可能な状態", "itMeaning": "システムやサービスが必要時に利用可能である度合い", "example": "Service availability", "related": "Uptime", "confusing": "Reliability", "difference": "Availability=使える状態、Reliability=安定して動く状態", "category": "11 セキュリティ", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Bioinformatics", "reading": "バイオインフォマティクス", "meaning": "生命情報学", "image": "生命情報と情報技術を組み合わせる分野", "itMeaning": "生命科学のデータを情報技術で解析・管理する分野", "example": "Bioinformatics analysis", "related": "AI", "confusing": "Data science", "difference": "Bioinformatics=生命科学データ、Data science=一般データ分析", "category": "19 AI", "level": 3, "importance": 2, "fe": "○", "ap": "○", "practical": "○", "priority50": false}, {"word": "Machine learning", "reading": "機械学習", "meaning": "経験から学習する技術", "image": "データから規則を自動で学ぶ", "itMeaning": "大量のデータからパターンやルールを学習し予測や判断を行う技術", "example": "Supervised learning", "related": "AI", "confusing": "Deep learning", "difference": "Machine learning=広い枠、Deep learning=その中の一手法", "category": "19 AI", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Deep learning", "reading": "深層学習", "meaning": "多層ニューラルネットワークによる学習", "image": "階層的に特徴を抽出して理解する", "itMeaning": "多層のニューラルネットワークで複雑な特徴を自動学習する技術", "example": "Deep learning model", "related": "Machine learning", "confusing": "Machine learning", "difference": "Deep learning=多層学習、ML=広い概念", "category": "19 AI", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Neural network", "reading": "ニューラルネットワーク", "meaning": "脳のような計算モデル", "image": "層を重ねた数理モデルで特徴を学ぶ", "itMeaning": "複数のノードを重ねて特徴を学習する計算モデル", "example": "Convolutional neural network", "related": "AI", "confusing": "Rule-based system", "difference": "Neural network=学習型モデル、Rule-based=明示ルール", "category": "19 AI", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Inference", "reading": "推論", "meaning": "判断・推定", "image": "学習済みモデルが予測を出す処理", "itMeaning": "学習済みモデルが入力から予測や判断を出す処理", "example": "Model inference", "related": "Prediction", "confusing": "Training", "difference": "Inference=予測、Training=学習", "category": "19 AI", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Training", "reading": "学習・訓練", "meaning": "モデルを作る過程", "image": "大量データから規則を学ばせる", "itMeaning": "モデルがデータから特徴や重みを学ぶための処理", "example": "Training data", "related": "Inference", "confusing": "Inference", "difference": "Training=学習、Inference=予測", "category": "19 AI", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Model", "reading": "モデル", "meaning": "モデル・設計図", "image": "データから学んだ数学的表現", "itMeaning": "入力から出力を決めるデータや数式として表現された知識", "example": "Prediction model", "related": "AI", "confusing": "Algorithm", "difference": "Model=学習結果、Algorithm=処理手順", "category": "19 AI", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Dataset", "reading": "データセット", "meaning": "学習用データ群", "image": "AIに学習させるデータの集まり", "itMeaning": "機械学習や分析の対象となるデータの集合", "example": "Training dataset", "related": "Data", "confusing": "Database", "difference": "Dataset=分析用データ群、Database=管理システム", "category": "19 AI", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Feature", "reading": "特徴量", "meaning": "入力データの特徴", "image": "モデルが判断に使う情報の要素", "itMeaning": "学習や予測で利用する入力データの代表的な属性や値", "example": "Feature extraction", "related": "Model", "confusing": "Function", "difference": "Feature=入力の属性、Function=機能そのもの", "category": "19 AI", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Accuracy", "reading": "精度", "meaning": "正解率・精度", "image": "予測がどれだけ正しいかの指標", "itMeaning": "モデルが正しく予測できる割合や精度のこと", "example": "Model accuracy", "related": "Metric", "confusing": "Precision", "difference": "Accuracy=全体の正解率、Precision=陽性の適合率", "category": "19 AI", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Precision", "reading": "適合率", "meaning": "正しく当てた比率", "image": "予測したもののうち本当に正しい比率", "itMeaning": "陽性予測のうち実際に正しかった割合", "example": "High precision", "related": "Recall", "confusing": "Accuracy", "difference": "Precision=予測の正確さ、Recall=見つけられた割合", "category": "19 AI", "level": 2, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Recall", "reading": "再現率", "meaning": "見逃さない率", "image": "本当に必要なものをどれだけ拾えるか", "itMeaning": "本当に正解である対象をどれだけ検出できたかの割合", "example": "High recall", "related": "Precision", "confusing": "Accuracy", "difference": "Recall=見つけた割合、Precision=予測の精度", "category": "19 AI", "level": 2, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Bias", "reading": "バイアス", "meaning": "偏り・バイアス", "image": "学習データに偏りがあると予測が歪む", "itMeaning": "データやモデルに偏りが生じて、結果が理想からずれる状態", "example": "Data bias", "related": "Fairness", "confusing": "Variance", "difference": "Bias=偏り、Variance=ばらつき", "category": "19 AI", "level": 2, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Variance", "reading": "分散", "meaning": "ばらつき・分散", "image": "同じ条件でも結果がばらつく度合い", "itMeaning": "データや予測の値がどれだけばらつくかの程度", "example": "Model variance", "related": "Bias", "confusing": "Bias", "difference": "Variance=ばらつき、Bias=偏り", "category": "19 AI", "level": 2, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Validation", "reading": "検証", "meaning": "評価・妥当性確認", "image": "学習後に性能を確認する", "itMeaning": "モデルやシステムが本当に期待どおりかを評価する過程", "example": "Validation dataset", "related": "Evaluation", "confusing": "Verification", "difference": "Validation=評価、Verification=検証一般", "category": "19 AI", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Evaluation", "reading": "評価", "meaning": "性能評価", "image": "ある基準で測って良し悪しを判断する", "itMeaning": "モデルやサービスがどの程度の性能を持つかを基準に測定・比較すること", "example": "Model evaluation", "related": "Validation", "confusing": "Verification", "difference": "Evaluation=評価、Verification=確認作業", "category": "19 AI", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Prompt", "reading": "プロンプト", "meaning": "入力指示文", "image": "AIに何を求めるかの指示文", "itMeaning": "AIモデルへ与える指示や入力テキストのこと", "example": "Prompt engineering", "related": "LLM", "confusing": "Token", "difference": "Prompt=指示、Token=単位データ", "category": "19 AI", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "LLM", "reading": "LLM", "meaning": "大規模言語モデル", "image": "膨大な文章から学習した言語モデル", "itMeaning": "大量のテキストから言語的な理解と生成を行う大規模モデル", "example": "LLM API", "related": "Prompt", "confusing": "AI", "difference": "LLM=大規模言語モデル、AI=広い概念", "category": "19 AI", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Hallucination", "reading": "ハルシネーション", "meaning": "作り話・誤認識", "image": "事実に基づかない情報を出してしまう", "itMeaning": "モデルが事実と異なる内容を根拠なく出力してしまう現象", "example": "AI hallucination", "related": "Trust", "confusing": "Confidence", "difference": "Hallucination=誤情報出力、Confidence=自信の度合い", "category": "19 AI", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Embedding", "reading": "埋め込み", "meaning": "ベクトル表現・埋め込み表現", "image": "単語や文を数値ベクトルに変換する", "itMeaning": "言語や画像を数値ベクトルとして表現し、意味の近さを扱えるようにする技術", "example": "Embedding vector", "related": "Vector", "confusing": "Feature", "difference": "Embedding=意味ベクトル、Feature=属性値", "category": "19 AI", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Vector", "reading": "ベクトル", "meaning": "方向と大きさを持つ数値表現", "image": "意味や特徴を数値の方向で表す", "itMeaning": "数値の組み合わせで表現された方向や特性を示すデータ", "example": "Feature vector", "related": "Embedding", "confusing": "Matrix", "difference": "Vector=一次元、Matrix=二次元", "category": "19 AI", "level": 2, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Automation", "reading": "自動化", "meaning": "手作業を自動で処理すること", "image": "作業を機械が行う", "itMeaning": "人手による操作を機械やスクリプトへ置き換えて効率化すること", "example": "Process automation", "related": "Pipeline", "confusing": "Orchestration", "difference": "Automation=自動化、Orchestration=複数処理の調整", "category": "16 DevOps/CI-CD", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Baseline", "reading": "ベースライン", "meaning": "基準・比較の起点", "image": "比較対象になる基準値", "itMeaning": "性能や状態を比較するための基準値や初期状態", "example": "Baseline performance", "related": "Benchmark", "confusing": "Target", "difference": "Baseline=基準、Target=目標値", "category": "20 プロジェクト管理", "level": 2, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Benchmark", "reading": "ベンチマーク", "meaning": "性能比較評価", "image": "同じ条件で比較し、性能を測る", "itMeaning": "複数の実装や環境を同条件で比較して性能を評価する試験", "example": "Benchmark test", "related": "Baseline", "confusing": "Target", "difference": "Benchmark=比較検証、Baseline=基準値", "category": "20 プロジェクト管理", "level": 2, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Deliverable", "reading": "成果物", "meaning": "納品物・成果物", "image": "プロジェクトで納める成果", "itMeaning": "プロジェクトや業務で成果として納品または提出する成果物", "example": "Project deliverable", "related": "Milestone", "confusing": "Task", "difference": "Deliverable=成果物、Task=作業単位", "category": "20 プロジェクト管理", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Scope", "reading": "スコープ", "meaning": "範囲・対象範囲", "image": "何を対象にするかを定める範囲", "itMeaning": "プロジェクトやシステムで対象とする範囲や境界を示す概念", "example": "Project scope", "related": "Requirement", "confusing": "Timeline", "difference": "Scope=範囲、Timeline=期間", "category": "20 プロジェクト管理", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Requirement", "reading": "要求事項", "meaning": "必要条件・要件", "image": "何を満たすべきかを示す条件", "itMeaning": "システムやプロジェクトに対して満たすべき条件や仕様", "example": "Functional requirement", "related": "Scope", "confusing": "Task", "difference": "Requirement=必要条件、Task=作業単位", "category": "20 プロジェクト管理", "level": 1, "importance": 5, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Timeline", "reading": "タイムライン", "meaning": "時間軸・予定表", "image": "予定や進捗の流れを時間順に見る", "itMeaning": "プロジェクトの進行予定や実績を時間順に並べた表示", "example": "Project timeline", "related": "Milestone", "confusing": "Scope", "difference": "Timeline=時間軸、Scope=範囲", "category": "20 プロジェクト管理", "level": 1, "importance": 4, "fe": "◎", "ap": "◎", "practical": "◎", "priority50": true}, {"word": "Stakeholder", "reading": "ステークホルダー", "meaning": "利害関係者", "image": "プロジェクトに影響する人や組織", "itMeaning": "プロジェクトやサービスに影響を受ける人や組織の総称", "example": "Project stakeholders", "related": "Requirement", "confusing": "Team", "difference": "Stakeholder=利害関係者、Team=作業メンバー", "category": "20 プロジェクト管理", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}, {"word": "Risk management", "reading": "リスクマネジメント", "meaning": "危険の管理", "image": "問題が起きる前に対策を考える", "itMeaning": "リスクの特定、分析、対応を通じて影響を低減すること", "example": "Project risk management", "related": "Risk", "confusing": "Crisis management", "difference": "Risk management=事前対策、Crisis management=発生後の対応", "category": "20 プロジェクト管理", "level": 2, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Crisis management", "reading": "クライシスマネジメント", "meaning": "危機対応", "image": "事故や問題が起きた時の対応を整える", "itMeaning": "重大な問題発生時に迅速に対処し被害を最小化する対応", "example": "Operational crisis management", "related": "Incident", "confusing": "Risk management", "difference": "Crisis management=発生後対応、Risk management=事前管理", "category": "20 プロジェクト管理", "level": 2, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Kanban", "reading": "カンバン", "meaning": "可視化した作業管理法", "image": "カードで進行状況を可視化する", "itMeaning": "作業を可視化し、進捗やボトルネックを管理する手法", "example": "Kanban board", "related": "Agile", "confusing": "Scrum", "difference": "Kanban=可視化中心、Scrum=時間区切り中心", "category": "20 プロジェクト管理", "level": 2, "importance": 3, "fe": "○", "ap": "○", "practical": "◎", "priority50": false}, {"word": "Scrum", "reading": "スクラム", "meaning": "反復型開発手法", "image": "短い開発周期で進める", "itMeaning": "短い開発サイクルを繰り返し、定期的に成果を確認しながら進める手法", "example": "Scrum team", "related": "Agile", "confusing": "Kanban", "difference": "Scrum=固定期間サイクル、Kanban=流れ可視化", "category": "20 プロジェクト管理", "level": 2, "importance": 4, "fe": "○", "ap": "◎", "practical": "◎", "priority50": false}];
+
+const STORAGE_KEY = 'itEnglish300KnownWords';
+let _storage;
+try { _storage = localStorage; } catch(e) { _storage = null; }
+const _memStore = {};
+const _safeStorage = {
+  getItem: function(k) { if (_storage) { try { return _storage.getItem(k); } catch(e) {} } return _memStore[k] || null; },
+  setItem: function(k, v) { if (_storage) { try { _storage.setItem(k, v); return; } catch(e) {} } _memStore[k] = v; }
+};
+let knownWords = new Set(JSON.parse(_safeStorage.getItem(STORAGE_KEY) || '[]'));
+
+let currentMode = 'list';
+let currentFilters = { level: 0, category: 'all', importance: 0, status: 'all' };
+let currentSort = 'recommended';
+let currentSearch = '';
+let flashcardIndex = 0;
+let filteredWords = [];
+let isRandomSession = false;
+let randomSessionWords = [];
+
+let quizState = { questions: [], currentIndex: 0, score: 0, wrong: 0, answered: false, direction: 'en2ja' };
+
+function initTheme() {
+  const saved = _safeStorage.getItem('itEnglish300Theme');
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.getElementById('themeToggle').textContent = '昼';
+  }
+}
+
+document.getElementById('themeToggle').addEventListener('click', function() {
+  const current = document.documentElement.getAttribute('data-theme');
+  if (current === 'dark') {
+    document.documentElement.removeAttribute('data-theme');
+    this.textContent = '夜';
+    _safeStorage.setItem('itEnglish300Theme', 'light');
+  } else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    this.textContent = '昼';
+    _safeStorage.setItem('itEnglish300Theme', 'dark');
+  }
+});
+
+function updateStats() {
+  const known = knownWords.size;
+  const total = WORDS.length;
+  const unknown = total - known;
+  const percent = Math.round((known / total) * 100);
+  document.getElementById('statKnown').textContent = known;
+  document.getElementById('statUnknown').textContent = unknown;
+  document.getElementById('statPercent').textContent = percent + '%';
+  document.getElementById('progressText').textContent = known + ' / ' + total;
+  document.getElementById('progressFill').style.width = percent + '%';
+}
+
+function getFilteredWords() {
+  if (isRandomSession && randomSessionWords.length > 0) return randomSessionWords;
+  let result = WORDS.filter(function(w) {
+    if (currentFilters.level !== 0 && w.level !== currentFilters.level) return false;
+    if (currentFilters.category !== 'all' && w.category !== currentFilters.category) return false;
+    if (currentFilters.importance !== 0 && w.importance !== currentFilters.importance) return false;
+    if (currentFilters.status === 'known' && !knownWords.has(w.word)) return false;
+    if (currentFilters.status === 'unknown' && knownWords.has(w.word)) return false;
+    if (currentSearch) {
+      const s = currentSearch.toLowerCase();
+      if (w.word.toLowerCase().indexOf(s) === -1 && w.meaning.toLowerCase().indexOf(s) === -1 &&
+          w.reading.toLowerCase().indexOf(s) === -1 && w.image.toLowerCase().indexOf(s) === -1 &&
+          w.itMeaning.toLowerCase().indexOf(s) === -1) return false;
+    }
+    return true;
+  });
+  if (currentSort === 'az') result.sort(function(a, b) { return a.word.localeCompare(b.word); });
+  else if (currentSort === 'za') result.sort(function(a, b) { return b.word.localeCompare(a.word); });
+  else if (currentSort === 'importance') result.sort(function(a, b) { return b.importance - a.importance; });
+  else if (currentSort === 'random') result = shuffleArray(result);
+  else result.sort(function(a, b) { if (a.priority50 && !b.priority50) return -1; if (!a.priority50 && b.priority50) return 1; return b.importance - a.importance; });
+  return result;
+}
+
+function shuffleArray(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+
+function render() {
+  filteredWords = getFilteredWords();
+  const area = document.getElementById('contentArea');
+  if (filteredWords.length === 0) {
+    area.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">該当する単語がありません</div></div>';
+    return;
+  }
+  if (currentMode === 'list') renderList();
+  else if (currentMode === 'card') renderCard();
+  else if (currentMode === 'memorize') renderMemorize();
+  else if (currentMode === 'quiz') renderQuiz();
+}
+
+function renderList() {
+  const area = document.getElementById('contentArea');
+  let h = '<div class="word-list">';
+  filteredWords.forEach(function(w, idx) {
+    const isKnown = knownWords.has(w.word);
+    const stars = '★'.repeat(w.importance) + '☆'.repeat(5 - w.importance);
+    h += '<div class="word-card' + (isKnown ? ' known' : '') + '" data-idx="' + idx + '">';
+    h += '<div class="card-header"><div><span class="word-english">' + escapeHtml(w.word) + '</span>' + (w.priority50 ? '<span class="priority-star">⭐</span>' : '') + '</div>';
+    h += '<button class="known-btn ' + (isKnown ? 'unmark' : 'mark') + '" data-word="' + escapeHtml(w.word) + '">' + (isKnown ? '覚えた ✓' : '覚えた') + '</button></div>';
+    h += '<div class="word-reading">' + escapeHtml(w.reading) + '</div>';
+    h += '<div class="word-meaning">' + escapeHtml(w.meaning) + '</div>';
+    h += '<div class="word-image">' + escapeHtml(w.image) + '</div>';
+    h += '<div class="card-badges"><span class="badge badge-l' + w.level + '">L' + w.level + '</span>';
+    h += '<span class="badge badge-cat">' + escapeHtml(w.category) + '</span>';
+    h += '<span class="badge badge-imp">' + stars + '</span></div>';
+    h += '<div class="card-details">';
+    h += '<div class="detail-row"><span class="detail-label">ITでの意味</span><span class="detail-value">' + escapeHtml(w.itMeaning) + '</span></div>';
+    h += '<div class="detail-row"><span class="detail-label">使用例</span><span class="detail-value">' + escapeHtml(w.example) + '</span></div>';
+    h += '<div class="detail-row"><span class="detail-label">関連語</span><span class="detail-value">' + escapeHtml(w.related) + '</span></div>';
+    h += '<div class="detail-row"><span class="detail-label">混同しやすい</span><span class="detail-value">' + escapeHtml(w.confusing) + '</span></div>';
+    h += '<div class="detail-row"><span class="detail-label">違い</span><span class="detail-value">' + escapeHtml(w.difference) + '</span></div>';
+    h += '<div class="detail-row"><span class="detail-label">FE</span><span class="detail-value">' + w.fe + '</span></div>';
+    h += '<div class="detail-row"><span class="detail-label">AP</span><span class="detail-value">' + w.ap + '</span></div>';
+    h += '<div class="detail-row"><span class="detail-label">実務</span><span class="detail-value">' + w.practical + '</span></div>';
+    h += '</div></div>';
+  });
+  h += '</div>';
+  area.innerHTML = h;
+  document.querySelectorAll('.word-card').forEach(function(card) {
+    card.addEventListener('click', function(e) {
+      if (e.target.classList.contains('known-btn')) { e.stopPropagation(); toggleKnown(e.target.getAttribute('data-word')); return; }
+      card.classList.toggle('expanded');
+    });
+  });
+}
+
+function renderCard() {
+  const area = document.getElementById('contentArea');
+  if (flashcardIndex >= filteredWords.length) flashcardIndex = 0;
+  const w = filteredWords[flashcardIndex];
+  const isKnown = knownWords.has(w.word);
+  let h = '<div class="flashcard-container">';
+  h += '<div class="flashcard" id="flashcard">';
+  h += '<div class="flashcard-word">' + escapeHtml(w.word) + (w.priority50 ? '<span class="priority-star">⭐</span>' : '') + '</div>';
+  h += '<div class="flashcard-reading">' + escapeHtml(w.reading) + '</div>';
+  h += '<div class="flashcard-hidden">クリックして意味を表示</div>';
+  h += '<div class="flashcard-revealed">';
+  h += '<div class="flashcard-meaning">' + escapeHtml(w.meaning) + '</div>';
+  h += '<div class="flashcard-image">' + escapeHtml(w.image) + '</div>';
+  h += '<div class="flashcard-itmeaning">' + escapeHtml(w.itMeaning) + '</div>';
+  h += '<div class="flashcard-example">例: ' + escapeHtml(w.example) + '</div>';
+  h += '</div></div>';
+  h += '<div class="flashcard-nav">';
+  h += '<button class="nav-btn" id="prevBtn"' + (flashcardIndex === 0 ? ' disabled' : '') + '>‹</button>';
+  h += '<span class="nav-counter">' + (flashcardIndex + 1) + ' / ' + filteredWords.length + '</span>';
+  h += '<button class="nav-btn" id="nextBtn"' + (flashcardIndex >= filteredWords.length - 1 ? ' disabled' : '') + '>›</button>';
+  h += '</div>';
+  h += '<button class="known-btn ' + (isKnown ? 'unmark' : 'mark') + '" style="font-size:14px;padding:8px 24px;" data-word="' + escapeHtml(w.word) + '">' + (isKnown ? '覚えた ✓' : '覚えた') + '</button>';
+  h += '</div>';
+  area.innerHTML = h;
+  document.getElementById('flashcard').addEventListener('click', function() { this.classList.toggle('flipped'); });
+  document.getElementById('prevBtn').addEventListener('click', function(e) { e.stopPropagation(); if (flashcardIndex > 0) { flashcardIndex--; renderCard(); } });
+  document.getElementById('nextBtn').addEventListener('click', function(e) { e.stopPropagation(); if (flashcardIndex < filteredWords.length - 1) { flashcardIndex++; renderCard(); } });
+  document.querySelector('.known-btn[data-word]').addEventListener('click', function(e) { e.stopPropagation(); toggleKnown(this.getAttribute('data-word')); });
+}
+
+function renderMemorize() {
+  const area = document.getElementById('contentArea');
+  let h = '<div class="memorize-grid">';
+  filteredWords.forEach(function(w, idx) {
+    const isKnown = knownWords.has(w.word);
+    h += '<div class="memorize-card" data-idx="' + idx + '">';
+    h += '<div class="memorize-word">' + escapeHtml(w.word) + '</div>';
+    h += '<div class="memorize-reading">' + escapeHtml(w.reading) + '</div>';
+    h += '<div class="memorize-hidden">クリックして表示</div>';
+    h += '<div class="memorize-revealed">';
+    h += '<div class="memorize-meaning">' + escapeHtml(w.meaning) + '</div>';
+    h += '<div class="memorize-image">' + escapeHtml(w.image) + '</div>';
+    h += '</div>';
+    h += '<div class="memorize-actions">';
+    h += '<button class="known-btn ' + (isKnown ? 'unmark' : 'mark') + '" data-word="' + escapeHtml(w.word) + '" style="font-size:12px;padding:4px 12px;">' + (isKnown ? '✓' : '覚えた') + '</button>';
+    h += '</div></div>';
+  });
+  h += '</div>';
+  area.innerHTML = h;
+  document.querySelectorAll('.memorize-card').forEach(function(card) {
+    card.addEventListener('click', function(e) {
+      if (e.target.classList.contains('known-btn')) { e.stopPropagation(); toggleKnown(e.target.getAttribute('data-word')); return; }
+      card.classList.toggle('flipped');
+    });
+  });
+}
+
+function renderQuiz() {
+  const area = document.getElementById('contentArea');
+  if (quizState.questions.length === 0 || quizState.currentIndex >= quizState.questions.length) {
+    quizState.questions = generateQuizQuestions();
+    quizState.currentIndex = 0; quizState.score = 0; quizState.wrong = 0;
+  }
+  if (quizState.currentIndex >= quizState.questions.length) {
+    const total = quizState.questions.length;
+    let h = '<div class="quiz-container"><div class="quiz-question">';
+    h += '<div class="quiz-label">クイズ結果</div>';
+    h += '<div class="quiz-score">';
+    h += '<div class="score-item"><div class="score-value correct">' + quizState.score + '</div><div class="score-label">正解</div></div>';
+    h += '<div class="score-item"><div class="score-value wrong">' + quizState.wrong + '</div><div class="score-label">不正解</div></div>';
+    h += '<div class="score-item"><div class="score-value accent">' + Math.round(quizState.score / total * 100) + '%</div><div class="score-label">正答率</div></div>';
+    h += '</div><button class="random-btn" id="quizRestart" style="margin-top:16px;">もう一度</button>';
+    h += '</div></div>';
+    area.innerHTML = h;
+    document.getElementById('quizRestart').addEventListener('click', function() { quizState.questions = []; quizState.currentIndex = 0; renderQuiz(); });
+    return;
+  }
+  const q = quizState.questions[quizState.currentIndex];
+  quizState.answered = false;
+  let h = '<div class="quiz-container">';
+  h += '<div class="quiz-question">';
+  h += '<div class="quiz-label">' + (q.direction === 'en2ja' ? '英語 → 日本語' : '日本語 → 英語') + ' (' + (quizState.currentIndex + 1) + '/' + quizState.questions.length + ')</div>';
+  h += '<div class="quiz-word">' + escapeHtml(q.question) + '</div>';
+  h += '</div><div class="quiz-options">';
+  q.options.forEach(function(opt, i) { h += '<button class="quiz-option" data-index="' + i + '">' + escapeHtml(opt) + '</button>'; });
+  h += '</div><div class="quiz-result" id="quizResult"></div></div>';
+  area.innerHTML = h;
+  document.querySelectorAll('.quiz-option').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      if (quizState.answered) return;
+      quizState.answered = true;
+      const selected = parseInt(this.getAttribute('data-index'));
+      const correctIdx = q.correctIndex;
+      document.querySelectorAll('.quiz-option').forEach(function(b) { b.classList.add('disabled'); });
+      if (selected === correctIdx) {
+        this.classList.add('correct'); quizState.score++;
+        document.getElementById('quizResult').innerHTML = '<span style="color:var(--success)">✓ 正解！</span>';
+      } else {
+        this.classList.add('wrong');
+        document.querySelector('.quiz-option[data-index="' + correctIdx + '"]').classList.add('correct');
+        quizState.wrong++;
+        document.getElementById('quizResult').innerHTML = '<span style="color:var(--danger)">✗ 不正解。正解: ' + escapeHtml(q.options[correctIdx]) + '</span>';
+      }
+      setTimeout(function() { quizState.currentIndex++; renderQuiz(); }, 1500);
+    });
+  });
+}
+
+function generateQuizQuestions() {
+  const pool = filteredWords.length >= 10 ? filteredWords : WORDS;
+  const questions = [];
+  const used = new Set();
+  const count = Math.min(10, pool.length);
+  while (questions.length < count) {
+    const idx = Math.floor(Math.random() * pool.length);
+    const w = pool[idx];
+    if (used.has(w.word)) continue;
+    used.add(w.word);
+    const direction = Math.random() < 0.5 ? 'en2ja' : 'ja2en';
+    const question = direction === 'en2ja' ? w.word : w.meaning;
+    const answer = direction === 'en2ja' ? w.meaning : w.word;
+    const distractors = [];
+    const usedDistractors = new Set([answer]);
+    while (distractors.length < 3) {
+      const dIdx = Math.floor(Math.random() * WORDS.length);
+      const dW = WORDS[dIdx];
+      const dAns = direction === 'en2ja' ? dW.meaning : dW.word;
+      if (usedDistractors.has(dAns) || dAns === answer) continue;
+      usedDistractors.add(dAns); distractors.push(dAns);
+    }
+    const options = [answer, ...distractors];
+    for (let i = options.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [options[i], options[j]] = [options[j], options[i]]; }
+    questions.push({ question: question, options: options, correctIndex: options.indexOf(answer), direction: direction });
+  }
+  return questions;
+}
+
+function toggleKnown(word) {
+  if (knownWords.has(word)) knownWords.delete(word); else knownWords.add(word);
+  _safeStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(knownWords)));
+  updateStats();
+  if (isRandomSession && currentMode === 'card') {
+    const btn = document.querySelector('.known-btn[data-word]');
+    const isKnown = knownWords.has(word);
+    if (btn) { btn.className = 'known-btn ' + (isKnown ? 'unmark' : 'mark'); btn.textContent = isKnown ? '覚えた ✓' : '覚えた'; }
+  } else {
+    render();
+  }
+}
+
+function escapeHtml(str) { const div = document.createElement('div'); div.textContent = str; return div.innerHTML; }
+
+document.getElementById('searchInput').addEventListener('input', function(e) {
+  currentSearch = e.target.value;
+  if (isRandomSession) { isRandomSession = false; randomSessionWords = []; }
+  render();
+});
+
+document.querySelectorAll('.chip').forEach(function(chip) {
+  chip.addEventListener('click', function() {
+    const filterType = this.getAttribute('data-filter');
+    const value = this.getAttribute('data-value');
+    document.querySelectorAll('.chip[data-filter="' + filterType + '"]').forEach(function(c) { c.classList.remove('active'); });
+    this.classList.add('active');
+    if (filterType === 'level') currentFilters.level = parseInt(value);
+    else if (filterType === 'category') currentFilters.category = value;
+    else if (filterType === 'importance') currentFilters.importance = parseInt(value);
+    else if (filterType === 'status') currentFilters.status = value;
+    isRandomSession = false; randomSessionWords = []; flashcardIndex = 0;
+    render();
+  });
+});
+
+document.getElementById('sortSelect').addEventListener('change', function(e) {
+  currentSort = e.target.value;
+  isRandomSession = false; randomSessionWords = []; flashcardIndex = 0;
+  render();
+});
+
+document.querySelectorAll('.mode-tab').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.mode-tab').forEach(function(t) { t.classList.remove('active'); });
+    this.classList.add('active');
+    currentMode = this.getAttribute('data-mode');
+    flashcardIndex = 0;
+    if (currentMode === 'quiz') { quizState.questions = []; quizState.currentIndex = 0; }
+    render();
+  });
+});
+
+document.getElementById('randomBtn').addEventListener('click', function() {
+  let unknown = WORDS.filter(function(w) { return !knownWords.has(w.word); });
+  if (unknown.length === 0) unknown = WORDS;
+  const pool = unknown.length >= 10 ? unknown : WORDS;
+  const random10 = shuffleArray(pool).slice(0, Math.min(10, pool.length));
+  isRandomSession = true; randomSessionWords = random10;
+  currentFilters = { level: 0, category: 'all', importance: 0, status: 'all' };
+  currentSearch = ''; currentSort = 'recommended';
+  document.getElementById('searchInput').value = '';
+  document.querySelectorAll('.chip').forEach(function(c) {
+    c.classList.remove('active');
+    const ft = c.getAttribute('data-filter'); const val = c.getAttribute('data-value');
+    if ((ft === 'level' && val === '0') || (ft === 'category' && val === 'all') || (ft === 'importance' && val === '0') || (ft === 'status' && val === 'all')) c.classList.add('active');
+  });
+  document.getElementById('sortSelect').value = 'recommended';
+  currentMode = 'card';
+  document.querySelectorAll('.mode-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelector('.mode-tab[data-mode="card"]').classList.add('active');
+  flashcardIndex = 0;
+  renderCard();
+});
+
+document.addEventListener('keydown', function(e) {
+  if (currentMode !== 'card') return;
+  if (e.key === 'ArrowLeft' && flashcardIndex > 0) { flashcardIndex--; renderCard(); }
+  else if (e.key === 'ArrowRight' && flashcardIndex < filteredWords.length - 1) { flashcardIndex++; renderCard(); }
+  else if (e.key === ' ' || e.key === 'Enter') { const fc = document.getElementById('flashcard'); if (fc) fc.classList.toggle('flipped'); }
+});
+
+initTheme();
+updateStats();
+render();
+</script>
+<script data-pplx-inline-edit>
+(function () {
+  if (window === window.top) return;
+
+  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://perplexity.localhost","http://localhost:1420","http://127.0.0.1:1420","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
+  const MAX_FONT_BYTES = 500 * 1024;
+  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
+  const DEFAULT_LINE_HEIGHT = 16;
+  let scrollForwarding = false;
+  let scrollRaf = 0;
+  let trustedTopOrigin = null;
+
+  function matchesAllowedOrigin(origin) {
+    if (!origin) return false;
+    for (const entry of allowedParentOrigins) {
+      if (!entry.includes("*")) {
+        if (entry === origin) return true;
+        continue;
+      }
+      const pattern = new RegExp(
+        "^" +
+          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
+          "$",
+      );
+      if (pattern.test(origin)) return true;
+    }
+    return false;
+  }
+
+  function getTrustedParentOrigin(event) {
+    const forwardedParentOrigin =
+      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
+    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
+    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
+  }
+
+  function postToTrustedTop(message) {
+    if (!trustedTopOrigin) return;
+    try {
+      window.top.postMessage(message, trustedTopOrigin);
+    } catch (_error) {}
+  }
+
+  function inlineAll(original, clone) {
+    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
+
+    try {
+      const computedStyle = getComputedStyle(original);
+      const serialized = computedStyle.cssText;
+      if (serialized) {
+        clone.style.cssText = serialized;
+      } else {
+        const parts = new Array(computedStyle.length);
+        for (let index = 0; index < computedStyle.length; index += 1) {
+          const property = computedStyle[index];
+          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
+        }
+        clone.style.cssText = parts.join("");
+      }
+    } catch (_error) {}
+
+    const originalChildren = original.children;
+    const clonedChildren = clone.children;
+    for (
+      let index = 0;
+      index < originalChildren.length && index < clonedChildren.length;
+      index += 1
+    ) {
+      inlineAll(originalChildren[index], clonedChildren[index]);
+    }
+  }
+
+  function extractFontUrl(srcValue) {
+    const matches = [
+      ...srcValue.matchAll(
+        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
+      ),
+    ];
+    if (matches.length === 0) return null;
+    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
+    if (woff2) return woff2[1];
+    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
+    if (woff) return woff[1];
+    return matches[0][1];
+  }
+
+  const fontDataUriCache = new Map();
+  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
+
+  async function fetchAsDataUri(url) {
+    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
+    let dataUri = null;
+    try {
+      const response = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size <= MAX_FONT_BYTES) {
+          dataUri = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+              resolve(typeof reader.result === "string" ? reader.result : null);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (_error) {
+      dataUri = null;
+    }
+    fontDataUriCache.set(url, dataUri);
+    return dataUri;
+  }
+
+  function collectFontFaceRuleTexts() {
+    const rules = [];
+    for (const sheet of document.styleSheets) {
+      let cssRules;
+      try {
+        cssRules = sheet.cssRules;
+      } catch (_error) {
+        continue;
+      }
+      if (!cssRules) continue;
+      for (const rule of cssRules) {
+        const cssText = rule.cssText || "";
+        if (cssText.startsWith("@font-face")) rules.push(cssText);
+      }
+    }
+    return rules;
+  }
+
+  async function buildInlinedFontCss() {
+    const ruleTexts = collectFontFaceRuleTexts();
+    if (ruleTexts.length === 0) return null;
+
+    const resolved = ruleTexts.map((cssText) => {
+      if (!SRC_DECLARATION_RE.test(cssText)) return null;
+      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
+      if (!srcMatch) return null;
+      const url = extractFontUrl(srcMatch[1]);
+      if (!url) return null;
+      try {
+        return { cssText, url: new URL(url, document.baseURI).href };
+      } catch (_error) {
+        return null;
+      }
+    });
+
+    const dataUris = await Promise.all(
+      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
+    );
+
+    const inlined = [];
+    let totalBytes = 0;
+    for (let index = 0; index < resolved.length; index += 1) {
+      const entry = resolved[index];
+      const dataUri = dataUris[index];
+      if (!entry || !dataUri) continue;
+      const approxBytes = dataUri.length * 0.75;
+      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
+      totalBytes += approxBytes;
+      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
+    }
+    return inlined.length > 0 ? inlined.join("\n") : null;
+  }
+
+  function stripExternal(clone) {
+    const images = clone.querySelectorAll("img");
+    for (let index = 0; index < images.length; index += 1) {
+      const src = images[index].getAttribute("src");
+      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
+    }
+
+    const elements = clone.querySelectorAll("*");
+    for (let index = 0; index < elements.length; index += 1) {
+      const style = elements[index].style.cssText;
+      if (style && style.includes("url(")) {
+        elements[index].style.cssText = style.replace(
+          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
+          "none",
+        );
+      }
+    }
+  }
+
+  function emitScroll() {
+    scrollRaf = 0;
+    if (!scrollForwarding) return;
+    postToTrustedTop({
+      type: "INLINE_EDIT_SCROLL",
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!scrollForwarding || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(emitScroll);
+    },
+    { passive: true, capture: true },
+  );
+
+  async function handleCaptureRequest(event) {
+    const requestId = event.data.requestId;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    function postResult(dataUrl) {
+      postToTrustedTop({
+        type: "INLINE_EDIT_SCREENSHOT_RESULT",
+        requestId,
+        dataUrl,
+        scrollX,
+        scrollY,
+      });
+    }
+
+    try {
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_error) {}
+      }
+
+      const clone = document.documentElement.cloneNode(true);
+      inlineAll(document.documentElement, clone);
+
+      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
+      for (let index = 0; index < removedNodes.length; index += 1) {
+        removedNodes[index].remove();
+      }
+
+      stripExternal(clone);
+
+      const inlinedFontCss = await buildInlinedFontCss();
+      if (inlinedFontCss) {
+        const styleEl = document.createElement("style");
+        styleEl.textContent = inlinedFontCss;
+        const head = clone.querySelector("head");
+        if (head) head.appendChild(styleEl);
+        else clone.insertBefore(styleEl, clone.firstChild);
+      }
+
+      const html = new XMLSerializer().serializeToString(clone);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+        '<foreignObject width="100%" height="100%">' +
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
+        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
+        html +
+        "</div></div></foreignObject></svg>";
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        postResult(canvas.toDataURL("image/png"));
+      };
+      image.onerror = function () {
+        postResult(null);
+      };
+      image.src = svgUrl;
+    } catch (_error) {
+      postResult(null);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data) return;
+    if (event.source !== window.parent) return;
+
+    const trustedParentOrigin = getTrustedParentOrigin(event);
+    if (!trustedParentOrigin) return;
+    trustedTopOrigin = trustedParentOrigin;
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
+      scrollForwarding = true;
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
+      scrollForwarding = false;
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = 0;
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_BY") {
+      const { deltaX, deltaY, deltaMode } = event.data;
+      if (!scrollForwarding || !Number.isFinite(deltaX) || !Number.isFinite(deltaY)) return;
+      if (deltaMode !== 0 && deltaMode !== 1 && deltaMode !== 2) return;
+      const lineHeight =
+        parseFloat(getComputedStyle(document.documentElement).lineHeight) || DEFAULT_LINE_HEIGHT;
+      const scaleX = deltaMode === 1 ? lineHeight : deltaMode === 2 ? window.innerWidth : 1;
+      const scaleY = deltaMode === 1 ? lineHeight : deltaMode === 2 ? window.innerHeight : 1;
+      window.scrollBy({ left: deltaX * scaleX, top: deltaY * scaleY, behavior: "instant" });
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
+
+    handleCaptureRequest(event);
+  });
+})();
+
+
+</script></body>
+</html>
