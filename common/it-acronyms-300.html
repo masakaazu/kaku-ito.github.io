@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="dark">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>IT Acronyms 300｜共通教材</title>
+  <style>
+    :root {
+      --bg: #1e1f21;
+      --c: #272726;
+      --t: #dad3c9;
+      --g: #9b9791;
+      --b: #98938c;
+      --l: #21201f;
+      --bd: #3e3d3c
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--t);
+      font: 16px/1.6 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif
+    }
+
+    .w {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 48px 20px
+    }
+
+    h1 {
+      font-size: 44px;
+      margin: 0;
+      letter-spacing: -.02em
+    }
+
+    .sub {
+      color: var(--g);
+      margin: 8px 0 28px
+    }
+
+    .st {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px
+    }
+
+    .st div,
+    .cd {
+      background: var(--c);
+      border: 1px solid var(--bd);
+      border-radius: 22px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.088);
+      padding: 18px
+    }
+
+    .st b {
+      display: block;
+      font-size: 28px
+    }
+
+    .st span {
+      color: var(--g);
+      font-size: 13px
+    }
+
+    .bar {
+      height: 8px;
+      background: var(--bd);
+      border-radius: 8px;
+      margin: 16px 0;
+      overflow: hidden
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      background: var(--b)
+    }
+
+    input,
+    select,
+    button {
+      font: inherit;
+      border-radius: 12px;
+      border: 1px solid var(--bd);
+      padding: 9px 14px;
+      background: var(--c);
+      color: var(--t)
+    }
+
+    button {
+      cursor: pointer
+    }
+
+    button.on,
+    button.p {
+      background: var(--b);
+      color: #272726;
+      border-color: var(--b)
+    }
+
+    #q {
+      width: 100%;
+      margin: 12px 0
+    }
+
+    .bar2 {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 14px
+    }
+
+    .a {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--b)
+    }
+
+    .j {
+      font-weight: 600
+    }
+
+    .f {
+      color: var(--g);
+      font-size: 13px
+    }
+
+    .mk {
+      font-size: 12px;
+      background: var(--l);
+      color: var(--b);
+      border-radius: 8px;
+      padding: 2px 8px
+    }
+
+    details {
+      margin-top: 8px;
+      font-size: 14px
+    }
+
+    details p {
+      margin: 4px 0
+    }
+
+    .big .a {
+      font-size: 56px
+    }
+
+    .big {
+      text-align: center;
+      padding: 40px 20px
+    }
+
+    .ch {
+      display: block;
+      width: 100%;
+      text-align: left;
+      margin: 8px 0
+    }
+
+    .ok {
+      background: #21201f !important
+    }
+
+    .ng {
+      background: #353433 !important
+    }
+
+    @media(max-width:600px) {
+      h1 {
+        font-size: 32px
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="w">
+    <h1>IT Acronyms 300</h1>
+    <p class="sub">ITエンジニアのための<br>「略語が分からない」をなくすIT略語帳</p>
+    <div class="st" id="st"></div>
+    <div class="bar"><i id="pb"></i></div>
+    <input id="q" placeholder="略語・正式名称・日本語で検索（例: DNS / Domain Name / ドメイン名）">
+    <div class="bar2" id="fl"></div>
+    <div class="bar2" id="md"></div>
+    <div id="main"></div>
+    <p class="f">※頻出度(FE/AP/実務)は公式の出題頻度ではなく、編集上の学習優先度の目安です。</p>
+  </div>
+  <script>
+    // 形式: 略語|読み|正式名称|正式名称カナ|日本語訳|一言|ITでの意味|使用例|関連|混同|違い|カテゴリ|LEVEL|★|FE|AP|実務|priority50|出典URL
+    const D = `DNS|ディーエヌエス|Domain Name System|ドメイン・ネーム・システム|ドメイン名をIPアドレスに変換する仕組み|ネットの電話帳|ホスト名とIPアドレスを対応づける分散型の名前解決の仕組み。|DNSサーバーに問い合わせる|DHCP、IP、URL|DHCP|DNS=名前→IP変換 / DHCP=IPアドレスを自動配布|ネットワーク|1|5|◎|◎|◎|1|https://www.rfc-editor.org/rfc/rfc1034
+DHCP|ディーエイチシーピー|Dynamic Host Configuration Protocol|ダイナミック・ホスト・コンフィギュレーション・プロトコル|IPアドレスなどを自動で割り当てる仕組み|接続すると住所をくれる係|端末にIPアドレスやゲートウェイ等を自動設定するプロトコル。|DHCPでアドレスを取得する|DNS、IP|DNS|DHCP=設定の自動配布 / DNS=名前解決|ネットワーク|1|5|◎|◎|◎|1|https://www.rfc-editor.org/rfc/rfc2131
+HTTP|エイチティーティーピー|HyperText Transfer Protocol|ハイパーテキスト・トランスファー・プロトコル|Webページをやり取りする通信手順|ブラウザとサーバーの共通言語|リクエストとレスポンスでHTMLなどを送受信するプロトコル。|HTTPリクエストを送る|HTTPS、REST、DNS|HTTPS|HTTP=平文 / HTTPS=TLSで暗号化|Web|1|5|◎|◎|◎|1|https://www.rfc-editor.org/rfc/rfc9110
+HTTPS|エイチティーティーピーエス|HyperText Transfer Protocol Secure|ハイパーテキスト・トランスファー・プロトコル・セキュア|暗号化されたHTTP通信|鍵付きのHTTP|HTTPをTLSで保護した通信。|HTTPSで配信する|HTTP、TLS|HTTP|HTTPS=TLSで暗号化 / HTTP=平文|Web|1|5|◎|◎|◎|1|https://www.rfc-editor.org/rfc/rfc9110
+TCP|ティーシーピー|Transmission Control Protocol|トランスミッション・コントロール・プロトコル|確実に届ける通信手順|届くまで確認する宅配|接続を確立し、順序保証・再送で信頼性を確保するトランスポート層プロトコル。|TCPで接続する|UDP、IP|UDP|TCP=信頼性重視 / UDP=速度重視|ネットワーク|1|5|◎|◎|◎|1|https://www.rfc-editor.org/rfc/rfc9293
+UDP|ユーディーピー|User Datagram Protocol|ユーザー・データグラム・プロトコル|確認なしで素早く送る通信手順|投げっぱなしの速達|接続確立や再送を行わない軽量なトランスポート層プロトコル。|UDPで音声を流す|TCP、DNS|TCP|UDP=軽量・非保証 / TCP=信頼性あり|ネットワーク|1|4|◎|○|○|1|https://www.rfc-editor.org/rfc/rfc768
+URL|ユーアールエル|Uniform Resource Locator|ユニフォーム・リソース・ロケーター|ネット上の資源の場所を示す文字列|ネットの住所|資源の所在とアクセス方法を示すURIの一種。|URLをコピーする|URI、HTTP|URI|URL=場所を示す / URI=識別子全般|Web|1|5|◎|○|◎|1|https://www.rfc-editor.org/rfc/rfc3986
+URI|ユーアールアイ|Uniform Resource Identifier|ユニフォーム・リソース・アイデンティファイア|資源を識別する文字列の総称|URLの上位概念|資源を一意に識別する書式。URLとURNを含む。|リソースのURIを指定|URL|URL|URI=識別子全般 / URL=場所|Web|1|3|○|○|○|0|https://www.rfc-editor.org/rfc/rfc3986
+SQL|エスキューエル|Structured Query Language|ストラクチャード・クエリー・ランゲージ|データベースを操作する言語|DBへの注文書|関係データベースの定義・操作・問合せに使う言語。|SQLでデータを抽出する|CRUD、RDBMS|なし||データベース|1|5|◎|◎|◎|1|
+CRUD|クラッド|Create, Read, Update, Delete|クリエイト・リード・アップデート・デリート|データの基本4操作|作る・読む・直す・消す|データ管理の基本操作。|CRUD機能を実装する|SQL、REST|ACID|CRUD=操作の種類 / ACID=トランザクションの性質|データベース|1|5|◎|○|◎|1|
+ACID|アシッド|Atomicity, Consistency, Isolation, Durability|アトミシティ・コンシステンシー・アイソレーション・デュラビリティ|トランザクションが守る4つの性質|DBの信頼性の4条件|原子性・一貫性・独立性・永続性。|ACID特性を満たす|CRUD、RDBMS|CRUD|ACID=性質 / CRUD=操作|データベース|2|5|◎|◎|○|1|
+CPU|シーピーユー|Central Processing Unit|セントラル・プロセッシング・ユニット|命令を実行する中央処理装置|コンピュータの頭脳|プログラムの命令を解釈・実行する装置。|CPUの使用率を確認|RAM、GPU|RAM|CPU=処理 / RAM=一時記憶|コンピュータ構成|1|5|◎|○|◎|1|
+RAM|ラム|Random Access Memory|ランダム・アクセス・メモリー|読み書きできる主記憶|作業机|電源を切ると内容が消える主記憶装置。|RAMを増設する|ROM、CPU|ROM|RAM=読み書き・揮発 / ROM=読み出し中心|コンピュータ構成|1|5|◎|○|◎|1|
+TLS|ティーエルエス|Transport Layer Security|トランスポート・レイヤー・セキュリティ|通信を暗号化する技術(SSLの後継)|通信の鍵付き封筒|通信の暗号化・改ざん検知・相手認証を行うプロトコル。|TLS1.3に対応|SSL、HTTPS|SSL|TLS=現行 / SSL=旧称・非推奨|セキュリティ|2|5|◎|◎|◎|1|https://www.rfc-editor.org/rfc/rfc8446
+SSL|エスエスエル|Secure Sockets Layer|セキュア・ソケッツ・レイヤー|TLSの前身の暗号化技術|古い鍵|脆弱性が見つかり現在は使われない。慣用的にTLSを指すことも。|SSL証明書|TLS|TLS|SSL=旧 / TLS=後継|セキュリティ|2|4|◎|○|○|0|https://www.rfc-editor.org/rfc/rfc8996
+SLA|エスエルエー|Service Level Agreement|サービス・レベル・アグリーメント|サービス品質の合意|品質の約束書|稼働率などの水準を提供者と利用者で合意した文書。|SLAで稼働率99.9%を保証|ITIL、KPI|OLA|SLA=顧客との合意 / OLA=社内部門間の合意|サービスマネジメント|2|5|○|◎|◎|1|
+RTO|アールティーオー|Recovery Time Objective|リカバリー・タイム・オブジェクティブ|復旧までの目標時間|いつまでに直すか|障害発生から復旧までの許容時間の目標。|RTOは4時間|RPO、DR|RPO|RTO=時間 / RPO=データ損失の許容点|システム設計|2|4|△|◎|○|0|
+RPO|アールピーオー|Recovery Point Objective|リカバリー・ポイント・オブジェクティブ|どの時点のデータまで戻すかの目標|どこまで巻き戻すか|許容できるデータ損失の時点の目標。|RPOは直前のバックアップ時点|RTO、DR|RTO|RPO=戻す時点 / RTO=復旧時間|システム設計|2|4|△|◎|○|0|
+AES|エーイーエス|Advanced Encryption Standard|アドバンスト・エンクリプション・スタンダード|現在主流の共通鍵暗号方式|同じ鍵で施錠・解錠|ブロック暗号の標準。128/192/256ビット鍵。|AES-256で暗号化|RSA、TLS|RSA|AES=共通鍵(高速) / RSA=公開鍵|セキュリティ|2|4|◎|◎|○|1|
+RSA|アールエスエー|Rivest–Shamir–Adleman|リベスト・シャミア・エイドルマン|公開鍵暗号の代表方式|鍵が2本ある暗号|素因数分解の困難さを利用した公開鍵暗号。署名にも使う。|RSA署名を検証|AES、PKI|AES|RSA=公開鍵 / AES=共通鍵|セキュリティ|2|4|◎|◎|○|0|
+IaaS|イアース|Infrastructure as a Service|インフラストラクチャー・アズ・ア・サービス|サーバー等の基盤をサービスで借りる|土地を借りる|仮想サーバーやネットワークを利用。OS以上は利用者が管理。|IaaSで仮想マシンを作る|PaaS、SaaS|PaaS|IaaS=基盤 / PaaS=実行環境 / SaaS=アプリ|クラウド|3|5|◎|◎|◎|1|
+CI|シーアイ|Continuous Integration|コンティニュアス・インテグレーション|変更を頻繁に統合し自動テストする|こまめな合体と検査|コードを頻繁に統合し、ビルド・テストを自動実行する手法。|CIでテストを回す|CD、DevOps|CD|CI=統合とテスト / CD=配布の自動化|DevOps|3|5|○|○|◎|1|
+CD|シーディー|Continuous Delivery / Continuous Deployment|コンティニュアス・デリバリー/デプロイメント|リリースを自動化する|出荷まで自動|Delivery=いつでも出せる状態 / Deployment=本番まで自動、と区別される。|CDで本番へ反映|CI、DevOps|CI|CD=リリース自動化 / CI=統合テスト|DevOps|3|5|△|○|◎|1|
+API|エーピーアイ|Application Programming Interface|アプリケーション・プログラミング・インターフェース|ソフト同士をつなぐ窓口|機能の呼び出し口|他のプログラムの機能やデータを呼び出すための取り決め。|APIでデータを取得|REST、JSON|ABI|API=ソース上の窓口 / ABI=バイナリ上の窓口|プログラミング|1|5|◎|◎|◎|1|
+GUI|ジーユーアイ|Graphical User Interface|グラフィカル・ユーザー・インターフェース|絵やボタンで操作する画面|クリックで操作|アイコンやウィンドウをマウス等で操作する方式。|GUIツールで設定|CUI|CUI|GUI=画面操作 / CUI=文字入力|IT基礎|1|4|◎|△|◎|1|
+CUI|シーユーアイ|Character User Interface|キャラクター・ユーザー・インターフェース|文字コマンドで操作する画面|黒い画面|キーボードで命令を入力して操作する方式。|CUIでコマンド実行|GUI|GUI|CUI=文字入力 / GUI=画面操作|IT基礎|1|3|◎|△|◎|0|
+LAN|ラン|Local Area Network|ローカル・エリア・ネットワーク|社内など狭い範囲のネットワーク|ビル内の回線|同一建物や敷地内の機器を結ぶネットワーク。|LANケーブルをつなぐ|WAN、VLAN|WAN|LAN=狭域 / WAN=広域|ネットワーク|1|5|◎|○|◎|1|
+WAN|ワン|Wide Area Network|ワイド・エリア・ネットワーク|拠点間を結ぶ広域ネットワーク|遠くの拠点をつなぐ|地理的に離れたLAN同士を結ぶネットワーク。|拠点をWANで接続|LAN、VPN|LAN|WAN=広域 / LAN=狭域|ネットワーク|1|4|◎|○|○|1|
+ROM|ロム|Read Only Memory|リード・オンリー・メモリー|読み出し専用の記憶|書き込めない台帳|電源を切っても内容が残る記憶。起動用プログラムなどを保持。|ROMにファームウェアを格納|RAM|RAM|ROM=不揮発・読出し中心 / RAM=揮発|コンピュータ構成|1|4|◎|△|△|1|
+IP|アイピー|Internet Protocol|インターネット・プロトコル|宛先を指定してパケットを届ける手順|住所付きの荷札|IPアドレスで宛先を指定しパケットを転送するネットワーク層プロトコル。|IPアドレスを設定|TCP、DHCP|TCP|IP=宛先まで運ぶ / TCP=確実に届ける|ネットワーク|1|5|◎|◎|◎|1|https://www.rfc-editor.org/rfc/rfc791
+OS|オーエス|Operating System|オペレーティング・システム|機器とソフトを管理する基本ソフト|コンピュータの管理人|ハードウェア資源を管理しアプリに利用環境を提供する。|OSをアップデート|Linux、カーネル|なし||OS|1|5|◎|○|◎|1|
+SMTP|エスエムティーピー|Simple Mail Transfer Protocol|シンプル・メール・トランスファー・プロトコル|メールを送る通信手順|郵便の配達|メールの送信とサーバー間転送に使うプロトコル。|SMTPサーバーを設定|IMAP、POP3|IMAP|SMTP=送信 / IMAP=受信・サーバー上で管理|ネットワーク|2|4|◎|◎|○|0|https://www.rfc-editor.org/rfc/rfc5321
+ICMP|アイシーエムピー|Internet Control Message Protocol|インターネット・コントロール・メッセージ・プロトコル|通信の状態やエラーを知らせる手順|ネットの連絡係|エラー通知や疎通確認(ping)に使うプロトコル。|pingはICMPを使う|IP、ARP|ARP|ICMP=状態通知 / ARP=IP→MAC対応|ネットワーク|2|3|◎|◎|○|0|https://www.rfc-editor.org/rfc/rfc792
+SSH|エスエスエイチ|Secure Shell|セキュア・シェル|安全に遠隔操作する仕組み|暗号化された遠隔ログイン|暗号化通信でリモート機器にログイン・操作する。|SSHでサーバーに接続|Telnet、TLS|Telnet|SSH=暗号化 / Telnet=平文|セキュリティ|2|4|○|○|◎|0|https://www.rfc-editor.org/rfc/rfc4251
+VPN|ブイピーエヌ|Virtual Private Network|バーチャル・プライベート・ネットワーク|公衆回線上の仮想専用線|ネット上のトンネル|暗号化等で専用線のように安全に通信する仕組み。|VPNで社内に接続|WAN、VLAN、TLS|VLAN|VPN=離れた拠点を安全に接続 / VLAN=LANを論理分割|ネットワーク|2|5|◎|◎|◎|1|
+VLAN|ブイラン|Virtual LAN|バーチャル・ラン|1つのLANを論理的に分ける技術|見えない間仕切り|スイッチ上でLANを論理的に分割する。|VLANで部門ごとに分離|LAN、VPN|VPN|VLAN=LANの分割 / VPN=遠隔の安全な接続|ネットワーク|2|4|◎|◎|○|0|
+NAT|ナット|Network Address Translation|ネットワーク・アドレス・トランスレーション|プライベートIPとグローバルIPを変換|住所の読み替え|プライベートアドレスとグローバルアドレスを相互変換する。|NATで外部に接続|IP、DHCP|なし||ネットワーク|2|4|◎|◎|○|0|https://www.rfc-editor.org/rfc/rfc3022
+PKI|ピーケーアイ|Public Key Infrastructure|パブリック・キー・インフラストラクチャー|公開鍵と証明書で信頼を保つ仕組み|ネットの身分証制度|認証局が証明書を発行し、公開鍵の持ち主を保証する。|PKIで証明書を管理|TLS、RSA|なし||セキュリティ|2|4|◎|◎|○|0|
+WBS|ダブリュービーエス|Work Breakdown Structure|ワーク・ブレークダウン・ストラクチャー|作業を細かく分解した構成図|作業の木|プロジェクトの作業を階層的に分解した構造。|WBSで工数を見積る|PERT|PERT|WBS=作業の分解 / PERT=作業の順序と日程|プロジェクトマネジメント|2|5|◎|◎|◎|1|
+ERP|イーアールピー|Enterprise Resource Planning|エンタープライズ・リソース・プランニング|会社の資源を一元管理する考え方|経営の全体管理|人・物・金・情報を統合管理する経営手法やシステム。|ERPを導入|CRM、SCM|CRM|ERP=社内資源全体 / CRM=顧客関係|ストラテジ|2|4|◎|◎|○|1|
+CRM|シーアールエム|Customer Relationship Management|カスタマー・リレーションシップ・マネジメント|顧客との関係を管理する手法|顧客台帳|顧客情報を一元管理し関係を深める手法。|CRMで商談を管理|ERP、SCM|ERP|CRM=顧客 / ERP=経営資源全体|ストラテジ|2|4|◎|◎|○|0|
+KPI|ケーピーアイ|Key Performance Indicator|キー・パフォーマンス・インディケーター|目標達成度を測る重要な指標|成績表の指標|目標の達成度を測る定量指標。|KPIを設定|SLA|SLA|KPI=達成度の指標 / SLA=合意した水準|ストラテジ|2|4|◎|◎|◎|0|
+ITIL|アイティル|旧称 IT Infrastructure Library（現在は固有名として扱われる）|アイティル|ITサービス運用の管理手法集|運用のお手本集|ITサービスマネジメントのベストプラクティス集。|ITILに基づく運用|ITSM、SLA|ITSM|ITIL=手法集 / ITSM=管理活動そのもの|サービスマネジメント|2|4|◎|◎|○|0|
+SSO|エスエスオー|Single Sign-On|シングル・サインオン|1回のログインで複数サービスを使う|一度の入場券|1回の認証で複数のシステムを利用できる仕組み。|SSOで社内ツールにログイン|OAuth、SAML|OAuth|SSO=認証の仕組み / OAuth=認可の仕組み|セキュリティ|3|4|○|○|◎|0|
+OAuth|オーオース|（正式な英語展開形なし。Open Authorizationと説明されることがある）|オーオース|他サービスへのアクセス権限を委ねる仕組み|合鍵でなく許可証を渡す|パスワードを渡さずに第三者アプリへ権限を与える認可の枠組み。|OAuthで連携を許可|SSO、JWT|SSO|OAuth=認可 / SSO=認証|セキュリティ|3|5|△|○|◎|1|https://www.rfc-editor.org/rfc/rfc6749
+JWT|ジェイダブリューティー|JSON Web Token|ジェイソン・ウェブ・トークン|署名つきのJSON形式のトークン|改ざん検知つきの通行証|認証情報をJSONで表し署名したトークン。|JWTでAPI認証|OAuth、API|なし||セキュリティ|3|4|△|△|◎|0|https://www.rfc-editor.org/rfc/rfc7519
+REST|レスト|Representational State Transfer|レプレゼンテーショナル・ステート・トランスファー|URLで資源を表すWeb APIの設計様式|資源をHTTPで操作|URIで資源を指し、HTTPメソッドで操作するAPI設計様式。|REST APIを呼ぶ|HTTP、API、CRUD|なし||Web|3|5|△|○|◎|1|
+PaaS|パース|Platform as a Service|プラットフォーム・アズ・ア・サービス|アプリ実行環境をサービスで借りる|家付きの土地|実行環境やミドルウェアまでを提供。利用者はアプリを開発・運用。|PaaSにデプロイ|IaaS、SaaS|IaaS|PaaS=実行環境 / IaaS=基盤|クラウド|3|5|◎|◎|◎|1|
+SaaS|サース|Software as a Service|ソフトウェア・アズ・ア・サービス|ソフトをサービスとして使う|借りて使うアプリ|ネット経由で利用するソフトウェア。|SaaSを契約|IaaS、PaaS|PaaS|SaaS=アプリ / PaaS=開発環境|クラウド|3|5|◎|◎|◎|1|
+IaC|アイエーシー|Infrastructure as Code|インフラストラクチャー・アズ・コード|インフラ構成をコードで管理|設計図をコードに|サーバーやネットワーク構成をコードで定義し自動構築する。|IaCで環境を構築|CI、CD|なし||DevOps|3|4|△|△|◎|0|
+k8s|ケーエイツ|（Kubernetesの略記。Kとsの間が8文字）|ケーエイツ|コンテナ管理基盤Kubernetesの略称|コンテナの司令塔|Kubernetesを短く書いた表記。コンテナの配置・運用を自動化する。|k8sクラスタを運用|Docker|なし||インフラ|3|4|△|△|◎|0|
+HTML|エイチティーエムエル|HyperText Markup Language|ハイパーテキスト・マークアップ・ランゲージ|Webページの構造を書く言語|ページの骨組み|見出しやリンクなど文書構造をタグで記述するマークアップ言語。|HTMLを書く|CSS、HTTP|CSS|HTML=構造 / CSS=見た目|Web|1|5|◎|△|◎|1|
+CSS|シーエスエス|Cascading Style Sheets|カスケーディング・スタイル・シーツ|Webページの見た目を指定する言語|ページの服装|色・配置・フォントなどの表示スタイルを定義する。|CSSで配色を変える|HTML|HTML|CSS=見た目 / HTML=構造|Web|1|4|○|△|◎|0|
+JSON|ジェイソン|JavaScript Object Notation|ジャバスクリプト・オブジェクト・ノーテーション|軽量なデータ交換形式|APIの標準的な荷姿|キーと値で構造化データを表すテキスト形式。|JSONで返す|API、REST、XML|XML|JSON=軽量 / XML=タグで厳密|Web|1|5|△|○|◎|1|https://www.rfc-editor.org/rfc/rfc8259
+RDBMS|アールディービーエムエス|Relational Database Management System|リレーショナル・データベース・マネジメント・システム|表形式でデータを管理するDB管理ソフト|表計算の本格版|関係モデルに基づきSQLで操作するデータベース管理システム。|RDBMSに接続|SQL、DBMS、ACID|なし||データベース|1|5|◎|◎|◎|1|
+SSD|エスエスディー|Solid State Drive|ソリッド・ステート・ドライブ|フラッシュメモリの記憶装置|回転しない高速ディスク|フラッシュメモリを使う記憶装置。HDDより高速で衝撃に強い。|SSDに換装|HDD|HDD|SSD=フラッシュ・高速 / HDD=磁気ディスク|コンピュータ構成|1|4|◎|○|◎|0|
+GPU|ジーピーユー|Graphics Processing Unit|グラフィックス・プロセッシング・ユニット|画像処理や並列計算の専用プロセッサ|並列計算の職人集団|画像処理や機械学習の並列演算に強いプロセッサ。|GPUで学習|CPU、AI|CPU|GPU=並列計算 / CPU=汎用処理|コンピュータ構成|1|4|○|○|◎|0|
+USB|ユーエスビー|Universal Serial Bus|ユニバーサル・シリアル・バス|周辺機器をつなぐ標準規格|万能コネクタ|周辺機器接続用のシリアルインタフェース規格。|USBメモリを挿す|HDMI|なし||コンピュータ構成|1|3|◎|△|○|0|
+IPv4/IPv6|アイピーブイフォー/シックス|Internet Protocol version 4 / version 6|インターネット・プロトコル・バージョン4/6|32bit形式と128bit形式のIPアドレス体系|住所の桁数が違う|IPv4は32ビット、IPv6は128ビットのアドレスで枯渇問題に対応。|IPv6に移行する|IP、NAT|なし||ネットワーク|1|5|◎|◎|○|1|https://www.rfc-editor.org/rfc/rfc8200
+IMAP|アイマップ|Internet Message Access Protocol|インターネット・メッセージ・アクセス・プロトコル|サーバー上のメールを管理する受信手順|メールを置いたまま読む|メールをサーバー上に残したまま閲覧・管理する受信プロトコル。|IMAPで同期|SMTP、POP3|SMTP|IMAP=受信 / SMTP=送信|ネットワーク|2|3|◎|○|○|0|https://www.rfc-editor.org/rfc/rfc9051
+ARP|アープ|Address Resolution Protocol|アドレス・レゾリューション・プロトコル|IPアドレスからMACアドレスを調べる手順|IPから機器の実体を探す|同一ネットワーク内でIPアドレスに対応するMACアドレスを取得する。|ARPテーブルを確認|IP、ICMP|ICMP|ARP=IP→MAC / ICMP=状態通知|ネットワーク|2|3|◎|◎|○|0|https://www.rfc-editor.org/rfc/rfc826
+SNMP|エスエヌエムピー|Simple Network Management Protocol|シンプル・ネットワーク・マネジメント・プロトコル|ネットワーク機器を監視・管理する手順|機器の見守り係|ルーター等の状態を収集・設定するプロトコル。|SNMPで監視|ICMP|ICMP|SNMP=管理情報の取得 / ICMP=疎通確認|ネットワーク|2|3|◎|◎|○|0|
+OSI|オーエスアイ|Open Systems Interconnection|オープン・システムズ・インターコネクション|通信を7階層に分けた参照モデル|通信の7層ケーキ|通信機能を物理層からアプリケーション層まで7階層に整理したモデル。|OSI参照モデルの第3層|TCP、IP|TCP/IP|OSI=7階層 / TCP/IP=4階層|ネットワーク|2|5|◎|◎|△|1|
+SHA|シャー|Secure Hash Algorithm|セキュア・ハッシュ・アルゴリズム|改ざん検知用のハッシュ関数群|データの指紋|入力から固定長のハッシュ値を作る関数群。SHA-256などが主流。|SHA-256で検証|MD5、AES|MD5|SHA=現行推奨 / MD5=脆弱|セキュリティ|2|4|◎|◎|○|1|
+MD5|エムディーファイブ|Message Digest 5|メッセージ・ダイジェスト・ファイブ|古く脆弱なハッシュ関数|衝突に弱い指紋|128ビットのハッシュ値を作る。衝突が見つかり安全用途には非推奨。|MD5でファイル照合|SHA|SHA|MD5=非推奨 / SHA=推奨|セキュリティ|2|3|○|○|△|0|https://www.rfc-editor.org/rfc/rfc1321
+SCM|エスシーエム|Supply Chain Management（他にSoftware Configuration Managementの意味あり）|サプライ・チェーン・マネジメント|調達から販売までの流れを最適化する手法|モノの流れの管理|原材料調達から顧客への供給まで全体を最適化する経営手法。|SCMで在庫削減|ERP、CRM|ERP|SCM=供給網 / CRM=顧客 / ERP=社内資源|ストラテジ|2|4|◎|◎|△|0|
+PERT|パート|Program Evaluation and Review Technique|プログラム・エバリュエーション・アンド・レビュー・テクニック|作業の順序と所要日数から日程を管理する手法|工程の矢印図|作業の依存関係と日数から最長経路(クリティカルパス)を求める。|PERT図を作る|WBS|WBS|PERT=順序と日程 / WBS=作業の分解|プロジェクトマネジメント|2|4|○|◎|△|0|
+ITSM|アイティーエスエム|IT Service Management|アイティー・サービス・マネジメント|ITサービスを管理する活動|運用を回す仕組み|顧客価値の観点でITサービスを計画・提供・改善する管理活動。|ITSMを導入|ITIL、SLA|ITIL|ITSM=管理活動 / ITIL=その手法集|サービスマネジメント|2|4|○|◎|○|0|
+OLA|オーエルエー|Operational Level Agreement|オペレーショナル・レベル・アグリーメント|社内部門間のサービス水準の合意|社内向けの約束|サービス提供のため、社内の部門間で交わす合意。|OLAを定める|SLA|SLA|OLA=社内合意 / SLA=顧客との合意|サービスマネジメント|2|3|△|◎|△|0|
+DoS|ドス|Denial of Service|ディナイアル・オブ・サービス|大量の要求でサービスを止める攻撃|満員にして閉店させる|過剰な負荷でサービスを利用不能にする攻撃。複数元から行うとDDoS。|DoS攻撃を防ぐ|DDoS|なし||セキュリティ|2|4|◎|◎|○|0|
+XSS|エックスエスエス|Cross-Site Scripting|クロスサイト・スクリプティング|Webページに悪意あるスクリプトを仕込む攻撃|ページへの悪戯書き|入力値が不適切に出力され、閲覧者のブラウザで悪意あるスクリプトが動く脆弱性。|XSS対策でエスケープ|SQLインジェクション|なし||セキュリティ|2|4|◎|◎|◎|0|
+SAML|サムル|Security Assertion Markup Language|セキュリティ・アサーション・マークアップ・ランゲージ|XMLで認証情報をやり取りする規格|認証結果の証明書|IdPからサービスへXML形式の認証情報を渡しSSOを実現する。|SAMLでSSO|SSO、OAuth|OAuth|SAML=認証連携 / OAuth=認可|セキュリティ|3|3|△|△|○|0|
+FaaS|ファース|Function as a Service|ファンクション・アズ・ア・サービス|関数単位でコードを実行するクラウド|必要な時だけ動く関数|イベントに応じて関数を実行し、サーバー管理が不要。|FaaSで処理を実行|SaaS、PaaS|PaaS|FaaS=関数単位 / PaaS=アプリ実行環境|クラウド|3|3|△|△|○|0|
+CDN|シーディーエヌ|Content Delivery Network|コンテンツ・デリバリー・ネットワーク|世界中に分散配置してコンテンツを高速配信|近所の配達所|キャッシュを各地に配置し、利用者に近い場所から配信する。|CDNで配信|DNS、HTTP|なし||Web|3|4|△|○|◎|0|
+CORS|コーズ|Cross-Origin Resource Sharing|クロスオリジン・リソース・シェアリング|別オリジンからのアクセスを許可する仕組み|ドメイン越えの通行許可|ブラウザが別オリジンのリソース利用を許可するHTTPヘッダーによる仕組み。|CORSエラー|HTTP、API|なし||Web|3|3|△|△|◎|0|
+VPC|ブイピーシー|Virtual Private Cloud|バーチャル・プライベート・クラウド|クラウド上の自分専用ネットワーク|クラウドの専用区画|パブリッククラウド内に論理的に分離したネットワークを構築する。|VPCを作成|VPN、IAM|VPN|VPC=クラウド内の専用網 / VPN=暗号化接続|クラウド|3|3|△|△|◎|0|
+IAM|アイエーエム|Identity and Access Management|アイデンティティ・アンド・アクセス・マネジメント|ユーザーと権限を管理する仕組み|誰に何を許すか|認証・認可とアクセス権限を一元管理する。|IAMロールを付与|SSO、OAuth|なし||セキュリティ|3|4|△|△|◎|0|
+HA|エイチエー|High Availability|ハイ・アベイラビリティ|止まりにくい高可用性|予備を持つ構成|冗長化により障害時にもサービスを継続できる設計。|HA構成にする|DR、SLA|DR|HA=止めない / DR=壊れた後に復旧|システム設計|3|4|△|○|◎|0|
+DR|ディーアール|Disaster Recovery|ディザスター・リカバリー|災害後にシステムを復旧する取り組み|災害時の復旧計画|大規模障害・災害後に別拠点などで復旧する取り組み。|DRサイトを用意|RTO、RPO、HA|HA|DR=壊れた後の復旧 / HA=止めない設計|システム設計|3|4|△|◎|○|0|
+SDLC|エスディーエルシー|Software Development Life Cycle|ソフトウェア・デベロップメント・ライフサイクル|ソフト開発の工程全体の流れ|企画から廃棄までの一生|要件定義・設計・実装・テスト・運用・保守といった開発の一連の工程。|SDLCに沿って進める|ウォーターフォール、アジャイル|なし||ソフトウェア開発|1|5|◎|◎|◎|1|
+UML|ユーエムエル|Unified Modeling Language|ユニファイド・モデリング・ランゲージ|ソフトの設計を図で表す記法|設計の共通図面|クラス図やシーケンス図などで、システムの構造や振る舞いを表す表記法。|UMLでクラス図を描く|OOP|なし||ソフトウェア開発|1|4|◎|◎|○|0|https://www.omg.org/spec/UML/
+OOP|オーオーピー|Object-Oriented Programming|オブジェクト・オリエンテッド・プログラミング|データと処理をまとめて扱う設計手法|部品として組み立てる|データと操作をオブジェクトにまとめ、継承やカプセル化で再利用性を高める。|OOPでクラスを設計|UML|なし||プログラミング|1|4|○|○|◎|0|
+IDE|アイディーイー|Integrated Development Environment|インテグレーテッド・デベロップメント・エンバイロメント|開発に必要な道具をまとめた環境|開発の作業台|エディタ・コンパイラ・デバッガなどを一体化した開発ツール。|IDEでデバッグする|CLI|なし||プログラミング|1|3|△|△|◎|0|
+DBMS|ディービーエムエス|Database Management System|データベース・マネジメント・システム|データベースを管理するソフト|データの管理人|データの格納・検索・更新・排他制御・障害回復などを担うソフトウェア。|DBMSがロックを制御|RDBMS、SQL|RDBMS|DBMS=管理ソフト全般 / RDBMS=関係モデル型|データベース|1|5|◎|◎|◎|1|
+LSI|エルエスアイ|Large Scale Integration|ラージ・スケール・インテグレーション|多数の素子を載せた集積回路|小さな頭脳チップ|多数のトランジスタを1チップに集積した回路。CPUやメモリの基盤。|LSIを製造する|CPU|なし||コンピュータ構成|1|3|◎|△|△|0|
+BIOS|バイオス|Basic Input/Output System|ベーシック・インプット・アウトプット・システム|起動時に機器を初期化する基本プログラム|電源投入時の点呼|電源投入時にハードウェアを初期化しOSを起動する、ROMに格納された基本プログラム。|BIOS画面を開く|OS、ROM|なし||コンピュータ構成|1|3|◎|△|○|0|
+HDD|エイチディーディー|Hard Disk Drive|ハード・ディスク・ドライブ|磁気ディスクを使う記憶装置|回転する記録盤|磁気ディスクを高速回転させヘッドで読み書きする大容量の記憶装置。|HDDが故障する|SSD、RAID|SSD|HDD=磁気ディスク・低価格 / SSD=フラッシュ・高速|コンピュータ構成|1|4|◎|○|○|0|
+MAC|マック|Media Access Control|メディア・アクセス・コントロール|機器ごとのハードウェア固有アドレス|ネットワーク機器の背番号|MACアドレスはNICに割り当てられる48ビットの識別子。暗号分野のMACはMessage Authentication Codeで別物。|MACアドレスを確認|ARP、IP|IP|MAC=機器固有(同一ネットワーク内) / IP=論理アドレス|ネットワーク|1|4|◎|○|○|0|
+ISP|アイエスピー|Internet Service Provider|インターネット・サービス・プロバイダー|インターネット接続を提供する事業者|ネットの入口の会社|利用者にインターネットへの接続サービスを提供する事業者。|ISPと契約する|WAN、DNS|なし||ネットワーク|1|3|◎|△|△|0|
+WWW|ダブリューダブリューダブリュー|World Wide Web|ワールド・ワイド・ウェブ|インターネット上のWebの仕組み|ページがつながる巨大な網|HTTPとHTMLを使い、リンクで世界中の文書をたどれるようにした仕組み。|WWWサーバーを立てる|HTTP、HTML、URL|なし||Web|1|3|◎|△|○|0|
+FTP|エフティーピー|File Transfer Protocol|ファイル・トランスファー・プロトコル|ファイルを転送する通信手順|ファイルの宅配便|ネットワーク経由でファイルをアップロード・ダウンロードするプロトコル。|FTPでアップロード|SSH、HTTP|なし||ネットワーク|1|4|◎|○|△|0|https://www.rfc-editor.org/rfc/rfc959
+POP3|ポップスリー|Post Office Protocol version 3|ポスト・オフィス・プロトコル・バージョン3|メールをサーバーから取り出す受信手順|郵便局から持ち帰る|メールサーバーからメールをダウンロードして受信するプロトコル。|POP3で受信|SMTP、IMAP|IMAP|POP3=取り込み型 / IMAP=サーバー保管型|ネットワーク|1|4|◎|○|△|0|https://www.rfc-editor.org/rfc/rfc1939
+MIME|マイム|Multipurpose Internet Mail Extensions|マルチパーパス・インターネット・メール・エクステンションズ|メールで文字以外のデータを扱う規格|添付ファイルの仕組み|メールで画像や添付ファイル、日本語などを扱えるようにする拡張規格。|MIMEタイプを指定|SMTP、HTTP|なし||ネットワーク|1|3|◎|○|○|0|https://www.rfc-editor.org/rfc/rfc2045
+ASCII|アスキー|American Standard Code for Information Interchange|アメリカン・スタンダード・コード・フォー・インフォメーション・インターチェンジ|英数字を表す基本の文字コード|文字を数値にする基本表|英数字や記号を7ビットの数値に対応づけた文字コード。|ASCIIコードで表す|Unicode|なし||IT基礎|1|4|◎|△|△|0|
+AI|エーアイ|Artificial Intelligence|アーティフィシャル・インテリジェンス|人間の知的作業をコンピュータで行う技術|考える機械|学習・推論・認識など人間の知的な振る舞いをコンピュータで実現する技術。|AIで予測する|ML、GPU|ML|AI=知的処理の総称 / ML=データから学習する手法|AI|1|5|◎|◎|◎|1|
+IoT|アイオーティー|Internet of Things|インターネット・オブ・シングス|モノがネットにつながる仕組み|家電や機械もネット住民|センサーや機器がネットワークにつながり、データ収集や遠隔制御を行う仕組み。|IoTセンサーで計測|AI、WAN|なし||IT基礎|1|4|◎|◎|○|0|
+XML|エックスエムエル|Extensible Markup Language|エクステンシブル・マークアップ・ランゲージ|タグで自由に構造を定義できる言語|自作できるタグ文書|利用者が独自のタグを定義して構造化データを表現できるマークアップ言語。|XMLで設定を記述|HTML、JSON|JSON|XML=タグで厳密 / JSON=軽量|Web|1|4|◎|○|○|0|https://www.w3.org/TR/xml/
+OCR|オーシーアール|Optical Character Recognition|オプティカル・キャラクター・レコグニション|画像の文字をテキストに変換する技術|文字を読み取る目|スキャンした画像や写真上の文字を読み取り、文字データに変換する技術。|OCRで書類を読み取る|AI|なし||IT基礎|1|3|◎|△|○|0|
+FIFO|ファイフォ|First In First Out|ファースト・イン・ファースト・アウト|先に入れたものを先に出す方式|行列の順番待ち|データ構造のキューの処理順。後入れ先出しはLIFO。|FIFOで処理する|LIFO、キュー|LIFO|FIFO=先入れ先出し(キュー) / LIFO=後入れ先出し(スタック)|プログラミング|1|4|◎|○|△|0|
+NIC|ニック|Network Interface Card|ネットワーク・インタフェース・カード|ネットワークにつなぐための装置|通信用の差込口|コンピュータをLANなどのネットワークに接続するための装置。MACアドレスを持つ。|NICを交換する|MAC、LAN|なし||ネットワーク|1|3|◎|△|○|0|
+SSID|エスエスアイディー|Service Set Identifier|サービス・セット・アイデンティファイア|無線LANのネットワーク名|Wi-Fiの名前|無線LANのアクセスポイントを識別するための名前。|SSIDを選んで接続|LAN、WPA|なし||ネットワーク|1|3|◎|△|○|0|
+HDMI|エイチディーエムアイ|High-Definition Multimedia Interface|ハイデフィニション・マルチメディア・インタフェース|映像と音声を1本で送る接続規格|テレビにつなぐ太いケーブル|映像・音声をデジタルのまま1本のケーブルで伝送するインタフェース規格。|HDMIでモニターに接続|USB|なし||コンピュータ構成|1|3|◎|△|△|0|
+PIN|ピン|Personal Identification Number|パーソナル・アイデンティフィケーション・ナンバー|本人確認のための暗証番号|数字の合言葉|本人確認に使う短い数字列。キャッシュカードやスマホのロック解除などで利用。|PINを入力|OTP、MFA|なし||セキュリティ|1|3|◎|△|○|0|
+PDCA|ピーディーシーエー|Plan, Do, Check, Act|プラン・ドゥ・チェック・アクト|計画→実行→評価→改善を繰り返す手法|改善のぐるぐる回し|計画・実行・評価・改善のサイクルを繰り返し、業務を継続的に改善する管理手法。|PDCAを回す|ISMS、ITIL|なし||プロジェクトマネジメント|1|5|◎|◎|◎|1|
+ROI|アールオーアイ|Return On Investment|リターン・オン・インベストメント|投資に対する利益の割合|元を取れたかの指標|投資額に対してどれだけ利益が得られたかを示す指標。|ROIを試算する|KPI|KPI|ROI=投資効果 / KPI=目標達成度|ストラテジ|1|4|◎|◎|○|0|
+SWOT|スウォット|Strengths, Weaknesses, Opportunities, Threats|ストレングス・ウィークネス・オポチュニティ・スレット|強み・弱み・機会・脅威で分析する手法|現状の4象限チェック|自社の強みと弱み、外部の機会と脅威を整理して戦略を考える分析手法。|SWOT分析を行う|KPI|なし||ストラテジ|1|4|◎|◎|△|0|
+DX|ディーエックス|Digital Transformation|デジタル・トランスフォーメーション|デジタル技術で事業や業務を変革すること|IT化の先の変身|デジタル技術を使って業務やビジネスモデルを変革すること。Transを「X」と略記する。|DXを推進する|IoT、AI、ERP|なし||ストラテジ|1|4|◎|◎|◎|0|
+CIO|シーアイオー|Chief Information Officer|チーフ・インフォメーション・オフィサー|情報システム戦略の最高責任者|ITの総責任者|経営戦略に沿って情報システムを統括する最高責任者。|CIOが方針を決める|CTO|なし||ストラテジ|1|3|◎|◎|△|0|
+EC|イーシー|Electronic Commerce|エレクトロニック・コマース|ネット上の商取引|ネットショップ全般|インターネットなどの電子的な手段を使った商取引。|ECサイトを運営|CRM|なし||ストラテジ|1|3|◎|○|○|0|
+OSS|オーエスエス|Open Source Software|オープン・ソース・ソフトウェア|ソースコードが公開され自由に使えるソフト|誰でも見られる設計図|ソースコードが公開され、決められたライセンスの下で利用・改変・再配布できるソフトウェア。|OSSを利用する|Linux、GPL|なし||ソフトウェア開発|1|4|◎|○|◎|0|
+UI/UX|ユーアイ/ユーエックス|User Interface / User Experience|ユーザー・インタフェース/ユーザー・エクスペリエンス|操作画面と、使って得られる体験|見た目と使い心地|UIは画面やボタンなど利用者との接点、UXは製品やサービスを通じた体験全体。|UI/UXを改善する|GUI|なし||ソフトウェア開発|1|4|◎|○|◎|0|
+JPEG|ジェイペグ|Joint Photographic Experts Group|ジョイント・フォトグラフィック・エキスパーツ・グループ|写真向けの圧縮画像形式|写真用の軽量画像|写真などの静止画を非可逆圧縮する画像形式。|JPEGで保存|MPEG、PDF|MPEG|JPEG=静止画 / MPEG=動画・音声|IT基礎|1|3|◎|△|○|0|
+MPEG|エムペグ|Moving Picture Experts Group|ムービング・ピクチャー・エキスパーツ・グループ|動画・音声の圧縮方式|動画用の圧縮規格|動画や音声を圧縮する規格群。MP3やMP4の基になった。|MPEG形式で保存|JPEG|JPEG|MPEG=動画・音声 / JPEG=静止画|IT基礎|1|3|◎|△|△|0|
+GPS|ジーピーエス|Global Positioning System|グローバル・ポジショニング・システム|人工衛星で現在位置を測る仕組み|空からの位置情報|複数の人工衛星の電波を受信して現在位置を計算するシステム。|GPSで位置を取得|IoT|なし||IT基礎|1|3|◎|△|○|0|
+UPS|ユーピーエス|Uninterruptible Power Supply|アンインタラプティブル・パワー・サプライ|停電時に電力を供給し続ける装置|非常用バッテリー|停電時にバッテリーで電力を供給し、機器を安全に停止させる無停電電源装置。|UPSを設置|HA|なし||インフラ|1|3|◎|○|○|0|
+RAID|レイド|Redundant Arrays of Independent Disks|リダンダント・アレイズ・オブ・インディペンデント・ディスクス|複数のディスクを組み合わせる技術|ディスクのチームプレー|複数のHDDやSSDを組み合わせ、高速化や耐障害性を高める技術。|RAID1でミラーリング|HDD、SSD、NAS|なし||インフラ|1|5|◎|◎|◎|1|
+PDF|ピーディーエフ|Portable Document Format|ポータブル・ドキュメント・フォーマット|環境によらず同じ見た目で表示できる文書形式|崩れない書類|レイアウトやフォントを保持したまま、どの環境でも同じように表示できる文書形式。|PDFで配布|JPEG|なし||IT基礎|1|3|◎|△|◎|0|
+RPA|アールピーエー|Robotic Process Automation|ロボティック・プロセス・オートメーション|定型業務をソフトで自動化する技術|事務作業のロボット|人が行う定型的なパソコン操作をソフトウェアのロボットに代行させる技術。|RPAで入力を自動化|AI、DX|なし||ストラテジ|1|4|◎|◎|○|0|
+BI|ビーアイ|Business Intelligence|ビジネス・インテリジェンス|データを分析して経営に活かす手法|データで経営を見る|蓄積したデータを集計・分析・可視化し、意思決定に活用する手法やツール。|BIツールで可視化|DWH、KPI|なし||ストラテジ|1|4|◎|◎|○|0|
+CSV|シーエスブイ|Comma-Separated Values|カンマ・セパレーテッド・バリューズ|カンマ区切りのテキストデータ形式|表計算の素朴な書き出し形式|項目をカンマで区切って1行1レコードで表すテキスト形式。|CSVで出力|JSON、XML|なし||IT基礎|1|4|◎|△|◎|0|https://www.rfc-editor.org/rfc/rfc4180
+SNS|エスエヌエス|Social Networking Service|ソーシャル・ネットワーキング・サービス|人と人のつながりを作るネットサービス|ネット上の交流の場|利用者同士が交流できるWebサービス。|SNSで情報を発信|EC|なし||Web|1|3|◎|△|△|0|
+CAD|キャド|Computer Aided Design|コンピュータ・エイデッド・デザイン|コンピュータで設計図を作る技術|パソコン上の製図台|機械や建築などの設計図面をコンピュータ上で作成・編集するシステム。|CADで図面を描く|なし|なし||IT基礎|1|3|◎|△|△|0|
+VM|ブイエム|Virtual Machine|バーチャル・マシン|ソフトで作った仮想のコンピュータ|PCの中のPC|物理的な機器上にソフトウェアで作られた仮想的なコンピュータ。|VMを複製する|IaaS、Docker|なし||インフラ|1|4|○|○|◎|0|
+CMS|シーエムエス|Content Management System|コンテンツ・マネジメント・システム|Webの記事や画像を管理するシステム|サイトの編集ツール|専門知識がなくてもWebサイトの記事や画像を作成・管理できるシステム。|CMSでサイトを更新|SEO|なし||Web|1|3|○|△|◎|0|
+SEO|エスイーオー|Search Engine Optimization|サーチ・エンジン・オプティマイゼーション|検索結果の上位に表示させる工夫|検索で見つけてもらう工夫|検索エンジンの検索結果で自社サイトを上位に表示させるための施策。|SEO対策を行う|CMS|なし||Web|1|3|◎|△|○|0|
+JIS|ジス|Japanese Industrial Standards|ジャパニーズ・インダストリアル・スタンダーズ|日本の産業製品の国家規格|日本の標準ルール|日本の産業標準化法に基づく国家規格。情報分野のJISも多い。|JISに準拠する|ISO|ISO|JIS=日本の国家規格 / ISO=国際規格|IT基礎|1|3|◎|○|△|0|https://www.jisc.go.jp/
+CTO|シーティーオー|Chief Technology Officer|チーフ・テクノロジー・オフィサー|技術戦略の最高責任者|技術のトップ|経営戦略に沿って技術開発・技術方針を統括する最高責任者。|CTOが技術を選定|CIO|CIO|CTO=技術戦略 / CIO=情報システム戦略|ストラテジ|1|3|○|○|△|0|
+PM|ピーエム|Project Manager / Project Management|プロジェクト・マネージャー/マネジメント|プロジェクトの責任者・その管理手法|計画から完了までの舵取り|プロジェクトの目標達成に責任を持つ者、またはその管理活動。PMBOKなどの体系がある。|PMがスケジュールを管理|WBS、PERT|なし||プロジェクトマネジメント|1|4|◎|◎|◎|1|
+QA/QC|キューエー/キューシー|Quality Assurance / Quality Control|クオリティ・アシュアランス/クオリティ・コントロール|品質を保証する活動と検査する活動|仕組みで守るか、結果で確かめるか|QAは品質が保てる仕組みやプロセスの保証、QCは製品の検査・測定による品質管理。|QAチームが確認|テスト|なし||ソフトウェア開発|1|4|◎|◎|◎|0|
+SI|エスアイ|System Integration|システム・インテグレーション|システムを企画・構築して導入する事業|システム構築の請負|顧客の要望に合わせてシステムの設計・開発・導入・運用を一括して行う事業。|SI企業に依頼|RFP|なし||ストラテジ|1|3|◎|○|△|0|
+RFI/RFP|アールエフアイ/アールエフピー|Request For Information / Request For Proposal|リクエスト・フォー・インフォメーション/プロポーザル|情報提供依頼と提案依頼|調達の最初の2枚の依頼書|RFIはベンダーへ情報提供を求める依頼、RFPは具体的な提案と見積もりを求める依頼。|RFPを送付|SI|なし||ストラテジ|1|3|△|◎|△|0|
+NDA|エヌディーエー|Non-Disclosure Agreement|ノン・ディスクロージャー・アグリーメント|秘密を守る約束の契約|秘密保持の誓約書|業務上知った秘密情報を第三者に漏らさないことを約束する契約。|NDAを締結|SLA|なし||ストラテジ|1|3|○|○|◎|0|
+ERD|イーアールディー|Entity Relationship Diagram|エンティティ・リレーションシップ・ダイアグラム|データ同士の関係を表す図|DBの設計図|エンティティ(実体)とその関係を図で表すデータベース設計の手法。E-R図。|ERDで設計する|RDBMS、PK/FK|なし||データベース|1|4|◎|◎|○|0|
+PK/FK|ピーケー/エフケー|Primary Key / Foreign Key|プライマリー・キー/フォーリン・キー|表の行を特定するキーと表同士をつなぐキー|表の背番号と他の表への参照|主キーは行を一意に識別し、外部キーは他の表の主キーを参照して関係を表す。|FKで参照整合性を保つ|RDBMS、ERD|なし||データベース|1|5|◎|◎|◎|1|
+ICT|アイシーティー|Information and Communication Technology|インフォメーション・アンド・コミュニケーション・テクノロジー|情報と通信にまたがる技術の総称|ITに通信を足した言葉|コンピュータ技術に通信技術を加えた総称。ITとほぼ同じ意味で使われる。|ICTを活用する|IoT、DX|なし||IT基礎|1|3|◎|○|○|0|
+TCP/IP|ティーシーピーアイピー|Transmission Control Protocol / Internet Protocol|トランスミッション・コントロール・プロトコル/インターネット・プロトコル|インターネットで使われる標準の通信規約群|ネットの共通ルール集|TCPやIPなどを組み合わせた、インターネット通信の基本となるプロトコル群。4階層で整理する。|TCP/IPで通信する|OSI、TCP、IP|OSI|TCP/IP=4階層の実用モデル / OSI=7階層の参照モデル|ネットワーク|1|5|◎|◎|◎|1|https://www.rfc-editor.org/rfc/rfc1122
+FTTH|エフティーティーエイチ|Fiber To The Home|ファイバー・トゥ・ザ・ホーム|家庭まで光ファイバーを引く方式|光回線で自宅まで|光ファイバーを家庭まで直接引き込む高速インターネット接続方式。|FTTHで接続|ISP、WAN|なし||ネットワーク|1|3|◎|△|△|0|
+LTE|エルティーイー|Long Term Evolution|ロング・ターム・エボリューション|高速な携帯電話の通信規格|スマホの高速回線|3Gを発展させた高速な携帯電話の通信規格。4Gの一部として扱われる。|LTEで通信|SIM、WAN|なし||ネットワーク|1|3|◎|△|○|0|
+SIM|シム|Subscriber Identity Module|サブスクライバー・アイデンティティ・モジュール|携帯回線の契約者情報を記録したカード|通信の身分証カード|携帯電話の契約者を識別する情報を記録したICカード。|SIMを差し替える|LTE|なし||ネットワーク|1|3|◎|△|○|0|
+PoC|ポック|Proof of Concept|プルーフ・オブ・コンセプト|実現できるかを試す概念実証|小さく試してみる実験|新しい技術やアイデアが実現可能かを、小規模に試して検証する取り組み。|PoCで効果を検証|DX、AI|なし||ストラテジ|1|3|△|○|◎|0|
+CSR|シーエスアール|Corporate Social Responsibility（セキュリティ分野ではCertificate Signing Requestの意味もある）|コーポレート・ソーシャル・レスポンシビリティ|企業が果たすべき社会的責任|企業の社会貢献|法令遵守や環境配慮など、企業が社会に対して負う責任。TLS証明書申請のCSRとは別物。|CSR活動を報告|ISMS|なし||ストラテジ|1|3|◎|◎|△|0|
+M&A|エムアンドエー|Mergers and Acquisitions|マージャーズ・アンド・アクイジションズ|企業の合併と買収|会社を買う・合わせる|企業の合併や買収によって事業を拡大・再編する手法。|M&Aで事業を拡大|アライアンス|なし||ストラテジ|1|3|◎|◎|△|0|
+EOL|イーオーエル|End Of Life|エンド・オブ・ライフ|製品の提供・サポートの終了|サポート切れ|製品の販売やサポートが終了すること。EOL後はセキュリティ更新が提供されない。|OSがEOLを迎える|OS、ITIL|なし||サービスマネジメント|1|3|△|△|◎|0|
+SDK|エスディーケー|Software Development Kit|ソフトウェア・デベロップメント・キット|開発に必要な道具一式|開発の道具箱|ライブラリ・ツール・文書など、特定の環境向けのソフト開発に必要なものをまとめたもの。|SDKをインストール|API、IDE|API|SDK=道具一式 / API=呼び出し口|プログラミング|1|3|△|△|◎|0|
+TLD|ティーエルディー|Top Level Domain|トップ・レベル・ドメイン|ドメイン名の最も右側の部分|.comや.jpの部分|ドメイン名の末尾にあたる.comや.jpなどの最上位の区分。|TLDを選ぶ|DNS、URL|なし||Web|1|3|○|△|○|0|
+TTL|ティーティーエル|Time To Live|タイム・トゥ・リブ|データやパケットの生存時間|賞味期限|IPパケットが通過できるルーター数の上限、またはDNSキャッシュの有効時間。|TTLを短くする|IP、DNS|なし||ネットワーク|1|4|○|○|◎|0|
+DRAM/SRAM|ディーラム/エスラム|Dynamic Random Access Memory / Static Random Access Memory|ダイナミック/スタティック・ランダム・アクセス・メモリー|主記憶に使う安価なメモリと高速なメモリ|大容量の机と手元の高速メモ|DRAMは主記憶に使われ定期的なリフレッシュが必要、SRAMは高速でキャッシュメモリに使われる。|DRAMを増設|RAM、CPU|なし||コンピュータ構成|1|4|◎|○|△|0|
+NFC|エヌエフシー|Near Field Communication|ニア・フィールド・コミュニケーション|かざして使う近距離無線通信|タッチ決済の仕組み|数センチ程度の近距離で無線通信を行う技術。電子マネーやスマホ決済で使われる。|NFCでかざして決済|RFID、IoT|なし||ネットワーク|1|3|◎|○|○|0|
+NAS|ナス|Network Attached Storage（RADIUS等ではNetwork Access Serverの意味もある）|ネットワーク・アタッチド・ストレージ|ネットワークにつなぐ共有ストレージ|みんなで使うHDD|LANに直接つなぎ、複数の端末からファイルを共有できる記憶装置。|NASにバックアップ|SAN、RAID|SAN|NAS=ファイル単位で共有 / SAN=専用網でブロック単位|インフラ|1|4|◎|◎|◎|0|
+WYSIWYG|ウィジウィグ|What You See Is What You Get|ホワット・ユー・シー・イズ・ホワット・ユー・ゲット|画面で見た通りに出力される方式|見たまま印刷|画面上の表示と、印刷や公開結果が一致する編集方式。|WYSIWYGエディタで編集|HTML、CMS|なし||ソフトウェア開発|1|3|◎|△|○|0|
+VR/AR|ブイアール/エーアール|Virtual Reality / Augmented Reality|バーチャル・リアリティ/オーグメンテッド・リアリティ|仮想空間に入る技術と現実に情報を重ねる技術|別世界へ入るか現実を拡張するか|VRは仮想空間を体験する技術、ARは現実世界にデジタル情報を重ねて表示する技術。|ARで情報を重ねる|IoT、AI|なし||IT基礎|1|3|◎|○|△|0|
+DDoS|ディードス|Distributed Denial of Service|ディストリビューテッド・ディナイアル・オブ・サービス|多数の端末から一斉に攻撃してサービスを止める|大群で押しかける迷惑行為|多数の端末から同時に大量の要求を送り、サービスを利用不能にする攻撃。|DDoS攻撃を受ける|DoS、WAF|DoS|DoS=単独元から / DDoS=多数の端末から|セキュリティ|2|4|◎|◎|○|0|
+WPA|ダブリューピーエー|Wi-Fi Protected Access|ワイファイ・プロテクテッド・アクセス|無線LANの暗号化・認証方式|Wi-Fiの鍵付きドア|無線LANの通信を暗号化し、接続者を認証するための規格。WPA2、WPA3と改良されている。|WPA3で接続|SSID|なし||セキュリティ|2|3|◎|○|○|0|
+MFA|エムエフエー|Multi-Factor Authentication|マルチファクター・オーセンティケーション|複数の要素を組み合わせた本人確認|鍵と指紋の二重チェック|知識・所持・生体など異なる種類の要素を2つ以上組み合わせて本人確認を行う方式。|MFAを有効にする|SSO、OTP|SSO|MFA=認証を強化 / SSO=ログインを1回で済ませる|セキュリティ|2|4|○|◎|◎|0|
+OTP|オーティーピー|One-Time Password|ワン・タイム・パスワード|1回限りで使えるパスワード|使い捨ての合言葉|一度使うと無効になるパスワード。盗まれても再利用されにくい。|OTPを入力|MFA、PIN|なし||セキュリティ|2|3|◎|◎|○|0|
+ACL|エーシーエル|Access Control List|アクセス・コントロール・リスト|アクセスを許可・拒否する一覧|通行許可リスト|誰が何にアクセスしてよいかを一覧で定めた設定。ルーターやファイルシステムで使う。|ACLで通信を制限|IAM、FW|なし||セキュリティ|2|3|○|◎|◎|0|
+IDS/IPS|アイディーエス/アイピーエス|Intrusion Detection System / Intrusion Prevention System|イントルージョン・ディテクション/プリベンション・システム|不正侵入を検知する仕組みと防御する仕組み|見張り番と門番|IDSは不正な通信を検知して通知し、IPSは検知に加えて自動的に遮断する。|IPSで通信を遮断|WAF、UTM|IDSとIPS|IDS=検知して通知 / IPS=検知して遮断|セキュリティ|2|4|○|◎|○|0|
+WAF|ワフ|Web Application Firewall|ウェブ・アプリケーション・ファイアウォール|Webアプリへの攻撃を防ぐ防火壁|Web専用の守衛|Webアプリケーションへの通信を検査し、SQLインジェクションやXSSなどの攻撃を遮断する。|WAFを導入|XSS、IPS|ファイアウォール|WAF=Webアプリ層を検査 / 従来のFW=IPやポートを制御|セキュリティ|2|4|△|◎|◎|0|
+CSRF|シーエスアールエフ|Cross-Site Request Forgery|クロスサイト・リクエスト・フォージェリ|利用者になりすまして不正な操作をさせる攻撃|勝手に押されるボタン|ログイン中の利用者に、意図しないリクエストを送信させる攻撃。|CSRF対策のトークン|XSS、WAF|XSS|XSS=悪意あるスクリプトを実行させる / CSRF=リクエストを偽造して送らせる|セキュリティ|2|4|△|◎|◎|0|
+CA|シーエー|Certificate Authority（Certification Authorityとも表記）|サーティフィケート・オーソリティ|電子証明書を発行する認証局|ネットの身分証発行所|公開鍵と持ち主の対応を保証する電子証明書を発行する機関。|CAがサーバー証明書を発行|PKI、TLS|なし||セキュリティ|2|4|◎|◎|○|0|
+DMZ|ディーエムゼット|DeMilitarized Zone|デミリタライズド・ゾーン|外部と内部の中間に置く隔離ネットワーク|緩衝地帯|外部公開するサーバーを置き、社内ネットワークと切り離しておく区画。|DMZにWebサーバーを置く|WAF、FW|なし||セキュリティ|2|4|◎|◎|○|0|
+UTM|ユーティーエム|Unified Threat Management|ユニファイド・スレット・マネジメント|複数のセキュリティ機能を1台にまとめた装置|防御のオールインワン|ファイアウォール、IPS、ウイルス対策などを1台に統合して管理する仕組み。|UTMを設置|IDS/IPS、WAF|なし||セキュリティ|2|3|△|○|○|0|
+CSIRT|シーサート|Computer Security Incident Response Team|コンピュータ・セキュリティ・インシデント・レスポンス・チーム|セキュリティ事故に対応する専門チーム|情報セキュリティの消防隊|インシデントの発生時に原因調査や対応、再発防止を行う組織内のチーム。|CSIRTを設置|SOC、ISMS|SOC|CSIRT=事故への対応 / SOC=常時監視|セキュリティ|2|4|△|◎|○|0|
+ISMS|アイエスエムエス|Information Security Management System|インフォメーション・セキュリティ・マネジメント・システム|情報セキュリティを管理する仕組み|組織の情報守る運用ルール|情報の機密性・完全性・可用性を維持するための組織的な管理の仕組み。ISO/IEC 27001が代表規格。|ISMSの認証を取得|PDCA、CIA、ISO|なし||セキュリティ|2|5|◎|◎|○|1|
+CIA|シーアイエー|Confidentiality, Integrity, Availability|コンフィデンシャリティ・インテグリティ・アベイラビリティ|情報セキュリティの3要素|守るべき3つの性質|機密性、完全性、可用性。情報セキュリティで守るべき基本の3要素。米国の情報機関CIAとは別。|CIAの観点で評価|ISMS|なし||セキュリティ|2|5|◎|◎|○|1|
+IPsec|アイピーセック|Internet Protocol Security（RFC 4301の題名はSecurity Architecture for the Internet Protocol）|インターネット・プロトコル・セキュリティ|IP通信を暗号化・認証する技術|IP層の暗号化|IP層で通信の暗号化と認証を行う技術。VPNの実現に使われる。|IPsec VPNを構築|VPN、IP、TLS|TLS|IPsec=IP層で保護 / TLS=トランスポート層以上で保護|セキュリティ|2|4|△|◎|○|0|https://www.rfc-editor.org/rfc/rfc4301
+LDAP|エルダップ|Lightweight Directory Access Protocol|ライトウェイト・ディレクトリ・アクセス・プロトコル|ユーザー情報などの台帳を参照する手順|社員名簿の問い合わせ窓口|ユーザーや機器などの情報を階層的に管理するディレクトリサービスにアクセスするためのプロトコル。|LDAPで認証|IAM、SSO|なし||ネットワーク|2|3|△|○|◎|0|https://www.rfc-editor.org/rfc/rfc4511
+VoIP|ボイップ|Voice over Internet Protocol|ボイス・オーバー・インターネット・プロトコル|IPネットワークで音声通話する技術|ネットを使った電話|音声をIPパケットに変換して送受信する技術。IP電話などで利用される。|VoIPで通話|IP、UDP|なし||ネットワーク|2|3|◎|○|○|0|
+SOC|ソック|Security Operation Center|セキュリティ・オペレーション・センター|セキュリティを常時監視する組織|ネットの監視室|ネットワークや機器のログを24時間監視し、攻撃の兆候を検知・分析する組織や拠点。|SOCで監視|CSIRT、SIEM|CSIRT|SOC=常時監視 / CSIRT=事故対応|セキュリティ|2|3|△|○|○|0|
+FW|エフダブリュー|Firewall|ファイアウォール|通信を許可・遮断する防火壁|ネットの門番|IPアドレスやポート番号などをもとに、通過させる通信を制御する仕組み。|FWで通信を制限|WAF、DMZ、ACL|WAF|FW=IP・ポートで制御 / WAF=Webアプリの中身を検査|セキュリティ|2|4|◎|◎|◎|0|
+DWH|ディーダブリューエイチ|Data Warehouse|データ・ウェアハウス|分析用にデータを集めた大規模DB|データの倉庫|複数のシステムからデータを集め、分析しやすい形で時系列に蓄積したデータベース。|DWHに集約|BI、ETL|なし||データベース|2|4|△|◎|◎|0|
+ETL|イーティーエル|Extract, Transform, Load|エクストラクト・トランスフォーム・ロード|データを取り出し・変換し・書き込む処理|データの運搬と整形|データを抽出し、形式を整えて変換し、DWHなどに格納する一連の処理。|ETLで取り込む|DWH、BI|なし||データベース|2|4|△|○|◎|0|
+DDL/DML|ディーディーエル/ディーエムエル|Data Definition Language / Data Manipulation Language|データ・ディフィニション/マニピュレーション・ランゲージ|表を定義する命令と、データを操作する命令|設計用と操作用|DDLは表などの構造を定義し、DMLはデータの検索・追加・更新・削除を行う。|DDLで表を作成|SQL、CRUD|なし||データベース|2|4|○|◎|◎|0|
+NoSQL|ノーエスキューエル|Not Only SQL|ノット・オンリー・エスキューエル|表形式に縛られないデータベースの総称|SQL以外の選択肢|関係データベース以外の方式で、大量データや高速処理に向くデータベースの総称。|NoSQLを採用|RDBMS、KVS|なし||データベース|2|3|△|○|◎|0|
+KVS|ケーブイエス|Key-Value Store|キー・バリュー・ストア|キーと値の組で保存するデータ管理方式|単純な辞書型DB|キーを指定して値を高速に取り出す単純な構造のデータ管理方式。|KVSをキャッシュに利用|NoSQL|なし||データベース|2|3|△|○|◎|0|
+OLTP/OLAP|オーエルティーピー/オーラップ|Online Transaction Processing / Online Analytical Processing|オンライン・トランザクション・プロセッシング/アナリティカル・プロセッシング|日常の取引処理と多次元の分析処理|レジと分析室|OLTPは注文など日常業務のトランザクション処理、OLAPは蓄積データを多角的に分析する処理。|OLAPで集計|DWH、BI|なし||データベース|2|3|△|◎|○|0|
+BCP|ビーシーピー|Business Continuity Plan|ビジネス・コンティニュイティ・プラン|災害時にも事業を続けるための計画|事業の防災計画|災害や障害が起きても、重要な事業を継続・早期復旧するための計画。|BCPを策定|DR、RTO、RPO|DR|BCP=事業全体の継続計画 / DR=ITシステムの復旧|システム設計|2|5|○|◎|◎|1|
+MTBF/MTTR|エムティービーエフ/エムティーティーアール|Mean Time Between Failures / Mean Time To Repair|ミーン・タイム・ビトウィーン・フェイラーズ/トゥ・リペア|平均故障間隔と平均修理時間|壊れにくさと直しやすさ|MTBFは故障から次の故障までの平均時間、MTTRは故障から復旧までの平均時間。稼働率の計算に使う。|稼働率をMTBFで計算|SLA、HA|なし||システム設計|2|5|◎|◎|○|1|
+TCO|ティーシーオー|Total Cost of Ownership|トータル・コスト・オブ・オーナーシップ|導入から運用までの総費用|買ってからの全部の費用|システムの購入費だけでなく、運用・保守・教育などを含めた総費用。|TCOを比較する|ROI、SLA|ROI|TCO=総コスト / ROI=投資の利益率|ストラテジ|2|4|○|◎|○|0|
+KGI|ケージーアイ|Key Goal Indicator|キー・ゴール・インディケーター|最終目標の達成度を測る指標|ゴールの数字|組織やプロジェクトが最終的に達成すべき目標を示す指標。|KGIを設定|KPI|KPI|KGI=最終目標 / KPI=途中経過の指標|ストラテジ|2|3|○|◎|△|0|
+ISO|アイエスオー|International Organization for Standardization|インターナショナル・オーガナイゼーション・フォー・スタンダーディゼーション|国際的な標準を定める機関|世界の標準ルールの作り手|工業製品やサービスなどの国際規格を策定する機関。ISO 27001やISO 9001などがある。|ISO認証を取得|JIS、ISMS|JIS|ISO=国際規格 / JIS=日本の国家規格|IT基礎|2|4|◎|◎|○|0|https://www.iso.org/
+RFC|アールエフシー|Request for Comments|リクエスト・フォー・コメンツ|インターネット技術の仕様をまとめた文書|ネットの技術仕様書|IETFなどが公開する、インターネット技術の仕様や運用方法を記した文書。TCPやHTTPなどが定義されている。|RFCを参照|IETF、HTTP、TCP|なし||ネットワーク|2|3|△|△|◎|0|https://www.rfc-editor.org/
+IEEE|アイトリプルイー|Institute of Electrical and Electronics Engineers|インスティテュート・オブ・エレクトリカル・アンド・エレクトロニクス・エンジニアーズ|電気・電子分野の学会|規格を作る世界最大の技術者団体|電気・電子・情報分野の技術者団体。無線LAN(IEEE 802.11)やイーサネットの規格を策定。|IEEE 802.11|LAN、ISO|なし||ネットワーク|2|4|◎|◎|△|0|https://www.ieee.org/
+PMBOK|ピンボック|Project Management Body of Knowledge|プロジェクト・マネジメント・ボディ・オブ・ナレッジ|プロジェクト管理の知識体系|PMの教科書|プロジェクトマネジメントのベストプラクティスを体系化した知識体系。PMI(米国)が発行。|PMBOKに沿って管理|PM、WBS|なし||プロジェクトマネジメント|2|4|○|◎|△|0|
+EVM|イーブイエム|Earned Value Management|アーンド・バリュー・マネジメント|出来高でコストと進捗を管理する手法|進み具合を金額で見る|計画値・実績・出来高を使い、プロジェクトのコストと進捗を定量的に管理する手法。|EVMで進捗を測る|WBS、PM|なし||プロジェクトマネジメント|2|4|△|◎|△|0|
+CMMI|シーエムエムアイ|Capability Maturity Model Integration|ケイパビリティ・マチュリティ・モデル・インテグレーション|組織の開発能力を段階評価する指標|開発力のレベル判定|組織のソフトウェア開発・プロセスの成熟度を5段階で評価するモデル。|CMMIレベル3|SDLC、ISO|なし||ソフトウェア開発|2|3|△|◎|△|0|
+BPR|ビーピーアール|Business Process Reengineering|ビジネス・プロセス・リエンジニアリング|業務プロセスを根本から見直す手法|仕事の進め方を作り直す|業務の流れや組織を根本から見直し、抜本的に再設計して効率を高める手法。|BPRを実施|DX、BPO|なし||ストラテジ|2|3|○|◎|△|0|
+BPO|ビーピーオー|Business Process Outsourcing|ビジネス・プロセス・アウトソーシング|業務プロセスを外部に委託すること|業務のまるごと外注|業務プロセス全体を専門業者に委託すること。|BPOを活用|BPR、SI|BPR|BPO=外部委託 / BPR=業務の再設計|ストラテジ|2|3|○|◎|△|0|
+SFA|エスエフエー|Sales Force Automation|セールス・フォース・オートメーション|営業活動を支援するシステム|営業の管理ツール|営業担当者の活動や案件の進捗を管理・共有し、営業を効率化するシステム。|SFAで案件管理|CRM|CRM|SFA=営業活動の効率化 / CRM=顧客関係の管理|ストラテジ|2|3|○|◎|△|0|
+EDI|イーディーアイ|Electronic Data Interchange|エレクトロニック・データ・インターチェンジ|企業間で電子的に取引データを交換する仕組み|企業間のデータ受発注|受発注や請求などの取引データを、企業間で標準形式を使って電子的にやり取りする仕組み。|EDIで受注|SCM、EC|なし||ストラテジ|2|3|○|◎|△|0|
+JIT|ジェイアイティー|Just In Time|ジャスト・イン・タイム|必要なものを必要な時に必要な量だけ作る方式|無駄を作らない生産方式|必要な部品を必要なときに必要な量だけ調達・生産し、在庫を減らす方式。|JIT生産方式|SCM、ERP|なし||ストラテジ|2|3|○|◎|△|0|
+MRP|エムアールピー|Material Requirements Planning|マテリアル・リクワイアメンツ・プランニング|必要な資材の量と時期を計算する手法|資材の発注計算|生産計画をもとに、必要な部品や資材の量と調達時期を計算する生産管理手法。|MRPで発注量を計算|ERP、JIT|なし||ストラテジ|2|3|○|◎|△|0|
+RISC/CISC|リスク/シスク|Reduced Instruction Set Computer / Complex Instruction Set Computer|リデュースド/コンプレックス・インストラクション・セット・コンピュータ|命令を単純にした方式と多機能にした方式|命令の少数精鋭か多機能か|RISCは命令を単純化して高速化を図り、CISCは1つの命令で複雑な処理を行える。|RISCプロセッサ|CPU、MIPS|なし|RISC=単純な命令 / CISC=複雑な命令|コンピュータ構成|2|3|◎|◎|△|0|
+MIPS|ミップス|Million Instructions Per Second|ミリオン・インストラクションズ・パー・セカンド|1秒間に実行できる命令数(百万単位)|CPUの処理速度の目安|1秒間に何百万回の命令を実行できるかを示すCPUの性能指標。|MIPS値を比較|CPU、FLOPS|なし||コンピュータ構成|2|3|◎|◎|△|0|
+DMA|ディーエムエー|Direct Memory Access|ダイレクト・メモリー・アクセス|CPUを介さずにデータをメモリへ転送する方式|CPUを通さない直送便|周辺装置とメモリ間のデータ転送を、CPUを介さずに行う方式。CPUの負担が減る。|DMAで転送|CPU、RAM|なし||コンピュータ構成|2|3|◎|◎|△|0|
+FPGA|エフピージーエー|Field Programmable Gate Array|フィールド・プログラマブル・ゲート・アレイ|後から回路を書き換えられるLSI|書き換え可能な電子回路|利用者が後から内部の論理回路の構成を書き換えられる集積回路。|FPGAで高速化|LSI、ASIC|なし||コンピュータ構成|2|3|△|◎|○|0|
+ASIC|エイシック|Application Specific Integrated Circuit|アプリケーション・スペシフィック・インテグレーテッド・サーキット|特定用途向けに作る専用LSI|専用設計のチップ|特定の用途のために設計・製造される集積回路。|ASICで量産|FPGA、LSI|FPGA|ASIC=専用で固定 / FPGA=後から書き換え可|コンピュータ構成|2|3|△|○|○|0|
+SoC|エスオーシー|System on a Chip|システム・オン・ア・チップ|システムの主要機能を1チップにまとめたLSI|1枚に全部入り|CPUやメモリ、通信機能など、システムの主要機能を1つのチップに集積したもの。|SoCを搭載|LSI、CPU|なし||コンピュータ構成|2|3|○|◎|○|0|
+BGP|ビージーピー|Border Gateway Protocol|ボーダー・ゲートウェイ・プロトコル|組織間で経路情報を交換する手順|インターネットの道案内|インターネット上の異なる組織(AS)の間で経路情報を交換するルーティングプロトコル。|BGPで経路を広告|OSPF|OSPF|BGP=組織間(AS間) / OSPF=組織内|ネットワーク|2|3|△|○|○|0|https://www.rfc-editor.org/rfc/rfc4271
+OSPF|オーエスピーエフ|Open Shortest Path First|オープン・ショーテスト・パス・ファースト|組織内で最短経路を計算して経路を決める手順|社内の最短ルート探し|リンクの状態から最短経路を計算する、組織内で使われるルーティングプロトコル。|OSPFで経路を決定|BGP|BGP|OSPF=組織内 / BGP=組織間|ネットワーク|2|3|○|◎|○|0|https://www.rfc-editor.org/rfc/rfc2328
+QoS|キューオーエス|Quality of Service|クオリティ・オブ・サービス|通信の優先度を制御して品質を保つ仕組み|通信の優先レーン|音声や映像など重要な通信を優先し、遅延や帯域を保証して品質を保つ仕組み。|QoSで音声を優先|VoIP、SLA|なし||ネットワーク|2|3|△|◎|○|0|
+SDN|エスディーエヌ|Software Defined Networking|ソフトウェア・ディファインド・ネットワーキング|ネットワークをソフトウェアで制御する技術|ネットワークをプログラムで操作|ネットワーク機器の制御をソフトウェアで集中管理し、構成変更を柔軟にする技術。|SDNで構成変更|VLAN、IaC|なし||ネットワーク|2|3|△|◎|○|0|
+CIDR|サイダー|Classless Inter-Domain Routing|クラスレス・インタードメイン・ルーティング|クラスを使わずIPアドレスを柔軟に分ける方式|192.168.0.0/24の書き方|ネットワーク部の長さを「/24」のように表し、IPアドレスを柔軟に割り当てる方式。|CIDR表記で指定|IP、NAT|なし||ネットワーク|2|4|◎|◎|◎|0|https://www.rfc-editor.org/rfc/rfc4632
+NTP|エヌティーピー|Network Time Protocol|ネットワーク・タイム・プロトコル|機器の時刻を合わせる手順|ネットの時計合わせ|ネットワーク上の機器の時刻を、時刻サーバーと同期させるプロトコル。ログの突き合わせに重要。|NTPで時刻同期|UDP|なし||ネットワーク|2|3|△|○|◎|0|https://www.rfc-editor.org/rfc/rfc5905
+FQDN|エフキューディーエヌ|Fully Qualified Domain Name|フリー・クオリファイド・ドメイン・ネーム|ホスト名からドメインまで省略せず書いた名前|完全なドメイン名|ホスト名とドメイン名を省略せずにすべて書いた形式。例: www.example.com。|FQDNで指定|DNS、URL|なし||ネットワーク|2|3|△|○|◎|0|
+SPOF|スポフ|Single Point Of Failure|シングル・ポイント・オブ・フェイラー|止まると全体が止まる弱点|唯一の急所|その1か所が故障するとシステム全体が停止してしまう箇所。冗長化で解消する。|SPOFをなくす|HA、RAID|なし||システム設計|2|4|○|◎|◎|0|
+CMDB|シーエムディービー|Configuration Management Database|コンフィギュレーション・マネジメント・データベース|IT資産の構成情報を管理するDB|IT機器の台帳|ハードウェアやソフトウェアなどの構成要素とその関係を管理するデータベース。|CMDBで構成管理|ITIL、ITSM|なし||サービスマネジメント|2|3|△|◎|○|0|
+UAT|ユーエーティー|User Acceptance Test|ユーザー・アクセプタンス・テスト|利用者が使えるか確認する受入テスト|納品前の最終確認|開発したシステムが業務要件を満たすかを、利用者側が確認する最終段階のテスト。|UATを実施|SDLC|なし||ソフトウェア開発|2|3|△|◎|○|0|
+TDD|ティーディーディー|Test-Driven Development|テスト・ドリブン・デベロップメント|先にテストを書いてから実装する開発手法|テスト先行で作る|先にテストコードを書き、それを通すための最小限の実装を行う開発手法。|TDDで開発|CI、UAT|なし||ソフトウェア開発|2|3|△|○|◎|0|
+MVC|エムブイシー|Model-View-Controller|モデル・ビュー・コントローラー|処理・表示・制御を分けて設計する考え方|役割分担の設計パターン|データ処理(Model)・表示(View)・制御(Controller)に役割を分ける設計パターン。|MVCで設計|OOP、UI/UX|なし||プログラミング|2|3|△|○|◎|0|
+DFD|ディーエフディー|Data Flow Diagram|データ・フロー・ダイアグラム|データの流れを表す図|処理とデータの流れ図|処理・データの流れ・データの保管場所を記号で表した図。|DFDで流れを整理|ERD、UML|ERD|DFD=処理とデータの流れ / ERD=データ同士の関係|ソフトウェア開発|2|4|◎|◎|△|0|
+BYOD|バイオーディー|Bring Your Own Device|ブリング・ユア・オウン・デバイス|私物の端末を業務に使うこと|自分のスマホで仕事|従業員が私物のPCやスマートフォンを業務に利用すること。情報漏えい対策が課題。|BYODを許可|MDM|なし||セキュリティ|2|3|○|◎|○|0|
+MDM|エムディーエム|Mobile Device Management|モバイル・デバイス・マネジメント|スマホなどの端末を一元管理する仕組み|端末の遠隔管理|スマートフォンやタブレットなどの端末を、遠隔で設定・監視・ロックする仕組み。|MDMで端末を管理|BYOD|なし||セキュリティ|2|3|△|◎|○|0|
+ML|エムエル|Machine Learning|マシン・ラーニング|データから規則を学ぶ技術|データで賢くなるAI|データから規則やパターンを自動的に学習し、予測や分類を行う技術。|MLで予測|AI、DL|AI|ML=データから学習する手法 / AI=知的処理の総称|AI|2|4|○|◎|◎|0|
+DL|ディーエル|Deep Learning|ディープ・ラーニング|多層のニューラルネットで学ぶ機械学習|深く学ぶAI|多層のニューラルネットワークを使い、画像や音声などの特徴を自動で抽出して学習する手法。|DLで画像認識|ML、GPU|ML|DL=機械学習の一種(多層NN) / ML=学習手法全般|AI|2|4|△|◎|◎|0|
+NLP|エヌエルピー|Natural Language Processing|ナチュラル・ランゲージ・プロセッシング|人間の言葉をコンピュータで処理する技術|言葉を理解する技術|文章や音声などの人間の言語を、コンピュータで解析・生成する技術。翻訳や要約などに使う。|NLPで文章を解析|AI、LLM|なし||AI|2|3|△|○|◎|0|
+LLM|エルエルエム|Large Language Model|ラージ・ランゲージ・モデル|大量の文章を学習した大規模言語モデル|文章を扱う大きなAI|膨大なテキストを学習し、文章の生成や要約・対話などができる大規模なAIモデル。|LLMに質問|AI、NLP、GPU|なし||AI|2|4|△|○|◎|0|
+LRU|エルアールユー|Least Recently Used|リースト・リーセントリー・ユースド|最も長く使われていないものを入れ替える方式|使ってないものから捨てる|キャッシュやページ置換で、最後に使われてから最も時間が経ったものを入れ替える方式。|LRUで置換|FIFO|FIFO|LRU=最も使われていない順 / FIFO=古い順|OS|2|4|◎|◎|△|0|
+ASP|エーエスピー|Application Service Provider|アプリケーション・サービス・プロバイダー|アプリをネット経由で提供する事業者|SaaSの前身|ソフトウェアをインターネット経由で提供する事業者。現在のSaaSにつながる形態。|ASPを利用|SaaS|SaaS|ASP=提供する事業者 / SaaS=提供形態|クラウド|2|3|○|◎|△|0|
+SIEM|シーム|Security Information and Event Management|セキュリティ・インフォメーション・アンド・イベント・マネジメント|ログを集めて分析し、脅威を検知する仕組み|ログの見張り番|複数の機器のログを集約・相関分析し、不審な動きを検知して通知する仕組み。|SIEMで相関分析|SOC、IDS/IPS|EDR|SIEM=ログ全体を分析 / EDR=端末の挙動を監視|セキュリティ|3|3|△|○|◎|0|
+EDR|イーディーアール|Endpoint Detection and Response|エンドポイント・ディテクション・アンド・レスポンス|端末の不審な動きを検知して対処する仕組み|PCやスマホの監視員|PCやサーバーなどの端末上の挙動を監視し、マルウェアの侵入後の検知や封じ込めを行う仕組み。|EDRで端末を隔離|SIEM、IDS/IPS|SIEM|EDR=端末を監視 / SIEM=ログ全体を分析|セキュリティ|3|3|△|○|◎|0|
+CVE|シーブイイー|Common Vulnerabilities and Exposures|コモン・ヴァルナラビリティーズ・アンド・エクスポージャーズ|脆弱性に付ける共通の識別番号|脆弱性の管理番号|公開された脆弱性に付けられる、CVE-年-番号の形式の共通識別子。|CVE番号を確認|CVSS|CVSS|CVE=識別番号 / CVSS=深刻度の評価|セキュリティ|3|4|○|◎|◎|0|https://www.cve.org/
+CVSS|シーブイエスエス|Common Vulnerability Scoring System|コモン・ヴァルナラビリティ・スコアリング・システム|脆弱性の深刻度を数値で評価する方式|危険度の点数|脆弱性の深刻度を0.0から10.0の数値で評価する共通の指標。|CVSSスコアで優先度を判断|CVE|CVE|CVSS=深刻度の点数 / CVE=識別番号|セキュリティ|3|4|△|◎|◎|0|https://www.first.org/cvss/
+OWASP|オワスプ|Open Worldwide Application Security Project（旧称 Open Web Application Security Project）|オープン・ワールドワイド・アプリケーション・セキュリティ・プロジェクト|Webアプリのセキュリティを向上させる国際的な活動|脆弱性トップ10の発信元|アプリケーションのセキュリティ向上を目指すコミュニティ。OWASP Top 10で有名。|OWASP Top 10を参照|XSS、CSRF、WAF|なし||セキュリティ|3|3|△|○|◎|0|https://owasp.org/
+DLP|ディーエルピー|Data Loss Prevention|データ・ロス・プリベンション|機密情報の流出を防ぐ仕組み|持ち出し防止の見張り|機密情報の外部送信やコピーを検知・ブロックし、情報漏えいを防ぐ仕組み。|DLPでメール添付を監視|UTM、ACL|なし||セキュリティ|3|3|△|◎|◎|0|
+HSM|エイチエスエム|Hardware Security Module|ハードウェア・セキュリティ・モジュール|暗号鍵を安全に保管・処理する専用装置|鍵の金庫|暗号鍵の生成・保管・暗号処理を、耐タンパー性のある専用ハードウェアで行う装置。|HSMで鍵を管理|PKI、TPM|TPM|HSM=サーバー向けの外付け・専用装置 / TPM=PC内蔵のチップ|セキュリティ|3|3|△|◎|○|0|
+TPM|ティーピーエム|Trusted Platform Module|トラステッド・プラットフォーム・モジュール|暗号鍵などを守るPC内蔵のセキュリティチップ|PC内の小さな金庫|PCなどに内蔵され、暗号鍵の保管や起動時の改ざん検知を行うセキュリティチップ。|TPMでディスクを暗号化|HSM、UEFI|HSM|TPM=機器に内蔵 / HSM=専用の外部装置|セキュリティ|3|3|△|◎|○|0|
+HSTS|エイチエスティーエス|HTTP Strict Transport Security|エイチティーティーピー・ストリクト・トランスポート・セキュリティ|HTTPS接続を必ず使わせる仕組み|平文通信を断る設定|サーバーがブラウザに対し、以後はHTTPSでのみアクセスするよう指示する仕組み。|HSTSを有効化|HTTPS、TLS|なし||セキュリティ|3|3|△|○|◎|0|https://www.rfc-editor.org/rfc/rfc6797
+CSP|シーエスピー|Content Security Policy（クラウド分野ではCloud Service Providerの意味もある）|コンテンツ・セキュリティ・ポリシー|読み込める資源を制限して攻撃を防ぐ仕組み|読み込み許可リスト|Webページが読み込めるスクリプトや画像の取得元を制限し、XSSなどを防ぐ仕組み。|CSPヘッダを設定|XSS、HSTS|なし||セキュリティ|3|3|△|○|◎|0|
+APT|エーピーティー|Advanced Persistent Threat|アドバンスト・パーシステント・スレット|特定の標的を長期間狙う高度な攻撃|しつこい標的型攻撃|特定の組織を標的に、長期間かけて侵入・情報収集を続ける高度で持続的な攻撃。|APT攻撃を受ける|SIEM、EDR|なし||セキュリティ|3|4|△|◎|○|0|
+DNSSEC|ディーエヌエスセック|DNS Security Extensions|ディーエヌエス・セキュリティ・エクステンションズ|DNSの応答が改ざんされていないか確認する仕組み|DNSの電子署名|DNSの応答に電子署名を付け、偽の応答を検知できるようにする拡張機能。|DNSSECを有効化|DNS、PKI|なし||セキュリティ|3|3|△|◎|○|0|https://www.rfc-editor.org/rfc/rfc4033
+SPF/DKIM/DMARC|エスピーエフ/ディーキム/ディーマーク|Sender Policy Framework / DomainKeys Identified Mail / Domain-based Message Authentication, Reporting and Conformance|センダー・ポリシー・フレームワーク ほか|メールの送信元が本物か確認する仕組み|なりすましメール対策の三点セット|SPFは送信サーバーのIPを、DKIMは電子署名を確認し、DMARCは失敗時の扱いを定める。|DMARCを設定|SMTP、DNS|なし||セキュリティ|3|4|△|◎|◎|0|
+S/MIME|エスマイム|Secure/Multipurpose Internet Mail Extensions|セキュア/マルチパーパス・インターネット・メール・エクステンションズ|メールを暗号化し電子署名する規格|封印付きの電子メール|電子証明書を使ってメールの暗号化と電子署名を行う規格。|S/MIMEで署名|MIME、PKI、PGP|PGP|S/MIME=認証局の証明書で信頼 / PGP=利用者同士の信頼|セキュリティ|3|4|△|◎|○|0|https://www.rfc-editor.org/rfc/rfc8551
+PGP|ピージーピー|Pretty Good Privacy|プリティ・グッド・プライバシー|公開鍵暗号でメールなどを暗号化するソフト|個人間の暗号化|公開鍵暗号を使ってメールやファイルの暗号化・署名を行う方式。|PGP鍵を交換|S/MIME、RSA|S/MIME|PGP=利用者同士の信頼 / S/MIME=認証局の証明書|セキュリティ|3|3|△|○|○|0|
+ECC|イーシーシー|Elliptic Curve Cryptography（メモリ分野ではError Correcting Codeの意味もある）|エリプティック・カーブ・クリプトグラフィー|楕円曲線を使う公開鍵暗号|短い鍵で強い暗号|楕円曲線上の計算の難しさを利用した公開鍵暗号。RSAより短い鍵で同等の強度が得られる。|ECC署名を使う|RSA、TLS|RSA|ECC=短い鍵で高効率 / RSA=素因数分解を利用|セキュリティ|3|3|△|○|○|0|
+HMAC|エイチマック|Hash-based Message Authentication Code|ハッシュ・ベースド・メッセージ・オーセンティケーション・コード|鍵つきハッシュで改ざんと送信者を確認する方式|秘密鍵つきの指紋|共通鍵とハッシュ関数を組み合わせ、メッセージの改ざんと送信者を確認する方式。|HMACで署名|SHA、MD5|なし||セキュリティ|3|3|△|◎|◎|0|https://www.rfc-editor.org/rfc/rfc2104
+OIDC|オーアイディーシー|OpenID Connect（正式名称そのものの略称）|オープンアイディー・コネクト|OAuthを土台にした認証の仕組み|OAuthに本人確認を足したもの|OAuth 2.0の上に作られた認証の仕様。IDトークンで利用者を確認する。|OIDCでログイン|OAuth、SSO、JWT|OAuth|OIDC=認証 / OAuth=認可|セキュリティ|3|3|△|○|◎|0|
+FIDO|ファイドー|Fast IDentity Online|ファスト・アイデンティティ・オンライン|パスワードを使わない認証規格|生体認証でログイン|公開鍵暗号と生体認証などを使い、パスワードなしで安全に認証する規格。|FIDOでログイン|MFA、OTP|なし||セキュリティ|3|3|△|◎|◎|0|
+RADIUS|レイディウス|Remote Authentication Dial-In User Service|リモート・オーセンティケーション・ダイヤルイン・ユーザー・サービス|ネットワーク接続の認証を集中管理するプロトコル|ネット接続の受付係|VPNや無線LANなどの接続時に、認証・認可・課金情報を集中して管理するプロトコル。|RADIUSで認証|LDAP、WPA|なし||ネットワーク|3|3|△|◎|○|0|https://www.rfc-editor.org/rfc/rfc2865
+AWS|エーダブリューエス|Amazon Web Services|アマゾン・ウェブ・サービシズ|Amazonが提供する代表的なクラウドサービス|クラウドの定番|Amazonが提供するクラウドサービス群。サーバー、ストレージ、DBなどをネット経由で利用する。|AWSで構築|EC2、S3、IaaS|なし||クラウド|3|4|△|○|◎|0|https://aws.amazon.com/
+EC2|イーシーツー|Amazon Elastic Compute Cloud|アマゾン・エラスティック・コンピュート・クラウド|AWSで仮想サーバーを借りるサービス|クラウド上の貸しサーバー|AWSが提供する仮想サーバーサービス。必要な時にサーバーを起動・停止できる。|EC2を起動|AWS、IaaS|なし||クラウド|3|3|△|△|◎|0|https://aws.amazon.com/ec2/
+S3|エススリー|Amazon Simple Storage Service|アマゾン・シンプル・ストレージ・サービス|AWSで大量のファイルを保管するサービス|クラウド上の倉庫|AWSが提供するオブジェクトストレージ。画像やバックアップなどを保管する。|S3に保存|AWS、NAS|NAS|S3=オブジェクト単位のクラウド保管 / NAS=ファイル共有用のLAN接続型|クラウド|3|3|△|△|◎|0|https://aws.amazon.com/s3/
+RDS|アールディーエス|Amazon Relational Database Service|アマゾン・リレーショナル・データベース・サービス|AWSで管理されたDBを使うサービス|運用おまかせのDB|AWSが提供するマネージド型のリレーショナルデータベースサービス。バックアップなどを自動化できる。|RDSを利用|AWS、RDBMS|なし||クラウド|3|3|△|△|◎|0|https://aws.amazon.com/rds/
+SRE|エスアールイー|Site Reliability Engineering|サイト・リライアビリティ・エンジニアリング|信頼性をソフトウェアの考え方で保つ運用手法|運用をエンジニアリングする|システムの信頼性を、自動化や数値目標を使って高めるGoogle発祥の運用手法。|SREがSLOを管理|SLI/SLO、DevOps|なし||DevOps|3|3|△|△|◎|0|
+MSA|エムエスエー|Microservice Architecture|マイクロサービス・アーキテクチャ|小さなサービスの組み合わせで作る設計|小さな部品で組む構成|システムを小さな独立したサービスに分け、APIで連携させる設計方式。|MSAで分割|SOA、REST、Docker|SOA|MSA=小さく独立したサービス / SOA=業務単位のサービス連携|システム設計|3|3|△|○|◎|0|
+SOA|ソア|Service Oriented Architecture|サービス・オリエンテッド・アーキテクチャ|業務機能をサービスとして組み合わせる設計|サービス部品化の考え方|業務機能を独立したサービスとして部品化し、組み合わせてシステムを構築する設計思想。|SOAで再利用|MSA、API|MSA|SOA=業務単位のサービス連携 / MSA=より小さく独立したサービス|システム設計|3|4|○|◎|△|0|
+VDI|ブイディーアイ|Virtual Desktop Infrastructure|バーチャル・デスクトップ・インフラストラクチャ|デスクトップ環境をサーバー上で動かす仕組み|画面だけ手元に届く|PCのデスクトップ環境をサーバー上に集約し、手元の端末には画面だけを表示する仕組み。|VDIで接続|VM、IaaS|なし||インフラ|3|3|△|◎|○|0|
+HCI|エイチシーアイ|Hyper-Converged Infrastructure|ハイパー・コンバージド・インフラストラクチャ|サーバー・ストレージ・ネットワークを一体化した基盤|全部入りのインフラ|計算・記憶・ネットワークの機能をソフトウェアで統合し、同じ筐体で構成するインフラ。|HCIを導入|VM、SDN|なし||インフラ|3|3|△|△|○|0|
+SD-WAN|エスディーワン|Software-Defined Wide Area Network|ソフトウェア・ディファインド・ワイド・エリア・ネットワーク|WANをソフトウェアで制御する技術|拠点間回線のスマート管理|拠点間をつなぐWANを、ソフトウェアで集中管理し最適な経路を選ぶ技術。|SD-WANで拠点接続|SDN、WAN、VPN|SDN|SD-WAN=拠点間のWAN制御 / SDN=ネットワーク全般の制御|ネットワーク|3|3|△|△|○|0|
+YAML|ヤムル|YAML Ain't Markup Language（初期はYet Another Markup Language）|ヤムル・エイント・マークアップ・ランゲージ|設定ファイルでよく使うデータ記述形式|人間が読みやすい設定形式|インデントで構造を表す、人間が読み書きしやすいデータ記述形式。KubernetesやCI設定で多用される。|YAMLで設定を書く|JSON、k8s|JSON|YAML=読みやすい設定向き / JSON=軽量なデータ交換向き|DevOps|3|3|△|△|◎|0|https://yaml.org/
+VCS|ブイシーエス|Version Control System|バージョン・コントロール・システム|ファイルの変更履歴を管理する仕組み|ソースの履歴帳|ファイルの変更履歴を記録・管理し、過去の状態に戻したり並行開発を行えるようにする仕組み。Gitなどがある。|VCSで履歴管理|CI、SCM|SCM|VCS=変更履歴の管理 / SCM(構成管理)=成果物全体の管理|DevOps|3|4|△|○|◎|0|
+APM|エーピーエム|Application Performance Management|アプリケーション・パフォーマンス・マネジメント|アプリの性能を計測・監視する仕組み|アプリの健康診断|アプリケーションの応答時間やエラーなどを計測・監視し、性能問題を特定する仕組み。|APMで遅延を調査|SRE、SLI/SLO|なし||DevOps|3|3|△|△|◎|0|
+BDD|ビーディーディー|Behavior-Driven Development|ビヘイビア・ドリブン・デベロップメント|期待する振る舞いを先に定義して開発する手法|仕様をテストにして作る|システムに期待される振る舞いを自然言語に近い形で記述し、それをテストに使う開発手法。|BDDで仕様を記述|TDD、UAT|TDD|BDD=振る舞い(仕様)を起点 / TDD=テストコードを起点|ソフトウェア開発|3|3|△|△|○|0|
+E2E|イーツーイー|End-to-End|エンド・トゥ・エンド|入口から出口まで通して検証するテスト|最初から最後まで通す|利用者の操作から最終結果まで、システム全体を通して動作を確認するテスト。|E2Eテストを自動化|UAT、CI|なし||ソフトウェア開発|3|3|△|△|◎|0|
+SAST/DAST|サスト/ダスト|Static Application Security Testing / Dynamic Application Security Testing|スタティック/ダイナミック・アプリケーション・セキュリティ・テスティング|ソースを調べる検査と動かして調べる検査|解析の静的と動的|SASTはソースコードを静的に解析し、DASTは実行中のアプリケーションに対して攻撃を模擬して脆弱性を検出する。|SASTをCIに組み込む|CI、OWASP|なし|SAST=動かさずにソースを解析 / DAST=動かして外から検査|セキュリティ|3|3|△|○|○|0|
+SLI/SLO|エスエルアイ/エスエルオー|Service Level Indicator / Service Level Objective|サービス・レベル・インディケーター/オブジェクティブ|サービス品質の測定値と、その目標値|測るものと目指す数字|SLIは稼働率などの実測指標、SLOはその目標値。SLAは契約上の約束で、SLOより緩く設定されることが多い。|SLOで稼働率99.9%を目標に|SLA、SRE|SLA|SLI/SLO=内部の測定と目標 / SLA=顧客との契約|DevOps|3|3|△|○|◎|0|
+KVM|ケーブイエム|Kernel-based Virtual Machine|カーネル・ベースド・バーチャル・マシン|Linuxに組み込まれた仮想化技術|Linux標準の仮想化|Linuxカーネルに組み込まれた仮想化機能。仮想マシンを動かす基盤として使われる。|KVMで仮想化|VM、Linux|なし||インフラ|3|3|△|△|◎|0|
+LVM|エルブイエム|Logical Volume Manager|ロジカル・ボリューム・マネージャー|複数のディスクを柔軟にまとめて扱うLinuxの仕組み|ディスクの伸縮自在な仕切り|複数の物理ディスクを1つの論理ボリュームとして扱い、容量の拡張や分割を柔軟に行えるようにするLinuxの仕組み。|LVMで容量を拡張|RAID、NAS|RAID|LVM=容量を柔軟に管理 / RAID=冗長化・高速化|OS|3|3|△|△|◎|0|
+SELinux|エスイーリナックス|Security-Enhanced Linux|セキュリティ・エンハンスト・リナックス|Linuxに強制アクセス制御を加える仕組み|Linuxの追加の守り|管理者でも許可されていない操作を制限できる、強制アクセス制御をLinuxに加える仕組み。|SELinuxを有効化|ACL、IAM|なし||OS|3|3|△|○|◎|0|
+POSIX|ポジックス|Portable Operating System Interface|ポータブル・オペレーティング・システム・インタフェース|UNIX系OSの共通インタフェース規格|OS間の共通ルール|UNIX系OSの間でプログラムの互換性を保つために定められた、共通のAPIや仕様。|POSIXに準拠|OS、API|なし||OS|3|3|△|○|◎|0|
+NFS|エヌエフエス|Network File System|ネットワーク・ファイル・システム|ネットワーク経由でファイルを共有する仕組み|UNIX系のファイル共有|ネットワーク上の他のコンピュータのファイルを、自分のファイルのように扱えるようにする仕組み。主にUNIX/Linuxで使う。|NFSでマウント|SMB、NAS|SMB|NFS=主にUNIX/Linux向け / SMB=主にWindows向け|インフラ|3|3|△|○|◎|0|https://www.rfc-editor.org/rfc/rfc7530
+SMB|エスエムビー|Server Message Block（別の意味でSmall and Medium Business=中小企業を指すこともある）|サーバー・メッセージ・ブロック|Windowsで使われるファイル共有の手順|Windowsのファイル共有|ネットワーク上のファイルやプリンタを共有するためのプロトコル。主にWindowsで使われる。|SMBで共有|NFS、NAS|NFS|SMB=主にWindows向け / NFS=主にUNIX/Linux向け|ネットワーク|3|3|△|△|◎|0|
+SAN|サン|Storage Area Network|ストレージ・エリア・ネットワーク|ストレージ専用のネットワーク|サーバーとディスクを結ぶ専用道路|サーバーとストレージを専用のネットワークで結び、ブロック単位でアクセスする構成。|SANで接続|NAS、iSCSI|NAS|SAN=専用網・ブロック単位 / NAS=LAN接続・ファイル単位|インフラ|3|4|◎|◎|○|0|
+iSCSI|アイスカジー|Internet Small Computer System Interface|インターネット・スモール・コンピュータ・システム・インタフェース|IPネットワークでストレージに接続する規格|ネットでつなぐディスク|SCSIの命令をIPネットワークで転送し、ネットワーク越しにストレージを利用できるようにする規格。|iSCSIで接続|SAN、NAS|なし||インフラ|3|3|△|○|○|0|https://www.rfc-editor.org/rfc/rfc7143
+UEFI|ユーイーエフアイ|Unified Extensible Firmware Interface|ユニファイド・エクステンシブル・ファームウェア・インタフェース|BIOSに代わる新しい起動用ファームウェア|新しいBIOS|BIOSの後継となる、起動時にハードウェアを初期化しOSを起動するファームウェア。大容量ディスクやセキュアブートに対応。|UEFIで起動|BIOS、TPM|BIOS|UEFI=新方式 / BIOS=従来方式|コンピュータ構成|3|3|△|○|◎|0|
+OCI|オーシーアイ|Open Container Initiative|オープン・コンテナ・イニシアティブ|コンテナの標準仕様を決める団体|コンテナの共通規格|コンテナのイメージ形式や実行方法を標準化する団体、およびその仕様。|OCI準拠|Docker、k8s|なし||インフラ|3|3|△|△|○|0|https://opencontainers.org/
+LAMP|ランプ|Linux, Apache, MySQL, PHP（Perl・Pythonを指すこともある）|リナックス・アパッチ・マイエスキューエル・ピーエイチピー|Webサーバー構成の代表的な組み合わせ|定番のWebサーバー構成|Linux、Apache、MySQL、PHPを組み合わせた、Webアプリケーション用のオープンソースの構成。|LAMP環境を構築|OSS、Linux|なし||Web|3|3|○|△|○|0|
+RTOS|アールトス|Real-Time Operating System|リアルタイム・オペレーティング・システム|決められた時間内に必ず処理を終えるOS|時間厳守のOS|制御機器などで、決められた時間内に処理を完了することを保証するOS。|RTOSで制御|OS、IoT|なし||OS|3|3|◎|◎|△|0|
+SMP|エスエムピー|Symmetric Multi-Processing|シンメトリック・マルチプロセッシング|複数のCPUを対等に使う方式|CPUの横並び運用|複数のCPUが同じメモリを共有し、対等な立場で処理を分担する方式。|SMPで並列処理|CPU|なし||コンピュータ構成|3|3|◎|◎|△|0|
+NVMe|エヌブイエムイー|Non-Volatile Memory Express|ノン・ボラタイル・メモリー・エクスプレス|SSDを高速に接続するための規格|SSDの高速道路|PCIeを使ってSSDなどの記憶装置に高速アクセスするためのインタフェース規格。|NVMe SSDに換装|SSD、PCIe|SATA|NVMe=PCIe接続で高速 / SATA=従来の接続規格|コンピュータ構成|3|3|△|△|◎|0|
+SATA|サタ|Serial ATA（Serial Advanced Technology Attachment）|シリアル・エーティーエー|HDDやSSDをつなぐ接続規格|ディスクの標準ケーブル|HDDやSSDを接続するシリアル方式のインタフェース規格。|SATA接続|SSD、HDD|NVMe|SATA=従来の規格 / NVMe=より高速|コンピュータ構成|3|3|◎|△|○|0|
+PCIe|ピーシーアイイー|Peripheral Component Interconnect Express|ペリフェラル・コンポーネント・インターコネクト・エクスプレス|拡張カードなどをつなぐ高速バス|拡張スロットの高速道路|グラフィックカードやSSDなどの拡張機器を接続する、高速なシリアル方式のバス規格。|PCIeスロット|GPU、NVMe|なし||コンピュータ構成|3|3|△|△|○|0|
+MMU|エムエムユー|Memory Management Unit|メモリー・マネジメント・ユニット|仮想アドレスを物理アドレスに変換する装置|アドレスの翻訳係|仮想記憶で、プログラムが使う仮想アドレスを実際のメモリ上の物理アドレスに変換する装置。|MMUで変換|CPU、LRU|なし||コンピュータ構成|3|3|◎|◎|△|0|
+AJAX|エイジャックス|Asynchronous JavaScript And XML|アシンクロナス・ジャバスクリプト・アンド・エックスエムエル|ページ全体を更新せずにデータをやり取りする技術|画面の一部だけ更新|JavaScriptでサーバーと非同期に通信し、ページ全体を再読み込みせずに画面の一部を更新する技術。|AJAXで更新|JSON、HTTP、DOM|なし||Web|3|3|△|△|◎|0|
+SPA|エスピーエー|Single Page Application|シングル・ページ・アプリケーション|1つのページ内で画面を切り替えるWebアプリ|ページ遷移のないアプリ|最初に1つのページを読み込み、以降はJavaScriptで画面を書き換えて動作するWebアプリ。|SPAで構築|AJAX、PWA|なし||Web|3|3|△|△|◎|0|
+PWA|ピーダブリューエー|Progressive Web App|プログレッシブ・ウェブ・アプリ|アプリのように使えるWebサイト|ホーム画面に置けるWeb|オフライン動作やホーム画面への追加など、ネイティブアプリに近い体験を提供するWebアプリ。|PWAとして公開|SPA、HTTPS|なし||Web|3|3|△|△|○|0|
+SOAP|ソープ|Simple Object Access Protocol（SOAP 1.2以降は略語ではなく名称として扱われる）|シンプル・オブジェクト・アクセス・プロトコル|XMLでWebサービスを呼び出す手順|XML版の呼び出し規約|XMLでメッセージを表現し、HTTPなどでWebサービスを呼び出す規約。|SOAPで連携|REST、XML|REST|SOAP=XML形式で厳密な規約 / REST=URIとHTTPメソッドによる軽量設計|Web|3|3|○|○|△|0|
+ORM|オーアールエム|Object-Relational Mapping|オブジェクト・リレーショナル・マッピング|オブジェクトと表の対応づけ|オブジェクトとDBの通訳|プログラム上のオブジェクトと、データベースの表のデータを対応づけて扱う技術。|ORMでDBアクセス|SQL、RDBMS|なし||プログラミング|3|3|△|△|◎|0|
+DOM|ドム|Document Object Model|ドキュメント・オブジェクト・モデル|HTMLを木構造で扱う仕組み|ページの部品ツリー|HTMLやXMLの文書を木構造のオブジェクトとして表現し、プログラムから操作できるようにする仕組み。|DOMを操作|HTML、AJAX|なし||Web|3|3|△|△|◎|0|
+JVM|ジェイブイエム|Java Virtual Machine|ジャバ・バーチャル・マシン|Javaのプログラムを動かす仮想マシン|Javaのための実行環境|Javaのバイトコードを実行する仮想マシン。OSに依存せず同じプログラムが動かせる。|JVMで実行|VM、OOP|なし||プログラミング|3|3|◎|◎|○|0|
+UUID|ユーユーアイディー|Universally Unique Identifier|ユニバーサリー・ユニーク・アイデンティファイア|世界で重複しない識別子|重複しないID|重複する可能性が極めて低い128ビットの識別子。IDの採番に使われる。|UUIDで識別|PK/FK|なし||プログラミング|3|3|△|△|◎|0|https://www.rfc-editor.org/rfc/rfc9562
+CAP|キャップ|Consistency, Availability, Partition tolerance|コンシステンシー・アベイラビリティ・パーティション・トレランス|分散DBで3つを同時には満たせない原則|三つ巴のトレードオフ|分散システムでは、一貫性・可用性・分断耐性の3つのうち同時に満たせるのは2つまでとする原則(CAP定理)。|CAP定理を考慮|ACID、BASE|ACID|CAP=分散システムの原則 / ACID=トランザクションの性質|データベース|3|3|△|○|○|0|
+BASE|ベース|Basically Available, Soft state, Eventually consistent|ベーシカリー・アベイラブル・ソフト・ステート・イベンチュアリー・コンシステント|NoSQLで使われる緩やかな整合性の考え方|ゆるくても止まらない|常に使えることを優先し、データの整合性は最終的に保たれればよいとする考え方。|BASE特性を採用|ACID、NoSQL|ACID|BASE=最終的な整合性 / ACID=常に厳密な整合性|データベース|3|3|△|○|○|0|
+MVCC|エムブイシーシー|Multi-Version Concurrency Control|マルチ・バージョン・コンカレンシー・コントロール|複数のバージョンで同時実行を制御する方式|読み取りを止めない仕組み|データの複数のバージョンを保持し、読み取りと書き込みが互いを待たずに同時実行できるようにする制御方式。|MVCCで同時制御|ACID、RDBMS|なし||データベース|3|3|△|○|○|0|
+JDBC/ODBC|ジェイディービーシー/オーディービーシー|Java Database Connectivity / Open Database Connectivity|ジャバ・データベース・コネクティビティ/オープン・データベース・コネクティビティ|DBに接続するための共通インタフェース|DBへの共通の窓口|アプリケーションからデータベースに接続するための標準的なAPI。JDBCはJava向け、ODBCは言語に依存しない。|JDBCで接続|SQL、API|なし|JDBC=Java向け / ODBC=言語を問わない|データベース|3|3|△|○|◎|0|
+WAL|ワル|Write-Ahead Logging|ライト・アヘッド・ロギング|変更の前にログを書く方式|先に記録してから更新|データベースの更新内容を先にログへ書き込み、障害時にログから復旧できるようにする方式。|WALで復旧|ACID、RDBMS|なし||データベース|3|3|△|◎|○|0|
+CNN|シーエヌエヌ|Convolutional Neural Network|コンボリューショナル・ニューラル・ネットワーク|画像認識に強いニューラルネットワーク|画像の特徴を拾う網|画像の局所的な特徴を捉える畳み込み層を持つニューラルネットワーク。|CNNで画像分類|DL、RNN|RNN|CNN=画像向け / RNN=時系列・文章向け|AI|3|3|△|○|○|0|
+RNN|アールエヌエヌ|Recurrent Neural Network|リカレント・ニューラル・ネットワーク|時系列データを扱うニューラルネットワーク|過去を覚えながら処理|過去の情報を保持しながら順番に処理するニューラルネットワーク。文章や音声に使われた。|RNNで予測|DL、CNN|CNN|RNN=時系列向け / CNN=画像向け|AI|3|3|△|○|△|0|
+GAN|ガン|Generative Adversarial Network|ジェネレーティブ・アドバーサリアル・ネットワーク|生成側と判定側が競い合う生成モデル|偽造者と鑑定士の対決|データを作るネットワークと見破るネットワークが競い合い、本物らしいデータを生成するモデル。|GANで画像生成|DL、LLM|なし||AI|3|3|△|○|△|0|
+RAG|ラグ|Retrieval-Augmented Generation|リトリーバル・オーグメンテッド・ジェネレーション|外部情報を検索して回答を補強する生成AIの手法|調べながら答えるAI|LLMが回答する際に、外部の文書やデータベースを検索して結果を参照させることで回答の精度を高める手法。|RAGで社内文書を参照|LLM、NLP|なし||AI|3|3|△|△|◎|0|
+GPT|ジーピーティー|Generative Pre-trained Transformer|ジェネレーティブ・プリトレインド・トランスフォーマー|事前学習した文章生成のモデル|文章生成の代表的モデル|大量のテキストで事前学習したTransformer型の言語モデル。文章生成や対話に使われる。|GPTで文章生成|LLM、NLP|なし||AI|3|3|△|△|◎|0|
+OKR|オーケーアール|Objectives and Key Results|オブジェクティブス・アンド・キー・リザルツ|目標と主要な成果指標で管理する手法|目標と達成の物差し|達成したい目標(O)と、その達成度を測る主要な成果指標(KR)を設定して管理する手法。|OKRを設定|KPI、KGI|KPI|OKR=挑戦的な目標管理 / KPI=業績の指標|ストラテジ|3|3|△|○|◎|0|
+PMO|ピーエムオー|Project Management Office|プロジェクト・マネジメント・オフィス|プロジェクト管理を支援する専門組織|プロジェクトの事務局|複数のプロジェクトの管理を支援し、標準化や進捗の把握を行う組織。|PMOが進捗を管理|PM、PMBOK|PM|PMO=支援する組織 / PM=プロジェクトの責任者|プロジェクトマネジメント|3|4|△|◎|○|0|
+RACI|レイシー|Responsible, Accountable, Consulted, Informed|レスポンシブル・アカウンタブル・コンサルテッド・インフォームド|役割と責任を整理する表|担当・責任・相談・報告の分担表|作業ごとに実行責任者・説明責任者・相談先・報告先を整理する責任分担表。|RACIで役割分担|PM、WBS|なし||プロジェクトマネジメント|3|3|△|◎|○|0|
+BSC|ビーエスシー|Balanced Scorecard|バランスト・スコアカード|財務以外も含めて業績を測る手法|4つの視点の通信簿|財務・顧客・業務プロセス・学習と成長の4つの視点で業績を評価する経営管理手法。|BSCで評価|KPI、KGI|なし||ストラテジ|3|3|△|◎|△|0|
+CSF|シーエスエフ|Critical Success Factor|クリティカル・サクセス・ファクター|目標達成に欠かせない重要な要因|成功の鍵|目標を達成するために、特に重要となる要因。KGIとKPIをつなぐ位置づけで使われる。|CSFを特定|KGI、KPI|なし||ストラテジ|3|3|△|◎|△|0|
+MVP|エムブイピー|Minimum Viable Product|ミニマム・バイアブル・プロダクト|最小限の機能で作る試作の製品|まず小さく出す|顧客の反応を確かめるために、最小限の機能だけを備えた製品。|MVPをリリース|PoC、アジャイル|PoC|MVP=実際に使えるが最小限の製品 / PoC=実現可能性の検証|ストラテジ|3|3|△|○|◎|0|
+GDPR|ジーディーピーアール|General Data Protection Regulation|ジェネラル・データ・プロテクション・レギュレーション|EUの個人データ保護規則|個人データの国際ルール|EU域内の個人データの保護と移転を定めた規則。日本企業も対象となる場合がある。|GDPRに対応|ISMS|なし||ストラテジ|3|4|△|◎|○|0|https://gdpr.eu/
+CAB|キャブ|Change Advisory Board|チェンジ・アドバイザリー・ボード|変更の承認を判断する会議体|変更の審査会|ITサービスの変更について、その影響やリスクを評価して承認の可否を助言する会議体。|CABで承認|ITIL、CMDB|なし||サービスマネジメント|3|3|△|◎|○|0|
+RCA|アールシーエー|Root Cause Analysis|ルート・コーズ・アナリシス|問題の根本原因を分析する手法|原因を掘り下げる|障害などの問題に対して、表面的な現象ではなく根本的な原因を突き止める分析手法。|RCAを実施|ITIL、SRE|なし||サービスマネジメント|3|3|△|◎|◎|0|`.trim().split("\n").map((l, i) => { const p = l.split("|"); return { id: i, a: p[0], r: p[1], f: p[2], fk: p[3], j: p[4], i: p[5], m: p[6], e: p[7], rel: p[8], c: p[9], d: p[10], cat: p[11], lv: +p[12], s: +p[13], fe: p[14], ap: p[15], wk: p[16], p: p[17] == "1", u: p[18] } });
+    const $ = s => document.querySelector(s);
+    let M; try { M = new Set(JSON.parse(localStorage.getItem("itac_m") || "[]")) } catch (e) { M = new Set() }
+    const save = () => { try { localStorage.setItem("itac_m", JSON.stringify([...M])) } catch (e) { } };
+    const S = { q: "", lv: "", cat: "", s: "", st: "", sort: "rec", mode: "list", ci: 0, rev: new Set(), rs: null, rn: [], qz: null, qt: "a2m" };
+    const cats = [...new Set(D.map(x => x.cat))];
+    const sh = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0;[a[i], a[j]] = [a[j], a[i]] } return a };
+    function list() {
+      let r = D.filter(x => { const q = S.q.trim().toLowerCase(); return (!q || [x.a, x.f, x.fk, x.j, x.r, x.m].join(" ").toLowerCase().includes(q)) && (!S.lv || x.lv == S.lv) && (!S.cat || x.cat == S.cat) && (!S.s || x.s == S.s) && (!S.st || (S.st == "m") == M.has(x.id)) });
+      if (S.sort == "rec") r.sort((a, b) => b.p - a.p || b.s - a.s || a.id - b.id); if (S.sort == "az") r.sort((a, b) => a.a.localeCompare(b.a)); if (S.sort == "za") r.sort((a, b) => b.a.localeCompare(a.a)); if (S.sort == "imp") r.sort((a, b) => b.s - a.s); if (S.sort == "rnd") { if (!S.rn.length) S.rn = sh(D.map(x => x.id)); r.sort((a, b) => S.rn.indexOf(a.id) - S.rn.indexOf(b.id)) } return r
+    }
+    const det = x => `<details ${S.mode == "card" ? "open" : ""}><summary>詳しく</summary><p>読み: ${x.r}／正式名称の読み: ${x.fk}</p><p>${x.m}</p><p>例: ${x.e}</p><p>関連: ${x.rel}</p>${x.c && x.c != "なし" ? `<p>混同: ${x.c} — ${x.d}</p>` : ""}<p>${x.cat}／LEVEL ${x.lv}／${"★".repeat(x.s)}／FE ${x.fe} AP ${x.ap} 実務 ${x.wk}（頻出度は編集上の学習優先度の目安）${x.p ? "／最初に覚える50語" : ""}</p><p>出典: ${x.u ? `<a href="${x.u}" target="_blank" rel="noopener">${x.u}</a>` : "未設定"}</p></details>`;
+    const mkBtn = x => `<button data-a="mk" data-id="${x.id}" class="${M.has(x.id) ? "on" : ""}">${M.has(x.id) ? "覚えた ✓" : "覚えた"}</button>`;
+    const item = x => `<div class="cd ${S.mode == "card" ? "big" : ""}"><div class="a">${x.a}</div><div class="j">${x.j}</div><div class="f">${x.f}</div><div class="f">${x.i}</div>${det(x)}<p>${mkBtn(x)}</p></div>`;
+    function head() { const n = D.length, m = M.size; $("#st").innerHTML = `<div><b>${n}</b><span>全略語数</span></div><div><b>${m}</b><span>覚えた</span></div><div><b>${n - m}</b><span>未習得</span></div><div><b>${(m / n * 100).toFixed(1)}%</b><span>進捗率 (${m}/${n})</span></div>`; $("#pb").style.width = m / n * 100 + "%"; }
+    function sel(k, o, all) { return `<select data-f="${k}"><option value="">${all}</option>${o.map(v => `<option value="${v[0]}" ${S[k] == v[0] ? "selected" : ""}>${v[1]}</option>`).join("")}</select>` }
+    function ctl() {
+      $("#fl").innerHTML = sel("lv", [1, 2, 3].map(v => [v, "LEVEL " + v]), "LEVEL全て") + sel("cat", cats.map(v => [v, v]), "カテゴリ全て") + sel("s", [...new Set(D.map(x => x.s))].sort((a, b) => b - a).map(v => [v, "★" + v]), "重要度全て") + sel("st", [["m", "覚えた"], ["u", "未習得"]], "状態全て") + sel("sort", [["rec", "おすすめ順"], ["az", "A-Z"], ["za", "Z-A"], ["imp", "重要度順"], ["rnd", "ランダム"]], "").replace('<option value=""></option>', "");
+      $("#md").innerHTML = [["list", "一覧"], ["card", "カード"], ["mem", "暗記"], ["rand", "ランダム学習"], ["quiz", "クイズ"]].map(v => `<button data-a="mode" data-v="${v[0]}" class="${S.mode == v[0] ? "p" : ""}">${v[1]}</button>`).join("")
+    }
+    function mkQuiz() { const q = sh(D).slice(0, Math.min(10, D.length)).map(x => { const o = sh(D.filter(y => y.id != x.id)).slice(0, 3).concat(x); return { x, o: sh(o) } }); S.qz = { q, n: 0, sc: 0, p: null } }
+    function render() {
+      head(); ctl(); const r = list(), m = $("#main");
+      if (S.mode == "list") m.innerHTML = `<div class="grid">${r.map(item).join("") || "該当なし"}</div>`;
+      else if (S.mode == "card") { if (S.ci >= r.length) S.ci = 0; const x = r[S.ci]; m.innerHTML = x ? `<p class="f">${S.ci + 1} / ${r.length}</p>${item(x)}<p><button data-a="pv">←</button> <button data-a="nx">→</button></p>` : "該当なし" }
+      else if (S.mode == "mem") m.innerHTML = `<p class="f">タップで答えを表示</p><div class="grid">${r.map(x => S.rev.has(x.id) ? `<div class="cd" data-a="rv" data-id="${x.id}"><div class="a">${x.a}</div><div class="j">${x.j}</div><div class="f">${x.f}</div><div class="f">${x.i}</div><p>${x.m}</p><p>${mkBtn(x)}</p></div>` : `<div class="cd" data-a="rv" data-id="${x.id}"><div class="a">${x.a}</div><div class="f">タップで表示</div></div>`).join("")}</div>`;
+      else if (S.mode == "rand") { if (!S.rs) { const u = D.filter(x => !M.has(x.id)); S.rs = sh(u).slice(0, 10).map(x => x.id) } const un = D.length - M.size; m.innerHTML = `<p><button data-a="rr">新しく選ぶ</button> ${un < 10 ? `残り${un}件` : ""}</p><div class="grid">${S.rs.map(i => D[i]).map(x => S.rev.has(x.id) ? item(x) : `<div class="cd" data-a="rv" data-id="${x.id}"><div class="a">${x.a}</div><div class="f">タップで表示</div>${mkBtn(x)}</div>`).join("") || "未習得はありません"}</div>` }
+      else {
+        if (!S.qz) mkQuiz(); const z = S.qz; if (z.n >= z.q.length) { m.innerHTML = `<div class="cd"><h2>結果 ${z.sc} / ${z.q.length}点</h2><button class="p" data-a="qr">もう一度</button></div>`; return }
+        const c = z.q[z.n], t = S.qt == "a2m"; m.innerHTML = `<p><button data-a="qt" data-v="a2m" class="${t ? "p" : ""}">略語→意味</button> <button data-a="qt" data-v="m2a" class="${t ? "" : "p"}">意味→略語</button></p><div class="cd"><p class="f">${z.n + 1}/${z.q.length}</p><div class="a">${t ? c.x.a : c.x.j}</div>${c.o.map(y => `<button class="ch ${z.p === null ? "" : y.id == c.x.id ? "ok" : y.id == z.p ? "ng" : ""}" data-a="qa" data-id="${y.id}">${t ? y.f + "／" + y.j : y.a}</button>`).join("")}${z.p !== null ? `<p><button class="p" data-a="qn">次へ</button></p>` : ""}</div>`
+      }
+    }
+    document.addEventListener("click", e => {
+      const b = e.target.closest("[data-a]"); if (!b) return; const a = b.dataset.a, id = +b.dataset.id;
+      if (a == "mk") { e.stopPropagation(); M.has(id) ? M.delete(id) : M.add(id); save(); render(); return }
+      if (a == "mode") { S.mode = b.dataset.v; S.rev = new Set(); if (S.mode == "rand") S.rs = null; if (S.mode == "quiz") S.qz = null }
+      if (a == "rv") { S.rev.has(id) ? S.rev.delete(id) : S.rev.add(id) }
+      if (a == "pv") S.ci = Math.max(0, S.ci - 1); if (a == "nx") S.ci++; if (a == "rr") { S.rs = null; S.rev = new Set() }
+      if (a == "qt") { S.qt = b.dataset.v; S.qz = null } if (a == "qr") S.qz = null;
+      if (a == "qa" && S.qz.p === null) { S.qz.p = id; if (id == S.qz.q[S.qz.n].x.id) S.qz.sc++ }
+      if (a == "qn") { S.qz.n++; S.qz.p = null }
+      render()
+    });
+    document.addEventListener("change", e => { const k = e.target.dataset.f; if (k) { S[k] = e.target.value; if (k == "sort") S.rn = []; S.ci = 0; render() } });
+    $("#q").addEventListener("input", e => { S.q = e.target.value; S.ci = 0; render() });
+    render();
+  </script>
+  <script src="../assets/js/site.js"></script>
+</body>
+
+</html>

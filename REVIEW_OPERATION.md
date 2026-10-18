@@ -8,26 +8,33 @@
 
 ## ディレクトリ構成
 
+サイト全体の構成は [README.md](README.md) を参照。復習HTMLに関係する部分は次のとおり。
+
 ```text
 kaku-ito.github.io/
-├── index.html
-├── wbs/
-│   └── index.html
-├── review/
-│   ├── index.html
-│   ├── 2026-09-13/
-│   │   ├── index.html
-│   │   ├── 913no1.html
-│   │   ├── 913no2.html
-│   │   └── 913no3.html
-│   └── 2026-09-14/
-│       └── 914no1.html
+├── fe/
+│   ├── wbs/
+│   │   └── index.html
+│   └── review/
+│       ├── index.html
+│       ├── 2026-09-13/
+│       │   ├── index.html
+│       │   ├── 913no1.html
+│       │   ├── 913no2.html
+│       │   └── 913no3.html
+│       └── 2026-09-14/
+│           ├── index.html
+│           └── 914no1.html
 └── assets/
     └── js/
+        ├── catalog.js
+        ├── site.js
         └── fe-study-sync.js
 ```
 
 `assets/js/fe-study-sync.js` は、すべての復習HTMLで共用する同期処理とする。
+`assets/js/site.js` は、ページ上部のナビバー（現在地と前後の教材への移動）を表示する。
+`assets/js/catalog.js` は、教材の一覧データ。ここに登録した教材だけが一覧ページとナビバーに表示される。
 
 ## 共通JavaScriptの責務
 
@@ -44,27 +51,33 @@ kaku-ito.github.io/
 
 ## 復習HTML側の変更
 
-各復習HTMLの `</body>` の直前で、共通JavaScriptを1行読み込む。
+各復習HTMLの `</body>` の直前で、共通JavaScriptを2行読み込む。
 
 実際の配置は次の階層になる。
 
 ```text
-review/YYYY-MM-DD/ファイル名.html
+fe/review/YYYY-MM-DD/ファイル名.html
 ```
 
-この階層からルートの `assets/js` までは2階層戻る必要がある。
+この階層からルートの `assets/js` までは3階層戻る必要がある。
 
 ```html
-<script src="../../assets/js/fe-study-sync.js"></script>
+<script src="../../../assets/js/fe-study-sync.js"></script>
+<script src="../../../assets/js/site.js"></script>
 ```
 
 パスの数え方:
 
 ```text
 ファイル自身から見て
-../     → review/
-../../  → ルート（assets/js/ がある場所）
+../        → fe/review/
+../../     → fe/
+../../../  → ルート（assets/js/ がある場所）
 ```
+
+「目次に戻る」などの戻るリンクは教材HTMLに書かない。`site.js` が上部と下部に共通のナビバーを表示する。
+
+`<title>` は `教材名｜基本情報 復習教材` の形式にそろえる（教材名は catalog.js の title と同じにする）。
 
 HTMLを別の階層へ置く場合は、実際のフォルダの深さに応じて `../` の数を調整する。**必ずブラウザで読み込みエラーが出ないことを確認してから確定する。**
 
@@ -172,16 +185,19 @@ WBSと復習HTMLは同じGitHub Pagesドメイン（`https://kaku-ito.github.io/
 
 ```text
 1. 新しい復習HTMLを作成する
-2. review/YYYY-MM-DD/ に配置する
+2. fe/review/YYYY-MM-DD/ に配置する
+   （新しい日付のときは、既存の日付フォルダの index.html をコピーし、
+     <title>・<h1>・data-date の3か所を新しい日付に書き換える）
 3. 問題ごとに固定問題IDを設定する（教材名を含める）
 4. 既存の回答判定関数を開き、実際の変数名を確認する
 5. 判定関数の内側、save() の直後に recordAnswer(...) を1行追加する
-6. HTML末尾で共通JS（../../assets/js/fe-study-sync.js）を読み込む
-7. review/index.html または日付別index.htmlからリンクする
-8. ローカルまたは公開URLで、表示・回答・同期メッセージを確認する
-9. Safariコンソールでエラーが出ていないか確認する
-10. GitHub Pages公開後のURLで、再度1問だけ動作確認する
-11. GitへPushする
+6. HTML末尾で共通JS（../../../assets/js/fe-study-sync.js と site.js）を読み込む
+7. Git Bash で perl tools/darken.pl fe/review/YYYY-MM-DD/ファイル名.html を実行し、色を夜テーマに変換する
+8. assets/js/catalog.js の feReview に教材を1行登録する（一覧ページとナビバーに自動反映）
+9. ローカルまたは公開URLで、表示・回答・同期メッセージを確認する
+10. Safariコンソールでエラーが出ていないか確認する
+11. GitHub Pages公開後のURLで、再度1問だけ動作確認する
+12. GitへPushする
 ```
 
 将来的には、復習HTML生成用テンプレートに次の3点を含める。

@@ -62,13 +62,13 @@
         z-index: 9999;
         max-width: calc(100vw - 24px);
         padding: 8px 12px;
-        border: 1px solid #cbd5e1;
-        border-radius: 8px;
-        background: #ffffff;
-        color: #334155;
+        border: 1px solid rgba(232, 226, 214, 0.22);
+        border-radius: 4px;
+        background: #272726;
+        color: #d7d1c6;
         font: 14px/1.4 -apple-system, BlinkMacSystemFont,
           "Segoe UI", "Noto Sans JP", sans-serif;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
       `;
 
       document.body.appendChild(element);
@@ -76,19 +76,19 @@
 
     const colors = {
       info: {
-        background: "#eff6ff",
-        color: "#1e3a8a",
-        border: "#93c5fd"
+        background: "#272726",
+        color: "#e8e2d6",
+        border: "rgba(232, 226, 214, 0.3)"
       },
       success: {
-        background: "#f0fdf4",
-        color: "#166534",
-        border: "#86efac"
+        background: "#1d241f",
+        color: "#8db094",
+        border: "#3d5a44"
       },
       error: {
-        background: "#fef2f2",
-        color: "#b91c1c",
-        border: "#fca5a5"
+        background: "#2a1f1e",
+        color: "#d19489",
+        border: "#6b4846"
       }
     };
 
@@ -138,7 +138,7 @@
   }
 
   /*
-    review/2026-09-13/913no1.html のURLから
+    fe/review/2026-09-13/913no1.html のURLから
     2026-09-13 を自動取得する。
   */
   function getReviewDate() {
