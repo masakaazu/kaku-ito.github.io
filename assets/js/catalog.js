@@ -11,7 +11,7 @@
     file    資格フォルダ（ap/ や fe/）から見たファイルの場所
     fields  シラバスの中分類番号（下の fields 一覧）。複数の分野にまたがるときは複数書く
     date    （基本情報の日別復習だけ）学習日 "YYYY-MM-DD"
-    qid     （任意）回答記録の問題IDの頭。省略するとファイル名＋"-"（例: "927no5-"）
+    qid     （任意）回答記録の問題IDの頭。省略すると用語集は "ap-20-"、それ以外はファイル名＋"-"（例: "927no5-"）
     pdf     （任意）図解スライドのPDF。資格フォルダから見た場所
 
   試験日は topics の exams に { label, date: "YYYY-MM-DD" } で書く。
@@ -111,6 +111,12 @@ window.SITE_CATALOG = {
       { type: "note", file: "notes/apno13.html", title: "データベースの正規化", desc: "第1〜第3正規形", fields: [9] },
       { type: "note", file: "notes/apno14.html", title: "トランザクションとACID（復旧）", desc: "ログと障害復旧", fields: [9] },
       { type: "note", file: "notes/apno15.html", title: "情報セキュリティのリスク対応", desc: "回避・低減・移転・保有", fields: [11] },
+
+      { type: "terms", file: "terms/17.html", title: "システム戦略 用語まとめ", desc: "EA・BPR・IT投資評価・UML・調達など54語", fields: [17] },
+      { type: "terms", file: "terms/18.html", title: "システム企画 用語集", desc: "システム化計画・要件定義・調達と契約など157語", fields: [18] },
+      { type: "terms", file: "terms/19.html", title: "経営戦略マネジメント 用語集", desc: "PPM・競争戦略・マーケティング・BSCなど206語", fields: [19] },
+      { type: "terms", file: "terms/20.html", title: "技術戦略マネジメント 用語集", desc: "MOT・イノベーション・PoC・知的財産など68語", fields: [20] },
+      { type: "terms", file: "terms/21.html", title: "ビジネスインダストリ 用語一覧", desc: "ビジネスシステム・IoT・電子商取引など291語（用語名のみ）", fields: [21] },
     ],
 
     fe: [
