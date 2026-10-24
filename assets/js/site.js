@@ -302,6 +302,9 @@
         })
         .join("")}</div>`,
 
+    /* 資格ページ：間違えた問題（ログイン後に renderWrong が中身を入れる） */
+    wrong: () => "",
+
     /* 資格ページ：分野マップ */
     "field-map": (site, el) => {
       const topic = el.dataset.topic;
@@ -504,6 +507,7 @@
   const aggregate = (site, rows) => {
     const byItem = {};
     const byField = {};
+    const wrongByItem = {}; // 最後の回答が不正解の問題ID（教材ごと）
     const add = (bucket, key, row) => {
       const s = (bucket[key] ||= { correct: 0, wrong: 0 });
       s.correct += row.correct_count || 0;
@@ -516,10 +520,45 @@
       const direct = id.match(/^([a-z]+)-(\d{1,2})-/);
       const item = prefixed.find((m) => id.startsWith(m.qid));
       if (item) add(byItem, item.path, row);
+      if (item && row.last_answer_correct === false) (wrongByItem[item.path] ||= []).push(row);
       if (direct && site.topics[direct[1]]) add(byField, `${direct[1]}:${Number(direct[2])}`, row);
       else if (item && item.fields.length === 1) add(byField, `${item.topic}:${item.fields[0]}`, row);
     });
-    return { byItem, byField };
+    return { byItem, byField, wrongByItem };
+  };
+
+  /*
+    資格ページの「間違えた問題」。最後の回答が不正解のままの問題がある教材を並べる。
+    用語集は ?mode=wrong で開くと、間違えた用語だけのクイズになる。
+  */
+  const renderWrong = (site, wrongByItem) => {
+    document.querySelectorAll('[data-site-list="wrong"]').forEach((el) => {
+      const topic = el.dataset.topic;
+      const list = itemsOf(site, topic, (m) => wrongByItem[m.path])
+        .map((m) => ({ m, rows: wrongByItem[m.path] }))
+        .sort((a, b) => {
+          const last = (x) => Math.max(...x.rows.map((r) => Date.parse(r.last_answered_at) || 0));
+          return last(b) - last(a);
+        });
+      const section = el.closest("[data-wrong-section]");
+      if (section) section.hidden = false;
+      if (!list.length) {
+        el.innerHTML = `<p class="empty">間違えたままの問題はありません。</p>`;
+        return;
+      }
+      el.innerHTML = `<div class="grid">${list
+        .map(({ m, rows }) =>
+          card({
+            href: url(m.type === "terms" ? `${m.path}?mode=wrong` : m.path),
+            icon: site.types[m.type].label,
+            title: m.title,
+            desc: `間違えたまま ${rows.length}${m.type === "terms" ? "語" : "問"}`,
+            arrow: m.type === "terms" ? "間違えた用語だけ解く →" : "解き直す →",
+            extraClass: "is-wrong",
+          })
+        )
+        .join("")}</div>`;
+    });
   };
 
   const showRate = (el, s) => {
@@ -541,7 +580,8 @@
     updateLoginLinks(user);
     if (!user) return;
     try {
-      const { byItem, byField } = aggregate(site, await sync.fetchAllStats());
+      const { byItem, byField, wrongByItem } = aggregate(site, await sync.fetchAllStats());
+      renderWrong(site, wrongByItem);
       document.querySelectorAll("[data-rate-item]").forEach((el) => byItem[el.dataset.rateItem] && showRate(el, byItem[el.dataset.rateItem]));
       document.querySelectorAll("[data-rate-field]").forEach((el) => byField[el.dataset.rateField] && showRate(el, byField[el.dataset.rateField]));
       document.querySelectorAll("[data-rate-note]").forEach((el) => (el.hidden = false));

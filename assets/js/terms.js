@@ -326,7 +326,12 @@
     shown: false,
   };
 
-  const pool = (doc, sectionTitle) => doc.studyTerms.filter((t) => !sectionTitle || t.section === sectionTitle);
+  /* 前回間違えたままの用語（回答記録から読む。ログインしていなければ空） */
+  const WRONG = "__wrong";
+  const wrongIds = new Set();
+
+  const pool = (doc, range) =>
+    doc.studyTerms.filter((t) => (range === WRONG ? wrongIds.has(termId(t)) : !range || t.section === range));
 
   const renderCard = (doc) => {
     const box = main.querySelector("[data-cards]");
@@ -433,6 +438,9 @@
         const ok = picked === q.term;
         if (ok) quiz.correct += 1;
         else quiz.missed.push(q.term);
+        if (ok) wrongIds.delete(termId(q.term));
+        else wrongIds.add(termId(q.term));
+        updateWrongOption(doc);
 
         box.querySelectorAll("[data-choice]").forEach((b) => {
           const t = choices[Number(b.dataset.choice)];
@@ -473,6 +481,49 @@
     quiz.answered = false;
     quiz.missed = [];
     renderQuiz(doc);
+  };
+
+  /* 範囲の選択肢に「前に間違えた用語」を足す（1語以上あるときだけ） */
+  const updateWrongOption = (doc) => {
+    const count = pool(doc, WRONG).length;
+    main.querySelectorAll("[data-quiz-range], [data-card-range]").forEach((select) => {
+      let option = select.querySelector(`option[value="${WRONG}"]`);
+      if (!count) {
+        if (option && select.value !== WRONG) option.remove();
+        if (option && select.value === WRONG) option.textContent = "前に間違えた用語（0語）";
+        return;
+      }
+      if (!option) {
+        option = document.createElement("option");
+        option.value = WRONG;
+        select.insertBefore(option, select.options[1] || null);
+      }
+      option.textContent = `前に間違えた用語（${count}語）`;
+    });
+  };
+
+  /* 回答記録を読み、最後の回答が不正解の用語を集める */
+  const loadWrong = async (doc) => {
+    if (!window.StudySync) return;
+    try {
+      const rows = await window.StudySync.fetchAllStats();
+      const prefix = `${topic}-${field}-`;
+      rows.forEach((row) => {
+        if (row.question_id.startsWith(prefix) && row.last_answer_correct === false) wrongIds.add(row.question_id);
+      });
+    } catch (error) {
+      console.error("[terms]", error);
+      return;
+    }
+    updateWrongOption(doc);
+
+    // 復習ページから ?mode=wrong で来たら、間違えた用語だけのクイズを始める
+    if (new URLSearchParams(location.search).get("mode") === "wrong" && pool(doc, WRONG).length) {
+      main.querySelector("[data-quiz-range]").value = WRONG;
+      main.querySelector("[data-quiz-count]").value = "0";
+      setMode("quiz");
+      startQuiz(doc);
+    }
   };
 
   /* ---------- 組み立て ---------- */
@@ -572,6 +623,7 @@
     resetCards(doc);
     startQuiz(doc);
     setMode(store.get("mode", "list"));
+    loadWrong(doc);
   };
 
   main.innerHTML = `<p class="terms-empty">用語集を読み込んでいます…</p>`;
