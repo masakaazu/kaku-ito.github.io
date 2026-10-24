@@ -103,11 +103,23 @@ for (const s of sections) {
   flush();
 }
 
-// まとめ：小分類ごとの用語名
-add(`  <h1>まとめ<small>この分野で覚える用語</small></h1>
+// まとめ：小分類ごとの用語名（多いときは複数枚に分ける）
+const rows = sections.map((s) => ({ title: s.title, text: s.terms.map((t) => t.name).join("・") }));
+const pages = [];
+let cur = [], h = 0;
+for (const r of rows) {
+  const rh = Math.ceil(r.text.length / 42) + 0.8;
+  if (cur.length && h + rh > 13) { pages.push(cur); cur = []; h = 0; }
+  cur.push(r); h += rh;
+}
+if (cur.length) pages.push(cur);
+pages.forEach((pg, i) => {
+  const no = pages.length > 1 ? `（${i + 1}/${pages.length}）` : "";
+  add(`  <h1>まとめ${no}<small>この分野で覚える用語</small></h1>
   <table><thead><tr><th style="width:30%">小分類</th><th>用語</th></tr></thead><tbody>
-${sections.map((s) => `<tr><td>${esc(s.title)}</td><td>${s.terms.map((t) => esc(t.name)).join("・")}</td></tr>`).join("\n")}
+${pg.map((r) => `<tr><td>${esc(r.title)}</td><td>${esc(r.text)}</td></tr>`).join("\n")}
   </tbody></table>`);
+});
 
 const extra = `<style>
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
