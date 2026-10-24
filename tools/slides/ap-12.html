@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>応用情報 システム開発技術 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+</style>
+<style>
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
+.term .box { text-align: left; font-size: 15px; padding: 7px 12px; }
+.term dl { margin: 6px 2px 0; }
+.term dd { margin: 0 0 4px; font-size: 12.5px; line-height: 1.5; }
+.term dd.pt { color: #333; }
+.term dd.words { color: var(--navy2); font-size: 11.5px; }
+.term .tag { font-size: 10.5px; padding: 0 5px; }
+.slide .cap + table { margin-bottom: 14px; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">応用情報技術者試験　テクノロジ系　No.12</div>
+  <h1>システム開発技術</h1>
+  <p>システム要件定義・ソフトウェア要件定義・設計・実装・構築・統合・テスト・導入・受入れ支援・保守・廃棄</p>
+<div class="foot"><span>応用情報 システム開発技術</span><span>1</span></div>
+</section>
+
+<section class="slide ">
+  <h1>目次</h1>
+  <ol class="toc">
+    <li>12-1 システム要件定義・ソフトウェア要件定義（4語）</li>
+    <li>12-2 設計（9語）</li>
+    <li>12-3 実装・構築（4語）</li>
+    <li>12-4 統合・テスト（7語）</li>
+    <li>12-5 導入・受入れ支援（3語）</li>
+    <li>12-6 保守・廃棄（4語）</li>
+    <li>まとめ</li>
+  </ol>
+<div class="foot"><span>応用情報 システム開発技術</span><span>2</span></div>
+</section>
+
+<section class="slide ">
+  <h1>12-1 システム要件定義・ソフトウェア要件定義<small>要件</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">機能要件・非機能要件<span>Functional / Non-functional Requirements</span></div><dl><dd>機能要件は何ができるか、非機能要件は性能・信頼性・セキュリティなどどれだけうまくできるか</dd></dl></div><div class="term"><div class="box b1">非機能要求グレード<span>Non-functional Requirements Grade</span></div><dl><dd>非機能要件を、可用性・性能・運用・移行・セキュリティなどの項目で段階的に決めるための表（IPA）</dd></dl></div><div class="term"><div class="box b1">ユースケース<span>Use Case</span></div><dl><dd>利用者（アクタ）とシステムのやり取りを、目的ごとに書いたもの</dd></dl></div><div class="term"><div class="box b1">CRUD分析<span>CRUD Analysis</span></div><dl><dd>処理ごとにデータを Create・Read・Update・Delete のどれで使うかを表にして整理する方法</dd></dl></div></div>
+<div class="foot"><span>応用情報 システム開発技術</span><span>3</span></div>
+</section>
+
+<section class="slide ">
+  <h1>12-2 設計<small>まとめ表</small></h1>
+  <div class="cap">モジュールの強さと結合</div>
+  <table><thead><tr><th>尺度</th><th>最もよい</th><th>最も悪い</th></tr></thead>
+  <tbody><tr><td>モジュール強度（凝集度）</td><td>機能的強度</td><td>暗合的強度</td></tr><tr><td>モジュール結合度</td><td>データ結合</td><td>内容結合</td></tr></tbody></table>
+<div class="foot"><span>応用情報 システム開発技術</span><span>4</span></div>
+</section>
+
+<section class="slide ">
+  <h1>12-2 設計<small>設計の手法</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">DFD<span>でぃーえふでぃー / Data Flow Diagram</span></div><dl><dd>データの流れを、プロセス・データストア・外部実体・データフローで表す図</dd><dd class="pt"><span class="tag">ポイント</span>処理の順番や条件は表さない</dd><dd class="words">Data＝データ／Flow＝流れ／Diagram＝図</dd></dl></div><div class="term"><div class="box b1">UMLの主な図<span>UML Diagrams</span></div><dl><dd>クラス図（構造）、シーケンス図（時間順のやり取り）、コミュニケーション図（オブジェクトのつながり）、アクティビティ図（処理の流れ）、状態マシン図（状態の変化）</dd></dl></div><div class="term"><div class="box b1">汎化・集約<span>Generalization / Aggregation</span></div><dl><dd>汎化は「is-a」の関係（上位クラスと下位クラス）、集約は「part-of」の関係（全体と部分）</dd></dl></div><div class="term"><div class="box b1">多態性<span>ポリモーフィズム / Polymorphism</span></div><dl><dd>同じメッセージでも、受け取るオブジェクトによって違う動きをすること</dd></dl></div><div class="term"><div class="box b1">デザインパターン<span>Design Pattern</span></div><dl><dd>オブジェクト指向設計でよく使う設計の型</dd><dd class="pt"><span class="tag">例</span>Singleton、Observer、Factory Method</dd></dl></div><div class="term"><div class="box b1">モジュール強度<span>Module Strength</span></div><dl><dd>モジュールの中の機能のまとまりの強さ</dd><dd class="pt"><span class="tag">ポイント</span>機能的強度が最も強くよい</dd></dl></div></div>
+<div class="foot"><span>応用情報 システム開発技術</span><span>5</span></div>
+</section>
+
+<section class="slide ">
+  <h1>12-2 設計<small>設計の手法</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">モジュール結合度<span>Module Coupling</span></div><dl><dd>モジュールどうしのつながりの強さ</dd><dd class="pt"><span class="tag">ポイント</span>データ結合が最も弱くよい</dd></dl></div><div class="term"><div class="box b1">決定表<span>デシジョンテーブル / Decision Table</span></div><dl><dd>条件の組合せと、それに対する動作を表で表したもの</dd></dl></div><div class="term"><div class="box b1">レビュー手法<span>Review</span></div><dl><dd>ウォークスルー（作成者が説明）、インスペクション（モデレータが進行し役割を決める）、ラウンドロビン（参加者が順に進行）</dd></dl></div></div>
+<div class="foot"><span>応用情報 システム開発技術</span><span>6</span></div>
+</section>
+
+<section class="slide ">
+  <h1>12-3 実装・構築<small>実装</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">コーディング規約<span>Coding Standards</span></div><dl><dd>プログラムの書き方の決まり</dd><dd class="pt"><span class="tag">ポイント</span>読みやすさと品質をそろえる</dd></dl></div><div class="term"><div class="box b1">静的解析<span>Static Analysis</span></div><dl><dd>プログラムを動かさずにソースコードを調べて問題を見つけること</dd></dl></div><div class="term"><div class="box b1">ペアプログラミング<span>Pair Programming</span></div><dl><dd>2人1組で、1人が書き、もう1人が確かめながら作ること</dd></dl></div><div class="term"><div class="box b1">テスト駆動開発<span>TDD / Test-Driven Development</span></div><dl><dd>先にテストを書き、それに通るようにプログラムを作る進め方</dd></dl></div></div>
+<div class="foot"><span>応用情報 システム開発技術</span><span>7</span></div>
+</section>
+
+<section class="slide ">
+  <h1>12-4 統合・テスト<small>まとめ表</small></h1>
+  <div class="cap">網羅の基準</div>
+  <table><thead><tr><th>基準</th><th>満たす条件</th></tr></thead>
+  <tbody><tr><td>命令網羅</td><td>すべての命令を1回は実行する</td></tr><tr><td>判定条件網羅（分岐網羅）</td><td>すべての分岐で真と偽を通る</td></tr><tr><td>条件網羅</td><td>判定の中の各条件が真と偽をとる</td></tr><tr><td>複数条件網羅</td><td>条件の組合せをすべて試す（最も強い）</td></tr></tbody></table>
+<div class="foot"><span>応用情報 システム開発技術</span><span>8</span></div>
+</section>
+
+<section class="slide ">
+  <h1>12-4 統合・テスト<small>テスト</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">ブラックボックステスト<span>Black Box Test</span></div><dl><dd>内部を見ず、仕様どおりに入出力が合うかを調べる</dd><dd class="pt"><span class="tag">ポイント</span>同値分割・限界値分析・原因結果グラフ</dd></dl></div><div class="term"><div class="box b1">ホワイトボックステスト<span>White Box Test</span></div><dl><dd>内部の構造を見て、命令や分岐を通るか調べる</dd><dd class="pt"><span class="tag">ポイント</span>命令網羅・判定条件網羅・条件網羅・複数条件網羅</dd></dl></div><div class="term"><div class="box b1">限界値分析<span>Boundary Value Analysis</span></div><dl><dd>有効な範囲の境目と、そのすぐ外の値をテストする方法</dd></dl></div><div class="term"><div class="box b1">スタブ・ドライバ<span>Stub / Driver</span></div><dl><dd>スタブは下位モジュールの代わり（トップダウンテスト）、ドライバは上位モジュールの代わり（ボトムアップテスト）</dd></dl></div><div class="term"><div class="box b1">回帰テスト<span>Regression Test</span></div><dl><dd>修正によってほかの部分に不具合が出ていないかを確かめるテスト</dd></dl></div><div class="term"><div class="box b1">信頼度成長曲線<span>ゴンペルツ曲線 / Reliability Growth Curve</span></div><dl><dd>テストの時間と発見したバグの累計の関係を表すS字の曲線</dd><dd class="pt"><span class="tag">ポイント</span>増え方が止まれば品質が安定してきたとみなす</dd></dl></div></div>
+<div class="foot"><span>応用情報 システム開発技術</span><span>9</span></div>
+</section>
+
+<section class="slide ">
+  <h1>12-4 統合・テスト<small>テスト</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">エラー埋込み法<span>Error Seeding</span></div><dl><dd>わざと既知のエラーを埋め込み、その見つかった割合から残っているバグの数を推定する方法</dd></dl></div></div>
+<div class="foot"><span>応用情報 システム開発技術</span><span>10</span></div>
+</section>
+
+<section class="slide ">
+  <h1>12-5 導入・受入れ支援<small>導入</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">受入れテスト<span>Acceptance Test</span></div><dl><dd>発注者が、要件を満たしているかを確かめて受け入れるテスト</dd></dl></div><div class="term"><div class="box b1">移行方式<span>Migration</span></div><dl><dd>一斉移行（一度に切り替え）、段階移行（少しずつ）、並行運用（新旧を同時に動かす）、パイロット移行（一部の部門で先に試す）</dd></dl></div><div class="term"><div class="box b1">利用者マニュアル・教育<span>User Manual / Training</span></div><dl><dd>新しいシステムの使い方を文書と研修で伝えること</dd></dl></div></div>
+<div class="foot"><span>応用情報 システム開発技術</span><span>11</span></div>
+</section>
+
+<section class="slide ">
+  <h1>12-6 保守・廃棄<small>保守</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">保守の種類<span>Types of Maintenance</span></div><dl><dd>是正保守（不具合を直す）、予防保守（問題が起きる前に直す）、適応保守（環境の変化に合わせる）、完全化保守（性能や保守性を上げる）</dd></dl></div><div class="term"><div class="box b1">リバースエンジニアリング<span>Reverse Engineering</span></div><dl><dd>既存のプログラムから仕様や設計を明らかにすること</dd></dl></div><div class="term"><div class="box b1">リファクタリング<span>Refactoring</span></div><dl><dd>外から見た動作は変えずに、中の構造を整理すること</dd></dl></div><div class="term"><div class="box b1">システムの廃棄<span>Disposal</span></div><dl><dd>使わなくなったシステムを止め、データを確実に消去して処分すること</dd></dl></div></div>
+<div class="foot"><span>応用情報 システム開発技術</span><span>12</span></div>
+</section>
+
+<section class="slide ">
+  <h1>まとめ<small>この分野で覚える用語</small></h1>
+  <table><thead><tr><th style="width:30%">小分類</th><th>用語</th></tr></thead><tbody>
+<tr><td>12-1 システム要件定義・ソフトウェア要件定義</td><td>機能要件・非機能要件・非機能要求グレード・ユースケース・CRUD分析</td></tr>
+<tr><td>12-2 設計</td><td>DFD・UMLの主な図・汎化・集約・多態性・デザインパターン・モジュール強度・モジュール結合度・決定表・レビュー手法</td></tr>
+<tr><td>12-3 実装・構築</td><td>コーディング規約・静的解析・ペアプログラミング・テスト駆動開発</td></tr>
+<tr><td>12-4 統合・テスト</td><td>ブラックボックステスト・ホワイトボックステスト・限界値分析・スタブ・ドライバ・回帰テスト・信頼度成長曲線・エラー埋込み法</td></tr>
+<tr><td>12-5 導入・受入れ支援</td><td>受入れテスト・移行方式・利用者マニュアル・教育</td></tr>
+<tr><td>12-6 保守・廃棄</td><td>保守の種類・リバースエンジニアリング・リファクタリング・システムの廃棄</td></tr>
+  </tbody></table>
+<div class="foot"><span>応用情報 システム開発技術</span><span>13</span></div>
+</section>
+</body>
+</html>

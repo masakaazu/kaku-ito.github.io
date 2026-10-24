@@ -23,7 +23,7 @@ kaku-ito.github.io/
 │   ├── index.html          分野マップ
 │   ├── field.html          中分類ページ（field.html?f=番号）
 │   ├── notes/              ノート（apno1.html〜）
-│   └── terms/              用語集（分野番号.md が中身、同名の .html が表示用）
+│   └── terms/              用語集（01〜23。分野番号.md が中身、同名の .html が表示用、.pdf が図解）
 ├── fe/                     基本情報技術者試験（受験済み）
 │   ├── index.html          分野マップ
 │   ├── field.html          中分類ページ
@@ -102,6 +102,8 @@ md は次のどちらの書き方でも読める（混ぜてもよい）。
 - 最後に `## 問題演習` を置くと、手作りの4択問題もクイズに出せる。`### 小分類名`（上の ## と同じ名前）の下に `#### 問 問題ID`、`- 問：` `- ア：`〜`- エ：` `- 正解：イ` `- 解説：` を書く。回答は問題IDのまま記録する
 - ほかのページから問題を移したときは、`catalog.js` の `ids` に元の問題IDを書くと、これまでの回答記録が新しいページに引き継がれる（例：`fe/terms/10.md`）
 - 図解スライドは `tools/slides/` のHTMLから `node tools/slides/topdf.js tools/slides/fe-10.html fe/terms/10.pdf` でPDFにできる
+- md から図解スライドを自動で作るときは `node tools/slides/md2slides.js ap/terms/12.md tools/slides/ap-12.html` のあと topdf.js でPDFにする
+- 応用情報の 01〜16・21〜23 の md は、Claudeが作った仮版（出典の行に「仮版」と書いてある）。自分の md や PDF ができたら、その分野の .md・.pdf を差し替える（問題演習の節は残してもよい）
 - 「意味」がない用語（名前だけの一覧）は札の形で並び、カード・クイズには出ない
 - `⚠重複` を付けた用語は一覧にだけ出す
 - 図解スライドのPDFは `data-pdf="ファイル名.pdf"` を `<main>` に付けるとボタンが出る

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>応用情報 ソフトウェア開発管理技術 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+</style>
+<style>
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
+.term .box { text-align: left; font-size: 15px; padding: 7px 12px; }
+.term dl { margin: 6px 2px 0; }
+.term dd { margin: 0 0 4px; font-size: 12.5px; line-height: 1.5; }
+.term dd.pt { color: #333; }
+.term dd.words { color: var(--navy2); font-size: 11.5px; }
+.term .tag { font-size: 10.5px; padding: 0 5px; }
+.slide .cap + table { margin-bottom: 14px; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">応用情報技術者試験　テクノロジ系　No.13</div>
+  <h1>ソフトウェア開発管理技術</h1>
+  <p>開発プロセス・手法・知的財産適用管理・開発環境管理・構成管理・変更管理</p>
+<div class="foot"><span>応用情報 ソフトウェア開発管理技術</span><span>1</span></div>
+</section>
+
+<section class="slide ">
+  <h1>目次</h1>
+  <ol class="toc">
+    <li>13-1 開発プロセス・手法（12語）</li>
+    <li>13-2 知的財産適用管理（3語）</li>
+    <li>13-3 開発環境管理（2語）</li>
+    <li>13-4 構成管理・変更管理（3語）</li>
+    <li>まとめ</li>
+  </ol>
+<div class="foot"><span>応用情報 ソフトウェア開発管理技術</span><span>2</span></div>
+</section>
+
+<section class="slide ">
+  <h1>13-1 開発プロセス・手法<small>まとめ表</small></h1>
+  <div class="cap">アジャイルの主な手法</div>
+  <table><thead><tr><th>手法</th><th>特徴</th></tr></thead>
+  <tbody><tr><td>スクラム</td><td>スプリントを繰り返す。役割はプロダクトオーナー・スクラムマスター・開発者</td></tr><tr><td>XP</td><td>ペアプログラミング・テスト駆動開発・リファクタリング・継続的インテグレーション</td></tr><tr><td>かんばん</td><td>作業を見える化し、同時に進める作業の量を制限する</td></tr></tbody></table>
+<div class="foot"><span>応用情報 ソフトウェア開発管理技術</span><span>3</span></div>
+</section>
+
+<section class="slide ">
+  <h1>13-1 開発プロセス・手法<small>開発モデルと手法</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">ウォーターフォールモデル<span>Waterfall Model</span></div><dl><dd>工程を順番に進め、原則として後戻りしないモデル</dd></dl></div><div class="term"><div class="box b1">プロトタイピングモデル<span>Prototyping Model</span></div><dl><dd>試作品を作って利用者に確かめ、要件を固めるモデル</dd></dl></div><div class="term"><div class="box b1">スパイラルモデル<span>Spiral Model</span></div><dl><dd>設計・開発・評価を繰り返して、少しずつ大きくするモデル</dd><dd class="pt"><span class="tag">ポイント</span>リスク分析を各周回で行う</dd></dl></div><div class="term"><div class="box b1">アジャイル開発<span>Agile Development</span></div><dl><dd>短い期間で動くものを作り、変化に合わせて進める開発</dd><dd class="pt"><span class="tag">ポイント</span>アジャイルソフトウェア開発宣言の4つの価値</dd></dl></div><div class="term"><div class="box b1">スクラム<span>Scrum</span></div><dl><dd>スプリント（1〜4週間）を繰り返して進めるアジャイルの枠組み</dd><dd class="pt"><span class="tag">ポイント</span>プロダクトバックログ・スプリントレビュー・レトロスペクティブ</dd></dl></div><div class="term"><div class="box b1">ユーザーストーリー<span>User Story</span></div><dl><dd>利用者から見た要求を「〜として、〜したい、なぜなら〜」の形で短く書いたもの</dd></dl></div></div>
+<div class="foot"><span>応用情報 ソフトウェア開発管理技術</span><span>4</span></div>
+</section>
+
+<section class="slide ">
+  <h1>13-1 開発プロセス・手法<small>開発モデルと手法</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">ベロシティ<span>Velocity</span></div><dl><dd>1回のスプリントで終えた作業の量</dd><dd class="pt"><span class="tag">ポイント</span>次の計画に使う</dd></dl></div><div class="term"><div class="box b1">DevOps<span>でぶおぷす / Development and Operations</span></div><dl><dd>開発と運用が協力し、速く確実にリリースする考え方</dd><dd class="words">Development＝開発／Operations＝運用</dd></dl></div><div class="term"><div class="box b1">CI/CD<span>Continuous Integration / Continuous Delivery</span></div><dl><dd>変更を頻繁に統合して自動でテストし、いつでもリリースできる状態に保つこと</dd><dd class="words">Continuous＝継続的な／Integration＝統合／Delivery＝提供</dd></dl></div><div class="term"><div class="box b1">共通フレーム<span>SLCP-JCF</span></div><dl><dd>ソフトウェアの開発から廃棄までの作業と用語の意味をそろえた枠組み</dd></dl></div><div class="term"><div class="box b1">CMMI<span>しーえむえむあい / Capability Maturity Model Integration</span></div><dl><dd>組織の開発プロセスの成熟度を5段階で評価するモデル</dd><dd class="words">Capability＝能力／Maturity＝成熟度／Model＝模型／Integration＝統合</dd></dl></div><div class="term"><div class="box b1">マッシュアップ<span>Mashup</span></div><dl><dd>公開されている複数のWeb APIを組み合わせて、新しいサービスを作ること</dd></dl></div></div>
+<div class="foot"><span>応用情報 ソフトウェア開発管理技術</span><span>5</span></div>
+</section>
+
+<section class="slide ">
+  <h1>13-2 知的財産適用管理<small>権利の管理</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">ソフトウェアの著作権<span>Copyright of Software</span></div><dl><dd>プログラムは著作物として守られる</dd><dd class="pt"><span class="tag">ポイント</span>アルゴリズムやプログラム言語、規約は守られない</dd></dl></div><div class="term"><div class="box b1">特許とソフトウェア<span>Software Patent</span></div><dl><dd>ソフトウェアのアイデアも、条件を満たせば特許になる</dd></dl></div><div class="term"><div class="box b1">ライセンス管理<span>License Management</span></div><dl><dd>使っているソフトウェアのライセンスの数や条件を管理すること</dd><dd class="pt"><span class="tag">ポイント</span>OSSのライセンス条件も確かめる</dd></dl></div></div>
+<div class="foot"><span>応用情報 ソフトウェア開発管理技術</span><span>6</span></div>
+</section>
+
+<section class="slide ">
+  <h1>13-3 開発環境管理<small>環境</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">開発環境・ステージング環境・本番環境<span>Development / Staging / Production</span></div><dl><dd>開発するための環境、本番とほぼ同じ形で最後に確かめる環境、実際に使う環境</dd></dl></div><div class="term"><div class="box b1">IaC<span>あいえーしー / Infrastructure as Code</span></div><dl><dd>サーバなどの設定をコードで書き、自動で同じ環境を作れるようにすること</dd><dd class="words">Infrastructure＝基盤／as Code＝コードとして</dd></dl></div></div>
+<div class="foot"><span>応用情報 ソフトウェア開発管理技術</span><span>7</span></div>
+</section>
+
+<section class="slide ">
+  <h1>13-4 構成管理・変更管理<small>管理</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">構成管理<span>Configuration Management</span></div><dl><dd>成果物のバージョンと、その組合せ（ベースライン）を管理すること</dd></dl></div><div class="term"><div class="box b1">バージョン管理システム<span>Version Control System</span></div><dl><dd>ファイルの変更の履歴を記録するしくみ</dd><dd class="pt"><span class="tag">例</span>Git。ブランチで並行して開発し、マージで統合する</dd></dl></div><div class="term"><div class="box b1">変更管理<span>Change Management</span></div><dl><dd>変更の依頼・影響の評価・承認・実施を管理する手順</dd></dl></div></div>
+<div class="foot"><span>応用情報 ソフトウェア開発管理技術</span><span>8</span></div>
+</section>
+
+<section class="slide ">
+  <h1>まとめ<small>この分野で覚える用語</small></h1>
+  <table><thead><tr><th style="width:30%">小分類</th><th>用語</th></tr></thead><tbody>
+<tr><td>13-1 開発プロセス・手法</td><td>ウォーターフォールモデル・プロトタイピングモデル・スパイラルモデル・アジャイル開発・スクラム・ユーザーストーリー・ベロシティ・DevOps・CI/CD・共通フレーム・CMMI・マッシュアップ</td></tr>
+<tr><td>13-2 知的財産適用管理</td><td>ソフトウェアの著作権・特許とソフトウェア・ライセンス管理</td></tr>
+<tr><td>13-3 開発環境管理</td><td>開発環境・ステージング環境・本番環境・IaC</td></tr>
+<tr><td>13-4 構成管理・変更管理</td><td>構成管理・バージョン管理システム・変更管理</td></tr>
+  </tbody></table>
+<div class="foot"><span>応用情報 ソフトウェア開発管理技術</span><span>9</span></div>
+</section>
+</body>
+</html>

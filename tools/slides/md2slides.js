@@ -1,6 +1,6 @@
 /*
   用語集の md から、図解スライド（HTML）を自動で作る。
-  使い方: node tools/slides/md2slides.js fe/terms/12.md tools/slides/fe-12.html
+  使い方: node tools/slides/md2slides.js fe/terms/12.md tools/slides/fe-12.html（応用情報は ap/terms/NN.md → ap-NN.html）
   そのあと topdf.js で PDF にする。見た目は fe-10.html と同じ（白地に紺の箱）。
   構成: 表紙 → 目次 → 小分類ごとに「まとめ表」と「用語の箱（1枚に最大6語）」 → まとめ
 */
@@ -15,9 +15,10 @@ const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, 
 const inline = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
 
 // ---- md を読む ----
-const head = md.match(/^# .*#(\d+)\s+(.+?)（/m);
-const no = Number(head[1]);
-const name = head[2].trim();
+const head = md.match(/^# (.*?)用語集.*#(\d+)\s+(.+?)（/m);
+const exam = /応用情報/.test(head[1]) ? "応用情報" : "基本情報";
+const no = Number(head[2]);
+const name = head[3].trim();
 const sections = [];
 let sec = null, theme = "", term = null, table = null, caption = "";
 for (const line of md.split("\n")) {
@@ -47,10 +48,10 @@ for (const line of md.split("\n")) {
 // ---- スライドを組む ----
 const label = no <= 13 ? "テクノロジ系" : no <= 16 ? "マネジメント系" : "ストラテジ系";
 const slides = [];
-const foot = () => `<div class="foot"><span>基本情報 ${esc(name)}</span><span>${slides.length + 1}</span></div>`;
+const foot = () => `<div class="foot"><span>${exam} ${esc(name)}</span><span>${slides.length + 1}</span></div>`;
 const add = (body, cls = "") => slides.push(`<section class="slide ${cls}">\n${body}\n${foot()}\n</section>`);
 
-add(`  <div class="k">基本情報技術者試験　${label}　No.${no}</div>
+add(`  <div class="k">${exam}技術者試験　${label}　No.${no}</div>
   <h1>${esc(name)}</h1>
   <p>${sections.map((s) => esc(s.title.replace(/^\d+-\d+\s*/, ""))).join("・")}</p>`, "title");
 
@@ -102,11 +103,23 @@ for (const s of sections) {
   flush();
 }
 
-// まとめ：小分類ごとの用語名
-add(`  <h1>まとめ<small>この分野で覚える用語</small></h1>
+// まとめ：小分類ごとの用語名（多いときは複数枚に分ける）
+const rows = sections.map((s) => ({ title: s.title, text: s.terms.map((t) => t.name).join("・") }));
+const pages = [];
+let cur = [], h = 0;
+for (const r of rows) {
+  const rh = Math.ceil(r.text.length / 42) + 0.8;
+  if (cur.length && h + rh > 13) { pages.push(cur); cur = []; h = 0; }
+  cur.push(r); h += rh;
+}
+if (cur.length) pages.push(cur);
+pages.forEach((pg, i) => {
+  const no = pages.length > 1 ? `（${i + 1}/${pages.length}）` : "";
+  add(`  <h1>まとめ${no}<small>この分野で覚える用語</small></h1>
   <table><thead><tr><th style="width:30%">小分類</th><th>用語</th></tr></thead><tbody>
-${sections.map((s) => `<tr><td>${esc(s.title)}</td><td>${s.terms.map((t) => esc(t.name)).join("・")}</td></tr>`).join("\n")}
+${pg.map((r) => `<tr><td>${esc(r.title)}</td><td>${esc(r.text)}</td></tr>`).join("\n")}
   </tbody></table>`);
+});
 
 const extra = `<style>
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
@@ -123,7 +136,7 @@ fs.writeFileSync(out, `<!doctype html>
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<title>基本情報 ${esc(name)} 図解</title>
+<title>${exam} ${esc(name)} 図解</title>
 ${style}
 ${extra}
 </head>
