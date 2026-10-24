@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1e1f21">
+  <title>ログイン｜資格学習支援サイト</title>
+  <link rel="stylesheet" href="./assets/css/site.css">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+</head>
+
+<body>
+  <main>
+    <header class="hero">
+      <span class="hero-label">Account</span>
+      <h1>ログイン</h1>
+      <p>ログインすると、問題演習の正答・誤答がiPhoneとMacで共有され、分野マップに正答率が出る。</p>
+    </header>
+
+    <section class="section">
+      <!-- 確認中 -->
+      <div class="form-card" id="checking">
+        <p class="form-message">ログイン状態を確認しています…</p>
+      </div>
+
+      <!-- 未ログイン -->
+      <form class="form-card" id="login-form" hidden>
+        <label for="email">メールアドレス</label>
+        <input id="email" type="email" autocomplete="email" required>
+
+        <label for="password">パスワード</label>
+        <input id="password" type="password" autocomplete="current-password" required>
+
+        <div class="form-actions">
+          <button class="button" type="submit">ログイン</button>
+        </div>
+        <p class="form-message" id="login-message" role="status"></p>
+      </form>
+
+      <!-- ログイン中 -->
+      <div class="form-card" id="account" hidden>
+        <p class="form-message is-ok">ログイン中：<span id="account-email"></span></p>
+        <div class="form-actions">
+          <a class="button" href="./ap/index.html">応用情報の分野マップへ</a>
+          <button class="button button-ghost" type="button" id="logout">ログアウト</button>
+        </div>
+        <p class="form-message" id="account-message" role="status"></p>
+      </div>
+    </section>
+
+    <footer>資格学習支援サイト</footer>
+  </main>
+
+  <script src="./assets/js/study-sync.js" data-quiet></script>
+  <script src="./assets/js/catalog.js"></script>
+  <script src="./assets/js/site.js"></script>
+  <script>
+    (() => {
+      const $ = (id) => document.getElementById(id);
+      const sync = window.StudySync;
+
+      const show = (user) => {
+        $("checking").hidden = true;
+        $("login-form").hidden = Boolean(user);
+        $("account").hidden = !user;
+        $("account-email").textContent = user ? user.email : "";
+      };
+
+      sync.ready.then(show);
+      sync.onChange(show);
+
+      $("login-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const message = $("login-message");
+        const button = event.target.querySelector("button");
+        message.className = "form-message";
+        message.textContent = "ログインしています…";
+        button.disabled = true;
+        try {
+          await sync.signIn($("email").value.trim(), $("password").value);
+          $("password").value = "";
+          message.textContent = "";
+        } catch (error) {
+          message.className = "form-message is-error";
+          message.textContent = `ログインできませんでした：${error.message}`;
+        } finally {
+          button.disabled = false;
+        }
+      });
+
+      $("logout").addEventListener("click", async () => {
+        try {
+          await sync.signOut();
+        } catch (error) {
+          const message = $("account-message");
+          message.className = "form-message is-error";
+          message.textContent = `ログアウトできませんでした：${error.message}`;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
