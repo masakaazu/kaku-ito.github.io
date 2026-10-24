@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<title>応用情報 ソフトウェア 図解</title>
+<title>応用情報 #5 ソフトウェア 図解</title>
 <style>
 @page { size: 960px 540px; margin: 0; }
 :root {
@@ -48,99 +48,909 @@ ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; colu
 .flow .box { flex: 1; }
 .flow .to { color: var(--navy3); font-size: 20px; }
 svg text { font-family: "IPAPGothic", sans-serif; }
-</style>
-<style>
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
-.term .box { text-align: left; font-size: 15px; padding: 7px 12px; }
-.term dl { margin: 6px 2px 0; }
-.term dd { margin: 0 0 4px; font-size: 12.5px; line-height: 1.5; }
-.term dd.pt { color: #333; }
-.term dd.words { color: var(--navy2); font-size: 11.5px; }
-.term .tag { font-size: 10.5px; padding: 0 5px; }
-.slide .cap + table { margin-bottom: 14px; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
 </style>
 </head>
 <body>
+
+<!-- 表紙 -->
 <section class="slide title">
-  <div class="k">応用情報技術者試験　テクノロジ系　No.5</div>
+  <div class="k">応用情報技術者試験　テクノロジ系　#5</div>
   <h1>ソフトウェア</h1>
-  <p>オペレーティングシステム・ミドルウェア・ファイルシステム・開発ツール・オープンソースソフトウェア</p>
-<div class="foot"><span>応用情報 ソフトウェア</span><span>1</span></div>
+  <p>用語集まとめ ― 過去問10回分（令和3〜7年度）で出たところを中心に</p>
+  <div class="icons"><img src="img/soft/gear_flat.svg" alt=""><img src="img/soft/vertical_traffic_light_flat.svg" alt=""><img src="img/soft/card_file_box_flat.svg" alt=""><img src="img/soft/open_file_folder_flat.svg" alt=""><img src="img/soft/hammer_and_wrench_flat.svg" alt=""><img src="img/soft/penguin_flat.svg" alt=""></div>
 </section>
 
-<section class="slide ">
-  <h1>目次</h1>
-  <ol class="toc">
-    <li>5-1 オペレーティングシステム（17語）</li>
-    <li>5-2 ミドルウェア（3語）</li>
-    <li>5-3 ファイルシステム（3語）</li>
-    <li>5-4 開発ツール（6語）</li>
-    <li>5-5 オープンソースソフトウェア（3語）</li>
-    <li>まとめ</li>
-  </ol>
-<div class="foot"><span>応用情報 ソフトウェア</span><span>2</span></div>
+<!-- 全体像 -->
+<section class="slide">
+  <h1>全体像<small>シラバスの5つの小分類を、5章に分けて読む</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 OSの種類と構成<span>基本ソフトウェア・カーネル・動作モード・ジョブ管理・スプーリング・起動・アクセス制御</span></div>
+      <div class="box b2">2 タスク管理<span>3つの状態・プリエンプション・スケジューリング・多重度・排他制御・デッドロック</span></div>
+      <div class="box b2">3 記憶管理<span>区画方式・断片化・仮想記憶・ページフォールト・ページ置換え（FIFO・LRU）</span></div>
+      <div class="box b3">4 ミドルウェアとファイルシステム<span>TPモニター・API・ライブラリ・シェル・パス・リンク・バックアップ</span></div>
+      <div class="box b4">5 開発ツールとOSS<span>コンパイラの処理・リンカとローダ・デバッグの道具・Git・ライセンス・用途別のOSS</span></div>
+    </div>
+    <div>
+      <div class="cap">午前での出方</div>
+      <table>
+        <tr><td>問題数</td><td>毎回 <b>問16〜問20 あたりで4問前後</b>（R7春は問14〜17）。10回で42問</td></tr>
+        <tr><td>同じ問題の再出題</td><td>5組。プリエンプションの遷移先・多重度の計算・デッドロックの防止・スラッシング・Git。I2Cのセマフォは選択肢を1つ変えて再出題</td></tr>
+        <tr><td>問題の型</td><td><b>時間の線や表を書いて数える計算が約3分の1</b>（ターンアラウンド・多重度・ページ置換え）。残りは用語の入れ替えを見抜く問題</td></tr>
+      </table>
+      <div class="point"><b>この資料の読み方：</b>1枚に1つのメッセージ。計算の問題は、図と同じ線や表を自分で書けば解けるようにしてある。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>5-1 オペレーティングシステム<small>まとめ表</small></h1>
-  <div class="cap">ページ置換えのアルゴリズム</div>
-  <table><thead><tr><th>方式</th><th>追い出すページ</th></tr></thead>
-  <tbody><tr><td>FIFO</td><td>いちばん先に読み込んだページ</td></tr><tr><td>LRU</td><td>いちばん長く使われていないページ</td></tr><tr><td>LFU</td><td>使われた回数がいちばん少ないページ</td></tr></tbody></table>
-<div class="foot"><span>応用情報 ソフトウェア</span><span>3</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/soft/bar_chart_flat.svg" alt="">4分の1は仮想記憶。ページの出し入れを表に書ければ取れる</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="440" height="290" viewBox="0 0 440 290"><text x="212" y="21" font-size="12" text-anchor="end" fill="#1d1d1f">ページ置換え・仮想記憶</text><rect x="222" y="9" width="180" height="17" rx="3" fill="#1f3a68"/><text x="408" y="22" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">10問</text><text x="212" y="49" font-size="12" text-anchor="end" fill="#1d1d1f">排他制御・デッドロック・スレッド</text><rect x="222" y="37" width="108" height="17" rx="3" fill="#1f3a68"/><text x="336" y="50" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">6問</text><text x="212" y="77" font-size="12" text-anchor="end" fill="#1d1d1f">多重度・ジョブの時間計算</text><rect x="222" y="65" width="90" height="17" rx="3" fill="#1f3a68"/><text x="318" y="78" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">5問</text><text x="212" y="105" font-size="12" text-anchor="end" fill="#1d1d1f">開発ツール・コンパイラ</text><rect x="222" y="93" width="90" height="17" rx="3" fill="#1f3a68"/><text x="318" y="106" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">5問</text><text x="212" y="133" font-size="12" text-anchor="end" fill="#1d1d1f">タスクの状態とプリエンプション</text><rect x="222" y="121" width="72" height="17" rx="3" fill="#5b80bf"/><text x="300" y="134" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">4問</text><text x="212" y="161" font-size="12" text-anchor="end" fill="#1d1d1f">OSS（ライセンス・用途）</text><rect x="222" y="149" width="72" height="17" rx="3" fill="#5b80bf"/><text x="300" y="162" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">4問</text><text x="212" y="189" font-size="12" text-anchor="end" fill="#1d1d1f">スケジューリング方式</text><rect x="222" y="177" width="54" height="17" rx="3" fill="#5b80bf"/><text x="282" y="190" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">3問</text><text x="212" y="217" font-size="12" text-anchor="end" fill="#1d1d1f">ページフォールトの計算</text><rect x="222" y="205" width="36" height="17" rx="3" fill="#5b80bf"/><text x="264" y="218" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">2問</text><text x="212" y="245" font-size="12" text-anchor="end" fill="#1d1d1f">実記憶・断片化</text><rect x="222" y="233" width="36" height="17" rx="3" fill="#5b80bf"/><text x="264" y="246" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">2問</text><text x="212" y="273" font-size="12" text-anchor="end" fill="#1d1d1f">カーネル</text><rect x="222" y="261" width="18" height="17" rx="3" fill="#5b80bf"/><text x="246" y="274" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">1問</text></svg>
+      <div style="font-size:11px;color:#6e6e73">令和3年度春期〜令和7年度秋期の42問を、論点ごとに数えた（同じ問題も1問ずつ数えた）</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:34%">論点</th><th>押さえること</th></tr>
+        <tr><td>ページ置換え</td><td>FIFO＝読み込んだ時刻、LRU＝最後に使った時刻、LFU＝回数。<b>見る列が違う</b></td></tr>
+        <tr><td>仮想記憶の事象</td><td>ページフォールト＝ページイン ≧ ページアウト。急に遅くなるのはスラッシング</td></tr>
+        <tr><td>排他制御</td><td>共有資源はセマフォ。デッドロックは<b>資源を取る順番をそろえて</b>防ぐ</td></tr>
+        <tr><td>時間の計算</td><td>横軸に時間を取った線（ガントチャート）を書き、終了時刻－到着時刻</td></tr>
+        <tr><td>状態遷移</td><td>横取りされたら<b>実行可能状態</b>。待ち状態ではない</td></tr>
+        <tr><td>開発ツール・OSS</td><td>道具の名前と役目の組合せ。GPL→LGPL→MPL→BSDの順に義務が軽い</td></tr>
+      </table>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>5-1 オペレーティングシステム<small>タスクの管理</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">タスク<span>プロセス）の状態（Task States</span></div><dl><dd>実行状態・実行可能状態・待ち状態の3つ</dd><dd class="pt"><span class="tag">ポイント</span>入出力を待つと待ち状態、終わると実行可能状態に戻る</dd></dl></div><div class="term"><div class="box b1">ディスパッチ<span>Dispatch</span></div><dl><dd>実行可能状態のタスクに、CPUを割り当てること</dd></dl></div><div class="term"><div class="box b1">スケジューリング方式<span>Scheduling</span></div><dl><dd>どのタスクにCPUを渡すかの決め方</dd><dd class="pt"><span class="tag">ポイント</span>到着順・優先度順・ラウンドロビン（一定時間ずつ順番に）など</dd></dl></div><div class="term"><div class="box b1">ラウンドロビン<span>Round Robin</span></div><dl><dd>決まった時間（タイムクウォンタム）ずつ順番にCPUを割り当てる方式</dd></dl></div><div class="term"><div class="box b1">プリエンプション<span>Preemption</span></div><dl><dd>実行中のタスクからCPUを取り上げ、別のタスクに渡すこと</dd></dl></div><div class="term"><div class="box b1">スレッド<span>Thread</span></div><dl><dd>プロセスの中の処理の流れの単位</dd><dd class="pt"><span class="tag">ポイント</span>同じプロセスのスレッドはメモリを共有する</dd></dl></div></div>
-<div class="foot"><span>応用情報 ソフトウェア</span><span>4</span></div>
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/gear.png" alt=""><img src="img/irasutoya/pc_work.png" alt=""><img src="img/irasutoya/printer.png" alt=""><img src="img/irasutoya/padlock.png" alt=""></div>
+  <div class="k">第1章</div>
+  <h1>OSの種類と構成</h1>
+  <p>ソフトウェアの体系 ／ カーネル ／ CPUの動作モード ／ ジョブ管理 ／ スプーリング ／ 起動 ／ 利用者とアクセス制御</p>
 </section>
 
-<section class="slide ">
-  <h1>5-1 オペレーティングシステム<small>タスクの管理・記憶の管理</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">セマフォ<span>Semaphore</span></div><dl><dd>共有する資源を使えるかを、数（カウンタ）で管理するしくみ</dd><dd class="pt"><span class="tag">ポイント</span>P操作で減らし、V操作で増やす</dd></dl></div><div class="term"><div class="box b1">デッドロック<span>Deadlock</span></div><dl><dd>複数のタスクがお互いの持つ資源を待ち合って、どれも進めなくなる状態</dd><dd class="pt"><span class="tag">ポイント</span>資源を取る順番をそろえると防げる</dd></dl></div><div class="term"><div class="box b1">仮想記憶<span>Virtual Memory</span></div><dl><dd>補助記憶を使って、主記憶より大きな記憶空間があるように見せるしくみ</dd></dl></div><div class="term"><div class="box b1">ページング方式<span>Paging</span></div><dl><dd>仮想記憶を決まった大きさのページに分けて管理する方式</dd><dd class="pt"><span class="tag">ポイント</span>主記憶にないページを使うとページフォールトが起きる</dd></dl></div><div class="term"><div class="box b1">ページフォールト<span>Page Fault</span></div><dl><dd>必要なページが主記憶にないときに起きる割込み</dd></dl></div><div class="term"><div class="box b1">スラッシング<span>Thrashing</span></div><dl><dd>ページの入れ替えが多くなりすぎて、処理がほとんど進まなくなる状態</dd><dd class="pt"><span class="tag">ポイント</span>主記憶が足りないと起きる</dd></dl></div></div>
-<div class="foot"><span>応用情報 ソフトウェア</span><span>5</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/soft/gear_flat.svg" alt="">OSはハードウェアとアプリの間で、資源を配る係。中核がカーネル</h1>
+  <div class="cols">
+    <div>
+      <div class="stack">
+        <div class="box b5">応用ソフトウェア<span>販売管理・表計算・Webブラウザ</span></div>
+        <div class="box b4">ミドルウェア<span>DBMS・TPモニター・Webサーバ・運用管理ツール（第4章）</span></div>
+        <div class="box b2">OS（基本ソフトウェア）<span>制御プログラム（中心がカーネル）＋言語プロセッサ＋サービスプログラム</span></div>
+        <div class="box b1">ハードウェア<span>CPU・主記憶・ディスク・入出力装置</span></div>
+      </div>
+      <div class="point">OSとミドルウェアをまとめて<b>システムソフトウェア</b>と呼ぶ。サービスプログラム（整列・併合・アーカイバなど）は<b>ユーティリティ</b>とも呼ぶ。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:30%">OSの管理機能</th><th>受け持つこと</th></tr>
+        <tr><td>ジョブ管理</td><td>利用者の仕事（ジョブ）を受け付け、順番を決めて実行させる</td></tr>
+        <tr><td>タスク管理</td><td>実行の単位（タスク）にCPUを割り当てる（第2章）</td></tr>
+        <tr><td>記憶管理</td><td>主記憶を割り当て、仮想記憶を管理する（第3章）</td></tr>
+        <tr><td>データ管理</td><td>ディスク上のデータをファイルとして読み書きさせる</td></tr>
+        <tr><td>入出力管理</td><td>装置の割当てとスプーリング・バッファリング</td></tr>
+        <tr><td>運用管理・障害管理</td><td>起動と終了・利用者の管理・監視・障害の記録と回復</td></tr>
+      </table>
+      <div class="point">OSの種類：<b>リアルタイムOS</b>は締切りまでに応答することを最重視。<b>組込みOS</b>は機器に入る小さなOS。<b>セキュアOS</b>はrootの権限も細かく制限する。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>5-1 オペレーティングシステム<small>記憶の管理・いろいろなOS</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">LRU<span>えるあーるゆー / Least Recently Used</span></div><dl><dd>最後に使われてから最も長い時間がたったページを追い出す方式</dd><dd class="words">Least＝最も少なく／Recently＝最近／Used＝使われた</dd></dl></div><div class="term"><div class="box b1">フラグメンテーション<span>Fragmentation</span></div><dl><dd>空き領域が細かく分かれ、まとまった領域が取れなくなること</dd><dd class="pt"><span class="tag">ポイント</span>コンパクションで空きをまとめる</dd></dl></div><div class="term"><div class="box b1">メモリリーク<span>Memory Leak</span></div><dl><dd>使い終わったメモリが解放されず、使える領域が少しずつ減ること</dd><dd class="pt"><span class="tag">ポイント</span>ガーベジコレクションで回収する</dd></dl></div><div class="term"><div class="box b1">リアルタイムOS<span>Real-time OS</span></div><dl><dd>決められた時間内に処理を終えることを保証するOS</dd><dd class="pt"><span class="tag">ポイント</span>組込みシステムに使う</dd></dl></div><div class="term"><div class="box b1">カーネル<span>Kernel</span></div><dl><dd>OSの中心部分。タスク・メモリ・入出力などを管理する</dd><dd class="pt"><span class="tag">ポイント</span>マイクロカーネルは最小限の機能だけを持つ</dd></dl></div></div>
-<div class="foot"><span>応用情報 ソフトウェア</span><span>6</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/soft/puzzle_piece_flat.svg" alt="">カーネルに何を入れるかで2通り。シェルもGUIもカーネルの外</h1>
+  <div class="cols">
+    <div><svg width="420" height="270" viewBox="0 0 420 270"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<text x="100" y="14" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">モノリシックカーネル</text>
+<rect x="10" y="26" width="60" height="30" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="40.0" y="45.0" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">アプリ</text><rect x="75" y="26" width="60" height="30" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="105.0" y="45.0" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">アプリ</text><rect x="140" y="26" width="60" height="30" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="170.0" y="45.0" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">アプリ</text>
+<line x1="0" y1="70" x2="205" y2="70" stroke="#b25000" stroke-width="1.4" stroke-dasharray="4 3"/><text x="203" y="66" font-size="9.5" text-anchor="end" fill="#b25000">ユーザーモード／カーネルモード</text>
+<rect x="6" y="80" width="198" height="150" rx="8" fill="#1f3a68"/>
+<text x="105" y="100" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">カーネル（全部入り）</text>
+<rect x="16" y="110" width="86" height="30" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="59.0" y="129.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">記憶管理</text><rect x="108" y="110" width="86" height="30" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="151.0" y="129.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">タスク管理</text>
+<rect x="16" y="146" width="86" height="30" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="59.0" y="165.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">ファイル管理</text><rect x="108" y="146" width="86" height="30" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="151.0" y="165.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">ネットワーク</text>
+<rect x="16" y="182" width="178" height="30" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="105.0" y="201.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">デバイスドライバ</text>
+<text x="105" y="252" font-size="11" text-anchor="middle" fill="#6e6e73">呼出しが直接で速い</text><text x="105" y="266" font-size="11" text-anchor="middle" fill="#6e6e73">一部の不具合で全体が止まりやすい</text>
+<text x="320" y="14" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">マイクロカーネル</text>
+<rect x="225" y="26" width="60" height="30" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="255.0" y="45.0" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">アプリ</text><rect x="290" y="26" width="60" height="30" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="320.0" y="45.0" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">アプリ</text>
+<rect x="225" y="90" width="60" height="34" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="255.0" y="105.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">ファイル</text><text x="255.0" y="120.0" font-size="10.5" text-anchor="middle" fill="#fff">サーバ</text><rect x="290" y="90" width="60" height="34" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="320.0" y="105.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">ドライバ</text><text x="320.0" y="120.0" font-size="10.5" text-anchor="middle" fill="#fff">サーバ</text><rect x="355" y="90" width="60" height="34" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="385.0" y="105.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">通信</text><text x="385.0" y="120.0" font-size="10.5" text-anchor="middle" fill="#fff">サーバ</text>
+<line x1="220" y1="140" x2="420" y2="140" stroke="#b25000" stroke-width="1.4" stroke-dasharray="4 3"/>
+<rect x="250" y="160" width="140" height="50" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="320.0" y="183.0" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">最小のカーネル</text><text x="320.0" y="198.0" font-size="10.5" text-anchor="middle" fill="#fff">タスク切替え・通信</text>
+<line x1="255" y1="124" x2="290" y2="160" stroke="#5b80bf" stroke-width="1.4" marker-end="url(#ar)"/><line x1="320" y1="124" x2="320" y2="160" stroke="#5b80bf" stroke-width="1.4" marker-end="url(#ar)"/><line x1="385" y1="124" x2="350" y2="160" stroke="#5b80bf" stroke-width="1.4" marker-end="url(#ar)"/>
+<text x="320" y="252" font-size="11" text-anchor="middle" fill="#6e6e73">機能を差し替えやすく、壊れにくい</text><text x="320" y="266" font-size="11" text-anchor="middle" fill="#6e6e73">メッセージのやり取りが増えて遅め</text>
+</svg></div>
+    <div>
+      <table>
+        <tr><th style="width:30%">ソフトウェア</th><th>カーネルの中か外か</th></tr>
+        <tr><td>プロセス管理・メモリ管理</td><td><b>中</b>。アプリが動くための基本機能</td></tr>
+        <tr><td>シェル（bashなど）</td><td>外。コマンドを解釈してカーネルを呼ぶ</td></tr>
+        <tr><td>デスクトップ環境（GUI）</td><td>外。画面の操作を受け持つ別のソフト</td></tr>
+        <tr><td>ブラウザ・ワープロ</td><td>外。応用ソフトウェア</td></tr>
+      </table>
+      <div class="point"><b>R5秋 問19</b>「Linuxカーネルの説明」：正解は「プロセス管理やメモリ管理などの基本機能を提供する」。シェルやGUIが<b>組み込まれている</b>とする選択肢は誤り。Linuxはモノリシックカーネル。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>5-2 ミドルウェア<small>OSとアプリの間</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">ミドルウェア<span>Middleware</span></div><dl><dd>OSとアプリケーションの間で、共通の機能を提供するソフトウェア</dd><dd class="pt"><span class="tag">例</span>DBMS、Webサーバ、アプリケーションサーバ</dd></dl></div><div class="term"><div class="box b1">API<span>えーぴーあい / Application Programming Interface</span></div><dl><dd>ほかのソフトウェアの機能を呼び出すための窓口（決まり）</dd><dd class="words">Application＝アプリ／Programming＝プログラミング／Interface＝接点</dd></dl></div><div class="term"><div class="box b1">トランザクションモニタ<span>TP Monitor</span></div><dl><dd>多くのトランザクションを効率よく、正しく処理するためのミドルウェア</dd></dl></div></div>
-<div class="foot"><span>応用情報 ソフトウェア</span><span>7</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/soft/key_flat.svg" alt="">アプリは特権命令を使えない。OSに頼むとカーネルモードに切り替わる</h1>
+  <div class="cols">
+    <div><svg width="430" height="230" viewBox="0 0 430 230"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<rect x="0" y="10" width="430" height="80" rx="6" fill="#e8eef8"/><text x="10" y="28" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">ユーザーモード（非特権）</text>
+<rect x="0" y="120" width="430" height="80" rx="6" fill="#e3e8f2"/><text x="10" y="218" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">カーネルモード（特権）</text>
+<rect x="20" y="40" width="110" height="36" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="75.0" y="62.1" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">アプリ実行中</text>
+<line x1="130" y1="58" x2="165" y2="58" stroke="#5b80bf" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="170" y="40" width="100" height="36" rx="6" fill="#fde7cf" stroke="#b25000" stroke-width="1.5"/><text x="220.0" y="62.1" font-size="11.5" text-anchor="middle" fill="#b25000" font-weight="700">システムコール</text>
+<line x1="220" y1="76" x2="220" y2="140" stroke="#b25000" stroke-width="1.8" marker-end="url(#ar)"/><text x="226" y="112" font-size="10.5" text-anchor="start" fill="#b25000" font-weight="700">SVC割込み</text>
+<rect x="170" y="142" width="130" height="40" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="235.0" y="160.0" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">OSが代わりに処理</text><text x="235.0" y="175.0" font-size="10.5" text-anchor="middle" fill="#fff">入出力・メモリ確保</text>
+<line x1="300" y1="162" x2="340" y2="162" stroke="#5b80bf" stroke-width="1.6"/><line x1="340" y1="162" x2="340" y2="76" stroke="#5b80bf" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="300" y="40" width="120" height="36" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="360.0" y="62.1" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">アプリ再開</text>
+</svg>
+      <div class="point">アプリが自分でカーネルモードに上がることはできない。ユーザーモードで特権命令を実行すると<b>例外（プログラム割込み）</b>になり、実行されない。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:28%">モード</th><th>動くもの</th><th>使える命令</th></tr>
+        <tr><td>カーネルモード<br>（スーパーバイザー・特権）</td><td>OSのカーネル</td><td>全部。入出力・割込みの設定などの<b>特権命令</b>も</td></tr>
+        <tr><td>ユーザーモード<br>（非特権）</td><td>アプリケーション</td><td>特権命令以外。主記憶も自分の範囲だけ</td></tr>
+      </table>
+      <div class="point">目的は<b>保護</b>。アプリの誤りや悪意が、OSや他のプログラムを壊さないようにする。割込みの種類（SVC・入出力・タイマなど）は #3 にまとめた。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>5-3 ファイルシステム<small>ファイルの管理</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">絶対パス・相対パス<span>Absolute / Relative Path</span></div><dl><dd>絶対パスはルートからの道順、相対パスは今いるディレクトリ（カレント）からの道順</dd><dd class="pt"><span class="tag">ポイント</span>".." は1つ上のディレクトリ</dd></dl></div><div class="term"><div class="box b1">アクセス権<span>Access Permission</span></div><dl><dd>ファイルに対する読取り・書込み・実行の許可</dd><dd class="pt"><span class="tag">ポイント</span>所有者・グループ・その他ごとに設定する</dd></dl></div><div class="term"><div class="box b1">バックアップ<span>Backup</span></div><dl><dd>障害に備えてデータの複製を取ること</dd><dd class="pt"><span class="tag">ポイント</span>フル・差分・増分の方式</dd></dl></div></div>
-<div class="foot"><span>応用情報 ソフトウェア</span><span>8</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/soft/clipboard_flat.svg" alt="">ジョブ→ジョブステップ→タスクの順に細かくなる。一時ファイルは表で数える</h1>
+  <div class="cols">
+    <div>
+      <div class="flow"><div class="box b1">ジョブ<span>利用者の仕事</span></div><div class="to">▶</div><div class="box b2">ジョブステップ<span>プログラム1本の実行</span></div><div class="to">▶</div><div class="box b3">タスク<span>CPUを割り当てる単位</span></div></div>
+      <div style="height:12px"></div>
+      <table class="mini">
+        <tr><th>ジョブ管理の部品</th><th>役目</th></tr>
+        <tr><td>ジョブスケジューラー</td><td>リーダ（読込み）→イニシエータ（開始）→ターミネータ（後始末）→ライタ（結果の出力）</td></tr>
+        <tr><td>マスタスケジューラー</td><td>オペレーターとのやり取りと、システム全体の監視</td></tr>
+        <tr><td>JCL</td><td>ジョブの中身をOSに指示する言語</td></tr>
+      </table>
+      <div class="point">夜間にまとめて流す<b>バッチ処理</b>、定期実行の <b>cron</b>、裏で動かす<b>バックグラウンドジョブ</b>も、ジョブの動かし方の言葉。</div>
+    </div>
+    <div>
+      <div class="cap">R4春 問16：多重度2、各ジョブ50Mバイトの一時ファイル</div>
+      <table class="mini">
+        <tr><th>時間の枠</th><th>動くジョブ</th><th>残っているファイル</th><th>合計</th></tr>
+        <tr><td>①</td><td>A</td><td>a</td><td>50</td></tr>
+        <tr><td>②</td><td>B・C</td><td>a（Bが参照）・b・c</td><td>150</td></tr>
+        <tr><td>③</td><td>D・E</td><td>b（Dが参照）・c（Eが参照）・d・e</td><td><b>200</b></td></tr>
+        <tr><td>④</td><td>F</td><td>d・e（Fが参照）・f</td><td>150</td></tr>
+      </table>
+      <div class="point">ファイルは「作ったジョブの<b>直後のジョブ</b>が終わるまで」残る。Bが終わるとaが消え、DとEが終わるとbとcが消える。最大の③が答え（<b>200Mバイト</b>）。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>5-4 開発ツール<small>言語処理</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">コンパイラ<span>Compiler</span></div><dl><dd>高水準言語のプログラムを、まとめて機械語に翻訳するソフトウェア</dd><dd class="pt"><span class="tag">ポイント</span>字句解析→構文解析→意味解析→最適化→コード生成の順</dd></dl></div><div class="term"><div class="box b1">インタプリタ<span>Interpreter</span></div><dl><dd>プログラムを1行ずつ解釈しながら実行するソフトウェア</dd></dl></div><div class="term"><div class="box b1">リンカ<span>Linker</span></div><dl><dd>複数の目的プログラムやライブラリを結合して、実行できる形にするソフトウェア</dd><dd class="pt"><span class="tag">ポイント</span>実行時に結合するのが動的リンク</dd></dl></div><div class="term"><div class="box b1">最適化<span>Optimization</span></div><dl><dd>コンパイラが、実行が速くなるように命令を整理すること</dd></dl></div><div class="term"><div class="box b1">JIT コンパイラ<span>Just-In-Time Compiler</span></div><dl><dd>実行するときに中間コードを機械語に翻訳する方式</dd><dd class="pt"><span class="tag">例</span>Javaの仮想マシン</dd></dl></div><div class="term"><div class="box b1">IDE<span>あいでぃーいー / Integrated Development Environment</span></div><dl><dd>編集・コンパイル・デバッグなどを1つにまとめた開発ツール</dd><dd class="words">Integrated＝統合された／Development＝開発／Environment＝環境</dd></dl></div></div>
-<div class="foot"><span>応用情報 ソフトウェア</span><span>9</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/soft/printer_flat.svg" alt="">遅い装置への出力はディスクにためる。割当ては空いた時刻の順に追う</h1>
+  <div class="cols">
+    <div>
+      <div class="flow"><div class="box b1">プログラム<span>出力して次へ進む</span></div><div class="to">▶</div><div class="box b3">ディスク<span>スプール（待ち行列）</span></div><div class="to">▶</div><div class="box b4">プリンタ<span>空いたら少しずつ印刷</span></div></div>
+      <table class="mini" style="margin-top:12px">
+        <tr><th style="width:30%">仕組み</th><th>ためる場所と単位</th></tr>
+        <tr><td><b>スプーリング</b></td><td>ディスクに、ジョブ（印刷データ）の単位でためる。CPUが装置を待たない</td></tr>
+        <tr><td>バッファリング</td><td>主記憶のバッファに、入出力の単位でためて速度差を吸収</td></tr>
+        <tr><td>DMA（#3）</td><td>CPUを通さずに装置と主記憶の間で転送する</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">R4秋 問19：4,6,3,2,5,3,4,3,1 分を A→B→C の順に割当て（目盛りは分）</div>
+      <svg width="420" height="150" viewBox="0 0 420 150"><line x1="40" y1="20" x2="40" y2="132" stroke="#e1e5ec" stroke-width="1"/><text x="40" y="148" font-size="10" text-anchor="middle" fill="#6e6e73">0</text><line x1="70" y1="20" x2="70" y2="132" stroke="#e1e5ec" stroke-width="1"/><text x="70" y="148" font-size="10" text-anchor="middle" fill="#6e6e73">1</text><line x1="100" y1="20" x2="100" y2="132" stroke="#e1e5ec" stroke-width="1"/><text x="100" y="148" font-size="10" text-anchor="middle" fill="#6e6e73">2</text><line x1="130" y1="20" x2="130" y2="132" stroke="#e1e5ec" stroke-width="1"/><text x="130" y="148" font-size="10" text-anchor="middle" fill="#6e6e73">3</text><line x1="160" y1="20" x2="160" y2="132" stroke="#e1e5ec" stroke-width="1"/><text x="160" y="148" font-size="10" text-anchor="middle" fill="#6e6e73">4</text><line x1="190" y1="20" x2="190" y2="132" stroke="#e1e5ec" stroke-width="1"/><text x="190" y="148" font-size="10" text-anchor="middle" fill="#6e6e73">5</text><line x1="220" y1="20" x2="220" y2="132" stroke="#e1e5ec" stroke-width="1"/><text x="220" y="148" font-size="10" text-anchor="middle" fill="#6e6e73">6</text><line x1="250" y1="20" x2="250" y2="132" stroke="#e1e5ec" stroke-width="1"/><text x="250" y="148" font-size="10" text-anchor="middle" fill="#6e6e73">7</text><line x1="280" y1="20" x2="280" y2="132" stroke="#e1e5ec" stroke-width="1"/><text x="280" y="148" font-size="10" text-anchor="middle" fill="#6e6e73">8</text><line x1="310" y1="20" x2="310" y2="132" stroke="#e1e5ec" stroke-width="1"/><text x="310" y="148" font-size="10" text-anchor="middle" fill="#6e6e73">9</text><line x1="340" y1="20" x2="340" y2="132" stroke="#e1e5ec" stroke-width="1"/><text x="340" y="148" font-size="10" text-anchor="middle" fill="#6e6e73">10</text><line x1="370" y1="20" x2="370" y2="132" stroke="#e1e5ec" stroke-width="1"/><text x="370" y="148" font-size="10" text-anchor="middle" fill="#6e6e73">11</text><line x1="400" y1="20" x2="400" y2="132" stroke="#e1e5ec" stroke-width="1"/><text x="400" y="148" font-size="10" text-anchor="middle" fill="#6e6e73">12</text><text x="32" y="42.0" font-size="11.5" text-anchor="end" fill="#1f3a68" font-weight="700">A</text><rect x="40" y="24" width="120" height="28" rx="3" fill="#1f3a68" stroke="#fff" stroke-width="1"/><text x="100.0" y="42.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">4</text><rect x="160" y="24" width="150" height="28" rx="3" fill="#1f3a68" stroke="#fff" stroke-width="1"/><text x="235.0" y="42.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">5</text><rect x="310" y="24" width="30" height="28" rx="3" fill="#1f3a68" stroke="#fff" stroke-width="1"/><text x="325.0" y="42.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">1</text><text x="32" y="80.0" font-size="11.5" text-anchor="end" fill="#1f3a68" font-weight="700">B</text><rect x="40" y="62" width="180" height="28" rx="3" fill="#5b80bf" stroke="#fff" stroke-width="1"/><text x="130.0" y="80.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">6</text><rect x="220" y="62" width="120" height="28" rx="3" fill="#5b80bf" stroke="#fff" stroke-width="1"/><text x="280.0" y="80.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">4</text><text x="32" y="118.0" font-size="11.5" text-anchor="end" fill="#1f3a68" font-weight="700">C</text><rect x="40" y="100" width="90" height="28" rx="3" fill="#b25000" stroke="#fff" stroke-width="1"/><text x="85.0" y="118.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">3</text><rect x="130" y="100" width="60" height="28" rx="3" fill="#b25000" stroke="#fff" stroke-width="1"/><text x="160.0" y="118.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">2</text><rect x="190" y="100" width="90" height="28" rx="3" fill="#b25000" stroke="#fff" stroke-width="1"/><text x="235.0" y="118.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">3</text><rect x="280" y="100" width="90" height="28" rx="3" fill="#b25000" stroke="#fff" stroke-width="1"/><text x="325.0" y="118.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">3</text></svg>
+      <div class="point">時刻0にA・B・Cへ。あとは<b>空いた時刻の早い順</b>に次のデータを渡す（3分にC、4分にA、5分にC、6分にB、8分にC、9分にA）。Cの合計は 3＋2＋3＋3＝<b>11分</b>。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>5-5 オープンソースソフトウェア<small>OSS</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">OSS<span>おーえすえす / Open Source Software</span></div><dl><dd>ソースコードが公開され、決まった条件のもとで誰でも使ったり変えたりできるソフトウェア</dd><dd class="words">Open＝公開された／Source＝ソースコード／Software＝ソフトウェア</dd></dl></div><div class="term"><div class="box b1">GPL<span>じーぴーえる / GNU General Public License</span></div><dl><dd>改変したものを配布するときも、同じGPLでソースコードを公開する必要があるライセンス（コピーレフト）</dd><dd class="words">GNU＝プロジェクト名／General Public＝一般公衆向けの／License＝利用許諾</dd></dl></div><div class="term"><div class="box b1">BSDライセンス・MITライセンス<span>BSD / MIT License</span></div><dl><dd>著作権の表示などを守れば、改変したものを非公開にしてもよいライセンス</dd></dl></div></div>
-<div class="foot"><span>応用情報 ソフトウェア</span><span>10</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/soft/locked_flat.svg" alt="">起動は小さなプログラムからの順送り。アクセスは「誰が決めるか」で2種類</h1>
+  <div class="cols">
+    <div>
+      <div class="flow"><div class="box b4">電源ON</div><div class="to">▶</div><div class="box b3">ファームウェア<span>BIOS・UEFI</span></div><div class="to">▶</div><div class="box b2">ブートローダ</div><div class="to">▶</div><div class="box b1">カーネル</div></div>
+      <div class="point" style="margin-top:8px">この順送りを<b>ブートストラップ（IPL）</b>と呼ぶ。サーバからOSを受け取るのが<b>ネットワークブート</b>、起動時にOSを選ぶのが<b>マルチブート</b>（同時に動くOSは1つ）。</div>
+      <table class="mini" style="margin-top:8px">
+        <tr><th style="width:32%">アクセス制御</th><th>許可を決める人</th></tr>
+        <tr><td>任意（DAC）</td><td>ファイルの<b>所有者</b>が自分で決める。ふつうのOSのアクセス権</td></tr>
+        <tr><td>強制（MAC）</td><td>システムの<b>ポリシー</b>が決め、所有者でも変えられない。セキュアOS</td></tr>
+      </table>
+    </div>
+    <div>
+      <svg width="420" height="170" viewBox="0 0 420 170"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<rect x="150" y="6" width="120" height="30" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="210.0" y="25.3" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">極秘</text><rect x="150" y="66" width="120" height="30" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="210.0" y="85.3" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">秘</text><rect x="150" y="126" width="120" height="30" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="210.0" y="145.3" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">一般</text>
+<rect x="10" y="66" width="90" height="30" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="55.0" y="85.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">利用者（秘）</text>
+<line x1="100" y1="76" x2="150" y2="26" stroke="#b25000" stroke-width="1.6" stroke-dasharray="4 3"/><text x="96" y="40" font-size="10.5" text-anchor="end" fill="#b25000" font-weight="700">上は読めない</text><text x="96" y="54" font-size="9.5" text-anchor="end" fill="#b25000">No Read Up</text>
+<line x1="100" y1="86" x2="150" y2="140" stroke="#b25000" stroke-width="1.6" stroke-dasharray="4 3"/><text x="96" y="128" font-size="10.5" text-anchor="end" fill="#b25000" font-weight="700">下へ書けない</text><text x="96" y="142" font-size="9.5" text-anchor="end" fill="#b25000">No Write Down</text>
+<text x="285" y="26" font-size="10.5" text-anchor="start" fill="#6e6e73">← 読み書きの可否は</text><text x="285" y="42" font-size="10.5" text-anchor="start" fill="#6e6e73">　ポリシーが決める（MAC）</text>
+<text x="285" y="86" font-size="10.5" text-anchor="start" fill="#6e6e73">← 同じ段階は読み書きできる</text>
+</svg>
+      <div class="point"><b>BLPモデル</b>は機密性を守る規則（上を読まない・下へ書かない）。利用者は<b>root（Administrator）</b>・一般ユーザー・ゲストに分け、ふだんは最小の権限で使う（WindowsのUAC）。アカウントの一元管理は<b>LDAP・Active Directory</b>。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>まとめ<small>この分野で覚える用語</small></h1>
-  <table><thead><tr><th style="width:30%">小分類</th><th>用語</th></tr></thead><tbody>
-<tr><td>5-1 オペレーティングシステム</td><td>タスク・ディスパッチ・スケジューリング方式・ラウンドロビン・プリエンプション・スレッド・セマフォ・デッドロック・仮想記憶・ページング方式・ページフォールト・スラッシング・LRU・フラグメンテーション・メモリリーク・リアルタイムOS・カーネル</td></tr>
-<tr><td>5-2 ミドルウェア</td><td>ミドルウェア・API・トランザクションモニタ</td></tr>
-<tr><td>5-3 ファイルシステム</td><td>絶対パス・相対パス・アクセス権・バックアップ</td></tr>
-<tr><td>5-4 開発ツール</td><td>コンパイラ・インタプリタ・リンカ・最適化・JIT コンパイラ・IDE</td></tr>
-<tr><td>5-5 オープンソースソフトウェア</td><td>OSS・GPL・BSDライセンス・MITライセンス</td></tr>
-  </tbody></table>
-<div class="foot"><span>応用情報 ソフトウェア</span><span>11</span></div>
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/queue.png" alt=""><img src="img/irasutoya/traffic_jam.png" alt=""><img src="img/irasutoya/stopwatch.png" alt=""><img src="img/irasutoya/twins.png" alt=""></div>
+  <div class="k">第2章</div>
+  <h1>タスク管理</h1>
+  <p>3つの状態 ／ プリエンプション ／ スケジューリング ／ ターンアラウンドタイム ／ 多重度 ／ 排他制御 ／ デッドロック</p>
 </section>
-</body>
-</html>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/vertical_traffic_light_flat.svg" alt="">横取りされたタスクは「実行可能」に戻る。待ち状態ではない</h1>
+  <div class="cols">
+    <div><svg width="420" height="270" viewBox="0 0 420 270"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<defs><marker id="aw" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#b25000"/></marker></defs>
+<rect x="20" y="40" width="130" height="50" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="85.0" y="63.0" font-size="13" text-anchor="middle" fill="#fff" font-weight="700">実行可能状態</text><text x="85.0" y="78.0" font-size="10.5" text-anchor="middle" fill="#fff">CPUの空きを待つ</text>
+<rect x="270" y="40" width="130" height="50" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="335.0" y="63.0" font-size="13" text-anchor="middle" fill="#fff" font-weight="700">実行状態</text><text x="335.0" y="78.0" font-size="10.5" text-anchor="middle" fill="#fff">CPUで動いている</text>
+<rect x="145" y="190" width="130" height="50" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="210.0" y="213.0" font-size="13" text-anchor="middle" fill="#fff" font-weight="700">待ち状態</text><text x="210.0" y="228.0" font-size="10.5" text-anchor="middle" fill="#fff">入出力などを待つ</text>
+<line x1="150" y1="52" x2="270" y2="52" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/><text x="210" y="46" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">ディスパッチ</text>
+<line x1="270" y1="78" x2="150" y2="78" stroke="#b25000" stroke-width="2.2" marker-end="url(#aw)"/><text x="210" y="96" font-size="11.5" text-anchor="middle" fill="#b25000" font-weight="700">プリエンプション</text><text x="210" y="110" font-size="10" text-anchor="middle" fill="#b25000">（横取り・時間切れ）</text>
+<line x1="320" y1="90" x2="260" y2="190" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/><text x="318" y="150" font-size="11" text-anchor="start" fill="#1f3a68">入出力の開始</text><text x="318" y="164" font-size="10" text-anchor="start" fill="#6e6e73">（自分から待つ）</text>
+<line x1="160" y1="190" x2="90" y2="90" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/><text x="100" y="150" font-size="11" text-anchor="end" fill="#1f3a68">入出力の終了</text><text x="100" y="164" font-size="10" text-anchor="end" fill="#6e6e73">（待ちが解けた）</text>
+<text x="210" y="262" font-size="11" text-anchor="middle" fill="#6e6e73">待ち → 実行 には直接移らない（いったん実行可能へ）</text>
+</svg></div>
+    <div>
+      <table>
+        <tr><th style="width:34%">状態</th><th>いつその状態か</th></tr>
+        <tr><td>実行状態</td><td>CPUを使って命令を実行している（CPU1個なら1つだけ）</td></tr>
+        <tr><td>実行可能状態</td><td>CPUさえあればすぐ動ける。待ち行列に並んでいる</td></tr>
+        <tr><td>待ち状態</td><td>入出力の終了・資源・イベントを待っていて、CPUが空いても動けない</td></tr>
+        <tr><td>休止状態（RTOS）</td><td>登録されているが起動前、または実行を終えた</td></tr>
+      </table>
+      <div class="point"><b>R3春 問17・R7春 問14</b>（同じ問題）：リアルタイムOSで、プリエンプションによって移る状態は<b>実行可能状態</b>。「待ち状態」「休止状態」「終了状態」は誤り。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/bell_flat.svg" alt="">OSが横取りできるのがプリエンプティブ。割込み処理はどのタスクよりも先</h1>
+  <div class="cols">
+    <div>
+      <table class="vs">
+        <tr><th style="width:26%"></th><th>プリエンプティブ</th><th>ノンプリエンプティブ</th></tr>
+        <tr><td>切り替わるとき</td><td>OSの判断で、いつでも（優先度の高いタスクの到着・時間切れ）</td><td>タスクが<b>自分から</b>手放したときだけ（終了・待ち・中断の要求）</td></tr>
+        <tr><td>無限ループのタスク</td><td>他のタスクは動ける</td><td>他のタスクが<b>動けなくなる</b></td></tr>
+        <tr><td>使われる所</td><td>リアルタイムOS・今のPC用OS</td><td>昔のOS・単純な組込み機器</td></tr>
+      </table>
+      <div class="point"><b>R6春 問16</b>：ノンプリエンプティブは「自らの中断をOSに要求したときだけ切り替わる」。「優先度の高いタスクが来たら中断」はプリエンプティブの動き。</div>
+    </div>
+    <div>
+      <div class="stack">
+        <div class="box b1">割込み処理ルーチン（割込みハンドラ）<span>どのタスクよりも先に実行（割込み禁止中を除く）</span></div>
+        <div class="arrow">▼</div>
+        <div class="box b2">優先度の高いタスク</div>
+        <div class="arrow">▼</div>
+        <div class="box b3">優先度の低いタスク</div>
+      </div>
+      <div class="point"><b>R4秋 問18</b>：割込み処理ルーチンは<b>最も優先度の高いタスクよりも優先</b>して実行される。処理が長いと応答性が落ちるので短く作る。割り込まれたタスクとは<b>別のコンテキスト</b>で動き、タスク切替えを禁止しても割込みは止まらない。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/hourglass_done_flat.svg" alt="">短い処理を優先すると、長い処理がいつまでも待たされることがある</h1>
+  <table>
+    <tr><th style="width:18%">方式</th><th style="width:22%">次に動かすタスク</th><th style="width:14%">横取り</th><th>押さえどころ</th></tr>
+    <tr><td>到着順（FCFS）</td><td>先に来たもの</td><td>しない</td><td>公平で簡単。長い処理の後ろに並んだ短い処理が待たされる</td></tr>
+    <tr><td>処理時間順（SJF）</td><td>処理時間が最も短いもの</td><td>しない</td><td>平均の待ち時間は最短。短いものが次々来ると、長いものが<b>待ち続ける（スタベーション）</b></td></tr>
+    <tr><td>優先度順</td><td>優先度が最も高いもの</td><td>することが多い</td><td>低い優先度が待たされる。待つほど優先度を上げる<b>エージング</b>で防ぐ</td></tr>
+    <tr><td>ラウンドロビン</td><td>待ち行列の先頭</td><td>する（時間切れで最後尾へ）</td><td>全員に順番が回る。タイムクウォンタムが短すぎると切替えの手間が増える</td></tr>
+    <tr><td>多段フィードバック待ち行列</td><td>高い段の待ち行列の先頭</td><td>する（時間切れで一段下へ）</td><td>短い処理は早く終わる。処理時間を知らなくてもSJFに近い効果</td></tr>
+  </table>
+  <div class="point"><b>R6秋 問16</b>：「特定のタスクがCPUの割当てを待ち続ける可能性が最も高い」のは<b>処理時間順（SJF）</b>。エージング付きの優先度順・ラウンドロビン・到着順は、待てばいつか順番が来る。</div>
+  <img class="illust" src="img/irasutoya/queue.png" alt="" style="height:70px;bottom:36px">
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/stopwatch_flat.svg" alt="">ターンアラウンドタイムは「終了時刻－到着時刻」。時間の線を書けば数えられる</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R3春 問16：到着順・多重度1</div>
+      <table class="mini"><tr><th>ジョブ</th><th>到着</th><th>処理</th></tr><tr><td>A</td><td>0</td><td>5</td></tr><tr><td>B</td><td>2</td><td>6</td></tr><tr><td>C</td><td>3</td><td>3</td></tr></table>
+      <svg width="400" height="90" viewBox="0 0 400 90"><line x1="20" y1="26" x2="20" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="20" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">0</text><line x1="44" y1="26" x2="44" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="44" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">1</text><line x1="68" y1="26" x2="68" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="68" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">2</text><line x1="92" y1="26" x2="92" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="92" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">3</text><line x1="116" y1="26" x2="116" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="116" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">4</text><line x1="140" y1="26" x2="140" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="140" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">5</text><line x1="164" y1="26" x2="164" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="164" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">6</text><line x1="188" y1="26" x2="188" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="188" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">7</text><line x1="212" y1="26" x2="212" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="212" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">8</text><line x1="236" y1="26" x2="236" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="236" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">9</text><line x1="260" y1="26" x2="260" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="260" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">10</text><line x1="284" y1="26" x2="284" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="284" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">11</text><line x1="308" y1="26" x2="308" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="308" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">12</text><line x1="332" y1="26" x2="332" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="332" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">13</text><line x1="356" y1="26" x2="356" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="356" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">14</text><text x="12" y="47.0" font-size="11.5" text-anchor="end" fill="#1f3a68" font-weight="700"></text><rect x="20" y="30" width="120" height="26" rx="3" fill="#5b80bf" stroke="#fff" stroke-width="1"/><text x="80.0" y="47.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">A</text><rect x="140" y="30" width="144" height="26" rx="3" fill="#5b80bf" stroke="#fff" stroke-width="1"/><text x="212.0" y="47.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">B</text><rect x="284" y="30" width="72" height="26" rx="3" fill="#b25000" stroke="#fff" stroke-width="1"/><text x="320.0" y="47.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">C</text><path d="M88,16 L96,16 L92,23 Z" fill="#b25000"/><text x="92" y="12" font-size="9.5" text-anchor="middle" fill="#b25000">C到着</text></svg>
+      <div class="point">Cは11秒に始まり14秒に終わる。<b>14－3＝11秒</b>（待った8秒＋実行3秒）。</div>
+    </div>
+    <div>
+      <div class="cap">R7秋 問15：処理時間順・多重度1</div>
+      <table class="mini"><tr><th>ジョブ</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr><tr><td>到着</td><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td></tr><tr><td>処理</td><td>2</td><td>4</td><td>3</td><td>2</td><td>1</td></tr></table>
+      <svg width="400" height="90" viewBox="0 0 400 90"><line x1="20" y1="26" x2="20" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="20" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">0</text><line x1="44" y1="26" x2="44" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="44" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">1</text><line x1="68" y1="26" x2="68" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="68" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">2</text><line x1="92" y1="26" x2="92" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="92" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">3</text><line x1="116" y1="26" x2="116" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="116" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">4</text><line x1="140" y1="26" x2="140" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="140" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">5</text><line x1="164" y1="26" x2="164" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="164" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">6</text><line x1="188" y1="26" x2="188" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="188" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">7</text><line x1="212" y1="26" x2="212" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="212" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">8</text><line x1="236" y1="26" x2="236" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="236" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">9</text><line x1="260" y1="26" x2="260" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="260" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">10</text><line x1="284" y1="26" x2="284" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="284" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">11</text><line x1="308" y1="26" x2="308" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="308" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">12</text><line x1="332" y1="26" x2="332" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="332" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">13</text><line x1="356" y1="26" x2="356" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="356" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">14</text><text x="12" y="47.0" font-size="11.5" text-anchor="end" fill="#1f3a68" font-weight="700"></text><rect x="20" y="30" width="48" height="26" rx="3" fill="#5b80bf" stroke="#fff" stroke-width="1"/><text x="44.0" y="47.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">A</text><rect x="68" y="30" width="72" height="26" rx="3" fill="#5b80bf" stroke="#fff" stroke-width="1"/><text x="104.0" y="47.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">C</text><rect x="140" y="30" width="24" height="26" rx="3" fill="#5b80bf" stroke="#fff" stroke-width="1"/><text x="152.0" y="47.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">E</text><rect x="164" y="30" width="48" height="26" rx="3" fill="#5b80bf" stroke="#fff" stroke-width="1"/><text x="188.0" y="47.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">D</text><rect x="212" y="30" width="96" height="26" rx="3" fill="#b25000" stroke="#fff" stroke-width="1"/><text x="260.0" y="47.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">B</text><path d="M40,16 L48,16 L44,23 Z" fill="#b25000"/><text x="44" y="12" font-size="9.5" text-anchor="middle" fill="#b25000">B到着</text></svg>
+      <div class="point">1つ終わるたびに、<b>その時点で到着済み</b>のものから最短を選ぶ。2秒：B・CからC。5秒：B・D・EからE→D→B。<b>12－1＝11秒</b>。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/busts_in_silhouette_flat.svg" alt="">多重度は「同時に動ける数」。要求の到着時刻をずらして線を引く</h1>
+  <div class="cols wide-r">
+    <div>
+      <div class="cap">R4春 問19・R6春 問18（同じ問題）</div>
+      <div class="point" style="margin-top:0">多重度2以下なら1件4秒。1秒おきに4件届く。多重度1と2で、全部終わるまでの時間の差は？</div>
+      <svg width="440" height="90" viewBox="0 0 440 90"><line x1="60" y1="26" x2="60" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="60" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">0</text><line x1="104" y1="26" x2="104" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="104" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">2</text><line x1="148" y1="26" x2="148" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="148" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">4</text><line x1="192" y1="26" x2="192" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="192" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">6</text><line x1="236" y1="26" x2="236" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="236" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">8</text><line x1="280" y1="26" x2="280" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="280" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">10</text><line x1="324" y1="26" x2="324" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="324" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">12</text><line x1="368" y1="26" x2="368" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="368" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">14</text><line x1="412" y1="26" x2="412" y2="60" stroke="#e1e5ec" stroke-width="1"/><text x="412" y="74" font-size="10" text-anchor="middle" fill="#6e6e73">16</text><text x="52" y="47.0" font-size="11.5" text-anchor="end" fill="#1f3a68" font-weight="700">多重度1</text><rect x="60" y="30" width="88" height="26" rx="3" fill="#5b80bf" stroke="#fff" stroke-width="1"/><text x="104.0" y="47.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">1件目</text><rect x="148" y="30" width="88" height="26" rx="3" fill="#5b80bf" stroke="#fff" stroke-width="1"/><text x="192.0" y="47.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">2件目</text><rect x="236" y="30" width="88" height="26" rx="3" fill="#5b80bf" stroke="#fff" stroke-width="1"/><text x="280.0" y="47.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">3件目</text><rect x="324" y="30" width="88" height="26" rx="3" fill="#5b80bf" stroke="#fff" stroke-width="1"/><text x="368.0" y="47.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">4件目</text><path d="M56,16 L64,16 L60,23 Z" fill="#b25000"/><text x="60" y="12" font-size="9.5" text-anchor="middle" fill="#b25000">1</text><path d="M78,16 L86,16 L82,23 Z" fill="#b25000"/><text x="82" y="12" font-size="9.5" text-anchor="middle" fill="#b25000">2</text><path d="M100,16 L108,16 L104,23 Z" fill="#b25000"/><text x="104" y="12" font-size="9.5" text-anchor="middle" fill="#b25000">3</text><path d="M122,16 L130,16 L126,23 Z" fill="#b25000"/><text x="126" y="12" font-size="9.5" text-anchor="middle" fill="#b25000">4</text></svg>
+      <svg width="440" height="100" viewBox="0 0 440 100"><line x1="60" y1="10" x2="60" y2="78" stroke="#e1e5ec" stroke-width="1"/><text x="60" y="92" font-size="10" text-anchor="middle" fill="#6e6e73">0</text><line x1="104" y1="10" x2="104" y2="78" stroke="#e1e5ec" stroke-width="1"/><text x="104" y="92" font-size="10" text-anchor="middle" fill="#6e6e73">2</text><line x1="148" y1="10" x2="148" y2="78" stroke="#e1e5ec" stroke-width="1"/><text x="148" y="92" font-size="10" text-anchor="middle" fill="#6e6e73">4</text><line x1="192" y1="10" x2="192" y2="78" stroke="#e1e5ec" stroke-width="1"/><text x="192" y="92" font-size="10" text-anchor="middle" fill="#6e6e73">6</text><line x1="236" y1="10" x2="236" y2="78" stroke="#e1e5ec" stroke-width="1"/><text x="236" y="92" font-size="10" text-anchor="middle" fill="#6e6e73">8</text><line x1="280" y1="10" x2="280" y2="78" stroke="#e1e5ec" stroke-width="1"/><text x="280" y="92" font-size="10" text-anchor="middle" fill="#6e6e73">10</text><line x1="324" y1="10" x2="324" y2="78" stroke="#e1e5ec" stroke-width="1"/><text x="324" y="92" font-size="10" text-anchor="middle" fill="#6e6e73">12</text><line x1="368" y1="10" x2="368" y2="78" stroke="#e1e5ec" stroke-width="1"/><text x="368" y="92" font-size="10" text-anchor="middle" fill="#6e6e73">14</text><line x1="412" y1="10" x2="412" y2="78" stroke="#e1e5ec" stroke-width="1"/><text x="412" y="92" font-size="10" text-anchor="middle" fill="#6e6e73">16</text><text x="52" y="31.0" font-size="11.5" text-anchor="end" fill="#1f3a68" font-weight="700">多重度2</text><rect x="60" y="14" width="88" height="26" rx="3" fill="#1f3a68" stroke="#fff" stroke-width="1"/><text x="104.0" y="31.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">1件目</text><rect x="148" y="14" width="88" height="26" rx="3" fill="#1f3a68" stroke="#fff" stroke-width="1"/><text x="192.0" y="31.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">3件目</text><text x="52" y="65.0" font-size="11.5" text-anchor="end" fill="#1f3a68" font-weight="700"></text><rect x="82" y="48" width="88" height="26" rx="3" fill="#2f5596" stroke="#fff" stroke-width="1"/><text x="126.0" y="65.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">2件目</text><rect x="170" y="48" width="88" height="26" rx="3" fill="#2f5596" stroke="#fff" stroke-width="1"/><text x="214.0" y="65.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">4件目</text></svg>
+    </div>
+    <div>
+      <table>
+        <tr><th>多重度</th><th>考え方</th><th>終わる時刻</th></tr>
+        <tr><td>1</td><td>1件ずつ順に4秒</td><td>16秒</td></tr>
+        <tr><td>2</td><td>2本の列で並行。2件目は1秒に到着して1〜5秒、4件目は5秒に始まる</td><td>9秒</td></tr>
+      </table>
+      <div class="point">差は <b>16－9＝7秒</b>。「4件÷2×4秒＝8秒」と割り算すると、到着が1秒ずつずれることを見落とす。</div>
+      <div class="point warn">多重度を上げすぎると、主記憶が足りなくなりページの出し入ればかりになる（第3章のスラッシング）。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/repeat_button_flat.svg" alt="">周期タスクは、高い方が使った残りの時間で低い方が終わるかを数える</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R5秋 問17：Aの優先度が高い。Bは周期内に終わるか</div>
+      <div style="font-size:12.5px;margin:6px 0 2px"><b>ア</b> A：2ミリ秒／周期4　B：3ミリ秒／周期8</div>
+      <svg width="420" height="90" viewBox="0 0 420 90"><line x1="56" y1="18" x2="56" y2="76" stroke="#e1e5ec" stroke-width="1"/><text x="56" y="88" font-size="10" text-anchor="middle" fill="#6e6e73">0</text><line x1="90" y1="18" x2="90" y2="76" stroke="#e1e5ec" stroke-width="1"/><text x="90" y="88" font-size="10" text-anchor="middle" fill="#6e6e73">1</text><line x1="124" y1="18" x2="124" y2="76" stroke="#e1e5ec" stroke-width="1"/><text x="124" y="88" font-size="10" text-anchor="middle" fill="#6e6e73">2</text><line x1="158" y1="18" x2="158" y2="76" stroke="#e1e5ec" stroke-width="1"/><text x="158" y="88" font-size="10" text-anchor="middle" fill="#6e6e73">3</text><line x1="192" y1="18" x2="192" y2="76" stroke="#e1e5ec" stroke-width="1"/><text x="192" y="88" font-size="10" text-anchor="middle" fill="#6e6e73">4</text><line x1="226" y1="18" x2="226" y2="76" stroke="#e1e5ec" stroke-width="1"/><text x="226" y="88" font-size="10" text-anchor="middle" fill="#6e6e73">5</text><line x1="260" y1="18" x2="260" y2="76" stroke="#e1e5ec" stroke-width="1"/><text x="260" y="88" font-size="10" text-anchor="middle" fill="#6e6e73">6</text><line x1="294" y1="18" x2="294" y2="76" stroke="#e1e5ec" stroke-width="1"/><text x="294" y="88" font-size="10" text-anchor="middle" fill="#6e6e73">7</text><line x1="328" y1="18" x2="328" y2="76" stroke="#e1e5ec" stroke-width="1"/><text x="328" y="88" font-size="10" text-anchor="middle" fill="#6e6e73">8</text><line x1="362" y1="18" x2="362" y2="76" stroke="#e1e5ec" stroke-width="1"/><text x="362" y="88" font-size="10" text-anchor="middle" fill="#6e6e73">9</text><text x="48" y="37.0" font-size="11.5" text-anchor="end" fill="#1f3a68" font-weight="700">A（高）</text><rect x="56" y="22" width="68" height="22" rx="3" fill="#1f3a68" stroke="#fff" stroke-width="1"/><rect x="192" y="22" width="68" height="22" rx="3" fill="#1f3a68" stroke="#fff" stroke-width="1"/><text x="48" y="65.0" font-size="11.5" text-anchor="end" fill="#1f3a68" font-weight="700">B（低）</text><rect x="124" y="50" width="68" height="22" rx="3" fill="#b25000" stroke="#fff" stroke-width="1"/><rect x="260" y="50" width="34" height="22" rx="3" fill="#b25000" stroke="#fff" stroke-width="1"/><text x="328" y="14" font-size="10" text-anchor="middle" fill="#b25000">Bの締切り 8</text><line x1="328" y1="18" x2="328" y2="80" stroke="#b25000" stroke-width="1.4" stroke-dasharray="4 3"/></svg>
+      <div style="font-size:12.5px;margin:6px 0 2px"><b>イ</b> A：3ミリ秒／周期6　B：4ミリ秒／周期9</div>
+      <svg width="420" height="90" viewBox="0 0 420 90"><line x1="56" y1="18" x2="56" y2="76" stroke="#e1e5ec" stroke-width="1"/><text x="56" y="88" font-size="10" text-anchor="middle" fill="#6e6e73">0</text><line x1="90" y1="18" x2="90" y2="76" stroke="#e1e5ec" stroke-width="1"/><text x="90" y="88" font-size="10" text-anchor="middle" fill="#6e6e73">1</text><line x1="124" y1="18" x2="124" y2="76" stroke="#e1e5ec" stroke-width="1"/><text x="124" y="88" font-size="10" text-anchor="middle" fill="#6e6e73">2</text><line x1="158" y1="18" x2="158" y2="76" stroke="#e1e5ec" stroke-width="1"/><text x="158" y="88" font-size="10" text-anchor="middle" fill="#6e6e73">3</text><line x1="192" y1="18" x2="192" y2="76" stroke="#e1e5ec" stroke-width="1"/><text x="192" y="88" font-size="10" text-anchor="middle" fill="#6e6e73">4</text><line x1="226" y1="18" x2="226" y2="76" stroke="#e1e5ec" stroke-width="1"/><text x="226" y="88" font-size="10" text-anchor="middle" fill="#6e6e73">5</text><line x1="260" y1="18" x2="260" y2="76" stroke="#e1e5ec" stroke-width="1"/><text x="260" y="88" font-size="10" text-anchor="middle" fill="#6e6e73">6</text><line x1="294" y1="18" x2="294" y2="76" stroke="#e1e5ec" stroke-width="1"/><text x="294" y="88" font-size="10" text-anchor="middle" fill="#6e6e73">7</text><line x1="328" y1="18" x2="328" y2="76" stroke="#e1e5ec" stroke-width="1"/><text x="328" y="88" font-size="10" text-anchor="middle" fill="#6e6e73">8</text><line x1="362" y1="18" x2="362" y2="76" stroke="#e1e5ec" stroke-width="1"/><text x="362" y="88" font-size="10" text-anchor="middle" fill="#6e6e73">9</text><text x="48" y="37.0" font-size="11.5" text-anchor="end" fill="#1f3a68" font-weight="700">A（高）</text><rect x="56" y="22" width="102" height="22" rx="3" fill="#1f3a68" stroke="#fff" stroke-width="1"/><rect x="260" y="22" width="102" height="22" rx="3" fill="#1f3a68" stroke="#fff" stroke-width="1"/><text x="48" y="65.0" font-size="11.5" text-anchor="end" fill="#1f3a68" font-weight="700">B（低）</text><rect x="158" y="50" width="102" height="22" rx="3" fill="#b25000" stroke="#fff" stroke-width="1"/><text x="362" y="14" font-size="10" text-anchor="middle" fill="#b25000">Bの締切り 9</text><line x1="362" y1="18" x2="362" y2="80" stroke="#b25000" stroke-width="1.4" stroke-dasharray="4 3"/></svg>
+    </div>
+    <div>
+      <table>
+        <tr><th>選択肢</th><th>Bの周期内でAが使う時間</th><th>残り</th><th>Bの必要</th></tr>
+        <tr><td><b>ア</b></td><td>2＋2＝4</td><td>8－4＝4</td><td>3 <b>○</b></td></tr>
+        <tr><td>イ</td><td>3＋3＝6</td><td>9－6＝3</td><td>4 ×</td></tr>
+        <tr><td>ウ</td><td>3＋3＋3＝9</td><td>13－9＝4</td><td>5 ×</td></tr>
+        <tr><td>エ</td><td>4＋4＋3＝11</td><td>15－11＝4</td><td>5 ×</td></tr>
+      </table>
+      <div class="point">Aは周期が来るたびに<b>Bを横取りして</b>先に動く（プリエンプティブ）。エは3回目のAが12〜16ミリ秒にかかるが、Bの締切り15までの3ミリ秒を数える。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/construction_flat.svg" alt="">共有資源を1つずつ使わせるのがセマフォ。キューやラウンドロビンは別の役</h1>
+  <div class="cols">
+    <div><svg width="420" height="230" viewBox="0 0 420 230"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<rect x="10" y="20" width="110" height="44" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="65.0" y="40.0" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">タスク1</text><text x="65.0" y="55.0" font-size="10.5" text-anchor="middle" fill="#fff">センサー1を読む</text>
+<rect x="10" y="120" width="110" height="44" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="65.0" y="140.0" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">タスク2</text><text x="65.0" y="155.0" font-size="10.5" text-anchor="middle" fill="#fff">センサー2を読む</text>
+<rect x="160" y="66" width="110" height="50" rx="6" fill="#fde7cf" stroke="#b25000" stroke-width="1.5"/><text x="215.0" y="89.0" font-size="12.5" text-anchor="middle" fill="#b25000" font-weight="700">セマフォ S</text><text x="215.0" y="104.0" font-size="10.5" text-anchor="middle" fill="#b25000">1→0</text>
+<rect x="310" y="66" width="100" height="50" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="360.0" y="89.0" font-size="13" text-anchor="middle" fill="#fff" font-weight="700">I2Cバス</text><text x="360.0" y="104.0" font-size="10.5" text-anchor="middle" fill="#fff">共有資源</text>
+<line x1="120" y1="42" x2="160" y2="80" stroke="#5b80bf" stroke-width="1.6" marker-end="url(#ar)"/><text x="126" y="28" font-size="10.5" text-anchor="start" fill="#1f3a68" font-weight="700">P(S)：S＝1 なので使える</text>
+<line x1="120" y1="142" x2="160" y2="104" stroke="#b25000" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#ar)"/><text x="126" y="180" font-size="10.5" text-anchor="start" fill="#b25000" font-weight="700">P(S)：S＝0 なので待つ</text>
+<line x1="270" y1="91" x2="310" y2="91" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar)"/>
+<text x="10" y="206" font-size="10.5" text-anchor="start" fill="#1d1d1f">P操作：Sが1以上なら1減らして進む。0なら待つ</text>
+<text x="10" y="224" font-size="10.5" text-anchor="start" fill="#1d1d1f">V操作：Sを1増やし、待っているタスクを起こす</text>
+</svg></div>
+    <div>
+      <div class="cap">R4春 問17・R7秋 問16 の選択肢</div>
+      <table>
+        <tr><td><b>セマフォ</b></td><td><b>正解</b>。資源の空きを数で表し、P操作・V操作で確保と解放</td></tr>
+        <tr><td>キュー</td><td>タスク間でデータを順に受け渡す（メッセージキュー）</td></tr>
+        <tr><td>マルチスレッド</td><td>処理を並行して動かすこと。同時に<b>使わせない</b>仕組みではない</td></tr>
+        <tr><td>ラウンドロビン</td><td>CPUを順番に回すスケジューリングの方式</td></tr>
+        <tr><td>メモリプール</td><td>決まった大きさのメモリを貸し出す記憶管理（R7秋で入れ替わった選択肢）</td></tr>
+      </table>
+      <div class="point">ロックしたタスクだけが解放できる<b>ミューテックス</b>、ループで待つ<b>スピンロック</b>も排他制御の道具。守る部分を<b>クリティカルセクション</b>と呼ぶ。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/chains_flat.svg" alt="">デッドロックは待ちの輪。全員が同じ順番で資源を取れば輪ができない</h1>
+  <div class="cols">
+    <div><svg width="420" height="220" viewBox="0 0 420 220"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<defs><marker id="aw2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#b25000"/></marker></defs>
+<rect x="30" y="20" width="120" height="44" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="90.0" y="46.7" font-size="13" text-anchor="middle" fill="#fff" font-weight="700">タスク1</text><rect x="270" y="20" width="120" height="44" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="330.0" y="46.7" font-size="13" text-anchor="middle" fill="#fff" font-weight="700">タスク2</text>
+<rect x="30" y="150" width="120" height="44" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="90.0" y="176.7" font-size="13" text-anchor="middle" fill="#fff" font-weight="700">資源X</text><rect x="270" y="150" width="120" height="44" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="330.0" y="176.7" font-size="13" text-anchor="middle" fill="#fff" font-weight="700">資源Y</text>
+<line x1="90" y1="150" x2="90" y2="66" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar)"/><text x="84" y="112" font-size="10.5" text-anchor="end" fill="#1f3a68">持っている</text>
+<line x1="330" y1="150" x2="330" y2="66" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar)"/><text x="336" y="112" font-size="10.5" text-anchor="start" fill="#1f3a68">持っている</text>
+<line x1="150" y1="50" x2="270" y2="160" stroke="#b25000" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#aw2)"/>
+<line x1="270" y1="50" x2="150" y2="160" stroke="#b25000" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#aw2)"/>
+<text x="210" y="30" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">互いに相手の</text><text x="210" y="45" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">資源を待つ</text>
+<text x="210" y="214" font-size="11" text-anchor="middle" fill="#6e6e73">取る順番が「X→Y」と「Y→X」で逆だと、待ちの輪ができる</text>
+</svg>
+      <div class="point"><b>R4秋 問16・R7秋 問18</b>（同じ問題）：防ぐ方法は「資源獲得の順序を両方のタスクで<b>同じ</b>にする」。優先度を変えても防げない。</div>
+    </div>
+    <div>
+      <div class="cap">R6春 問17：Aと同時に動かしてデッドロックが起きうるのは？</div>
+      <table>
+        <tr><th>プロセス</th><th>取る順（表の数字を並べ直す）</th><th>Aと</th></tr>
+        <tr><td>A</td><td>X → Y → Z</td><td>―</td></tr>
+        <tr><td>B</td><td>X → Y → Z</td><td>同じ順 ○</td></tr>
+        <tr><td>C</td><td>Z → X → Y</td><td>Xを持つAとZを持つCが<b>待ち合う</b></td></tr>
+        <tr><td>D</td><td>Z → Y → X</td><td>XとYを逆に取り合う</td></tr>
+      </table>
+      <div class="point">答えは<b>C，D</b>。表の数字は「何番目に取るか」なので、まず資源を<b>取る順に並べ直す</b>のがこつ。</div>
+    </div>
+  </div>
+  <img class="illust" src="img/irasutoya/traffic_jam.png" alt="" style="height:70px;bottom:36px">
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/shuffle_tracks_button_flat.svg" alt="">並行処理の困りごとは5つ。「止まる」「進まない」「結果が狂う」で分ける</h1>
+  <div class="cols wide-r">
+    <div>
+      <table>
+        <tr><th style="width:30%">現象</th><th>何が起きるか</th></tr>
+        <tr><td>デッドロック</td><td>互いに待って<b>全員が止まる</b></td></tr>
+        <tr><td>ライブロック</td><td>譲り合いを繰り返し、動いているのに<b>進まない</b></td></tr>
+        <tr><td>スタベーション</td><td>他は動くのに、<b>特定のタスクだけ</b>待たされ続ける</td></tr>
+        <tr><td>優先度逆転</td><td>低い優先度のタスクがロックを持つ間に、中くらいが動き続け、高いタスクが待たされる。<b>優先度継承</b>で防ぐ</td></tr>
+        <tr><td>競合状態</td><td>同時に読み書きして、タイミングで<b>結果が狂う</b></td></tr>
+      </table>
+    </div>
+    <div>
+      <svg width="400" height="150" viewBox="0 0 400 150"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+        <text x="10" y="14" font-size="11" text-anchor="start" fill="#1f3a68" font-weight="700">競合状態の例：残高100に、2つのスレッドが10ずつ足す</text>
+        <rect x="10" y="28" width="120" height="26" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="70.0" y="44.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">Ｔ1：100を読む</text><rect x="140" y="28" width="120" height="26" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="200.0" y="44.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">Ｔ2：100を読む</text>
+        <rect x="10" y="64" width="120" height="26" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="70.0" y="80.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">Ｔ1：110を書く</text><rect x="140" y="64" width="120" height="26" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="200.0" y="80.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">Ｔ2：110を書く</text>
+        <rect x="270" y="46" width="120" height="30" rx="6" fill="#fde7cf" stroke="#b25000" stroke-width="1.5"/><text x="330.0" y="65.3" font-size="12" text-anchor="middle" fill="#b25000" font-weight="700">結果 110</text>
+        <text x="200" y="116" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">正しくは120。片方の更新が消える</text>
+        <text x="200" y="136" font-size="10.5" text-anchor="middle" fill="#6e6e73">読む→足す→書く をクリティカルセクションとして排他制御する</text>
+      </svg>
+      <div class="point"><b>R7秋 問17</b>：<b>スレッドセーフ</b>は「複数のスレッドで並列に実行しても問題が生じない」性質。「複数のスレッドから呼ばれないようにする」「単一スレッドで動かす」は誤り。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/memory.png" alt=""><img src="img/irasutoya/bookshelf.png" alt=""><img src="img/irasutoya/hdd.png" alt=""><img src="img/irasutoya/puzzle.png" alt=""></div>
+  <div class="k">第3章</div>
+  <h1>記憶管理</h1>
+  <p>区画方式 ／ 断片化とGC ／ 仮想記憶 ／ ページングとセグメンテーション ／ ページフォールト ／ ページ置換え（FIFO・LRU）／ スラッシング</p>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/card_index_dividers_flat.svg" alt="">空きの合計は足りても、続いた空きがないと入らない。それが断片化</h1>
+  <div class="cols">
+    <div><svg width="420" height="270" viewBox="0 0 420 270"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs><rect x="20" y="10" width="110" height="30" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="75.0" y="29.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">OS</text><rect x="20" y="40" width="110" height="40" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="75.0" y="64.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">A</text><rect x="20" y="80" width="110" height="25" fill="#fff" stroke="#9aa7bd" stroke-dasharray="4 3"/><text x="75" y="96.5" font-size="10.5" text-anchor="middle" fill="#6e6e73">空き 25</text><rect x="20" y="105" width="110" height="55" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="75.0" y="136.5" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">B</text><rect x="20" y="160" width="110" height="15" fill="#fff" stroke="#9aa7bd" stroke-dasharray="4 3"/><text x="75" y="171.5" font-size="10.5" text-anchor="middle" fill="#6e6e73">空き 15</text><rect x="20" y="175" width="110" height="35" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="75.0" y="196.5" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">C</text><rect x="20" y="210" width="110" height="40" fill="#fff" stroke="#9aa7bd" stroke-dasharray="4 3"/><text x="75" y="234.0" font-size="10.5" text-anchor="middle" fill="#6e6e73">空き 40</text>
+<text x="0" y="268" font-size="10.5" text-anchor="start" fill="#6e6e73">可変区画：ジョブごとに必要な大きさだけ</text>
+<rect x="170" y="30" width="110" height="30" rx="6" fill="#fde7cf" stroke="#b25000" stroke-width="1.5"/><text x="225.0" y="49.0" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">新しいジョブ 30</text>
+<text x="300" y="30" font-size="11" text-anchor="start" fill="#1d1d1f">空きは 25・15・40</text><text x="300" y="46" font-size="11" text-anchor="start" fill="#1d1d1f">合計80あっても</text><text x="300" y="62" font-size="11" text-anchor="start" fill="#b25000" font-weight="700">入るのは 40 の所だけ</text>
+<text x="170" y="100" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">どの空きに入れるか</text>
+<text x="170" y="122" font-size="10.5" text-anchor="start" fill="#1d1d1f">ファーストフィット：最初に見つかった入る空き</text>
+<text x="170" y="142" font-size="10.5" text-anchor="start" fill="#1d1d1f">ベストフィット：入る中で一番小さい空き</text>
+<text x="170" y="162" font-size="10.5" text-anchor="start" fill="#1d1d1f">ワーストフィット：一番大きい空き</text>
+<text x="170" y="200" font-size="11.5" text-anchor="start" fill="#b25000" font-weight="700">空きが細切れになるのが断片化</text>
+<text x="170" y="220" font-size="10.5" text-anchor="start" fill="#1d1d1f">→ 詰め直す（コンパクション）</text>
+<text x="170" y="238" font-size="10.5" text-anchor="start" fill="#1d1d1f">　 連続した大きな空きを作る</text>
+</svg></div>
+    <div>
+      <table>
+        <tr><th style="width:30%">方式</th><th>しくみ</th><th>弱み</th></tr>
+        <tr><td>固定区画</td><td>主記憶を決まった大きさに区切る</td><td>区画の中に余りが出る（<b>内部断片化</b>）</td></tr>
+        <tr><td>可変区画</td><td>必要な大きさだけ切り出す</td><td>区画の間に細かい空きが出る（<b>外部断片化</b>）</td></tr>
+        <tr><td>オーバーレイ</td><td>プログラムを分け、必要な部分だけ順に読み込む</td><td>分け方を作る人が決める</td></tr>
+        <tr><td>スワッピング</td><td>実行中でないプログラムを丸ごとディスクへ出す</td><td>出し入れの時間がかかる</td></tr>
+      </table>
+      <div class="point"><b>R4春 問18</b>：断片化は「空き領域の合計は十分なのに、必要な大きさの<b>連続した領域</b>を獲得できない」状態。<b>R3春 問18</b>：使われなくなったヒープ領域を回収するのは<b>ガーベジコレクション</b>（コンパクションや動的再配置と入れ替えた選択肢に注意）。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/brain_flat.svg" alt="">仮想記憶は、主記憶より大きなプログラムを、必要なページだけ載せて動かす</h1>
+  <div class="cols">
+    <div><svg width="430" height="254" viewBox="0 0 430 254"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<text x="60" y="14" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">仮想アドレス空間</text>
+<rect x="20" y="24" width="80" height="30" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="60.0" y="43.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">ページ0</text><rect x="20" y="58" width="80" height="30" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="60.0" y="77.0" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">ページ1</text><rect x="20" y="92" width="80" height="30" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="60.0" y="111.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">ページ2</text><rect x="20" y="126" width="80" height="30" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="60.0" y="145.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">ページ3</text><rect x="20" y="160" width="80" height="30" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="60.0" y="179.0" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">ページ4</text><rect x="20" y="194" width="80" height="30" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="60.0" y="213.0" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">ページ5</text>
+<rect x="150" y="90" width="110" height="56" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="205.0" y="116.0" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">アドレス変換</text><text x="205.0" y="131.0" font-size="10.5" text-anchor="middle" fill="#fff">MMU・ページテーブル</text>
+<rect x="160" y="30" width="90" height="30" rx="6" fill="#fde7cf" stroke="#b25000" stroke-width="1.5"/><text x="205.0" y="49.1" font-size="11.5" text-anchor="middle" fill="#b25000" font-weight="700">TLB</text><text x="205" y="74" font-size="9.5" text-anchor="middle" fill="#b25000">変換結果のキャッシュ</text>
+<text x="355" y="14" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">主記憶（実記憶）</text>
+<rect x="310" y="24" width="90" height="30" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="355.0" y="43.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">ページ2</text><rect x="310" y="58" width="90" height="30" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="355.0" y="77.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">ページ0</text><rect x="310" y="92" width="90" height="30" rx="6" fill="#fff" stroke="#9aa7bd" stroke-width="1.5"/><text x="355.0" y="111.0" font-size="11" text-anchor="middle" fill="#6e6e73" font-weight="700">空き</text><rect x="310" y="126" width="90" height="30" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="355.0" y="145.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">ページ3</text>
+<line x1="100" y1="40" x2="150" y2="110" stroke="#5b80bf" stroke-width="1.4" marker-end="url(#ar)"/><line x1="260" y1="118" x2="310" y2="72" stroke="#5b80bf" stroke-width="1.4" marker-end="url(#ar)"/>
+<rect x="300" y="175" width="110" height="44" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="355.0" y="195.0" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">補助記憶</text><text x="355.0" y="210.0" font-size="10.5" text-anchor="middle" fill="#fff">ページ1・4・5</text>
+<line x1="100" y1="70" x2="300" y2="190" stroke="#9aa7bd" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#ar)"/><text x="110" y="230" font-size="10.5" text-anchor="start" fill="#b25000" font-weight="700">主記憶にない → ページフォールト</text>
+<text x="215" y="248" font-size="10.5" text-anchor="middle" fill="#6e6e73">プログラムは連続した広い空間に見える。実際は飛び飛びでも構わない</text>
+</svg></div>
+    <div>
+      <table>
+        <tr><th style="width:30%">部品</th><th>役目</th></tr>
+        <tr><td>ページテーブル</td><td>仮想ページ番号→主記憶の枠番号の対応表。主記憶にあるかどうかの印も持つ</td></tr>
+        <tr><td>MMU</td><td>アドレス変換を行うハードウェア</td></tr>
+        <tr><td>TLB</td><td>最近の変換結果を覚えておく小さな高速メモリ。ページテーブルを毎回読まずに済む</td></tr>
+        <tr><td>補助記憶（ページング領域）</td><td>ページアウトされたページの置き場所</td></tr>
+      </table>
+      <div class="point"><b>R3秋 問19</b>：仮想記憶での補助記憶の役目は「<b>ページアウトされたページを格納する</b>」こと。更新前の内容の保存やバックアップではない。</div>
+      <div class="point">ページは<b>必要になったときに読み込む</b>（デマンドページング）のがふつう。先に読んでおくのはプリページング。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/scroll_flat.svg" alt="">ページは固定長、セグメントは意味の単位。ページングは外部断片化なし</h1>
+  <div class="cols">
+    <div>
+      <table class="vs">
+        <tr><th style="width:24%"></th><th>ページング</th><th>セグメンテーション</th></tr>
+        <tr><td>分け方</td><td><b>固定長</b>のページ</td><td>プログラム・データなど<b>論理的なまとまり</b>（可変長）</td></tr>
+        <tr><td>断片化</td><td>外部断片化は<b>起きない</b>（最後のページに内部断片化）</td><td>外部断片化が起きる</td></tr>
+        <tr><td>保護・共有</td><td>ページ単位なので意味と合わない</td><td>まとまりごとに保護や共用を決めやすい</td></tr>
+        <tr><td>大きさの変更</td><td>ページを足して対応</td><td>セグメントの長さを実行中に変えやすい</td></tr>
+      </table>
+      <div class="point"><b>R6秋 問18</b>：ページングの長所は「<b>外部断片化が発生しない</b>」。論理単位での保護・共用・大きさの動的変更は、どれも<b>セグメンテーション</b>の長所。</div>
+    </div>
+    <div>
+      <div class="cap">R4秋 問17：ページサイズを半分にすると</div>
+      <svg width="420" height="130" viewBox="0 0 420 130">
+        <text x="10" y="16" font-size="11" text-anchor="start" fill="#1f3a68" font-weight="700">大半のプログラムがページの半分以下</text>
+        <rect x="10" y="26" width="160" height="34" fill="#fff" stroke="#9aa7bd"/><rect x="10" y="26" width="70" height="34" fill="#5b80bf"/><text x="45" y="48" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">使用</text><text x="125" y="48" font-size="10.5" text-anchor="middle" fill="#b25000" font-weight="700">無駄</text>
+        <text x="185" y="48" font-size="16" text-anchor="start" fill="#1f3a68" font-weight="700">→</text>
+        <rect x="210" y="26" width="80" height="34" fill="#5b80bf"/><text x="250" y="48" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">使用</text>
+        <text x="10" y="90" font-size="11" text-anchor="start" fill="#1d1d1f">1ページの中の使わない部分（内部断片化）が減る</text>
+        <text x="10" y="110" font-size="11" text-anchor="start" fill="#b25000" font-weight="700">→ 主記憶にたくさん載り、主記憶の不足が和らぐ（正解ウ）</text>
+      </svg>
+      <div class="point">逆に、ページを小さくするとページテーブルは大きくなる。「ページフォールトが増えて遅くなる」「余裕がなくなる」は、この問題の前提では誤り。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/abacus_flat.svg" alt="">フォールト＝ページイン ≧ ページアウト。平均時間は割合で重み付け</h1>
+  <div class="cols">
+    <div>
+      <div class="flow"><div class="box b2">ページフォールト<span>ページが主記憶にない</span></div><div class="to">▶</div><div class="box b3">ページアウト<span>空きがなければ追い出す</span></div><div class="to">▶</div><div class="box b1">ページイン<span>補助記憶から読む</span></div></div>
+      <div class="point" style="margin-top:10px"><b>R3春 問19</b>：フォールトが起きたら必ずページインするので<b>フォールト＝ページイン</b>。ページアウトは空きがない時だけ（追い出すページが更新されていない時は書き戻しも不要）なので<b>それ以下</b>。答えは「PF＝PI ≧ PO」。</div>
+      <div class="point"><b>ページアウト</b>の対象をどれにするかが、次のスライドのページ置換えアルゴリズム。</div>
+    </div>
+    <div>
+      <div class="cap">R5秋 問16：平均処理時間30ミリ秒。ページアウトなしの割合は？</div>
+      <div class="formula" style="font-size:15px">20 × p ＋ 60 × (1 － p) ＝ 30<br>60 － 40p ＝ 30　→　p ＝ <b>0.75</b></div>
+      <div style="font-size:11.5px;color:#6e6e73;margin:2px 0 8px">ページアウトなし20ミリ秒、あり60ミリ秒</div>
+      <div class="cap">R3秋 問17：許されるページフォールトの発生率</div>
+      <div class="formula" style="font-size:15px">1命令の遅れ ＝ 2回 × 率 × 40ミリ秒 ≦ 0.4マイクロ秒<br>率 ≦ 0.4×10⁻⁶ ÷ (80×10⁻³) ＝ <b>5×10⁻⁶</b></div>
+      <div class="point warn">ミリ（10⁻³）とマイクロ（10⁻⁶）の桁をそろえてから割る。「1命令で2回参照」の2を落とすと1×10⁻⁵（イ）になる。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/inbox_tray_flat.svg" alt="">FIFOは「一番先に読み込んだページ」を出す。途中で使ったかは関係ない</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R5春 問17：3つの枠、参照順 1, 4, 2, 4, 1, 3（枠の位置は動かない）</div>
+      <table class="mini" style="text-align:center"><tr><th>参照</th><th>枠1</th><th>枠2</th><th>枠3</th><th>結果</th></tr><tr><td><b>1</b></td><td>1</td><td></td><td></td><td>読込み</td></tr><tr><td><b>4</b></td><td>1</td><td>4</td><td></td><td>読込み</td></tr><tr><td><b>2</b></td><td>1</td><td>4</td><td>2</td><td>読込み</td></tr><tr><td><b>4</b></td><td>1</td><td>4</td><td>2</td><td>あり</td></tr><tr><td><b>1</b></td><td>1</td><td>4</td><td>2</td><td>あり</td></tr><tr><td><b>3</b></td><td style="background:#fde7cf;color:#b25000;font-weight:700">3</td><td>4</td><td>2</td><td style="color:#b25000;font-weight:700">置換え（1を出す）</td></tr></table>
+      <div class="point">3を読む時、読み込んだ時刻が一番古いのは<b>ページ1</b>（直前に使ったばかりでも出す）。枠1が3になり、最後は <b>3, 4, 2</b>（ウ）。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:24%">方式</th><th>追い出すページ</th><th>見る情報</th></tr>
+        <tr><td><b>FIFO</b></td><td>主記憶に<b>最も早く読み込んだ</b>ページ</td><td>読み込んだ時刻</td></tr>
+        <tr><td><b>LRU</b></td><td><b>最後に使ってから最も時間がたった</b>ページ</td><td>最後に使った時刻</td></tr>
+        <tr><td>LFU</td><td><b>使った回数</b>が最も少ないページ</td><td>使った回数</td></tr>
+        <tr><td>LIFO</td><td>最も新しく読み込んだページ</td><td>読み込んだ時刻</td></tr>
+        <tr><td>OPT（最適）</td><td>この先<b>最も長く使わない</b>ページ</td><td>未来の参照（実際には作れない比較の基準）</td></tr>
+      </table>
+      <div class="point warn">FIFOでは、枠の数を増やしたのにフォールトが増えることがある（<b>ビレディの逆説</b>）。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/hourglass_done_flat.svg" alt="">LRUは「最後に使った時刻」が一番古いページを出す。使うたびに時刻を更新</h1>
+  <div class="cols wide-r">
+    <div>
+      <div class="cap">R7春 問15：4つの枠（4000〜7000番地）</div>
+      <div style="font-size:12.5px;margin-bottom:6px">参照順 1, 2, 3, 4, 2, 5, 3, 1, 6, 5, <b>4</b>。最後の4はどこに入る？</div>
+      <table class="mini" style="text-align:center"><tr><th>参照</th><th>4000</th><th>5000</th><th>6000</th><th>7000</th><th>結果</th></tr><tr><td><b>1〜4</b></td><td>1</td><td>2</td><td>3</td><td>4</td><td>読込み</td></tr><tr><td><b>2</b></td><td>1</td><td><b>2</b></td><td>3</td><td>4</td><td>あり</td></tr><tr><td><b>5</b></td><td style="background:#fde7cf;color:#b25000;font-weight:700">5</td><td>2</td><td>3</td><td>4</td><td style="color:#b25000;font-weight:700">置換え（1）</td></tr><tr><td><b>3</b></td><td>5</td><td>2</td><td><b>3</b></td><td>4</td><td>あり</td></tr><tr><td><b>1</b></td><td>5</td><td>2</td><td>3</td><td style="background:#fde7cf;color:#b25000;font-weight:700">1</td><td style="color:#b25000;font-weight:700">置換え（4）</td></tr><tr><td><b>6</b></td><td>5</td><td style="background:#fde7cf;color:#b25000;font-weight:700">6</td><td>3</td><td>1</td><td style="color:#b25000;font-weight:700">置換え（2）</td></tr><tr><td><b>5</b></td><td><b>5</b></td><td>6</td><td>3</td><td>1</td><td>あり</td></tr><tr><td><b>4</b></td><td>5</td><td>6</td><td style="background:#fde7cf;color:#b25000;font-weight:700">4</td><td>1</td><td style="color:#b25000;font-weight:700">置換え（3）</td></tr></table>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th>参照</th><th>その時の「最後に使った順」（古い→新しい）</th><th>出す</th></tr>
+        <tr><td>5</td><td>1, 3, 4, 2</td><td>1</td></tr>
+        <tr><td>1</td><td>4, 2, 5, 3</td><td>4</td></tr>
+        <tr><td>6</td><td>2, 5, 3, 1</td><td>2</td></tr>
+        <tr><td>4</td><td>3, 1, 6, 5</td><td><b>3</b></td></tr>
+      </table>
+      <div class="point">最後の4はページ3がいた<b>6000番地</b>（ウ）。「2」「3」「5」を使い直すたびに、その順番が一番新しい側へ動くのがFIFOとの違い。</div>
+      <div class="point"><b>R5春 問18</b>：LRUは「<b>使用されてからの経過時間が最も長い</b>ページを置き換える」。使用回数で選ぶのはLFU。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/recycling_symbol_flat.svg" alt="">ページの出し入ればかりで急に遅くなるのがスラッシング。多重度を下げて防ぐ</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="160" viewBox="0 0 420 160"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<line x1="40" y1="140" x2="400" y2="140" stroke="#1f3a68" stroke-width="1.4" marker-end="url(#ar)"/><line x1="40" y1="140" x2="40" y2="10" stroke="#1f3a68" stroke-width="1.4" marker-end="url(#ar)"/>
+<text x="400" y="156" font-size="10.5" text-anchor="end" fill="#6e6e73">多重度（同時に動かすプログラム数）</text><text x="46" y="14" font-size="10.5" text-anchor="start" fill="#6e6e73">処理の量</text>
+<path d="M40,130 C120,60 180,30 230,30 C260,30 280,60 310,120 L340,132" fill="none" stroke="#5b80bf" stroke-width="2.6"/>
+<line x1="240" y1="20" x2="240" y2="140" stroke="#b25000" stroke-width="1.3" stroke-dasharray="4 3"/><text x="300" y="50" font-size="11" text-anchor="start" fill="#b25000" font-weight="700">ここから急に落ちる</text><text x="300" y="66" font-size="11" text-anchor="start" fill="#b25000" font-weight="700">＝スラッシング</text>
+</svg>
+      <div class="point"><b>R3秋 問16・R6秋 問17</b>（同じ問題）：「ページの置換えが頻繁に起きて、処理能力が急に落ちる」のは<b>スラッシング</b>。スワップアウト・フラグメンテーション・ページフォールトは、それぞれ1つの出来事や状態の名前。</div>
+    </div>
+    <div>
+      <div class="cap">R7秋 問19：キャッシュの表（読み込んだ時刻・最後に参照した時刻・参照回数）</div>
+      <table>
+        <tr><th style="width:24%">選択肢</th><th>表のどの列で選ぶか</th></tr>
+        <tr><td>FIFO</td><td>読み込んだ時刻が<b>最も古い</b>もの</td></tr>
+        <tr><td>LFU</td><td>参照回数が<b>最も少ない</b>もの</td></tr>
+        <tr><td>LIFO</td><td>読み込んだ時刻が<b>最も新しい</b>もの</td></tr>
+        <tr><td><b>LRU</b></td><td>最後に参照した時刻が<b>最も古い</b>もの（この問題の答え）</td></tr>
+      </table>
+      <div class="point">キャッシュメモリの置換え（#3の範囲）も、ページ置換えと同じ名前と考え方。<b>列を1つずつ当てはめて</b>、C2が選ばれる方式を探す。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/server.png" alt=""><img src="img/irasutoya/client_server.png" alt=""><img src="img/irasutoya/tree.png" alt=""><img src="img/irasutoya/backup_hdd.png" alt=""></div>
+  <div class="k">第4章</div>
+  <h1>ミドルウェアと<br>ファイルシステム</h1>
+  <p>ミドルウェア ／ API と ライブラリ ／ シェル ／ ディレクトリとパス ／ リンク ／ バックアップ ／ ファイル編成</p>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/handshake_flat.svg" alt="">ミドルウェアは多くのアプリに共通の機能。OSとアプリの間に入る</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th style="width:32%">ミドルウェア</th><th>受け持つこと</th></tr>
+        <tr><td>DBMS</td><td>データベースの定義・操作・同時実行の制御（#9）</td></tr>
+        <tr><td>TPモニター</td><td>大量のトランザクションを受け付け、処理を振り分けて完了まで管理する</td></tr>
+        <tr><td>アプリケーションサーバ</td><td>Webアプリの業務処理を動かす土台</td></tr>
+        <tr><td>メッセージキュー（MOM）</td><td>アプリ間でメッセージを<b>ためて非同期に</b>受け渡す</td></tr>
+        <tr><td>運用管理ツール</td><td>ジョブの自動実行・稼働の監視・ログの収集</td></tr>
+        <tr><td>ORB（CORBA）</td><td>ネットワーク上の別のオブジェクトを呼び出す</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="stack">
+        <div class="box b5">業務アプリ　業務アプリ　業務アプリ</div>
+        <div class="arrow">▼ API を呼ぶ</div>
+        <div class="box b2">ミドルウェア<span>共通の機能を一度だけ作って使い回す</span></div>
+        <div class="arrow">▼ システムコール</div>
+        <div class="box b1">OS</div>
+      </div>
+      <div class="point">ミドルウェアを使うと、アプリは<b>OSの違いを気にせず</b>作れて、開発の手間も減る。Webサーバ・DBMS・アプリケーションサーバの3層は、#4の3層クライアントサーバと対応する。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/link_flat.svg" alt="">APIは呼び出し方の約束。ライブラリは「いつつなぐか」で静的と動的</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th style="width:26%">言葉</th><th>意味</th></tr>
+        <tr><td>API</td><td>ソフトウェアの機能を呼び出すための<b>決まりごと</b>（関数名・引数・戻り値）。ソースコードの段階の約束</td></tr>
+        <tr><td>ABI</td><td>機械語の段階の約束（呼出し規約・データの並べ方）。同じなら作り直さずに動く</td></tr>
+        <tr><td>Web API</td><td>HTTPで呼び出すAPI。REST方式が多い</td></tr>
+        <tr><td>OpenAPI</td><td>Web APIの仕様を書く形式。<b>R7春 問17</b>：それに沿って定義・開発を支えるOSSは<b>Swagger</b></td></tr>
+      </table>
+      <div class="point">シェル（bashなど）は、利用者が打ったコマンドを解釈してOSに伝える<b>コマンドインタプリタ</b>。複数のコマンドを並べたファイルが<b>シェルスクリプト</b>。</div>
+    </div>
+    <div>
+      <table class="vs">
+        <tr><th style="width:24%"></th><th>静的リンク</th><th>動的リンク</th></tr>
+        <tr><td>つなぐ時</td><td>実行ファイルを作る時（リンカ）</td><td><b>実行する時</b>（DLL・共有ライブラリ）</td></tr>
+        <tr><td>実行ファイル</td><td>ライブラリ入りで大きい</td><td>小さい。複数のプログラムで共用</td></tr>
+        <tr><td>ライブラリの更新</td><td>作り直しが必要</td><td>差し替えるだけで反映</td></tr>
+      </table>
+      <div class="point">ライブラリは<b>自分のコードから呼ぶ</b>部品。フレームワークは土台の側が<b>自分のコードを呼ぶ</b>（制御の反転）。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/open_file_folder_flat.svg" alt="">ファイルは木の形で管理する。パスはルートからか、今いる所から書く</h1>
+  <div class="cols">
+    <div><svg width="420" height="230" viewBox="0 0 420 230">
+<rect x="170" y="6" width="70" height="28" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="205.0" y="24.7" font-size="13" text-anchor="middle" fill="#fff" font-weight="700">/</text>
+<rect x="40" y="66" width="80" height="28" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="80.0" y="84.1" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">home</text><rect x="170" y="66" width="70" height="28" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="205.0" y="84.1" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">etc</text><rect x="290" y="66" width="80" height="28" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="330.0" y="84.1" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">usr</text>
+<rect x="10" y="126" width="70" height="28" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="45.0" y="144.1" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">aki</text><rect x="90" y="126" width="70" height="28" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="125.0" y="144.1" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">ben</text>
+<rect x="0" y="186" width="90" height="28" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="45.0" y="204.0" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">memo.txt</text><rect x="100" y="186" width="80" height="28" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="140.0" y="204.0" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">doc</text>
+<line x1="205" y1="34" x2="80" y2="66" stroke="#9aa7bd" stroke-width="1.6"/><line x1="205" y1="34" x2="205" y2="66" stroke="#9aa7bd" stroke-width="1.6"/><line x1="205" y1="34" x2="330" y2="66" stroke="#9aa7bd" stroke-width="1.6"/><line x1="80" y1="94" x2="45" y2="126" stroke="#9aa7bd" stroke-width="1.6"/><line x1="80" y1="94" x2="125" y2="126" stroke="#9aa7bd" stroke-width="1.6"/><line x1="45" y1="154" x2="45" y2="186" stroke="#9aa7bd" stroke-width="1.6"/><line x1="125" y1="154" x2="140" y2="186" stroke="#9aa7bd" stroke-width="1.6"/>
+<rect x="85" y="120" width="80" height="40" rx="8" fill="none" stroke="#b25000" stroke-width="2" stroke-dasharray="5 3"/><text x="170" y="172" font-size="10.5" text-anchor="start" fill="#b25000" font-weight="700">いまいる所</text>
+<text x="240" y="130" font-size="11" text-anchor="start" fill="#1f3a68" font-weight="700">絶対パス（ルートから）</text><text x="240" y="146" font-size="11" text-anchor="start" fill="#1d1d1f">/home/aki/memo.txt</text>
+<text x="240" y="176" font-size="11" text-anchor="start" fill="#1f3a68" font-weight="700">相対パス（いまいる所から）</text><text x="240" y="192" font-size="11" text-anchor="start" fill="#1d1d1f">../aki/memo.txt</text>
+<text x="240" y="214" font-size="10.5" text-anchor="start" fill="#6e6e73">. は今の所、.. は1つ上</text>
+</svg></div>
+    <div>
+      <table>
+        <tr><th style="width:30%">リンク</th><th>指しているもの</th><th>元を消すと</th></tr>
+        <tr><td>ハードリンク</td><td>同じ<b>ファイルの実体</b>（iノード）にもう1つ名前を付ける</td><td>残りの名前から<b>まだ読める</b></td></tr>
+        <tr><td>シンボリックリンク</td><td>元のファイルの<b>パス名</b>を中身に持つ別ファイル（ショートカット）</td><td>指す先がなくなり<b>読めない</b></td></tr>
+      </table>
+      <div class="point">シンボリックリンクはディレクトリや別のファイルシステムも指せる。ハードリンクは同じファイルシステムの中だけ。</div>
+      <div class="point">アクセス権（UNIX）：所有者・グループ・その他 ごとに<b>読み r・書き w・実行 x</b>。<span class="mono">rwxr-x---</span> は所有者が全部、グループが読みと実行、その他は何もできない。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/floppy_disk_flat.svg" alt="">増分は取るのが速く戻すのが遅い。差分はその中間</h1>
+  <div class="cols">
+    <div><svg width="420" height="170" viewBox="0 0 420 170">
+<text x="70" y="14" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">日</text><text x="125" y="14" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">月</text><text x="180" y="14" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">火</text><text x="235" y="14" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">水</text><text x="290" y="14" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">木</text><text x="345" y="14" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">金</text>
+<text x="4" y="44" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">差分</text><text x="4" y="120" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">増分</text>
+<rect x="46" y="26" width="48" height="28" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="70.0" y="43.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">フル</text><rect x="101" y="26" width="19" height="28" rx="3" fill="#5b80bf"/><rect x="156" y="26" width="30" height="28" rx="3" fill="#5b80bf"/><rect x="211" y="26" width="41" height="28" rx="3" fill="#5b80bf"/><rect x="266" y="26" width="52" height="28" rx="3" fill="#5b80bf"/><rect x="321" y="26" width="63" height="28" rx="3" fill="#5b80bf"/>
+<text x="240" y="72" font-size="10.5" text-anchor="middle" fill="#6e6e73">毎回「フルからの変更」全部。戻すのは フル＋最後の差分</text>
+<rect x="46" y="102" width="48" height="28" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="70.0" y="119.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">フル</text><rect x="101" y="102" width="18" height="28" rx="3" fill="#b25000"/><rect x="156" y="102" width="18" height="28" rx="3" fill="#b25000"/><rect x="211" y="102" width="18" height="28" rx="3" fill="#b25000"/><rect x="266" y="102" width="18" height="28" rx="3" fill="#b25000"/><rect x="321" y="102" width="18" height="28" rx="3" fill="#b25000"/>
+<text x="240" y="148" font-size="10.5" text-anchor="middle" fill="#6e6e73">毎回「前回からの変更」だけ。戻すのは フル＋増分を全部順に</text>
+</svg>
+      <table class="mini">
+        <tr><th>方式</th><th>取る時間・容量</th><th>戻す手間</th></tr>
+        <tr><td>フル</td><td>最大</td><td>1つ戻すだけ</td></tr>
+        <tr><td>差分</td><td>日がたつほど増える</td><td>フル＋最新の差分の<b>2つ</b></td></tr>
+        <tr><td>増分</td><td>最小</td><td>フル＋増分<b>全部</b>（1つ欠けると戻せない）</td></tr>
+      </table>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:32%">ファイルの編成</th><th>しくみ</th></tr>
+        <tr><td>順編成</td><td>先頭から順に並べる。順に読むのは速い</td></tr>
+        <tr><td>直接編成</td><td>キーから<b>計算で</b>位置を決める（ハッシュ）。1件を探すのが速い</td></tr>
+        <tr><td>索引順編成</td><td>順に並べた本体＋キーの<b>索引</b>。順にも1件ずつにも読める</td></tr>
+        <tr><td>区分編成</td><td>複数の順編成のメンバと、その場所を示す登録簿。プログラムの保管</td></tr>
+      </table>
+      <div class="point">ファイルシステムの種類：Windowsの<b>NTFS</b>、Linuxの<b>ext4</b>、USBメモリ向けの<b>FAT32・exFAT</b>。書込みの記録（ジャーナル）を先に残す<b>ジャーナリング</b>で、停電後も壊れにくくする。</div>
+    </div>
+  </div>
+  <img class="illust" src="img/irasutoya/backup_hdd.png" alt="" style="height:64px;bottom:36px">
+</section>
+
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/programmer.png" alt=""><img src="img/irasutoya/code_pc.png" alt=""><img src="img/irasutoya/bug.png" alt=""><img src="img/irasutoya/cloud.png" alt=""></div>
+  <div class="k">第5章</div>
+  <h1>開発ツールとOSS</h1>
+  <p>コンパイラの処理 ／ リンカとローダ ／ 言語処理の種類 ／ デバッグとテストの道具 ／ バージョン管理 ／ OSSのライセンス ／ 用途別のOSS</p>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/gear_flat.svg" alt="">コンパイラは字句→構文→意味→最適化→コード生成。生成の直前が最適化</h1>
+  <div class="flow"><div class="box b4">字句解析<span>文字の列を単語（トークン）に</span></div><div class="to">▶</div><div class="box b3">構文解析<span>文法どおりか・構文木</span></div><div class="to">▶</div><div class="box b2">意味解析<span>型や宣言の矛盾</span></div><div class="to">▶</div><div class="box b1">最適化<span>速く・小さく</span></div><div class="to">▶</div><div class="box b1">コード生成<span>目的プログラム</span></div></div>
+  <div class="cols" style="margin-top:12px">
+    <div>
+      <div class="flow"><div class="box b3">コンパイラ<span>原始→目的プログラム</span></div><div class="to">▶</div><div class="box b2">リンカ<span>→実行可能プログラム</span></div><div class="to">▶</div><div class="box b1">ローダ<span>主記憶に載せる</span></div></div>
+      <div class="point">リンカ（連係編集）は目的プログラムとライブラリを<b>つなぐ</b>。ローダは実行可能プログラムを主記憶に<b>載せる</b>。載せる場所に合わせて番地を直すのが<b>再配置</b>。</div>
+    </div>
+    <div>
+      <div class="point" style="margin-top:0"><b>R6秋 問20</b>：コード生成の<b>直前</b>に行うのは<b>最適化</b>。字句解析は最初、構文解析と意味解析は途中。</div>
+      <table class="mini">
+        <tr><th>最適化の例</th><th>中身</th></tr>
+        <tr><td>定数の畳込み</td><td>2*3 を先に 6 と計算しておく</td></tr>
+        <tr><td>ループ不変式の移動</td><td>ループの中で変わらない計算を外に出す</td></tr>
+        <tr><td>インライン展開</td><td>小さな関数の呼出しを中身で置き換える</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/desktop_computer_flat.svg" alt="">別のCPU向けの機械語を作るのがクロスコンパイラ。組込み開発の基本</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th style="width:32%">言語プロセッサ</th><th>何をするか</th></tr>
+        <tr><td>コンパイラ</td><td>原始プログラムを<b>まとめて</b>目的プログラムに翻訳</td></tr>
+        <tr><td>インタプリタ</td><td>1文ずつ解釈しながら<b>すぐ実行</b>。目的プログラムを作らない</td></tr>
+        <tr><td>アセンブラ</td><td>アセンブリ言語（機械語と1対1）を機械語に</td></tr>
+        <tr><td><b>クロスコンパイラ</b></td><td>動かすのと<b>異なる命令形式</b>のコンピュータ用の目的プログラムを作る</td></tr>
+        <tr><td>JITコンパイラ</td><td>実行中に、よく使う中間コードを機械語へ直す（Java・JavaScript）</td></tr>
+        <tr><td>プリプロセッサ</td><td>コンパイルの前に、マクロの展開やファイルの取込みを行う</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="flow"><div class="box b2">開発用PC<span>x86で翻訳</span></div><div class="to">▶</div><div class="box b3">クロスコンパイラ</div><div class="to">▶</div><div class="box b1">組込み機器<span>ARMで実行</span></div></div>
+      <div class="point"><b>R5秋 問18</b>：「異なる命令形式のコンピュータで実行できる目的プログラムを生成する」のは<b>クロスコンパイラ</b>。エミュレーター（他の機械の<b>まね</b>をして動かす）、最適化コンパイラ、プログラムジェネレーター（仕様から<b>プログラムを自動生成</b>）と入れ替えた選択肢に注意。</div>
+      <div class="point">開発するコンピュータを<b>ホスト</b>、動かす機器を<b>ターゲット</b>と呼ぶ。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/lady_beetle_flat.svg" alt="">回数と時間を測るのがプロファイラ。全履歴を手元に持つのがGit</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th style="width:32%">道具</th><th>何をするか</th></tr>
+        <tr><td><b>プロファイラ</b></td><td>関数などの<b>実行回数・実行時間</b>を集め、遅い所を見つける</td></tr>
+        <tr><td>デバッガ</td><td>止めながら実行し、変数の中身を見て誤りを探す（ブレークポイント・トレース）</td></tr>
+        <tr><td>エミュレーター</td><td>別のハードウェアの動きを<b>まねて</b>、そのプログラムを動かす</td></tr>
+        <tr><td>シミュレーター</td><td>実物の代わりに、ソフトウェアで<b>動きを模擬</b>して確かめる</td></tr>
+        <tr><td>テストドライバ・スタブ</td><td>下位を試す時の<b>呼ぶ側の代わり</b>・上位を試す時の<b>呼ばれる側の代わり</b>（#12）</td></tr>
+        <tr><td>静的解析ツール</td><td>動かさずにソースコードを調べて誤りや規約違反を探す</td></tr>
+      </table>
+      <div class="point"><b>R6春 問19</b>：実行回数や実行時間を集めるのは<b>プロファイラ</b>。</div>
+    </div>
+    <div>
+      <table class="vs">
+        <tr><th style="width:24%"></th><th>集中型</th><th>分散型</th></tr>
+        <tr><td>例</td><td>Subversion・CVS・RCS</td><td><b>Git</b>・Mercurial</td></tr>
+        <tr><td>履歴の置き場所</td><td>サーバに1つ</td><td>各自の手元に<b>全履歴の完全な複製</b></td></tr>
+        <tr><td>つながらない時</td><td>記録（コミット）できない</td><td>手元でコミットでき、あとで送る（push）</td></tr>
+      </table>
+      <div class="point"><b>R3秋 問18・R6秋 問19</b>（同じ問題）：「ローカルに全履歴の完全な複製を持つ」のは<b>Git</b>。ほか3つは集中型（RCSは1ファイル単位の古い道具）。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/scroll_flat.svg" alt="">ソース公開の義務は GPL→LGPL→MPL→BSD の順に軽くなる</h1>
+  <div class="cols wide-r">
+    <div>
+      <div class="cap">R7春 問16：改変して配るとき、ソースの公開が必要か</div>
+      <table style="text-align:center">
+        <tr><th>ライセンス</th><th>改変した部分</th><th>静的リンクした自分のコード</th><th>動的リンクした自分のコード</th></tr>
+        <tr><td><b>GPL</b></td><td>必要</td><td>必要</td><td>必要</td></tr>
+        <tr><td><b>LGPL</b></td><td>必要</td><td>必要（結合部分の再リンクを許す）</td><td>不要</td></tr>
+        <tr><td><b>MPL</b></td><td>必要（ファイル単位）</td><td>不要</td><td>不要</td></tr>
+        <tr><td><b>BSD</b>・MIT・Apache</td><td>不要</td><td>不要</td><td>不要</td></tr>
+      </table>
+      <div class="point">表の○の数が多い順に <b>GPL, LGPL, MPL, BSD</b>（ア）。GPLのように「派生物も同じ条件で配る」考え方を<b>コピーレフト</b>と呼ぶ。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:36%">OSI の定義</th><th>中身</th></tr>
+        <tr><td>自由な再配布</td><td>売ってもよい。ライセンス料を取らない</td></tr>
+        <tr><td>ソースコード</td><td>入手できるようにする</td></tr>
+        <tr><td>差別の禁止</td><td>人・団体・<b>利用分野</b>で制限しない（「商用は禁止」は不可）</td></tr>
+      </table>
+      <div class="point warn">OSSでも<b>著作権は放棄されていない</b>。無保証が原則で、ライセンスの条件を守る義務がある。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/penguin_flat.svg" alt="">OSSは用途とセットで覚える。似た分野の名前と入れ替えて出る</h1>
+  <table>
+    <tr><th style="width:18%">用途</th><th>代表的なOSS</th><th style="width:32%">過去問で問われ方</th></tr>
+    <tr><td>OS</td><td>Linux・FreeBSD・Android</td><td>R5秋19：Linuxカーネルの役目</td></tr>
+    <tr><td>仮想化・コンテナ</td><td><b>Docker</b>（コンテナ）・Kubernetes（コンテナの管理）・KVM・Xen・QEMU（仮想マシン）</td><td>R5春20：コンテナ型仮想化は<b>Docker</b></td></tr>
+    <tr><td>大規模データ</td><td><b>Hadoop</b>（分散処理）・Spark</td><td>R3春20：大量データを分散処理するライブラリ</td></tr>
+    <tr><td>Web・API</td><td>Apache HTTP Server・nginx・Tomcat（アプリサーバ）・<b>Swagger</b>（API定義）・curl</td><td>R7春17：OpenAPIに従った定義はSwagger</td></tr>
+    <tr><td>DBMS</td><td>MySQL・PostgreSQL・SQLite・Redis・MongoDB</td><td>―</td></tr>
+    <tr><td>運用・構成管理</td><td>Ansible・Chef（構成の自動化）・Serverspec（構成のテスト）・Zabbix（監視）・Fluentd（ログ収集）</td><td>Serverspecは選択肢に登場</td></tr>
+    <tr><td>認証</td><td>OpenAM・Keycloak（シングルサインオン）</td><td>OpenAMは選択肢に登場</td></tr>
+    <tr><td>開発</td><td>Git・Jenkins（CI）・Eclipse・GCC（コンパイラ）</td><td>R3秋18：Git</td></tr>
+  </table>
+  <img class="illust" src="img/irasutoya/cloud.png" alt="" style="height:60px;bottom:36px">
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/soft/clipboard_flat.svg" alt="">まとめ：表と線を自分で書けるようにすれば、42問の論点はほぼ取れる</h1>
+  <table>
+    <tr><th style="width:22%">論点</th><th>覚えること</th><th style="width:24%">過去問</th></tr>
+    <tr><td>状態遷移</td><td>横取り→実行可能。入出力の開始→待ち。待ち→実行は直接移らない</td><td>R3春17・R7春14・R6春16</td></tr>
+    <tr><td>割込みとRTOS</td><td>割込み処理は最高優先度のタスクより先。周期タスクは高い方の使用時間を引く</td><td>R4秋18・R5秋17</td></tr>
+    <tr><td>時間の計算</td><td>線を引く。ターンアラウンド＝終了－到着。多重度は到着のずれに注意</td><td>R3春16・R7秋15・R4春19・R6春18</td></tr>
+    <tr><td>スケジューリング</td><td>SJFはスタベーション、エージングで防ぐ</td><td>R6秋16</td></tr>
+    <tr><td>排他制御</td><td>共有資源はセマフォ。デッドロックは取る順番をそろえる。スレッドセーフ</td><td>R4春17・R7秋16・R4秋16・R6春17・R7秋17</td></tr>
+    <tr><td>記憶管理</td><td>断片化＝連続した空きがない。ページングは外部断片化なし。GC</td><td>R3春18・R4春18・R6秋18・R4秋17</td></tr>
+    <tr><td>仮想記憶</td><td>PF＝PI≧PO。FIFO＝読込み時刻、LRU＝最終使用時刻。スラッシング</td><td>R3春19・R5春17・R7春15・R3秋16 ほか</td></tr>
+    <tr><td>開発ツール・OSS</td><td>最適化はコード生成の直前。クロスコンパイラ・プロファイラ・Git。GPL→BSD</td><td>R6秋20・R5秋18・R6春19・R7春16 ほか</td></tr>
+  </table>
+</section>
