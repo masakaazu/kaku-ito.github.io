@@ -567,6 +567,9 @@
           if (own.has(b)) shared += 1;
         });
         score += Math.min(shared, 3) * 1.5;
+        // 問題文（意味）に名前が出てくる用語は、正解でないとすぐ分かるので選ばない
+        const key = nameKey(t);
+        if (key.length > 1 && (term.meaning || "").includes(key)) score -= 20;
         return { t, score };
       })
       .sort((a, b) => b.score - a.score)
