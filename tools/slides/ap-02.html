@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>応用情報 アルゴリズムとプログラミング 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+</style>
+<style>
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
+.term .box { text-align: left; font-size: 15px; padding: 7px 12px; }
+.term dl { margin: 6px 2px 0; }
+.term dd { margin: 0 0 4px; font-size: 12.5px; line-height: 1.5; }
+.term dd.pt { color: #333; }
+.term dd.words { color: var(--navy2); font-size: 11.5px; }
+.term .tag { font-size: 10.5px; padding: 0 5px; }
+.slide .cap + table { margin-bottom: 14px; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">応用情報技術者試験　テクノロジ系　No.2</div>
+  <h1>アルゴリズムとプログラミング</h1>
+  <p>データ構造・アルゴリズム・プログラミング・プログラム言語・その他の言語</p>
+<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>1</span></div>
+</section>
+
+<section class="slide ">
+  <h1>目次</h1>
+  <ol class="toc">
+    <li>2-1 データ構造（12語）</li>
+    <li>2-2 アルゴリズム（11語）</li>
+    <li>2-3 プログラミング（5語）</li>
+    <li>2-4 プログラム言語（5語）</li>
+    <li>2-5 その他の言語（5語）</li>
+    <li>まとめ</li>
+  </ol>
+<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>2</span></div>
+</section>
+
+<section class="slide ">
+  <h1>2-1 データ構造<small>まとめ表</small></h1>
+  <div class="cap">主なデータ構造</div>
+  <table><thead><tr><th>構造</th><th>特徴</th></tr></thead>
+  <tbody><tr><td>スタック</td><td>後入れ先出し（LIFO）。push・pop</td></tr><tr><td>キュー</td><td>先入れ先出し（FIFO）。enqueue・dequeue</td></tr><tr><td>リスト</td><td>ポインタで次の要素をつなぐ。挿入・削除が速い</td></tr><tr><td>2分探索木</td><td>左の子＜親＜右の子。探索は平均 O(log n)</td></tr><tr><td>ヒープ</td><td>親が子より常に大きい（小さい）完全2分木。優先度付きキューに使う</td></tr><tr><td>ハッシュ表</td><td>キーから計算した位置に格納。探索は平均 O(1)</td></tr></tbody></table>
+<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>3</span></div>
+</section>
+
+<section class="slide ">
+  <h1>2-1 データ構造<small>データ構造</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">配列<span>Array</span></div><dl><dd>同じ型のデータを連続した場所に並べたもの</dd><dd class="pt"><span class="tag">ポイント</span>添字で直接アクセスできるが、途中への挿入は遅い</dd></dl></div><div class="term"><div class="box b1">スタック<span>Stack</span></div><dl><dd>最後に入れたデータを最初に取り出す構造（LIFO）</dd><dd class="pt"><span class="tag">ポイント</span>関数呼出しの戻り先や、逆ポーランド記法の計算に使う</dd></dl></div><div class="term"><div class="box b1">キュー<span>Queue</span></div><dl><dd>最初に入れたデータを最初に取り出す構造（FIFO）</dd><dd class="pt"><span class="tag">ポイント</span>待ち行列やバッファに使う</dd></dl></div><div class="term"><div class="box b1">連結リスト<span>Linked List</span></div><dl><dd>各要素が次の要素へのポインタを持つ構造</dd><dd class="pt"><span class="tag">ポイント</span>単方向・双方向・循環がある</dd></dl></div><div class="term"><div class="box b1">2分探索木<span>Binary Search Tree</span></div><dl><dd>左の部分木の値＜節の値＜右の部分木の値となる2分木</dd><dd class="pt"><span class="tag">ポイント</span>偏ると探索が遅くなるため、AVL木など平衡木を使う</dd></dl></div><div class="term"><div class="box b1">完全2分木<span>Complete Binary Tree</span></div><dl><dd>最下段以外がすべて埋まり、最下段は左から詰まっている2分木</dd></dl></div></div>
+<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>4</span></div>
+</section>
+
+<section class="slide ">
+  <h1>2-1 データ構造<small>データ構造・木のなぞり方</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">ヒープ<span>Heap</span></div><dl><dd>親の値が子の値以上（または以下）になる完全2分木</dd><dd class="pt"><span class="tag">ポイント</span>最大値（最小値）がすぐ取り出せる</dd></dl></div><div class="term"><div class="box b1">B木<span>B-tree</span></div><dl><dd>1つの節に多くのキーを持つ平衡多分木</dd><dd class="pt"><span class="tag">ポイント</span>ディスク上のデータベースの索引に使う</dd></dl></div><div class="term"><div class="box b1">ハッシュ表<span>Hash Table</span></div><dl><dd>ハッシュ関数でキーから格納位置を決める表</dd><dd class="pt"><span class="tag">ポイント</span>位置がぶつかること（衝突・シノニム）への対策が必要</dd></dl></div><div class="term"><div class="box b1">グラフ<span>Graph</span></div><dl><dd>頂点と辺で、ものどうしのつながりを表す構造</dd><dd class="pt"><span class="tag">ポイント</span>隣接行列や隣接リストで表す</dd></dl></div><div class="term"><div class="box b1">深さ優先探索<span>DFS / Depth-First Search</span></div><dl><dd>行けるところまで深く進み、行き止まりで戻る探索</dd><dd class="pt"><span class="tag">ポイント</span>前順・間順・後順のなぞり方がある</dd></dl></div><div class="term"><div class="box b1">幅優先探索<span>BFS / Breadth-First Search</span></div><dl><dd>出発点に近い頂点から順に調べる探索</dd><dd class="pt"><span class="tag">ポイント</span>最短の手数を求めるのに向く</dd></dl></div></div>
+<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>5</span></div>
+</section>
+
+<section class="slide ">
+  <h1>2-2 アルゴリズム<small>まとめ表</small></h1>
+  <div class="cap">整列の計算量</div>
+  <table><thead><tr><th>整列</th><th>平均</th><th>最悪</th><th>特徴</th></tr></thead>
+  <tbody><tr><td>バブルソート</td><td>O(n²)</td><td>O(n²)</td><td>隣どうしを比べて交換</td></tr><tr><td>選択ソート</td><td>O(n²)</td><td>O(n²)</td><td>最小値を選んで先頭へ</td></tr><tr><td>挿入ソート</td><td>O(n²)</td><td>O(n²)</td><td>ほぼ整列済みなら速い</td></tr><tr><td>クイックソート</td><td>O(n log n)</td><td>O(n²)</td><td>基準値で分けて再帰</td></tr><tr><td>マージソート</td><td>O(n log n)</td><td>O(n log n)</td><td>分けて併合。安定</td></tr><tr><td>ヒープソート</td><td>O(n log n)</td><td>O(n log n)</td><td>ヒープを使う</td></tr></tbody></table>
+<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>6</span></div>
+</section>
+
+<section class="slide ">
+  <h1>2-2 アルゴリズム<small>探索と整列</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">線形探索<span>Linear Search</span></div><dl><dd>先頭から順に1つずつ調べる探索</dd><dd class="pt"><span class="tag">ポイント</span>計算量 O(n)。番兵を置くと終了判定が減る</dd></dl></div><div class="term"><div class="box b1">2分探索<span>Binary Search</span></div><dl><dd>整列済みのデータを半分に分けながら調べる探索</dd><dd class="pt"><span class="tag">ポイント</span>計算量 O(log n)。最大の比較回数は約 log2 n ＋1</dd></dl></div><div class="term"><div class="box b1">クイックソート<span>Quick Sort</span></div><dl><dd>基準値（ピボット）より小さいグループと大きいグループに分け、再帰的に整列する</dd><dd class="pt"><span class="tag">ポイント</span>平均は速いが、最悪 O(n²)</dd></dl></div><div class="term"><div class="box b1">マージソート<span>Merge Sort</span></div><dl><dd>データを半分ずつに分けて整列し、併合（マージ）する</dd><dd class="pt"><span class="tag">ポイント</span>常に O(n log n)。安定な整列</dd></dl></div><div class="term"><div class="box b1">安定な整列<span>Stable Sort</span></div><dl><dd>同じ値のデータの並び順が、整列の前後で変わらない整列</dd></dl></div><div class="term"><div class="box b1">計算量<span>Computational Complexity</span></div><dl><dd>アルゴリズムの処理の手間を、データ量nの関数で表したもの</dd><dd class="pt"><span class="tag">ポイント</span>O記法で表す</dd></dl></div></div>
+<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>7</span></div>
+</section>
+
+<section class="slide ">
+  <h1>2-2 アルゴリズム<small>いろいろなアルゴリズム</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">再帰<span>Recursion</span></div><dl><dd>関数が自分自身を呼び出すこと</dd><dd class="pt"><span class="tag">ポイント</span>終了条件が必要。例: 階乗、ハノイの塔</dd></dl></div><div class="term"><div class="box b1">動的計画法<span>Dynamic Programming</span></div><dl><dd>小さな問題の答えを表に記録し、それを使って大きな問題を解く方法</dd><dd class="pt"><span class="tag">ポイント</span>同じ計算を繰り返さない</dd></dl></div><div class="term"><div class="box b1">ダイクストラ法<span>Dijkstra's Algorithm</span></div><dl><dd>重みが0以上のグラフで、最短経路を求める方法</dd><dd class="pt"><span class="tag">ポイント</span>ネットワークの経路選択（OSPF）にも使う</dd></dl></div><div class="term"><div class="box b1">ユークリッドの互除法<span>Euclidean Algorithm</span></div><dl><dd>2つの数の最大公約数を、割り算の余りを繰り返して求める方法</dd></dl></div><div class="term"><div class="box b1">逆ポーランド記法<span>後置記法 / Reverse Polish Notation</span></div><dl><dd>演算子を後ろに書く記法</dd><dd class="pt"><span class="tag">例</span>(A＋B)×C は AB＋C×。スタックで計算できる</dd></dl></div></div>
+<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>8</span></div>
+</section>
+
+<section class="slide ">
+  <h1>2-3 プログラミング<small>プログラムの性質</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">再入可能<span>リエントラント / Reentrant</span></div><dl><dd>複数のプロセスから同時に呼ばれても正しく動くプログラム</dd><dd class="pt"><span class="tag">ポイント</span>データをプロセスごとに分けて持つ</dd></dl></div><div class="term"><div class="box b1">再使用可能<span>Reusable</span></div><dl><dd>一度実行したあと、読み込み直さずに再び実行できるプログラム</dd></dl></div><div class="term"><div class="box b1">再帰的<span>Recursive</span></div><dl><dd>実行中に自分自身を呼び出せるプログラム</dd></dl></div><div class="term"><div class="box b1">再配置可能<span>Relocatable</span></div><dl><dd>主記憶のどこに置いても実行できるプログラム</dd></dl></div><div class="term"><div class="box b1">コーディング規約<span>Coding Standards</span></div><dl><dd>プログラムの書き方をそろえるための決まり</dd><dd class="pt"><span class="tag">ポイント</span>読みやすさと保守のしやすさを上げる</dd></dl></div></div>
+<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>9</span></div>
+</section>
+
+<section class="slide ">
+  <h1>2-4 プログラム言語<small>言語の種類</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">手続型言語<span>Procedural Language</span></div><dl><dd>処理の手順を順に書いていく言語</dd><dd class="pt"><span class="tag">例</span>C、COBOL</dd></dl></div><div class="term"><div class="box b1">オブジェクト指向言語<span>Object-Oriented Language</span></div><dl><dd>データと処理をまとめたオブジェクトを組み合わせて作る言語</dd><dd class="pt"><span class="tag">例</span>Java、C++、Python</dd></dl></div><div class="term"><div class="box b1">関数型言語<span>Functional Language</span></div><dl><dd>関数の組合せでプログラムを作る言語</dd><dd class="pt"><span class="tag">ポイント</span>副作用を避ける。例: Haskell</dd></dl></div><div class="term"><div class="box b1">論理型言語<span>Logic Programming Language</span></div><dl><dd>事実と規則を書き、問合せに答えを推論させる言語</dd><dd class="pt"><span class="tag">例</span>Prolog</dd></dl></div><div class="term"><div class="box b1">スクリプト言語<span>Script Language</span></div><dl><dd>コンパイルせずにインタプリタで手軽に実行できる言語</dd><dd class="pt"><span class="tag">例</span>JavaScript、Python</dd></dl></div></div>
+<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>10</span></div>
+</section>
+
+<section class="slide ">
+  <h1>2-5 その他の言語<small>マークアップとデータ</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">HTML<span>えいちてぃーえむえる / HyperText Markup Language</span></div><dl><dd>Webページの構造をタグで書く言語</dd><dd class="words">HyperText＝リンクでつながる文書／Markup＝目印をつける／Language＝言語</dd></dl></div><div class="term"><div class="box b1">XML<span>えっくすえむえる / Extensible Markup Language</span></div><dl><dd>利用者が自由にタグを決められるマークアップ言語</dd><dd class="pt"><span class="tag">ポイント</span>データ交換に使う。DTDやXML Schemaで構造を定める</dd><dd class="words">Extensible＝拡張できる／Markup＝目印付け／Language＝言語</dd></dl></div><div class="term"><div class="box b1">JSON<span>じぇいそん / JavaScript Object Notation</span></div><dl><dd>「名前：値」の組でデータを表す軽い形式</dd><dd class="pt"><span class="tag">ポイント</span>Web APIのデータのやり取りで多く使う</dd><dd class="words">JavaScript＝言語名／Object＝もの／Notation＝表記法</dd></dl></div><div class="term"><div class="box b1">CSS<span>しーえすえす / Cascading Style Sheets</span></div><dl><dd>Webページの見た目（色・配置など）を指定する言語</dd><dd class="words">Cascading＝段階的に重なる／Style Sheets＝書式の指定</dd></dl></div><div class="term"><div class="box b1">UML<span>ゆーえむえる / Unified Modeling Language</span></div><dl><dd>オブジェクト指向の設計を図で表す標準の書き方</dd><dd class="words">Unified＝統一された／Modeling＝モデルを描く／Language＝言語</dd></dl></div></div>
+<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>11</span></div>
+</section>
+
+<section class="slide ">
+  <h1>まとめ<small>この分野で覚える用語</small></h1>
+  <table><thead><tr><th style="width:30%">小分類</th><th>用語</th></tr></thead><tbody>
+<tr><td>2-1 データ構造</td><td>配列・スタック・キュー・連結リスト・2分探索木・完全2分木・ヒープ・B木・ハッシュ表・グラフ・深さ優先探索・幅優先探索</td></tr>
+<tr><td>2-2 アルゴリズム</td><td>線形探索・2分探索・クイックソート・マージソート・安定な整列・計算量・再帰・動的計画法・ダイクストラ法・ユークリッドの互除法・逆ポーランド記法</td></tr>
+<tr><td>2-3 プログラミング</td><td>再入可能・再使用可能・再帰的・再配置可能・コーディング規約</td></tr>
+<tr><td>2-4 プログラム言語</td><td>手続型言語・オブジェクト指向言語・関数型言語・論理型言語・スクリプト言語</td></tr>
+<tr><td>2-5 その他の言語</td><td>HTML・XML・JSON・CSS・UML</td></tr>
+  </tbody></table>
+<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>12</span></div>
+</section>
+</body>
+</html>

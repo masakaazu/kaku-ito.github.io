@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>応用情報 ネットワーク 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+</style>
+<style>
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
+.term .box { text-align: left; font-size: 15px; padding: 7px 12px; }
+.term dl { margin: 6px 2px 0; }
+.term dd { margin: 0 0 4px; font-size: 12.5px; line-height: 1.5; }
+.term dd.pt { color: #333; }
+.term dd.words { color: var(--navy2); font-size: 11.5px; }
+.term .tag { font-size: 10.5px; padding: 0 5px; }
+.slide .cap + table { margin-bottom: 14px; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">応用情報技術者試験　テクノロジ系　No.10</div>
+  <h1>ネットワーク</h1>
+  <p>ネットワーク方式・データ通信と制御・通信プロトコル・ネットワーク管理・ネットワーク応用</p>
+<div class="foot"><span>応用情報 ネットワーク</span><span>1</span></div>
+</section>
+
+<section class="slide ">
+  <h1>目次</h1>
+  <ol class="toc">
+    <li>10-1 ネットワーク方式（5語）</li>
+    <li>10-2 データ通信と制御（6語）</li>
+    <li>10-3 通信プロトコル（14語）</li>
+    <li>10-4 ネットワーク管理（4語）</li>
+    <li>10-5 ネットワーク応用（4語）</li>
+    <li>まとめ</li>
+  </ol>
+<div class="foot"><span>応用情報 ネットワーク</span><span>2</span></div>
+</section>
+
+<section class="slide ">
+  <h1>10-1 ネットワーク方式<small>まとめ表</small></h1>
+  <div class="cap">OSI参照モデルと機器</div>
+  <table><thead><tr><th>層</th><th>名前</th><th>主なプロトコル・機器</th></tr></thead>
+  <tbody><tr><td>7〜5</td><td>アプリケーション・プレゼンテーション・セッション</td><td>HTTP・SMTP・DNS／ゲートウェイ</td></tr><tr><td>4</td><td>トランスポート</td><td>TCP・UDP</td></tr><tr><td>3</td><td>ネットワーク</td><td>IP・ICMP／ルータ・L3スイッチ</td></tr><tr><td>2</td><td>データリンク</td><td>イーサネット／L2スイッチ・ブリッジ</td></tr><tr><td>1</td><td>物理</td><td>ケーブル／リピータ・ハブ</td></tr></tbody></table>
+<div class="foot"><span>応用情報 ネットワーク</span><span>3</span></div>
+</section>
+
+<section class="slide ">
+  <h1>10-1 ネットワーク方式<small>ネットワークの形</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">LAN・WAN<span>Local / Wide Area Network</span></div><dl><dd>LANは建物の中などの狭い範囲、WANは離れた場所をつなぐ広い範囲のネットワーク</dd><dd class="words">Local＝構内の／Wide＝広い／Area＝範囲／Network＝網</dd></dl></div><div class="term"><div class="box b1">無線LAN<span>Wireless LAN</span></div><dl><dd>電波でつなぐLAN</dd><dd class="pt"><span class="tag">ポイント</span>IEEE 802.11。暗号化はWPA3。衝突を避けるCSMA/CA方式</dd></dl></div><div class="term"><div class="box b1">5G<span>第5世代移動通信システム</span></div><dl><dd>高速大容量・超低遅延・多数同時接続が特徴の移動通信</dd><dd class="pt"><span class="tag">ポイント</span>ローカル5Gは企業が自分の敷地で使う</dd></dl></div><div class="term"><div class="box b1">LPWA<span>えるぴーだぶりゅーえー / Low Power Wide Area</span></div><dl><dd>少ない電力で広い範囲を通信できる方式。速度は遅い</dd><dd class="pt"><span class="tag">ポイント</span>IoTのセンサに向く</dd><dd class="words">Low Power＝低消費電力／Wide Area＝広い範囲</dd></dl></div><div class="term"><div class="box b1">SDN<span>えすでぃーえぬ / Software-Defined Networking</span></div><dl><dd>ネットワークの制御をソフトウェアで集中して行う考え方</dd><dd class="pt"><span class="tag">ポイント</span>制御（コントロールプレーン）と転送（データプレーン）を分ける。OpenFlowが代表</dd><dd class="words">Software＝ソフトウェア／Defined＝定義された／Networking＝ネットワーク</dd></dl></div></div>
+<div class="foot"><span>応用情報 ネットワーク</span><span>4</span></div>
+</section>
+
+<section class="slide ">
+  <h1>10-2 データ通信と制御<small>通信の制御</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">伝送時間<span>Transmission Time</span></div><dl><dd>データ量 ÷（回線速度 × 伝送効率）</dd></dl></div><div class="term"><div class="box b1">CSMA/CD<span>Carrier Sense Multiple Access with Collision Detection</span></div><dl><dd>送信前に回線を確かめ、衝突したら待って送り直す有線LANの方式</dd></dl></div><div class="term"><div class="box b1">CSMA/CA<span>Carrier Sense Multiple Access with Collision Avoidance</span></div><dl><dd>衝突を避けるために、待ち時間をおいて送る無線LANの方式</dd></dl></div><div class="term"><div class="box b1">MACアドレス<span>Media Access Control Address</span></div><dl><dd>ネットワーク機器に付けられた48ビットの固有の番号</dd><dd class="pt"><span class="tag">ポイント</span>先頭24ビットはメーカーの番号（OUI）</dd></dl></div><div class="term"><div class="box b1">VLAN<span>ぶいらん / Virtual LAN</span></div><dl><dd>物理的なつながりとは別に、論理的にLANを分ける技術</dd><dd class="words">Virtual＝仮想の／LAN＝構内網</dd></dl></div><div class="term"><div class="box b1">スパニングツリープロトコル<span>STP / Spanning Tree Protocol</span></div><dl><dd>スイッチのループ（輪）を見つけて、一部のポートを止めてループを防ぐ方式</dd></dl></div></div>
+<div class="foot"><span>応用情報 ネットワーク</span><span>5</span></div>
+</section>
+
+<section class="slide ">
+  <h1>10-3 通信プロトコル<small>まとめ表</small></h1>
+  <div class="cap">よく出るポート番号</div>
+  <table><thead><tr><th>プロトコル</th><th>ポート</th></tr></thead>
+  <tbody><tr><td>HTTP</td><td>80</td></tr><tr><td>HTTPS</td><td>443</td></tr><tr><td>SMTP</td><td>25（送信の受付は587）</td></tr><tr><td>POP3</td><td>110</td></tr><tr><td>IMAP</td><td>143</td></tr><tr><td>DNS</td><td>53</td></tr></tbody></table>
+<div class="foot"><span>応用情報 ネットワーク</span><span>6</span></div>
+</section>
+
+<section class="slide ">
+  <h1>10-3 通信プロトコル<small>TCP/IP</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">TCP/IP<span>Transmission Control Protocol / Internet Protocol</span></div><dl><dd>インターネットで使う4階層のプロトコル群</dd><dd class="pt"><span class="tag">ポイント</span>アプリケーション層・トランスポート層・インターネット層・ネットワークインタフェース層</dd></dl></div><div class="term"><div class="box b1">TCP・UDP<span>Transmission Control Protocol / User Datagram Protocol</span></div><dl><dd>TCPはコネクションを作り、届いたかを確かめる信頼性の高い通信。UDPは確認をせず速い通信で、動画・音声やDNSに使う</dd></dl></div><div class="term"><div class="box b1">3ウェイハンドシェイク<span>3-way Handshake</span></div><dl><dd>TCPで接続を始めるときの3回のやり取り（SYN → SYN/ACK → ACK）</dd></dl></div><div class="term"><div class="box b1">IPv4アドレスとサブネットマスク<span>Subnet Mask</span></div><dl><dd>IPアドレスのうちネットワーク部とホスト部の境目を示す値</dd><dd class="pt"><span class="tag">ポイント</span>/24なら使えるホストは 2^8 − 2 ＝ 254台</dd></dl></div><div class="term"><div class="box b1">CIDR<span>さいだー / Classless Inter-Domain Routing</span></div><dl><dd>クラスにとらわれず、ネットワーク部の長さを自由に決める方式</dd><dd class="pt"><span class="tag">例</span>192.168.1.0/24</dd><dd class="words">Classless＝クラスのない／Inter-Domain＝ドメイン間の／Routing＝経路制御</dd></dl></div></div>
+<div class="foot"><span>応用情報 ネットワーク</span><span>7</span></div>
+</section>
+
+<section class="slide ">
+  <h1>10-3 通信プロトコル<small>TCP/IP</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">IPv6<span>Internet Protocol version 6</span></div><dl><dd>128ビットのアドレスを使うIP</dd><dd class="pt"><span class="tag">ポイント</span>アドレスが足りない問題を解決する。16ビットずつ16進数で8つに区切って書く</dd></dl></div><div class="term"><div class="box b1">NAT・NAPT<span>Network Address Translation / Network Address Port Translation</span></div><dl><dd>プライベートIPアドレスとグローバルIPアドレスを変換するしくみ</dd><dd class="pt"><span class="tag">ポイント</span>NAPTはポート番号も変換し、1つのグローバルアドレスを複数の端末で使える</dd></dl></div><div class="term"><div class="box b1">ARP<span>あーぷ / Address Resolution Protocol</span></div><dl><dd>IPアドレスからMACアドレスを調べるプロトコル</dd><dd class="words">Address＝アドレス／Resolution＝解決／Protocol＝通信規約</dd></dl></div><div class="term"><div class="box b1">ICMP<span>あいしーえむぴー / Internet Control Message Protocol</span></div><dl><dd>通信の誤りや状態を知らせるプロトコル</dd><dd class="pt"><span class="tag">ポイント</span>ping や traceroute が使う</dd><dd class="words">Internet＝インターネット／Control＝制御／Message＝通知</dd></dl></div><div class="term"><div class="box b1">DHCP<span>でぃーえいちしーぴー / Dynamic Host Configuration Protocol</span></div><dl><dd>端末にIPアドレスなどの設定を自動で配るプロトコル</dd><dd class="words">Dynamic＝動的な／Host＝端末／Configuration＝設定</dd></dl></div></div>
+<div class="foot"><span>応用情報 ネットワーク</span><span>8</span></div>
+</section>
+
+<section class="slide ">
+  <h1>10-3 通信プロトコル<small>TCP/IP</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">DNS<span>でぃーえぬえす / Domain Name System</span></div><dl><dd>ドメイン名とIPアドレスを対応付けるしくみ</dd><dd class="words">Domain Name＝ドメイン名／System＝仕組み</dd></dl></div><div class="term"><div class="box b1">HTTP・HTTPS<span>HyperText Transfer Protocol / Secure</span></div><dl><dd>Webのやり取りのプロトコル。HTTPSはHTTPをTLSで暗号化したもの</dd><dd class="pt"><span class="tag">ポイント</span>要求（リクエスト）と応答（レスポンス）を繰り返す。状態を持たないのでCookieで状態を管理する</dd></dl></div><div class="term"><div class="box b2">SMTP・POP3・IMAP4</div><dl><dd>SMTPはメールの送信と転送、POP3はメールを端末に取り込む受信、IMAP4はメールをサーバに置いたまま見る受信</dd></dl></div><div class="term"><div class="box b1">カプセル化<span>Encapsulation</span></div><dl><dd>送信するとき、上の層のデータに下の層のヘッダを順に付けていくこと</dd><dd class="pt"><span class="tag">ポイント</span>受け取る側は逆に外していく</dd></dl></div></div>
+<div class="foot"><span>応用情報 ネットワーク</span><span>9</span></div>
+</section>
+
+<section class="slide ">
+  <h1>10-4 ネットワーク管理<small>管理の道具</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">SNMP<span>えすえぬえむぴー / Simple Network Management Protocol</span></div><dl><dd>ネットワーク機器の状態を集めて管理するプロトコル</dd><dd class="pt"><span class="tag">ポイント</span>マネージャがエージェントに問い合わせる。異常はトラップで知らせる</dd><dd class="words">Simple＝簡単な／Network Management＝ネットワーク管理／Protocol＝規約</dd></dl></div><div class="term"><div class="box b2">ping・traceroute</div><dl><dd>ping はICMPで相手に届くかを確かめるコマンド、traceroute は経路上のルータを調べるコマンド</dd></dl></div><div class="term"><div class="box b1">NTP<span>えぬてぃーぴー / Network Time Protocol</span></div><dl><dd>機器の時刻を合わせるプロトコル</dd><dd class="pt"><span class="tag">ポイント</span>ログの時刻をそろえるのに大事</dd><dd class="words">Network＝ネットワーク／Time＝時刻／Protocol＝規約</dd></dl></div><div class="term"><div class="box b1">障害の切り分け<span>Troubleshooting</span></div><dl><dd>層ごとに確かめて原因の場所を絞ること</dd><dd class="pt"><span class="tag">ポイント</span>ping（3層）が通るのにWebだけ見られないなら、4層以上（ポートやファイアウォール）を疑う</dd></dl></div></div>
+<div class="foot"><span>応用情報 ネットワーク</span><span>10</span></div>
+</section>
+
+<section class="slide ">
+  <h1>10-5 ネットワーク応用<small>応用</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">VPN<span>ぶいぴーえぬ / Virtual Private Network</span></div><dl><dd>公衆の回線の上に、暗号化した専用線のような通信路を作る技術</dd><dd class="pt"><span class="tag">ポイント</span>IPsec VPN・SSL/TLS VPNがある</dd><dd class="words">Virtual＝仮想の／Private＝専用の／Network＝網</dd></dl></div><div class="term"><div class="box b1">CDN<span>しーでぃーえぬ / Content Delivery Network</span></div><dl><dd>利用者の近くのサーバ（キャッシュ）からコンテンツを配信して、速くするしくみ</dd><dd class="words">Content＝内容／Delivery＝配送／Network＝網</dd></dl></div><div class="term"><div class="box b1">プロキシサーバ<span>Proxy Server</span></div><dl><dd>内部の端末の代わりに外部のWebサーバへアクセスするサーバ</dd><dd class="pt"><span class="tag">ポイント</span>キャッシュやアクセス制限に使う</dd></dl></div><div class="term"><div class="box b1">IoTネットワーク<span>IoT Network</span></div><dl><dd>多くの機器をつなぐネットワーク</dd><dd class="pt"><span class="tag">ポイント</span>MQTTなど軽いプロトコルを使う</dd></dl></div></div>
+<div class="foot"><span>応用情報 ネットワーク</span><span>11</span></div>
+</section>
+
+<section class="slide ">
+  <h1>まとめ<small>この分野で覚える用語</small></h1>
+  <table><thead><tr><th style="width:30%">小分類</th><th>用語</th></tr></thead><tbody>
+<tr><td>10-1 ネットワーク方式</td><td>LAN・WAN・無線LAN・5G・LPWA・SDN</td></tr>
+<tr><td>10-2 データ通信と制御</td><td>伝送時間・CSMA/CD・CSMA/CA・MACアドレス・VLAN・スパニングツリープロトコル</td></tr>
+<tr><td>10-3 通信プロトコル</td><td>TCP/IP・TCP・UDP・3ウェイハンドシェイク・IPv4アドレスとサブネットマスク・CIDR・IPv6・NAT・NAPT・ARP・ICMP・DHCP・DNS・HTTP・HTTPS・SMTP・POP3・IMAP4・カプセル化</td></tr>
+<tr><td>10-4 ネットワーク管理</td><td>SNMP・ping・traceroute・NTP・障害の切り分け</td></tr>
+<tr><td>10-5 ネットワーク応用</td><td>VPN・CDN・プロキシサーバ・IoTネットワーク</td></tr>
+  </tbody></table>
+<div class="foot"><span>応用情報 ネットワーク</span><span>12</span></div>
+</section>
+</body>
+</html>

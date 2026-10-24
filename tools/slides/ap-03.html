@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>応用情報 コンピュータ構成要素 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+</style>
+<style>
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
+.term .box { text-align: left; font-size: 15px; padding: 7px 12px; }
+.term dl { margin: 6px 2px 0; }
+.term dd { margin: 0 0 4px; font-size: 12.5px; line-height: 1.5; }
+.term dd.pt { color: #333; }
+.term dd.words { color: var(--navy2); font-size: 11.5px; }
+.term .tag { font-size: 10.5px; padding: 0 5px; }
+.slide .cap + table { margin-bottom: 14px; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">応用情報技術者試験　テクノロジ系　No.3</div>
+  <h1>コンピュータ構成要素</h1>
+  <p>プロセッサ・メモリ・バス・入出力デバイス・入出力装置</p>
+<div class="foot"><span>応用情報 コンピュータ構成要素</span><span>1</span></div>
+</section>
+
+<section class="slide ">
+  <h1>目次</h1>
+  <ol class="toc">
+    <li>3-1 プロセッサ（12語）</li>
+    <li>3-2 メモリ（7語）</li>
+    <li>3-3 バス（3語）</li>
+    <li>3-4 入出力デバイス（5語）</li>
+    <li>3-5 入出力装置（3語）</li>
+    <li>まとめ</li>
+  </ol>
+<div class="foot"><span>応用情報 コンピュータ構成要素</span><span>2</span></div>
+</section>
+
+<section class="slide ">
+  <h1>3-1 プロセッサ<small>まとめ表</small></h1>
+  <div class="cap">性能の計算</div>
+  <table><thead><tr><th>指標</th><th>式</th></tr></thead>
+  <tbody><tr><td>CPI</td><td>1命令あたりのクロック数</td></tr><tr><td>実行時間</td><td>命令数 × CPI ÷ クロック周波数</td></tr><tr><td>MIPS</td><td>1秒間に実行できる命令数（百万単位）＝ クロック周波数 ÷ CPI ÷ 10^6</td></tr></tbody></table>
+<div class="foot"><span>応用情報 コンピュータ構成要素</span><span>3</span></div>
+</section>
+
+<section class="slide ">
+  <h1>3-1 プロセッサ<small>CPUのしくみ</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">CPU<span>しーぴーゆー / Central Processing Unit</span></div><dl><dd>命令を読み取って解読し、計算や制御を行う装置</dd><dd class="pt"><span class="tag">ポイント</span>制御装置と演算装置からなる</dd><dd class="words">Central＝中央の／Processing＝処理／Unit＝装置</dd></dl></div><div class="term"><div class="box b1">レジスタ<span>Register</span></div><dl><dd>CPUの中にある、とても速い小さな記憶場所</dd><dd class="pt"><span class="tag">ポイント</span>プログラムカウンタ・命令レジスタ・汎用レジスタなど</dd></dl></div><div class="term"><div class="box b1">アドレス指定方式<span>Addressing Mode</span></div><dl><dd>命令の中のアドレス部から、データの場所を決める方法</dd><dd class="pt"><span class="tag">ポイント</span>即値・直接・間接・指標（インデックス）・基底・相対など</dd></dl></div><div class="term"><div class="box b1">パイプライン<span>Pipeline</span></div><dl><dd>命令の実行をいくつかの段階に分け、少しずつずらして同時に進める方式</dd><dd class="pt"><span class="tag">ポイント</span>分岐やデータの依存で流れが止まること（ハザード）がある</dd></dl></div><div class="term"><div class="box b1">スーパスカラ<span>Superscalar</span></div><dl><dd>パイプラインを複数持ち、同時に複数の命令を実行する方式</dd></dl></div><div class="term"><div class="box b1">分岐予測<span>Branch Prediction</span></div><dl><dd>分岐先を予測して先に命令を進め、パイプラインの乱れを減らす方法</dd><dd class="pt"><span class="tag">ポイント</span>外れたら投機実行した結果を捨てる</dd></dl></div></div>
+<div class="foot"><span>応用情報 コンピュータ構成要素</span><span>4</span></div>
+</section>
+
+<section class="slide ">
+  <h1>3-1 プロセッサ<small>CPUのしくみ</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">CISC・RISC<span>Complex / Reduced Instruction Set Computer</span></div><dl><dd>CISCは複雑で多機能な命令を持つCPU、RISCは単純で長さのそろった命令を持つCPU</dd><dd class="pt"><span class="tag">ポイント</span>RISCはパイプラインに向き、ワイヤードロジックで制御する</dd><dd class="words">Complex＝複雑な／Reduced＝減らした／Instruction Set＝命令の集まり</dd></dl></div><div class="term"><div class="box b1">マルチコアプロセッサ<span>Multi-core Processor</span></div><dl><dd>1つのチップに複数のコア（処理の中心）を載せたCPU</dd></dl></div><div class="term"><div class="box b1">GPU<span>じーぴーゆー / Graphics Processing Unit</span></div><dl><dd>画像処理向けのプロセッサ。大量の単純な計算を並列に行える</dd><dd class="pt"><span class="tag">ポイント</span>AIの学習にも使う</dd><dd class="words">Graphics＝画像／Processing＝処理／Unit＝装置</dd></dl></div><div class="term"><div class="box b1">CPI<span>しーぴーあい / Cycles Per Instruction</span></div><dl><dd>1命令の実行に必要なクロック数の平均</dd><dd class="words">Cycles＝クロックの回数／Per＝〜あたり／Instruction＝命令</dd></dl></div><div class="term"><div class="box b1">MIPS<span>みっぷす / Million Instructions Per Second</span></div><dl><dd>1秒間に何百万の命令を実行できるかを表す性能の指標</dd><dd class="words">Million＝百万／Instructions＝命令／Per Second＝毎秒</dd></dl></div></div>
+<div class="foot"><span>応用情報 コンピュータ構成要素</span><span>5</span></div>
+</section>
+
+<section class="slide ">
+  <h1>3-1 プロセッサ<small>CPUのしくみ</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">フリンの分類<span>Flynn's Taxonomy</span></div><dl><dd>命令とデータの流れの数で並列処理を分ける分類</dd><dd class="pt"><span class="tag">ポイント</span>SISD・SIMD・MISD・MIMD。SIMDは1つの命令で複数のデータを処理する</dd></dl></div></div>
+<div class="foot"><span>応用情報 コンピュータ構成要素</span><span>6</span></div>
+</section>
+
+<section class="slide ">
+  <h1>3-2 メモリ<small>まとめ表</small></h1>
+  <div class="cap">キャッシュの書込み方式</div>
+  <table><thead><tr><th>方式</th><th>書き込み先</th><th>特徴</th></tr></thead>
+  <tbody><tr><td>ライトスルー</td><td>キャッシュと主記憶に同時に書く</td><td>一貫性を保ちやすいが遅い</td></tr><tr><td>ライトバック</td><td>キャッシュだけに書き、追い出すときに主記憶へ</td><td>速いが制御が複雑</td></tr></tbody></table>
+<div class="foot"><span>応用情報 コンピュータ構成要素</span><span>7</span></div>
+</section>
+
+<section class="slide ">
+  <h1>3-2 メモリ<small>記憶装置</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">DRAM・SRAM<span>Dynamic / Static RAM</span></div><dl><dd>DRAMはコンデンサに電荷をためて記憶し、リフレッシュが必要。安く大容量で主記憶に使う。SRAMはフリップフロップで記憶し、速いが高価でキャッシュに使う</dd><dd class="words">Dynamic＝動的／Static＝静的／RAM＝読み書きできる記憶装置</dd></dl></div><div class="term"><div class="box b1">フラッシュメモリ<span>Flash Memory</span></div><dl><dd>電源を切っても内容が消えず、電気的に書き換えられるメモリ</dd><dd class="pt"><span class="tag">ポイント</span>SSDやUSBメモリに使う。書換えの回数に上限がある</dd></dl></div><div class="term"><div class="box b1">キャッシュメモリ<span>Cache Memory</span></div><dl><dd>CPUと主記憶の速さの差を埋める、小さく速いメモリ</dd><dd class="pt"><span class="tag">ポイント</span>1次・2次・3次と階層になっている</dd></dl></div><div class="term"><div class="box b1">実効アクセス時間<span>Effective Access Time</span></div><dl><dd>キャッシュを使うときの平均のアクセス時間</dd><dd class="pt"><span class="tag">ポイント</span>ヒット率×キャッシュの時間 ＋（1−ヒット率）×主記憶の時間</dd></dl></div><div class="term"><div class="box b1">参照の局所性<span>Locality of Reference</span></div><dl><dd>最近使ったデータや、その近くのデータは、また使われやすいという性質</dd><dd class="pt"><span class="tag">ポイント</span>キャッシュが効く理由</dd></dl></div><div class="term"><div class="box b1">メモリインタリーブ<span>Memory Interleave</span></div><dl><dd>主記憶を複数のバンクに分け、同時にアクセスして速くする方式</dd></dl></div></div>
+<div class="foot"><span>応用情報 コンピュータ構成要素</span><span>8</span></div>
+</section>
+
+<section class="slide ">
+  <h1>3-2 メモリ<small>記憶装置</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">ECC<span>いーしーしー / Error Correcting Code</span></div><dl><dd>記憶したデータの誤りを見つけて直す符号</dd><dd class="words">Error＝誤り／Correcting＝訂正する／Code＝符号</dd></dl></div></div>
+<div class="foot"><span>応用情報 コンピュータ構成要素</span><span>9</span></div>
+</section>
+
+<section class="slide ">
+  <h1>3-3 バス<small>データの通り道</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">バス<span>Bus</span></div><dl><dd>装置どうしをつなぎ、データをやり取りする共通の通り道</dd><dd class="pt"><span class="tag">ポイント</span>アドレスバス・データバス・制御バスがある</dd></dl></div><div class="term"><div class="box b1">バス幅<span>Bus Width</span></div><dl><dd>一度に送れるビット数</dd><dd class="pt"><span class="tag">ポイント</span>転送速度 ＝ バス幅 × クロック周波数</dd></dl></div><div class="term"><div class="box b1">PCI Express<span>Peripheral Component Interconnect Express</span></div><dl><dd>拡張カードをつなぐシリアル転送のバスの規格</dd><dd class="pt"><span class="tag">ポイント</span>レーン数を増やすと速くなる</dd><dd class="words">Peripheral＝周辺の／Component＝部品／Interconnect＝相互接続</dd></dl></div></div>
+<div class="foot"><span>応用情報 コンピュータ構成要素</span><span>10</span></div>
+</section>
+
+<section class="slide ">
+  <h1>3-4 入出力デバイス<small>つなぐ規格</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">USB<span>ゆーえすびー / Universal Serial Bus</span></div><dl><dd>パソコンと周辺機器をつなぐシリアルの規格</dd><dd class="pt"><span class="tag">ポイント</span>バスパワーで電源も送れる。ホットプラグに対応</dd><dd class="words">Universal＝汎用の／Serial＝直列の／Bus＝伝送路</dd></dl></div><div class="term"><div class="box b1">DMA<span>でぃーえむえー / Direct Memory Access</span></div><dl><dd>CPUを通さずに、入出力装置と主記憶の間で直接データを転送する方式</dd><dd class="pt"><span class="tag">ポイント</span>CPUの負担が減る</dd><dd class="words">Direct＝直接の／Memory＝記憶装置／Access＝読み書き</dd></dl></div><div class="term"><div class="box b1">割込み<span>Interrupt</span></div><dl><dd>実行中の処理を中断して、別の処理を先に行うしくみ</dd><dd class="pt"><span class="tag">ポイント</span>内部割込み（0での割り算・ページフォールトなど）と外部割込み（入出力の完了・タイマなど）</dd></dl></div><div class="term"><div class="box b1">デバイスドライバ<span>Device Driver</span></div><dl><dd>OSが周辺機器を動かすためのソフトウェア</dd></dl></div><div class="term"><div class="box b1">Bluetooth<span>ブルートゥース</span></div><dl><dd>近くの機器を無線でつなぐ規格</dd><dd class="pt"><span class="tag">ポイント</span>BLEは消費電力が少なくIoTに向く</dd></dl></div></div>
+<div class="foot"><span>応用情報 コンピュータ構成要素</span><span>11</span></div>
+</section>
+
+<section class="slide ">
+  <h1>3-5 入出力装置<small>装置</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">SSD<span>えすえすでぃー / Solid State Drive</span></div><dl><dd>フラッシュメモリを使った補助記憶装置</dd><dd class="pt"><span class="tag">ポイント</span>HDDより速く衝撃に強い。ウェアレベリングで書込みを分散する</dd><dd class="words">Solid State＝半導体の／Drive＝装置</dd></dl></div><div class="term"><div class="box b1">HDDのアクセス時間<span>Access Time</span></div><dl><dd>平均シーク時間 ＋ 平均回転待ち時間 ＋ データ転送時間</dd><dd class="pt"><span class="tag">ポイント</span>平均回転待ち時間は1回転の時間の半分</dd></dl></div><div class="term"><div class="box b1">有機EL<span>Organic Electro-Luminescence</span></div><dl><dd>電気を流すと自ら光る材料を使ったディスプレイ</dd><dd class="pt"><span class="tag">ポイント</span>バックライトがいらず、薄く曲げられる</dd></dl></div></div>
+<div class="foot"><span>応用情報 コンピュータ構成要素</span><span>12</span></div>
+</section>
+
+<section class="slide ">
+  <h1>まとめ<small>この分野で覚える用語</small></h1>
+  <table><thead><tr><th style="width:30%">小分類</th><th>用語</th></tr></thead><tbody>
+<tr><td>3-1 プロセッサ</td><td>CPU・レジスタ・アドレス指定方式・パイプライン・スーパスカラ・分岐予測・CISC・RISC・マルチコアプロセッサ・GPU・CPI・MIPS・フリンの分類</td></tr>
+<tr><td>3-2 メモリ</td><td>DRAM・SRAM・フラッシュメモリ・キャッシュメモリ・実効アクセス時間・参照の局所性・メモリインタリーブ・ECC</td></tr>
+<tr><td>3-3 バス</td><td>バス・バス幅・PCI Express</td></tr>
+<tr><td>3-4 入出力デバイス</td><td>USB・DMA・割込み・デバイスドライバ・Bluetooth</td></tr>
+<tr><td>3-5 入出力装置</td><td>SSD・HDDのアクセス時間・有機EL</td></tr>
+  </tbody></table>
+<div class="foot"><span>応用情報 コンピュータ構成要素</span><span>13</span></div>
+</section>
+</body>
+</html>

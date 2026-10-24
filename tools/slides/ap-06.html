@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>応用情報 ハードウェア 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+</style>
+<style>
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
+.term .box { text-align: left; font-size: 15px; padding: 7px 12px; }
+.term dl { margin: 6px 2px 0; }
+.term dd { margin: 0 0 4px; font-size: 12.5px; line-height: 1.5; }
+.term dd.pt { color: #333; }
+.term dd.words { color: var(--navy2); font-size: 11.5px; }
+.term .tag { font-size: 10.5px; padding: 0 5px; }
+.slide .cap + table { margin-bottom: 14px; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">応用情報技術者試験　テクノロジ系　No.6</div>
+  <h1>ハードウェア</h1>
+  <p>ハードウェア（電気・電子回路）・機械・制御・論理設計・構成部品及び要素と実装・消費電力</p>
+<div class="foot"><span>応用情報 ハードウェア</span><span>1</span></div>
+</section>
+
+<section class="slide ">
+  <h1>目次</h1>
+  <ol class="toc">
+    <li>6-1 ハードウェア（電気・電子回路）（5語）</li>
+    <li>6-2 機械・制御（4語）</li>
+    <li>6-3 論理設計（4語）</li>
+    <li>6-4 構成部品及び要素と実装（4語）</li>
+    <li>6-5 消費電力（4語）</li>
+    <li>まとめ</li>
+  </ol>
+<div class="foot"><span>応用情報 ハードウェア</span><span>2</span></div>
+</section>
+
+<section class="slide ">
+  <h1>6-1 ハードウェア（電気・電子回路）<small>まとめ表</small></h1>
+  <div class="cap">論理回路の真理値</div>
+  <table><thead><tr><th>A</th><th>B</th><th>AND</th><th>OR</th><th>XOR</th><th>NAND</th><th>NOR</th></tr></thead>
+  <tbody><tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td></tr><tr><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td></tr><tr><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td></tr></tbody></table>
+<div class="foot"><span>応用情報 ハードウェア</span><span>3</span></div>
+</section>
+
+<section class="slide ">
+  <h1>6-1 ハードウェア（電気・電子回路）<small>回路の基本</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">NAND回路<span>NAND Gate</span></div><dl><dd>ANDの結果を反転させる回路</dd><dd class="pt"><span class="tag">ポイント</span>NANDだけでどんな論理回路も作れる</dd></dl></div><div class="term"><div class="box b1">フリップフロップ<span>Flip-flop</span></div><dl><dd>1ビットの情報を保持できる順序回路</dd><dd class="pt"><span class="tag">ポイント</span>SRAMやレジスタに使う</dd></dl></div><div class="term"><div class="box b1">組合せ回路・順序回路<span>Combinational / Sequential Circuit</span></div><dl><dd>組合せ回路は今の入力だけで出力が決まる回路、順序回路は過去の状態も出力に影響する回路</dd></dl></div><div class="term"><div class="box b1">半加算器・全加算器<span>Half Adder / Full Adder</span></div><dl><dd>半加算器は2ビットを足して和と桁上がりを出す回路（XORとAND）、全加算器は下の桁からの桁上がりも足す回路</dd></dl></div><div class="term"><div class="box b1">半導体<span>Semiconductor</span></div><dl><dd>電気を通す導体と通さない絶縁体の中間の性質をもつ物質</dd><dd class="pt"><span class="tag">ポイント</span>トランジスタやICの材料</dd></dl></div></div>
+<div class="foot"><span>応用情報 ハードウェア</span><span>4</span></div>
+</section>
+
+<section class="slide ">
+  <h1>6-2 機械・制御<small>機械を動かす</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">アクチュエータ<span>Actuator</span></div><dl><dd>電気などの信号を受けて、実際に動きを生み出す装置</dd><dd class="pt"><span class="tag">例</span>モータ、油圧シリンダ</dd></dl></div><div class="term"><div class="box b1">センサ<span>Sensor</span></div><dl><dd>温度・光・加速度などの物理量を測って、電気信号に変える装置</dd></dl></div><div class="term"><div class="box b1">ステッピングモータ<span>Stepping Motor</span></div><dl><dd>パルス信号1つで決まった角度だけ回るモータ</dd><dd class="pt"><span class="tag">ポイント</span>位置を正確に決めやすい</dd></dl></div><div class="term"><div class="box b1">PWM<span>ぴーだぶりゅーえむ / Pulse Width Modulation</span></div><dl><dd>パルスのオンの時間の割合を変えて、モータの速さなどを調整する方式</dd><dd class="words">Pulse＝パルス／Width＝幅／Modulation＝変調</dd></dl></div></div>
+<div class="foot"><span>応用情報 ハードウェア</span><span>5</span></div>
+</section>
+
+<section class="slide ">
+  <h1>6-3 論理設計<small>論理の組立て</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">論理式の簡単化<span>Logic Simplification</span></div><dl><dd>ブール代数やカルノー図を使って、論理式を短くすること</dd><dd class="pt"><span class="tag">ポイント</span>回路の部品が減る</dd></dl></div><div class="term"><div class="box b1">FPGA<span>えふぴーじーえー / Field Programmable Gate Array</span></div><dl><dd>買った後に利用者が論理回路を書き換えられるIC</dd><dd class="words">Field＝現場で／Programmable＝プログラムできる／Gate Array＝ゲートの並び</dd></dl></div><div class="term"><div class="box b1">ASIC<span>えーしっく / Application Specific Integrated Circuit</span></div><dl><dd>特定の用途向けに設計されたIC</dd><dd class="pt"><span class="tag">ポイント</span>大量生産すると安く速い</dd><dd class="words">Application Specific＝特定用途向け／Integrated Circuit＝集積回路</dd></dl></div><div class="term"><div class="box b1">SoC<span>えすおーしー / System on a Chip</span></div><dl><dd>CPU・メモリ・入出力などシステムの主な機能を1つのチップにまとめたもの</dd><dd class="words">System＝システム／on a Chip＝1つのチップの上に</dd></dl></div></div>
+<div class="foot"><span>応用情報 ハードウェア</span><span>6</span></div>
+</section>
+
+<section class="slide ">
+  <h1>6-4 構成部品及び要素と実装<small>部品と実装</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">組込みシステム<span>Embedded System</span></div><dl><dd>家電や機械に組み込まれ、特定の機能を制御するコンピュータシステム</dd><dd class="pt"><span class="tag">ポイント</span>リアルタイムOSを使うことが多い</dd></dl></div><div class="term"><div class="box b1">ウォッチドッグタイマ<span>Watchdog Timer</span></div><dl><dd>一定時間内にプログラムから信号が来ないと、異常とみなしてシステムをリセットするしくみ</dd><dd class="pt"><span class="tag">ポイント</span>組込みシステムの暴走対策</dd></dl></div><div class="term"><div class="box b1">ファームウェア<span>Firmware</span></div><dl><dd>機器のROMやフラッシュメモリに書き込まれ、ハードウェアを直接制御するソフトウェア</dd></dl></div><div class="term"><div class="box b1">IoTデバイス<span>IoT Device</span></div><dl><dd>ネットワークにつながり、センサの情報を送ったり制御を受けたりする機器</dd><dd class="pt"><span class="tag">ポイント</span>省電力・小型が求められる</dd></dl></div></div>
+<div class="foot"><span>応用情報 ハードウェア</span><span>7</span></div>
+</section>
+
+<section class="slide ">
+  <h1>6-5 消費電力<small>電力を減らす</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">低消費電力化<span>Low Power Design</span></div><dl><dd>回路が使う電力を減らす工夫</dd><dd class="pt"><span class="tag">ポイント</span>動的電力は「電圧の2乗×周波数」に比例するので、電圧を下げる効果が大きい</dd></dl></div><div class="term"><div class="box b1">DVFS<span>でぃーぶいえふえす / Dynamic Voltage and Frequency Scaling</span></div><dl><dd>負荷に合わせて電圧とクロック周波数を変え、電力を減らす技術</dd><dd class="words">Dynamic＝動的な／Voltage＝電圧／Frequency＝周波数／Scaling＝調整</dd></dl></div><div class="term"><div class="box b1">クロックゲーティング<span>Clock Gating</span></div><dl><dd>使っていない回路へのクロックを止めて、電力を減らす技術</dd></dl></div><div class="term"><div class="box b1">パワーゲーティング<span>Power Gating</span></div><dl><dd>使っていない回路への電源そのものを切る技術</dd><dd class="pt"><span class="tag">ポイント</span>漏れ電流も減らせる</dd></dl></div></div>
+<div class="foot"><span>応用情報 ハードウェア</span><span>8</span></div>
+</section>
+
+<section class="slide ">
+  <h1>まとめ<small>この分野で覚える用語</small></h1>
+  <table><thead><tr><th style="width:30%">小分類</th><th>用語</th></tr></thead><tbody>
+<tr><td>6-1 ハードウェア（電気・電子回路）</td><td>NAND回路・フリップフロップ・組合せ回路・順序回路・半加算器・全加算器・半導体</td></tr>
+<tr><td>6-2 機械・制御</td><td>アクチュエータ・センサ・ステッピングモータ・PWM</td></tr>
+<tr><td>6-3 論理設計</td><td>論理式の簡単化・FPGA・ASIC・SoC</td></tr>
+<tr><td>6-4 構成部品及び要素と実装</td><td>組込みシステム・ウォッチドッグタイマ・ファームウェア・IoTデバイス</td></tr>
+<tr><td>6-5 消費電力</td><td>低消費電力化・DVFS・クロックゲーティング・パワーゲーティング</td></tr>
+  </tbody></table>
+<div class="foot"><span>応用情報 ハードウェア</span><span>9</span></div>
+</section>
+</body>
+</html>
