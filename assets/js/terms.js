@@ -165,11 +165,16 @@
             qGroup = line.replace(/^###\s+/, "");
             question = null;
           } else if (/^####\s/.test(line)) {
-            question = { id: line.replace(/^####\s+(問\s*)?/, "").trim(), section: qGroup, text: "", choices: [], answer: -1, explain: "" };
+            question = { id: line.replace(/^####\s+(問\s*)?/, "").trim(), section: qGroup, text: "", choices: [], answer: -1, explain: "", notes: [], source: "" };
             doc.questions.push(question);
           } else if (question && /^\s*-\s+/.test(line)) {
-            const m = line.replace(/^\s*-\s+/, "").match(/^(問|ア|イ|ウ|エ|正解|解説)[：:]\s*(.*)$/);
-            if (m && m[1] === "問") question.text = m[2];
+            const body = line.replace(/^\s*-\s+/, "");
+            // 「アの意味：」のように、選択肢ごとの説明も書ける
+            const note = body.match(/^(ア|イ|ウ|エ)の意味[：:]\s*(.*)$/);
+            const m = body.match(/^(問|ア|イ|ウ|エ|正解|解説|出典)[：:]\s*(.*)$/);
+            if (note) question.notes["アイウエ".indexOf(note[1])] = note[2];
+            else if (m && m[1] === "問") question.text = m[2];
+            else if (m && m[1] === "出典") question.source = m[2];
             else if (m && m[1] === "正解") question.answer = "アイウエ".indexOf(m[2].trim());
             else if (m && m[1] === "解説") question.explain = m[2];
             else if (m) question.choices.push(m[2]);
@@ -278,6 +283,7 @@
     doc.sections.forEach((s) => {
       s.groups = s.groups.filter((g) => g.terms.length);
     });
+    doc.sections.forEach((s) => s.groups.forEach((g) => g.terms.forEach((t) => { t.group = g.title; })));
     doc.terms = doc.sections.flatMap((s) => s.groups.flatMap((g) => g.terms));
     // クイズ・カードには「意味」がある用語だけを使う（重複掲載などは一覧にだけ出す）
     doc.studyTerms = doc.terms.filter((t) => t.meaning && !t.flags.includes("重複"));
@@ -487,8 +493,7 @@
       return;
     }
     const q = quiz.list[quiz.index];
-    const candidates = pool(doc, q.term.section).filter((t) => t !== q.term && t.name !== q.term.name);
-    const others = shuffle(candidates.length >= 3 ? candidates : doc.studyTerms.filter((t) => t.name !== q.term.name)).slice(0, 3);
+    const others = pickDistractors(doc, q.term);
     const choices = shuffle([q.term, ...others]);
 
     box.innerHTML = `
@@ -526,6 +531,11 @@
         feedback.innerHTML = `
           <p class="quiz-verdict ${ok ? "is-correct" : "is-wrong"}">${ok ? "正解" : "不正解"}</p>
           ${termHead(q.term)}${termBody(q.term)}
+          <p class="quiz-others-title">ほかの選択肢</p>
+          <ul class="quiz-others">${choices
+            .filter((t) => t !== q.term)
+            .map((t) => `<li><b>${escapeHtml(t.name)}</b>：${inline(t.meaning)}</li>`)
+            .join("")}</ul>
           <div class="terms-controls"><button type="button" class="terms-button is-primary" data-next>次へ →</button></div>`;
         feedback.querySelector("[data-next]").addEventListener("click", () => nextQuestion(doc, box));
 
@@ -534,6 +544,37 @@
         }
       })
     );
+  };
+
+  /* 誤りの選択肢は、まぎらわしいものを優先する。
+     同じテーマ（###）＞名前が似ている＞同じ小分類（##）の順に点を付け、点が高いものから選ぶ */
+  const nameKey = (t) => t.name.replace(/[（(].*$/, "");
+  const bigrams = (s) => {
+    const set = new Set();
+    for (let i = 0; i < s.length - 1; i += 1) set.add(s.slice(i, i + 2));
+    return set;
+  };
+  const pickDistractors = (doc, term) => {
+    const own = bigrams(nameKey(term));
+    return doc.studyTerms
+      .filter((t) => t !== term && t.name !== term.name)
+      .map((t) => {
+        let score = Math.random();
+        if (t.section === term.section) score += 2;
+        if (t.section === term.section && t.group && t.group === term.group) score += 3;
+        let shared = 0;
+        bigrams(nameKey(t)).forEach((b) => {
+          if (own.has(b)) shared += 1;
+        });
+        score += Math.min(shared, 3) * 1.5;
+        // 問題文（意味）に名前が出てくる用語は、正解でないとすぐ分かるので選ばない
+        const key = nameKey(t);
+        if (key.length > 1 && (term.meaning || "").includes(key)) score -= 20;
+        return { t, score };
+      })
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3)
+      .map((x) => x.t);
   };
 
   const nextQuestion = (doc, box) => {
@@ -580,6 +621,14 @@
         feedback.innerHTML = `
           <p class="quiz-verdict ${ok ? "is-correct" : "is-wrong"}">${ok ? "正解" : `不正解（正解は${KANA[q.answer]}）`}</p>
           ${q.explain ? `<p class="term-meaning">${inline(q.explain)}</p>` : ""}
+          ${
+            q.notes.some(Boolean)
+              ? `<p class="quiz-others-title">選択肢の意味</p><ul class="quiz-others">${q.choices
+                  .map((c, i) => (q.notes[i] ? `<li class="${i === q.answer ? "is-answer" : ""}"><b>${KANA[i]}</b>　${inline(q.notes[i])}</li>` : ""))
+                  .join("")}</ul>`
+              : ""
+          }
+          ${q.source ? `<p class="quiz-source">出典：${escapeHtml(q.source)}</p>` : ""}
           <div class="terms-controls"><button type="button" class="terms-button is-primary" data-next>次へ →</button></div>`;
         feedback.querySelector("[data-next]").addEventListener("click", () => nextQuestion(doc, box));
 
