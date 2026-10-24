@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<title>応用情報 アルゴリズムとプログラミング 図解</title>
+<title>応用情報 #2 アルゴリズムとプログラミング 図解</title>
 <style>
 @page { size: 960px 540px; margin: 0; }
 :root {
@@ -48,107 +48,1021 @@ ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; colu
 .flow .box { flex: 1; }
 .flow .to { color: var(--navy3); font-size: 20px; }
 svg text { font-family: "IPAPGothic", sans-serif; }
-</style>
-<style>
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
-.term .box { text-align: left; font-size: 15px; padding: 7px 12px; }
-.term dl { margin: 6px 2px 0; }
-.term dd { margin: 0 0 4px; font-size: 12.5px; line-height: 1.5; }
-.term dd.pt { color: #333; }
-.term dd.words { color: var(--navy2); font-size: 11.5px; }
-.term .tag { font-size: 10.5px; padding: 0 5px; }
-.slide .cap + table { margin-bottom: 14px; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
 </style>
 </head>
 <body>
+
+<!-- 表紙 -->
 <section class="slide title">
-  <div class="k">応用情報技術者試験　テクノロジ系　No.2</div>
+  <div class="k">応用情報技術者試験　テクノロジ系　#2</div>
   <h1>アルゴリズムとプログラミング</h1>
-  <p>データ構造・アルゴリズム・プログラミング・プログラム言語・その他の言語</p>
-<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>1</span></div>
+  <p>用語集まとめ ― 過去問10回分（令和3〜7年度）で出たところを中心に</p>
+  <div class="icons"><img src="img/algo/card_index_dividers_flat.svg" alt=""><img src="img/algo/deciduous_tree_flat.svg" alt=""><img src="img/algo/shuffle_tracks_button_flat.svg" alt=""><img src="img/algo/magnifying_glass_tilted_left_flat.svg" alt=""><img src="img/algo/laptop_flat.svg" alt=""><img src="img/algo/page_facing_up_flat.svg" alt=""></div>
 </section>
 
-<section class="slide ">
-  <h1>目次</h1>
-  <ol class="toc">
-    <li>2-1 データ構造（12語）</li>
-    <li>2-2 アルゴリズム（11語）</li>
-    <li>2-3 プログラミング（5語）</li>
-    <li>2-4 プログラム言語（5語）</li>
-    <li>2-5 その他の言語（5語）</li>
-    <li>まとめ</li>
-  </ol>
-<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>2</span></div>
+<!-- 全体像 -->
+<section class="slide">
+  <h1>全体像<small>シラバスの5つの小分類で読む</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 データ構造<span>配列・リスト・スタック・キュー・木（2分探索木・AVL木・ヒープ）・ハッシュ表</span></div>
+      <div class="box b2">2 アルゴリズム<span>流れ図・整列・探索・再帰・設計方法・グラフ・文字列照合・記憶域管理</span></div>
+      <div class="box b3">3 プログラミング<span>プログラムの性質（再入可能など）・構造・データ型・Web・BNF</span></div>
+      <div class="box b4">4 プログラム言語<span>言語の分類と特徴・型付け・引数の渡し方・記憶域</span></div>
+      <div class="box b5">5 その他の言語<span>HTML・XML・JSON・スタイルシート・UML</span></div>
+    </div>
+    <div>
+      <div class="cap">午前での出方</div>
+      <table>
+        <tr><td>問題数</td><td>毎回 <b>問5〜問7 の3問</b>（R3春だけ問5〜問8 の4問）。10回で31問</td></tr>
+        <tr><td>同じ問題の再出題</td><td>3組（スタックの出力順、ハッシュの衝突条件、R言語）</td></tr>
+        <tr><td>問題の型</td><td>手を動かして追う問題（並べ替えの途中・木の操作・リストのポインタ）が約半分。残りは「説明を選ぶ」で、誤りの選択肢は同じ仲間（ソートなら4種類）</td></tr>
+      </table>
+      <div class="point"><b>この資料の読み方：</b>1枚に1つのメッセージ。見出しの一文と、図の動きを自分の手で追えれば解けるようにしてある。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>2-1 データ構造<small>まとめ表</small></h1>
-  <div class="cap">主なデータ構造</div>
-  <table><thead><tr><th>構造</th><th>特徴</th></tr></thead>
-  <tbody><tr><td>スタック</td><td>後入れ先出し（LIFO）。push・pop</td></tr><tr><td>キュー</td><td>先入れ先出し（FIFO）。enqueue・dequeue</td></tr><tr><td>リスト</td><td>ポインタで次の要素をつなぐ。挿入・削除が速い</td></tr><tr><td>2分探索木</td><td>左の子＜親＜右の子。探索は平均 O(log n)</td></tr><tr><td>ヒープ</td><td>親が子より常に大きい（小さい）完全2分木。優先度付きキューに使う</td></tr><tr><td>ハッシュ表</td><td>キーから計算した位置に格納。探索は平均 O(1)</td></tr></tbody></table>
-<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>3</span></div>
+<!-- 出題傾向 -->
+<section class="slide">
+  <h1>過去10回・31問の内訳<small>令和3年度春期〜令和7年度秋期</small></h1>
+  <div class="cols wide-r" style="grid-template-columns:1.25fr .75fr">
+    <table>
+      <tr><th style="width:30%">テーマ</th><th style="width:8%">数</th><th>よく出る論点</th></tr>
+      <tr><td>リスト・スタック・ハッシュ</td><td>6</td><td>スタックの出力順（2回）、配列で作るリスト、双方向リストの挿入、ハッシュの衝突（2回）</td></tr>
+      <tr><td>整列（ソート）</td><td>5</td><td>バブルソート（4回）、クイックソートの途中経過</td></tr>
+      <tr><td>木</td><td>4</td><td>配列で表す2分木、2分探索木の削除、AVL木の回転、なぞり方</td></tr>
+      <tr><td>プログラム言語</td><td>5</td><td>R（2回）、Python、TypeScript、Scala</td></tr>
+      <tr><td>再帰・設計・流れ図</td><td>3</td><td>分割統治法、階乗の再帰、ループの終了条件</td></tr>
+      <tr><td>探索の比較回数</td><td>2</td><td>線形探索の平均、ブロックに分けた探索</td></tr>
+      <tr><td>記憶域の管理</td><td>2</td><td>ベストフィット（2回）</td></tr>
+      <tr><td>プログラムの性質</td><td>2</td><td>再入可能・再使用可能・再帰的・再配置可能</td></tr>
+      <tr><td>XML・JSON</td><td>2</td><td>符号化宣言の省略、JSON</td></tr>
+    </table>
+    <div>
+      <div class="point"><b>一番の得点源：</b>バブルソート。10回で4回、説明文・流れ図・途中経過と形を変えて出た。</div>
+      <div class="point"><b>手で追う問題：</b>スタック・リスト・木は、紙に図を描いて1手ずつ動かせば必ず解ける。</div>
+      <div class="point warn"><b>落とし穴：</b>言語の問題は誤りの選択肢も実在の言語（Go・Kotlin・JavaScript など）。「型付け」と「何向けか」で見分ける。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>2-1 データ構造<small>データ構造</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">配列<span>Array</span></div><dl><dd>同じ型のデータを連続した場所に並べたもの</dd><dd class="pt"><span class="tag">ポイント</span>添字で直接アクセスできるが、途中への挿入は遅い</dd></dl></div><div class="term"><div class="box b1">スタック<span>Stack</span></div><dl><dd>最後に入れたデータを最初に取り出す構造（LIFO）</dd><dd class="pt"><span class="tag">ポイント</span>関数呼出しの戻り先や、逆ポーランド記法の計算に使う</dd></dl></div><div class="term"><div class="box b1">キュー<span>Queue</span></div><dl><dd>最初に入れたデータを最初に取り出す構造（FIFO）</dd><dd class="pt"><span class="tag">ポイント</span>待ち行列やバッファに使う</dd></dl></div><div class="term"><div class="box b1">連結リスト<span>Linked List</span></div><dl><dd>各要素が次の要素へのポインタを持つ構造</dd><dd class="pt"><span class="tag">ポイント</span>単方向・双方向・循環がある</dd></dl></div><div class="term"><div class="box b1">2分探索木<span>Binary Search Tree</span></div><dl><dd>左の部分木の値＜節の値＜右の部分木の値となる2分木</dd><dd class="pt"><span class="tag">ポイント</span>偏ると探索が遅くなるため、AVL木など平衡木を使う</dd></dl></div><div class="term"><div class="box b1">完全2分木<span>Complete Binary Tree</span></div><dl><dd>最下段以外がすべて埋まり、最下段は左から詰まっている2分木</dd></dl></div></div>
-<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>4</span></div>
+<!-- 第1章 -->
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/stack.png" alt=""><img src="img/irasutoya/tree.png" alt=""><img src="img/irasutoya/bookshelf.png" alt=""><img src="img/algo/card_index_dividers_flat.svg" alt=""></div>
+  <div class="k">第1章</div>
+  <h1>データ構造</h1>
+  <p>配列とリスト ／ スタックとキュー ／ 木（2分探索木・AVL木・ヒープ）／ ハッシュ表</p>
 </section>
 
-<section class="slide ">
-  <h1>2-1 データ構造<small>データ構造・木のなぞり方</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">ヒープ<span>Heap</span></div><dl><dd>親の値が子の値以上（または以下）になる完全2分木</dd><dd class="pt"><span class="tag">ポイント</span>最大値（最小値）がすぐ取り出せる</dd></dl></div><div class="term"><div class="box b1">B木<span>B-tree</span></div><dl><dd>1つの節に多くのキーを持つ平衡多分木</dd><dd class="pt"><span class="tag">ポイント</span>ディスク上のデータベースの索引に使う</dd></dl></div><div class="term"><div class="box b1">ハッシュ表<span>Hash Table</span></div><dl><dd>ハッシュ関数でキーから格納位置を決める表</dd><dd class="pt"><span class="tag">ポイント</span>位置がぶつかること（衝突・シノニム）への対策が必要</dd></dl></div><div class="term"><div class="box b1">グラフ<span>Graph</span></div><dl><dd>頂点と辺で、ものどうしのつながりを表す構造</dd><dd class="pt"><span class="tag">ポイント</span>隣接行列や隣接リストで表す</dd></dl></div><div class="term"><div class="box b1">深さ優先探索<span>DFS / Depth-First Search</span></div><dl><dd>行けるところまで深く進み、行き止まりで戻る探索</dd><dd class="pt"><span class="tag">ポイント</span>前順・間順・後順のなぞり方がある</dd></dl></div><div class="term"><div class="box b1">幅優先探索<span>BFS / Breadth-First Search</span></div><dl><dd>出発点に近い頂点から順に調べる探索</dd><dd class="pt"><span class="tag">ポイント</span>最短の手数を求めるのに向く</dd></dl></div></div>
-<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>5</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/algo/brick_flat.svg" alt="">スタックは「後から入れたものが先」、キューは「先に入れたものが先」</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="170" viewBox="0 0 400 170">
+        <text x="95" y="16" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">スタック（LIFO）</text>
+        <path d="M45,40 L45,150 L145,150 L145,40" fill="none" stroke="#2f5596" stroke-width="2"/>
+        <rect x="52" y="116" width="86" height="28" rx="4" fill="#c9daf2"/><text x="95" y="135" font-size="13" text-anchor="middle" fill="#1f3a68">A</text>
+        <rect x="52" y="84" width="86" height="28" rx="4" fill="#c9daf2"/><text x="95" y="103" font-size="13" text-anchor="middle" fill="#1f3a68">B</text>
+        <rect x="52" y="52" width="86" height="28" rx="4" fill="#2f5596"/><text x="95" y="71" font-size="13" text-anchor="middle" fill="#fff">C</text>
+        <text x="152" y="62" font-size="11.5" fill="#b25000">← 最後に入れた</text>
+        <text x="95" y="34" font-size="11.5" text-anchor="middle" fill="#1d1d1f">↕ 出入口は1つ（プッシュ・ポップ）</text>
+        <text x="300" y="16" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">キュー（FIFO）</text>
+        <path d="M230,70 L370,70 M230,120 L370,120" stroke="#2f5596" stroke-width="2"/>
+        <rect x="236" y="80" width="40" height="30" rx="4" fill="#c9daf2"/><text x="256" y="100" font-size="13" text-anchor="middle" fill="#1f3a68">C</text>
+        <rect x="280" y="80" width="40" height="30" rx="4" fill="#c9daf2"/><text x="300" y="100" font-size="13" text-anchor="middle" fill="#1f3a68">B</text>
+        <rect x="324" y="80" width="40" height="30" rx="4" fill="#2f5596"/><text x="344" y="100" font-size="13" text-anchor="middle" fill="#fff">A</text>
+        <text x="236" y="140" font-size="11.5" fill="#1d1d1f">入れる（末尾）</text><text x="365" y="140" font-size="11.5" text-anchor="end" fill="#b25000">出す（先頭）</text>
+        <text x="300" y="160" font-size="11.5" text-anchor="middle" fill="#1d1d1f">エンキュー・デキュー</text>
+      </svg>
+      <div class="point"><b>使い道：</b>スタック＝関数の戻り先・逆ポーランド記法・深さ優先探索。キュー＝待ち行列・幅優先探索。優先度の高いものから出すのは<b>優先度付きキュー</b>（ヒープで作る）。</div>
+    </div>
+    <div>
+      <div class="cap">R3春 問5＝R7春 問5：A, B, C の順に入れ、出し入れ1回ずつ</div>
+      <table class="mini">
+        <tr><th>出力順</th><th>できるか</th><th>操作（入＝プッシュ、出＝ポップ）</th></tr>
+        <tr><td>A B C</td><td>○</td><td>A入出 → B入出 → C入出</td></tr>
+        <tr><td>A C B</td><td>○</td><td>A入出 → B入 → C入出 → B出</td></tr>
+        <tr><td>B A C</td><td>○</td><td>A入 → B入出 → A出 → C入出</td></tr>
+        <tr><td>B C A</td><td>○</td><td>A入 → B入出 → C入出 → A出</td></tr>
+        <tr><td>C B A</td><td>○</td><td>A入 → B入 → C入出 → B出 → A出</td></tr>
+        <tr><td><b>C A B</b></td><td><b>×</b></td><td>C を先に出すと、一番上は B。A を B より先に出せない</td></tr>
+      </table>
+      <div class="point">並べ方6通りのうち、作れないのは CAB だけ → <b>5通り（ウ）</b>。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>2-2 アルゴリズム<small>まとめ表</small></h1>
-  <div class="cap">整列の計算量</div>
-  <table><thead><tr><th>整列</th><th>平均</th><th>最悪</th><th>特徴</th></tr></thead>
-  <tbody><tr><td>バブルソート</td><td>O(n²)</td><td>O(n²)</td><td>隣どうしを比べて交換</td></tr><tr><td>選択ソート</td><td>O(n²)</td><td>O(n²)</td><td>最小値を選んで先頭へ</td></tr><tr><td>挿入ソート</td><td>O(n²)</td><td>O(n²)</td><td>ほぼ整列済みなら速い</td></tr><tr><td>クイックソート</td><td>O(n log n)</td><td>O(n²)</td><td>基準値で分けて再帰</td></tr><tr><td>マージソート</td><td>O(n log n)</td><td>O(n log n)</td><td>分けて併合。安定</td></tr><tr><td>ヒープソート</td><td>O(n log n)</td><td>O(n log n)</td><td>ヒープを使う</td></tr></tbody></table>
-<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>6</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/algo/link_flat.svg" alt="">配列は「参照が速い」、連結リストは「挿入・削除が速い」</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="150" viewBox="0 0 410 150">
+        <text x="0" y="14" font-size="12.5" fill="#1f3a68" font-weight="700">配列：連続した領域に並べる（添字で直接）</text>
+        <g font-size="13" text-anchor="middle">
+          <rect x="0" y="24" width="50" height="30" fill="#c9daf2" stroke="#2f5596"/><text x="25" y="44" fill="#1f3a68">A</text>
+          <rect x="50" y="24" width="50" height="30" fill="#c9daf2" stroke="#2f5596"/><text x="75" y="44" fill="#1f3a68">B</text>
+          <rect x="100" y="24" width="50" height="30" fill="#c9daf2" stroke="#2f5596"/><text x="125" y="44" fill="#1f3a68">D</text>
+          <rect x="150" y="24" width="50" height="30" fill="#fff" stroke="#2f5596" stroke-dasharray="4 3"/>
+          <rect x="200" y="24" width="50" height="30" fill="#fff" stroke="#2f5596" stroke-dasharray="4 3"/>
+          <text x="225" y="72" font-size="11" fill="#b25000">使わない領域（最大個数分を確保）</text>
+        </g>
+        <text x="0" y="98" font-size="12.5" fill="#1f3a68" font-weight="700">連結リスト：次の場所（ポインタ）でつなぐ</text>
+        <g font-size="13" text-anchor="middle">
+          <rect x="0" y="108" width="34" height="30" fill="#c9daf2" stroke="#2f5596"/><text x="17" y="128" fill="#1f3a68">A</text><rect x="34" y="108" width="18" height="30" fill="#fff" stroke="#2f5596"/>
+          <rect x="90" y="108" width="34" height="30" fill="#c9daf2" stroke="#2f5596"/><text x="107" y="128" fill="#1f3a68">B</text><rect x="124" y="108" width="18" height="30" fill="#fff" stroke="#2f5596"/>
+          <rect x="250" y="108" width="34" height="30" fill="#c9daf2" stroke="#2f5596"/><text x="267" y="128" fill="#1f3a68">D</text><rect x="284" y="108" width="18" height="30" fill="#fff" stroke="#2f5596"/>
+          <rect x="170" y="108" width="34" height="30" fill="#fde7cf" stroke="#b25000"/><text x="187" y="128" fill="#b25000">C</text><rect x="204" y="108" width="18" height="30" fill="#fff" stroke="#b25000"/>
+        </g>
+        <defs><marker id="la" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#2f5596"/></marker><marker id="lb" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#b25000"/></marker></defs>
+        <path d="M43,123 L88,123" stroke="#2f5596" stroke-width="1.6" marker-end="url(#la)"/>
+        <path d="M133,123 L168,123" stroke="#b25000" stroke-width="1.6" marker-end="url(#lb)"/>
+        <path d="M213,123 L248,123" stroke="#b25000" stroke-width="1.6" marker-end="url(#lb)"/>
+        <path d="M133,112 C170,92 220,92 250,110" stroke="#9aa7bd" stroke-width="1.2" fill="none" stroke-dasharray="4 3"/>
+        <text x="330" y="128" font-size="11" fill="#b25000">付け替えは2か所</text>
+      </svg>
+      <div class="point"><b>双方向リスト</b>は前へのポインタももつ。挿入では、新しい要素の次・前と、前後の要素の計4か所を書き換える。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:28%">操作</th><th>配列で作る</th><th>ポインタで作る</th></tr>
+        <tr><td>i番目を見る</td><td><b>すぐ</b>（添字）</td><td>先頭からたどる（要素数に比例）</td></tr>
+        <tr><td>途中に挿入・削除</td><td>後ろをずらす（要素数に比例）</td><td><b>付け替えだけ</b>（一定時間）</td></tr>
+        <tr><td>領域</td><td>最大個数分を先に確保。<b>使わない領域が出る</b></td><td>要素の分だけ。ポインタの領域が余計に要る</td></tr>
+      </table>
+      <div class="point"><b>R4春 問5：</b>配列で作ったリストの特徴は「最大個数分の領域を確保し、使われない領域が出る（ア）」。イ・ウ・エはどれもポインタの方の特徴。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>2-2 アルゴリズム<small>探索と整列</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">線形探索<span>Linear Search</span></div><dl><dd>先頭から順に1つずつ調べる探索</dd><dd class="pt"><span class="tag">ポイント</span>計算量 O(n)。番兵を置くと終了判定が減る</dd></dl></div><div class="term"><div class="box b1">2分探索<span>Binary Search</span></div><dl><dd>整列済みのデータを半分に分けながら調べる探索</dd><dd class="pt"><span class="tag">ポイント</span>計算量 O(log n)。最大の比較回数は約 log2 n ＋1</dd></dl></div><div class="term"><div class="box b1">クイックソート<span>Quick Sort</span></div><dl><dd>基準値（ピボット）より小さいグループと大きいグループに分け、再帰的に整列する</dd><dd class="pt"><span class="tag">ポイント</span>平均は速いが、最悪 O(n²)</dd></dl></div><div class="term"><div class="box b1">マージソート<span>Merge Sort</span></div><dl><dd>データを半分ずつに分けて整列し、併合（マージ）する</dd><dd class="pt"><span class="tag">ポイント</span>常に O(n log n)。安定な整列</dd></dl></div><div class="term"><div class="box b1">安定な整列<span>Stable Sort</span></div><dl><dd>同じ値のデータの並び順が、整列の前後で変わらない整列</dd></dl></div><div class="term"><div class="box b1">計算量<span>Computational Complexity</span></div><dl><dd>アルゴリズムの処理の手間を、データ量nの関数で表したもの</dd><dd class="pt"><span class="tag">ポイント</span>O記法で表す</dd></dl></div></div>
-<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>7</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/algo/link_flat.svg" alt="">配列で作る双方向リストは「Headから next をたどって並びを復元」</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R5秋 問5：D の次に C を挿入（追加は配列の末尾＝6番）</div>
+      <table class="mini">
+        <tr><th>要素番号</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr>
+        <tr><td>elem</td><td>A</td><td>F</td><td>D</td><td>B</td><td>E</td><td><b style="color:#b25000">C</b></td></tr>
+        <tr><td>next</td><td>4</td><td>0</td><td>5 → <b style="color:#b25000">6</b></td><td>3</td><td>2</td><td><b style="color:#b25000">5</b></td></tr>
+        <tr><td>prev</td><td>0</td><td>5</td><td>4</td><td>1</td><td>3 → <b style="color:#b25000">6</b></td><td><b style="color:#b25000">3</b></td></tr>
+      </table>
+      <div class="point">Head＝1 から next をたどる：<b>A(1) → B(4) → D(3) → E(5) → F(2)</b>。next が0の F が末尾（Tail＝2）。</div>
+    </div>
+    <div>
+      <svg width="400" height="120" viewBox="0 0 400 120">
+        <defs><marker id="da" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#2f5596"/></marker><marker id="db" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#b25000"/></marker></defs>
+        <g font-size="13" text-anchor="middle" font-weight="700">
+          <rect x="10" y="20" width="56" height="30" rx="5" fill="#c9daf2"/><text x="38" y="40" fill="#1f3a68">D(3)</text>
+          <rect x="172" y="20" width="56" height="30" rx="5" fill="#fde7cf" stroke="#b25000"/><text x="200" y="40" fill="#b25000">C(6)</text>
+          <rect x="334" y="20" width="56" height="30" rx="5" fill="#c9daf2"/><text x="362" y="40" fill="#1f3a68">E(5)</text>
+        </g>
+        <path d="M66,28 L170,28" stroke="#b25000" stroke-width="1.6" marker-end="url(#db)"/>
+        <path d="M172,44 L68,44" stroke="#b25000" stroke-width="1.6" marker-end="url(#db)"/>
+        <path d="M228,28 L332,28" stroke="#b25000" stroke-width="1.6" marker-end="url(#db)"/>
+        <path d="M334,44 L230,44" stroke="#b25000" stroke-width="1.6" marker-end="url(#db)"/>
+        <g font-size="11" fill="#1d1d1f" text-anchor="middle">
+          <text x="118" y="70">next[3]＝6 ／ prev[6]＝3</text>
+          <text x="282" y="70">next[6]＝5 ／ prev[5]＝6</text>
+        </g>
+        <text x="200" y="104" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">書き換えは4か所。問われたのは C の2つ</text>
+      </svg>
+      <div class="point">答えは <b>next[6]＝5、prev[6]＝3（ウ）</b>。誤りの選択肢は、F(2)・B(4) など並びを取り違えた番号。</div>
+      <div class="point warn"><b>コツ：</b>配列の番号順（A, F, D, B, E）はリストの順ではない。必ず Head から next をたどって並びを書き出す。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>2-2 アルゴリズム<small>いろいろなアルゴリズム</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">再帰<span>Recursion</span></div><dl><dd>関数が自分自身を呼び出すこと</dd><dd class="pt"><span class="tag">ポイント</span>終了条件が必要。例: 階乗、ハノイの塔</dd></dl></div><div class="term"><div class="box b1">動的計画法<span>Dynamic Programming</span></div><dl><dd>小さな問題の答えを表に記録し、それを使って大きな問題を解く方法</dd><dd class="pt"><span class="tag">ポイント</span>同じ計算を繰り返さない</dd></dl></div><div class="term"><div class="box b1">ダイクストラ法<span>Dijkstra's Algorithm</span></div><dl><dd>重みが0以上のグラフで、最短経路を求める方法</dd><dd class="pt"><span class="tag">ポイント</span>ネットワークの経路選択（OSPF）にも使う</dd></dl></div><div class="term"><div class="box b1">ユークリッドの互除法<span>Euclidean Algorithm</span></div><dl><dd>2つの数の最大公約数を、割り算の余りを繰り返して求める方法</dd></dl></div><div class="term"><div class="box b1">逆ポーランド記法<span>後置記法 / Reverse Polish Notation</span></div><dl><dd>演算子を後ろに書く記法</dd><dd class="pt"><span class="tag">例</span>(A＋B)×C は AB＋C×。スタックで計算できる</dd></dl></div></div>
-<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>8</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/algo/deciduous_tree_flat.svg" alt="">完全2分木は配列で表せる。子は 2i と 2i＋1</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="160" viewBox="0 0 400 160"><line x1="200.0" y1="24" x2="100.0" y2="80" stroke="#9aa7bd" stroke-width="1.6"/><line x1="100.0" y1="80" x2="50.0" y2="136" stroke="#9aa7bd" stroke-width="1.6"/><line x1="100.0" y1="80" x2="150.0" y2="136" stroke="#9aa7bd" stroke-width="1.6"/><line x1="200.0" y1="24" x2="300.0" y2="80" stroke="#9aa7bd" stroke-width="1.6"/><line x1="300.0" y1="80" x2="250.0" y2="136" stroke="#9aa7bd" stroke-width="1.6"/><line x1="300.0" y1="80" x2="350.0" y2="136" stroke="#9aa7bd" stroke-width="1.6"/><circle cx="200.0" cy="24" r="19" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.6"/><text x="200.0" y="28.1" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">A[1]</text><circle cx="100.0" cy="80" r="19" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="100.0" y="84.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A[2]</text><circle cx="50.0" cy="136" r="19" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="50.0" y="140.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A[4]</text><circle cx="150.0" cy="136" r="19" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="150.0" y="140.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A[5]</text><circle cx="300.0" cy="80" r="19" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="300.0" y="84.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A[3]</text><circle cx="250.0" cy="136" r="19" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="250.0" y="140.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A[6]</text><circle cx="350.0" cy="136" r="19" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="350.0" y="140.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A[7]</text></svg>
+      <div style="display:flex;gap:0;margin-top:6px"><div style="flex:1;border:1px solid #2f5596;text-align:center;padding:5px 0;font-size:12.5px;background:#1f3a68;color:#fff">A[1]</div><div style="flex:1;border:1px solid #2f5596;text-align:center;padding:5px 0;font-size:12.5px;background:#c9daf2">A[2]</div><div style="flex:1;border:1px solid #2f5596;text-align:center;padding:5px 0;font-size:12.5px;background:#c9daf2">A[3]</div><div style="flex:1;border:1px solid #2f5596;text-align:center;padding:5px 0;font-size:12.5px;background:#e8eef8">A[4]</div><div style="flex:1;border:1px solid #2f5596;text-align:center;padding:5px 0;font-size:12.5px;background:#e8eef8">A[5]</div><div style="flex:1;border:1px solid #2f5596;text-align:center;padding:5px 0;font-size:12.5px;background:#e8eef8">A[6]</div><div style="flex:1;border:1px solid #2f5596;text-align:center;padding:5px 0;font-size:12.5px;background:#e8eef8">A[7]</div></div>
+      <div style="display:flex;font-size:11px;color:#6e6e73;margin-top:3px"><div style="flex:1;text-align:center">1段目</div><div style="flex:2;text-align:center">2段目</div><div style="flex:4;text-align:center">3段目</div></div>
+    </div>
+    <div>
+      <dl class="def">
+        <dt>木の部品</dt><dd><b>根</b>＝一番上（親なし）、<b>葉</b>＝子のない節、<b>枝</b>＝親子を結ぶ線（節が n 個なら n−1 本）、<b>部分木</b>＝ある節から下の小さな木</dd>
+        <dt>完全2分木</dt><dd>一番下の段以外は埋まり、一番下の段は左から詰める。A[i] の子は A[2i]・A[2i＋1]、親は A[i÷2]（切捨て）</dd>
+      </dl>
+      <div class="point"><b>R3春 問6：</b>この表し方で配列を先頭から調べると、1段目→2段目→3段目と<b>段ごとに左から右</b>へ進む。これは<b>幅優先探索（エ）</b>。行きがけ順なら A[1]→A[2]→A[4] と下へ潜るので順番が違う。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>2-3 プログラミング<small>プログラムの性質</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">再入可能<span>リエントラント / Reentrant</span></div><dl><dd>複数のプロセスから同時に呼ばれても正しく動くプログラム</dd><dd class="pt"><span class="tag">ポイント</span>データをプロセスごとに分けて持つ</dd></dl></div><div class="term"><div class="box b1">再使用可能<span>Reusable</span></div><dl><dd>一度実行したあと、読み込み直さずに再び実行できるプログラム</dd></dl></div><div class="term"><div class="box b1">再帰的<span>Recursive</span></div><dl><dd>実行中に自分自身を呼び出せるプログラム</dd></dl></div><div class="term"><div class="box b1">再配置可能<span>Relocatable</span></div><dl><dd>主記憶のどこに置いても実行できるプログラム</dd></dl></div><div class="term"><div class="box b1">コーディング規約<span>Coding Standards</span></div><dl><dd>プログラムの書き方をそろえるための決まり</dd><dd class="pt"><span class="tag">ポイント</span>読みやすさと保守のしやすさを上げる</dd></dl></div></div>
-<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>9</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/algo/deciduous_tree_flat.svg" alt="">木のなぞり方は「節をいつ出力するか」の違い</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R6春 問6 の木（数式を表す2分木）</div>
+      <svg width="400" height="171" viewBox="0 0 400 171"><line x1="200.0" y1="20" x2="100.0" y2="64" stroke="#9aa7bd" stroke-width="1.6"/><line x1="200.0" y1="20" x2="300.0" y2="64" stroke="#9aa7bd" stroke-width="1.6"/><line x1="300.0" y1="64" x2="250.0" y2="108" stroke="#9aa7bd" stroke-width="1.6"/><line x1="250.0" y1="108" x2="225.0" y2="152" stroke="#9aa7bd" stroke-width="1.6"/><line x1="250.0" y1="108" x2="275.0" y2="152" stroke="#9aa7bd" stroke-width="1.6"/><line x1="300.0" y1="64" x2="350.0" y2="108" stroke="#9aa7bd" stroke-width="1.6"/><line x1="350.0" y1="108" x2="325.0" y2="152" stroke="#9aa7bd" stroke-width="1.6"/><line x1="350.0" y1="108" x2="375.0" y2="152" stroke="#9aa7bd" stroke-width="1.6"/><circle cx="200.0" cy="20" r="15" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="200.0" y="24.7" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">＋</text><circle cx="100.0" cy="64" r="15" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="100.0" y="68.7" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">A</text><circle cx="300.0" cy="64" r="15" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="300.0" y="68.7" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">÷</text><circle cx="250.0" cy="108" r="15" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="250.0" y="112.7" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">×</text><circle cx="225.0" cy="152" r="15" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="225.0" y="156.7" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">B</text><circle cx="275.0" cy="152" r="15" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="275.0" y="156.7" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">C</text><circle cx="350.0" cy="108" r="15" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="350.0" y="112.7" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">−</text><circle cx="325.0" cy="152" r="15" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="325.0" y="156.7" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">D</text><circle cx="375.0" cy="152" r="15" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="375.0" y="156.7" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">E</text></svg>
+      <div class="point">深さ優先でなぞるとき、節を<b>先に</b>出すか、左右の<b>間</b>か、<b>後</b>か。左右のどちらから行くかも問題文で必ず確かめる。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:36%">なぞり方</th><th>出力</th></tr>
+        <tr><td>先行順（行きがけ）<br>自分→左→右</td><td class="mono">＋A÷×BC−DE<br><span style="font-size:11px;color:#6e6e73">前置記法</span></td></tr>
+        <tr><td>中間順（通りがけ）<br>左→自分→右</td><td class="mono">A＋B×C÷D−E<br><span style="font-size:11px;color:#6e6e73">中置記法（かっこは省略）</span></td></tr>
+        <tr><td>後行順（帰りがけ）<br>左→右→自分</td><td class="mono">ABC×DE−÷＋<br><span style="font-size:11px;color:#6e6e73">逆ポーランド記法＝R6春 問6 のイ</span></td></tr>
+        <tr><td><b>R6春 問6</b><br>右→左→自分</td><td class="mono"><b>ED−CB×÷A＋（エ）</b></td></tr>
+      </table>
+      <div class="point warn">この問題は「右の子を先」に処理する。普通の後行順（イ）を選ばせる作りなので、定義の1行目を読み飛ばさない。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>2-4 プログラム言語<small>言語の種類</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">手続型言語<span>Procedural Language</span></div><dl><dd>処理の手順を順に書いていく言語</dd><dd class="pt"><span class="tag">例</span>C、COBOL</dd></dl></div><div class="term"><div class="box b1">オブジェクト指向言語<span>Object-Oriented Language</span></div><dl><dd>データと処理をまとめたオブジェクトを組み合わせて作る言語</dd><dd class="pt"><span class="tag">例</span>Java、C++、Python</dd></dl></div><div class="term"><div class="box b1">関数型言語<span>Functional Language</span></div><dl><dd>関数の組合せでプログラムを作る言語</dd><dd class="pt"><span class="tag">ポイント</span>副作用を避ける。例: Haskell</dd></dl></div><div class="term"><div class="box b1">論理型言語<span>Logic Programming Language</span></div><dl><dd>事実と規則を書き、問合せに答えを推論させる言語</dd><dd class="pt"><span class="tag">例</span>Prolog</dd></dl></div><div class="term"><div class="box b1">スクリプト言語<span>Script Language</span></div><dl><dd>コンパイルせずにインタプリタで手軽に実行できる言語</dd><dd class="pt"><span class="tag">例</span>JavaScript、Python</dd></dl></div></div>
-<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>10</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/algo/magnifying_glass_tilted_left_flat.svg" alt="">2分探索木は「左＜節＜右」。消したら左の最大か右の最小で埋める</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R6秋 問5：12 を削除して、別の要素を移すだけで直す</div>
+      <svg width="400" height="197" viewBox="0 0 400 197"><line x1="42.3" y1="100" x2="16.0" y2="140" stroke="#9aa7bd" stroke-width="1.6"/><line x1="42.3" y1="100" x2="68.6" y2="140" stroke="#9aa7bd" stroke-width="1.6"/><line x1="94.9" y1="60" x2="42.3" y2="100" stroke="#9aa7bd" stroke-width="1.6"/><line x1="94.9" y1="60" x2="121.1" y2="100" stroke="#9aa7bd" stroke-width="1.6"/><line x1="147.4" y1="20" x2="94.9" y2="60" stroke="#9aa7bd" stroke-width="1.6"/><line x1="200.0" y1="60" x2="173.7" y2="100" stroke="#9aa7bd" stroke-width="1.6"/><line x1="252.6" y1="140" x2="226.3" y2="180" stroke="#9aa7bd" stroke-width="1.6"/><line x1="252.6" y1="140" x2="278.9" y2="180" stroke="#9aa7bd" stroke-width="1.6"/><line x1="305.1" y1="100" x2="252.6" y2="140" stroke="#9aa7bd" stroke-width="1.6"/><line x1="357.7" y1="140" x2="331.4" y2="180" stroke="#9aa7bd" stroke-width="1.6"/><line x1="357.7" y1="140" x2="384.0" y2="180" stroke="#9aa7bd" stroke-width="1.6"/><line x1="305.1" y1="100" x2="357.7" y2="140" stroke="#9aa7bd" stroke-width="1.6"/><line x1="200.0" y1="60" x2="305.1" y2="100" stroke="#9aa7bd" stroke-width="1.6"/><line x1="147.4" y1="20" x2="200.0" y2="60" stroke="#9aa7bd" stroke-width="1.6"/><circle cx="16.0" cy="140" r="13" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="16.0" y="144.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">1</text><circle cx="42.3" cy="100" r="13" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="42.3" y="104.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">2</text><circle cx="68.6" cy="140" r="13" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="68.6" y="144.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">3</text><circle cx="94.9" cy="60" r="13" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="94.9" y="64.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">4</text><circle cx="121.1" cy="100" r="13" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="121.1" y="104.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">5</text><circle cx="147.4" cy="20" r="13" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="147.4" y="24.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">6</text><circle cx="173.7" cy="100" r="13" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="173.7" y="104.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">7</text><circle cx="200.0" cy="60" r="13" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="200.0" y="64.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">8</text><circle cx="226.3" cy="180" r="13" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="226.3" y="184.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">9</text><circle cx="252.6" cy="140" r="13" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="252.6" y="144.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">10</text><circle cx="278.9" cy="180" r="13" fill="#fde7cf" stroke="#b25000" stroke-width="1.6"/><text x="278.9" y="184.1" font-size="11.5" text-anchor="middle" fill="#b25000" font-weight="700">11</text><circle cx="305.1" cy="100" r="13" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.6"/><text x="305.1" y="104.1" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">12</text><circle cx="331.4" cy="180" r="13" fill="#fde7cf" stroke="#b25000" stroke-width="1.6"/><text x="331.4" y="184.1" font-size="11.5" text-anchor="middle" fill="#b25000" font-weight="700">13</text><circle cx="357.7" cy="140" r="13" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="357.7" y="144.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">14</text><circle cx="384.0" cy="180" r="13" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="384.0" y="184.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">15</text></svg>
+    </div>
+    <div>
+      <dl class="def">
+        <dt>2分探索木の決まり</dt><dd>どの節でも、左の部分木は全部小さく、右の部分木は全部大きい。<b>中間順になぞると小さい順</b>に並ぶ</dd>
+        <dt>削除のしかた</dt><dd>葉なら消すだけ。子が1つならその子を上げる。子が2つなら<b>左の部分木の最大値</b>か<b>右の部分木の最小値</b>を移す</dd>
+      </dl>
+      <div class="point">12 の左の部分木の最大は 11、右の部分木の最小は 13。選択肢にあるのは <b>13（ウ）</b>。9・10・14 を置くと、残った節で大小の決まりが崩れる。</div>
+      <div class="point warn">偏った形（片側に一直線）になると探索が O(n) に落ちる。これを防ぐのが次の AVL木。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>2-5 その他の言語<small>マークアップとデータ</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">HTML<span>えいちてぃーえむえる / HyperText Markup Language</span></div><dl><dd>Webページの構造をタグで書く言語</dd><dd class="words">HyperText＝リンクでつながる文書／Markup＝目印をつける／Language＝言語</dd></dl></div><div class="term"><div class="box b1">XML<span>えっくすえむえる / Extensible Markup Language</span></div><dl><dd>利用者が自由にタグを決められるマークアップ言語</dd><dd class="pt"><span class="tag">ポイント</span>データ交換に使う。DTDやXML Schemaで構造を定める</dd><dd class="words">Extensible＝拡張できる／Markup＝目印付け／Language＝言語</dd></dl></div><div class="term"><div class="box b1">JSON<span>じぇいそん / JavaScript Object Notation</span></div><dl><dd>「名前：値」の組でデータを表す軽い形式</dd><dd class="pt"><span class="tag">ポイント</span>Web APIのデータのやり取りで多く使う</dd><dd class="words">JavaScript＝言語名／Object＝もの／Notation＝表記法</dd></dl></div><div class="term"><div class="box b1">CSS<span>しーえすえす / Cascading Style Sheets</span></div><dl><dd>Webページの見た目（色・配置など）を指定する言語</dd><dd class="words">Cascading＝段階的に重なる／Style Sheets＝書式の指定</dd></dl></div><div class="term"><div class="box b1">UML<span>ゆーえむえる / Unified Modeling Language</span></div><dl><dd>オブジェクト指向の設計を図で表す標準の書き方</dd><dd class="words">Unified＝統一された／Modeling＝モデルを描く／Language＝言語</dd></dl></div></div>
-<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>11</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/algo/deciduous_tree_flat.svg" alt="">AVL木は「左右の高さの差が2になった一番下の節」で回転する</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R7春 問6：5(3(2,4),7(6)) に 1 と 0 を順に追加</div>
+      <div style="display:flex;align-items:center">
+        <div style="text-align:center;font-size:11.5px"><svg width="210" height="181" viewBox="0 0 210 181"><line x1="44.3" y1="128" x2="20.0" y2="164" stroke="#9aa7bd" stroke-width="1.6"/><line x1="68.6" y1="92" x2="44.3" y2="128" stroke="#9aa7bd" stroke-width="1.6"/><line x1="92.9" y1="56" x2="68.6" y2="92" stroke="#9aa7bd" stroke-width="1.6"/><line x1="92.9" y1="56" x2="117.1" y2="92" stroke="#9aa7bd" stroke-width="1.6"/><line x1="141.4" y1="20" x2="92.9" y2="56" stroke="#9aa7bd" stroke-width="1.6"/><line x1="190.0" y1="56" x2="165.7" y2="92" stroke="#9aa7bd" stroke-width="1.6"/><line x1="141.4" y1="20" x2="190.0" y2="56" stroke="#9aa7bd" stroke-width="1.6"/><circle cx="20.0" cy="164" r="13" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.6"/><text x="20.0" y="168.3" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">0</text><circle cx="44.3" cy="128" r="13" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.6"/><text x="44.3" y="132.3" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">1</text><circle cx="68.6" cy="92" r="13" fill="#fde7cf" stroke="#b25000" stroke-width="1.6"/><text x="68.6" y="96.3" font-size="12" text-anchor="middle" fill="#b25000" font-weight="700">2</text><circle cx="92.9" cy="56" r="13" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="92.9" y="60.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">3</text><circle cx="117.1" cy="92" r="13" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="117.1" y="96.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">4</text><circle cx="141.4" cy="20" r="13" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="141.4" y="24.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">5</text><circle cx="165.7" cy="92" r="13" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="165.7" y="96.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">6</text><circle cx="190.0" cy="56" r="13" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="190.0" y="60.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">7</text></svg><br>0 を足すと節2で左の高さ2・右0</div>
+        <div style="font-size:22px;color:#5b80bf;padding:0 4px">→</div>
+        <div style="text-align:center;font-size:11.5px"><svg width="210" height="180" viewBox="0 0 210 180"><line x1="44.3" y1="92" x2="20.0" y2="128" stroke="#9aa7bd" stroke-width="1.6"/><line x1="44.3" y1="92" x2="68.6" y2="128" stroke="#9aa7bd" stroke-width="1.6"/><line x1="92.9" y1="56" x2="44.3" y2="92" stroke="#9aa7bd" stroke-width="1.6"/><line x1="92.9" y1="56" x2="117.1" y2="92" stroke="#9aa7bd" stroke-width="1.6"/><line x1="141.4" y1="20" x2="92.9" y2="56" stroke="#9aa7bd" stroke-width="1.6"/><line x1="190.0" y1="56" x2="165.7" y2="92" stroke="#9aa7bd" stroke-width="1.6"/><line x1="141.4" y1="20" x2="190.0" y2="56" stroke="#9aa7bd" stroke-width="1.6"/><circle cx="20.0" cy="128" r="13" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.6"/><text x="20.0" y="132.3" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">0</text><circle cx="44.3" cy="92" r="13" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.6"/><text x="44.3" y="96.3" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">1</text><circle cx="68.6" cy="128" r="13" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.6"/><text x="68.6" y="132.3" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">2</text><circle cx="92.9" cy="56" r="13" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="92.9" y="60.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">3</text><circle cx="117.1" cy="92" r="13" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="117.1" y="96.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">4</text><circle cx="141.4" cy="20" r="13" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="141.4" y="24.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">5</text><circle cx="165.7" cy="92" r="13" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="165.7" y="96.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">6</text><circle cx="190.0" cy="56" r="13" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="190.0" y="60.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">7</text></svg><br>節2を右回転して 1 を上げる</div>
+      </div>
+    </div>
+    <div>
+      <dl class="def">
+        <dt>AVL木</dt><dd>どの節でも左右の部分木の高さの差が1以下の2分探索木。崩れたら<b>回転</b>で直す</dd>
+        <dt>右回転（左に偏ったとき）</dt><dd>偏った節の左の子を上に上げ、偏った節はその右の子になる。3より上と右側（7・6）は動かさない</dd>
+      </dl>
+      <div class="point">答えは <b>5(3(1(0,2),4),7(6))（ウ）</b>。ほかの選択肢も「高さの差1以下」は満たすが、根まで組み替えたり（ア・イ）、偏っていない右側を回したり（エ）していて、追加の手順どおりではない。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>まとめ<small>この分野で覚える用語</small></h1>
-  <table><thead><tr><th style="width:30%">小分類</th><th>用語</th></tr></thead><tbody>
-<tr><td>2-1 データ構造</td><td>配列・スタック・キュー・連結リスト・2分探索木・完全2分木・ヒープ・B木・ハッシュ表・グラフ・深さ優先探索・幅優先探索</td></tr>
-<tr><td>2-2 アルゴリズム</td><td>線形探索・2分探索・クイックソート・マージソート・安定な整列・計算量・再帰・動的計画法・ダイクストラ法・ユークリッドの互除法・逆ポーランド記法</td></tr>
-<tr><td>2-3 プログラミング</td><td>再入可能・再使用可能・再帰的・再配置可能・コーディング規約</td></tr>
-<tr><td>2-4 プログラム言語</td><td>手続型言語・オブジェクト指向言語・関数型言語・論理型言語・スクリプト言語</td></tr>
-<tr><td>2-5 その他の言語</td><td>HTML・XML・JSON・CSS・UML</td></tr>
-  </tbody></table>
-<div class="foot"><span>応用情報 アルゴリズムとプログラミング</span><span>12</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/algo/bar_chart_flat.svg" alt="">ヒープは「親≧子」の完全2分木。根がいつも最大</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">最大ヒープに 10 を追加する</div>
+      <div style="display:flex;align-items:center">
+        <div style="text-align:center;font-size:11.5px"><svg width="210" height="130" viewBox="0 0 210 130"><line x1="105.0" y1="20" x2="52.5" y2="64" stroke="#9aa7bd" stroke-width="1.6"/><line x1="52.5" y1="64" x2="26.2" y2="108" stroke="#9aa7bd" stroke-width="1.6"/><line x1="52.5" y1="64" x2="78.8" y2="108" stroke="#9aa7bd" stroke-width="1.6"/><line x1="105.0" y1="20" x2="157.5" y2="64" stroke="#9aa7bd" stroke-width="1.6"/><line x1="157.5" y1="64" x2="131.2" y2="108" stroke="#9aa7bd" stroke-width="1.6"/><circle cx="105.0" cy="20" r="14" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="105.0" y="24.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">9</text><circle cx="52.5" cy="64" r="14" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="52.5" y="68.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">7</text><circle cx="26.2" cy="108" r="14" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="26.2" y="112.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">3</text><circle cx="78.8" cy="108" r="14" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="78.8" y="112.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">5</text><circle cx="157.5" cy="64" r="14" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="157.5" y="68.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">8</text><circle cx="131.2" cy="108" r="14" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="131.2" y="112.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">6</text></svg><br>配列：9, 7, 8, 3, 5, 6</div>
+        <div style="font-size:22px;color:#5b80bf;padding:0 4px">→</div>
+        <div style="text-align:center;font-size:11.5px"><svg width="210" height="130" viewBox="0 0 210 130"><line x1="105.0" y1="20" x2="52.5" y2="64" stroke="#9aa7bd" stroke-width="1.6"/><line x1="52.5" y1="64" x2="26.2" y2="108" stroke="#9aa7bd" stroke-width="1.6"/><line x1="52.5" y1="64" x2="78.8" y2="108" stroke="#9aa7bd" stroke-width="1.6"/><line x1="105.0" y1="20" x2="157.5" y2="64" stroke="#9aa7bd" stroke-width="1.6"/><line x1="157.5" y1="64" x2="131.2" y2="108" stroke="#9aa7bd" stroke-width="1.6"/><line x1="157.5" y1="64" x2="183.8" y2="108" stroke="#9aa7bd" stroke-width="1.6"/><circle cx="105.0" cy="20" r="14" fill="#fde7cf" stroke="#b25000" stroke-width="1.6"/><text x="105.0" y="24.3" font-size="12" text-anchor="middle" fill="#b25000" font-weight="700">10</text><circle cx="52.5" cy="64" r="14" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="52.5" y="68.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">7</text><circle cx="26.2" cy="108" r="14" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="26.2" y="112.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">3</text><circle cx="78.8" cy="108" r="14" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="78.8" y="112.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">5</text><circle cx="157.5" cy="64" r="14" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="157.5" y="68.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">9</text><circle cx="131.2" cy="108" r="14" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="131.2" y="112.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">6</text><circle cx="183.8" cy="108" r="14" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><text x="183.8" y="112.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">8</text></svg><br>配列：10, 7, 9, 3, 5, 6, 8</div>
+      </div>
+      <div class="point">10 を末尾（8 の右の子）に置き、親より大きければ交換：8 と交換 → 9 と交換 → 根へ。高さの分だけなので O(log n)。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:30%">操作</th><th>やり方</th></tr>
+        <tr><td>追加</td><td>末尾に置いて、親と比べながら上へ</td></tr>
+        <tr><td>根を取り出す</td><td>最後の葉を根へ移し、大きい方の子と比べながら下へ</td></tr>
+        <tr><td>ヒープソート</td><td>根（最大）を取り出して末尾へ、を繰り返す。O(n log n)</td></tr>
+      </table>
+      <div class="point"><b>2分探索木との違い：</b>ヒープは左右の子の大小を決めない。決まっているのは親子の大小だけ。IPA の問題文では「順序木」と書かれることもある（R3秋 問5 エ）。</div>
+      <div class="point warn">プログラムの「ヒープ領域」（実行中に確保する記憶域）とは別物。</div>
+    </div>
+  </div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/algo/card_file_box_flat.svg" alt="">ハッシュは「余りが同じなら衝突」。差が n の倍数のとき</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">h(x)＝x mod 5（表の大きさ n＝5）</div>
+      <table class="mini">
+        <tr><th>キー</th><th>÷5の余り</th><th>格納位置</th></tr>
+        <tr><td>12</td><td>2</td><td>2</td></tr>
+        <tr><td>7</td><td>2</td><td>2 <b style="color:#b25000">← 衝突（シノニム）</b></td></tr>
+        <tr><td>9</td><td>4</td><td>4</td></tr>
+      </table>
+      <div class="point"><b>R4秋 問5＝R6秋 問6：</b>a mod n ＝ b mod n のとき衝突。余りが同じ ⇔ <b>a−b が n の倍数（イ）</b>。12−7＝5 は5の倍数。</div>
+      <div class="point warn">「n が a−b の倍数」（エ）は向きが逆。日本語の「AがBの倍数」の向きで迷わせる選択肢。</div>
+    </div>
+    <div>
+      <div class="cap">衝突したときの2つの対策</div>
+      <svg width="400" height="150" viewBox="0 0 400 150">
+        <defs><marker id="ha" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#2f5596"/></marker></defs>
+        <text x="90" y="16" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700">チェイン法</text>
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="26" width="40" height="22" fill="#fff" stroke="#2f5596"/><text x="30" y="41">0</text>
+          <rect x="10" y="48" width="40" height="22" fill="#fff" stroke="#2f5596"/><text x="30" y="63">1</text>
+          <rect x="10" y="70" width="40" height="22" fill="#c9daf2" stroke="#2f5596"/><text x="30" y="85">2</text>
+          <rect x="10" y="92" width="40" height="22" fill="#fff" stroke="#2f5596"/><text x="30" y="107">3</text>
+          <rect x="10" y="114" width="40" height="22" fill="#c9daf2" stroke="#2f5596"/><text x="30" y="129">4</text>
+          <rect x="72" y="70" width="34" height="22" rx="4" fill="#c9daf2"/><text x="89" y="85">12</text>
+          <rect x="128" y="70" width="34" height="22" rx="4" fill="#fde7cf"/><text x="145" y="85">7</text>
+          <rect x="72" y="114" width="34" height="22" rx="4" fill="#c9daf2"/><text x="89" y="129">9</text>
+        </g>
+        <path d="M50,81 L70,81 M106,81 L126,81 M50,125 L70,125" stroke="#2f5596" stroke-width="1.5" marker-end="url(#ha)"/>
+        <text x="300" y="16" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700">オープンアドレス法</text>
+        <g font-size="12" text-anchor="middle">
+          <rect x="260" y="26" width="80" height="22" fill="#fff" stroke="#2f5596"/><text x="300" y="41">0</text>
+          <rect x="260" y="48" width="80" height="22" fill="#fff" stroke="#2f5596"/><text x="300" y="63">1</text>
+          <rect x="260" y="70" width="80" height="22" fill="#c9daf2" stroke="#2f5596"/><text x="300" y="85">2：12</text>
+          <rect x="260" y="92" width="80" height="22" fill="#fde7cf" stroke="#b25000"/><text x="300" y="107">3：7</text>
+          <rect x="260" y="114" width="80" height="22" fill="#c9daf2" stroke="#2f5596"/><text x="300" y="129">4：9</text>
+        </g>
+        <path d="M345,81 C370,86 370,98 345,103" stroke="#b25000" stroke-width="1.5" fill="none" marker-end="url(#ha)"/>
+        <text x="372" y="96" font-size="11" fill="#b25000">隣へ</text>
+      </svg>
+      <div class="point">チェイン法＝同じ位置から<b>リストでつなぐ</b>。オープンアドレス法＝表の中の<b>別の空き</b>を探す。衝突が少なければ探索は平均 O(1)。</div>
+    </div>
+  </div>
+</section>
+
+<!-- 第2章 -->
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/sort.png" alt=""><img src="img/irasutoya/search.png" alt=""><img src="img/irasutoya/maze.png" alt=""><img src="img/algo/shuffle_tracks_button_flat.svg" alt=""></div>
+  <div class="k">第2章</div>
+  <h1>アルゴリズム</h1>
+  <p>流れ図 ／ 整列 ／ 探索 ／ 再帰と設計方法 ／ グラフ・文字列 ／ 記憶域の管理</p>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/algo/spiral_notepad_flat.svg" alt="">流れ図は記号の形で役割が決まる。ループは「いつ抜けるか」を数で確かめる</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="150" viewBox="0 0 400 150">
+      <g fill="#e8eef8" stroke="#2f5596" stroke-width="1.6">
+        <rect x="10" y="12" width="110" height="30" rx="15"/>
+        <rect x="140" y="12" width="110" height="30"/>
+        <rect x="270" y="12" width="110" height="30"/>
+        <path d="M65,70 L120,90 L65,110 L10,90 Z"/>
+        <path d="M152,72 L238,72 L250,84 L250,104 L140,104 L140,84 Z"/>
+        <path d="M140,116 L250,116 L250,136 L238,148 L152,148 L140,136 Z" fill="#fff"/>
+        <path d="M290,72 L380,72 L364,104 L274,104 Z"/>
+      </g>
+      <line x1="282" y1="12" x2="282" y2="42" stroke="#2f5596" stroke-width="1.6"/><line x1="368" y1="12" x2="368" y2="42" stroke="#2f5596" stroke-width="1.6"/>
+      <g font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">
+        <text x="65" y="31">端子</text><text x="195" y="31">処理</text><text x="325" y="31">定義済み処理</text>
+        <text x="65" y="94">判断</text><text x="195" y="92">ループ端（始）</text><text x="195" y="136" font-weight="400" font-size="11">ループ端（終）</text><text x="327" y="92">データ</text>
+      </g>
+    </svg>
+      <div class="point">ループ端には「変数名：初期値，増分，終値」を書く。<b>定義済み処理</b>は両端に縦線（中身は別の流れ図）。</div>
+    </div>
+    <div>
+      <div class="cap">R6春 問5：x←1, n←1 から「x←x×n, n←n＋1」を a まで繰り返す</div>
+      <table class="mini">
+        <tr><th>回</th><th>x←x×n</th><th>n←n＋1</th><th>a＝「n＞M」（M＝3）</th></tr>
+        <tr><td>1</td><td>1×1＝1</td><td>2</td><td>No</td></tr>
+        <tr><td>2</td><td>1×2＝2</td><td>3</td><td>No</td></tr>
+        <tr><td>3</td><td>2×3＝6</td><td>4</td><td><b>Yes → 終了</b></td></tr>
+      </table>
+      <div class="point">左の流れ図は M から1まで掛けて M!＝6。右も 6 で止めるには、M まで掛けた直後（n＝M＋1）で抜ける <b>n＞M（ウ）</b>。n＞M−1 だと1回足りず、n＞M＋1 だと1回多い。</div>
+      <div class="point warn"><b>コツ：</b>M＝3 のような小さい数を入れて、表で1行ずつ追う。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/algo/shuffle_tracks_button_flat.svg" alt="">バブルソートは「1回なぞるごとに、端に最大が1つ決まる」</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R5秋 問6：状態の移り変わり（濃い所が決まった値）</div>
+      <table class="mini"><tr><td>状態0</td><td style="text-align:center;">3</td><td style="text-align:center;">5</td><td style="text-align:center;">9</td><td style="text-align:center;">6</td><td style="text-align:center;">1</td><td style="text-align:center;">2</td></tr><tr><td>状態1</td><td style="text-align:center;">3</td><td style="text-align:center;">5</td><td style="text-align:center;">6</td><td style="text-align:center;">1</td><td style="text-align:center;">2</td><td style="text-align:center;background:#1f3a68;color:#fff;font-weight:700">9</td></tr><tr><td>状態2</td><td style="text-align:center;">3</td><td style="text-align:center;">5</td><td style="text-align:center;">1</td><td style="text-align:center;">2</td><td style="text-align:center;background:#1f3a68;color:#fff;font-weight:700">6</td><td style="text-align:center;background:#1f3a68;color:#fff;font-weight:700">9</td></tr><tr><td>状態3</td><td style="text-align:center;">3</td><td style="text-align:center;">1</td><td style="text-align:center;">2</td><td style="text-align:center;background:#1f3a68;color:#fff;font-weight:700">5</td><td style="text-align:center;background:#1f3a68;color:#fff;font-weight:700">6</td><td style="text-align:center;background:#1f3a68;color:#fff;font-weight:700">9</td></tr><tr><td>状態4</td><td style="text-align:center;">1</td><td style="text-align:center;">2</td><td style="text-align:center;background:#1f3a68;color:#fff;font-weight:700">3</td><td style="text-align:center;background:#1f3a68;color:#fff;font-weight:700">5</td><td style="text-align:center;background:#1f3a68;color:#fff;font-weight:700">6</td><td style="text-align:center;background:#1f3a68;color:#fff;font-weight:700">9</td></tr></table>
+      <div class="point">隣どうしを比べて逆なら交換、を左から右へ。9 が泡のように右端へ浮かび、次は 6、次は 5。<b>決まっていない部分（3, 5, 1, 2）の並びは大きく崩れない</b>のが見分けどころ → <b>バブルソート（ウ）</b>。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:26%">誤りの選択肢</th><th>この状態にならない理由</th></tr>
+        <tr><td>クイックソート</td><td>基準値（例えば3）で分けるので、状態1で 1, 2 が前へ移るはず</td></tr>
+        <tr><td>挿入ソート</td><td>先頭から整列済みの部分が伸びる。末尾から決まらない</td></tr>
+        <tr><td>ヒープソート</td><td>最初にヒープを作るので、全体の並びが大きく入れ替わる</td></tr>
+      </table>
+      <div class="point"><b>バブルソートは10回で4回出た：</b>説明文（R3秋 問5・R6春 問7）、流れ図（R4秋 問6）、途中経過（R5秋 問6）。比べる向きが「末尾から先頭へ」でも、隣どうしの交換ならバブルソート。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/algo/shuffle_tracks_button_flat.svg" alt="">ソートの説明文は「決まり文句」で見分ける</h1>
+  <table>
+    <tr><th style="width:15%">方法</th><th style="width:43%">選択肢に出る決まり文句</th><th style="width:16%">計算量（平均／最悪）</th><th>ひとこと</th></tr>
+    <tr><td><b>バブル</b></td><td>隣り合う要素を比較して、逆なら入れ替える</td><td>O(n²)／O(n²)</td><td>安定。端から1つずつ決まる</td></tr>
+    <tr><td>選択</td><td>未整列の中から最小値を探索し、未整列の先頭と入れ替える</td><td>O(n²)／O(n²)</td><td>交換は1回のなぞりで1回</td></tr>
+    <tr><td>挿入</td><td>整列済みの部分の適切な位置に挿入する</td><td>O(n²)／O(n²)</td><td>ほぼ整列済みなら速い</td></tr>
+    <tr><td>シェル</td><td>ある間隔おきに取り出した部分列を整列し、間隔を詰める</td><td>間隔による</td><td>挿入ソートの改良</td></tr>
+    <tr><td>クイック</td><td>基準値より大きい区分と小さい区分に振り分ける</td><td>O(n log n)／O(n²)</td><td>実用上は速い。分割統治法</td></tr>
+    <tr><td>マージ</td><td>ほぼ同じ長さの2つに分割し、分割できなくなったら併合しながら並べる</td><td>O(n log n)／O(n log n)</td><td>安定。作業領域が要る</td></tr>
+    <tr><td>ヒープ</td><td>未整列の部分を順序木（ヒープ）にし、最大（最小）を取り出して移す</td><td>O(n log n)／O(n log n)</td><td>作業領域がほぼ不要</td></tr>
+  </table>
+  <div class="point"><b>R3秋 問5</b>（バブルの説明）の誤りはシェル・クイック・ヒープ、<b>R6春 問7</b>の誤りはクイック・マージ・選択。この表の7つから4つを並べるのが定番。<b>安定</b>＝同じキーの要素の順番が整列の前後で変わらない（バブル・挿入・マージ）。</div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/algo/shuffle_tracks_button_flat.svg" alt="">流れ図のソートは内側のループ、クイックソートは「基準値で2つに分ける」</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R4秋 問6 の流れ図（文字で書き直した）</div>
+      <div class="formula mono" style="text-align:left;font-size:13px;line-height:1.7;font-weight:400;color:#1d1d1f">
+        ループ1　i：1, 1, n−1<br>
+        　ループ2　j：n, −1, i＋1<br>
+        　　A[j]＜A[j−1] なら A[j] と A[j−1] を交換<br>
+        　ループ2 の終わり<br>
+        ループ1 の終わり
+      </div>
+      <div class="point">内側で<b>隣どうし（j と j−1）</b>を比べて交換している → <b>バブルソート（エ）</b>。末尾から先頭へ進むので、1回ごとに最小値が A[i] に決まる。選択ソートなら「最小値の位置を覚えて最後に1回交換」になる。</div>
+    </div>
+    <div>
+      <div class="cap">R5春 問7：2, 3, 5, 4, 1 をクイックソート（基準値は左端）</div>
+      <table class="mini">
+        <tr><th>分割</th><th>基準値</th><th>小さいグループ</th><th>大きいグループ</th><th>並び</th></tr>
+        <tr><td>1回目</td><td>2</td><td>1</td><td>3, 5, 4</td><td>1, 2, 3, 5, 4</td></tr>
+        <tr><td>2回目</td><td>3</td><td>なし</td><td>5, 4</td><td><b>1, 2, 3, 5, 4（ア）</b></td></tr>
+        <tr><td>3回目</td><td>5</td><td>4</td><td>なし</td><td>1, 2, 3, 4, 5</td></tr>
+      </table>
+      <div class="point">「グループ内の順番は元の配列と同じ」なので、大きいグループは 3, 5, 4 のまま。イ（5, 4, 3）はこの条件に反し、ウ・エは 1 が 2 の後ろにあって分割になっていない。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/algo/magnifying_glass_tilted_left_flat.svg" alt="">探索の比較回数は「見つかる場合×確率＋見つからない場合×確率」</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th style="width:28%">方法</th><th>平均</th><th>最大</th></tr>
+        <tr><td>線形探索</td><td>(n＋1)/2（見つかる場合）</td><td>n</td></tr>
+        <tr><td>2分探索（要整列）</td><td>約 log₂n</td><td>⌊log₂n⌋＋1</td></tr>
+        <tr><td>ハッシュ表探索</td><td>衝突がなければ1</td><td>衝突しだい</td></tr>
+      </table>
+      <div class="point">2分探索は1回で範囲が半分。1,000個でも最大 <b>10回</b>（2<sup>10</sup>＝1,024）。線形探索は番兵（探す値を末尾に置く）で「表の終わりか」の判定を省ける。</div>
+    </div>
+    <div>
+      <div class="cap">R5春 問6：線形探索、表にない確率が a</div>
+      <div class="formula" style="font-size:15px">(n＋1)/2 × (1−a) ＋ n × a<span style="display:block;font-size:12px;font-weight:400;color:#6e6e73;margin-top:4px">見つかる場合（平均）　　　ない場合（最後まで n 回）</span></div>
+      <div class="cap">R7秋 問6：m 個ずつのブロックに分けて探す</div>
+      <div class="formula" style="font-size:15px">(n/m)/2 ＋ m/2 ＝ n/(2m) ＋ m/2<span style="display:block;font-size:12px;font-weight:400;color:#6e6e73;margin-top:4px">ブロックを探す（平均）　ブロックの中を探す（平均）</span></div>
+      <div class="point warn">誤りの選択肢は「片方だけ」の式（ブロックを探す回数だけ、見つかる場合だけ）や「最大の回数」。2段階の両方を足しているかを確かめる。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/algo/repeat_button_flat.svg" alt="">再帰は「止まる条件」と「小さくして自分を呼ぶ」の2つでできている</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R7春 問7：fact(n) の再帰的な定義</div>
+      <div class="formula mono" style="font-size:14px;font-weight:400;color:#1d1d1f;text-align:left">if n＝0 then return <b>1</b><br>else return n × fact(<b>n−1</b>)</div>
+      <svg width="400" height="120" viewBox="0 0 400 120">
+        <g font-size="12" font-family="IPAGothic">
+          <rect x="10" y="8" width="170" height="22" rx="4" fill="#e8eef8"/><text x="18" y="23">fact(3)＝3×fact(2)</text>
+          <rect x="30" y="34" width="170" height="22" rx="4" fill="#e8eef8"/><text x="38" y="49">fact(2)＝2×fact(1)</text>
+          <rect x="50" y="60" width="170" height="22" rx="4" fill="#e8eef8"/><text x="58" y="75">fact(1)＝1×fact(0)</text>
+          <rect x="70" y="86" width="170" height="22" rx="4" fill="#1f3a68"/><text x="78" y="101" fill="#fff">fact(0)＝1（止まる）</text>
+          <text x="260" y="101" fill="#b25000">戻りながら掛ける</text><text x="260" y="75" fill="#b25000">1×1＝1</text><text x="260" y="49" fill="#b25000">2×1＝2</text><text x="260" y="23" fill="#b25000">3×2＝6</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:26%">選択肢</th><th>どうなるか</th></tr>
+        <tr><td>0 を返す, n−1</td><td>最後に0が掛かり、いつも0</td></tr>
+        <tr><td>0 を返す, n＋1</td><td>n が増え続けて止まらない</td></tr>
+        <tr><td><b>1 を返す, n−1</b></td><td><b>正しい（ウ）</b></td></tr>
+        <tr><td>1 を返す, n＋1</td><td>n＝0 にたどり着かず止まらない</td></tr>
+      </table>
+      <div class="point">呼ぶたびに引数と戻り先が<b>スタック</b>に積まれる。止まる条件がないと積み続けてあふれる（スタックオーバーフロー）。だから再帰には、呼出しごとに別のデータ領域が必要（→第3章「再帰的」）。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/algo/puzzle_piece_flat.svg" alt="">設計方法は「分けて解く・その場で最良・表に記録・見込みで切る」</h1>
+  <table>
+    <tr><th style="width:15%">方法</th><th style="width:40%">考え方</th><th style="width:20%">代表例</th><th>R3春 問7 では</th></tr>
+    <tr><td><b>分割統治法</b></td><td>小さな問題に分け、独立に解いた結果をつなぎ合わせる</td><td>マージソート、クイックソート、2分探索</td><td><b>ウ（正解）</b></td></tr>
+    <tr><td>貪欲法</td><td>その時点で最良のものを選び続ける。全体の最適とは限らない</td><td>ダイクストラ法、おつりの硬貨</td><td>エ（各時点で最良の解を選択）</td></tr>
+    <tr><td>動的計画法</td><td>部分問題の答えを表に記録して使い回す</td><td>ナップサック問題、最短経路</td><td>―</td></tr>
+    <tr><td>分枝限定法</td><td>場合分けしながら、見込みのない枝を調べない</td><td>巡回セールスマン問題</td><td>イ（無駄な組合せを除く）に近い</td></tr>
+    <tr><td>バックトラック法</td><td>深さ優先で進み、だめなら1つ前に戻る</td><td>迷路、8クイーン</td><td>―</td></tr>
+    <tr><td>逐次改良</td><td>粗い解から少しずつよくしていく</td><td>山登り法</td><td>ア（粗い解を逐次改良）</td></tr>
+  </table>
+  <div class="cols" style="margin-top:4px">
+    <div class="point"><b>確率アルゴリズム：</b>モンテカルロ法＝乱数で何度も試し、割合から近似（円の中に入った点の割合で円周率）。</div>
+    <div class="point"><b>遺伝的アルゴリズム：</b>解を遺伝子に見立て、選択・交叉・突然変異。最適に近い解を探す近似の方法。</div>
+  </div>
+  <img class="illust" src="img/irasutoya/puzzle.png" alt="" style="height:70px;bottom:36px">
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/algo/globe_with_meridians_flat.svg" alt="">ダイクストラ法は「一番近い未確定の点を確定」を繰り返す</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="190" viewBox="0 0 400 190">
+        <g stroke="#9aa7bd" stroke-width="1.8">
+          <line x1="40" y1="95" x2="160" y2="35"/><line x1="40" y1="95" x2="160" y2="155"/>
+          <line x1="160" y1="35" x2="160" y2="155"/><line x1="160" y1="35" x2="300" y2="35"/>
+          <line x1="160" y1="155" x2="300" y2="155"/><line x1="300" y1="35" x2="370" y2="95"/><line x1="300" y1="155" x2="370" y2="95"/>
+        </g>
+        <g font-size="12" fill="#b25000" font-weight="700" text-anchor="middle">
+          <text x="92" y="56">2</text><text x="92" y="144">5</text><text x="172" y="99">1</text><text x="230" y="28">6</text><text x="230" y="172">2</text><text x="345" y="56">1</text><text x="345" y="140">4</text>
+        </g>
+        <g font-size="13" font-weight="700" text-anchor="middle">
+          <circle cx="40" cy="95" r="16" fill="#1f3a68"/><text x="40" y="100" fill="#fff">S</text>
+          <circle cx="160" cy="35" r="16" fill="#e8eef8" stroke="#2f5596"/><text x="160" y="40" fill="#1f3a68">A</text>
+          <circle cx="160" cy="155" r="16" fill="#e8eef8" stroke="#2f5596"/><text x="160" y="160" fill="#1f3a68">B</text>
+          <circle cx="300" cy="35" r="16" fill="#e8eef8" stroke="#2f5596"/><text x="300" y="40" fill="#1f3a68">C</text>
+          <circle cx="300" cy="155" r="16" fill="#e8eef8" stroke="#2f5596"/><text x="300" y="160" fill="#1f3a68">D</text>
+          <circle cx="370" cy="95" r="16" fill="#e8eef8" stroke="#2f5596"/><text x="370" y="100" fill="#1f3a68">G</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th>手順</th><th>確定する点</th><th>S からの距離（未確定は暫定）</th></tr>
+        <tr><td>1</td><td>S＝0</td><td>A＝2, B＝5</td></tr>
+        <tr><td>2</td><td>A＝2</td><td>B＝min(5, 2＋1)＝3, C＝2＋6＝8</td></tr>
+        <tr><td>3</td><td>B＝3</td><td>D＝3＋2＝5</td></tr>
+        <tr><td>4</td><td>D＝5</td><td>G＝5＋4＝9</td></tr>
+        <tr><td>5</td><td>C＝8</td><td>G＝min(9, 8＋1)＝9</td></tr>
+        <tr><td>6</td><td>G＝9</td><td>S→A→B→D→G（または S→A→C→G）</td></tr>
+      </table>
+      <div class="point"><b>重みが負の辺があると使えない</b>（確定した距離があとで縮むため）。負の辺があるときは<b>ベルマンフォード法</b>（全部の辺で更新を繰り返す）。辺の重みがなければ<b>幅優先探索</b>で辺の本数が最少の道が求まる。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/algo/page_facing_up_flat.svg" alt="">文字列照合は「どこから比べ、どれだけずらすか」の違い</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">本文「ABCABDABCABC」からパターン「ABCABC」を探す</div>
+      <table class="mini mono" style="text-align:center">
+        <tr><th>方法</th><th colspan="12">比べ方</th></tr>
+        <tr><td>本文</td><td>A</td><td>B</td><td>C</td><td>A</td><td>B</td><td>D</td><td>A</td><td>B</td><td>C</td><td>A</td><td>B</td><td>C</td></tr>
+        <tr><td>位置0</td><td>A</td><td>B</td><td>C</td><td>A</td><td>B</td><td style="background:#fde7cf;color:#b25000">C</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>力まかせ</td><td></td><td style="background:#e8eef8">A</td><td>…</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>KMP</td><td></td><td></td><td></td><td>A</td><td>B</td><td style="background:#e8eef8">C</td><td>…</td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>BM</td><td></td><td></td><td></td><td></td><td></td><td></td><td>A</td><td>B</td><td>C</td><td>A</td><td>B</td><td style="background:#e8eef8">C</td></tr>
+      </table>
+      <div class="point">位置0は6文字目（本文の D）で不一致。<b>力まかせ</b>は1つずらして先頭から。<b>KMP</b>は一致した ABCAB の末尾 AB がパターンの先頭と同じことを使い、3つずらして D の所から比べ直す。<b>BM</b>は末尾から比べるので最初に D を見る。D はパターンにない文字なので<b>6つ一気にずらせる</b>。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:22%">方法</th><th>比べる向き</th><th>不一致のとき</th></tr>
+        <tr><td>力まかせ法</td><td>先頭から</td><td>1文字ずらして先頭から比べ直す</td></tr>
+        <tr><td>KMP法</td><td>先頭から</td><td>一致していた部分のパターン自身の情報で、比べ直す位置を決める。本文の中で後戻りしない</td></tr>
+        <tr><td><b>BM法</b></td><td><b>末尾から</b></td><td>不一致の文字に応じてパターンを大きくずらす。実際の文章では速い</td></tr>
+      </table>
+      <div class="point"><b>見分ける一言：</b>「末尾から」ならBM法、「パターン自身の情報（一致した部分）」ならKMP法。名前はどちらも考案者の頭文字。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/algo/package_flat.svg" alt="">空き領域の割当て：ベストフィットは「入る中で一番小さい」</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">空き領域 30・12・20（アドレス順）に、10 を割り当てる</div>
+      <svg width="400" height="150" viewBox="0 0 400 150">
+        <g font-size="12" text-anchor="middle">
+          <text x="40" y="28" fill="#1f3a68" font-weight="700" text-anchor="start">ファーストフィット</text>
+          <rect x="150" y="14" width="90" height="22" fill="#fde7cf" stroke="#b25000"/><text x="195" y="29" fill="#b25000">30 → 20 残る</text>
+          <rect x="245" y="14" width="40" height="22" fill="#e8eef8" stroke="#2f5596"/><text x="265" y="29">12</text>
+          <rect x="290" y="14" width="60" height="22" fill="#e8eef8" stroke="#2f5596"/><text x="320" y="29">20</text>
+          <text x="40" y="78" fill="#1f3a68" font-weight="700" text-anchor="start">ベストフィット</text>
+          <rect x="150" y="64" width="90" height="22" fill="#e8eef8" stroke="#2f5596"/><text x="195" y="79">30</text>
+          <rect x="245" y="64" width="40" height="22" fill="#fde7cf" stroke="#b25000"/><text x="265" y="79" fill="#b25000">2残</text>
+          <rect x="290" y="64" width="60" height="22" fill="#e8eef8" stroke="#2f5596"/><text x="320" y="79">20</text>
+          <text x="40" y="128" fill="#1f3a68" font-weight="700" text-anchor="start">ワーストフィット</text>
+          <rect x="150" y="114" width="90" height="22" fill="#fde7cf" stroke="#b25000"/><text x="195" y="129" fill="#b25000">30 → 20 残る</text>
+          <rect x="245" y="114" width="40" height="22" fill="#e8eef8" stroke="#2f5596"/><text x="265" y="129">12</text>
+          <rect x="290" y="114" width="60" height="22" fill="#e8eef8" stroke="#2f5596"/><text x="320" y="129">20</text>
+        </g>
+      </svg>
+      <div class="point">ベストフィットは 12 を使い、<b>2 という使いにくい小さな空き</b>が残る。これが積み重なるのが弱点（R7秋 問5 イ）。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:30%">方式</th><th>選ぶ領域</th><th>傾向</th></tr>
+        <tr><td>ファーストフィット</td><td>先頭から見て最初に入る</td><td>下位アドレスが細かくなる（R7秋 問5 ア）</td></tr>
+        <tr><td>ベストフィット</td><td>入る中で最小</td><td>小さな空きが多数残る</td></tr>
+        <tr><td>ワーストフィット</td><td>最大</td><td>大きな空きが減る</td></tr>
+      </table>
+      <div class="point"><b>R5春 問5：</b>ベストフィットを速くするには、空き領域を<b>大きさをキーにした2分探索木</b>（ウ）で持つ。大きさ順のリストでは先頭からたどるので O(n)。</div>
+      <div class="point warn">細切れ（<b>フラグメンテーション</b>）は、使用中の領域を詰める<b>コンパクション</b>で解消する。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/algo/scroll_flat.svg" alt="">言葉・圧縮・3次元図形のアルゴリズムは「何を順に決めるか」で覚える</h1>
+  <div class="flow" style="margin-bottom:10px">
+    <div class="box b1">形態素解析<span>単語に区切り品詞を決める</span></div><div class="to">→</div>
+    <div class="box b2">構文解析<span>係り受け（どこにかかるか）</span></div><div class="to">→</div>
+    <div class="box b3">意味解析<span>単語・文の意味を決める</span></div><div class="to">→</div>
+    <div class="box b4">文脈解析<span>指示語・省略を文をまたいで補う</span></div>
+  </div>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th style="width:30%">圧縮</th><th>やり方</th></tr>
+        <tr><td>ランレングス法</td><td>AAAABBB → A4B3。同じ値が続くデータ（白黒画像・FAX）向き</td></tr>
+        <tr><td>ハフマン法</td><td>よく出る記号ほど短い符号。区切りなしで元に戻せる</td></tr>
+      </table>
+      <div class="point"><b>n-gram：</b>「東京都」→「東京」「京都」と n 文字ずつ区切って索引を作る。<b>文章間類似度</b>は文章をベクトルにして近さを測る。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:32%">3次元図形</th><th>やり方</th></tr>
+        <tr><td>Zバッファ法</td><td>画素ごとに奥行き（Z値）を記録し、手前の物だけ描く</td></tr>
+        <tr><td>スキャンライン法</td><td>横1行（走査線）ごとに、手前に見える面を決める</td></tr>
+        <tr><td>レイトレーシング法</td><td>視点から光線を逆にたどり、反射・屈折・影を計算</td></tr>
+      </table>
+      <div class="point">Zバッファ法とスキャンライン法は<b>隠面消去</b>（隠れた面を消す）の方法。レイトレーシング法は写実的だが計算が重い。</div>
+    </div>
+  </div>
+</section>
+
+<!-- 第3章 -->
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/programmer.png" alt=""><img src="img/irasutoya/code_pc.png" alt=""><img src="img/irasutoya/gear.png" alt=""><img src="img/algo/hammer_and_wrench_flat.svg" alt=""></div>
+  <div class="k">第3章</div>
+  <h1>プログラミング</h1>
+  <p>プログラムの4つの性質 ／ プログラムの構造 ／ データ型 ／ Webプログラミング ／ BNF</p>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/algo/gear_flat.svg" alt="">プログラムの性質は4つ。「再入可能＝同時に呼ばれても正しい」</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th style="width:30%">性質</th><th>意味</th><th style="width:30%">そのための条件</th></tr>
+        <tr><td><b>再入可能</b><br>リエントラント</td><td>複数のタスクから同時に呼ばれても、それぞれ正しい結果</td><td>手続は共有、<b>データはタスクごと</b></td></tr>
+        <tr><td>再使用可能<br>リユーザブル</td><td>読み込み直さずに、もう一度実行できる</td><td>始めに初期化する（終わりに初期状態へ）</td></tr>
+        <tr><td>再帰的<br>リカーシブ</td><td>自分自身を呼び出せる</td><td>呼出しごとに別のデータ領域</td></tr>
+        <tr><td>再配置可能<br>リロケータブル</td><td>主記憶のどこに置いても動く</td><td>アドレスを相対で表す</td></tr>
+      </table>
+    </div>
+    <div>
+      <svg width="400" height="120" viewBox="0 0 400 120">
+        <rect x="130" y="8" width="140" height="34" rx="6" fill="#1f3a68"/><text x="200" y="30" font-size="13" text-anchor="middle" fill="#fff" font-weight="700">手続（命令）は1つを共有</text>
+        <g font-size="12" text-anchor="middle">
+          <rect x="20" y="78" width="100" height="30" rx="6" fill="#fde7cf" stroke="#b25000"/><text x="70" y="98" fill="#b25000">タスク1のデータ</text>
+          <rect x="150" y="78" width="100" height="30" rx="6" fill="#fde7cf" stroke="#b25000"/><text x="200" y="98" fill="#b25000">タスク2のデータ</text>
+          <rect x="280" y="78" width="100" height="30" rx="6" fill="#fde7cf" stroke="#b25000"/><text x="330" y="98" fill="#b25000">タスク3のデータ</text>
+        </g>
+        <g stroke="#5b80bf" stroke-width="1.6"><line x1="200" y1="42" x2="70" y2="78"/><line x1="200" y1="42" x2="200" y2="78"/><line x1="200" y1="42" x2="330" y2="78"/></g>
+      </svg>
+      <div class="point"><b>R4春 問6：</b>再入可能の特徴は「並行して実行されても、それぞれのタスクに正しい結果を返す（エ）」。ア＝再配置可能、イ＝再帰的、ウ＝オーバーレイ。</div>
+      <div class="point warn"><b>R3秋 問6：</b>正しいのは再使用可能の説明（イ）。「再入可能はデータとコードの<b>両方を共用</b>」「再帰的は<b>全てがデータを共用</b>」「再配置可能は<b>定まった領域</b>で実行」がそれぞれ誤り。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/algo/hammer_and_wrench_flat.svg" alt="">オーバーロードは「同じ名前・違う引数」、オーバーライドは「親を書き直す」</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th style="width:28%">用語</th><th>意味</th></tr>
+        <tr><td><b>オーバーロード</b></td><td>同じクラスに、名前が同じで<b>引数の型や数が違う</b>メソッドを複数定義（多重定義）</td></tr>
+        <tr><td><b>オーバーライド</b></td><td>親クラスのメソッドを、<b>名前も引数も同じ</b>まま子クラスで書き直す</td></tr>
+        <tr><td>多重継承</td><td>複数の親クラスから引き継ぐ。C++はできる、Java・Scalaはクラスではできない</td></tr>
+        <tr><td>DLL</td><td>実行時に結び付ける部品の集まり。部品だけ差し替えられる</td></tr>
+        <tr><td>静的リンク</td><td>作るときに部品を実行ファイルに全部取り込む</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="formula mono" style="text-align:left;font-size:12.5px;font-weight:400;color:#1d1d1f;line-height:1.7">
+        class 図形 { 面積() }<br>
+        class 円 extends 図形 { <b style="color:#b25000">面積()</b> ← オーバーライド }<br><br>
+        印刷(int x)　印刷(String s)　印刷(int x, int y)<br>
+        <span style="color:#b25000">↑ 同じ名前で引数が違う ＝ オーバーロード</span>
+      </div>
+      <div class="point"><b>モジュール分割：</b>機能ごとに分け、モジュールの中のまとまりは強く、モジュールどうしのつながりは弱くするほど<b>独立性が高い</b>。<b>コーディング標準</b>では命名規則・字下げ・ネストの深さ・使用禁止命令（goto など）を決める。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/algo/globe_with_meridians_flat.svg" alt="">Web技術は「ブラウザで動くか、サーバで動くか」で分ける</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="160" viewBox="0 0 400 160">
+        <defs><marker id="wa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#2f5596"/></marker></defs>
+        <rect x="10" y="10" width="160" height="140" rx="10" fill="#e8eef8" stroke="#2f5596"/>
+        <text x="90" y="32" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">ブラウザ（クライアント）</text>
+        <g font-size="12" text-anchor="middle"><rect x="25" y="44" width="130" height="24" rx="5" fill="#fff"/><text x="90" y="61">JavaScript・Ajax</text>
+        <rect x="25" y="74" width="130" height="24" rx="5" fill="#fff"/><text x="90" y="91">SPA・フレームワーク</text>
+        <rect x="25" y="104" width="130" height="24" rx="5" fill="#fff"/><text x="90" y="121">WebAssembly</text></g>
+        <rect x="230" y="10" width="160" height="140" rx="10" fill="#1f3a68"/>
+        <text x="310" y="32" font-size="13" text-anchor="middle" fill="#fff" font-weight="700">Webサーバ</text>
+        <g font-size="12" text-anchor="middle"><rect x="245" y="44" width="130" height="24" rx="5" fill="#fff"/><text x="310" y="61">Apache（サーバソフト）</text>
+        <rect x="245" y="74" width="130" height="24" rx="5" fill="#fff"/><text x="310" y="91">JSP・PHP</text>
+        <rect x="245" y="104" width="130" height="24" rx="5" fill="#fff"/><text x="310" y="121">データベース</text></g>
+        <path d="M172,62 L228,62" stroke="#2f5596" stroke-width="1.6" marker-end="url(#wa)"/>
+        <path d="M228,82 L172,82" stroke="#2f5596" stroke-width="1.6" marker-end="url(#wa)"/>
+        <text x="200" y="56" font-size="10" text-anchor="middle" fill="#b25000">非同期</text>
+      </svg>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:28%">技術</th><th>見分ける一言</th></tr>
+        <tr><td>Ajax</td><td>画面を切り替えず、裏で<b>非同期に通信して一部だけ</b>書き換える</td></tr>
+        <tr><td>SPA</td><td><b>1ページだけ</b>読み込み、中身を入れ替えて画面を変える</td></tr>
+        <tr><td>WebAssembly</td><td>C言語などから作った<b>バイナリをブラウザで高速</b>に実行</td></tr>
+        <tr><td>JSP</td><td>HTMLに<b>Java</b>を埋め込み、<b>サーバ</b>でページを作る</td></tr>
+        <tr><td>リッチクライアント</td><td>Webで配布しつつ、デスクトップアプリ並みの操作性</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/algo/clipboard_flat.svg" alt="">BNFは「::＝」と「|」だけ。繰返しは自分自身を使って書く</h1>
+  <div class="cols">
+    <div>
+      <div class="formula mono" style="text-align:left;font-size:13.5px;line-height:1.8">
+        〈識別子〉::＝〈英字〉|〈識別子〉〈英字〉|〈識別子〉〈数字〉<br>
+        〈英字〉::＝A|B|C<br>
+        〈数字〉::＝0|1|2
+      </div>
+      <table class="mini">
+        <tr><th>文字列</th><th>〈識別子〉か</th><th>理由</th></tr>
+        <tr><td class="mono">A1B</td><td>○</td><td>A → A1（＋数字）→ A1B（＋英字）</td></tr>
+        <tr><td class="mono">1AB</td><td>×</td><td>必ず〈英字〉から始まる</td></tr>
+        <tr><td class="mono">AB3</td><td>×</td><td>3 は〈数字〉に入っていない</td></tr>
+      </table>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:26%">記法</th><th>特徴</th></tr>
+        <tr><td>BNF</td><td>「::＝」（定義）と「|」（または）。繰返しは再帰で表す</td></tr>
+        <tr><td>EBNF</td><td>BNFに { }（繰返し）や [ ]（省略可）を足して短く書ける</td></tr>
+        <tr><td>構文図</td><td>同じ決まりを、矢印でつないだ箱の図で表す</td></tr>
+      </table>
+      <div class="point">BNFで書けるのは<b>文脈自由文法</b>。多くのプログラム言語の<b>構文規則</b>（書き方の決まり）はこれで定める。何を意味するかの決まりは<b>意味規則</b>。</div>
+      <div class="point warn">基礎理論の「形式言語とオートマトン」とつながる：文脈自由文法を受理するのはプッシュダウンオートマトン。</div>
+    </div>
+  </div>
+</section>
+
+<!-- 第4章 -->
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/pc_work.png" alt=""><img src="img/irasutoya/bug.png" alt=""><img src="img/algo/keyboard_flat.svg" alt=""><img src="img/algo/laptop_flat.svg" alt=""></div>
+  <div class="k">第4章</div>
+  <h1>プログラム言語</h1>
+  <p>言語の分類 ／ 過去問に出た言語 ／ 型付け ／ 引数の渡し方 ／ 記憶域</p>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/algo/keyboard_flat.svg" alt="">言語は「水準」と「書き方（パラダイム）」の2軸で分ける</h1>
+  <div class="cols">
+    <div>
+      <div class="stack">
+        <div class="box b5">高水準言語<span>人の考え方に近い。C・Java・Python など</span></div>
+        <div class="arrow">↓ コンパイラ・インタプリタ</div>
+        <div class="box b3">中間言語<span>CPUに依存しない形（Javaのバイトコード、CLIの共通中間言語）</span></div>
+        <div class="arrow">↓ 仮想マシン・JITコンパイラ</div>
+        <div class="box b2">アセンブラ言語<span>機械語と1対1の記号（ADD・MOV）</span></div>
+        <div class="box b1">機械語<span>CPUが直接実行する0と1</span></div>
+      </div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:28%">分類</th><th>考え方</th><th style="width:28%">例</th></tr>
+        <tr><td>手続型</td><td>手順を順に書き、変数を書き換えて進める</td><td>C、Fortran、COBOL</td></tr>
+        <tr><td>関数型</td><td>関数の定義と適用を組み合わせる。値を書き換えない</td><td>Haskell、Lisp</td></tr>
+        <tr><td>論理型</td><td>事実と規則を書き、推論で答えを出す</td><td>Prolog</td></tr>
+        <tr><td>オブジェクト指向</td><td>データと手続をまとめたオブジェクトが単位</td><td>Java、C++</td></tr>
+        <tr><td>スクリプト</td><td>手軽に書いてすぐ実行。動的型付けが多い</td><td>Python、PHP、Ruby、Perl</td></tr>
+      </table>
+      <div class="point"><b>共通言語基盤（CLI）：</b>違う言語で書いた部品を共通の中間言語にして同じ環境で動かす仕様（JIS X 3016）。.NET がこれに沿う。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/algo/laptop_flat.svg" alt="">過去問の言語は「何向けか」と「型付け」で見分ける</h1>
+  <div class="cols wide-r" style="grid-template-columns:1.2fr .8fr">
+    <table>
+      <tr><th style="width:17%">言語</th><th>特徴</th><th style="width:12%">型付け</th><th style="width:22%">過去問</th></tr>
+      <tr><td><b>R</b></td><td>統計解析・機械学習。パッケージが多いOSS</td><td>動的</td><td>R3春 問8＝R6秋 問7</td></tr>
+      <tr><td><b>Python</b></td><td><b>字下げ</b>でブロックを表す。AI・分析で人気</td><td>動的</td><td>R4春 問7</td></tr>
+      <tr><td><b>TypeScript</b></td><td>JavaScriptに<b>静的な型</b>を足した。JSに変換して実行</td><td>静的</td><td>R3秋 問7</td></tr>
+      <tr><td><b>Scala</b></td><td><b>オブジェクト指向＋関数型</b>。JVMで動く</td><td>静的</td><td>R7秋 問7</td></tr>
+      <tr><td>Go</td><td>グーグル社。並行処理が得意</td><td>静的</td><td rowspan="2">R3春 問8 の誤り</td></tr>
+      <tr><td>Kotlin</td><td>Android開発。Javaと一緒に使える</td><td>静的</td></tr>
+      <tr><td>ECMAScript<br>JavaScript</td><td>JavaScriptの標準仕様と、それに沿った言語</td><td>動的</td><td rowspan="2">R3秋 問7 の誤り</td></tr>
+      <tr><td>VBScript</td><td>Visual Basicを元にしたMicrosoftの言語</td><td>動的</td></tr>
+    </table>
+    <div>
+      <div class="point"><b>静的型付け：</b>実行前（コンパイル時）に型を決めて誤りを見つける。<b>動的型付け：</b>代入された値で実行時に型が決まる。<b>型推論：</b>型を書かなくても処理系が決める（Scala・Kotlin・Go・TypeScript）。</div>
+      <div class="point warn"><b>Scala（R7秋 問7）：</b>クラスの多重継承はできない（トレイトで代用）。基本はJVMのバイトコードにコンパイルする。静的型付け。誤りの選択肢3つはこれを逆にしたもの。</div>
+      <div class="point">ブロックの表し方：C・Java・PHP は { }、Pascal は begin〜end、Python は字下げ。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/algo/input_numbers_flat.svg" alt="">値呼出しはコピーを渡す、参照呼出しは場所を渡す</h1>
+  <div class="cols">
+    <div>
+      <div class="formula mono" style="text-align:left;font-size:13px;font-weight:400;color:#1d1d1f;line-height:1.7">
+        a←1, b←1<br>sub(a, b)　<span style="color:#6e6e73">← a, b は実引数</span><br>
+        sub(x, y) { x←x＋10; y←y＋10 }　<span style="color:#6e6e73">← x, y は仮引数</span>
+      </div>
+      <table>
+        <tr><th>渡し方</th><th>渡すもの</th><th>sub のあと</th></tr>
+        <tr><td>値呼出し（x）</td><td>a の値のコピー</td><td>a＝<b>1</b>（変わらない）</td></tr>
+        <tr><td>参照呼出し（y）</td><td>b の場所（アドレス）</td><td>b＝<b>11</b>（変わる）</td></tr>
+      </table>
+    </div>
+    <div>
+      <svg width="400" height="170" viewBox="0 0 400 170">
+        <g font-size="12">
+          <rect x="10" y="8" width="380" height="34" rx="6" fill="#1f3a68"/><text x="20" y="30" fill="#fff" font-weight="700">プログラム領域</text><text x="380" y="30" fill="#fff" text-anchor="end">命令。実行中は変えない</text>
+          <rect x="10" y="48" width="380" height="34" rx="6" fill="#2f5596"/><text x="20" y="70" fill="#fff" font-weight="700">静的領域</text><text x="380" y="70" fill="#fff" text-anchor="end">静的変数・大域変数・定数。ずっと残る</text>
+          <rect x="10" y="88" width="380" height="34" rx="6" fill="#c9daf2"/><text x="20" y="110" fill="#1f3a68" font-weight="700">スタック領域</text><text x="380" y="110" fill="#1f3a68" text-anchor="end">自動変数・戻り先。呼出しで確保、戻ると解放</text>
+          <rect x="10" y="128" width="380" height="34" rx="6" fill="#e8eef8" stroke="#c9daf2"/><text x="20" y="150" fill="#1f3a68" font-weight="700">ヒープ領域</text><text x="380" y="150" fill="#1f3a68" text-anchor="end">実行中に必要な分だけ確保（new・malloc）</text>
+        </g>
+      </svg>
+      <div class="point"><b>再帰で呼出しごとに別になるのは自動変数</b>（スタック領域）。ヒープ領域の使われなくなったデータを自動で回収するのが<b>ガベージコレクション</b>。解放し忘れて減っていくのは<b>メモリリーク</b>。</div>
+    </div>
+  </div>
+</section>
+
+<!-- 第5章 -->
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/bookshelf.png" alt=""><img src="img/algo/page_facing_up_flat.svg" alt=""><img src="img/algo/bookmark_tabs_flat.svg" alt=""><img src="img/algo/card_index_dividers_flat.svg" alt=""></div>
+  <div class="k">第5章</div>
+  <h1>その他の言語</h1>
+  <p>HTML・XML ／ DTDとXML Schema ／ DOM・SAX ／ JSON ／ スタイルシート ／ UML</p>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/algo/page_facing_up_flat.svg" alt="">XMLは「タグを自分で決められる」。UTF-8とUTF-16なら符号化宣言を省略できる</h1>
+  <div class="cols">
+    <div>
+      <div class="stack">
+        <div class="box b1">SGML<span>マークアップ言語を定義するための元の規格</span></div>
+        <div class="flow"><div class="box b3">HTML<span>決まったタグだけ</span></div><div class="box b2">XML<span>タグを自分で定義</span></div></div>
+        <div class="box b4">XHTML<span>HTMLをXMLの規則で定義し直した。終了タグを省略できない</span></div>
+      </div>
+      <div class="formula mono" style="text-align:left;font-size:12.5px;font-weight:400;color:#1d1d1f;margin-top:10px">
+        &lt;?xml version="1.0" <b style="color:#b25000">encoding="Shift_JIS"</b>?&gt;<br>
+        &lt;本&gt;&lt;題名&gt;応用情報&lt;/題名&gt;&lt;/本&gt;
+      </div>
+    </div>
+    <div>
+      <div class="point"><b>R4秋 問7：</b>符号化宣言（encoding）を省略できるのは <b>UTF-16（エ）</b>（と UTF-8）。XMLの処理系はこの2つを必ず読めることになっていて、先頭のバイトから見分けられる。EUC-JP・ISO-2022-JP・Shift_JIS は宣言が必要。</div>
+      <table>
+        <tr><th style="width:28%">決まりの書き方</th><th>特徴</th></tr>
+        <tr><td>DTD</td><td>使える要素・属性を定義。SGMLからの独自の書き方。データ型は細かく決められない</td></tr>
+        <tr><td>XML Schema</td><td>同じ役割を<b>XMLの書き方</b>で。整数・範囲など<b>データ型</b>まで決められる</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/algo/bookmark_tabs_flat.svg" alt="">JSONは「名前と値の組」と「値の並び」の2つの形だけ</h1>
+  <div class="cols">
+    <div>
+      <div class="formula mono" style="text-align:left;font-size:13px;font-weight:400;color:#1d1d1f;line-height:1.6">
+        {<br>
+        　"試験": "応用情報",　<span style="color:#b25000">← 名前と値の組</span><br>
+        　"分野": ["基礎理論", "アルゴリズム"]　<span style="color:#b25000">← 値の順序付きリスト</span><br>
+        }
+      </div>
+      <div class="point"><b>R5秋 問7：</b>JavaScriptのオブジェクトの表記法が元で、この2つの構造でデータを表すのは <b>JSON（イ）</b>。Web API のデータ交換で一番使われる。字下げで書く <b>YAML</b> は設定ファイル向き。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:24%">名前</th><th>役割</th></tr>
+        <tr><td>DOM</td><td>文書を<b>木の形</b>で全部読み込み、自由に読み書きする</td></tr>
+        <tr><td>SAX</td><td>先頭から読み、<b>タグが現れるたびに</b>処理を呼ぶ。メモリが少なくて済む</td></tr>
+        <tr><td>SOAP</td><td>XMLのメッセージで<b>ほかのシステムの機能を呼ぶ</b>通信の決まり</td></tr>
+        <tr><td>XSL</td><td>XMLを<b>別の形式に変換</b>したり見た目を決めたりする</td></tr>
+        <tr><td>CSS</td><td>構造は変えず<b>見た目だけ</b>を指定する</td></tr>
+        <tr><td>SVG</td><td>図形を線や形の情報として<b>XMLで書く</b>画像形式</td></tr>
+      </table>
+      <div class="point warn">R5秋 問7 の誤りは DOM・SOAP・XML。どれもXMLに関係するが、「データ記述の仕様」で「JavaScriptが元」なのはJSONだけ。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/algo/card_index_dividers_flat.svg" alt="">UMLは「構造（形）」と「振る舞い（動き）」の図に分かれる</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="150" viewBox="0 0 400 150">
+      <g font-size="12">
+        <rect x="10" y="10" width="140" height="26" fill="#1f3a68"/><text x="80" y="28" fill="#fff" text-anchor="middle" font-weight="700">社員</text>
+        <rect x="10" y="36" width="140" height="40" fill="#fff" stroke="#1f3a68"/><text x="18" y="52">−社員番号: int</text><text x="18" y="68">−氏名: String</text>
+        <rect x="10" y="76" width="140" height="26" fill="#fff" stroke="#1f3a68"/><text x="18" y="94">＋給与計算(): int</text>
+        <text x="160" y="52" fill="#6e6e73" font-size="11">← 属性</text><text x="160" y="94" fill="#6e6e73" font-size="11">← 操作</text>
+        <rect x="250" y="10" width="140" height="26" fill="#1f3a68"/><text x="320" y="28" fill="#fff" text-anchor="middle" font-weight="700">部署</text>
+        <rect x="250" y="36" width="140" height="40" fill="#fff" stroke="#1f3a68"/><text x="258" y="52">−部署名: String</text>
+        <line x1="150" y1="122" x2="320" y2="122" stroke="#2f5596" stroke-width="1.6"/><line x1="80" y1="102" x2="80" y2="122" stroke="#2f5596" stroke-width="1.6"/><line x1="320" y1="76" x2="320" y2="122" stroke="#2f5596" stroke-width="1.6"/><line x1="80" y1="122" x2="150" y2="122" stroke="#2f5596" stroke-width="1.6"/>
+        <text x="88" y="140" fill="#b25000">*</text><text x="328" y="96" fill="#b25000">1</text>
+        <text x="200" y="140" fill="#6e6e73" font-size="11">多重度：部署1つに社員が何人でも（*）</text>
+      </g>
+    </svg>
+      <table class="mini">
+        <tr><th style="width:30%">構造の図</th><th>表すもの</th></tr>
+        <tr><td>クラス図</td><td>クラスの属性・操作と関係（上の図）</td></tr>
+        <tr><td>オブジェクト図</td><td>ある時点の具体的なオブジェクトのつながり</td></tr>
+        <tr><td>コンポーネント図</td><td>ソフトウェアの部品とインタフェース</td></tr>
+        <tr><td>配置図</td><td>どのハードウェアに何を置くか</td></tr>
+      </table>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:32%">振る舞いの図</th><th>表すもの</th></tr>
+        <tr><td>ユースケース図</td><td>利用者（アクター）から見た機能</td></tr>
+        <tr><td>アクティビティ図</td><td>処理の流れ（分岐・並行）。流れ図に近い</td></tr>
+        <tr><td>ステートマシン図</td><td>1つのオブジェクトの状態の移り変わり</td></tr>
+        <tr><td><b>シーケンス図</b></td><td>メッセージのやり取りを<b>時間の順に上から下へ</b></td></tr>
+        <tr><td>コミュニケーション図</td><td>オブジェクトの<b>つながり</b>を中心に、順番は<b>番号</b>で</td></tr>
+        <tr><td>タイミング図</td><td>横軸に時間をとり、状態が変わる時刻を正確に</td></tr>
+      </table>
+      <div class="point">シーケンス図とコミュニケーション図は同じ内容を別の見せ方で表す。「時間の順」ならシーケンス図、「つながり」ならコミュニケーション図。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1>試験で狙われやすい比較10選（1/2）</h1>
+  <table class="vs">
+    <tr><th style="width:4%"></th><th style="width:30%">比較</th><th>見分ける一言</th></tr>
+    <tr><td>1</td><td>バブル vs 選択 vs 挿入ソート</td><td><b>隣どうし</b>を交換／<b>最小値を探して</b>先頭と交換／整列済みの所へ<b>差し込む</b></td></tr>
+    <tr><td>2</td><td>クイック vs マージソート</td><td><b>基準値</b>で大小に分ける（最悪 O(n²)）／<b>半分ずつ</b>に分けて併合（いつも O(n log n)・安定）</td></tr>
+    <tr><td>3</td><td>スタック vs キュー</td><td>後入れ先出し（LIFO）／先入れ先出し（FIFO）</td></tr>
+    <tr><td>4</td><td>2分探索木 vs ヒープ</td><td><b>左＜節＜右</b>（中間順で整列）／<b>親≧子</b>だけ（根が最大）</td></tr>
+    <tr><td>5</td><td>深さ優先 vs 幅優先探索</td><td>奥へ進んで戻る（スタック）／近い段から順に（キュー）</td></tr>
+  </table>
+  <div class="point">1・2・5・6・7 は、過去問で正解と誤りの選択肢として<b>同じ問題に並んだ</b>組合せ（R6春 問7、R3春 問6、R3秋 問6、R4春 問6 など）。似た言葉どうしを一言で見分けられるようにしておく。</div>
+</section>
+
+<section class="slide">
+  <h1>試験で狙われやすい比較10選（2/2）</h1>
+  <table class="vs">
+    <tr><th style="width:4%"></th><th style="width:30%">比較</th><th>見分ける一言</th></tr>
+    <tr><td>6</td><td>再入可能 vs 再使用可能</td><td>同時に呼ばれても正しい（データはタスクごと）／終わったあと読み込み直さずに使える（始めに初期化）</td></tr>
+    <tr><td>7</td><td>再帰的 vs 再配置可能</td><td>自分自身を呼べる／主記憶のどこに置いても動く</td></tr>
+    <tr><td>8</td><td>オーバーロード vs オーバーライド</td><td>同じ名前で<b>引数が違う</b>／親のメソッドを<b>同じ形で書き直す</b></td></tr>
+    <tr><td>9</td><td>静的型付け vs 動的型付け</td><td>実行前に型を決めて誤りを見つける（TypeScript・Scala）／実行時に値で決まる（Python・R）</td></tr>
+    <tr><td>10</td><td>DTD vs XML Schema、DOM vs SAX</td><td>独自の書き方／XMLの書き方でデータ型まで。全部読んで木にする／先頭から読んで都度処理</td></tr>
+  </table>
+  <div class="point"><b>おまけ：</b>ファースト（最初に入る）・ベスト（入る中で最小）・ワースト（最大）フィット、KMP（先頭から・自分の情報）・BM（末尾から）、値呼出し（コピー）・参照呼出し（場所）。</div>
+</section>
+
+<section class="slide">
+  <h1>出典</h1>
+  <dl class="def">
+    <dt>過去問</dt><dd>IPA 応用情報技術者試験 午前 問題冊子・解答例（令和3年度春期〜令和7年度秋期の10回分）。この分野の問題（各回の問5〜問7、令和3年度春期は問5〜問8。計31問）を1問ずつ読み、正解と誤りの選択肢を確認した。IPAの過去問題は許諾・使用料なしで利用できる（IPA「過去問題」ページ）</dd>
+    <dt>シラバス</dt><dd>IPA「応用情報技術者試験（レベル3）シラバス Ver.7.2」中分類2 アルゴリズムとプログラミング（小分類1〜5の用語例）</dd>
+    <dt>イラスト</dt><dd>Microsoft Fluent Emoji（MIT License）。ライセンス全文は tools/slides/img/algo/LICENSE-fluentui-emoji.txt</dd>
+    <dt>イラスト（2）</dt><dd>いらすとや（https://www.irasutoya.com/）</dd>
+    <dt>作成</dt><dd>上の資料をもとにClaudeがまとめた。解説はIPAの公式解説ではなく、Claudeが自分の言葉で書いたもの。サイトの用語集（224語）と問題演習（43問）も同じ資料から作っている</dd>
+  </dl>
+</section>
+<script>
+document.querySelectorAll('.slide').forEach((s,i)=>{ if(i===0) return; const f=document.createElement('div'); f.className='foot'; f.innerHTML='<span>応用情報 #2 アルゴリズムとプログラミング</span><span>'+(i+1)+'</span>'; s.appendChild(f); });
+</script>
 </body>
 </html>
