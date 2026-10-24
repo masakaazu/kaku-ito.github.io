@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>基本情報 ネットワーク 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+</style>
+</head>
+<body>
+
+<!-- 1 表紙 -->
+<section class="slide title">
+  <div class="k">基本情報技術者試験　テクノロジ系　No.10</div>
+  <h1>ネットワーク</h1>
+  <p>OSI参照モデル・TCP/IP・IPアドレス・LAN機器・プロトコル・誤り検出・SDN</p>
+  <div class="foot"><span>出典：基本情報の日別復習（9/13〜9/28）とシラバスの範囲をもとに作成</span><span>1</span></div>
+</section>
+
+<!-- 2 目次 -->
+<section class="slide">
+  <h1>目次</h1>
+  <ol class="toc">
+    <li>OSI基本参照モデル（7層）</li>
+    <li>TCP/IPモデルとの対応</li>
+    <li>TCP・UDP・IP・ARP・ICMP</li>
+    <li>IPアドレスのクラスとサブネットマスク</li>
+    <li>グローバル／プライベートとNAT・NAPT</li>
+    <li>DHCPとDNS</li>
+    <li>LAN機器と動作する層</li>
+    <li>CSMA/CD方式</li>
+    <li>ネットワーク方式と無線通信</li>
+    <li>アプリケーション層のプロトコル</li>
+    <li>メールのプロトコル</li>
+    <li>誤り検出（パリティ・CRC）</li>
+    <li>SDNとOpenFlow</li>
+    <li>ネットワーク管理</li>
+    <li>ネットワーク応用</li>
+    <li>ネットワークの計算（伝送時間）</li>
+    <li>まとめ（頻出ポイント）</li>
+  </ol>
+  <div class="foot"><span>基本情報 ネットワーク</span><span>2</span></div>
+</section>
+
+<!-- 3 OSI -->
+<section class="slide">
+  <h1>OSI基本参照モデル<small>通信の機能を7つの層に分ける</small></h1>
+  <div class="cols wide-r">
+    <dl class="def">
+      <dt>考え方</dt><dd>上の層ほどアプリケーションに近く、下の層ほど物理的な通信に近い。</dd>
+      <dt>覚え方</dt><dd>上から「アプセトネデブ」<br>（アプリ・プレゼン・セッション・トランスポート・ネットワーク・データリンク・物理）</dd>
+      <dt>試験のポイント</dt><dd>層の番号と役割の組合せ、各層で動く機器・プロトコルの対応がよく問われる。</dd>
+    </dl>
+    <div class="stack">
+      <div class="box b1">第7層 アプリケーション<span>利用者向けの通信サービス（HTTP・DNS）</span></div>
+      <div class="box b1">第6層 プレゼンテーション<span>データ表現の変換（文字コード・暗号化・圧縮）</span></div>
+      <div class="box b2">第5層 セッション<span>通信の開始・維持・終了</span></div>
+      <div class="box b2">第4層 トランスポート<span>端末間の信頼性ある配送（TCP・UDP）</span></div>
+      <div class="box b3">第3層 ネットワーク<span>ネットワーク間の宛先配送（IP）</span></div>
+      <div class="box b4">第2層 データリンク<span>同一ネットワーク内のノード間通信（MAC）</span></div>
+      <div class="box b5">第1層 物理<span>ビットを電気信号・ケーブルで伝える</span></div>
+    </div>
+  </div>
+  <div class="foot"><span>基本情報 ネットワーク</span><span>3</span></div>
+</section>
+
+<!-- 4 TCP/IP -->
+<section class="slide">
+  <h1>TCP/IPモデルとの対応<small>インターネットで使う4層モデル</small></h1>
+  <svg width="856" height="330" viewBox="0 0 856 330">
+    <text x="130" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="#1f3a68">OSI参照モデル</text>
+    <text x="520" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="#1f3a68">TCP/IPモデル</text>
+    <text x="760" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="#1f3a68">代表例</text>
+    <g font-size="13">
+      <rect x="20" y="30" width="220" height="36" rx="6" fill="#1f3a68"/><text x="130" y="53" text-anchor="middle" fill="#fff">第7層 アプリケーション</text>
+      <rect x="20" y="70" width="220" height="36" rx="6" fill="#1f3a68"/><text x="130" y="93" text-anchor="middle" fill="#fff">第6層 プレゼンテーション</text>
+      <rect x="20" y="110" width="220" height="36" rx="6" fill="#2f5596"/><text x="130" y="133" text-anchor="middle" fill="#fff">第5層 セッション</text>
+      <rect x="20" y="150" width="220" height="36" rx="6" fill="#2f5596"/><text x="130" y="173" text-anchor="middle" fill="#fff">第4層 トランスポート</text>
+      <rect x="20" y="190" width="220" height="36" rx="6" fill="#5b80bf"/><text x="130" y="213" text-anchor="middle" fill="#fff">第3層 ネットワーク</text>
+      <rect x="20" y="230" width="220" height="36" rx="6" fill="#c9daf2"/><text x="130" y="253" text-anchor="middle" fill="#1f3a68">第2層 データリンク</text>
+      <rect x="20" y="270" width="220" height="36" rx="6" fill="#e8eef8" stroke="#c9daf2"/><text x="130" y="293" text-anchor="middle" fill="#1f3a68">第1層 物理</text>
+
+      <rect x="400" y="30" width="240" height="116" rx="8" fill="#1f3a68"/><text x="520" y="93" text-anchor="middle" fill="#fff" font-weight="700">アプリケーション層</text>
+      <rect x="400" y="150" width="240" height="36" rx="8" fill="#2f5596"/><text x="520" y="173" text-anchor="middle" fill="#fff" font-weight="700">トランスポート層</text>
+      <rect x="400" y="190" width="240" height="36" rx="8" fill="#5b80bf"/><text x="520" y="213" text-anchor="middle" fill="#fff" font-weight="700">インターネット層</text>
+      <rect x="400" y="230" width="240" height="76" rx="8" fill="#c9daf2"/><text x="520" y="273" text-anchor="middle" fill="#1f3a68" font-weight="700">ネットワークインタフェース層</text>
+
+      <g stroke="#5b80bf" stroke-width="2" fill="none">
+        <path d="M244 88 H396"/><path d="M244 168 H396"/><path d="M244 208 H396"/><path d="M244 268 H396"/>
+      </g>
+      <text x="320" y="82" text-anchor="middle" fill="#6e6e73" font-size="11">5〜7層</text>
+      <text x="320" y="262" text-anchor="middle" fill="#6e6e73" font-size="11">1〜2層</text>
+
+      <text x="760" y="93" text-anchor="middle" fill="#1d1d1f">HTTP・DNS・SMTP・FTP</text>
+      <text x="760" y="173" text-anchor="middle" fill="#1d1d1f">TCP・UDP</text>
+      <text x="760" y="213" text-anchor="middle" fill="#1d1d1f">IP・ICMP・ARP</text>
+      <text x="760" y="273" text-anchor="middle" fill="#1d1d1f">イーサネット</text>
+    </g>
+  </svg>
+  <div class="point"><b>ポイント：</b>TCP/IPのアプリケーション層はOSIの第5〜7層、ネットワークインタフェース層は第1〜2層にあたる。</div>
+  <div class="foot"><span>基本情報 ネットワーク</span><span>4</span></div>
+</section>
+
+<!-- 5 TCP UDP -->
+<section class="slide">
+  <h1>TCP・UDP・IP・ARP・ICMP</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">トランスポート層の2つ</div>
+      <table>
+        <tr><th style="width:20%"></th><th>TCP</th><th>UDP</th></tr>
+        <tr><td>接続</td><td>確立してから送る</td><td>確立しない</td></tr>
+        <tr><td>信頼性</td><td>確認・再送・順序制御あり</td><td>なし（軽量）</td></tr>
+        <tr><td>向く用途</td><td>Web・メール・ファイル転送</td><td>音声・動画などリアルタイム性重視</td></tr>
+      </table>
+      <div class="point warn"><b>引っかけ：</b>UDPは「速いから優れている」のではない。多少の欠落より即時性を優先する用途で有効。</div>
+    </div>
+    <dl class="def">
+      <dt><span class="tag">第3層</span>IP</dt><dd>IPアドレスをもとに、ネットワーク間でパケットを宛先へ配送する。</dd>
+      <dt><span class="tag">第3層</span>ARP</dt><dd>IPアドレスから、対応するMACアドレスを調べる。</dd>
+      <dt><span class="tag">第3層</span>ICMP</dt><dd>通信状態やエラーを通知する（pingで使う）。</dd>
+      <dt>混同しやすい</dt><dd>DNSは「名前 → IPアドレス」、ARPは「IPアドレス → MACアドレス」。</dd>
+    </dl>
+  </div>
+  <div class="foot"><span>基本情報 ネットワーク</span><span>5</span></div>
+</section>
+
+<!-- 6 クラス -->
+<section class="slide">
+  <h1>IPアドレスのクラスとサブネットマスク<small>IPv4は32ビット</small></h1>
+  <svg width="856" height="190" viewBox="0 0 856 190" font-size="13">
+    <text x="0" y="40" font-weight="700" fill="#1f3a68">クラスA</text>
+    <rect x="80" y="20" width="96" height="32" fill="#1f3a68"/><text x="128" y="41" text-anchor="middle" fill="#fff">ネット 8</text>
+    <rect x="176" y="20" width="288" height="32" fill="#e8eef8" stroke="#c9daf2"/><text x="320" y="41" text-anchor="middle" fill="#1f3a68">ホスト 24</text>
+    <text x="480" y="41" fill="#6e6e73">先頭 0 ／ 0〜127　大規模向け</text>
+
+    <text x="0" y="95" font-weight="700" fill="#1f3a68">クラスB</text>
+    <rect x="80" y="75" width="192" height="32" fill="#2f5596"/><text x="176" y="96" text-anchor="middle" fill="#fff">ネット 16</text>
+    <rect x="272" y="75" width="192" height="32" fill="#e8eef8" stroke="#c9daf2"/><text x="368" y="96" text-anchor="middle" fill="#1f3a68">ホスト 16</text>
+    <text x="480" y="96" fill="#6e6e73">先頭 10 ／ 128〜191　中規模向け</text>
+
+    <text x="0" y="150" font-weight="700" fill="#1f3a68">クラスC</text>
+    <rect x="80" y="130" width="288" height="32" fill="#5b80bf"/><text x="224" y="151" text-anchor="middle" fill="#fff">ネット 24</text>
+    <rect x="368" y="130" width="96" height="32" fill="#e8eef8" stroke="#c9daf2"/><text x="416" y="151" text-anchor="middle" fill="#1f3a68">ホスト 8</text>
+    <text x="480" y="151" fill="#6e6e73">先頭 110 ／ 192〜223　小規模向け</text>
+  </svg>
+  <div class="cols">
+    <dl class="def">
+      <dt>サブネットマスク</dt><dd>IPアドレスのうち、どこまでがネットワーク部かを示す値。1が並ぶ部分がネットワーク部。<br>例：255.255.255.0 ＝ /24（先頭24ビット）</dd>
+    </dl>
+    <dl class="def">
+      <dt>接続できるホスト数</dt><dd>ホスト部が n ビットなら 2<sup>n</sup> − 2 台。<br>（全部0＝ネットワークアドレス、全部1＝ブロードキャストは除く）<br>例：/24 → 2<sup>8</sup> − 2 ＝ 254台</dd>
+    </dl>
+  </div>
+  <div class="foot"><span>基本情報 ネットワーク</span><span>6</span></div>
+</section>
+
+<!-- 7 NAT -->
+<section class="slide">
+  <h1>グローバル／プライベートとNAT・NAPT</h1>
+  <svg width="856" height="170" viewBox="0 0 856 170" font-size="13">
+    <rect x="10" y="10" width="300" height="150" rx="10" fill="#e8eef8" stroke="#c9daf2"/>
+    <text x="160" y="32" text-anchor="middle" font-weight="700" fill="#1f3a68">社内LAN（プライベートIP）</text>
+    <rect x="30" y="50" width="120" height="40" rx="6" fill="#fff" stroke="#5b80bf"/><text x="90" y="75" text-anchor="middle">PC 192.168.1.10</text>
+    <rect x="170" y="50" width="120" height="40" rx="6" fill="#fff" stroke="#5b80bf"/><text x="230" y="75" text-anchor="middle">PC 192.168.1.11</text>
+    <rect x="100" y="105" width="120" height="40" rx="6" fill="#fff" stroke="#5b80bf"/><text x="160" y="130" text-anchor="middle">PC 192.168.1.12</text>
+    <path d="M312 85 H372" stroke="#5b80bf" stroke-width="2"/>
+    <rect x="374" y="45" width="150" height="80" rx="10" fill="#1f3a68"/>
+    <text x="449" y="78" text-anchor="middle" fill="#fff" font-weight="700">ルータ</text>
+    <text x="449" y="100" text-anchor="middle" fill="#fff" font-size="12">NAT／NAPTで変換</text>
+    <path d="M526 85 H586" stroke="#5b80bf" stroke-width="2"/>
+    <rect x="588" y="25" width="258" height="120" rx="60" fill="#c9daf2"/>
+    <text x="717" y="78" text-anchor="middle" font-weight="700" fill="#1f3a68">インターネット</text>
+    <text x="717" y="100" text-anchor="middle" fill="#1f3a68">グローバルIP 203.0.113.5</text>
+  </svg>
+  <table>
+    <tr><th style="width:22%">用語</th><th>意味</th><th style="width:34%">試験のポイント</th></tr>
+    <tr><td>グローバルIPアドレス</td><td>インターネット上で重複しないアドレス</td><td>世界で一意になるよう管理される</td></tr>
+    <tr><td>プライベートIPアドレス</td><td>LANの中で使うアドレス</td><td>別の組織と同じ値でもよい</td></tr>
+    <tr><td>NAT</td><td>プライベートIPとグローバルIPを変換する</td><td>アドレスだけを変換</td></tr>
+    <tr><td>NAPT（IPマスカレード）</td><td>IPアドレスとポート番号を組み合わせて変換する</td><td>複数台で1つのグローバルIPを共有できる</td></tr>
+  </table>
+  <div class="foot"><span>基本情報 ネットワーク</span><span>7</span></div>
+</section>
+
+<!-- 8 DHCP DNS -->
+<section class="slide">
+  <h1>DHCPとDNS<small>「設定を配る」と「名前を調べる」</small></h1>
+  <div class="cols">
+    <div>
+      <div class="cap">DHCP：ネットワーク設定を自動で配る</div>
+      <div class="stack" style="margin-top:10px">
+        <div class="flow"><div class="box b5">端末<span>つないだ直後</span></div><div class="to">→</div><div class="box b2">DHCPサーバ<span>設定を割り当てる</span></div></div>
+        <div class="box b4" style="text-align:left;font-weight:400;line-height:1.6">配る設定：IPアドレス・サブネットマスク・<br>デフォルトゲートウェイ・DNSサーバ</div>
+      </div>
+    </div>
+    <div>
+      <div class="cap">DNS：ドメイン名 → IPアドレス</div>
+      <div class="stack" style="margin-top:10px">
+        <div class="flow"><div class="box b5">端末<span>www.example.com は？</span></div><div class="to">→</div><div class="box b2">DNSサーバ<span>203.0.113.10 です</span></div></div>
+        <div class="box b4" style="text-align:left;font-weight:400;line-height:1.6">人が覚えやすい名前を、通信に必要な<br>IPアドレスに対応づける</div>
+      </div>
+    </div>
+  </div>
+  <div class="point"><b>混同しやすい：</b>DHCPは設定を「配る」、DNSは名前を「調べる」、ARPはIPアドレスからMACアドレスを「調べる」。</div>
+  <div class="foot"><span>基本情報 ネットワーク</span><span>8</span></div>
+</section>
+
+<!-- 9 LAN機器 -->
+<section class="slide">
+  <h1>LAN機器と動作する層<small>何を見て転送するかで区別する</small></h1>
+  <table>
+    <tr><th style="width:24%">機器</th><th style="width:16%">層</th><th style="width:18%">判断材料</th><th>役割</th></tr>
+    <tr><td><b>リピータ／リピータハブ</b></td><td>第1層 物理</td><td>見ない</td><td>受け取った信号を増幅し、すべてのポートへ中継する</td></tr>
+    <tr><td><b>ブリッジ／レイヤ2スイッチ</b></td><td>第2層 データリンク</td><td>MACアドレス</td><td>宛先MACアドレスを見て、必要なポートだけに転送する</td></tr>
+    <tr><td><b>ルータ／レイヤ3スイッチ</b></td><td>第3層 ネットワーク</td><td>IPアドレス</td><td>宛先IPアドレスから経路を決める（ルーティング）。ネットワーク同士をつなぐ</td></tr>
+    <tr><td><b>ゲートウェイ</b></td><td>第4〜7層</td><td>プロトコル</td><td>プロトコルの異なるネットワーク同士をつなぎ、変換する</td></tr>
+  </table>
+  <div class="cols" style="margin-top:14px">
+    <dl class="def">
+      <dt>NIC（ネットワークインタフェースカード）</dt><dd>コンピュータをLANにつなぐための部品。MACアドレスを持つ。</dd>
+    </dl>
+    <dl class="def">
+      <dt>MACアドレス</dt><dd>NICごとに割り当てられた48ビットの固有番号。同じネットワーク内の通信で使う。</dd>
+    </dl>
+  </div>
+  <div class="foot"><span>基本情報 ネットワーク</span><span>9</span></div>
+</section>
+
+<!-- 10 CSMA/CD -->
+<section class="slide">
+  <h1>CSMA/CD方式<small>共有型の有線LAN（イーサネット）のルール</small></h1>
+  <div class="flow" style="margin:10px 0 18px">
+    <div class="box b1" style="padding:16px">Carrier Sense<span>通信路が空いているか監視する</span></div><div class="to">→</div>
+    <div class="box b2" style="padding:16px">Multiple Access<span>空いていれば送信する（複数端末で共有）</span></div><div class="to">→</div>
+    <div class="box b3" style="padding:16px">Collision Detection<span>衝突を検出したら、時間をおいて再送</span></div>
+  </div>
+  <div class="cols">
+    <dl class="def">
+      <dt>一言でいうと</dt><dd>空いているか確かめてから送り、ぶつかったら送り直す方式。</dd>
+      <dt>試験のポイント</dt><dd>端末が増えて通信量が多くなるほど衝突が増え、実際の効率が下がる。</dd>
+    </dl>
+    <div class="point warn" style="margin-top:0"><b>注意：</b>今主流のスイッチングハブを使った全二重通信では衝突が起きないため、ふつうCSMA/CDは使われない。</div>
+  </div>
+  <div class="foot"><span>基本情報 ネットワーク</span><span>10</span></div>
+</section>
+
+<!-- 無線 -->
+<section class="slide">
+  <h1>ネットワーク方式と無線通信<small>つなぎ方の種類</small></h1>
+  <div class="cols">
+    <div>
+      <div class="cap">回線交換とパケット交換</div>
+      <table>
+        <tr><th style="width:26%"></th><th>回線交換</th><th>パケット交換</th></tr>
+        <tr><td>通信路</td><td>専用の通信路を確保し続ける</td><td>小さく分けて送り、回線を共有</td></tr>
+        <tr><td>長所</td><td>品質が安定</td><td>回線を効率よく使える</td></tr>
+        <tr><td>例</td><td>従来の固定電話</td><td>インターネット</td></tr>
+      </table>
+      <div class="point"><b>有線と無線：</b>有線LANのCSMA/CDは衝突を「検出」、無線LANのCSMA/CAは衝突を「回避」（空いていても少し待ってから送る）。</div>
+    </div>
+    <dl class="def">
+      <dt>無線LAN（IEEE 802.11）</dt><dd>電波でLANにつなぐ。アクセスポイントのSSID（ネットワーク名）を選んで接続する。</dd>
+      <dt>LPWA</dt><dd>低消費電力で数km以上届く。速度は遅いがIoTセンサ向き。</dd>
+      <dt>5G</dt><dd>超高速・大容量／超低遅延／多数同時接続。</dd>
+      <dt>Bluetooth・BLE</dt><dd>近い距離の機器どうしをつなぐ。BLEは省電力版。</dd>
+      <dt>ハンドオーバ／ローミング</dt><dd>移動中に基地局を切り替える／他社の設備を借りて使う。</dd>
+    </dl>
+  </div>
+  <div class="foot"><span>基本情報 ネットワーク</span><span>11</span></div>
+</section>
+
+<!-- 11 アプリ層 -->
+<section class="slide">
+  <h1>アプリケーション層のプロトコル</h1>
+  <table>
+    <tr><th style="width:18%">プロトコル</th><th>役割</th><th style="width:20%">代表的なポート番号</th></tr>
+    <tr><td><b>HTTP</b></td><td>Webページを送受信する</td><td>80</td></tr>
+    <tr><td><b>HTTPS</b></td><td>HTTPをTLSで暗号化して送受信する</td><td>443</td></tr>
+    <tr><td><b>FTP</b></td><td>ファイルを転送する</td><td>20・21</td></tr>
+    <tr><td><b>NTP</b></td><td>コンピュータの時刻を合わせる</td><td>123</td></tr>
+    <tr><td><b>DNS</b></td><td>ドメイン名とIPアドレスを対応づける</td><td>53</td></tr>
+    <tr><td><b>DHCP</b></td><td>IPアドレスなどを自動で割り当てる</td><td>67・68</td></tr>
+  </table>
+  <div class="cols" style="margin-top:14px">
+    <dl class="def">
+      <dt>CGI</dt><dd>Webサーバがリクエストに応じてプログラムを動かし、動的なページを作る仕組み。</dd>
+    </dl>
+    <dl class="def">
+      <dt>ポート番号</dt><dd>1台のコンピュータの中で、どのアプリケーション宛ての通信かを区別する番号（トランスポート層）。</dd>
+    </dl>
+  </div>
+  <div class="foot"><span>基本情報 ネットワーク</span><span>12</span></div>
+</section>
+
+<!-- 12 メール -->
+<section class="slide">
+  <h1>メールのプロトコル<small>「送る」と「受け取る」で別のプロトコル</small></h1>
+  <svg width="856" height="130" viewBox="0 0 856 130" font-size="13">
+    <rect x="10" y="40" width="130" height="50" rx="8" fill="#e8eef8" stroke="#c9daf2"/><text x="75" y="70" text-anchor="middle" fill="#1f3a68" font-weight="700">送信者</text>
+    <path d="M142 65 H240" stroke="#1f3a68" stroke-width="2.5" marker-end="url(#a)"/><text x="191" y="56" text-anchor="middle" fill="#1f3a68" font-weight="700">SMTP</text>
+    <rect x="246" y="40" width="150" height="50" rx="8" fill="#1f3a68"/><text x="321" y="70" text-anchor="middle" fill="#fff" font-weight="700">送信側サーバ</text>
+    <path d="M398 65 H486" stroke="#1f3a68" stroke-width="2.5" marker-end="url(#a)"/><text x="442" y="56" text-anchor="middle" fill="#1f3a68" font-weight="700">SMTP</text>
+    <rect x="492" y="40" width="150" height="50" rx="8" fill="#2f5596"/><text x="567" y="70" text-anchor="middle" fill="#fff" font-weight="700">受信側サーバ</text>
+    <path d="M644 65 H712" stroke="#5b80bf" stroke-width="2.5" marker-end="url(#b)"/><text x="678" y="50" text-anchor="middle" fill="#2f5596" font-weight="700">POP3</text><text x="678" y="88" text-anchor="middle" fill="#2f5596" font-weight="700">IMAP</text>
+    <rect x="716" y="40" width="130" height="50" rx="8" fill="#e8eef8" stroke="#c9daf2"/><text x="781" y="70" text-anchor="middle" fill="#1f3a68" font-weight="700">受信者</text>
+    <defs>
+      <marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker>
+      <marker id="b" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5b80bf"/></marker>
+    </defs>
+  </svg>
+  <table>
+    <tr><th style="width:16%">名前</th><th>役割</th><th style="width:36%">覚え方・注意</th></tr>
+    <tr><td><b>SMTP</b></td><td>メールを送信・転送する</td><td>ポート25。送る側</td></tr>
+    <tr><td><b>POP3</b></td><td>サーバから端末へメールを取り込む</td><td>ポート110。端末に保存して読む</td></tr>
+    <tr><td><b>IMAP</b></td><td>メールをサーバに置いたまま読む</td><td>ポート143。複数端末で状態を同期しやすい</td></tr>
+    <tr><td><b>MIME</b></td><td>日本語・画像・添付ファイルを扱えるようにする規格</td><td>メールの表現を広げる</td></tr>
+    <tr><td><b>S/MIME</b></td><td>MIMEに暗号化と電子署名を加える</td><td>なりすまし・盗み見を防ぐ</td></tr>
+  </table>
+  <div class="foot"><span>基本情報 ネットワーク</span><span>13</span></div>
+</section>
+
+<!-- 13 誤り検出 -->
+<section class="slide">
+  <h1>誤り検出<small>パリティチェックとCRC</small></h1>
+  <div class="cols">
+    <div>
+      <div class="cap">パリティチェック</div>
+      <div style="padding:12px;border:1px solid var(--line);border-top:0;border-radius:0 0 6px 6px">
+        <svg width="380" height="70" viewBox="0 0 380 70" font-size="16">
+          <g font-weight="700">
+            <rect x="0" y="10" width="36" height="36" fill="#e8eef8" stroke="#c9daf2"/><text x="18" y="34" text-anchor="middle">1</text>
+            <rect x="38" y="10" width="36" height="36" fill="#e8eef8" stroke="#c9daf2"/><text x="56" y="34" text-anchor="middle">0</text>
+            <rect x="76" y="10" width="36" height="36" fill="#e8eef8" stroke="#c9daf2"/><text x="94" y="34" text-anchor="middle">1</text>
+            <rect x="114" y="10" width="36" height="36" fill="#e8eef8" stroke="#c9daf2"/><text x="132" y="34" text-anchor="middle">1</text>
+            <rect x="152" y="10" width="36" height="36" fill="#e8eef8" stroke="#c9daf2"/><text x="170" y="34" text-anchor="middle">0</text>
+            <rect x="200" y="10" width="36" height="36" fill="#1f3a68"/><text x="218" y="34" text-anchor="middle" fill="#fff">1</text>
+          </g>
+          <text x="250" y="25" font-size="12" fill="#6e6e73">← パリティビット</text>
+          <text x="250" y="43" font-size="12" fill="#6e6e73">1の数を偶数（4個）に</text>
+        </svg>
+        <dl class="def">
+          <dt>考え方</dt><dd>1の個数が偶数（または奇数）になるようにビットを1つ足す。</dd>
+          <dt>種類</dt><dd>垂直パリティ・水平パリティ・水平垂直パリティ。</dd>
+        </dl>
+      </div>
+    </div>
+    <div>
+      <div class="cap">CRC（巡回冗長検査）</div>
+      <div style="padding:12px;border:1px solid var(--line);border-top:0;border-radius:0 0 6px 6px">
+        <div class="stack">
+          <div class="box b2">送信側：データ ÷ 生成多項式<span>余りを検査用データとして付けて送る</span></div>
+          <div class="arrow">↓</div>
+          <div class="box b4">受信側：同じ生成多項式で割る<span>余りが合わなければ誤りあり</span></div>
+        </div>
+        <dl class="def" style="margin-top:10px">
+          <dt>特徴</dt><dd>連続した誤り（バースト誤り）にも強く、通信で広く使われる。</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>基本情報 ネットワーク</span><span>14</span></div>
+</section>
+
+<!-- 14 SDN -->
+<section class="slide">
+  <h1>SDNとOpenFlow<small>制御と転送を分ける</small></h1>
+  <div class="cols wide-r">
+    <dl class="def">
+      <dt>SDN（Software-Defined Networking）</dt><dd>ネットワークの設定や制御をソフトウェアで行う考え方。制御する機能と、パケットを転送する機能を分ける。</dd>
+      <dt>OpenFlow</dt><dd>コントローラが、スイッチの転送動作を指示するためのプロトコル。SDNを実現する代表的な仕組み。</dd>
+      <dt>試験のポイント</dt><dd>「コントローラが全体を見て制御し、スイッチは転送だけする」という役割分担。</dd>
+    </dl>
+    <div class="stack">
+      <div class="box b1" style="padding:16px">SDNコントローラ<span>制御プレーン：ネットワーク全体を見て経路を決める</span></div>
+      <div class="arrow">↓ OpenFlowで指示 ↓</div>
+      <div class="flow">
+        <div class="box b4">スイッチ<span>転送</span></div>
+        <div class="box b4">スイッチ<span>転送</span></div>
+        <div class="box b4">スイッチ<span>転送</span></div>
+      </div>
+      <div class="box b5" style="font-weight:400">データプレーン：指示どおりにパケットを転送する</div>
+    </div>
+  </div>
+  <div class="foot"><span>基本情報 ネットワーク</span><span>15</span></div>
+</section>
+
+<!-- 管理 -->
+<section class="slide">
+  <h1>ネットワーク管理<small>監視と切り分けのコマンド</small></h1>
+  <table>
+    <tr><th style="width:22%">名前</th><th>何をするか</th><th style="width:34%">試験のポイント</th></tr>
+    <tr><td><b>SNMP</b></td><td>ネットワーク機器の状態を管理用コンピュータから監視・設定する</td><td>機器の情報はMIB。異常はトラップで通知。SMTP（メール）と混同しない</td></tr>
+    <tr><td><b>ping</b></td><td>相手にICMPを送り、返事が来るかで疎通を確かめる</td><td>使うプロトコルはICMP</td></tr>
+    <tr><td><b>traceroute（tracert）</b></td><td>宛先までに経由するルータを順に表示する</td><td>どこで止まっているかの切り分け</td></tr>
+    <tr><td><b>ipconfig</b></td><td>WindowsでIPアドレスなどの設定を確認する</td><td>arpコマンドはARPの対応表を扱う</td></tr>
+    <tr><td><b>NFV</b></td><td>ルータなどの機能を汎用サーバ上のソフトウェアで動かす</td><td>SDNと並ぶネットワークの仮想化</td></tr>
+  </table>
+  <div class="foot"><span>基本情報 ネットワーク</span><span>16</span></div>
+</section>
+
+<!-- 応用 -->
+<section class="slide">
+  <h1>ネットワーク応用<small>Webと通信サービス</small></h1>
+  <div class="cols">
+    <dl class="def">
+      <dt>URL</dt><dd>情報のありかの書き方。例：https://www.example.com/index.html</dd>
+      <dt>Cookie</dt><dd>Webサーバがブラウザに保存させる小さなデータ。ログイン状態などを覚える。</dd>
+      <dt>CGI</dt><dd>リクエストに応じてサーバ側のプログラムを動かし、動的なページを作る。</dd>
+      <dt>CDN</dt><dd>内容を各地のサーバに置き、利用者に近いサーバから配信する。</dd>
+    </dl>
+    <div class="stack">
+      <div class="cap" style="border-radius:6px">プロキシサーバ</div>
+      <div class="flow"><div class="box b5">社内の端末</div><div class="to">→</div><div class="box b2">プロキシ<span>代理でアクセス</span></div><div class="to">→</div><div class="box b4">Webサーバ</div></div>
+      <div class="box b5" style="font-weight:400;text-align:left">アクセスの記録・制限、よく見るページのキャッシュに使う</div>
+      <div class="cap" style="border-radius:6px;margin-top:8px">VPN</div>
+      <div class="box b5" style="font-weight:400;text-align:left;line-height:1.6">共用の回線の上に、暗号化で仮想的な専用線を作る。インターネットVPNは安価、IP-VPNは通信事業者の閉じた網で品質が安定。</div>
+    </div>
+  </div>
+  <div class="foot"><span>基本情報 ネットワーク</span><span>17</span></div>
+</section>
+
+<!-- 15 計算 -->
+<section class="slide">
+  <h1>ネットワークの計算<small>伝送時間と回線利用率</small></h1>
+  <div class="formula">伝送時間 ＝ データ量（ビット） ÷（回線速度 × 回線利用率）</div>
+  <div class="cols">
+    <div>
+      <div class="cap">例題</div>
+      <div style="padding:12px;border:1px solid var(--line);border-top:0;border-radius:0 0 6px 6px;font-size:13.5px;line-height:1.8">
+        100Mbpsの回線を利用率50%で使うとき、500Mバイトのファイルを送るのにかかる時間は？<br>
+        ① バイトをビットに：500Mバイト × 8 ＝ <b>4,000Mビット</b><br>
+        ② 実効速度：100Mbps × 0.5 ＝ <b>50Mbps</b><br>
+        ③ 4,000 ÷ 50 ＝ <b style="color:var(--navy)">80秒</b>
+      </div>
+    </div>
+    <dl class="def">
+      <dt>つまずきやすい点</dt><dd>回線速度は「ビット毎秒」、データ量は「バイト」で出されることが多い。<b>1バイト＝8ビット</b>にそろえてから計算する。</dd>
+      <dt>スループット</dt><dd>実際に送れる速さ ＝ 回線速度 × 回線利用率。</dd>
+      <dt>オーバーヘッド</dt><dd>ヘッダなど制御情報の分だけ、送れる中身は減る。</dd>
+    </dl>
+  </div>
+  <div class="foot"><span>基本情報 ネットワーク</span><span>18</span></div>
+</section>
+
+<!-- 16 まとめ -->
+<section class="slide">
+  <h1>まとめ<small>頻出ポイント一覧</small></h1>
+  <table>
+    <tr><th style="width:26%">テーマ</th><th>押さえる点</th></tr>
+    <tr><td>OSI参照モデル</td><td>7層の順番（アプセトネデブ）と、各層の役割</td></tr>
+    <tr><td>TCPとUDP</td><td>TCPは接続確立・再送で信頼性、UDPは軽量でリアルタイム向き</td></tr>
+    <tr><td>調べる・配るの区別</td><td>DNS：名前→IP／ARP：IP→MAC／DHCP：設定を配る</td></tr>
+    <tr><td>IPアドレス</td><td>クラスA 8/24・B 16/16・C 24/8。ホスト数は 2<sup>n</sup>−2</td></tr>
+    <tr><td>NATとNAPT</td><td>NAPTはポート番号も使い、1つのグローバルIPを複数台で共有</td></tr>
+    <tr><td>LAN機器</td><td>リピータ＝第1層／L2スイッチ＝MAC・第2層／ルータ＝IP・第3層</td></tr>
+    <tr><td>メール</td><td>送信SMTP、受信POP3（取り込む）・IMAP（サーバに置く）、S/MIMEで暗号化と署名</td></tr>
+    <tr><td>誤り検出</td><td>パリティ＝1の個数をそろえる／CRC＝生成多項式で割った余り</td></tr>
+    <tr><td>SDN</td><td>コントローラが制御、スイッチは転送。指示はOpenFlow</td></tr>
+    <tr><td>無線と管理</td><td>無線LANはCSMA/CA／SNMPで監視、pingはICMP</td></tr>
+  </table>
+  <div class="foot"><span>基本情報 ネットワーク</span><span>19</span></div>
+</section>
+
+</body>
+</html>

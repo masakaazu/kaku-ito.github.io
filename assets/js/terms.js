@@ -19,8 +19,21 @@
     - 意味：…
     - ポイント：…
     - 例：… ／ 注：… ／ ⚠要確認：…
+    - 語の意味：Robotic＝ロボットによる／Process＝業務の手順／Automation＝自動化（略語のとき）
+
+  略語（見出しに English の正式名称があるもの）のカードは、
+  1回目のタップで正式名称だけ、2回目のタップで用語の意味と語の意味を出す。
+
+    ## 問題演習         → ここから下は手作りの4択問題（任意）
+    ### 小分類名         → クイズの「範囲」に使う（上の ## と同じ名前にする）
+    #### 問 問題ID
+    - 問：…
+    - ア：… ／ - イ：… ／ - ウ：… ／ - エ：…
+    - 正解：イ
+    - 解説：…
 
   クイズの回答は recordAnswer("ap-20-用語名", 小分類, 正解か) で記録する。
+  手作りの問題は、見出しに書いた問題IDのまま記録する（日別復習から移した問題も記録を引き継げる）。
 */
 (() => {
   const main = document.querySelector("main.terms");
@@ -75,7 +88,7 @@
 
   /* ---------- md を読み取る ---------- */
 
-  const LABELS = { 意味: "meaning", ポイント: "point", 例: "example", 注: "note", "⚠要確認": "caution" };
+  const LABELS = { 意味: "meaning", ポイント: "point", 例: "example", 注: "note", "⚠要確認": "caution", 語の意味: "words" };
 
   const parseHeading = (raw) => {
     let text = raw.trim();
@@ -112,6 +125,10 @@
     let summary = null;
     let inMeta = true;
     let tableHead = null; // 「| 用語 | 英語 | 解説 |」形式の表の見出し
+    let inQuestions = false; // 「## 問題演習」より下
+    let qGroup = "";
+    let question = null;
+    doc.questions = [];
 
     const ensureSection = () => {
       if (!section) {
@@ -134,6 +151,31 @@
       if (/^#\s/.test(line)) {
         doc.title = line.replace(/^#\s+/, "");
         return;
+      }
+      if (/^##\s/.test(line) && /^##\s+問題演習/.test(line)) {
+        inMeta = false;
+        inQuestions = true;
+        question = null;
+        return;
+      }
+      if (inQuestions) {
+        if (/^##\s/.test(line)) inQuestions = false;
+        else {
+          if (/^###\s/.test(line)) {
+            qGroup = line.replace(/^###\s+/, "");
+            question = null;
+          } else if (/^####\s/.test(line)) {
+            question = { id: line.replace(/^####\s+(問\s*)?/, "").trim(), section: qGroup, text: "", choices: [], answer: -1, explain: "" };
+            doc.questions.push(question);
+          } else if (question && /^\s*-\s+/.test(line)) {
+            const m = line.replace(/^\s*-\s+/, "").match(/^(問|ア|イ|ウ|エ|正解|解説)[：:]\s*(.*)$/);
+            if (m && m[1] === "問") question.text = m[2];
+            else if (m && m[1] === "正解") question.answer = "アイウエ".indexOf(m[2].trim());
+            else if (m && m[1] === "解説") question.explain = m[2];
+            else if (m) question.choices.push(m[2]);
+          }
+          return;
+        }
       }
       if (/^##\s/.test(line)) {
         inMeta = false;
@@ -161,7 +203,7 @@
       if (/^####\s/.test(line)) {
         inMeta = false;
         summary = null;
-        term = { ...parseHeading(line.replace(/^####\s+/, "")), meaning: "", point: "", example: "", note: "", caution: "", extra: [] };
+        term = { ...parseHeading(line.replace(/^####\s+/, "")), meaning: "", point: "", example: "", note: "", caution: "", words: "", extra: [] };
         term.section = ensureSection().title;
         ensureGroup().terms.push(term);
         return;
@@ -214,7 +256,7 @@
       // 「### テーマ」の下に「- 用語名」だけが並ぶ形（解説なしの用語一覧）
       if ((!term || term.nameOnly) && group && /^\s*-\s+/.test(line)) {
         const body = line.replace(/^\s*-\s+/, "");
-        if (!/^(意味|ポイント|例|注|⚠要確認)[：:]/.test(body)) {
+        if (!/^(意味|ポイント|例|注|⚠要確認|語の意味)[：:]/.test(body)) {
           term = { ...parseHeading(body), meaning: "", point: "", example: "", note: "", caution: "", extra: [], nameOnly: true };
           term.section = section.title;
           group.terms.push(term);
@@ -223,7 +265,7 @@
       }
       if (term && /^\s*-\s+/.test(line)) {
         const body = line.replace(/^\s*-\s+/, "");
-        const m = body.match(/^(意味|ポイント|例|注|⚠要確認)[：:]\s*(.*)$/);
+        const m = body.match(/^(意味|ポイント|例|注|⚠要確認|語の意味)[：:]\s*(.*)$/);
         if (m) {
           const key = LABELS[m[1]];
           term[key] = term[key] ? `${term[key]} ${m[2]}` : m[2];
@@ -239,6 +281,7 @@
     doc.terms = doc.sections.flatMap((s) => s.groups.flatMap((g) => g.terms));
     // クイズ・カードには「意味」がある用語だけを使う（重複掲載などは一覧にだけ出す）
     doc.studyTerms = doc.terms.filter((t) => t.meaning && !t.flags.includes("重複"));
+    doc.questions = doc.questions.filter((q) => q.id && q.text && q.choices.length >= 2 && q.answer >= 0 && q.answer < q.choices.length);
     return doc;
   };
 
@@ -281,19 +324,25 @@
 
   const termId = (term) => `${topic}-${field}-${term.name}`;
 
+  /* 略語かどうか（英字の見出しに、別の綴りの正式名称が付いている） */
+  const isAbbr = (term) => term.english && term.english !== term.name && /^[A-Za-z0-9/.&+\- ]+$/.test(term.name) && /[A-Z]/.test(term.name);
+
+  const wordsLine = (term) => (term.words ? `<p class="term-line"><span class="term-label">語の意味</span>${inline(term.words)}</p>` : "");
+
   const termBody = (term) => `
     ${term.meaning ? `<p class="term-meaning">${inline(term.meaning)}</p>` : ""}
+    ${wordsLine(term)}
     ${term.point ? `<p class="term-line"><span class="term-label">ポイント</span>${inline(term.point)}</p>` : ""}
     ${term.example ? `<p class="term-line"><span class="term-label">例</span>${inline(term.example)}</p>` : ""}
     ${term.note ? `<p class="term-line"><span class="term-label">注</span>${inline(term.note)}</p>` : ""}
     ${term.extra.map((e) => `<p class="term-line">${inline(e)}</p>`).join("")}
     ${term.caution ? `<p class="term-line term-caution"><span class="term-label">要確認</span>${inline(term.caution)}</p>` : ""}`;
 
-  const termHead = (term, tag = "h4") => `
+  const termHead = (term, tag = "h4", { sub = true } = {}) => `
     <${tag} class="term-name">${escapeHtml(term.name)}${term.flags
       .map((f) => `<span class="term-flag">⚠${escapeHtml(f)}</span>`)
       .join("")}</${tag}>
-    ${term.reading || term.english ? `<p class="term-sub">${escapeHtml([term.reading, term.english].filter(Boolean).join(" ／ "))}</p>` : ""}`;
+    ${sub && (term.reading || term.english) ? `<p class="term-sub">${escapeHtml([term.reading, term.english].filter(Boolean).join(" ／ "))}</p>` : ""}`;
 
   const renderList = (doc) =>
     doc.sections
@@ -323,8 +372,10 @@
     order: [],
     index: 0,
     reveal: store.get("reveal", false),
-    shown: false,
+    stage: 0, // 0＝用語だけ、1＝正式名称（略語のとき）、最後＝意味まで
   };
+
+  const lastStage = (term) => (isAbbr(term) ? 2 : 1);
 
   /* 前回間違えたままの用語（回答記録から読む。ログインしていなければ空） */
   const WRONG = "__wrong";
@@ -332,6 +383,15 @@
 
   const pool = (doc, range) =>
     doc.studyTerms.filter((t) => (range === WRONG ? wrongIds.has(termId(t)) : !range || t.section === range));
+
+  const questionPool = (doc, range) =>
+    doc.questions.filter((q) => (range === WRONG ? wrongIds.has(q.id) : !range || q.section === range));
+
+  /* クイズに出す範囲。kind は terms（用語の4択）／questions（問題演習）／mix（まぜる） */
+  const quizPool = (doc, range, kind) => [
+    ...(kind === "questions" ? [] : pool(doc, range).map((term) => ({ term }))),
+    ...(kind === "terms" ? [] : questionPool(doc, range).map((question) => ({ question }))),
+  ];
 
   const renderCard = (doc) => {
     const box = main.querySelector("[data-cards]");
@@ -341,19 +401,27 @@
       return;
     }
     const term = list[cards.index];
-    const open = cards.reveal || cards.shown;
+    const last = lastStage(term);
+    const stage = cards.reveal ? last : cards.stage;
+    const open = stage >= last;
+    const abbr = isAbbr(term);
+    // 略語は 1回目のタップで正式名称だけ、2回目で意味と語の意味。それ以外は 1回で意味
+    const fullName = abbr && stage >= 1 ? `<p class="flash-fullname">${escapeHtml(term.english)}</p>` : "";
+    const hint = abbr ? (stage === 0 ? "タップして正式名称を表示" : "もう一度タップして意味を表示") : "タップして意味を表示";
     box.innerHTML = `
       <div class="flash ${open ? "is-open" : ""}" tabindex="0" role="button" aria-label="答えを表示">
         <p class="flash-count">${cards.index + 1} / ${list.length}<span>${escapeHtml(term.section)}</span></p>
-        ${termHead(term, "h3")}
-        <div class="flash-body">${open ? termBody(term) : `<p class="flash-hint">タップして意味を表示</p>`}</div>
+        ${termHead(term, "h3", { sub: !abbr })}
+        ${term.reading && abbr && stage >= 1 ? `<p class="term-sub">${escapeHtml(term.reading)}</p>` : ""}
+        ${fullName}
+        <div class="flash-body">${open ? termBody(term) : `<p class="flash-hint">${hint}</p>`}</div>
       </div>
       <div class="terms-controls">
         <button type="button" class="terms-button" data-move="-1">← 前へ</button>
         <button type="button" class="terms-button" data-move="1">次へ →</button>
       </div>`;
     box.querySelector(".flash").addEventListener("click", () => {
-      cards.shown = !cards.shown;
+      cards.stage = cards.stage >= last ? 0 : cards.stage + 1;
       renderCard(doc);
     });
     box.querySelectorAll("[data-move]").forEach((b) => b.addEventListener("click", () => moveCard(doc, Number(b.dataset.move))));
@@ -363,7 +431,7 @@
     const n = cards.order.length;
     if (!n) return;
     cards.index = (cards.index + step + n) % n;
-    cards.shown = false;
+    cards.stage = 0;
     renderCard(doc);
   };
 
@@ -371,7 +439,7 @@
     const list = pool(doc, main.querySelector("[data-card-range]").value);
     cards.order = random ? shuffle(list) : list;
     cards.index = 0;
-    cards.shown = false;
+    cards.stage = 0;
     renderCard(doc);
   };
 
@@ -389,7 +457,7 @@
   const renderQuiz = (doc) => {
     const box = main.querySelector("[data-quiz]");
     if (!quiz.list.length) {
-      box.innerHTML = `<p class="terms-empty">${doc.studyTerms.length ? "この範囲に用語がありません。" : "この用語集は用語名だけなので、クイズは使えません。"}</p>`;
+      box.innerHTML = `<p class="terms-empty">${doc.studyTerms.length || doc.questions.length ? "この範囲に問題がありません。" : "この用語集は用語名だけなので、クイズは使えません。"}</p>`;
       return;
     }
     if (quiz.index >= quiz.list.length) {
@@ -400,12 +468,12 @@
           <p>正答率 ${total ? Math.round((quiz.correct / total) * 100) : 0}%</p>
           ${
             quiz.missed.length
-              ? `<p class="quiz-missed-title">間違えた用語</p><ul class="quiz-missed">${quiz.missed.map((t) => `<li>${escapeHtml(t.name)}</li>`).join("")}</ul>`
+              ? `<p class="quiz-missed-title">間違えた問題</p><ul class="quiz-missed">${quiz.missed.map((m) => `<li>${escapeHtml(m.term ? m.term.name : m.question.text)}</li>`).join("")}</ul>`
               : ""
           }
           <div class="terms-controls">
             <button type="button" class="terms-button is-primary" data-quiz-start>もう一度</button>
-            ${quiz.missed.length ? `<button type="button" class="terms-button" data-quiz-retry>間違えた用語だけ</button>` : ""}
+            ${quiz.missed.length ? `<button type="button" class="terms-button" data-quiz-retry>間違えた問題だけ</button>` : ""}
           </div>
         </div>`;
       box.querySelector("[data-quiz-start]").addEventListener("click", () => startQuiz(doc));
@@ -414,6 +482,10 @@
       return;
     }
 
+    if (quiz.list[quiz.index].question) {
+      renderQuestion(doc, box);
+      return;
+    }
     const q = quiz.list[quiz.index];
     const candidates = pool(doc, q.term.section).filter((t) => t !== q.term && t.name !== q.term.name);
     const others = shuffle(candidates.length >= 3 ? candidates : doc.studyTerms.filter((t) => t.name !== q.term.name)).slice(0, 3);
@@ -437,7 +509,7 @@
         const picked = choices[Number(button.dataset.choice)];
         const ok = picked === q.term;
         if (ok) quiz.correct += 1;
-        else quiz.missed.push(q.term);
+        else quiz.missed.push(q);
         if (ok) wrongIds.delete(termId(q.term));
         else wrongIds.add(termId(q.term));
         updateWrongOption(doc);
@@ -455,12 +527,7 @@
           <p class="quiz-verdict ${ok ? "is-correct" : "is-wrong"}">${ok ? "正解" : "不正解"}</p>
           ${termHead(q.term)}${termBody(q.term)}
           <div class="terms-controls"><button type="button" class="terms-button is-primary" data-next>次へ →</button></div>`;
-        feedback.querySelector("[data-next]").addEventListener("click", () => {
-          quiz.index += 1;
-          quiz.answered = false;
-          renderQuiz(doc);
-          box.scrollIntoView({ block: "start", behavior: "smooth" });
-        });
+        feedback.querySelector("[data-next]").addEventListener("click", () => nextQuestion(doc, box));
 
         if (window.recordAnswer) {
           window.recordAnswer(termId(q.term), q.term.section || "未分類", ok);
@@ -469,13 +536,65 @@
     );
   };
 
+  const nextQuestion = (doc, box) => {
+    quiz.index += 1;
+    quiz.answered = false;
+    renderQuiz(doc);
+    box.scrollIntoView({ block: "start", behavior: "smooth" });
+  };
+
+  /* 手作りの4択問題（問題演習）。選択肢は書いた順に出す */
+  const renderQuestion = (doc, box) => {
+    const item = quiz.list[quiz.index];
+    const q = item.question;
+    const KANA = "アイウエオカ";
+    box.innerHTML = `
+      <div class="quiz-card">
+        <p class="flash-count">第${quiz.index + 1}問 / ${quiz.list.length}<span>問題演習${q.section ? `・${escapeHtml(q.section)}` : ""}</span></p>
+        <p class="quiz-question">${inline(q.text)}</p>
+        <div class="quiz-choices">${q.choices
+          .map((c, i) => `<button type="button" class="quiz-choice" data-choice="${i}">${KANA[i]}　${inline(c)}</button>`)
+          .join("")}</div>
+        <div class="quiz-feedback" hidden></div>
+      </div>`;
+
+    box.querySelectorAll("[data-choice]").forEach((button) =>
+      button.addEventListener("click", () => {
+        if (quiz.answered) return;
+        quiz.answered = true;
+        const ok = Number(button.dataset.choice) === q.answer;
+        if (ok) quiz.correct += 1;
+        else quiz.missed.push(item);
+        if (ok) wrongIds.delete(q.id);
+        else wrongIds.add(q.id);
+        updateWrongOption(doc);
+
+        box.querySelectorAll("[data-choice]").forEach((b) => {
+          b.disabled = true;
+          if (Number(b.dataset.choice) === q.answer) b.classList.add("is-correct");
+          else if (b === button) b.classList.add("is-wrong");
+        });
+
+        const feedback = box.querySelector(".quiz-feedback");
+        feedback.hidden = false;
+        feedback.innerHTML = `
+          <p class="quiz-verdict ${ok ? "is-correct" : "is-wrong"}">${ok ? "正解" : `不正解（正解は${KANA[q.answer]}）`}</p>
+          ${q.explain ? `<p class="term-meaning">${inline(q.explain)}</p>` : ""}
+          <div class="terms-controls"><button type="button" class="terms-button is-primary" data-next>次へ →</button></div>`;
+        feedback.querySelector("[data-next]").addEventListener("click", () => nextQuestion(doc, box));
+
+        if (window.recordAnswer) window.recordAnswer(q.id, q.section || "問題演習", ok);
+      })
+    );
+  };
+
   const startQuiz = (doc, only) => {
     const range = main.querySelector("[data-quiz-range]").value;
     const count = Number(main.querySelector("[data-quiz-count]").value);
-    const base = only || pool(doc, range);
-    quiz.list = shuffle(base)
-      .slice(0, only ? base.length : count || base.length)
-      .map((term) => ({ term }));
+    const kindSelect = main.querySelector("[data-quiz-kind]");
+    const kind = kindSelect ? kindSelect.value : "terms";
+    const base = only || quizPool(doc, range, kind);
+    quiz.list = shuffle(base).slice(0, only ? base.length : count || base.length);
     quiz.index = 0;
     quiz.correct = 0;
     quiz.answered = false;
@@ -485,12 +604,12 @@
 
   /* 範囲の選択肢に「前に間違えた用語」を足す（1語以上あるときだけ） */
   const updateWrongOption = (doc) => {
-    const count = pool(doc, WRONG).length;
+    const count = pool(doc, WRONG).length + questionPool(doc, WRONG).length;
     main.querySelectorAll("[data-quiz-range], [data-card-range]").forEach((select) => {
       let option = select.querySelector(`option[value="${WRONG}"]`);
       if (!count) {
         if (option && select.value !== WRONG) option.remove();
-        if (option && select.value === WRONG) option.textContent = "前に間違えた用語（0語）";
+        if (option && select.value === WRONG) option.textContent = "前に間違えた問題（0問）";
         return;
       }
       if (!option) {
@@ -498,7 +617,7 @@
         option.value = WRONG;
         select.insertBefore(option, select.options[1] || null);
       }
-      option.textContent = `前に間違えた用語（${count}語）`;
+      option.textContent = `前に間違えた問題（${count}問）`;
     });
   };
 
@@ -508,8 +627,10 @@
     try {
       const rows = await window.StudySync.fetchAllStats();
       const prefix = `${topic}-${field}-`;
+      const questionIds = new Set(doc.questions.map((q) => q.id));
       rows.forEach((row) => {
-        if (row.question_id.startsWith(prefix) && row.last_answer_correct === false) wrongIds.add(row.question_id);
+        const id = row.question_id;
+        if ((id.startsWith(prefix) || questionIds.has(id)) && row.last_answer_correct === false) wrongIds.add(id);
       });
     } catch (error) {
       console.error("[terms]", error);
@@ -518,8 +639,9 @@
     updateWrongOption(doc);
 
     // 復習ページから ?mode=wrong で来たら、間違えた用語だけのクイズを始める
-    if (new URLSearchParams(location.search).get("mode") === "wrong" && pool(doc, WRONG).length) {
+    if (new URLSearchParams(location.search).get("mode") === "wrong" && (pool(doc, WRONG).length || questionPool(doc, WRONG).length)) {
       main.querySelector("[data-quiz-range]").value = WRONG;
+      if (main.querySelector("[data-quiz-kind]")) main.querySelector("[data-quiz-kind]").value = "mix";
       main.querySelector("[data-quiz-count]").value = "0";
       setMode("quiz");
       startQuiz(doc);
@@ -550,8 +672,8 @@
     main.innerHTML = `
       <header class="terms-hero">
         <p class="terms-kicker">用語集${field ? `・No.${String(field).padStart(2, "0")}` : ""}</p>
-        <h1>${escapeHtml(doc.title.replace(/^応用情報技術者試験\s*用語集\s*/, "").replace(/^#\d+\s*/, "").replace(/\s*（[^（）]*シラバス[^（）]*）$/, "").replace(/\s*用語(集|まとめ|一覧)?\s*(（\d+語）)?$/, ""))}</h1>
-        <p class="terms-stats">${doc.terms.filter((t) => !t.flags.includes("重複")).length}語${doc.terms.some((t) => t.flags.includes("要確認")) ? `・⚠要確認 ${doc.terms.filter((t) => t.flags.includes("要確認")).length}語` : ""}</p>
+        <h1>${escapeHtml(doc.title.replace(/^(応用|基本)情報技術者試験\s*用語集\s*/, "").replace(/^#\d+\s*/, "").replace(/\s*（[^（）]*シラバス[^（）]*）$/, "").replace(/\s*用語(集|まとめ|一覧)?\s*(（\d+語）)?$/, "").replace(/\s*（\d+語）$/, ""))}</h1>
+        <p class="terms-stats">${doc.terms.filter((t) => !t.flags.includes("重複")).length}語${doc.questions.length ? `・問題 ${doc.questions.length}問` : ""}${doc.terms.some((t) => t.flags.includes("要確認")) ? `・⚠要確認 ${doc.terms.filter((t) => t.flags.includes("要確認")).length}語` : ""}</p>
         ${pdf ? `<p><a class="terms-button" href="${escapeHtml(pdf)}" target="_blank" rel="noopener">図解スライド（PDF）を開く</a></p>` : ""}
         ${doc.meta.length ? `<details class="terms-meta"><summary>出典・書式</summary><ul>${doc.meta.map((m) => `<li>${inline(m)}</li>`).join("")}</ul></details>` : ""}
       </header>
@@ -574,6 +696,15 @@
       <div data-panel="quiz" hidden>
         <div class="terms-options">
           <label>範囲 <select data-quiz-range>${rangeOptions}</select></label>
+          ${
+            doc.questions.length
+              ? `<label>出題 <select data-quiz-kind>
+            <option value="mix">用語と問題をまぜる</option>
+            <option value="terms">用語の4択だけ</option>
+            <option value="questions">問題演習だけ</option>
+          </select></label>`
+              : ""
+          }
           <label>問題数 <select data-quiz-count>
             <option value="10">10問</option>
             <option value="20">20問</option>
@@ -597,6 +728,7 @@
 
     main.querySelector("[data-quiz-new]").addEventListener("click", () => startQuiz(doc));
     main.querySelector("[data-quiz-range]").addEventListener("change", () => startQuiz(doc));
+    if (main.querySelector("[data-quiz-kind]")) main.querySelector("[data-quiz-kind]").addEventListener("change", () => startQuiz(doc));
 
     // カード画面ではキーボードの ← → とスペースで操作できる
     document.addEventListener("keydown", (e) => {
@@ -605,8 +737,7 @@
       if (e.key === "ArrowLeft") moveCard(doc, -1);
       if (e.key === " ") {
         e.preventDefault();
-        cards.shown = !cards.shown;
-        renderCard(doc);
+        main.querySelector(".flash")?.click();
       }
     });
 
