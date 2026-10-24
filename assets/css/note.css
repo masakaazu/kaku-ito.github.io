@@ -1,21 +1,21 @@
 /*
-  応用情報 知識ストックの読み物スタイル（夜テーマ）
+  応用情報 知識ストックの読み物スタイル
 
   応用情報のノートはすべてこれを読み込む（ノートに独自の <style> は書かない）。
   本文は h1〜h4 / p / ul / ol / table / pre だけで書けば整う。
   図解・例・確認問題などの囲みは、下の「ノートの部品」のクラスを使う。
-  色・書体などの値は theme.css で決める。
+  枠線は使わず、余白と面の明るさで区切る。色・書体などの値は theme.css で決める。
 */
-@import url("theme.css");
+@import url("components.css");
 
 :root {
   --bg: var(--theme-bg);
-  --cream: var(--theme-cream);
+  --cream: var(--theme-heading);
   --text: var(--theme-text);
   --muted: var(--theme-muted);
-  --line: var(--theme-line);
-  --surface: var(--theme-surface);
-  --surface-strong: var(--theme-surface-strong);
+  --line: var(--theme-line-soft);
+  --surface: var(--theme-bg-alt);
+  --surface-strong: var(--theme-bg-alt);
 }
 
 * {
@@ -26,113 +26,128 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-size: 16px;
-  line-height: 1.9;
+  font-family: var(--theme-font-body);
+  font-size: var(--theme-size-body);
+  line-height: calc(var(--theme-line-height) + 0.1);
 }
 
 .note {
-  width: min(var(--theme-reading-width), calc(100% - 24px));
-  margin: 32px auto 56px;
-  padding: clamp(20px, 4vw, 44px);
-  border: 1px solid var(--line);
-  border-radius: var(--theme-radius);
-  background: var(--surface);
+  width: min(var(--theme-reading-width), calc(100% - var(--theme-gutter) * 2));
+  margin: clamp(40px, 8vw, 88px) auto 0;
   overflow-wrap: anywhere;
 }
 
 .note h1,
-.note > :first-child:is(h2, p) {
-  margin: 0 0 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--cream);
+.note h2,
+.note h3,
+.note h4 {
   color: var(--cream);
-  font-size: clamp(1.35rem, 4vw, 1.75rem);
-  line-height: 1.5;
-  letter-spacing: 0.05em;
+  font-weight: 700;
+  letter-spacing: var(--theme-heading-tracking);
+  font-feature-settings: "palt";
+  text-wrap: balance;
+}
+
+/* ノートの題名（最初の見出し） */
+.note h1,
+.note > :first-child:is(h2, p) {
+  margin: 0 0 clamp(32px, 6vw, 56px);
+  color: var(--cream);
+  font-size: var(--theme-size-title);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.note > :first-child:is(p) strong {
+  font-weight: 700;
 }
 
 .note h2 {
-  margin: 44px 0 14px;
-  padding: 2px 0 2px 14px;
-  border-left: 2px solid var(--cream);
-  color: var(--cream);
-  font-size: 1.2rem;
-  line-height: 1.5;
-  letter-spacing: 0.05em;
+  margin: clamp(56px, 9vw, 88px) 0 18px;
+  font-size: var(--theme-size-reading-h2);
+  line-height: 1.3;
 }
 
 .note h3 {
-  margin: 28px 0 8px;
-  color: var(--cream);
-  font-size: 1.05rem;
+  margin: 40px 0 10px;
+  font-size: 1.1rem;
+  line-height: 1.4;
 }
 
 .note h4 {
-  margin: 20px 0 6px;
-  color: var(--cream);
-  font-size: 1rem;
+  margin: 28px 0 8px;
+  font-size: 1.05rem;
 }
 
 .note p {
-  margin: 0 0 14px;
+  margin: 0 0 1.1em;
 }
 
 .note ul,
 .note ol {
-  margin: 0 0 16px;
-  padding-left: 1.5em;
+  margin: 0 0 1.2em;
+  padding-left: 1.4em;
 }
 
 .note li {
-  margin: 4px 0;
+  margin: 6px 0;
 }
 
 .note li::marker {
-  color: var(--muted);
+  color: var(--theme-faint);
 }
 
 .note strong,
 .note b {
   color: var(--cream);
+  font-weight: 700;
 }
 
 .note a {
-  color: var(--cream);
+  color: var(--theme-link);
+  text-decoration: none;
+}
+
+.note a:hover {
+  text-decoration: underline;
   text-underline-offset: 3px;
 }
 
 .note table {
   display: block;
   max-width: 100%;
-  margin: 0 0 16px;
+  margin: 0 0 1.5em;
   overflow-x: auto;
   border-collapse: collapse;
   font-size: 0.92rem;
+  line-height: 1.6;
 }
 
 .note th,
 .note td {
   min-width: 4.5em;
-  padding: 8px 10px;
-  border: 1px solid var(--line);
+  padding: 12px 14px 12px 0;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
   vertical-align: top;
 }
 
 .note th {
   color: var(--cream);
-  background: var(--surface-strong);
+  border-bottom-color: var(--theme-line);
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .note pre {
-  margin: 0 0 16px;
-  padding: 14px 16px;
+  margin: 0 0 1.5em;
+  padding: 20px 22px;
   overflow-x: auto;
-  border: 1px solid var(--line);
   border-radius: var(--theme-radius);
   color: var(--text);
   background: var(--theme-bg-deep);
-  font-size: 0.88rem;
-  line-height: 1.6;
+  font-size: 0.86rem;
+  line-height: 1.65;
   white-space: pre;
 }
 
@@ -141,9 +156,10 @@ body {
 }
 
 .note :not(pre) > code {
-  padding: 1px 5px;
-  border-radius: var(--theme-radius-small);
+  padding: 1px 6px;
+  border-radius: 6px;
   background: var(--surface-strong);
+  font-size: 0.9em;
 }
 
 .note section {
@@ -151,7 +167,8 @@ body {
 }
 
 /* ---------- ノートの部品 ----------
-   図解・例・確認問題などの囲み。どのノートでも同じ見た目になるよう、ここだけで決める。 */
+   図解・例・確認問題などの囲み。どのノートでも同じ見た目になるよう、ここだけで決める。
+   囲みは枠線を使わず、グレーの面で示す。 */
 
 /* 冒頭（テーマ名・分野・ひとこと） */
 .note > header,
@@ -165,11 +182,11 @@ body {
 }
 
 .note h1 .category {
-  margin-top: 6px;
+  margin-top: 10px;
   color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 400;
-  letter-spacing: 0.08em;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0;
 }
 
 .note .label,
@@ -180,20 +197,21 @@ body {
 }
 
 .note .label {
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
+  font-size: var(--theme-size-small);
 }
 
 .note .lead {
-  font-size: 1.05rem;
+  color: var(--muted);
+  font-size: var(--theme-size-lead);
+  line-height: 1.55;
 }
 
 .note .source {
-  margin-top: 40px;
-  padding-top: 14px;
+  margin-top: 64px;
+  padding-top: 16px;
   border-top: 1px solid var(--line);
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: var(--theme-size-small);
 }
 
 /* 小さな札（分野・キーワード） */
@@ -203,7 +221,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin: 10px 0 18px;
+  margin: 12px 0 20px;
 }
 
 .note .tag,
@@ -216,15 +234,13 @@ body {
   align-items: center;
   gap: 6px;
   margin: 0 4px 0 0;
-  padding: 0 9px;
-  border: 1px solid var(--line);
+  padding: 2px 12px;
   border-radius: var(--theme-radius-pill);
   color: var(--muted);
-  background: transparent;
-  font-size: 0.78rem;
-  font-weight: 400;
+  background: var(--surface);
+  font-size: var(--theme-size-caption);
+  font-weight: 500;
   line-height: 1.8;
-  letter-spacing: 0.04em;
   text-decoration: none;
   vertical-align: 2px;
 }
@@ -235,13 +251,13 @@ body {
 }
 
 .note .badge-good {
-  border-color: var(--theme-good);
   color: var(--theme-good);
+  background: var(--theme-good-bg);
 }
 
 .note .badge-bad {
-  border-color: var(--theme-bad);
   color: var(--theme-bad);
+  background: var(--theme-bad-bg);
 }
 
 /* 囲み（図解・例・補足・まとめ） */
@@ -251,17 +267,16 @@ body {
 .note .memo,
 .note .highlight,
 .note .final {
-  margin: 0 0 16px;
-  padding: 12px 16px;
-  border: 1px solid var(--line);
-  border-left: 2px solid var(--cream);
-  border-radius: var(--theme-radius-small);
-  background: var(--theme-bg-deep);
+  margin: 0 0 1.5em;
+  padding: 20px 24px;
+  border-radius: var(--theme-radius);
+  background: var(--surface);
 }
 
+/* 例は「注意」の色をうっすら敷いて区別する */
 .note .example,
 .note .example-box {
-  border-left-color: var(--theme-warn);
+  background: var(--theme-warn-bg);
 }
 
 .note .diagram > :last-child,
@@ -280,16 +295,15 @@ body {
 .note .fe-ap {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px;
-  margin: 0 0 16px;
+  gap: 12px;
+  margin: 0 0 1.5em;
 }
 
 .note .mini-card,
 .note .fe-ap > div {
-  padding: 12px 14px;
-  border: 1px solid var(--line);
-  border-radius: var(--theme-radius-small);
-  background: var(--theme-bg-deep);
+  padding: 18px 20px;
+  border-radius: var(--theme-radius);
+  background: var(--surface);
 }
 
 .note .mini-card h3,
@@ -299,31 +313,26 @@ body {
 
 /* div で組んだ表 */
 .note .table-like {
-  margin: 0 0 16px;
-  border: 1px solid var(--line);
-  border-radius: var(--theme-radius-small);
-  overflow: hidden;
+  margin: 0 0 1.5em;
   font-size: 0.92rem;
+  line-height: 1.6;
 }
 
 .note .table-like .row {
   display: grid;
   grid-auto-columns: minmax(0, 1fr);
   grid-auto-flow: column;
-  border-top: 1px solid var(--line);
-}
-
-.note .table-like .row:first-child {
-  border-top: 0;
+  border-bottom: 1px solid var(--line);
 }
 
 .note .table-like .row > div {
-  padding: 8px 10px;
+  padding: 12px 14px 12px 0;
 }
 
 .note .table-like .head {
   color: var(--cream);
-  background: var(--surface-strong);
+  border-bottom-color: var(--theme-line);
+  font-weight: 600;
 }
 
 /* 手順の流れ */
@@ -332,75 +341,69 @@ body {
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  margin: 0 0 16px;
+  margin: 0 0 1.5em;
 }
 
 .note .flow .step {
   flex: 1 1 120px;
-  padding: 10px 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--theme-radius-small);
-  background: var(--theme-bg-deep);
+  padding: 14px 12px;
+  border-radius: var(--theme-radius);
+  background: var(--surface);
   font-size: 0.9rem;
   text-align: center;
 }
 
 .note .flow .arrow {
-  color: var(--muted);
+  color: var(--theme-faint);
 }
 
 /* 確認問題 */
 .note .qa-options,
 .note .choices,
 .note .quiz-options {
-  margin: 0 0 14px;
+  margin: 0 0 16px;
 }
 
 .note .qa-options label {
   display: block;
-  margin: 4px 0;
+  margin: 6px 0;
 }
 
 .note .qa-options input {
-  accent-color: var(--cream);
+  accent-color: var(--theme-accent);
 }
 
-.note button {
-  margin: 4px 6px 4px 0;
-  padding: 7px 16px;
-  border: 1px solid var(--cream);
-  border-radius: var(--theme-radius-small);
-  color: var(--theme-ink);
-  background: var(--cream);
-  font: inherit;
-  font-size: 0.9rem;
-  font-weight: 700;
-  cursor: pointer;
+/* 「答えを見る」などのボタンは components.css の .button と同じ形 */
+.note button:not(.quiz-choice) {
+  margin: 6px 8px 6px 0;
 }
 
 .note button.quiz-choice {
   display: block;
   width: 100%;
-  border-color: var(--line);
+  margin: 0 0 8px;
+  padding: 14px 18px;
+  border: 0;
+  border-radius: var(--theme-radius);
   color: var(--text);
-  background: transparent;
+  background: var(--surface);
+  font: inherit;
   text-align: left;
-  transition: border-color var(--theme-transition), background var(--theme-transition);
+  cursor: pointer;
+  transition: background-color var(--theme-transition);
 }
 
 .note button.quiz-choice:hover {
-  border-color: var(--cream);
   background: var(--theme-surface-hover);
 }
 
 /* 答えは「答えを見る」を押すまで隠す（スクリプトが表示に切り替える） */
 .note #answer {
   display: none;
-  margin: 14px 0 0;
-  padding: 14px 16px;
-  border: 1px solid var(--line);
-  border-radius: var(--theme-radius-small);
-  background: var(--theme-bg-deep);
+  margin: 16px 0 0;
+  padding: 20px 24px;
+  border-radius: var(--theme-radius);
+  background: var(--surface);
 }
 
 .note #answer h3 {

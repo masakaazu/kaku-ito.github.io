@@ -1,56 +1,97 @@
 /*
   デザインの設定（サイト全体の見た目はここだけで決まる）
 
-  色・書体・角の丸み・粒子の強さなどを変えたいときは、このファイルの値だけを書き換える。
-  site.css（トップ・一覧）、note.css（ノート）、content.css（教材全般）、
-  site.js のナビバー、ログインページ、用語集などは、すべてここの値を参照している。
+  色・書体・文字の大きさ・余白・角の丸み・動きの速さを変えたいときは、このファイルの値だけを書き換える。
+  site.css（トップ・一覧）、note.css（ノート）、terms.css（用語集）、content.css（その他の教材）、
+  components.css（ボタンなどの共通部品）、site.js のナビバー、ログインページは、すべてここの値を参照している。
 
-  ※ 基本情報の日別復習教材（fe/review/）は、色が各ファイルに直接書かれているため対象外。
+  ■ 明るい／暗い
+    色は light-dark(明るいときの色, 暗いときの色) で書いている。
+    どちらを使うかは、いちばん下の color-scheme で決まる。
+      color-scheme: light;       → いつも明るい（いまの設定）
+      color-scheme: light dark;  → 端末の設定に合わせる
+      color-scheme: dark;        → いつも暗い
+
   ※ 名前の頭に --theme- を付けているのは、教材ごとの独自の変数とぶつからないようにするため。
 */
-@import url("https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&display=swap");
 
 :root {
-  /* ---------- 色 ---------- */
-  --theme-bg: #1e1f21;            /* 背景（チャコール） */
-  --theme-bg-deep: #151618;       /* コード欄など、背景より一段暗い面 */
-  --theme-cream: #e8e2d6;         /* 見出し・強調・ランプの光（クリーム） */
-  --theme-text: #d7d1c6;          /* 本文 */
-  --theme-muted: rgba(232, 226, 214, 0.62);  /* 補足の文字 */
-  --theme-faint: rgba(232, 226, 214, 0.38);  /* さらに控えめな文字 */
-  --theme-line: rgba(232, 226, 214, 0.16);   /* 罫線 */
-  --theme-surface: rgba(232, 226, 214, 0.035);       /* カードの面 */
-  --theme-surface-strong: rgba(232, 226, 214, 0.07); /* 表の見出しなど */
-  --theme-surface-hover: rgba(232, 226, 214, 0.08);  /* カーソルを当てたとき */
-  --theme-ink: #1e1f21;                       /* 光の中に置く文字 */
-  --theme-ink-muted: rgba(30, 31, 33, 0.72);  /* 光の中に置く補足の文字 */
+  /* ---------- 色（白・黒・グレー＋アクセント1色） ---------- */
+  --theme-bg: light-dark(#ffffff, #000000);           /* ページの背景 */
+  --theme-bg-alt: light-dark(#f5f5f7, #161617);       /* 帯・タイル・囲みの面（背景より一段沈んだグレー） */
+  --theme-bg-deep: light-dark(#f5f5f7, #1d1d1f);      /* コード欄・入力欄 */
+  --theme-surface-hover: light-dark(#ebebf0, #232325); /* タイルにカーソルを当てたとき */
+  --theme-heading: light-dark(#1d1d1f, #f5f5f7);      /* 見出し・強調 */
+  --theme-text: light-dark(#1d1d1f, #f5f5f7);         /* 本文 */
+  --theme-muted: light-dark(#6e6e73, #a1a1a6);        /* 補足の文字 */
+  --theme-faint: light-dark(#86868b, #6e6e73);        /* さらに控えめな文字 */
+  --theme-line: light-dark(#d2d2d7, #424245);         /* 区切り線 */
+  --theme-line-soft: light-dark(#e8e8ed, #2c2c2e);    /* 一覧の行の区切りなど、さらに弱い線 */
 
-  /* 意味を持つ色（正解・不正解・注意） */
-  --theme-good: #8db094;
-  --theme-good-bg: #1d241f;
-  --theme-bad: #d19489;
-  --theme-bad-bg: #2a1f1e;
-  --theme-warn: #d6bf7f;
-  --theme-warn-bg: #2a261b;
+  /* アクセント（リンク・主要ボタン・選択中だけに使う） */
+  --theme-accent: light-dark(#0071e3, #2997ff);
+  --theme-accent-hover: light-dark(#0077ed, #47a6ff);
+  --theme-on-accent: #ffffff;                         /* アクセント色の上に置く文字 */
+  --theme-link: light-dark(#0066cc, #2997ff);
+
+  /* 意味を持つ色（正解・不正解・注意）。ここ以外では色を足さない */
+  --theme-good: light-dark(#248a3d, #30d158);
+  --theme-good-bg: light-dark(#e8f6ec, #0f2a17);
+  --theme-bad: light-dark(#d70015, #ff6961);
+  --theme-bad-bg: light-dark(#fdecee, #331414);
+  --theme-warn: light-dark(#b25000, #ffb340);
+  --theme-warn-bg: light-dark(#fff4e5, #2e2210);
+
+  /* 半透明のナビバー */
+  --theme-nav-bg: light-dark(rgba(255, 255, 255, 0.8), rgba(22, 22, 23, 0.8));
 
   /* ---------- 書体 ---------- */
-  --theme-font-serif: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", serif;
-  --theme-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
-  --theme-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  --theme-font-body: var(--theme-font-serif);  /* 本文に使う書体 */
-  --theme-font-ui: var(--theme-font-sans);     /* ナビバーなど部品に使う書体 */
+  --theme-font-sans: -apple-system, BlinkMacSystemFont, "SF Pro JP", "SF Pro Text", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", "Yu Gothic", Meiryo, sans-serif;
+  --theme-font-serif: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", serif;
+  --theme-font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  --theme-font-body: var(--theme-font-sans);  /* 本文の書体（明朝にしたいときは var(--theme-font-serif)） */
+  --theme-font-ui: var(--theme-font-sans);    /* ナビバー・ボタンの書体 */
+
+  /* ---------- 文字の大きさ ---------- */
+  --theme-size-display: clamp(2.5rem, 7vw, 4.5rem);  /* ページの大見出し */
+  --theme-size-h2: clamp(1.75rem, 4.2vw, 2.75rem);   /* セクション見出し */
+  --theme-size-h3: clamp(1.15rem, 2vw, 1.4rem);      /* 小見出し */
+  --theme-size-lead: clamp(1.1rem, 2.2vw, 1.5rem);   /* 大見出しの下の一文 */
+  --theme-size-title: clamp(1.75rem, 5vw, 2.75rem);  /* ノート・用語集の題名 */
+  --theme-size-reading-h2: clamp(1.3rem, 3.2vw, 1.75rem); /* ノート・用語集の見出し */
+  --theme-size-body: 16px;                            /* 本文（スマホは下の @media で小さくする） */
+  --theme-size-small: 0.875rem;                       /* 補足 */
+  --theme-size-caption: 0.75rem;                      /* 札・注記 */
+  --theme-line-height: 1.75;                          /* 本文の行間 */
+  --theme-heading-tracking: -0.015em;                 /* 見出しの字間（少し詰める） */
+
+  /* ---------- 余白・幅 ---------- */
+  --theme-space-section: clamp(72px, 11vw, 140px);  /* セクションの間 */
+  --theme-space-block: clamp(24px, 4vw, 40px);      /* 見出しと中身の間 */
+  --theme-gutter: clamp(20px, 5vw, 32px);           /* 画面の左右の余白 */
+  --theme-page-width: 980px;                        /* 一覧ページの最大幅 */
+  --theme-reading-width: 720px;                     /* 読み物の最大幅 */
 
   /* ---------- 形 ---------- */
-  --theme-radius: 4px;          /* カード・入力欄の角 */
-  --theme-radius-small: 2px;    /* 小さな札の角 */
-  --theme-radius-pill: 999px;   /* 丸い札 */
-  --theme-page-width: 920px;    /* 一覧ページの最大幅 */
-  --theme-reading-width: 780px; /* 読み物の最大幅 */
+  --theme-radius-large: 22px;  /* 大きなタイル */
+  --theme-radius: 14px;        /* タイル・囲み */
+  --theme-radius-small: 8px;   /* 入力欄・小さな囲み */
+  --theme-radius-pill: 980px;  /* ボタン・札 */
 
-  /* ---------- 質感 ---------- */
-  --theme-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  --theme-grain-opacity: 0.08;  /* 粒子の強さ（0で消える） */
-  --theme-transition: 0.25s ease;
+  /* ---------- 動き ---------- */
+  --theme-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --theme-transition: 0.3s var(--theme-ease);   /* ホバーなど */
+  --theme-reveal-duration: 0.9s;                /* スクロールで現れるときの速さ */
+  --theme-reveal-distance: 24px;                /* 現れるときに下から動く距離（0で動かない） */
 
-  color-scheme: dark;
+  /* ---------- 明るい／暗い（説明は冒頭） ---------- */
+  color-scheme: light;
+}
+
+/* スマートフォンでは本文を一回り小さくする */
+@media (max-width: 640px) {
+  :root {
+    --theme-size-body: 15px;
+    --theme-line-height: 1.7;
+  }
 }

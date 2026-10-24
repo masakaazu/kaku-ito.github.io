@@ -197,7 +197,7 @@ function answer(box, btn) {
 4. 既存の回答判定関数を開き、実際の変数名を確認する
 5. 判定関数の内側、save() の直後に recordAnswer(...) を1行追加する
 6. HTML末尾で共通JS（../../../assets/js/study-sync.js と site.js）を読み込む
-7. Git Bash で perl tools/darken.pl fe/review/YYYY-MM-DD/ファイル名.html を実行し、色を夜テーマに変換する
+7. 色はサイトに合わせ、白・黒・グレーと青（#0071e3）だけにする（教材を作るときにこの配色を指定しておく）
 8. assets/js/catalog.js の materials.fe に教材を1行登録する（date と fields も書く。一覧ページ・分野マップ・ナビバーに自動反映）
 9. ローカルまたは公開URLで、表示・回答・同期メッセージを確認する
 10. Safariコンソールでエラーが出ていないか確認する

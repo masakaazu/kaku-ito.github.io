@@ -549,7 +549,7 @@
 
     main.innerHTML = `
       <header class="terms-hero">
-        <p class="terms-kicker">用語集${field ? `｜No.${String(field).padStart(2, "0")}` : ""}</p>
+        <p class="terms-kicker">用語集${field ? `・No.${String(field).padStart(2, "0")}` : ""}</p>
         <h1>${escapeHtml(doc.title.replace(/^応用情報技術者試験\s*用語集\s*/, "").replace(/^#\d+\s*/, "").replace(/\s*（[^（）]*シラバス[^（）]*）$/, "").replace(/\s*用語(集|まとめ|一覧)?\s*(（\d+語）)?$/, ""))}</h1>
         <p class="terms-stats">${doc.terms.filter((t) => !t.flags.includes("重複")).length}語${doc.terms.some((t) => t.flags.includes("要確認")) ? `・⚠要確認 ${doc.terms.filter((t) => t.flags.includes("要確認")).length}語` : ""}</p>
         ${pdf ? `<p><a class="terms-button" href="${escapeHtml(pdf)}" target="_blank" rel="noopener">図解スライド（PDF）を開く</a></p>` : ""}

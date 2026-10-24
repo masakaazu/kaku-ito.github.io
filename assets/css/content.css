@@ -1,40 +1,21 @@
 /*
-  教材ページ共通の仕上げ（夜テーマ）
+  教材ページ共通の仕上げ（独自の <style> を持つ教材用：基本情報の日別復習・共通教材）
 
   site.js が、site.css を使わない教材ページに自動で読み込む。
-  色は各教材の <style> 側で夜テーマに変換済み。ここでは書体・質感をそろえる。
-  書体・粒子の強さなどの値は theme.css で決める。
+  色は各教材の <style> 側で light-dark(明るい色, 暗い色) に変換済み（tools/lighten.pl）。
+  ここでは書体と選択色をサイト共通にそろえる。値は theme.css で決める。
 */
-@import url("theme.css");
+@import url("components.css");
 
-/* 書体をサイト共通の明朝にそろえる（コードは等幅のまま） */
+/* 書体をサイト共通にそろえる（コードは等幅のまま） */
 html body,
 html body *:not(code):not(pre):not(kbd):not(samp):not(pre *):not(code *) {
   font-family: var(--theme-font-body) !important;
 }
 
-html body {
-  -webkit-font-smoothing: antialiased;
-}
-
-/* 画面全体の粒子（トップ・一覧ページと同じ質感） */
-html::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 2147483000;
-  pointer-events: none;
-  background-image: var(--theme-grain);
-  opacity: var(--theme-grain-opacity);
-}
-
-::selection {
-  color: var(--theme-bg);
-  background: var(--theme-cream);
-}
-
-@media print {
-  html::after {
-    display: none;
-  }
+html body h1,
+html body h2,
+html body h3 {
+  font-feature-settings: "palt";
+  letter-spacing: var(--theme-heading-tracking);
 }
