@@ -1,8 +1,9 @@
 /*
   応用情報 知識ストックの読み物スタイル（夜テーマ）
 
-  独自の <style> を持たないノートだけが読み込む。
-  ノート本文は h1〜h4 / p / ul / ol / table / pre だけで書けば、このスタイルで整う。
+  応用情報のノートはすべてこれを読み込む（ノートに独自の <style> は書かない）。
+  本文は h1〜h4 / p / ul / ol / table / pre だけで書けば整う。
+  図解・例・確認問題などの囲みは、下の「ノートの部品」のクラスを使う。
   色・書体などの値は theme.css で決める。
 */
 @import url("theme.css");
@@ -111,6 +112,7 @@ body {
 
 .note th,
 .note td {
+  min-width: 4.5em;
   padding: 8px 10px;
   border: 1px solid var(--line);
   vertical-align: top;
@@ -146,4 +148,272 @@ body {
 
 .note section {
   margin: 0;
+}
+
+/* ---------- ノートの部品 ----------
+   図解・例・確認問題などの囲み。どのノートでも同じ見た目になるよう、ここだけで決める。 */
+
+/* 冒頭（テーマ名・分野・ひとこと） */
+.note > header,
+.note > .hero {
+  margin: 0 0 8px;
+}
+
+.note h1 .theme,
+.note h1 .category {
+  display: block;
+}
+
+.note h1 .category {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+}
+
+.note .label,
+.note .muted,
+.note > header p,
+.note > .hero p {
+  color: var(--muted);
+}
+
+.note .label {
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+}
+
+.note .lead {
+  font-size: 1.05rem;
+}
+
+.note .source {
+  margin-top: 40px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+/* 小さな札（分野・キーワード） */
+.note .tag-row,
+.note .badge-row,
+.note .nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0 18px;
+}
+
+.note .tag,
+.note .pill,
+.note .badge,
+.note .badge-good,
+.note .badge-bad,
+.note .nav-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 4px 0 0;
+  padding: 0 9px;
+  border: 1px solid var(--line);
+  border-radius: var(--theme-radius-pill);
+  color: var(--muted);
+  background: transparent;
+  font-size: 0.78rem;
+  font-weight: 400;
+  line-height: 1.8;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  vertical-align: 2px;
+}
+
+.note .pill .icon {
+  color: var(--cream);
+  font-weight: 700;
+}
+
+.note .badge-good {
+  border-color: var(--theme-good);
+  color: var(--theme-good);
+}
+
+.note .badge-bad {
+  border-color: var(--theme-bad);
+  color: var(--theme-bad);
+}
+
+/* 囲み（図解・例・補足・まとめ） */
+.note .diagram,
+.note .example,
+.note .example-box,
+.note .memo,
+.note .highlight,
+.note .final {
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--cream);
+  border-radius: var(--theme-radius-small);
+  background: var(--theme-bg-deep);
+}
+
+.note .example,
+.note .example-box {
+  border-left-color: var(--theme-warn);
+}
+
+.note .diagram > :last-child,
+.note .example > :last-child,
+.note .example-box > :last-child,
+.note .memo > :last-child,
+.note .highlight > :last-child,
+.note .final > :last-child,
+.note .mini-card > :last-child,
+.note .fe-ap > div > :last-child {
+  margin-bottom: 0;
+}
+
+/* 横に並ぶ小さなカード（正規形の比較、FEとAPの比較など） */
+.note .card-row,
+.note .fe-ap {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin: 0 0 16px;
+}
+
+.note .mini-card,
+.note .fe-ap > div {
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--theme-radius-small);
+  background: var(--theme-bg-deep);
+}
+
+.note .mini-card h3,
+.note .fe-ap h3 {
+  margin-top: 0;
+}
+
+/* div で組んだ表 */
+.note .table-like {
+  margin: 0 0 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--theme-radius-small);
+  overflow: hidden;
+  font-size: 0.92rem;
+}
+
+.note .table-like .row {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  border-top: 1px solid var(--line);
+}
+
+.note .table-like .row:first-child {
+  border-top: 0;
+}
+
+.note .table-like .row > div {
+  padding: 8px 10px;
+}
+
+.note .table-like .head {
+  color: var(--cream);
+  background: var(--surface-strong);
+}
+
+/* 手順の流れ */
+.note .flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+
+.note .flow .step {
+  flex: 1 1 120px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--theme-radius-small);
+  background: var(--theme-bg-deep);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.note .flow .arrow {
+  color: var(--muted);
+}
+
+/* 確認問題 */
+.note .qa-options,
+.note .choices,
+.note .quiz-options {
+  margin: 0 0 14px;
+}
+
+.note .qa-options label {
+  display: block;
+  margin: 4px 0;
+}
+
+.note .qa-options input {
+  accent-color: var(--cream);
+}
+
+.note button {
+  margin: 4px 6px 4px 0;
+  padding: 7px 16px;
+  border: 1px solid var(--cream);
+  border-radius: var(--theme-radius-small);
+  color: var(--theme-ink);
+  background: var(--cream);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.note button.quiz-choice {
+  display: block;
+  width: 100%;
+  border-color: var(--line);
+  color: var(--text);
+  background: transparent;
+  text-align: left;
+  transition: border-color var(--theme-transition), background var(--theme-transition);
+}
+
+.note button.quiz-choice:hover {
+  border-color: var(--cream);
+  background: var(--theme-surface-hover);
+}
+
+/* 答えは「答えを見る」を押すまで隠す（スクリプトが表示に切り替える） */
+.note #answer {
+  display: none;
+  margin: 14px 0 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--theme-radius-small);
+  background: var(--theme-bg-deep);
+}
+
+.note #answer h3 {
+  margin-top: 0;
+}
+
+.note .correct,
+.note .answer-correct {
+  color: var(--theme-good);
+  font-weight: 700;
+}
+
+.note .wrong {
+  color: var(--theme-bad);
+  font-weight: 700;
 }
