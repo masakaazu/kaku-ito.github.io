@@ -104,7 +104,7 @@ window.SITE_CATALOG = {
       { type: "note", file: "notes/apno14.html", title: "トランザクションとACID（復旧）", desc: "ログと障害復旧", fields: [9] },
       { type: "note", file: "notes/apno15.html", title: "情報セキュリティのリスク対応", desc: "回避・低減・移転・保有", fields: [11] },
 
-      { type: "terms", file: "terms/01.html", title: "基礎理論 用語集", desc: "離散数学・応用数学・情報に関する理論・通信に関する理論・計測・制御に関する理論など127語と問題24問（仮版）", fields: [1] },
+      { type: "terms", file: "terms/01.html", title: "基礎理論 用語集", desc: "離散数学・応用数学・情報に関する理論・通信に関する理論・計測・制御に関する理論など392語と、IPA過去問（令和3〜7年度）を中心にした問題43問。ア〜エ全部に解説付き", fields: [1] },
       { type: "terms", file: "terms/02.html", title: "アルゴリズムとプログラミング 用語集", desc: "データ構造・アルゴリズム・プログラミング・プログラム言語・その他の言語など100語と問題20問（仮版）", fields: [2] },
       { type: "terms", file: "terms/03.html", title: "コンピュータ構成要素 用語集", desc: "プロセッサ・メモリ・バス・入出力デバイス・入出力装置など103語と問題20問（仮版）", fields: [3] },
       { type: "terms", file: "terms/04.html", title: "システム構成要素 用語集", desc: "システムの構成・システムの評価指標など100語と問題20問（仮版）", fields: [4] },
