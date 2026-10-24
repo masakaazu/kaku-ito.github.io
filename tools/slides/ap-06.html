@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<title>応用情報 ハードウェア 図解</title>
+<title>応用情報 #6 ハードウェア 図解</title>
 <style>
 @page { size: 960px 540px; margin: 0; }
 :root {
@@ -48,87 +48,1016 @@ ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; colu
 .flow .box { flex: 1; }
 .flow .to { color: var(--navy3); font-size: 20px; }
 svg text { font-family: "IPAPGothic", sans-serif; }
-</style>
-<style>
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
-.term .box { text-align: left; font-size: 15px; padding: 7px 12px; }
-.term dl { margin: 6px 2px 0; }
-.term dd { margin: 0 0 4px; font-size: 12.5px; line-height: 1.5; }
-.term dd.pt { color: #333; }
-.term dd.words { color: var(--navy2); font-size: 11.5px; }
-.term .tag { font-size: 10.5px; padding: 0 5px; }
-.slide .cap + table { margin-bottom: 14px; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
 </style>
 </head>
 <body>
+
 <section class="slide title">
-  <div class="k">応用情報技術者試験　テクノロジ系　No.6</div>
+  <div class="k">応用情報技術者試験　テクノロジ系　#6</div>
   <h1>ハードウェア</h1>
-  <p>ハードウェア（電気・電子回路）・機械・制御・論理設計・構成部品及び要素と実装・消費電力</p>
-<div class="foot"><span>応用情報 ハードウェア</span><span>1</span></div>
+  <p>用語集まとめ ― 過去問10回分（令和3〜7年度）で出たところを中心に</p>
+  <div class="icons"><img src="img/hw/high_voltage_flat.svg" alt=""><img src="img/hw/gear_flat.svg" alt=""><img src="img/hw/control_knobs_flat.svg" alt=""><img src="img/hw/robot_flat.svg" alt=""><img src="img/hw/battery_flat.svg" alt=""><img src="img/hw/seedling_flat.svg" alt=""></div>
 </section>
 
-<section class="slide ">
-  <h1>目次</h1>
-  <ol class="toc">
-    <li>6-1 ハードウェア（電気・電子回路）（5語）</li>
-    <li>6-2 機械・制御（4語）</li>
-    <li>6-3 論理設計（4語）</li>
-    <li>6-4 構成部品及び要素と実装（4語）</li>
-    <li>6-5 消費電力（4語）</li>
-    <li>まとめ</li>
-  </ol>
-<div class="foot"><span>応用情報 ハードウェア</span><span>2</span></div>
+<section class="slide">
+  <h1>全体像<small>シラバスの5つの項目を、そのまま5章で読む</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 電気・電子回路<span>オームの法則・論理ゲート・ド・モルガン・加算器・フリップフロップ・タイミングチャート</span></div>
+      <div class="box b2">2 機械・制御<span>センサーとアクチュエーター・フィードバック制御・PWM・Hブリッジ・モータ・PLC</span></div>
+      <div class="box b2">3 構成部品及び要素と実装<span>受動部品・ダイオード・MOS・パワー半導体・FPGA・SoC・マイコンの部品・RFID</span></div>
+      <div class="box b3">4 論理設計<span>真理値表→加法標準形→論理圧縮・タイミング設計・同期式と非同期式</span></div>
+      <div class="box b4">5 消費電力<span>動的と静的・DVFS・ゲーティング・間欠動作・エネルギーハーベスティング</span></div>
+    </div>
+    <div>
+      <div class="cap">午前での出方</div>
+      <table>
+        <tr><td>問題数</td><td>毎回 <b>問20〜問25 あたりで4問前後</b>（R7春は問18〜21）。10回で41問</td></tr>
+        <tr><td>同じ問題の再出題</td><td>7組。FPGA・SoC・アクチュエーター・耐タンパ性・RSフリップフロップ・LCDの番地・タイミングチャート</td></tr>
+        <tr><td>問題の型</td><td><b>回路に0と1を入れて確かめる問題が4分の1</b>。残りは「この説明はどの部品か」の入れ替え</td></tr>
+      </table>
+      <div class="point"><b>この資料の読み方：</b>論理回路の問題は、選択肢の回路に入力を1つずつ入れれば必ず解ける。そのための表の書き方を図にした。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>6-1 ハードウェア（電気・電子回路）<small>まとめ表</small></h1>
-  <div class="cap">論理回路の真理値</div>
-  <table><thead><tr><th>A</th><th>B</th><th>AND</th><th>OR</th><th>XOR</th><th>NAND</th><th>NOR</th></tr></thead>
-  <tbody><tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td></tr><tr><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td></tr><tr><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td></tr></tbody></table>
-<div class="foot"><span>応用情報 ハードウェア</span><span>3</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/hw/bar_chart_flat.svg" alt="">4分の1は論理回路。0と1を入れて表にすれば確実に取れる</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="440" height="280" viewBox="0 0 440 280"><text x="222" y="28" font-size="12" text-anchor="end" fill="#1d1d1f">論理回路・タイミングチャート</text><rect x="232" y="15" width="170" height="20" rx="3" fill="#1f3a68"/><text x="408" y="30" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">10問</text><text x="222" y="66" font-size="12" text-anchor="end" fill="#1d1d1f">センサー・アクチュエーター・制御</text><rect x="232" y="53" width="102" height="20" rx="3" fill="#1f3a68"/><text x="340" y="68" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">6問</text><text x="222" y="104" font-size="12" text-anchor="end" fill="#1d1d1f">組込みの部品（タイマ・GPIO・D/A）</text><rect x="232" y="91" width="102" height="20" rx="3" fill="#1f3a68"/><text x="340" y="106" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">6問</text><text x="222" y="142" font-size="12" text-anchor="end" fill="#1d1d1f">無線タグ・メモリ・耐タンパ性</text><rect x="232" y="129" width="102" height="20" rx="3" fill="#1f3a68"/><text x="340" y="144" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">6問</text><text x="222" y="180" font-size="12" text-anchor="end" fill="#1d1d1f">半導体素子・受動部品</text><rect x="232" y="167" width="85" height="20" rx="3" fill="#5b80bf"/><text x="323" y="182" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">5問</text><text x="222" y="218" font-size="12" text-anchor="end" fill="#1d1d1f">FPGA・HDL・SoC</text><rect x="232" y="205" width="85" height="20" rx="3" fill="#5b80bf"/><text x="323" y="220" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">5問</text><text x="222" y="256" font-size="12" text-anchor="end" fill="#1d1d1f">消費電力</text><rect x="232" y="243" width="51" height="20" rx="3" fill="#5b80bf"/><text x="289" y="258" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">3問</text></svg>
+      <div style="font-size:11px;color:#6e6e73">令和3年度春期〜令和7年度秋期の41問を、論点ごとに数えた（同じ問題も1問ずつ数えた）</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:32%">論点</th><th>押さえること</th></tr>
+        <tr><td>論理回路</td><td>NANDは「全部1のときだけ0」。チャートは区切りごとに真理値表に直す</td></tr>
+        <tr><td>入力と出力の部品</td><td>センサー＝物理量→電気、アクチュエーター＝エネルギー→動き。比べて決めるのはコントローラー</td></tr>
+        <tr><td>組込みの計算</td><td>16進数は10進数に直す。分周したクロックの1周期×カウント数</td></tr>
+        <tr><td>半導体</td><td>MOS＝金属・酸化物・半導体、ツェナー＝定電圧、インバータ＝直流→交流</td></tr>
+        <tr><td>カスタムIC</td><td>FPGAは実装後に書換え可、ASSPは分野向けの固定品、SoCは1チップ、SiPは1パッケージ</td></tr>
+        <tr><td>消費電力</td><td>直列の電力は電圧の比。間欠動作は「電気の量÷時間」で平均を出す</td></tr>
+      </table>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>6-1 ハードウェア（電気・電子回路）<small>回路の基本</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">NAND回路<span>NAND Gate</span></div><dl><dd>ANDの結果を反転させる回路</dd><dd class="pt"><span class="tag">ポイント</span>NANDだけでどんな論理回路も作れる</dd></dl></div><div class="term"><div class="box b1">フリップフロップ<span>Flip-flop</span></div><dl><dd>1ビットの情報を保持できる順序回路</dd><dd class="pt"><span class="tag">ポイント</span>SRAMやレジスタに使う</dd></dl></div><div class="term"><div class="box b1">組合せ回路・順序回路<span>Combinational / Sequential Circuit</span></div><dl><dd>組合せ回路は今の入力だけで出力が決まる回路、順序回路は過去の状態も出力に影響する回路</dd></dl></div><div class="term"><div class="box b1">半加算器・全加算器<span>Half Adder / Full Adder</span></div><dl><dd>半加算器は2ビットを足して和と桁上がりを出す回路（XORとAND）、全加算器は下の桁からの桁上がりも足す回路</dd></dl></div><div class="term"><div class="box b1">半導体<span>Semiconductor</span></div><dl><dd>電気を通す導体と通さない絶縁体の中間の性質をもつ物質</dd><dd class="pt"><span class="tag">ポイント</span>トランジスタやICの材料</dd></dl></div></div>
-<div class="foot"><span>応用情報 ハードウェア</span><span>4</span></div>
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/motherboard.png" alt=""><img src="img/irasutoya/cpu.png" alt=""><img src="img/irasutoya/calculator.png" alt=""><img src="img/irasutoya/binary.png" alt=""></div>
+  <div class="k">第1章</div>
+  <h1>電気・電子回路</h1>
+  <p>電圧・電流・電力 ／ 論理ゲート ／ ド・モルガンの法則 ／ 加算器と多数決 ／ フリップフロップ ／ タイミングチャート ／ エッジの検出</p>
 </section>
 
-<section class="slide ">
-  <h1>6-2 機械・制御<small>機械を動かす</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">アクチュエータ<span>Actuator</span></div><dl><dd>電気などの信号を受けて、実際に動きを生み出す装置</dd><dd class="pt"><span class="tag">例</span>モータ、油圧シリンダ</dd></dl></div><div class="term"><div class="box b1">センサ<span>Sensor</span></div><dl><dd>温度・光・加速度などの物理量を測って、電気信号に変える装置</dd></dl></div><div class="term"><div class="box b1">ステッピングモータ<span>Stepping Motor</span></div><dl><dd>パルス信号1つで決まった角度だけ回るモータ</dd><dd class="pt"><span class="tag">ポイント</span>位置を正確に決めやすい</dd></dl></div><div class="term"><div class="box b1">PWM<span>ぴーだぶりゅーえむ / Pulse Width Modulation</span></div><dl><dd>パルスのオンの時間の割合を変えて、モータの速さなどを調整する方式</dd><dd class="words">Pulse＝パルス／Width＝幅／Modulation＝変調</dd></dl></div></div>
-<div class="foot"><span>応用情報 ハードウェア</span><span>5</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/hw/high_voltage_flat.svg" alt="">直列なら電流は共通で電圧を分け合う。式は V＝IR と P＝VI の2つ</h1>
+  <div class="cols">
+    <div><svg width="420" height="240" viewBox="0 0 420 240"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<rect x="40" y="30" width="300" height="170" rx="4" fill="none" stroke="#1f3a68" stroke-width="2.2"/>
+<rect x="20" y="90" width="40" height="50" fill="#fff" stroke="none"/>
+<line x1="26" y1="104" x2="54" y2="104" stroke="#1f3a68" stroke-width="3"/><line x1="32" y1="120" x2="48" y2="120" stroke="#1f3a68" stroke-width="3"/><text x="16" y="100" font-size="12" text-anchor="end" fill="#1f3a68">＋</text><text x="10" y="160" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">電源 10V</text>
+<rect x="160" y="18" width="70" height="24" fill="#fff" stroke="#1f3a68" stroke-width="2"/><text x="195" y="12" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">抵抗 R</text>
+<path d="M330,90 L350,90 L340,110 Z" fill="#b25000" transform="translate(0,0)"/><line x1="328" y1="110" x2="352" y2="110" stroke="#b25000" stroke-width="2.4"/>
+<rect x="320" y="80" width="40" height="40" fill="none" stroke="none"/><text x="366" y="104" font-size="12" text-anchor="start" fill="#b25000" font-weight="700">LED</text>
+<text x="195" y="66" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">8V（10－2）</text><text x="380" y="128" font-size="12" text-anchor="start" fill="#b25000" font-weight="700">2V</text>
+<text x="190" y="186" font-size="12" text-anchor="middle" fill="#5b80bf" font-weight="700">電流はどこも同じ I</text><line x1="120" y1="200" x2="260" y2="200" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/>
+<text x="195" y="232" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">R ＝ 8V ÷ 10mA ＝ 800Ω</text>
+</svg></div>
+    <div>
+      <table>
+        <tr><th style="width:24%">量</th><th>意味</th><th style="width:22%">単位</th></tr>
+        <tr><td>電圧 V</td><td>電気を流そうとする力（水位の差）</td><td>ボルト V</td></tr>
+        <tr><td>電流 I</td><td>1秒に流れる電気の量</td><td>アンペア A</td></tr>
+        <tr><td>抵抗 R</td><td>流れにくさ。<b>V＝I×R</b></td><td>オーム Ω</td></tr>
+        <tr><td>電力 P</td><td>1秒あたりの仕事。<b>P＝V×I</b></td><td>ワット W</td></tr>
+      </table>
+      <div class="point"><b>R7秋 問20</b>：10Vの電源・LED（2V）・抵抗の直列で、LEDの電力の割合は？電流が共通なので<b>電力の比＝電圧の比</b>。2÷10＝<b>20％</b>。残り80％は抵抗で熱になる。</div>
+      <div class="point">交流（コンセント）はトランスで電圧を変えやすい。コンピュータの中は直流で動く。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>6-3 論理設計<small>論理の組立て</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">論理式の簡単化<span>Logic Simplification</span></div><dl><dd>ブール代数やカルノー図を使って、論理式を短くすること</dd><dd class="pt"><span class="tag">ポイント</span>回路の部品が減る</dd></dl></div><div class="term"><div class="box b1">FPGA<span>えふぴーじーえー / Field Programmable Gate Array</span></div><dl><dd>買った後に利用者が論理回路を書き換えられるIC</dd><dd class="words">Field＝現場で／Programmable＝プログラムできる／Gate Array＝ゲートの並び</dd></dl></div><div class="term"><div class="box b1">ASIC<span>えーしっく / Application Specific Integrated Circuit</span></div><dl><dd>特定の用途向けに設計されたIC</dd><dd class="pt"><span class="tag">ポイント</span>大量生産すると安く速い</dd><dd class="words">Application Specific＝特定用途向け／Integrated Circuit＝集積回路</dd></dl></div><div class="term"><div class="box b1">SoC<span>えすおーしー / System on a Chip</span></div><dl><dd>CPU・メモリ・入出力などシステムの主な機能を1つのチップにまとめたもの</dd><dd class="words">System＝システム／on a Chip＝1つのチップの上に</dd></dl></div></div>
-<div class="foot"><span>応用情報 ハードウェア</span><span>6</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/hw/puzzle_piece_flat.svg" alt="">ゲートは「出力が1になる条件」で覚える。丸（バブル）は反転の印</h1>
+  <div class="cols">
+    <div>
+      <svg width="430" height="150" viewBox="0 0 430 150"><path d="M40,16 L58.0,16 A16.0,16.0 0 0 1 58.0,48 L40,48 Z" fill="#fff" stroke="#1f3a68" stroke-width="1.8"/><line x1="24" y1="26" x2="46" y2="26" stroke="#1f3a68" stroke-width="1.6"/><line x1="24" y1="42" x2="46" y2="42" stroke="#1f3a68" stroke-width="1.6"/><line x1="74.0" y1="32" x2="88.0" y2="32" stroke="#1f3a68" stroke-width="1.6"/><text x="68" y="68" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">AND</text><path d="M180,16 Q193.2,32.0 180,48 Q206.4,48 218,32.0 Q206.4,16 180,16 Z" fill="#fff" stroke="#1f3a68" stroke-width="1.8"/><line x1="164" y1="26" x2="186" y2="26" stroke="#1f3a68" stroke-width="1.6"/><line x1="164" y1="42" x2="186" y2="42" stroke="#1f3a68" stroke-width="1.6"/><line x1="218" y1="32" x2="232" y2="32" stroke="#1f3a68" stroke-width="1.6"/><text x="208" y="68" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">OR</text><path d="M320,16 L338.0,16 A16.0,16.0 0 0 1 338.0,48 L320,48 Z" fill="#fff" stroke="#1f3a68" stroke-width="1.8"/><circle cx="358.0" cy="32.0" r="4" fill="#fff" stroke="#1f3a68" stroke-width="1.8"/><line x1="304" y1="26" x2="326" y2="26" stroke="#1f3a68" stroke-width="1.6"/><line x1="304" y1="42" x2="326" y2="42" stroke="#1f3a68" stroke-width="1.6"/><line x1="362.0" y1="32" x2="376.0" y2="32" stroke="#1f3a68" stroke-width="1.6"/><text x="348" y="68" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">NAND</text><path d="M40,86 Q53.2,102.0 40,118 Q66.4,118 78,102.0 Q66.4,86 40,86 Z" fill="#fff" stroke="#1f3a68" stroke-width="1.8"/><circle cx="82" cy="102.0" r="4" fill="#fff" stroke="#1f3a68" stroke-width="1.8"/><line x1="24" y1="96" x2="46" y2="96" stroke="#1f3a68" stroke-width="1.6"/><line x1="24" y1="112" x2="46" y2="112" stroke="#1f3a68" stroke-width="1.6"/><line x1="86" y1="102" x2="100" y2="102" stroke="#1f3a68" stroke-width="1.6"/><text x="68" y="138" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">NOR</text><path d="M180,86 Q193.2,102.0 180,118 Q206.4,118 218,102.0 Q206.4,86 180,86 Z" fill="#fff" stroke="#1f3a68" stroke-width="1.8"/><path d="M174,86 Q187.2,102.0 174,118" fill="none" stroke="#1f3a68" stroke-width="1.8"/><line x1="164" y1="96" x2="180" y2="96" stroke="#1f3a68" stroke-width="1.6"/><line x1="164" y1="112" x2="180" y2="112" stroke="#1f3a68" stroke-width="1.6"/><line x1="218" y1="102" x2="232" y2="102" stroke="#1f3a68" stroke-width="1.6"/><text x="208" y="138" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">XOR</text><path d="M320,86 Q333.2,102.0 320,118 Q346.4,118 358,102.0 Q346.4,86 320,86 Z" fill="#fff" stroke="#1f3a68" stroke-width="1.8"/><path d="M314,86 Q327.2,102.0 314,118" fill="none" stroke="#1f3a68" stroke-width="1.8"/><circle cx="362" cy="102.0" r="4" fill="#fff" stroke="#1f3a68" stroke-width="1.8"/><line x1="304" y1="96" x2="320" y2="96" stroke="#1f3a68" stroke-width="1.6"/><line x1="304" y1="112" x2="320" y2="112" stroke="#1f3a68" stroke-width="1.6"/><line x1="366" y1="102" x2="380" y2="102" stroke="#1f3a68" stroke-width="1.6"/><text x="348" y="138" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">XNOR</text></svg>
+      <table class="mini">
+        <tr><th>A, B →</th><th>0,0</th><th>0,1</th><th>1,0</th><th>1,1</th></tr>
+        <tr><td><b>AND</b></td><td style="text-align:center;">0</td><td style="text-align:center;">0</td><td style="text-align:center;">0</td><td style="text-align:center;color:#b25000;font-weight:700">1</td></tr><tr><td><b>OR</b></td><td style="text-align:center;">0</td><td style="text-align:center;color:#b25000;font-weight:700">1</td><td style="text-align:center;color:#b25000;font-weight:700">1</td><td style="text-align:center;color:#b25000;font-weight:700">1</td></tr><tr><td><b>NAND</b></td><td style="text-align:center;color:#b25000;font-weight:700">1</td><td style="text-align:center;color:#b25000;font-weight:700">1</td><td style="text-align:center;color:#b25000;font-weight:700">1</td><td style="text-align:center;">0</td></tr><tr><td><b>NOR</b></td><td style="text-align:center;color:#b25000;font-weight:700">1</td><td style="text-align:center;">0</td><td style="text-align:center;">0</td><td style="text-align:center;">0</td></tr><tr><td><b>XOR</b></td><td style="text-align:center;">0</td><td style="text-align:center;color:#b25000;font-weight:700">1</td><td style="text-align:center;color:#b25000;font-weight:700">1</td><td style="text-align:center;">0</td></tr><tr><td><b>XNOR</b></td><td style="text-align:center;color:#b25000;font-weight:700">1</td><td style="text-align:center;">0</td><td style="text-align:center;">0</td><td style="text-align:center;color:#b25000;font-weight:700">1</td></tr>
+      </table>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:22%">ゲート</th><th>1になるのは</th></tr>
+        <tr><td>AND</td><td><b>全部1</b>のときだけ（スイッチの直列）</td></tr>
+        <tr><td>OR</td><td>どれか1つでも1（スイッチの並列）</td></tr>
+        <tr><td>NAND</td><td>どれか1つでも0。<b>全部1のときだけ0</b></td></tr>
+        <tr><td>NOR</td><td><b>全部0</b>のときだけ</td></tr>
+        <tr><td>XOR</td><td>2つが<b>違う</b>とき（桁上げなしの和）</td></tr>
+        <tr><td>XNOR</td><td>2つが<b>同じ</b>とき（一致回路）</td></tr>
+      </table>
+      <div class="point">AND・ORの記号の出口に丸が付くとNAND・NOR。入口側に弧がもう1本あるのがXOR。<b>NANDだけ</b>（またはNORだけ）でどんな回路も作れる。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>6-4 構成部品及び要素と実装<small>部品と実装</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">組込みシステム<span>Embedded System</span></div><dl><dd>家電や機械に組み込まれ、特定の機能を制御するコンピュータシステム</dd><dd class="pt"><span class="tag">ポイント</span>リアルタイムOSを使うことが多い</dd></dl></div><div class="term"><div class="box b1">ウォッチドッグタイマ<span>Watchdog Timer</span></div><dl><dd>一定時間内にプログラムから信号が来ないと、異常とみなしてシステムをリセットするしくみ</dd><dd class="pt"><span class="tag">ポイント</span>組込みシステムの暴走対策</dd></dl></div><div class="term"><div class="box b1">ファームウェア<span>Firmware</span></div><dl><dd>機器のROMやフラッシュメモリに書き込まれ、ハードウェアを直接制御するソフトウェア</dd></dl></div><div class="term"><div class="box b1">IoTデバイス<span>IoT Device</span></div><dl><dd>ネットワークにつながり、センサの情報を送ったり制御を受けたりする機器</dd><dd class="pt"><span class="tag">ポイント</span>省電力・小型が求められる</dd></dl></div></div>
-<div class="foot"><span>応用情報 ハードウェア</span><span>7</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/hw/repeat_button_flat.svg" alt="">否定を外すと「・」と「＋」が入れ替わる。入力を反転したNANDはOR</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R5春 問21：NANDだけで作った回路の出力Z</div>
+      <svg width="420" height="190" viewBox="0 0 420 190"><path d="M70,20 L88.0,20 A16.0,16.0 0 0 1 88.0,52 L70,52 Z" fill="#fff" stroke="#1f3a68" stroke-width="1.8"/><circle cx="108.0" cy="36.0" r="4" fill="#fff" stroke="#1f3a68" stroke-width="1.8"/><path d="M70,110 L88.0,110 A16.0,16.0 0 0 1 88.0,142 L70,142 Z" fill="#fff" stroke="#1f3a68" stroke-width="1.8"/><circle cx="108.0" cy="126.0" r="4" fill="#fff" stroke="#1f3a68" stroke-width="1.8"/><path d="M210,62 L228.0,62 A16.0,16.0 0 0 1 228.0,94 L210,94 Z" fill="#fff" stroke="#1f3a68" stroke-width="1.8"/><circle cx="248.0" cy="78.0" r="4" fill="#fff" stroke="#1f3a68" stroke-width="1.8"/>
+<text x="20" y="44" font-size="14" text-anchor="middle" fill="#1f3a68" font-weight="700">X</text><line x1="30" y1="39" x2="50" y2="39" stroke="#1f3a68" stroke-width="1.6"/><line x1="50" y1="30" x2="50" y2="46" stroke="#9aa7bd" stroke-width="1.6"/><line x1="50" y1="30" x2="70" y2="30" stroke="#1f3a68" stroke-width="1.6"/><line x1="50" y1="46" x2="70" y2="46" stroke="#1f3a68" stroke-width="1.6"/>
+<text x="20" y="134" font-size="14" text-anchor="middle" fill="#1f3a68" font-weight="700">Y</text><line x1="30" y1="129" x2="50" y2="129" stroke="#1f3a68" stroke-width="1.6"/><line x1="50" y1="120" x2="50" y2="136" stroke="#9aa7bd" stroke-width="1.6"/><line x1="50" y1="120" x2="70" y2="120" stroke="#1f3a68" stroke-width="1.6"/><line x1="50" y1="136" x2="70" y2="136" stroke="#1f3a68" stroke-width="1.6"/>
+<line x1="112.0" y1="36" x2="180" y2="36" stroke="#1f3a68" stroke-width="1.6"/><line x1="180" y1="36" x2="180" y2="72" stroke="#9aa7bd" stroke-width="1.6"/><line x1="180" y1="72" x2="210" y2="72" stroke="#1f3a68" stroke-width="1.6"/>
+<line x1="112.0" y1="126" x2="180" y2="126" stroke="#1f3a68" stroke-width="1.6"/><line x1="180" y1="126" x2="180" y2="88" stroke="#9aa7bd" stroke-width="1.6"/><line x1="180" y1="88" x2="210" y2="88" stroke="#1f3a68" stroke-width="1.6"/>
+<line x1="252.0" y1="78" x2="300" y2="78" stroke="#1f3a68" stroke-width="1.6"/><text x="306" y="83" font-size="14" text-anchor="start" fill="#1f3a68" font-weight="700">Z</text>
+<text x="140" y="22" font-size="13" text-anchor="start" fill="#b25000" font-weight="700">X̄</text><text x="140" y="112" font-size="13" text-anchor="start" fill="#b25000" font-weight="700">Ȳ</text>
+<text x="210" y="170" font-size="14" text-anchor="middle" fill="#b25000" font-weight="700">Z ＝ ¬( X̄ ・ Ȳ ) ＝ X ＋ Y</text>
+</svg>
+      <div class="point">2本の入力を同じ信号につないだNANDは<b>NOT</b>と同じ。1段目で X̄・Ȳ ができ、最後のNANDでまとめると <b>X＋Y</b>（イ）。</div>
+    </div>
+    <div>
+      <div class="formula" style="font-size:17px">¬(A・B) ＝ Ā ＋ B̄<br>¬(A＋B) ＝ Ā ・ B̄</div>
+      <table>
+        <tr><th style="width:30%">読み替え</th><th>意味</th></tr>
+        <tr><td>NAND</td><td>入力を反転した<b>OR</b>と同じ（1つでも0なら1）</td></tr>
+        <tr><td>NOR</td><td>入力を反転した<b>AND</b>と同じ（全部0なら1）</td></tr>
+        <tr><td>NAND＋NAND</td><td>2段で<b>AND・OR</b>の2段と同じ働き（加法標準形をそのまま作れる）</td></tr>
+      </table>
+      <div class="point warn">上線の長さに注意。¬(X・Y) は全体を1本で反転（NAND）、X̄・Ȳ は別々に反転（NOR）。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>6-5 消費電力<small>電力を減らす</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">低消費電力化<span>Low Power Design</span></div><dl><dd>回路が使う電力を減らす工夫</dd><dd class="pt"><span class="tag">ポイント</span>動的電力は「電圧の2乗×周波数」に比例するので、電圧を下げる効果が大きい</dd></dl></div><div class="term"><div class="box b1">DVFS<span>でぃーぶいえふえす / Dynamic Voltage and Frequency Scaling</span></div><dl><dd>負荷に合わせて電圧とクロック周波数を変え、電力を減らす技術</dd><dd class="words">Dynamic＝動的な／Voltage＝電圧／Frequency＝周波数／Scaling＝調整</dd></dl></div><div class="term"><div class="box b1">クロックゲーティング<span>Clock Gating</span></div><dl><dd>使っていない回路へのクロックを止めて、電力を減らす技術</dd></dl></div><div class="term"><div class="box b1">パワーゲーティング<span>Power Gating</span></div><dl><dd>使っていない回路への電源そのものを切る技術</dd><dd class="pt"><span class="tag">ポイント</span>漏れ電流も減らせる</dd></dl></div></div>
-<div class="foot"><span>応用情報 ハードウェア</span><span>8</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/hw/abacus_flat.svg" alt="">足し算の桁上がりはAND、和はXOR。多数決は「2つずつのAND」をOR</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R3秋 問22：半加算器</div>
+      <svg width="300" height="130" viewBox="0 0 300 130"><path d="M80,14 L98.0,14 A16.0,16.0 0 0 1 98.0,46 L80,46 Z" fill="#fff" stroke="#1f3a68" stroke-width="1.8"/><path d="M80,74 Q93.2,90.0 80,106 Q106.4,106 118,90.0 Q106.4,74 80,74 Z" fill="#fff" stroke="#1f3a68" stroke-width="1.8"/><path d="M74,74 Q87.2,90.0 74,106" fill="none" stroke="#1f3a68" stroke-width="1.8"/>
+<text x="14" y="28" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">A</text><text x="14" y="62" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">B</text>
+<line x1="24" y1="24" x2="80" y2="24" stroke="#1f3a68" stroke-width="1.6"/><line x1="24" y1="58" x2="60" y2="58" stroke="#1f3a68" stroke-width="1.6"/><line x1="60" y1="58" x2="60" y2="40" stroke="#9aa7bd" stroke-width="1.6"/><line x1="60" y1="40" x2="80" y2="40" stroke="#1f3a68" stroke-width="1.6"/>
+<line x1="44" y1="24" x2="44" y2="84" stroke="#9aa7bd" stroke-width="1.6"/><line x1="44" y1="84" x2="80" y2="84" stroke="#1f3a68" stroke-width="1.6"/><line x1="60" y1="58" x2="60" y2="100" stroke="#9aa7bd" stroke-width="1.6"/><line x1="60" y1="100" x2="80" y2="100" stroke="#1f3a68" stroke-width="1.6"/>
+<circle cx="44" cy="24" r="3" fill="#1f3a68"/><circle cx="60" cy="58" r="3" fill="#1f3a68"/>
+<line x1="114.0" y1="30" x2="200" y2="30" stroke="#1f3a68" stroke-width="1.6"/><text x="206" y="35" font-size="12" text-anchor="start" fill="#1f3a68" font-weight="700">X 桁上がり</text>
+<line x1="118" y1="90" x2="200" y2="90" stroke="#1f3a68" stroke-width="1.6"/><text x="206" y="95" font-size="12" text-anchor="start" fill="#1f3a68" font-weight="700">Y 和</text>
+</svg>
+      <table class="mini"><tr><th>A＋B</th><th>0＋0</th><th>0＋1</th><th>1＋0</th><th>1＋1</th></tr><tr><td>X（桁上がり）</td><td>0</td><td>0</td><td>0</td><td><b>1</b></td></tr><tr><td>Y（和）</td><td>0</td><td><b>1</b></td><td><b>1</b></td><td>0</td></tr></table>
+      <div class="point">下の桁からの桁上がりも足せるのが<b>全加算器</b>（半加算器2つ＋OR）。</div>
+    </div>
+    <div>
+      <div class="cap">R5秋 問23：3入力多数決回路</div>
+      <div class="formula" style="font-size:16px">Y ＝ A・B ＋ B・C ＋ C・A</div>
+      <table>
+        <tr><th>選択肢</th><th>1段目</th><th>まとめ</th><th>結果</th></tr>
+        <tr><td><b>ア</b></td><td>AND×3</td><td>OR→OR</td><td><b>多数決</b></td></tr>
+        <tr><td>イ</td><td>XOR×3</td><td>OR→OR</td><td>全部同じとき以外1</td></tr>
+        <tr><td>ウ</td><td>OR×3</td><td>AND→NAND</td><td>多数決の<b>反転</b></td></tr>
+        <tr><td>エ</td><td>XOR×3</td><td>AND→NAND</td><td>常に1</td></tr>
+      </table>
+      <div class="point">迷ったら <b>A＝B＝C＝1</b> と <b>A＝1、B＝C＝0</b> の2通りを入れる。それだけでア以外が外れる。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>まとめ<small>この分野で覚える用語</small></h1>
-  <table><thead><tr><th style="width:30%">小分類</th><th>用語</th></tr></thead><tbody>
-<tr><td>6-1 ハードウェア（電気・電子回路）</td><td>NAND回路・フリップフロップ・組合せ回路・順序回路・半加算器・全加算器・半導体</td></tr>
-<tr><td>6-2 機械・制御</td><td>アクチュエータ・センサ・ステッピングモータ・PWM</td></tr>
-<tr><td>6-3 論理設計</td><td>論理式の簡単化・FPGA・ASIC・SoC</td></tr>
-<tr><td>6-4 構成部品及び要素と実装</td><td>組込みシステム・ウォッチドッグタイマ・ファームウェア・IoTデバイス</td></tr>
-<tr><td>6-5 消費電力</td><td>低消費電力化・DVFS・クロックゲーティング・パワーゲーティング</td></tr>
-  </tbody></table>
-<div class="foot"><span>応用情報 ハードウェア</span><span>9</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/hw/link_flat.svg" alt="">一致回路は XY＋X̄Ȳ。4通りの入力を全部入れて確かめる</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R4秋 問23：XとYが同じときだけZ＝1</div>
+      <div class="point" style="margin-top:0">どの選択肢も「上＝XとY」「下＝X̄とȲ」を同じ種類のゲートに入れ、3つ目のゲートでまとめる。</div>
+      <table>
+        <tr><th>選択肢</th><th>ゲート</th><th>式</th><th>働き</th></tr>
+        <tr><td>ア</td><td>AND・AND→AND</td><td>XY・X̄Ȳ</td><td>常に0</td></tr>
+        <tr><td>イ</td><td>OR・OR→OR</td><td>(X＋Y)＋(X̄＋Ȳ)</td><td>常に1</td></tr>
+        <tr><td><b>ウ</b></td><td>NAND・NAND→NAND</td><td><b>XY＋X̄Ȳ</b></td><td><b>一致（XNOR）</b></td></tr>
+        <tr><td>エ</td><td>NOR・NOR→NOR</td><td>(X＋Y)(X̄＋Ȳ)</td><td>不一致（XOR）</td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="mini" style="text-align:center">
+        <tr><th>X</th><th>Y</th><th>XY</th><th>X̄Ȳ</th><th>ウのZ</th><th>エのZ</th></tr>
+        <tr><td>0</td><td>0</td><td>0</td><td>1</td><td><b>1</b></td><td>0</td></tr>
+        <tr><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+        <tr><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+        <tr><td>1</td><td>1</td><td>1</td><td>0</td><td><b>1</b></td><td>0</td></tr>
+      </table>
+      <div class="point">NAND→NANDの2段は、AND→ORの2段と同じ（ド・モルガン）。だからウは「XYか X̄Ȳ のどちらかが1なら1」。</div>
+      <div class="point warn">ア・イのように<b>いつも同じ値</b>になる回路は、1行目と4行目を入れるだけで見抜ける。</div>
+    </div>
+  </div>
 </section>
-</body>
-</html>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/stopwatch_flat.svg" alt="">タイミングチャートは、区切りごとに縦に読んで真理値表に直す</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R6春 問21・R7秋 問22（同じ問題）</div>
+      <svg width="360" height="160" viewBox="0 0 360 160"><line x1="72" y1="10" x2="72" y2="150" stroke="#c7cfdc" stroke-width="1" stroke-dasharray="4 3"/><line x1="118" y1="10" x2="118" y2="150" stroke="#c7cfdc" stroke-width="1" stroke-dasharray="4 3"/><line x1="164" y1="10" x2="164" y2="150" stroke="#c7cfdc" stroke-width="1" stroke-dasharray="4 3"/><line x1="210" y1="10" x2="210" y2="150" stroke="#c7cfdc" stroke-width="1" stroke-dasharray="4 3"/><line x1="256" y1="10" x2="256" y2="150" stroke="#c7cfdc" stroke-width="1" stroke-dasharray="4 3"/><line x1="302" y1="10" x2="302" y2="150" stroke="#c7cfdc" stroke-width="1" stroke-dasharray="4 3"/><polyline points="26,42 72,42 72,42 118,42 118,20 164,20 164,42 210,42 210,20 256,20 256,42 302,42 302,20 348,20" fill="none" stroke="#1f3a68" stroke-width="2.2"/><text x="18" y="36.0" font-size="13" text-anchor="end" fill="#1f3a68" font-weight="700">A</text><polyline points="26,70 72,70 72,92 118,92 118,70 164,70 164,92 210,92 210,70 256,70 256,92 302,92 302,92 348,92" fill="none" stroke="#1f3a68" stroke-width="2.2"/><text x="18" y="86.0" font-size="13" text-anchor="end" fill="#1f3a68" font-weight="700">B</text><polyline points="26,120 72,120 72,120 118,120 118,142 164,142 164,120 210,120 210,142 256,142 256,120 302,120 302,120 348,120" fill="none" stroke="#b25000" stroke-width="2.2"/><text x="18" y="136.0" font-size="13" text-anchor="end" fill="#1f3a68" font-weight="700">Y</text></svg>
+      <table class="mini" style="text-align:center"><tr><th>AB→Y</th><td>01→<b>1</b></td><td>00→<b>1</b></td><td>11→<b>0</b></td><td>00→<b>1</b></td><td>11→<b>0</b></td><td>00→<b>1</b></td><td>10→<b>1</b></td></tr></table>
+      <div class="point">Yが0になるのは <b>A＝1、B＝1</b> のときだけ → <b>NAND</b>（ウ）。XOR・XNOR・NORは、(0,0) や (0,1) の区切りで合わない。</div>
+    </div>
+    <div>
+      <div class="cap">R6秋 問21：スイッチA・Bを直列にしたLED回路</div>
+      <table>
+        <tr><th>選択肢</th><th>チャートから読める働き</th></tr>
+        <tr><td>ア</td><td>どちらか1でY＝1 → OR（スイッチの並列）</td></tr>
+        <tr><td>イ</td><td>両方0のときだけY＝1 → NOR</td></tr>
+        <tr><td><b>ウ</b></td><td><b>両方1のときだけY＝1 → AND</b></td></tr>
+        <tr><td>エ</td><td>両方1のときだけY＝0 → NAND</td></tr>
+      </table>
+      <div class="point">スイッチを<b>直列</b>につなぐと、両方オンのときだけ電流が流れる＝AND。並列ならOR。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/card_index_dividers_flat.svg" alt="">フリップフロップは出力を入力に戻して1ビットを覚える。順序回路の部品</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R3春 問25・R5秋 問22（同じ問題）：X＝¬(S・Y)、Y＝¬(R・X)</div>
+      <table class="mini" style="text-align:center">
+        <tr><th>手順</th><th>S</th><th>R</th><th>X＝¬(S・Y)</th><th>Y＝¬(R・X)</th></tr>
+        <tr><td>はじめ</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+        <tr><td>Sを0に</td><td><b>0</b></td><td>1</td><td>¬(0・1)＝<b>1</b></td><td>¬(1・1)＝<b>0</b></td></tr>
+        <tr><td>Sを1に戻す</td><td>1</td><td>1</td><td>¬(1・0)＝<b>1</b></td><td>¬(1・1)＝<b>0</b></td></tr>
+      </table>
+      <div class="point">S＝R＝1は「<b>前の状態を保持</b>」。Sを一瞬0にするとX＝1にセットされ、戻しても <b>X＝1、Y＝0</b>（ウ）のまま。ANDの後ろにNOTがあるので、各ゲートはNAND。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:30%">種類</th><th>動き</th></tr>
+        <tr><td>RS（SRラッチ）</td><td>Sで1、Rで0を記憶。両方同時は禁止</td></tr>
+        <tr><td>D</td><td>クロックの<b>エッジの瞬間</b>のDを取り込んで保持。レジスタの部品</td></tr>
+        <tr><td>JK</td><td>RSの禁止をなくし、J＝K＝1で反転</td></tr>
+        <tr><td>T</td><td>クロックのたびに反転。<b>1段で2分周</b></td></tr>
+        <tr><td>ラッチ</td><td>許可の信号が有効な<b>間ずっと</b>通す（レベル動作）</td></tr>
+      </table>
+      <div class="point">出力が今の入力だけで決まるのが<b>組合せ回路</b>（加算器・多数決・マルチプレクサ）、過去の状態も効くのが<b>順序回路</b>（フリップフロップ・カウンタ・シフトレジスタ）。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/bell_flat.svg" alt="">押された瞬間は「今回1かつ前回0」。a・b̄ で立上りを見つける</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R7秋 問21：aが今回、bが前回の値（押す＝1）</div>
+      <svg width="400" height="166" viewBox="0 0 400 166"><line x1="76" y1="14" x2="76" y2="154" stroke="#c7cfdc" stroke-width="1" stroke-dasharray="4 3"/><line x1="126" y1="14" x2="126" y2="154" stroke="#c7cfdc" stroke-width="1" stroke-dasharray="4 3"/><line x1="176" y1="14" x2="176" y2="154" stroke="#c7cfdc" stroke-width="1" stroke-dasharray="4 3"/><line x1="226" y1="14" x2="226" y2="154" stroke="#c7cfdc" stroke-width="1" stroke-dasharray="4 3"/><line x1="276" y1="14" x2="276" y2="154" stroke="#c7cfdc" stroke-width="1" stroke-dasharray="4 3"/><line x1="326" y1="14" x2="326" y2="154" stroke="#c7cfdc" stroke-width="1" stroke-dasharray="4 3"/><polyline points="26,46 76,46 76,46 126,46 126,24 176,24 176,24 226,24 226,24 276,24 276,46 326,46 326,46 376,46" fill="none" stroke="#1f3a68" stroke-width="2.2"/><text x="18" y="40.0" font-size="13" text-anchor="end" fill="#1f3a68" font-weight="700">a</text><polyline points="26,96 76,96 76,96 126,96 126,96 176,96 176,74 226,74 226,74 276,74 276,74 326,74 326,96 376,96" fill="none" stroke="#1f3a68" stroke-width="2.2"/><text x="18" y="90.0" font-size="13" text-anchor="end" fill="#1f3a68" font-weight="700">b</text><polyline points="26,146 76,146 76,146 126,146 126,124 176,124 176,146 226,146 226,146 276,146 276,146 326,146 326,146 376,146" fill="none" stroke="#b25000" stroke-width="2.2"/><text x="18" y="140.0" font-size="13" text-anchor="end" fill="#1f3a68" font-weight="700">a・b̄</text><text x="380" y="20" font-size="10.5" text-anchor="end" fill="#6e6e73">今回</text><text x="380" y="70" font-size="10.5" text-anchor="end" fill="#6e6e73">前回</text></svg>
+      <table class="mini"><tr><th>選択肢</th><th>1になるとき</th></tr><tr><td><b>ア a・b̄</b></td><td><b>0→1（押された瞬間）</b></td></tr><tr><td>イ ā・b</td><td>1→0（放された瞬間）</td></tr><tr><td>ウ a＋b̄</td><td>押しっぱなしでも1</td></tr><tr><td>エ ā＋b</td><td>放したままでも1</td></tr></table>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:30%">言葉</th><th>意味</th></tr>
+        <tr><td>チャタリング</td><td>機械のスイッチの接点が跳ねて、一瞬オンとオフを繰り返す。数ミリ秒あけて読み直して取り除く</td></tr>
+        <tr><td>クロック</td><td>回路の動きをそろえる一定周期の信号</td></tr>
+        <tr><td>分周</td><td>クロックを数えて周波数を整数分の1にする。16MHz÷32＝0.5MHz（1周期2マイクロ秒）</td></tr>
+        <tr><td>デューティ比</td><td>1周期のうちオンの時間の割合（PWMで使う）</td></tr>
+        <tr><td>プルアップ抵抗</td><td>何もつながらない入力を1に固定して、値を定める</td></tr>
+      </table>
+    </div>
+  </div>
+  <img class="illust" src="img/irasutoya/keyboard.png" alt="" style="height:64px;bottom:36px">
+</section>
+
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/robot_arm.png" alt=""><img src="img/irasutoya/self_driving.png" alt=""><img src="img/irasutoya/conveyor.png" alt=""><img src="img/irasutoya/thermometer.png" alt=""></div>
+  <div class="k">第2章</div>
+  <h1>機械・制御</h1>
+  <p>センサーとアクチュエーター ／ フィードバック制御 ／ PID ／ PWM ／ Hブリッジ ／ モータの種類 ／ 距離のセンサー ／ PLCとラダー図</p>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/control_knobs_flat.svg" alt="">センサーで測り、コントローラーが決め、アクチュエーターが動かす</h1>
+  <div class="cols">
+    <div><svg width="430" height="200" viewBox="0 0 430 200"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<rect x="0" y="40" width="70" height="44" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="35.0" y="66.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">目標値</text>
+<circle cx="100" cy="62" r="14" fill="#fff" stroke="#1f3a68" stroke-width="2"/><text x="100" y="67" font-size="14" text-anchor="middle" fill="#1f3a68" font-weight="700">－</text>
+<rect x="140" y="40" width="90" height="44" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="185.0" y="60.0" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">コントローラー</text><text x="185.0" y="75.0" font-size="10.5" text-anchor="middle" fill="#fff">マイコン・PLC</text>
+<rect x="255" y="40" width="90" height="44" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="300.0" y="60.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">アクチュエーター</text><text x="300.0" y="75.0" font-size="10.5" text-anchor="middle" fill="#fff">モータ・ヒーター</text>
+<rect x="365" y="40" width="60" height="44" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="395.0" y="66.3" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">対象</text>
+<rect x="255" y="130" width="90" height="44" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="300.0" y="150.0" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">センサー</text><text x="300.0" y="165.0" font-size="10.5" text-anchor="middle" fill="#fff">温度・位置</text>
+<line x1="70" y1="62" x2="86" y2="62" stroke="#5b80bf" stroke-width="1.6" marker-end="url(#ar)"/><line x1="114" y1="62" x2="140" y2="62" stroke="#5b80bf" stroke-width="1.6" marker-end="url(#ar)"/><text x="126" y="54" font-size="10" text-anchor="middle" fill="#b25000" font-weight="700">偏差</text>
+<line x1="230" y1="62" x2="255" y2="62" stroke="#5b80bf" stroke-width="1.6" marker-end="url(#ar)"/><text x="242" y="34" font-size="10" text-anchor="middle" fill="#1f3a68">操作量</text><line x1="345" y1="62" x2="365" y2="62" stroke="#5b80bf" stroke-width="1.6" marker-end="url(#ar)"/>
+<line x1="395" y1="84" x2="395" y2="152" stroke="#9aa7bd" stroke-width="1.6"/><line x1="395" y1="152" x2="345" y2="152" stroke="#5b80bf" stroke-width="1.6" marker-end="url(#ar)"/><text x="400" y="120" font-size="10" text-anchor="start" fill="#1f3a68">制御量</text>
+<line x1="255" y1="152" x2="100" y2="152" stroke="#9aa7bd" stroke-width="1.6"/><line x1="100" y1="152" x2="100" y2="76" stroke="#b25000" stroke-width="1.8" marker-end="url(#ar)"/><text x="170" y="168" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">測って戻す＝フィードバック</text>
+</svg>
+      <div class="point"><b>R4春 問22・R6秋 問23</b>（同じ問題）：アクチュエーターは「エネルギー源からのパワーを、<b>回転・直進などの動き</b>に変換する」。<b>R4秋 問20</b>：「出力した電気信号を<b>力学的な運動</b>に変える」。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:30%">選択肢に出る説明</th><th>正体</th></tr>
+        <tr><td>目標と制御量を比べて操作量を出す</td><td>コントローラー</td></tr>
+        <tr><td>位置・温度などを検出し電気信号に</td><td>センサー</td></tr>
+        <tr><td>パワーを回転・直進の動きに</td><td><b>アクチュエーター</b></td></tr>
+        <tr><td>微小な電気信号を大きくする</td><td>増幅器（アンプ）</td></tr>
+        <tr><td>アナログ信号をデジタル信号に</td><td>A/Dコンバータ</td></tr>
+      </table>
+      <div class="point">変換の<b>向き</b>で区別する。物理量→電気がセンサー、電気→動きがアクチュエーター。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/level_slider_flat.svg" alt="">フィードバックは結果を測って戻す。PWMはオンの割合で強さを変える</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th style="width:30%">方式</th><th>しくみ</th></tr>
+        <tr><td>オープンループ</td><td>測らずに、決めた量だけ操作する</td></tr>
+        <tr><td>フィードバック（クローズドループ）</td><td>測った制御量と目標値の差（偏差）を小さくし続ける</td></tr>
+        <tr><td>フィードフォワード</td><td>外乱を先に測り、影響が出る前に操作を加える</td></tr>
+        <tr><td>シーケンス</td><td>決めた順序・条件で段階を進める（洗濯機・信号機）</td></tr>
+        <tr><td>PID</td><td>偏差の<b>比例・積分・微分</b>の3つで操作量を決めるフィードバック制御</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">PWM：周期は同じで、オンの時間（デューティ比）を変える</div>
+      <svg width="440" height="180" viewBox="0 0 440 180"><polyline points="50.0,20 82.0,20 82.0,42 114.0,42 114.0,42 146.0,42 146.0,42 178.0,42 178.0,20 210.0,20 210.0,42 242.0,42 242.0,42 274.0,42 274.0,42 306.0,42 306.0,20 338.0,20 338.0,42 370.0,42 370.0,42 402.0,42 402.0,42 434.0,42" fill="none" stroke="#1f3a68" stroke-width="2.2"/><text x="42" y="36.0" font-size="13" text-anchor="end" fill="#1f3a68" font-weight="700">25%</text><polyline points="50.0,80 82.0,80 82.0,80 114.0,80 114.0,102 146.0,102 146.0,102 178.0,102 178.0,80 210.0,80 210.0,80 242.0,80 242.0,102 274.0,102 274.0,102 306.0,102 306.0,80 338.0,80 338.0,80 370.0,80 370.0,102 402.0,102 402.0,102 434.0,102" fill="none" stroke="#1f3a68" stroke-width="2.2"/><text x="42" y="96.0" font-size="13" text-anchor="end" fill="#1f3a68" font-weight="700">50%</text><polyline points="50.0,140 82.0,140 82.0,140 114.0,140 114.0,140 146.0,140 146.0,162 178.0,162 178.0,140 210.0,140 210.0,140 242.0,140 242.0,140 274.0,140 274.0,162 306.0,162 306.0,140 338.0,140 338.0,140 370.0,140 370.0,140 402.0,140 402.0,162 434.0,162" fill="none" stroke="#1f3a68" stroke-width="2.2"/><text x="42" y="156.0" font-size="13" text-anchor="end" fill="#1f3a68" font-weight="700">75%</text></svg>
+      <div class="point">平均の電圧＝電源電圧×デューティ比。12Vで25％なら<b>3V</b>。電圧そのものを下げるより熱の損失が少なく、モータの速さやLEDの明るさを変えるのに使う。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/automobile_flat.svg" alt="">Hブリッジは対角の2つを入れて電流の向きを決める。逆転はS3とS2</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R3春 問23：＋端子→－端子で正転。逆転させる組合せは？</div>
+      <svg width="420" height="260" viewBox="0 0 420 260"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<text x="210" y="16" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">＋V</text><line x1="210" y1="22" x2="210" y2="34" stroke="#9aa7bd" stroke-width="1.6"/><line x1="90" y1="34" x2="330" y2="34" stroke="#1f3a68" stroke-width="2"/>
+<line x1="90" y1="34" x2="90" y2="230" stroke="#1f3a68" stroke-width="2"/><line x1="330" y1="34" x2="330" y2="230" stroke="#1f3a68" stroke-width="2"/><line x1="90" y1="230" x2="330" y2="230" stroke="#1f3a68" stroke-width="2"/><text x="210" y="250" font-size="11" text-anchor="middle" fill="#1f3a68">グラウンド</text>
+<rect x="72" y="70" width="36" height="34" rx="6" fill="#fff" stroke="#1f3a68" stroke-width="1.5"/><text x="90.0" y="91.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">S1</text><rect x="72" y="166" width="36" height="34" rx="6" fill="#fde7cf" stroke="#b25000" stroke-width="1.5"/><text x="90.0" y="187.3" font-size="12" text-anchor="middle" fill="#b25000" font-weight="700">S2</text>
+<rect x="312" y="70" width="36" height="34" rx="6" fill="#fde7cf" stroke="#b25000" stroke-width="1.5"/><text x="330.0" y="91.3" font-size="12" text-anchor="middle" fill="#b25000" font-weight="700">S3</text><rect x="312" y="166" width="36" height="34" rx="6" fill="#fff" stroke="#1f3a68" stroke-width="1.5"/><text x="330.0" y="187.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">S4</text>
+<line x1="90" y1="132" x2="180" y2="132" stroke="#1f3a68" stroke-width="2"/><line x1="240" y1="132" x2="330" y2="132" stroke="#1f3a68" stroke-width="2"/>
+<circle cx="210" cy="132" r="28" fill="#fff" stroke="#1f3a68" stroke-width="2.2"/><text x="210" y="138" font-size="16" text-anchor="middle" fill="#1f3a68" font-weight="700">M</text><text x="176" y="120" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">＋</text><text x="244" y="120" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">－</text>
+<path d="M318,50 L318,118 L250,118" fill="none" stroke="#b25000" stroke-width="2.6" marker-end="url(#ar)"/>
+<path d="M170,146 L102,146 L102,212" fill="none" stroke="#b25000" stroke-width="2.6" marker-end="url(#ar)"/>
+<text x="370" y="90" font-size="11" text-anchor="start" fill="#b25000" font-weight="700">A3＝High</text><text x="14" y="186" font-size="11" text-anchor="start" fill="#b25000" font-weight="700">A2＝High</text>
+</svg>
+    </div>
+    <div>
+      <table>
+        <tr><th>選択肢</th><th>導通するスイッチ</th><th>モータ</th></tr>
+        <tr><td>ア</td><td>なし</td><td>止まる</td></tr>
+        <tr><td>イ</td><td>S2・S4（下だけ）</td><td>電源につながらず回らない</td></tr>
+        <tr><td><b>ウ</b></td><td><b>S2・S3</b></td><td><b>－→＋で逆転</b></td></tr>
+        <tr><td>エ</td><td>S1・S4</td><td>＋→－で正転</td></tr>
+      </table>
+      <div class="point warn">同じ側の上下（S1とS2、S3とS4）を同時に入れると、電源とグラウンドが直結してショートする。</div>
+      <table class="mini" style="margin-top:6px">
+        <tr><th>モータ</th><th>特徴</th></tr>
+        <tr><td>DCモータ</td><td>電流の向きで回転の向き、PWMで速さ</td></tr>
+        <tr><td>ステッピング</td><td>パルス1つで決まった角度。測らずに位置決め</td></tr>
+        <tr><td>サーボ</td><td>エンコーダで測ってフィードバック</td></tr>
+        <tr><td>ブラシレスDC</td><td>接点なし。長寿命・静か</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/satellite_antenna_flat.svg" alt="">距離のセンサーは出すもので区別。LiDARは光、レーダーは電波</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th style="width:26%">センサー</th><th>出すもの</th><th>得意なこと</th></tr>
+        <tr><td><b>LiDAR</b></td><td><b>レーザー光</b>（パルス）</td><td>方向・距離・<b>形状</b>を立体的に</td></tr>
+        <tr><td>ミリ波レーダー</td><td>電波（ミリ波）</td><td>雨・霧・夜でも距離と速さ</td></tr>
+        <tr><td>超音波センサー</td><td>音（超音波）</td><td>近距離（駐車支援）</td></tr>
+        <tr><td>単眼カメラ</td><td>なし（画像）</td><td>遠近法で距離を推定</td></tr>
+      </table>
+      <div class="point"><b>R5春 問23</b>：LiDARは「レーザー光をパルス状に照射し、反射光を測って方向・距離・形状を計測する」（エ）。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:30%">センサー</th><th>測るもの</th></tr>
+        <tr><td>加速度センサー</td><td>速さの変化・重力の向き（画面の向き）</td></tr>
+        <tr><td>ジャイロセンサー</td><td>回転の速さ（姿勢・手ぶれ）</td></tr>
+        <tr><td>静電容量センサー</td><td>指が近づいたときの電気のたまり方（タッチパネル）</td></tr>
+        <tr><td>ホール素子</td><td>磁界（ふたの開閉・モータの位置）</td></tr>
+        <tr><td>サーミスタ</td><td>温度で変わる抵抗値</td></tr>
+      </table>
+      <div class="point">小さく作られた加速度・ジャイロは<b>MEMS</b>（機械の構造と回路を1つの基板に）。</div>
+    </div>
+  </div>
+  <img class="illust" src="img/irasutoya/self_driving.png" alt="" style="height:64px;bottom:36px">
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/factory_flat.svg" alt="">PLCはリレーの配線をプログラムに置き換えた装置。ラダー図で書く</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="190" viewBox="0 0 420 190">
+        <line x1="20" y1="10" x2="20" y2="180" stroke="#1f3a68" stroke-width="3"/><line x1="400" y1="10" x2="400" y2="180" stroke="#1f3a68" stroke-width="3"/>
+        <line x1="20" y1="50" x2="100" y2="50" stroke="#1f3a68" stroke-width="1.6"/><line x1="100" y1="38" x2="100" y2="62" stroke="#1f3a68" stroke-width="2"/><line x1="112" y1="38" x2="112" y2="62" stroke="#1f3a68" stroke-width="2"/><text x="106" y="30" font-size="10.5" text-anchor="middle" fill="#1f3a68">開始ボタン</text>
+        <line x1="112" y1="50" x2="200" y2="50" stroke="#1f3a68" stroke-width="1.6"/><line x1="200" y1="38" x2="200" y2="62" stroke="#1f3a68" stroke-width="2"/><line x1="212" y1="38" x2="212" y2="62" stroke="#1f3a68" stroke-width="2"/><line x1="198" y1="62" x2="214" y2="38" stroke="#b25000" stroke-width="2"/><text x="206" y="30" font-size="10.5" text-anchor="middle" fill="#b25000">停止ボタン（b接点）</text>
+        <line x1="212" y1="50" x2="320" y2="50" stroke="#1f3a68" stroke-width="1.6"/><circle cx="336" cy="50" r="14" fill="#fff" stroke="#1f3a68" stroke-width="2"/><text x="336" y="55" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">M</text><line x1="350" y1="50" x2="400" y2="50" stroke="#1f3a68" stroke-width="1.6"/><text x="336" y="82" font-size="10.5" text-anchor="middle" fill="#1f3a68">モータのリレー</text>
+        <line x1="60" y1="50" x2="60" y2="120" stroke="#1f3a68" stroke-width="1.6"/><line x1="60" y1="120" x2="100" y2="120" stroke="#1f3a68" stroke-width="1.6"/><line x1="100" y1="108" x2="100" y2="132" stroke="#1f3a68" stroke-width="2"/><line x1="112" y1="108" x2="112" y2="132" stroke="#1f3a68" stroke-width="2"/><line x1="112" y1="120" x2="150" y2="120" stroke="#1f3a68" stroke-width="1.6"/><line x1="150" y1="120" x2="150" y2="50" stroke="#1f3a68" stroke-width="1.6"/><text x="106" y="150" font-size="10.5" text-anchor="middle" fill="#1f3a68">M（自己保持）</text>
+        <text x="210" y="178" font-size="11" text-anchor="middle" fill="#6e6e73">左右の縦線の間に、接点とコイルをはしご状に並べる</text>
+      </svg>
+    </div>
+    <div>
+      <div class="cap">R7春 問19：PLCの説明</div>
+      <table>
+        <tr><th>選択肢</th><th>正体</th></tr>
+        <tr><td>偏差の比例・積分・微分の3要素</td><td>PID制御（制御の方式）</td></tr>
+        <tr><td><b>主にラダー図のシーケンスプログラム</b></td><td><b>PLC（正解イ）</b></td></tr>
+        <tr><td>アナログ信号をデジタル信号に</td><td>A/Dコンバータ</td></tr>
+        <tr><td>リレーシーケンス回路のハードウェア</td><td>PLC以前の制御（配線で作る）</td></tr>
+      </table>
+      <div class="point">PLCは<b>配線を変えずにプログラムで</b>動作を変えられる。工場の機械やエレベーター。家電など小さな機器はマイコンで制御する。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/motherboard.png" alt=""><img src="img/irasutoya/battery.png" alt=""><img src="img/irasutoya/ic_card.png" alt=""><img src="img/irasutoya/usb_memory.png" alt=""></div>
+  <div class="k">第3章</div>
+  <h1>構成部品及び要素と実装</h1>
+  <p>受動部品 ／ ダイオードの仲間 ／ MOSとCMOS ／ 光の素子 ／ パワー半導体 ／ FPGAとHDL ／ SoC ／ マイコンの部品 ／ RFIDとNFC ／ 耐タンパ性</p>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/electric_plug_flat.svg" alt="">コンデンサは交流を通し直流を止める。コイルはその逆</h1>
+  <div class="cols">
+    <div>
+      <table class="vs">
+        <tr><th style="width:22%">部品</th><th>働き</th><th>直流</th><th>交流</th></tr>
+        <tr><td>抵抗器</td><td>電流を制限・電圧を分ける</td><td>同じ</td><td>同じ</td></tr>
+        <tr><td><b>コンデンサ</b></td><td>電気をためる・放す</td><td><b>止める</b></td><td><b>通す</b></td></tr>
+        <tr><td>コイル</td><td>電流の変化を妨げる</td><td>通す</td><td>通しにくい</td></tr>
+        <tr><td>トランス</td><td>巻数の比で電圧を変える</td><td>働かない</td><td>上げ下げできる</td></tr>
+      </table>
+      <div class="point"><b>R3春 問24</b>：コンデンサは「交流電流は通すが直流電流は通さない」（ア）。逆の「直流は通すが交流は通さない」はコイル、交流→直流は整流（ダイオード）、直流→交流はインバータ。</div>
+    </div>
+    <div>
+      <svg width="420" height="200" viewBox="0 0 420 200"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+        <text x="10" y="20" font-size="12" text-anchor="start" fill="#1f3a68" font-weight="700">コンデンサに直流をかける</text>
+        <line x1="30" y1="60" x2="140" y2="60" stroke="#1f3a68" stroke-width="2"/><line x1="140" y1="40" x2="140" y2="80" stroke="#1f3a68" stroke-width="3"/><line x1="152" y1="40" x2="152" y2="80" stroke="#1f3a68" stroke-width="3"/><line x1="152" y1="60" x2="260" y2="60" stroke="#1f3a68" stroke-width="2"/>
+        <text x="146" y="100" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">たまったら流れが止まる</text>
+        <path d="M290,30 Q300,82 400,84" fill="none" stroke="#b25000" stroke-width="2"/><line x1="290" y1="86" x2="405" y2="86" stroke="#9aa7bd" stroke-width="1"/><text x="345" y="26" font-size="10.5" text-anchor="middle" fill="#b25000" font-weight="700">電流は最初だけ流れて0に</text>
+        <text x="10" y="136" font-size="12" text-anchor="start" fill="#1f3a68" font-weight="700">交流なら</text>
+        <text x="10" y="158" font-size="11.5" text-anchor="start" fill="#1d1d1f">向きが変わるたびに充電と放電を繰り返す</text>
+        <text x="10" y="178" font-size="11.5" text-anchor="start" fill="#1d1d1f">→ 電流が流れ続ける（周波数が高いほど通しやすい）</text>
+      </svg>
+      <div class="point">コンデンサは電源の電圧の揺れの吸収（平滑）やノイズの除去に使う。DRAMの1ビットも小さなコンデンサの電気で記憶する。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/light_bulb_flat.svg" alt="">ダイオードは一方向にだけ流す。仲間は使う性質で区別する</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R5春 問22：正弦波を入れると（ダイオードの順電圧は0V）</div>
+      <svg width="430" height="230" viewBox="0 0 430 230"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<text x="10" y="16" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">入力</text><polyline points="10.0,60.0 11.2,56.4 12.5,52.9 13.8,49.5 15.0,46.2 16.2,43.0 17.5,40.0 18.8,37.2 20.0,34.7 21.2,32.5 22.5,30.6 23.8,28.9 25.0,27.7 26.2,26.7 27.5,26.2 28.8,26.0 30.0,26.2 31.2,26.7 32.5,27.7 33.8,28.9 35.0,30.6 36.2,32.5 37.5,34.7 38.8,37.2 40.0,40.0 41.2,43.0 42.5,46.2 43.8,49.5 45.0,52.9 46.2,56.4 47.5,60.0 48.8,63.6 50.0,67.1 51.2,70.5 52.5,73.8 53.8,77.0 55.0,80.0 56.2,82.8 57.5,85.3 58.8,87.5 60.0,89.4 61.2,91.1 62.5,92.3 63.8,93.3 65.0,93.8 66.2,94.0 67.5,93.8 68.8,93.3 70.0,92.3 71.2,91.1 72.5,89.4 73.8,87.5 75.0,85.3 76.2,82.8 77.5,80.0 78.8,77.0 80.0,73.8 81.2,70.5 82.5,67.1 83.8,63.6 85.0,60.0 86.2,56.4 87.5,52.9 88.8,49.5 90.0,46.2 91.2,43.0 92.5,40.0 93.8,37.2 95.0,34.7 96.2,32.5 97.5,30.6 98.8,28.9 100.0,27.7 101.2,26.7 102.5,26.2 103.8,26.0 105.0,26.2 106.3,26.7 107.5,27.7 108.8,28.9 110.0,30.6 111.2,32.5 112.5,34.7 113.8,37.2 115.0,40.0 116.2,43.0 117.5,46.2 118.8,49.5 120.0,52.9 121.2,56.4 122.5,60.0 123.8,63.6 125.0,67.1 126.2,70.5 127.5,73.8 128.8,77.0 130.0,80.0 131.2,82.8 132.5,85.3 133.8,87.5 135.0,89.4 136.2,91.1 137.5,92.3 138.8,93.3 140.0,93.8 141.2,94.0 142.5,93.8 143.8,93.3 145.0,92.3 146.2,91.1 147.5,89.4 148.8,87.5 150.0,85.3 151.2,82.8 152.5,80.0 153.8,77.0 155.0,73.8 156.2,70.5 157.5,67.1 158.8,63.6 160.0,60.0" fill="none" stroke="#1f3a68" stroke-width="2.2"/><line x1="10" y1="60" x2="160" y2="60" stroke="#9aa7bd" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="180" y1="60" x2="210" y2="60" stroke="#5b80bf" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="220" y="30" width="60" height="60" fill="none" stroke="none"/>
+<line x1="214" y1="40" x2="236" y2="40" stroke="#1f3a68" stroke-width="1.6"/><rect x="236" y="33" width="28" height="14" fill="#fff" stroke="#1f3a68" stroke-width="1.6"/><line x1="264" y1="40" x2="300" y2="40" stroke="#1f3a68" stroke-width="1.6"/>
+<line x1="214" y1="90" x2="300" y2="90" stroke="#1f3a68" stroke-width="1.6"/><line x1="286" y1="40" x2="286" y2="56" stroke="#1f3a68" stroke-width="1.6"/><path d="M278,74 L294,74 L286,60 Z" fill="#b25000"/><line x1="278" y1="59" x2="294" y2="59" stroke="#b25000" stroke-width="2"/><line x1="286" y1="74" x2="286" y2="90" stroke="#1f3a68" stroke-width="1.6"/>
+<text x="250" y="112" font-size="10.5" text-anchor="middle" fill="#6e6e73">抵抗＋ダイオード</text>
+<line x1="304" y1="60" x2="324" y2="60" stroke="#5b80bf" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="330" y="16" font-size="11.5" text-anchor="start" fill="#b25000" font-weight="700">出力（ア）</text><polyline points="330.0,60.0 330.8,56.4 331.6,52.9 332.4,49.5 333.2,46.2 334.0,43.0 334.8,40.0 335.5,37.2 336.3,34.7 337.1,32.5 337.9,30.6 338.7,28.9 339.5,27.7 340.3,26.7 341.1,26.2 341.9,26.0 342.7,26.2 343.5,26.7 344.2,27.7 345.0,28.9 345.8,30.6 346.6,32.5 347.4,34.7 348.2,37.2 349.0,40.0 349.8,43.0 350.6,46.2 351.4,49.5 352.2,52.9 353.0,56.4 353.8,60.0 354.5,60.0 355.3,60.0 356.1,60.0 356.9,60.0 357.7,60.0 358.5,60.0 359.3,60.0 360.1,60.0 360.9,60.0 361.7,60.0 362.5,60.0 363.2,60.0 364.0,60.0 364.8,60.0 365.6,60.0 366.4,60.0 367.2,60.0 368.0,60.0 368.8,60.0 369.6,60.0 370.4,60.0 371.2,60.0 372.0,60.0 372.8,60.0 373.5,60.0 374.3,60.0 375.1,60.0 375.9,60.0 376.7,60.0 377.5,60.0 378.3,56.4 379.1,52.9 379.9,49.5 380.7,46.2 381.5,43.0 382.2,40.0 383.0,37.2 383.8,34.7 384.6,32.5 385.4,30.6 386.2,28.9 387.0,27.7 387.8,26.7 388.6,26.2 389.4,26.0 390.2,26.2 391.0,26.7 391.8,27.7 392.5,28.9 393.3,30.6 394.1,32.5 394.9,34.7 395.7,37.2 396.5,40.0 397.3,43.0 398.1,46.2 398.9,49.5 399.7,52.9 400.5,56.4 401.2,60.0 402.0,60.0 402.8,60.0 403.6,60.0 404.4,60.0 405.2,60.0 406.0,60.0 406.8,60.0 407.6,60.0 408.4,60.0 409.2,60.0 410.0,60.0 410.8,60.0 411.5,60.0 412.3,60.0 413.1,60.0 413.9,60.0 414.7,60.0 415.5,60.0 416.3,60.0 417.1,60.0 417.9,60.0 418.7,60.0 419.5,60.0 420.2,60.0 421.0,60.0 421.8,60.0 422.6,60.0 423.4,60.0 424.2,60.0 425.0,60.0" fill="none" stroke="#b25000" stroke-width="2.2"/><line x1="330" y1="60" x2="425" y2="60" stroke="#9aa7bd" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="10" y="150" font-size="11.5" text-anchor="start" fill="#1d1d1f">正のとき：ダイオードは逆向き → 流れない → 入力がそのまま出る</text>
+<text x="10" y="172" font-size="11.5" text-anchor="start" fill="#1d1d1f">負のとき：ダイオードが導通 → 出力がグラウンドとつながり 0V</text>
+<text x="10" y="204" font-size="11" text-anchor="start" fill="#6e6e73">ダイオード4本のブリッジなら、負の山も正に折り返す（全波整流）</text>
+</svg>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:30%">素子</th><th>使う性質</th></tr>
+        <tr><td>ダイオード</td><td>一方向にしか流さない → <b>整流</b>（R4秋 問21）</td></tr>
+        <tr><td>ツェナーダイオード</td><td>逆向きにある電圧以上で、<b>電圧がほぼ一定</b>になる</td></tr>
+        <tr><td>LED</td><td>電子と正孔の<b>再結合で光を出す</b></td></tr>
+        <tr><td>フォトダイオード</td><td><b>光が当たると電流</b>が生じる</td></tr>
+        <tr><td>OLED（有機EL）</td><td>有機物の層が自ら光る。バックライト不要</td></tr>
+      </table>
+      <div class="point">整流作用をもつのはダイオード。コイル・コンデンサ・抵抗器には向きによる違いがない。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/microscope_flat.svg" alt="">MOSは名前が構造そのもの。金属と半導体の間に酸化物の絶縁体</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="200" viewBox="0 0 420 200">
+        <rect x="150" y="20" width="120" height="34" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="210.0" y="41.3" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">Metal（金属）</text><text x="282" y="42" font-size="11" text-anchor="start" fill="#1f3a68">ゲート：電圧をかける</text>
+        <rect x="150" y="54" width="120" height="18" rx="6" fill="#fde7cf" stroke="#b25000" stroke-width="1.5"/><text x="210.0" y="66.8" font-size="10.5" text-anchor="middle" fill="#b25000" font-weight="700">Oxide（酸化物）</text><text x="282" y="67" font-size="11" text-anchor="start" fill="#b25000">絶縁体：電流は流れない</text>
+        <rect x="60" y="72" width="300" height="70" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="210.0" y="111.3" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">Semiconductor（半導体）</text>
+        <rect x="70" y="80" width="60" height="26" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="100.0" y="97.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">ソース</text><rect x="290" y="80" width="60" height="26" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="320.0" y="97.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">ドレイン</text>
+        <text x="210" y="170" font-size="11.5" text-anchor="middle" fill="#1d1d1f">ゲートの電圧で、ソースとドレインの間の電流をオン・オフ</text>
+      </svg>
+      <div class="point"><b>R5秋 問21</b>：MOSトランジスタは「金属と半導体との間に<b>酸化物絶縁体</b>を挟んだ構造」（ウ）。光を出す＝LED、光で電流＝フォトダイオード、電圧一定＝ツェナーダイオード。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:30%">方式</th><th>特徴</th></tr>
+        <tr><td>バイポーラ</td><td>ベースの<b>電流</b>で制御。高速だが電力が大きい（バイポーラメモリ）</td></tr>
+        <tr><td>MOS（MOSFET）</td><td>ゲートの<b>電圧</b>で制御。電力が小さく、小さく作れる</td></tr>
+        <tr><td><b>CMOS</b></td><td>nMOSとpMOSを対に。<b>切り替わるときだけ</b>電流が流れ、待機の電力がとても小さい。今のLSIの主流</td></tr>
+        <tr><td>BiCMOS</td><td>外への出力はバイポーラ、内部はCMOSで長所を使い分け</td></tr>
+      </table>
+      <div class="point">集積度の順：IC → LSI → VLSI。トランジスタの数は約2年で2倍（<b>ムーアの法則</b>）。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/light_bulb_flat.svg" alt="">光の素子は組合せで役目が変わる。フォトカプラは光で信号を渡して絶縁する</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="220" viewBox="0 0 420 220"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+        <text x="10" y="18" font-size="12" text-anchor="start" fill="#1f3a68" font-weight="700">フォトカプラ（1つのパッケージ）</text>
+        <rect x="60" y="30" width="260" height="70" rx="8" fill="#e8eef8" stroke="#5b80bf"/>
+        <rect x="80" y="45" width="70" height="40" rx="6" fill="#b25000" stroke="#b25000" stroke-width="1.5"/><text x="115.0" y="69.3" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">LED</text><rect x="230" y="45" width="70" height="40" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="265.0" y="63.0" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">受光</text><text x="265.0" y="78.0" font-size="10.5" text-anchor="middle" fill="#fff">トランジスタ</text>
+        <line x1="150" y1="65" x2="230" y2="65" stroke="#b25000" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#ar)"/><text x="190" y="58" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">光</text>
+        <text x="30" y="70" font-size="11" text-anchor="middle" fill="#1f3a68">入力</text><text x="350" y="70" font-size="11" text-anchor="middle" fill="#1f3a68">出力</text>
+        <text x="190" y="118" font-size="11" text-anchor="middle" fill="#6e6e73">電気的にはつながっていない（絶縁）</text>
+        <text x="10" y="150" font-size="12" text-anchor="start" fill="#1f3a68" font-weight="700">フォトインタラプタ</text>
+        <rect x="80" y="160" width="50" height="40" rx="6" fill="#b25000" stroke="#b25000" stroke-width="1.5"/><text x="105.0" y="184.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">LED</text><rect x="250" y="160" width="60" height="40" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="280.0" y="184.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">受光</text>
+        <rect x="175" y="150" width="30" height="60" fill="#e1e5ec" stroke="#9aa7bd"/><text x="190" y="218" font-size="10.5" text-anchor="middle" fill="#6e6e73">物</text>
+        <line x1="130" y1="180" x2="175" y2="180" stroke="#b25000" stroke-width="2" stroke-dasharray="4 3"/>
+        <text x="330" y="186" font-size="10.5" text-anchor="start" fill="#b25000" font-weight="700">さえぎられた</text><text x="330" y="200" font-size="10.5" text-anchor="start" fill="#b25000" font-weight="700">ことを検出</text>
+      </svg>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:32%">素子</th><th>役目</th></tr>
+        <tr><td>フォトダイオード</td><td>光→電流。光センサー・光通信の受信</td></tr>
+        <tr><td>フォトトランジスタ</td><td>光で生じた電流を<b>増幅</b>して出す。感度が高い</td></tr>
+        <tr><td><b>フォトカプラ</b></td><td>LEDと受光素子を向かい合わせて封入。<b>電圧の違う回路</b>の間で安全に信号を渡す</td></tr>
+        <tr><td>フォトインタラプタ</td><td>すき間を物が通って光が<b>さえぎられた</b>ことを検出（紙の有無・回転数）</td></tr>
+      </table>
+      <div class="point">交流の電力をオン・オフする<b>トライアック</b>（調光器）や<b>サイリスタ</b>は、大きな電力を扱うパワー半導体の仲間。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/battery_flat.svg" alt="">インバータは直流→交流。電力変換の4つは「何から何へ」で覚える</h1>
+  <div class="cols">
+    <div>
+      <div class="flow"><div class="box b4">交流</div><div class="to">▶</div><div class="box b3">整流器</div><div class="to">▶</div><div class="box b2">直流</div><div class="to">▶</div><div class="box b1">インバータ</div><div class="to">▶</div><div class="box b4">交流<span>周波数を自由に</span></div></div>
+      <table style="margin-top:12px">
+        <tr><th style="width:36%">装置</th><th>変換</th></tr>
+        <tr><td>整流器（AC-DCコンバータ）</td><td>交流 → 直流</td></tr>
+        <tr><td><b>インバータ</b></td><td><b>直流 → 交流</b>（周波数も変えられる）</td></tr>
+        <tr><td>DC-DCコンバータ</td><td>直流 → 高い（昇圧）／低い（降圧）直流</td></tr>
+        <tr><td>トランス</td><td>交流 → 電圧の違う交流</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="point" style="margin-top:0"><b>R6春 問20</b>：エアコンや電気自動車で使うパワー半導体の活用例、インバータの説明は「<b>直流電力を交流電力に変換する</b>」（エ）。</div>
+      <div class="point">モータに送る交流の周波数を変えれば、回転の速さを細かく調整できる（インバータエアコン）。中では<b>パワー半導体</b>（IGBT・パワーMOSFET）が高速にオン・オフしている。</div>
+      <div class="point warn">論理回路のNOT回路も「インバータ」と呼ぶ。電力のインバータとは別物なので、文脈で区別する。</div>
+    </div>
+  </div>
+  <img class="illust" src="img/irasutoya/power_unit.png" alt="" style="height:64px;bottom:36px">
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/toolbox_flat.svg" alt="">FPGAは実装後も回路を書き換えられる。回路はHDLで書く</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th style="width:22%">種類</th><th>回路を決める時</th><th>向いている場面</th></tr>
+        <tr><td>ASIC</td><td>製造時に固定（<b>1社の1製品向け</b>）</td><td>大量生産で速く・安く・低電力</td></tr>
+        <tr><td>ASSP</td><td>製造時に固定（<b>分野向けに複数社へ</b>販売）</td><td>通信・画像処理の共通部品</td></tr>
+        <tr><td><b>FPGA</b></td><td><b>基板に実装した後も書換え可</b></td><td>試作・少量・後から仕様が変わる</td></tr>
+      </table>
+      <div class="point"><b>R4春 問20・R5秋 問20</b>（同じ問題）：FPGAは「論理回路を基板上に実装した後で再プログラムできる集積回路」（エ）。電気的に書き換えられる不揮発性メモリ＝EEPROM、特定用途向け汎用集積回路＝ASSP、浮動小数点の演算＝FPU。</div>
+    </div>
+    <div>
+      <div class="flow"><div class="box b2">HDLで記述<span>VHDL・Verilog</span></div><div class="to">▶</div><div class="box b3">論理合成<span>ゲートの回路に</span></div><div class="to">▶</div><div class="box b1">FPGAに書込み<span>またはASICを製造</span></div></div>
+      <div class="point"><b>R7春 問20</b>：FPGAなどに実装する回路を記述し論理合成する言語は<b>HDL</b>（イ）。DDL＝データベースの定義、UML＝設計の図の記法、XML＝データの記述形式。</div>
+      <div class="point">掛け算なしで三角関数を計算する <b>CORDIC</b>、回路図を公開する <b>オープンソースハードウェア</b>（Arduino・RISC-V）もシラバスの用語。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/mobile_phone_flat.svg" alt="">SoCは1つのチップにシステムを作り込む。SiPは複数のチップを1つの包みに</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="200" viewBox="0 0 420 200">
+        <text x="100" y="16" font-size="14" text-anchor="middle" fill="#1f3a68" font-weight="700">SoC</text>
+        <rect x="20" y="28" width="160" height="130" rx="10" fill="#e8eef8" stroke="#1f3a68" stroke-width="2"/>
+        <rect x="34" y="42" width="132" height="102" rx="4" fill="#1f3a68"/>
+        <rect x="44" y="52" width="52" height="36" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="70.0" y="74.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">CPU</text><rect x="104" y="52" width="52" height="36" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="130.0" y="74.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">GPU</text><rect x="44" y="96" width="52" height="36" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="70.0" y="118.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">通信</text><rect x="104" y="96" width="52" height="36" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="130.0" y="118.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">メモリ</text>
+        <text x="100" y="178" font-size="12" text-anchor="middle" fill="#b25000" font-weight="700">チップは1つ</text>
+        <text x="320" y="16" font-size="14" text-anchor="middle" fill="#1f3a68" font-weight="700">SiP</text>
+        <rect x="240" y="28" width="160" height="130" rx="10" fill="#e8eef8" stroke="#1f3a68" stroke-width="2"/>
+        <rect x="254" y="46" width="60" height="46" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="284.0" y="67.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">CPU</text><text x="284.0" y="82.0" font-size="10.5" text-anchor="middle" fill="#fff">チップ1</text><rect x="326" y="46" width="60" height="46" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="356.0" y="67.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">メモリ</text><text x="356.0" y="82.0" font-size="10.5" text-anchor="middle" fill="#fff">チップ2</text><rect x="290" y="100" width="60" height="44" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="320.0" y="120.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">通信</text><text x="320.0" y="135.0" font-size="10.5" text-anchor="middle" fill="#fff">チップ3</text>
+        <text x="320" y="178" font-size="12" text-anchor="middle" fill="#b25000" font-weight="700">パッケージは1つ、チップは複数</text>
+      </svg>
+    </div>
+    <div>
+      <div class="cap">R3春 問22・R6秋 問22（同じ問題）：SoCの説明</div>
+      <table>
+        <tr><th>選択肢</th><th>正体</th></tr>
+        <tr><td>システムLSIに内蔵されたソフトウェア</td><td>ファームウェア</td></tr>
+        <tr><td>複数のMCUを搭載したボード</td><td>マイコンを並べた基板</td></tr>
+        <tr><td><b>複数のチップの構成を1つのチップで実現したLSI</b></td><td><b>SoC（ウ）</b></td></tr>
+        <tr><td>複数のチップを単一のパッケージに封入</td><td>SiP</td></tr>
+      </table>
+      <div class="point">どこをハードウェアに、どこをソフトウェアにするかを一緒に決めるのが<b>コデザイン</b>。小さなチップを1つのパッケージでつなぐのが<b>チップレット</b>。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/desktop_computer_flat.svg" alt="">マイコンは1チップにCPUと周辺回路。D/Aの出力は「1ビットの電圧×値」</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="200" viewBox="0 0 420 200">
+        <rect x="80" y="10" width="260" height="180" rx="10" fill="#e8eef8" stroke="#1f3a68" stroke-width="2"/><text x="210" y="30" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">マイクロコントローラー（MCU）</text>
+        <rect x="95" y="42" width="70" height="34" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="130.0" y="63.1" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">CPU</text><rect x="175" y="42" width="70" height="34" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="210.0" y="63.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">フラッシュ</text><rect x="255" y="42" width="70" height="34" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="290.0" y="63.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">RAM</text>
+        <rect x="95" y="86" width="70" height="34" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="130.0" y="107.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">タイマ</text><rect x="175" y="86" width="70" height="34" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="210.0" y="107.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">WDT</text><rect x="255" y="86" width="70" height="34" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="290.0" y="107.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">割込み</text>
+        <rect x="95" y="130" width="70" height="34" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="130.0" y="151.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">A/D</text><rect x="175" y="130" width="70" height="34" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="210.0" y="151.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">D/A</text><rect x="255" y="130" width="70" height="34" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="290.0" y="151.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">GPIO</text>
+        <text x="40" y="150" font-size="10.5" text-anchor="middle" fill="#1f3a68">センサー</text><line x1="56" y1="147" x2="95" y2="147" stroke="#5b80bf" stroke-width="1.6"/><text x="380" y="150" font-size="10.5" text-anchor="middle" fill="#1f3a68">LED</text><line x1="325" y1="147" x2="364" y2="147" stroke="#5b80bf" stroke-width="1.6"/>
+      </svg>
+      <div class="point">CPUだけを1つのLSIにしたのが<b>マイクロプロセッサ</b>、信号処理の積和演算に特化したのが<b>DSP</b>。</div>
+    </div>
+    <div>
+      <div class="cap">R7春 問18：8ビットD/A、1ビットで10mV、16進数82を与えると</div>
+      <div class="formula" style="font-size:16px">82（16進）＝ 8×16＋2 ＝ 130<br>130 × 10mV ＝ <b>1,300mV</b></div>
+      <table class="mini">
+        <tr><th>選択肢</th><th>どう計算した値か</th></tr>
+        <tr><td>820</td><td>82を10進数のまま使った</td></tr>
+        <tr><td>1,024</td><td>2の10乗（関係なし）</td></tr>
+        <tr><td><b>1,300</b></td><td><b>正解（ウ）</b></td></tr>
+        <tr><td>1,312</td><td>82×16 と掛けた</td></tr>
+      </table>
+      <div class="point">A/Dの<b>分解能</b>：10ビットなら1,024段階。0〜5Vを10ビットなら1段階は約4.9mV。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/key_flat.svg" alt="">1ビットだけ1にするならOR、0にするならAND。他のビットは元のまま残る</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R3秋 問23：LED1（ビット3）を、LED2（ビット6）を変えずに点灯</div>
+      <table class="mini" style="text-align:center">
+        <tr><th>ビット</th><th>7</th><th>6</th><th>5</th><th>4</th><th>3</th><th>2</th><th>1</th><th>0</th></tr>
+        <tr><td>今の値（例）</td><td>0</td><td><b>1</b></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+        <tr><td>OR 08h</td><td>0</td><td>0</td><td>0</td><td>0</td><td><b>1</b></td><td>0</td><td>0</td><td>0</td></tr>
+        <tr><td>結果</td><td>0</td><td><b>1</b></td><td>0</td><td>0</td><td style="color:#b25000;font-weight:700">1</td><td>0</td><td>0</td><td>0</td></tr>
+      </table>
+      <div class="point">読み出した値と <b>08h（0000 1000）の論理和</b>（イ）。ANDだとビット3以外が0になりLED2が消える。48h（ビット3と6）とORすると、LED2まで点けてしまう。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:26%">操作</th><th>マスク</th><th>演算</th></tr>
+        <tr><td>特定のビットを<b>1</b>に</td><td>そのビットだけ1</td><td><b>OR</b></td></tr>
+        <tr><td>特定のビットを<b>0</b>に</td><td>そのビットだけ0</td><td><b>AND</b></td></tr>
+        <tr><td>特定のビットを<b>反転</b></td><td>そのビットだけ1</td><td><b>XOR</b></td></tr>
+        <tr><td>特定のビットを<b>調べる</b></td><td>そのビットだけ1</td><td>ANDして0か見る</td></tr>
+      </table>
+      <div class="point">GPIO（汎用入出力ポート）は、ピン1本が1ビット。読み出して→演算して→書き戻す。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/dog_flat.svg" alt="">タイマは「1カウントの時間×回数」。番犬タイマはクリアされないとリセット</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R7秋 問23：16MHzを32分周したクロックで、150から数え下げ</div>
+      <div class="formula" style="font-size:16px">16MHz ÷ 32 ＝ 0.5MHz<br>1カウント ＝ 1 ÷ 500,000 ＝ 2マイクロ秒<br>2 × 150 ＝ <b>300マイクロ秒</b></div>
+      <table class="mini"><tr><th>選択肢</th><th>どう計算した値か</th></tr><tr><td>0.3</td><td>150÷(16×32)。分周を掛けてしまった</td></tr><tr><td>2</td><td>1カウント分だけ</td></tr><tr><td>150</td><td>1カウント＝1マイクロ秒とした</td></tr><tr><td><b>300</b></td><td><b>正解（エ）</b></td></tr></table>
+    </div>
+    <div>
+      <svg width="420" height="130" viewBox="0 0 420 130"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+        <rect x="10" y="40" width="110" height="44" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="65.0" y="60.0" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">プログラム</text><text x="65.0" y="75.0" font-size="10.5" text-anchor="middle" fill="#fff">正常なら定期的に</text>
+        <line x1="120" y1="62" x2="180" y2="62" stroke="#5b80bf" stroke-width="1.6" marker-end="url(#ar)"/><text x="150" y="54" font-size="10.5" text-anchor="middle" fill="#1f3a68">クリア</text>
+        <rect x="180" y="40" width="110" height="44" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="235.0" y="60.0" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">ウォッチドッグ</text><text x="235.0" y="75.0" font-size="10.5" text-anchor="middle" fill="#fff">タイマ</text>
+        <line x1="290" y1="62" x2="330" y2="62" stroke="#b25000" stroke-width="1.8" marker-end="url(#ar)"/><rect x="330" y="40" width="84" height="44" rx="6" fill="#fde7cf" stroke="#b25000" stroke-width="1.5"/><text x="372.0" y="66.3" font-size="12" text-anchor="middle" fill="#b25000" font-weight="700">リセット</text>
+        <text x="210" y="112" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">時間内にクリアされない＝暴走・停止とみなす</text>
+      </svg>
+      <div class="point"><b>R3秋 問21</b>：ウォッチドッグタイマは「一定時間内にタイマが<b>クリアされなかった</b>場合、システム異常とみなしてリセット又は終了する」（ア）。「異常を検出してから待つ」は順序が逆。</div>
+      <div class="point">電源電圧の低下を見張る電圧監視、起動時の自己診断（<b>診断プログラム</b>）も、組込み機器の<b>監視回路</b>の仲間。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/abacus_flat.svg" alt="">画面の番地は「y×横の画素数＋x」に、1画素の番地数を掛ける</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R4春 問21・R6春 問22（同じ問題）：640×480、1画素16ビット、1番地8ビット</div>
+      <svg width="430" height="210" viewBox="0 0 430 210"><circle cx="120" cy="24" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="138" cy="24" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="156" cy="24" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="174" cy="24" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="192" cy="24" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="210" cy="24" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="228" cy="24" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="246" cy="24" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="264" cy="24" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="282" cy="24" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="300" cy="24" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="318" cy="24" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="336" cy="24" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="354" cy="24" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="372" cy="24" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="390" cy="24" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="120" cy="42" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="138" cy="42" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="156" cy="42" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="174" cy="42" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="192" cy="42" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="210" cy="42" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="228" cy="42" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="246" cy="42" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="264" cy="42" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="282" cy="42" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="300" cy="42" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="318" cy="42" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="336" cy="42" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="354" cy="42" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="372" cy="42" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="390" cy="42" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="120" cy="60" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="138" cy="60" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="156" cy="60" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="174" cy="60" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="192" cy="60" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="210" cy="60" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="228" cy="60" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="246" cy="60" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="264" cy="60" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="282" cy="60" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="300" cy="60" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="318" cy="60" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="336" cy="60" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="354" cy="60" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="372" cy="60" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="390" cy="60" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="120" cy="78" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="138" cy="78" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="156" cy="78" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="174" cy="78" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="192" cy="78" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="210" cy="78" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="228" cy="78" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="246" cy="78" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="264" cy="78" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="282" cy="78" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="300" cy="78" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="318" cy="78" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="336" cy="78" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="354" cy="78" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="372" cy="78" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="390" cy="78" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="120" cy="96" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="138" cy="96" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="156" cy="96" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="174" cy="96" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="192" cy="96" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="210" cy="96" r="7" fill="#1f3a68" stroke="#5b80bf" stroke-width="1"/><circle cx="228" cy="96" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="246" cy="96" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="264" cy="96" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="282" cy="96" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="300" cy="96" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="318" cy="96" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="336" cy="96" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="354" cy="96" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="372" cy="96" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="390" cy="96" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="120" cy="114" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="138" cy="114" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="156" cy="114" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="174" cy="114" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="192" cy="114" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="210" cy="114" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="228" cy="114" r="7" fill="#1f3a68" stroke="#5b80bf" stroke-width="1"/><circle cx="246" cy="114" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="264" cy="114" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="282" cy="114" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="300" cy="114" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="318" cy="114" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="336" cy="114" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="354" cy="114" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="372" cy="114" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="390" cy="114" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="120" cy="132" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="138" cy="132" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="156" cy="132" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="174" cy="132" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="192" cy="132" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="210" cy="132" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="228" cy="132" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="246" cy="132" r="7" fill="#b25000" stroke="#5b80bf" stroke-width="1"/><circle cx="264" cy="132" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="282" cy="132" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="300" cy="132" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="318" cy="132" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="336" cy="132" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="354" cy="132" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="372" cy="132" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="390" cy="132" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="120" cy="150" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="138" cy="150" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="156" cy="150" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="174" cy="150" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="192" cy="150" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="210" cy="150" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="228" cy="150" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="246" cy="150" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="264" cy="150" r="7" fill="#1f3a68" stroke="#5b80bf" stroke-width="1"/><circle cx="282" cy="150" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="300" cy="150" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="318" cy="150" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="336" cy="150" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="354" cy="150" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="372" cy="150" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="390" cy="150" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="120" cy="168" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="138" cy="168" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="156" cy="168" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="174" cy="168" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="192" cy="168" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="210" cy="168" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="228" cy="168" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="246" cy="168" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="264" cy="168" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="282" cy="168" r="7" fill="#1f3a68" stroke="#5b80bf" stroke-width="1"/><circle cx="300" cy="168" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="318" cy="168" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="336" cy="168" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="354" cy="168" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="372" cy="168" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="390" cy="168" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="120" cy="186" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="138" cy="186" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="156" cy="186" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="174" cy="186" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="192" cy="186" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="210" cy="186" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="228" cy="186" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="246" cy="186" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="264" cy="186" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="282" cy="186" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="300" cy="186" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="318" cy="186" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="336" cy="186" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="354" cy="186" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="372" cy="186" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/><circle cx="390" cy="186" r="7" fill="#fff" stroke="#5b80bf" stroke-width="1"/>
+<text x="120" y="12" font-size="9" text-anchor="middle" fill="#6e6e73">0</text><text x="156" y="12" font-size="9" text-anchor="middle" fill="#6e6e73">2</text><text x="192" y="12" font-size="9" text-anchor="middle" fill="#6e6e73">4</text><text x="228" y="12" font-size="9" text-anchor="middle" fill="#6e6e73">6</text><text x="264" y="12" font-size="9" text-anchor="middle" fill="#6e6e73">8</text><text x="300" y="12" font-size="9" text-anchor="middle" fill="#6e6e73">10</text><text x="336" y="12" font-size="9" text-anchor="middle" fill="#6e6e73">12</text><text x="372" y="12" font-size="9" text-anchor="middle" fill="#6e6e73">14</text><text x="106" y="28" font-size="9" text-anchor="end" fill="#6e6e73">0</text><text x="106" y="46" font-size="9" text-anchor="end" fill="#6e6e73">1</text><text x="106" y="64" font-size="9" text-anchor="end" fill="#6e6e73">2</text><text x="106" y="82" font-size="9" text-anchor="end" fill="#6e6e73">3</text><text x="106" y="100" font-size="9" text-anchor="end" fill="#6e6e73">4</text><text x="106" y="118" font-size="9" text-anchor="end" fill="#6e6e73">5</text><text x="106" y="136" font-size="9" text-anchor="end" fill="#6e6e73">6</text><text x="106" y="154" font-size="9" text-anchor="end" fill="#6e6e73">7</text><text x="106" y="172" font-size="9" text-anchor="end" fill="#6e6e73">8</text><text x="106" y="190" font-size="9" text-anchor="end" fill="#6e6e73">9</text>
+<rect x="4" y="20" width="70" height="22" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="39.0" y="34.6" font-size="10" text-anchor="middle" fill="#1f3a68" font-weight="700">0番地</text><rect x="4" y="42" width="70" height="22" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="39.0" y="56.6" font-size="10" text-anchor="middle" fill="#1f3a68" font-weight="700">1番地</text><rect x="4" y="64" width="70" height="22" rx="6" fill="#e8eef8" stroke="#e8eef8" stroke-width="1.5"/><text x="39.0" y="78.6" font-size="10" text-anchor="middle" fill="#1f3a68" font-weight="700">2番地</text><rect x="4" y="86" width="70" height="22" rx="6" fill="#e8eef8" stroke="#e8eef8" stroke-width="1.5"/><text x="39.0" y="100.6" font-size="10" text-anchor="middle" fill="#1f3a68" font-weight="700">3番地</text>
+<text x="40" y="126" font-size="10.5" text-anchor="middle" fill="#1f3a68">1画素＝</text><text x="40" y="140" font-size="10.5" text-anchor="middle" fill="#1f3a68">16ビット</text><text x="40" y="154" font-size="10.5" text-anchor="middle" fill="#b25000" font-weight="700">＝2番地</text>
+<text x="270" y="206" font-size="11" text-anchor="middle" fill="#6e6e73">(5,4)→(9,8) の直線。x＝7 は y＝6（オレンジ）</text>
+</svg>
+    </div>
+    <div>
+      <div class="formula" style="font-size:16px">画素の番号 ＝ 6 × 640 ＋ 7 ＝ 3,847<br>先頭の番地 ＝ 3,847 × 2 ＝ <b>7,694</b></div>
+      <table>
+        <tr><th>選択肢</th><th>どう計算した値か</th></tr>
+        <tr><td>3,847</td><td>画素の番号のまま。2番地分を掛け忘れ</td></tr>
+        <tr><td>7,680</td><td>6×640×2。xの7を足していない</td></tr>
+        <tr><td><b>7,694</b></td><td><b>正解（ウ）</b></td></tr>
+        <tr><td>8,978</td><td>(7×640＋9)×2。xとyの取り違え</td></tr>
+      </table>
+      <div class="point">傾き1の直線なので、xが2増えればyも2増える。(5,4) から x＝7 なら y＝6。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/card_index_dividers_flat.svg" alt="">フラッシュメモリは消してから書く。書換え回数には上限がある</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th style="width:24%">メモリ</th><th>電源を切ると</th><th>書換え</th></tr>
+        <tr><td>SRAM</td><td>消える</td><td>自由・高速（フリップフロップ）</td></tr>
+        <tr><td>DRAM</td><td>消える。<b>リフレッシュが必要</b></td><td>自由（コンデンサ）</td></tr>
+        <tr><td>マスクROM</td><td>消えない</td><td>できない（製造時に固定）</td></tr>
+        <tr><td>EPROM</td><td>消えない</td><td>紫外線で消し、<b>基板から外して</b>ROMライターで</td></tr>
+        <tr><td>EEPROM</td><td>消えない</td><td>電気的に1バイト単位で</td></tr>
+        <tr><td><b>フラッシュ</b></td><td>消えない</td><td><b>ブロック単位で消去してから</b>書込み</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">R4秋 問22：フラッシュメモリの特徴</div>
+      <table>
+        <tr><th>選択肢</th><th>判定</th></tr>
+        <tr><td>書込み回数は無制限</td><td>× 上限がある（ウェアレベリングで散らす）</td></tr>
+        <tr><td>基板から外して専用のROMライターで</td><td>× EPROMの特徴</td></tr>
+        <tr><td>定期的にリフレッシュしないと消える</td><td>× DRAMの特徴</td></tr>
+        <tr><td><b>前のデータを消去してから書込み</b></td><td><b>○（エ）</b></td></tr>
+      </table>
+      <div class="point">SSD・USBメモリ・マイコンのプログラム置き場はフラッシュメモリ。</div>
+    </div>
+  </div>
+  <img class="illust" src="img/irasutoya/usb_memory.png" alt="" style="height:60px;bottom:36px">
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/credit_card_flat.svg" alt="">RFIDは電波で無線タグを読む。パッシブは受けた電波を電力にする</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th style="width:26%">過去問</th><th>正解</th><th>入れ替えの選択肢</th></tr>
+        <tr><td>R3春 問21 RFIDの活用事例</td><td><b>微小な無線チップで人や物を識別・管理</b></td><td>印刷したコード＝バーコード、ヘッドフォン＝Bluetooth、赤外線＝IrDA</td></tr>
+        <tr><td>R3秋 問20 パッシブ方式のRFタグ</td><td><b>アンテナで受け取った電力で通信</b></td><td>可視光・赤外線・静電容量（タッチパネル）</td></tr>
+        <tr><td>R5春 問24 NFC</td><td><b>ピアツーピアで通信する機能</b></td><td>タッチセンサー・接触式・最大10m</td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="vs">
+        <tr><th style="width:26%"></th><th>パッシブ</th><th>アクティブ</th></tr>
+        <tr><td>電池</td><td>持たない</td><td>持つ</td></tr>
+        <tr><td>電力</td><td>読取り機の電波から</td><td>自分の電池</td></tr>
+        <tr><td>距離</td><td>短い</td><td>長い</td></tr>
+      </table>
+      <div class="point"><b>NFC</b>は通信距離<b>10cm程度</b>の近距離無線。非接触ICカード（交通系IC）の技術がもとで、スマートフォンどうしの直接のやり取りもできる。「10m」はBluetoothの距離。</div>
+    </div>
+  </div>
+  <img class="illust" src="img/irasutoya/ic_card.png" alt="" style="height:60px;bottom:36px">
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/shield_flat.svg" alt="">耐タンパ性は「中身を盗まれにくい」性質。開けたら壊れるようにする</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R4春 問23・R6秋 問24（同じ問題）：マイクロプロセッサの耐タンパ性を上げる</div>
+      <table>
+        <tr><th>選択肢</th><th>判定</th></tr>
+        <tr><td>ESD（静電気）への耐性を強化</td><td>× 壊れにくさの対策。情報を守る目的ではない</td></tr>
+        <tr><td>検査用パッドを残しておく</td><td>× そこから信号を読まれやすくなる</td></tr>
+        <tr><td><b>物理的に解析しようとすると内部回路が壊れる</b></td><td><b>○（ウ）</b></td></tr>
+        <tr><td>内部メモリの物理アドレスを整然と配置</td><td>× 場所を推測されやすくなる</td></tr>
+      </table>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:34%">耐タンパ性の手法</th><th>中身</th></tr>
+        <tr><td>物理的な破壊</td><td>パッケージを開けると回路やデータが壊れる</td></tr>
+        <tr><td>電力の平準化</td><td>消費電力の変化から秘密の鍵を推測されないようにする（サイドチャネル攻撃の対策）</td></tr>
+        <tr><td>配線の隠蔽</td><td>配線や配置を分かりにくくして解析を難しくする</td></tr>
+      </table>
+      <div class="point">ICカードやスマートフォンの暗号の鍵を守る。#11 セキュリティの<b>TPM</b>・<b>HSM</b>もこの性質を持つ。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/binary.png" alt=""><img src="img/irasutoya/cpu.png" alt=""><img src="img/irasutoya/stopwatch.png" alt=""><img src="img/irasutoya/puzzle.png" alt=""></div>
+  <div class="k">第4章</div>
+  <h1>論理設計</h1>
+  <p>真理値表から論理式へ ／ 論理圧縮 ／ セットアップ時間とホールド時間 ／ 同期式設計と非同期式設計</p>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/puzzle_piece_flat.svg" alt="">論理設計は「1になる行を拾ってORでつなぎ、まとめて短くする」</h1>
+  <div class="cols">
+    <div>
+      <div class="flow"><div class="box b4">真理値表</div><div class="to">▶</div><div class="box b3">加法標準形<span>1の行をAND→OR</span></div><div class="to">▶</div><div class="box b1">論理圧縮<span>カルノー図・ブール代数</span></div></div>
+      <div class="cap" style="margin-top:12px">o10：A・B̄・C＋A・B・C＋A・B・C̄ を簡単にすると</div>
+      <div class="formula" style="font-size:15px">A・C・(B̄＋B) ＋ A・B・(C＋C̄)<br>＝ A・C ＋ A・B ＝ <b>A・(B＋C)</b>（エ）</div>
+      <div class="point">A・B・C は何度使ってもよい（A＋A＝A）。<b>Aが0なら全部の項が0</b>なので、B＋C だけの式は誤り。答えを選んだら1つの入力を入れて確かめる</div>
+    </div>
+    <div>
+      <svg width="320" height="180" viewBox="0 0 320 180"><text x="150" y="16" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">カルノー図（A・B̄・C＋A・B・C＋A・B・C̄）</text><text x="92" y="44" font-size="11" text-anchor="middle" fill="#1f3a68">B̄C̄</text><text x="136" y="44" font-size="11" text-anchor="middle" fill="#1f3a68">B̄C</text><text x="180" y="44" font-size="11" text-anchor="middle" fill="#1f3a68">BC</text><text x="224" y="44" font-size="11" text-anchor="middle" fill="#1f3a68">BC̄</text><text x="56" y="70" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">Ā</text><text x="56" y="104" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">A</text><rect x="70" y="50" width="44" height="34" fill="#fff" stroke="#5b80bf"/><text x="92" y="72" font-size="13" text-anchor="middle" fill="#6e6e73">0</text><rect x="114" y="50" width="44" height="34" fill="#fff" stroke="#5b80bf"/><text x="136" y="72" font-size="13" text-anchor="middle" fill="#6e6e73">0</text><rect x="158" y="50" width="44" height="34" fill="#fff" stroke="#5b80bf"/><text x="180" y="72" font-size="13" text-anchor="middle" fill="#6e6e73">0</text><rect x="202" y="50" width="44" height="34" fill="#fff" stroke="#5b80bf"/><text x="224" y="72" font-size="13" text-anchor="middle" fill="#6e6e73">0</text><rect x="70" y="84" width="44" height="34" fill="#fff" stroke="#5b80bf"/><text x="92" y="106" font-size="13" text-anchor="middle" fill="#6e6e73">0</text><rect x="114" y="84" width="44" height="34" fill="#fde7cf" stroke="#5b80bf"/><text x="136" y="106" font-size="13" text-anchor="middle" fill="#b25000" font-weight="700">1</text><rect x="158" y="84" width="44" height="34" fill="#fde7cf" stroke="#5b80bf"/><text x="180" y="106" font-size="13" text-anchor="middle" fill="#b25000" font-weight="700">1</text><rect x="202" y="84" width="44" height="34" fill="#fde7cf" stroke="#5b80bf"/><text x="224" y="106" font-size="13" text-anchor="middle" fill="#b25000" font-weight="700">1</text><rect x="113" y="87" width="84" height="28" rx="12" fill="none" stroke="#1f3a68" stroke-width="2"/><rect x="157" y="90" width="84" height="22" rx="10" fill="none" stroke="#b25000" stroke-width="2" stroke-dasharray="4 3"/><text x="155" y="144" font-size="11" text-anchor="middle" fill="#1d1d1f">紺の囲み＝A・C　オレンジの囲み＝A・B</text><text x="155" y="166" font-size="13" text-anchor="middle" fill="#b25000" font-weight="700">→ A・C＋A・B ＝ A・(B＋C)</text></svg>
+      <div class="point">隣り合う1を2・4個の長方形で囲むと、そこで値が変わる変数が消える（B＋B̄＝1）。囲みが大きいほど式が短い。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/stopwatch_flat.svg" alt="">フリップフロップはエッジの前後で入力を止めておかないと値を取りこぼす</h1>
+  <div class="cols">
+    <div>
+      <svg width="430" height="200" viewBox="0 0 430 200"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<polyline points="60,62 110,62 110,40 160,40 160,62 210,62 210,40 260,40 260,62 310,62 310,40 360,40 360,62 410,62" fill="none" stroke="#1f3a68" stroke-width="2.2"/><text x="52" y="56.0" font-size="13" text-anchor="end" fill="#1f3a68" font-weight="700">CLK</text><path d="M60,104 L140,104 L150,84 L260,84 L270,104 L360,104" fill="none" stroke="#1f3a68" stroke-width="2.2"/><path d="M60,84 L140,84 L150,104 L260,104 L270,84 L360,84" fill="none" stroke="#1f3a68" stroke-width="2.2"/><text x="52" y="99" font-size="13" text-anchor="end" fill="#1f3a68" font-weight="700">D</text>
+<line x1="210" y1="30" x2="210" y2="150" stroke="#b25000" stroke-width="1.6" stroke-dasharray="4 3"/><text x="210" y="168" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">クロックの立上がり（取り込む瞬間）</text>
+<rect x="160" y="78" width="50" height="32" fill="#1f3a68" opacity=".12"/><rect x="210" y="78" width="40" height="32" fill="#b25000" opacity=".18"/>
+<text x="185" y="128" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">セットアップ</text><text x="232" y="128" font-size="10.5" text-anchor="middle" fill="#b25000" font-weight="700">ホールド</text>
+<text x="185" y="142" font-size="10" text-anchor="middle" fill="#6e6e73">エッジの前</text><text x="232" y="142" font-size="10" text-anchor="middle" fill="#6e6e73">エッジの後</text>
+</svg>
+      <div class="point">守れないと出力が0とも1とも決まらない<b>メタステーブル</b>になる。別のクロックから来た信号は、フリップフロップを2段重ねた<b>シンクロナイザ</b>で受ける。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:36%">用語</th><th>何の時間か</th></tr>
+        <tr><td><b>セットアップ時間</b></td><td>エッジの<b>前</b>に入力を安定させておく時間（o11の正解）</td></tr>
+        <tr><td>ホールド時間</td><td>エッジの<b>後</b>も入力を保っておく時間</td></tr>
+        <tr><td>伝搬遅延</td><td>ゲートの入力が変わってから出力が変わるまで</td></tr>
+        <tr><td>クロックスキュー</td><td>同じクロックが場所によってずれて届く差</td></tr>
+        <tr><td>クリティカルパス</td><td>遅延がいちばん長い経路。これでクロックの最高周波数が決まる</td></tr>
+        <tr><td>ハザード</td><td>経路の遅延の差で、出力に一瞬だけ出るひげ</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/repeat_button_flat.svg" alt="">同期式は全員が同じクロックで動く。非同期式は終わった部分から進む</h1>
+  <div class="cols">
+    <div>
+      <table class="vs">
+        <tr><th style="width:24%"></th><th>同期式設計</th><th>非同期式設計</th></tr>
+        <tr><td>進み方</td><td>共通クロックのエッジで<b>一斉に</b>取り込む</td><td>処理の終わりを<b>合図</b>して次へ</td></tr>
+        <tr><td>速さ</td><td>最も遅い経路に合わせて周期を決める</td><td>速い部分は待たない</td></tr>
+        <tr><td>電力</td><td>クロックを配るだけで電力を使う</td><td>動いていない部分は電力を使いにくい</td></tr>
+        <tr><td>検証</td><td><b>しやすい</b>（ハザードもエッジで無視できる）</td><td><b>難しい</b>（届く順番を保証する）</td></tr>
+      </table>
+      <div class="point">今のLSIのほとんどは検証しやすい<b>同期式</b>。o12 の正解は非同期式の長所と短所をまとめたア。</div>
+    </div>
+    <div>
+      <svg width="400" height="190" viewBox="0 0 400 190"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+        <text x="200" y="16" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">ステートマシン（自動販売機の例）</text>
+        <circle cx="70" cy="90" r="38" fill="#1f3a68"/><text x="70" y="95" font-size="13" text-anchor="middle" fill="#fff" font-weight="700">待機</text>
+        <circle cx="200" cy="90" r="38" fill="#2f5596"/><text x="200" y="95" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">入金済み</text>
+        <circle cx="330" cy="90" r="38" fill="#5b80bf"/><text x="330" y="95" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">払出し</text>
+        <line x1="108" y1="80" x2="162" y2="80" stroke="#5b80bf" stroke-width="1.6" marker-end="url(#ar)"/><text x="135" y="72" font-size="10.5" text-anchor="middle" fill="#1f3a68">硬貨</text>
+        <line x1="238" y1="80" x2="292" y2="80" stroke="#5b80bf" stroke-width="1.6" marker-end="url(#ar)"/><text x="265" y="72" font-size="10.5" text-anchor="middle" fill="#1f3a68">ボタン</text>
+        <path d="M330,128 Q200,190 70,128" fill="none" stroke="#5b80bf" stroke-width="1.6" marker-end="url(#ar)"/><text x="200" y="176" font-size="10.5" text-anchor="middle" fill="#1f3a68">商品が出たら</text>
+      </svg>
+      <div class="point">状態と、何が来たらどの状態へ移るかで回路を設計する。状態はフリップフロップに記憶する（#3 の順序回路）。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/battery.png" alt=""><img src="img/irasutoya/power_unit.png" alt=""><img src="img/irasutoya/datacenter.png" alt=""><img src="img/irasutoya/thermometer.png" alt=""></div>
+  <div class="k">第5章</div>
+  <h1>消費電力</h1>
+  <p>動的消費電力と静的消費電力 ／ DVFS ／ クロックゲーティングとパワーゲーティング ／ 間欠動作 ／ LED回路の電力 ／ 直流給電</p>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/high_voltage_flat.svg" alt="">電力は「切り替わるとき」と「漏れ」の2つ。電圧は2乗で効く</h1>
+  <div class="cols">
+    <div>
+      <table class="vs">
+        <tr><th style="width:24%"></th><th>動的消費電力</th><th>静的消費電力</th></tr>
+        <tr><td>原因</td><td>0と1が<b>切り替わる</b>ときの充放電</td><td>止まっていても流れる<b>リーク電流</b></td></tr>
+        <tr><td>比例するもの</td><td><b>電圧の2乗</b>×周波数</td><td>電圧・温度。微細化で増える</td></tr>
+        <tr><td>減らす技術</td><td>DVFS・クロックゲーティング</td><td><b>パワーゲーティング</b></td></tr>
+      </table>
+      <div class="cap" style="margin-top:12px">o13：DVFSで電圧0.8倍・周波数0.5倍にすると</div>
+      <div class="formula" style="font-size:16px">0.8 × 0.8 × 0.5 ＝ <b>0.32倍</b>（イ）</div>
+      <div class="point">0.16＝周波数まで2乗、0.4＝電圧を2乗し忘れ、0.64＝周波数を掛け忘れ。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:36%">技術</th><th>止めるもの</th></tr>
+        <tr><td><b>DVFS</b></td><td>負荷に合わせて<b>電圧と周波数</b>を下げる</td></tr>
+        <tr><td>クロックゲーティング</td><td>使わないブロックの<b>クロック</b>を止める。リークは残る</td></tr>
+        <tr><td><b>パワーゲーティング</b></td><td>使わないブロックの<b>電源</b>を切る。リークも消えるが、状態が消え復帰に時間</td></tr>
+        <tr><td>スリープモード</td><td>機器全体を低電力の待機に</td></tr>
+      </table>
+      <div class="point"><b>TDP</b>（熱設計電力）は、冷却を設計するときの目安の発熱量。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/low_battery_flat.svg" alt="">間欠動作の平均電流は「電流×時間の合計 ÷ 周期」で計算する</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R7春 問21：平均を1μA以下にする最短の待機時間</div>
+      <svg width="430" height="190" viewBox="0 0 430 190"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<line x1="50" y1="130" x2="410" y2="130" stroke="#1f3a68" stroke-width="1.6" marker-end="url(#ar)"/><line x1="50" y1="140" x2="50" y2="20" stroke="#1f3a68" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="60" y="40" width="10" height="90" fill="#b25000"/><rect x="170" y="40" width="10" height="90" fill="#b25000"/><rect x="280" y="40" width="10" height="90" fill="#b25000"/><line x1="50" y1="128" x2="400" y2="128" stroke="#1f3a68" stroke-width="3"/>
+<text x="76" y="34" font-size="10.5" text-anchor="start" fill="#b25000" font-weight="700">10mA・10ms の動作</text><text x="125" y="120" font-size="10.5" text-anchor="middle" fill="#1f3a68">0.1μA で待機 T</text>
+<text x="30" y="46" font-size="10.5" text-anchor="middle" fill="#1f3a68">電流</text><text x="410" y="150" font-size="10.5" text-anchor="end" fill="#1f3a68">時間</text>
+<text x="230" y="176" font-size="11" text-anchor="middle" fill="#6e6e73">動作の山は高いが細い。待機を長くするほど平均が下がる</text>
+</svg>
+    </div>
+    <div>
+      <div class="formula" style="font-size:15px">単位をμAとmsにそろえる<br>(10,000×10 ＋ 0.1T) ÷ (10＋T) ≦ 1<br>0.9T ≧ 99,990　T ≧ 111,100ms<br>＝ <b>111.1秒</b>（ウ）</div>
+      <table class="mini">
+        <tr><th>選択肢</th><th>そのときの平均</th></tr>
+        <tr><td>1.1秒</td><td>約90μA</td></tr>
+        <tr><td>11.1秒</td><td>約9μA</td></tr>
+        <tr><td><b>111.1秒</b></td><td><b>1μA（正解）</b></td></tr>
+        <tr><td>1111.1秒</td><td>条件は満たすが最短ではない</td></tr>
+      </table>
+      <div class="point">光・振動・熱を集めて電気にする<b>エネルギーハーベスティング</b>（o15）と組み合わせると、電池交換のいらないセンサーになる。</div>
+    </div>
+  </div>
+  <img class="illust" src="img/irasutoya/battery.png" alt="" style="height:56px;bottom:36px">
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/electric_plug_flat.svg" alt="">直列の回路は電流が同じなので、電力の割合は電圧の割合になる</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R7秋 問20：10Vの電源・LED（2V）・抵抗を直列、10mA</div>
+      <svg width="420" height="170" viewBox="0 0 420 170">
+        <rect x="40" y="30" width="340" height="110" rx="6" fill="none" stroke="#1f3a68" stroke-width="2"/>
+        <rect x="16" y="60" width="50" height="50" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="41.0" y="89.7" font-size="13" text-anchor="middle" fill="#fff" font-weight="700">10V</text>
+        <path d="M160,18 L160,42 L184,30 Z" fill="#b25000"/><line x1="186" y1="18" x2="186" y2="42" stroke="#b25000" stroke-width="2.4"/><text x="173" y="62" font-size="11.5" text-anchor="middle" fill="#b25000" font-weight="700">LED 2V</text>
+        <rect x="262" y="20" width="60" height="20" fill="#fff" stroke="#1f3a68" stroke-width="2"/><text x="292" y="62" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">抵抗 8V</text>
+        <text x="210" y="100" font-size="12" text-anchor="middle" fill="#b25000" font-weight="700">LED：2V×10mA＝20mW</text>
+        <text x="210" y="122" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">全体：10V×10mA＝100mW</text>
+        <text x="210" y="162" font-size="12" text-anchor="middle" fill="#1d1d1f">→ 20÷100 ＝ 20％（ア）。残り80％は抵抗の熱</text>
+      </svg>
+      <div class="point">25％＝LEDと抵抗の比（2÷8）、80％＝抵抗の割合、100％＝抵抗の電力を見落とし。</div>
+    </div>
+    <div>
+      <div class="cap">R6春 問23：データセンターの直流給電の利点</div>
+      <div class="flow"><div class="box b4">交流</div><div class="to">▶</div><div class="box b3">UPS<span>直流↔交流</span></div><div class="to">▶</div><div class="box b3">電源<span>交流→直流</span></div><div class="to">▶</div><div class="box b1">サーバ</div></div>
+      <div class="point">変換のたびに損失が出る。直流のまま送れば<b>変換の回数が減り損失を減らせる</b>（ア）。</div>
+      <div class="point warn">LSIは1V前後なので途中の降圧は必要（イ×）。停電は起こるので電池は要る（ウ×）。トランスで簡単に昇圧・降圧できるのは<b>交流</b>の利点（エ×）。</div>
+    </div>
+  </div>
+  <img class="illust" src="img/irasutoya/datacenter.png" alt="" style="height:56px;bottom:36px">
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/clipboard_flat.svg" alt="">まとめ：ゲートは表で、計算は単位をそろえて。41問の論点はこの9つ</h1>
+  <table>
+    <tr><th style="width:20%">論点</th><th>覚えること</th><th style="width:26%">過去問</th></tr>
+    <tr><td>論理回路</td><td>4通りの入力を表にして確かめる。NANDだけで何でも作れる（ド・モルガン）</td><td>R5春21・R3秋22・R4秋23・R5秋23</td></tr>
+    <tr><td>順序回路・波形</td><td>RSラッチは前の状態を保つ。前回と今回のANDで変化を検出</td><td>R3春25・R6春21・R6秋21・R7秋21</td></tr>
+    <tr><td>制御・センサー</td><td>アクチュエーター＝動きに変換。Hブリッジは対角を導通。LiDAR＝光で距離</td><td>R4春22・R3春23・R5春23 ほか</td></tr>
+    <tr><td>受動部品・半導体</td><td>コンデンサは交流を通す。MOS＝酸化物絶縁体。インバータ＝直流→交流</td><td>R3春24・R5秋21・R6春20・R5春22</td></tr>
+    <tr><td>FPGA・SoC</td><td>FPGAは実装後に書換え。HDLで記述。SoC＝1チップ、SiP＝1パッケージ</td><td>R4春20・R7春20・R3春22</td></tr>
+    <tr><td>マイコンの計算</td><td>D/Aは16進→10進。タイマは周期×回数。画面は(y×横＋x)×番地数</td><td>R7春18・R7秋23・R4春21</td></tr>
+    <tr><td>部品と監視</td><td>OR 08hで1ビットだけ1に。WDTはクリアされないとリセット</td><td>R3秋23・R3秋21</td></tr>
+    <tr><td>メモリ・無線・耐タンパ</td><td>フラッシュは消してから書く。パッシブRFタグは電波で給電。開けたら壊れる</td><td>R4秋22・R3秋20・R5春24・R4春23</td></tr>
+    <tr><td>消費電力</td><td>平均電流＝合計÷周期。直列は電圧の比。直流給電は変換を減らす</td><td>R7春21・R7秋20・R6春23</td></tr>
+  </table>
+</section>
