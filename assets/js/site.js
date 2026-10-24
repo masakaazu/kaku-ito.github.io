@@ -38,7 +38,7 @@
     addHead("link", { rel: "icon", type: "image/png", href: url("assets/icons/icon-192.png") });
     addHead("meta", { name: "apple-mobile-web-app-title", content: "資格学習" });
     addHead("meta", { name: "apple-mobile-web-app-capable", content: "yes" });
-    addHead("meta", { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" });
+    addHead("meta", { name: "apple-mobile-web-app-status-bar-style", content: "default" });
   }
 
   // オフラインでも一度開いたページを見られるようにする（公開URLでのみ動く）
@@ -146,44 +146,69 @@
     return { pages, sequences };
   };
 
+  /*
+    ナビバーの見た目。教材ページは各自のCSSを持つので、all: unset で影響を断ってから書く。
+    色・書体などは theme.css の値を使う。
+  */
   const NAV_STYLE = `
-    .site-nav, .site-nav * { all: unset; box-sizing: border-box; }
+    .site-nav, .site-nav *, .site-pager, .site-pager * { all: unset; box-sizing: border-box; }
     .site-nav {
-      position: relative; z-index: 900;
-      display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px;
-      padding: 10px max(16px, calc((100% - var(--theme-page-width, 920px)) / 2));
-      padding-top: max(10px, env(safe-area-inset-top));
-      border-bottom: 1px solid var(--theme-line);
-      background: var(--theme-bg);
-      color: var(--theme-muted);
-      font: 13px/1.5 var(--theme-font-ui);
-      letter-spacing: 0.04em;
-      text-align: left;
+      position: relative; z-index: 900; display: block;
+      padding: env(safe-area-inset-top) max(var(--theme-gutter, 20px), calc((100% - var(--theme-page-width, 980px)) / 2)) 0;
+      background: var(--theme-nav-bg, rgba(255, 255, 255, 0.8));
+      -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
+      color: var(--theme-muted, #6e6e73);
+      font: 400 13px/1.4 var(--theme-font-ui, -apple-system, sans-serif);
+      letter-spacing: 0; text-align: left;
     }
-    .site-nav.site-nav-bottom {
-      margin-top: 40px;
-      padding-top: 10px;
-      padding-bottom: max(10px, env(safe-area-inset-bottom));
-      border-top: 1px solid var(--theme-line);
-      border-bottom: 0;
+    .site-nav-inner { display: flex; align-items: center; gap: 16px; min-height: 48px; }
+    .site-nav ol { display: flex; align-items: center; flex: 1 1 auto; min-width: 0; overflow: hidden; }
+    .site-nav li { display: inline-flex; align-items: center; min-width: 0; white-space: nowrap; }
+    .site-nav li + li::before { content: "›"; margin: 0 10px; color: var(--theme-faint, #86868b); }
+    .site-nav a { color: var(--theme-muted, #6e6e73); cursor: pointer; transition: color var(--theme-transition, 0.3s); }
+    .site-nav a:hover { color: var(--theme-heading, #1d1d1f); }
+    .site-nav a:focus-visible, .site-pager a:focus-visible { outline: 2px solid var(--theme-accent, #0071e3); outline-offset: 3px; border-radius: 4px; }
+    .site-nav li:first-child a { color: var(--theme-heading, #1d1d1f); font-weight: 600; }
+    .site-nav [aria-current="page"] { color: var(--theme-heading, #1d1d1f); overflow: hidden; text-overflow: ellipsis; }
+    .site-nav li:first-child[aria-current="page"] { font-weight: 600; }
+    .site-nav-side { display: inline-flex; flex: none; align-items: center; gap: 18px; margin-left: auto; white-space: nowrap; }
+    .site-nav-seq { display: inline-flex; align-items: center; gap: 4px; }
+    .site-nav-seq a, .site-nav-seq span.site-nav-off { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; font-size: 17px; }
+    .site-nav-seq a:hover { background: var(--theme-bg-alt, #f5f5f7); }
+    .site-nav-off { color: var(--theme-line, #d2d2d7); }
+    .site-nav-count { color: var(--theme-muted, #6e6e73); font-variant-numeric: tabular-nums; }
+    .site-nav .site-nav-login { color: var(--theme-link, #0066cc); }
+    .site-nav .site-nav-login:hover { color: var(--theme-link, #0066cc); text-decoration: underline; text-underline-offset: 3px; }
+    .site-nav .site-nav-login.is-in { color: var(--theme-good, #248a3d); }
+    .site-pager {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+      width: min(var(--theme-reading-width, 720px), calc(100% - var(--theme-gutter, 20px) * 2));
+      margin: 72px auto max(48px, env(safe-area-inset-bottom));
+      font: 400 15px/1.45 var(--theme-font-ui, -apple-system, sans-serif); letter-spacing: 0;
     }
-    .site-nav ol { display: flex; flex-wrap: wrap; align-items: center; min-width: 0; flex: 1 1 320px; }
-    .site-nav li { display: inline-flex; align-items: center; min-width: 0; }
-    .site-nav li + li::before { content: "／"; margin: 0 8px; color: var(--theme-faint); }
-    .site-nav a { color: color-mix(in srgb, var(--theme-cream) 78%, transparent); font-weight: 600; cursor: pointer; transition: color var(--theme-transition); }
-    .site-nav a:hover, .site-nav a:focus-visible { color: var(--theme-cream); text-decoration: underline; text-underline-offset: 3px; }
-    .site-nav a:focus-visible { outline: 1px solid var(--theme-cream); outline-offset: 3px; }
-    .site-nav [aria-current="page"] { color: var(--theme-cream); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 28em; }
-    .site-nav-side { display: inline-flex; align-items: center; gap: 14px; margin-left: auto; white-space: nowrap; }
-    .site-nav-count { color: var(--theme-muted); font-variant-numeric: tabular-nums; }
-    .site-nav-off { color: color-mix(in srgb, var(--theme-cream) 22%, transparent); font-weight: 600; }
-    .site-nav .site-nav-login { padding: 0 10px; border: 1px solid var(--theme-line); border-radius: var(--theme-radius-pill); font-size: 12px; text-decoration: none; }
-    .site-nav .site-nav-login.is-in { border-color: var(--theme-good); color: var(--theme-good); }
-    @media (max-width: 600px) {
-      .site-nav-side { width: 100%; justify-content: space-between; margin-left: 0; }
-      .site-nav [aria-current="page"] { max-width: 16em; }
+    .site-pager a {
+      display: flex; flex-direction: column; gap: 4px; padding: 18px 20px;
+      border-radius: var(--theme-radius, 14px); background: var(--theme-bg-alt, #f5f5f7);
+      color: var(--theme-heading, #1d1d1f); cursor: pointer;
+      transition: background-color var(--theme-transition, 0.3s);
     }
-    @media print { .site-nav { display: none; } }
+    .site-pager a:hover { background: var(--theme-surface-hover, #ebebf0); }
+    .site-pager a[rel="next"] { grid-column: 2; text-align: right; }
+    .site-pager small { color: var(--theme-muted, #6e6e73); font-size: 12px; }
+    .site-pager a[rel="prev"] small::before { content: "‹ "; }
+    .site-pager a[rel="next"] small::after { content: " ›"; }
+    .site-pager span { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; font-weight: 600; }
+    @media (max-width: 640px) {
+      /* スマホでは、ひとつ上の階層へ戻るリンクだけを出す */
+      .site-nav li { display: none; }
+      .site-nav li.is-parent, .site-nav li:only-child { display: inline-flex; }
+      .site-nav li.is-parent::before { content: "‹"; margin: 0 6px 0 0; font-size: 17px; color: var(--theme-link, #0066cc); }
+      .site-nav li.is-parent a { color: var(--theme-link, #0066cc); font-weight: 400; overflow: hidden; text-overflow: ellipsis; }
+      .site-nav-side { gap: 12px; }
+      .site-pager { grid-template-columns: 1fr; }
+      .site-pager a[rel="next"] { grid-column: 1; }
+    }
+    @media print { .site-nav, .site-pager { display: none; } }
   `;
 
   const loginLinks = [];
@@ -196,28 +221,34 @@
 
   const renderNav = ({ pages, sequences }, path) => {
     const page = pages[path];
-    if (!page || !page.parent) return;
+    if (!page) return;
 
     const chain = [];
     for (let p = page; p; p = pages[p.parent]) chain.unshift(p);
 
     const crumbs = chain
-      .map((p, i) =>
-        i === chain.length - 1
-          ? `<li aria-current="page">${escapeHtml(p.crumb)}</li>`
-          : `<li><a href="${url(p.path)}">${escapeHtml(p.crumb)}</a></li>`
-      )
+      .map((p, i) => {
+        if (i === chain.length - 1) return `<li aria-current="page">${escapeHtml(p.crumb)}</li>`;
+        const parent = i === chain.length - 2 ? ' class="is-parent"' : "";
+        return `<li${parent}><a href="${url(p.path)}">${escapeHtml(p.crumb)}</a></li>`;
+      })
       .join("");
 
     let seq = "";
+    let pager = "";
     if (page.sequence && sequences[page.sequence].length > 1) {
       const list = sequences[page.sequence];
       const i = list.indexOf(path);
-      const link = (target, rel, label) =>
+      const prev = list[i - 1];
+      const next = list[i + 1];
+      const arrow = (target, rel, label, mark) =>
         target
-          ? `<a href="${url(target)}" rel="${rel}" title="${escapeHtml(pages[target].crumb)}">${label}</a>`
-          : `<span class="site-nav-off">${label}</span>`;
-      seq = `${link(list[i - 1], "prev", "← 前へ")}<span class="site-nav-count">${i + 1} / ${list.length}</span>${link(list[i + 1], "next", "次へ →")}`;
+          ? `<a href="${url(target)}" rel="${rel}" title="${escapeHtml(pages[target].crumb)}" aria-label="${label}">${mark}</a>`
+          : `<span class="site-nav-off" aria-hidden="true">${mark}</span>`;
+      seq = `<span class="site-nav-seq">${arrow(prev, "prev", "前の教材", "‹")}<span class="site-nav-count">${i + 1} / ${list.length}</span>${arrow(next, "next", "次の教材", "›")}</span>`;
+      const block = (target, rel, label) =>
+        target ? `<a href="${url(target)}" rel="${rel}"><small>${label}</small><span>${escapeHtml(pages[target].crumb)}</span></a>` : "";
+      pager = block(prev, "prev", "前へ") + block(next, "next", "次へ");
     }
 
     const login = path === "login.html" ? "" : `<a class="site-nav-login" href="${url("login.html")}">ログイン</a>`;
@@ -229,16 +260,16 @@
     const nav = document.createElement("nav");
     nav.className = "site-nav";
     nav.setAttribute("aria-label", "サイト内の現在地");
-    nav.innerHTML = `<ol>${crumbs}</ol><div class="site-nav-side">${seq}${login}</div>`;
+    nav.innerHTML = `<div class="site-nav-inner"><ol>${crumbs}</ol><div class="site-nav-side">${seq}${login}</div></div>`;
     document.body.prepend(nav);
     loginLinks.push(...nav.querySelectorAll(".site-nav-login"));
 
     // 前後移動がある教材は、読み終えた位置からも移動できるよう下部にも置く
-    if (seq) {
+    if (pager) {
       const bottom = document.createElement("nav");
-      bottom.className = "site-nav site-nav-bottom";
+      bottom.className = "site-pager";
       bottom.setAttribute("aria-label", "前後の教材へ移動");
-      bottom.innerHTML = `<ol>${crumbs}</ol><div class="site-nav-side">${seq}</div>`;
+      bottom.innerHTML = pager;
       document.body.append(bottom);
     }
 
@@ -251,24 +282,35 @@
 
   /* ---------- 一覧ページの描画 ---------- */
 
-  const card = ({ href, icon, title, desc, arrow, rateKey, extraClass = "" }) => `
+  // 大きなタイル（資格・共通教材など）
+  const card = ({ href, icon, title, desc, arrow, extraClass = "" }) => `
     <a class="card ${extraClass}" href="${href}">
       <div class="card-head">
         ${icon ? `<span class="card-icon">${escapeHtml(icon)}</span>` : "<span></span>"}
-        ${rateKey ? `<span class="rate" data-rate-item="${escapeHtml(rateKey)}" hidden></span>` : ""}
       </div>
       <h3>${escapeHtml(title)}</h3>
       ${desc ? `<p>${escapeHtml(desc)}</p>` : ""}
       <span class="arrow">${arrow}</span>
     </a>`;
 
-  const materialCard = (site, m, iconText) =>
-    card({
+  // 一覧の1行（教材・日付など）
+  const row = ({ href, label, title, desc, rateKey, extraClass = "" }) => `
+    <a class="list-item ${extraClass}" href="${href}">
+      <span class="list-main">
+        ${label ? `<span class="list-date">${escapeHtml(label)}</span>` : ""}
+        <span class="list-title">${escapeHtml(title)}</span>
+        ${desc ? `<span class="list-meta">${escapeHtml(desc)}</span>` : ""}
+      </span>
+      ${rateKey ? `<span class="rate" data-rate-item="${escapeHtml(rateKey)}" hidden></span>` : ""}
+      <span class="list-arrow" aria-hidden="true">›</span>
+    </a>`;
+
+  const materialRow = (site, m, label) =>
+    row({
       href: url(m.path),
-      icon: iconText || site.types[m.type].label,
+      label: label ?? site.types[m.type].label,
       title: m.title,
       desc: m.desc,
-      arrow: m.type === "note" ? "ノートを開く →" : "教材を開く →",
       rateKey: m.type === "note" ? "" : m.path,
     });
 
@@ -297,7 +339,7 @@
           <h3>${escapeHtml(info.name)}</h3>
           <p>${escapeHtml(examText(info))}<br>${escapeHtml(info.desc)}</p>
           <span class="card-foot">${escapeHtml(counts)}</span>
-          <span class="arrow">${escapeHtml(info.short)}を開く →</span>
+          <span class="arrow">${escapeHtml(info.short)}を開く</span>
         </a>`;
         })
         .join("")}</div>`,
@@ -363,7 +405,7 @@
             <h2>${escapeHtml(site.types[type].label)}</h2>
             <span>${list.length}件</span>
           </div>
-          <div class="grid grid-3">${list.map((m) => materialCard(site, m, m.date ? shortDate(m.date) : "")).join("")}</div>
+          <div class="list">${list.map((m) => materialRow(site, m, m.date ? shortDate(m.date) : "")).join("")}</div>
         </section>`;
         })
         .join("");
@@ -373,9 +415,7 @@
     "type-list": (site, el) => {
       const list = itemsOf(site, el.dataset.topic, (m) => m.type === el.dataset.type);
       if (!list.length) return `<p class="empty">まだありません。</p>`;
-      return `<div class="grid">${list
-        .map((m, i) => materialCard(site, m, pad2(i + 1)))
-        .join("")}</div>`;
+      return `<div class="list">${list.map((m, i) => materialRow(site, m, pad2(i + 1))).join("")}</div>`;
     },
 
     /* 最近追加した教材（catalog.js の後ろから） */
@@ -385,13 +425,7 @@
       return `<div class="list">${list
         .map((m) => {
           const field = site.fieldByNo.get(m.fields[0]);
-          return `
-        <a class="list-item" href="${url(m.path)}">
-          <span class="list-date">${escapeHtml(site.types[m.type].label)}${field ? `｜${escapeHtml(field.name)}` : ""}</span>
-          <span class="list-title">${escapeHtml(m.title)}</span>
-          <span class="list-meta">${escapeHtml(m.desc || "")}</span>
-          <span class="list-arrow" aria-hidden="true">→</span>
-        </a>`;
+          return materialRow(site, m, `${site.types[m.type].label}${field ? `・${field.name}` : ""}`);
         })
         .join("")}</div>`;
     },
@@ -401,14 +435,12 @@
       const topic = el.dataset.topic;
       const days = site.topics[topic].days || {};
       return `<div class="list">${Object.entries(days)
-        .map(
-          ([date, summary]) => `
-        <a class="list-item" href="${url(`${topic}/review/${date}/index.html`)}">
-          <span class="list-date">${formatDate(date)}</span>
-          <span class="list-title">${escapeHtml(summary)}</span>
-          <span class="list-meta">${itemsOf(site, topic, (m) => m.date === date).length}教材</span>
-          <span class="list-arrow" aria-hidden="true">→</span>
-        </a>`
+        .map(([date, summary]) =>
+          row({
+            href: url(`${topic}/review/${date}/index.html`),
+            label: `${formatDate(date)}・${itemsOf(site, topic, (m) => m.date === date).length}教材`,
+            title: summary,
+          })
         )
         .join("")}</div>`;
     },
@@ -417,7 +449,7 @@
     day: (site, el) => {
       const list = itemsOf(site, el.dataset.topic, (m) => m.date === el.dataset.date);
       if (!list.length) return `<p class="empty">この日の教材は catalog.js に登録されていません。</p>`;
-      return `<div class="grid grid-3">${list.map((m, i) => materialCard(site, m, `教材 ${i + 1}`)).join("")}</div>`;
+      return `<div class="list">${list.map((m, i) => materialRow(site, m, `教材 ${i + 1}`)).join("")}</div>`;
     },
 
     common: (site) =>
@@ -428,7 +460,7 @@
             icon: item.icon,
             title: item.title,
             desc: item.desc,
-            arrow: "教材を開く →",
+            arrow: "教材を開く",
           })
         )
         .join("")}</div>`,
@@ -455,7 +487,7 @@
       const field = site.fieldByNo.get(Number(query.get("f")));
       if (!field) return "";
       const group = site.groups.find((g) => g.id === field.group);
-      return `${group.name}｜${field.major}｜No.${pad2(field.no)}`;
+      return `${group.name}・${field.major}・No.${pad2(field.no)}`;
     },
     active: (site) => {
       const active = Object.values(site.topics).find((t) => t.active);
@@ -477,6 +509,12 @@
       const [first, second] = el.dataset.siteText.split(":");
       const render = second ? texts[second] : texts[first];
       if (render) el.textContent = render(site, second ? first : null);
+    });
+
+    // data-site-href="active" … いま学習中の資格のページへのリンク
+    document.querySelectorAll('[data-site-href="active"]').forEach((el) => {
+      const active = Object.entries(site.topics).find(([, t]) => t.active);
+      if (active) el.href = url(`${active[0]}/index.html`);
     });
 
     // 中分類ページは、ページタイトルを分野名にする
@@ -546,14 +584,13 @@
         el.innerHTML = `<p class="empty">間違えたままの問題はありません。</p>`;
         return;
       }
-      el.innerHTML = `<div class="grid">${list
+      el.innerHTML = `<div class="list">${list
         .map(({ m, rows }) =>
-          card({
+          row({
             href: url(m.type === "terms" ? `${m.path}?mode=wrong` : m.path),
-            icon: site.types[m.type].label,
+            label: site.types[m.type].label,
             title: m.title,
-            desc: `間違えたまま ${rows.length}${m.type === "terms" ? "語" : "問"}`,
-            arrow: m.type === "terms" ? "間違えた用語だけ解く →" : "解き直す →",
+            desc: `間違えたまま ${rows.length}${m.type === "terms" ? "語（間違えた用語だけ解く）" : "問"}`,
             extraClass: "is-wrong",
           })
         )
@@ -590,6 +627,29 @@
     }
   };
 
+  /* ---------- スクロールで静かに現れる（一覧ページだけ） ---------- */
+
+  const revealOnScroll = () => {
+    if (!("IntersectionObserver" in window)) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const targets = [...document.querySelectorAll("main > .hero > *, main > .section, main > [data-site-list] > .section, .field-group")];
+    const observer = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }),
+      { rootMargin: "0px 0px -8% 0px" }
+    );
+    targets.forEach((el, i) => {
+      el.classList.add("reveal");
+      // 大見出しまわりは少しずつずらして現す
+      if (el.parentElement.classList.contains("hero")) el.style.transitionDelay = `${Math.min(i, 5) * 0.08}s`;
+      observer.observe(el);
+    });
+  };
+
   /* ---------- 起動 ---------- */
 
   const init = () => {
@@ -598,7 +658,10 @@
     renderPlaceholders(site);
     renderNav(buildPages(site), currentPath());
     // 一覧ページは正答率を、教材ページはログイン表示だけを更新する
-    if (document.querySelector('link[href$="assets/css/site.css"]')) renderRates(site);
+    if (document.querySelector('link[href$="assets/css/site.css"]')) {
+      renderRates(site);
+      revealOnScroll();
+    }
   };
 
   const start = () => {

@@ -63,23 +63,23 @@
       element.setAttribute("role", "status");
       element.style.cssText = `
         position: fixed;
-        right: 12px;
-        bottom: 12px;
+        right: 16px;
+        bottom: max(16px, env(safe-area-inset-bottom));
         z-index: 9999;
         max-width: calc(100vw - 24px);
-        padding: 8px 12px;
-        border: 1px solid;
-        border-radius: var(--theme-radius, 4px);
+        padding: 10px 16px;
+        border: 0;
+        border-radius: var(--theme-radius, 14px);
         font: 14px/1.4 var(--theme-font-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", sans-serif);
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
       `;
       document.body.appendChild(element);
     }
 
     const colors = {
-      info: ["var(--theme-bg, #272726)", "var(--theme-cream, #e8e2d6)", "var(--theme-line, rgba(232, 226, 214, 0.3))"],
-      success: ["var(--theme-good-bg, #1d241f)", "var(--theme-good, #8db094)", "var(--theme-good, #3d5a44)"],
-      error: ["var(--theme-bad-bg, #2a1f1e)", "var(--theme-bad, #d19489)", "var(--theme-bad, #6b4846)"],
+      info: ["var(--theme-bg-alt, #f5f5f7)", "var(--theme-heading, #1d1d1f)", "transparent"],
+      success: ["var(--theme-good-bg, #e8f6ec)", "var(--theme-good, #248a3d)", "transparent"],
+      error: ["var(--theme-bad-bg, #fdecee)", "var(--theme-bad, #d70015)", "transparent"],
     };
     const [background, color, border] = colors[type] || colors.info;
 

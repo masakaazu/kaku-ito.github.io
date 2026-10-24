@@ -8,7 +8,7 @@
 
   中身を大きく変えたときは VERSION を上げると、古い保存分が消える。
 */
-const VERSION = "v1";
+const VERSION = "v2";
 const CACHE = `site-${VERSION}`;
 const CORE = [
   "./",
@@ -16,9 +16,11 @@ const CORE = [
   "login.html",
   "manifest.webmanifest",
   "assets/css/theme.css",
+  "assets/css/components.css",
   "assets/css/site.css",
   "assets/css/content.css",
   "assets/css/note.css",
+  "assets/css/terms.css",
   "assets/js/catalog.js",
   "assets/js/site.js",
   "assets/js/study-sync.js",
@@ -51,7 +53,7 @@ const networkFirst = async (request) => {
     if (request.mode === "navigate") {
       return new Response(
         '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">' +
-          '<title>オフライン</title><body style="margin:0;padding:40px 20px;background:#1e1f21;color:#e8e2d6;font-family:serif;text-align:center">' +
+          '<title>オフライン</title><body style="margin:0;padding:40px 20px;background:#fff;color:#1d1d1f;font-family:-apple-system,sans-serif;text-align:center">' +
           "<h1>オフラインです</h1><p>このページはまだ保存されていません。電波のある場所で一度開くと、次からは圏外でも見られます。</p></body>",
         { headers: { "Content-Type": "text/html; charset=utf-8" } }
       );
