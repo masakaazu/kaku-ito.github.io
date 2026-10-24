@@ -13,6 +13,8 @@
     date    （基本情報の日別復習だけ）学習日 "YYYY-MM-DD"
     qid     （任意）回答記録の問題IDの頭。省略すると用語集は "ap-20-"、それ以外はファイル名＋"-"（例: "927no5-"）
     pdf     （任意）図解スライドのPDF。資格フォルダから見た場所
+    ids     （任意）日別復習などから移してきた問題の元の問題ID。回答記録を引き継ぐ。
+            「927no5-」のように「-」で終わるものは、頭が一致するIDをすべて含む
 
   試験日は topics の exams に { label, date: "YYYY-MM-DD" } で書く。
 */
@@ -120,6 +122,11 @@ window.SITE_CATALOG = {
     ],
 
     fe: [
+      {
+        type: "terms", file: "terms/10.html", title: "ネットワーク 用語集", desc: "OSI・TCP/IP・IPアドレス・LAN機器・メール・SDNなど83語と問題60問", fields: [10],
+        ids: ["927no5-", "914no1-osi-", "913no3-q5", "914no1-network-q01", "914no1-network-q02", "927no8-q6", "927no8-q7", "927no8-q8", "927no8-q9", "927no8-q10", "927no8-q11", "927no8-q12", "927no10-0", "927no10-1", "927no10-2", "927no10-3", "927no10-4", "927no10-5", "927no10-6", "927no10-7", "927no10-8", "927no10-10", "927no13-4", "927no13-5", "927no13-6", "927no13-7", "927no14-11", "927no14-12", "927no14-13", "927no14-14"],
+      },
+
       { type: "quiz", date: "2026-09-13", file: "review/2026-09-13/913no1.html", title: "クラウド・セキュリティ・基礎理論", desc: "用語カードと4択クイズで確認します。", fields: [4, 11, 1] },
       { type: "quiz", date: "2026-09-13", file: "review/2026-09-13/913no2.html", title: "毎日10分の復習", desc: "用語カード、クイズ、苦手復習に取り組みます。", fields: [] },
       { type: "quiz", date: "2026-09-13", file: "review/2026-09-13/913no3.html", title: "マネジメント・法務・ネットワーク基礎", desc: "用語カード、クイズ、苦手復習に取り組みます。", fields: [14, 15, 23, 10] },
@@ -133,7 +140,6 @@ window.SITE_CATALOG = {
       { type: "quiz", date: "2026-09-27", file: "review/2026-09-27/927no2.html", title: "システム評価・開発手法・モデリング", desc: "信頼性、開発手法、データモデリングを復習します。", fields: [4, 12, 13] },
       { type: "quiz", date: "2026-09-27", file: "review/2026-09-27/927no3.html", title: "IT戦略分野", desc: "ITサービス、監査、業務・生産分野を復習します。", fields: [15, 16, 21] },
       { type: "quiz", date: "2026-09-27", file: "review/2026-09-27/927no4.html", title: "経営戦略", desc: "経営戦略、マーケティング、経営管理を復習します。", fields: [19, 22] },
-      { type: "quiz", date: "2026-09-27", file: "review/2026-09-27/927no5.html", title: "ネットワーク", desc: "TCP/IP、IPアドレス、DHCP、DNSを復習します。", fields: [10] },
       { type: "quiz", date: "2026-09-27", file: "review/2026-09-27/927no6.html", title: "情報セキュリティ", desc: "脅威、暗号、認証、ネットワーク防御を復習します。", fields: [11] },
       { type: "quiz", date: "2026-09-27", file: "review/2026-09-27/927no7.html", title: "セキュリティ・アルゴリズム・データ構造", desc: "セキュリティ対策、プログラムの性質、木構造を復習します。", fields: [11, 2] },
       { type: "quiz", date: "2026-09-27", file: "review/2026-09-27/927no8.html", title: "DB・ネットワーク", desc: "データベース、SQL、LAN、OSI・TCP/IPを復習します。", fields: [9, 10] },

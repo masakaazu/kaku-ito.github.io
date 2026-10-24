@@ -95,6 +95,8 @@
           fields: m.fields || [],
           // 回答記録の問題IDの頭。用語集は「資格-中分類-」、それ以外は「ファイル名-」
           qid: m.qid || (m.type === "terms" && m.fields && m.fields.length ? `${topic}-${m.fields[0]}-` : `${stem(m.file)}-`),
+          // 日別復習などから移した問題の元の問題ID（「-」で終わるものは頭が一致すればよい）
+          ids: m.ids || [],
         });
       });
     });
@@ -556,7 +558,9 @@
     rows.forEach((row) => {
       const id = String(row.question_id);
       const direct = id.match(/^([a-z]+)-(\d{1,2})-/);
-      const item = prefixed.find((m) => id.startsWith(m.qid));
+      const item =
+        site.items.find((m) => m.ids.some((x) => (x.endsWith("-") ? id.startsWith(x) : id === x))) ||
+        prefixed.find((m) => id.startsWith(m.qid));
       if (item) add(byItem, item.path, row);
       if (item && row.last_answer_correct === false) (wrongByItem[item.path] ||= []).push(row);
       if (direct && site.topics[direct[1]]) add(byField, `${direct[1]}:${Number(direct[2])}`, row);
