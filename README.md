@@ -25,12 +25,13 @@ kaku-ito.github.io/
 │   ├── notes/              ノート（apno1.html〜）
 │   └── terms/              用語集（分野番号.md が中身、同名の .html が表示用）
 ├── fe/                     基本情報技術者試験（受験済み）
-│   ├── index.html          分野マップ＋日別復習
+│   ├── index.html          分野マップ
 │   ├── field.html          中分類ページ
-│   └── review/             日別復習（YYYY-MM-DD/ごと）
+│   └── terms/              用語集（01〜23。分野番号.md が中身、同名の .html が表示用、.pdf が図解）
 ├── common/                 資格を問わず使う教材（英単語帳・略語帳）
 ├── tools/
-│   └── lighten.pl          夜テーマ時代の教材HTMLを、明るいデザインの色へ変換する（変換済み）
+│   ├── lighten.pl          夜テーマ時代の教材HTMLを、明るいデザインの色へ変換する（変換済み）
+│   └── slides/             図解PDFを作る道具（md2slides.js で md→スライドHTML、topdf.js でPDF）
 └── assets/
     ├── css/
     │   ├── theme.css       デザインの設定（色・書体・文字の大きさ・余白・角の丸み・動き）※見た目を変えるときはここだけ
@@ -44,8 +45,7 @@ kaku-ito.github.io/
         ├── catalog.js      教材の一覧データ（教材を追加したらここに登録）
         ├── site.js         ナビバー・一覧・分野マップ・正答率の描画
         ├── study-sync.js   回答をSupabaseへ記録（ログインもここ経由）
-        ├── terms.js        用語集の md を読んで一覧・カード・クイズにする（デザインは css/terms.css）
-        └── review-answer-toggle.js 「答えを表示」ボタン
+        └── terms.js        用語集の md を読んで一覧・カード・クイズにする（デザインは css/terms.css）
 ```
 
 ## デザインを変える
@@ -62,7 +62,7 @@ Apple公式サイトのような、白・黒・グレーを基本にした余白
 - 本文を明朝体に戻したいとき：`--theme-font-body` を `var(--theme-font-serif)` に変える
 - ボタンは `.button`（青）・`.button.is-secondary`（グレー）・`.text-link`（文字リンク）の3種類だけ
 
-基本情報の日別復習（`fe/review/`）と共通教材（`common/`）は色が各HTMLに直接書かれている。
+共通教材（`common/`）は色が各HTMLに直接書かれている。
 `tools/lighten.pl` で `light-dark(明るい色, 暗い色)` の形に変換済みなので、上の color-scheme の切り替えには従う。
 
 ## 教材を追加する
@@ -100,7 +100,7 @@ md は次のどちらの書き方でも読める（混ぜてもよい）。
 - `### まとめ` の下に書いた表や文は「まとめ表」として折りたたみで出る
 - 略語は見出しに正式名称を書く（例：`#### RPA（Robotic Process Automation）`）。`- 語の意味：Robotic＝ロボットによる／…` を足すと、カードは1回目のタップで正式名称、2回目で意味と語の意味が出る
 - 最後に `## 問題演習` を置くと、手作りの4択問題もクイズに出せる。`### 小分類名`（上の ## と同じ名前）の下に `#### 問 問題ID`、`- 問：` `- ア：`〜`- エ：` `- 正解：イ` `- 解説：` を書く。回答は問題IDのまま記録する
-- 日別復習から問題を移したときは、`catalog.js` の `ids` に元の問題IDを書くと、これまでの回答記録が新しいページに引き継がれる（例：`fe/terms/10.md`）
+- ほかのページから問題を移したときは、`catalog.js` の `ids` に元の問題IDを書くと、これまでの回答記録が新しいページに引き継がれる（例：`fe/terms/10.md`）
 - 図解スライドは `tools/slides/` のHTMLから `node tools/slides/topdf.js tools/slides/fe-10.html fe/terms/10.pdf` でPDFにできる
 - 「意味」がない用語（名前だけの一覧）は札の形で並び、カード・クイズには出ない
 - `⚠重複` を付けた用語は一覧にだけ出す

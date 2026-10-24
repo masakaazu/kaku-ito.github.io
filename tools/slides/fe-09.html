@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>基本情報 データベース 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+</style>
+<style>
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
+.term .box { text-align: left; font-size: 15px; padding: 7px 12px; }
+.term dl { margin: 6px 2px 0; }
+.term dd { margin: 0 0 4px; font-size: 12.5px; line-height: 1.5; }
+.term dd.pt { color: #333; }
+.term dd.words { color: var(--navy2); font-size: 11.5px; }
+.term .tag { font-size: 10.5px; padding: 0 5px; }
+.slide .cap + table { margin-bottom: 14px; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">基本情報技術者試験　テクノロジ系　No.9</div>
+  <h1>データベース</h1>
+  <p>データベース方式・データベース設計・データ操作・トランザクション処理・データベース応用</p>
+<div class="foot"><span>基本情報 データベース</span><span>1</span></div>
+</section>
+
+<section class="slide ">
+  <h1>目次</h1>
+  <ol class="toc">
+    <li>9-1 データベース方式（11語）</li>
+    <li>9-2 データベース設計（8語）</li>
+    <li>9-3 データ操作（10語）</li>
+    <li>9-4 トランザクション処理（8語）</li>
+    <li>9-5 データベース応用（6語）</li>
+    <li>まとめ</li>
+  </ol>
+<div class="foot"><span>基本情報 データベース</span><span>2</span></div>
+</section>
+
+<section class="slide ">
+  <h1>9-1 データベース方式<small>まとめ表</small></h1>
+  <div class="cols"><div><div class="cap">3層スキーマ</div>
+  <table><thead><tr><th>スキーマ</th><th>何を定義するか</th></tr></thead>
+  <tbody><tr><td>外部スキーマ</td><td>利用者やアプリから見たデータ（ビュー）</td></tr><tr><td>概念スキーマ</td><td>データベース全体の論理的な構造（表の定義）</td></tr><tr><td>内部スキーマ</td><td>ディスク上にどう格納するか</td></tr></tbody></table></div><div><div class="cap">NoSQLの種類</div>
+  <table><thead><tr><th>種類</th><th>データの持ち方</th></tr></thead>
+  <tbody><tr><td>キーバリュー型</td><td>キーと値の組</td></tr><tr><td>ドキュメント型</td><td>JSONなどの文書</td></tr><tr><td>カラム指向型</td><td>列ごとにまとめる</td></tr><tr><td>グラフ型</td><td>ノードとエッジ（つながり）</td></tr></tbody></table></div></div>
+<div class="foot"><span>基本情報 データベース</span><span>3</span></div>
+</section>
+
+<section class="slide ">
+  <h1>9-1 データベース方式<small>データベースの基本</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">データベース<span>Database</span></div><dl><dd>多くのデータを整理して、共有・検索しやすくまとめたもの</dd></dl></div><div class="term"><div class="box b1">DBMS<span>でぃーびーえむえす / Database Management System</span></div><dl><dd>データベースを管理するソフトウェア。同時実行の制御や障害回復を行う</dd><dd class="words">Database＝データベース／Management＝管理／System＝仕組み</dd></dl></div><div class="term"><div class="box b1">関係データベース<span>かんけいでーたべーす / Relational Database</span></div><dl><dd>データを行と列の表（関係）で表すデータベース</dd><dd class="pt"><span class="tag">ポイント</span>行をタプル（レコード）、列を属性（フィールド）と呼ぶ</dd></dl></div><div class="term"><div class="box b1">3層スキーマ<span>さんそうすきーま / Three-schema Architecture</span></div><dl><dd>データベースを外部スキーマ・概念スキーマ・内部スキーマの3つに分けて定義する考え方</dd><dd class="pt"><span class="tag">ポイント</span>1つを変えても他への影響を小さくできる（データの独立性）</dd></dl></div><div class="term"><div class="box b1">外部スキーマ<span>External Schema</span></div><dl><dd>利用者やアプリケーションから見たデータベースの見え方を定義したもの</dd><dd class="pt"><span class="tag">ポイント</span>ビューにあたる</dd></dl></div><div class="term"><div class="box b1">概念スキーマ<span>Conceptual Schema</span></div><dl><dd>データベース全体の論理的な構造を定義したもの</dd><dd class="pt"><span class="tag">ポイント</span>表の定義にあたる</dd></dl></div></div>
+<div class="foot"><span>基本情報 データベース</span><span>4</span></div>
+</section>
+
+<section class="slide ">
+  <h1>9-1 データベース方式<small>データベースの基本</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">内部スキーマ<span>Internal Schema</span></div><dl><dd>データを記憶装置にどう格納するかを定義したもの</dd></dl></div><div class="term"><div class="box b1">NoSQL<span>のーえすきゅーえる / Not only SQL</span></div><dl><dd>表の形にとらわれず、大量のデータを柔軟に扱うデータベースの総称</dd><dd class="pt"><span class="tag">ポイント</span>キーバリュー型・ドキュメント型・カラム指向型・グラフ型がある</dd><dd class="words">Not only＝〜だけではない／SQL＝関係データベースの言語</dd></dl></div><div class="term"><div class="box b1">キーバリュー型<span>Key-Value Store</span></div><dl><dd>キーと値の組だけでデータを持つNoSQL</dd><dd class="pt"><span class="tag">ポイント</span>単純で速い</dd></dl></div><div class="term"><div class="box b1">ドキュメント型<span>Document Store</span></div><dl><dd>JSONなどの文書の形でデータを持つNoSQL</dd></dl></div><div class="term"><div class="box b1">グラフ型<span>Graph Database</span></div><dl><dd>ノード（点）とエッジ（線）で、データどうしのつながりを表すNoSQL</dd><dd class="pt"><span class="tag">例</span>SNSの友達関係</dd></dl></div></div>
+<div class="foot"><span>基本情報 データベース</span><span>5</span></div>
+</section>
+
+<section class="slide ">
+  <h1>9-2 データベース設計<small>まとめ表</small></h1>
+  <div class="cap">正規化の段階</div>
+  <table><thead><tr><th>段階</th><th>やること</th></tr></thead>
+  <tbody><tr><td>第1正規形</td><td>繰返し項目をなくす</td></tr><tr><td>第2正規形</td><td>主キーの一部だけに従属する項目（部分関数従属）を別の表に分ける</td></tr><tr><td>第3正規形</td><td>主キー以外の項目に従属する項目（推移的関数従属）を別の表に分ける</td></tr></tbody></table>
+<div class="foot"><span>基本情報 データベース</span><span>6</span></div>
+</section>
+
+<section class="slide ">
+  <h1>9-2 データベース設計<small>データの設計</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">E-R図<span>いーあーるず / Entity Relationship Diagram</span></div><dl><dd>実体（エンティティ）と、実体どうしの関連（リレーションシップ）を表した図</dd><dd class="pt"><span class="tag">ポイント</span>1対多などの関係（カーディナリティ）も表す</dd><dd class="words">Entity＝実体／Relationship＝関連／Diagram＝図</dd></dl></div><div class="term"><div class="box b1">主キー<span>しゅきー / Primary Key</span></div><dl><dd>表の中の行を1つに決められる列。重複やNULLは許されない</dd><dd class="pt"><span class="tag">ポイント</span>複数の列を組み合わせたものを複合主キーという</dd></dl></div><div class="term"><div class="box b1">外部キー<span>がいぶきー / Foreign Key</span></div><dl><dd>ほかの表の主キーを参照する列</dd><dd class="pt"><span class="tag">ポイント</span>参照先にない値は入れられない（参照制約）</dd></dl></div><div class="term"><div class="box b1">正規化<span>せいきか / Normalization</span></div><dl><dd>データの重複をなくすように表を分けること</dd><dd class="pt"><span class="tag">ポイント</span>更新したときの矛盾（更新時異状）を防ぐ</dd></dl></div><div class="term"><div class="box b1">関数従属<span>かんすうじゅうぞく / Functional Dependency</span></div><dl><dd>ある項目の値が決まると、別の項目の値が1つに決まる関係</dd></dl></div><div class="term"><div class="box b1">部分関数従属<span>ぶぶんかんすうじゅうぞく / Partial Functional Dependency</span></div><dl><dd>複合主キーの一部だけで、ほかの項目が決まってしまう関係</dd><dd class="pt"><span class="tag">ポイント</span>取り除くと第2正規形になる</dd></dl></div></div>
+<div class="foot"><span>基本情報 データベース</span><span>7</span></div>
+</section>
+
+<section class="slide ">
+  <h1>9-2 データベース設計<small>データの設計</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">推移的関数従属<span>すいいてきかんすうじゅうぞく / Transitive Functional Dependency</span></div><dl><dd>主キー以外の項目を通して、さらに別の項目が決まる関係</dd><dd class="pt"><span class="tag">ポイント</span>取り除くと第3正規形になる</dd></dl></div><div class="term"><div class="box b1">インデックス<span>Index</span></div><dl><dd>検索を速くするための索引</dd><dd class="pt"><span class="tag">ポイント</span>更新のたびにインデックスも直すので、更新は少し遅くなる</dd></dl></div></div>
+<div class="foot"><span>基本情報 データベース</span><span>8</span></div>
+</section>
+
+<section class="slide ">
+  <h1>9-3 データ操作<small>まとめ表</small></h1>
+  <div class="cap">SQLの実行順序</div>
+  <table><thead><tr><th>順番</th><th>句</th><th>役割</th></tr></thead>
+  <tbody><tr><td>1</td><td>FROM</td><td>表を決める</td></tr><tr><td>2</td><td>WHERE</td><td>行を絞る</td></tr><tr><td>3</td><td>GROUP BY</td><td>グループにまとめる</td></tr><tr><td>4</td><td>HAVING</td><td>グループを絞る</td></tr><tr><td>5</td><td>SELECT</td><td>表示する列を決める</td></tr><tr><td>6</td><td>ORDER BY</td><td>並べ替える</td></tr></tbody></table>
+<div class="foot"><span>基本情報 データベース</span><span>9</span></div>
+</section>
+
+<section class="slide ">
+  <h1>9-3 データ操作<small>関係演算・SQL</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">選択<span>せんたく / Selection</span></div><dl><dd>表から、条件に合う行を取り出す関係演算</dd></dl></div><div class="term"><div class="box b1">射影<span>しゃえい / Projection</span></div><dl><dd>表から、指定した列だけを取り出す関係演算</dd></dl></div><div class="term"><div class="box b1">結合<span>けつごう / Join</span></div><dl><dd>共通の列をもとに、2つの表をつなぎ合わせる関係演算</dd></dl></div><div class="term"><div class="box b1">SQL<span>えすきゅーえる / Structured Query Language</span></div><dl><dd>関係データベースを操作するための言語</dd><dd class="pt"><span class="tag">ポイント</span>定義するDDLと、操作するDMLがある</dd><dd class="words">Structured＝構造化された／Query＝問合せ／Language＝言語</dd></dl></div><div class="term"><div class="box b1">DDL<span>でぃーでぃーえる / Data Definition Language</span></div><dl><dd>表などを定義するSQL。CREATE・ALTER・DROP</dd><dd class="words">Data＝データ／Definition＝定義／Language＝言語</dd></dl></div><div class="term"><div class="box b1">DML<span>でぃーえむえる / Data Manipulation Language</span></div><dl><dd>データを操作するSQL。SELECT・INSERT・UPDATE・DELETE</dd><dd class="words">Data＝データ／Manipulation＝操作／Language＝言語</dd></dl></div></div>
+<div class="foot"><span>基本情報 データベース</span><span>10</span></div>
+</section>
+
+<section class="slide ">
+  <h1>9-3 データ操作<small>SQL</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">WHERE句・HAVING句<span>WHERE, HAVING</span></div><dl><dd>WHEREは行を、HAVINGはGROUP BYでまとめたグループを条件で絞る</dd></dl></div><div class="term"><div class="box b1">集合関数<span>しゅうごうかんすう / Aggregate Function</span></div><dl><dd>複数の行をまとめて1つの値にする関数。SUM・AVG・COUNT・MAX・MIN</dd></dl></div><div class="term"><div class="box b1">ビュー<span>View</span></div><dl><dd>表から必要な部分を取り出して、仮想的な表として見せるもの</dd><dd class="pt"><span class="tag">ポイント</span>外部スキーマにあたる</dd></dl></div><div class="term"><div class="box b1">ストアドプロシージャ<span>Stored Procedure</span></div><dl><dd>よく使うSQLの処理をDBMSに保存しておき、呼び出して実行する仕組み</dd><dd class="pt"><span class="tag">ポイント</span>通信の回数を減らせる</dd></dl></div></div>
+<div class="foot"><span>基本情報 データベース</span><span>11</span></div>
+</section>
+
+<section class="slide ">
+  <h1>9-4 トランザクション処理<small>まとめ表</small></h1>
+  <div class="cap">障害からの回復</div>
+  <table><thead><tr><th>処理</th><th>使うもの</th><th>どうするか</th></tr></thead>
+  <tbody><tr><td>ロールバック</td><td>更新前ログ</td><td>トランザクションの途中の更新を取り消す</td></tr><tr><td>ロールフォワード</td><td>バックアップ＋更新後ログ</td><td>バックアップを戻し、記録した更新をやり直す</td></tr></tbody></table>
+<div class="foot"><span>基本情報 データベース</span><span>12</span></div>
+</section>
+
+<section class="slide ">
+  <h1>9-4 トランザクション処理<small>トランザクション</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">トランザクション<span>Transaction</span></div><dl><dd>データベースへの、ひとまとまりの処理</dd><dd class="pt"><span class="tag">ポイント</span>全部成功（コミット）か、全部取り消し（ロールバック）のどちらか</dd></dl></div><div class="term"><div class="box b1">ACID特性<span>あしっどとくせい / ACID Properties</span></div><dl><dd>トランザクションが満たすべき4つの性質</dd><dd class="words">Atomicity＝原子性（全部か無か）／Consistency＝一貫性／Isolation＝独立性／Durability＝耐久性</dd></dl></div><div class="term"><div class="box b1">排他制御<span>はいたせいぎょ / Exclusive Control</span></div><dl><dd>複数の処理が同じデータを同時に更新して矛盾しないよう、ロックをかけて順番に処理させる仕組み</dd><dd class="pt"><span class="tag">ポイント</span>共有ロック（読むだけ）と専有ロック（書き換える）がある</dd></dl></div><div class="term"><div class="box b1">コミット<span>Commit</span></div><dl><dd>トランザクションの処理を確定させること</dd></dl></div><div class="term"><div class="box b1">ロールバック<span>Rollback</span></div><dl><dd>更新前のログを使って、トランザクションの途中の更新を取り消すこと</dd></dl></div><div class="term"><div class="box b1">ロールフォワード<span>Rollforward</span></div><dl><dd>障害のあと、バックアップを戻してから、ログ（ジャーナル）の更新後の記録を使って処理をやり直すこと</dd></dl></div></div>
+<div class="foot"><span>基本情報 データベース</span><span>13</span></div>
+</section>
+
+<section class="slide ">
+  <h1>9-4 トランザクション処理<small>トランザクション</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">ジャーナルファイル<span>ログファイル / Journal File</span></div><dl><dd>データベースへの更新の前後の内容を記録したファイル</dd><dd class="pt"><span class="tag">ポイント</span>障害回復に使う</dd></dl></div><div class="term"><div class="box b1">チェックポイント<span>Checkpoint</span></div><dl><dd>主記憶にある更新内容を、一定の時点でディスクに書き出すこと</dd><dd class="pt"><span class="tag">ポイント</span>回復はチェックポイントから行えばよい</dd></dl></div></div>
+<div class="foot"><span>基本情報 データベース</span><span>14</span></div>
+</section>
+
+<section class="slide ">
+  <h1>9-5 データベース応用<small>データの活用</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">データウェアハウス<span>Data Warehouse</span></div><dl><dd>いろいろなシステムのデータを、分析しやすい形で時系列に集めたデータベース</dd></dl></div><div class="term"><div class="box b1">データマイニング<span>Data Mining</span></div><dl><dd>大量のデータから、隠れた規則や関係を見つけ出すこと</dd><dd class="pt"><span class="tag">例</span>一緒に買われやすい商品の発見</dd></dl></div><div class="term"><div class="box b1">ビッグデータ<span>Big Data</span></div><dl><dd>量が多く、種類がさまざまで、速く発生する大量のデータ</dd></dl></div><div class="term"><div class="box b1">構造化データ・非構造化データ<span>Structured / Unstructured Data</span></div><dl><dd>構造化データは表の形に整理されたデータ、非構造化データは画像・音声・自由記述文など決まった形のないデータ</dd></dl></div><div class="term"><div class="box b1">データレイク<span>Data Lake</span></div><dl><dd>構造化・非構造化を問わず、データを元の形のままためておく場所</dd></dl></div><div class="term"><div class="box b1">外部データベース<span>External Database</span></div><dl><dd>外部の事業者が提供していて、利用料を払って使うデータベース</dd></dl></div></div>
+<div class="foot"><span>基本情報 データベース</span><span>15</span></div>
+</section>
+
+<section class="slide ">
+  <h1>まとめ<small>この分野で覚える用語</small></h1>
+  <table><thead><tr><th style="width:30%">小分類</th><th>用語</th></tr></thead><tbody>
+<tr><td>9-1 データベース方式</td><td>データベース・DBMS・関係データベース・3層スキーマ・外部スキーマ・概念スキーマ・内部スキーマ・NoSQL・キーバリュー型・ドキュメント型・グラフ型</td></tr>
+<tr><td>9-2 データベース設計</td><td>E-R図・主キー・外部キー・正規化・関数従属・部分関数従属・推移的関数従属・インデックス</td></tr>
+<tr><td>9-3 データ操作</td><td>選択・射影・結合・SQL・DDL・DML・WHERE句・HAVING句・集合関数・ビュー・ストアドプロシージャ</td></tr>
+<tr><td>9-4 トランザクション処理</td><td>トランザクション・ACID特性・排他制御・コミット・ロールバック・ロールフォワード・ジャーナルファイル・チェックポイント</td></tr>
+<tr><td>9-5 データベース応用</td><td>データウェアハウス・データマイニング・ビッグデータ・構造化データ・非構造化データ・データレイク・外部データベース</td></tr>
+  </tbody></table>
+<div class="foot"><span>基本情報 データベース</span><span>16</span></div>
+</section>
+</body>
+</html>

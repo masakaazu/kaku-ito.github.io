@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>基本情報 基礎理論 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+</style>
+<style>
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
+.term .box { text-align: left; font-size: 15px; padding: 7px 12px; }
+.term dl { margin: 6px 2px 0; }
+.term dd { margin: 0 0 4px; font-size: 12.5px; line-height: 1.5; }
+.term dd.pt { color: #333; }
+.term dd.words { color: var(--navy2); font-size: 11.5px; }
+.term .tag { font-size: 10.5px; padding: 0 5px; }
+.slide .cap + table { margin-bottom: 14px; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">基本情報技術者試験　テクノロジ系　No.1</div>
+  <h1>基礎理論</h1>
+  <p>離散数学・応用数学・情報に関する理論・通信に関する理論・計測・制御に関する理論</p>
+<div class="foot"><span>基本情報 基礎理論</span><span>1</span></div>
+</section>
+
+<section class="slide ">
+  <h1>目次</h1>
+  <ol class="toc">
+    <li>1-1 離散数学（13語）</li>
+    <li>1-2 応用数学（11語）</li>
+    <li>1-3 情報に関する理論（16語）</li>
+    <li>1-4 通信に関する理論（3語）</li>
+    <li>1-5 計測・制御に関する理論（5語）</li>
+    <li>まとめ</li>
+  </ol>
+<div class="foot"><span>基本情報 基礎理論</span><span>2</span></div>
+</section>
+
+<section class="slide ">
+  <h1>1-1 離散数学<small>まとめ表</small></h1>
+  <div class="cap">基数変換のコツ</div>
+  <table><thead><tr><th>変換</th><th>やり方</th><th>例</th></tr></thead>
+  <tbody><tr><td>10進 → 2進</td><td>2で割り続け、余りを下から並べる</td><td>43 → 101011</td></tr><tr><td>2進 → 10進</td><td>各桁×2の桁数乗を足す</td><td>101011 → 32+8+2+1＝43</td></tr><tr><td>2進 → 16進</td><td>下から4桁ずつ区切って1文字に</td><td>1010 1100 → AC</td></tr></tbody></table>
+<div class="foot"><span>基本情報 基礎理論</span><span>3</span></div>
+</section>
+
+<section class="slide ">
+  <h1>1-1 離散数学<small>まとめ表</small></h1>
+  <div class="cap">論理演算の真理値表</div>
+  <table><thead><tr><th>A</th><th>B</th><th>AND</th><th>OR</th><th>XOR</th><th>NAND</th></tr></thead>
+  <tbody><tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td></tr><tr><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td></tr><tr><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td></tr><tr><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td></tr></tbody></table>
+<div class="foot"><span>基本情報 基礎理論</span><span>4</span></div>
+</section>
+
+<section class="slide ">
+  <h1>1-1 離散数学<small>数の表し方</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">基数<span>きすう / Radix</span></div><dl><dd>何進数かを表す数。2進数なら2、16進数なら16</dd><dd class="pt"><span class="tag">ポイント</span>2進数1桁は0と1、16進数1桁は0〜9とA〜F</dd></dl></div><div class="term"><div class="box b1">2進数<span>にしんすう / Binary Number</span></div><dl><dd>0と1の2種類の数字で表す数。コンピュータ内部の表し方</dd><dd class="pt"><span class="tag">ポイント</span>2進数4桁が16進数1桁にあたる</dd></dl></div><div class="term"><div class="box b1">16進数<span>じゅうろくしんすう / Hexadecimal</span></div><dl><dd>0〜9とA〜Fの16種類で表す数</dd><dd class="pt"><span class="tag">例</span>2進数 1010 1100 ＝ 16進数 AC</dd></dl></div><div class="term"><div class="box b1">補数<span>ほすう / Complement</span></div><dl><dd>負の数を表すための考え方。1の補数は全ビット反転、2の補数はさらに1を足したもの</dd><dd class="pt"><span class="tag">ポイント</span>減算を「2の補数を足す」加算で実現できる。nビットで −2のn−1乗 〜 2のn−1乗−1 を表せる</dd><dd class="pt"><span class="tag">例</span>8ビットで −5 は 11111011</dd></dl></div><div class="term"><div class="box b1">固定小数点数<span>こていしょうすうてんすう / Fixed-point Number</span></div><dl><dd>小数点の位置を決めておいて数を表す方式</dd><dd class="pt"><span class="tag">ポイント</span>整数の表現に使う</dd></dl></div><div class="term"><div class="box b1">浮動小数点数<span>ふどうしょうすうてんすう / Floating-point Number</span></div><dl><dd>符号・仮数部・指数部で数を表す方式。大きな数も小さな数も表せる</dd><dd class="pt"><span class="tag">例</span>0.75 ＝ 1.1（2進）× 2の−1乗</dd><dd class="pt"><span class="tag">注</span>IEEE 754 では指数部にバイアス値を足して格納する</dd></dl></div></div>
+<div class="foot"><span>基本情報 基礎理論</span><span>5</span></div>
+</section>
+
+<section class="slide ">
+  <h1>1-1 離散数学<small>数の表し方・論理演算と集合</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">誤差<span>ごさ / Error</span></div><dl><dd>計算で生じる本当の値とのずれ</dd><dd class="pt"><span class="tag">ポイント</span>桁あふれ（オーバフロー）、丸め誤差、桁落ち（近い値の引き算で有効桁が減る）、情報落ち（大きい数に小さい数を足すと消える）を区別</dd></dl></div><div class="term"><div class="box b1">シフト演算<span>しふとえんざん / Shift Operation</span></div><dl><dd>ビット列を左右にずらす演算</dd><dd class="pt"><span class="tag">ポイント</span>左にnビットで2のn乗倍、右にnビットで2のn乗分の1（符号なし）</dd></dl></div><div class="term"><div class="box b1">論理演算<span>ろんりえんざん / Logical Operation</span></div><dl><dd>真（1）と偽（0）を使う演算。AND・OR・NOT・XORなど</dd><dd class="pt"><span class="tag">ポイント</span>XORは「どちらか一方だけ1」のとき1</dd></dl></div><div class="term"><div class="box b1">ド・モルガンの法則<span>De Morgan's Laws</span></div><dl><dd>NOT(A AND B) ＝ (NOT A) OR (NOT B)、NOT(A OR B) ＝ (NOT A) AND (NOT B)</dd><dd class="pt"><span class="tag">ポイント</span>否定を分配すると AND と OR が入れ替わる</dd></dl></div><div class="term"><div class="box b1">ベン図<span>べんず / Venn Diagram</span></div><dl><dd>集合どうしの関係を円の重なりで表した図</dd><dd class="pt"><span class="tag">ポイント</span>論理式とベン図の対応がよく問われる</dd></dl></div></div>
+<div class="foot"><span>基本情報 基礎理論</span><span>6</span></div>
+</section>
+
+<section class="slide ">
+  <h1>1-1 離散数学<small>論理演算と集合</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">逆ポーランド表記法<span>ぎゃくぽーらんどひょうきほう / Reverse Polish Notation</span></div><dl><dd>演算子を後ろに書く表し方。スタックを使って左から計算できる</dd><dd class="pt"><span class="tag">例</span>a+(b×(c−d)) → abcd−×+ 、 3 4 + 5 × → 35</dd></dl></div><div class="term"><div class="box b1">BNF記法<span>びーえぬえふきほう / Backus-Naur Form</span></div><dl><dd>プログラム言語などの文法を定義するための記法</dd><dd class="pt"><span class="tag">ポイント</span>::= で定義、｜ で「または」を表す</dd><dd class="words">Backus＝考案者の名前／Naur＝考案者の名前／Form＝記法</dd></dl></div></div>
+<div class="foot"><span>基本情報 基礎理論</span><span>7</span></div>
+</section>
+
+<section class="slide ">
+  <h1>1-2 応用数学<small>まとめ表</small></h1>
+  <div class="cap">確率・統計の公式</div>
+  <table><thead><tr><th>項目</th><th>公式</th></tr></thead>
+  <tbody><tr><td>順列 nPr</td><td>n! ÷ (n−r)!（並べ方を区別する）</td></tr><tr><td>組合せ nCr</td><td>n! ÷ (r!×(n−r)!)（選ぶだけ）</td></tr><tr><td>期待値</td><td>Σ（値 × その確率）</td></tr></tbody></table>
+<div class="foot"><span>基本情報 基礎理論</span><span>8</span></div>
+</section>
+
+<section class="slide ">
+  <h1>1-2 応用数学<small>確率と統計</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">順列<span>じゅんれつ / Permutation</span></div><dl><dd>いくつかのものを、順序を区別して並べる並べ方の数</dd><dd class="pt"><span class="tag">例</span>3人を1位・2位・3位に並べる ＝ 3P3 ＝ 6通り</dd></dl></div><div class="term"><div class="box b1">組合せ<span>くみあわせ / Combination</span></div><dl><dd>順序を区別せずに選ぶ選び方の数</dd><dd class="pt"><span class="tag">例</span>5人から2人を選ぶ ＝ 5C2 ＝ 10通り</dd></dl></div><div class="term"><div class="box b1">期待値<span>きたいち / Expected Value</span></div><dl><dd>起こりうる値に、それぞれの確率を掛けて足したもの。平均的に見込める値</dd><dd class="pt"><span class="tag">例</span>20%で1万円のくじの期待値は2,000円</dd></dl></div><div class="term"><div class="box b1">平均値・中央値・最頻値<span>へいきんち・ちゅうおうち・さいひんち / Mean, Median, Mode</span></div><dl><dd>平均値は合計÷個数、中央値は並べた真ん中、最頻値は最も多い値</dd><dd class="pt"><span class="tag">ポイント</span>外れ値の影響を受けにくいのは中央値</dd></dl></div><div class="term"><div class="box b1">分散・標準偏差<span>ぶんさん・ひょうじゅんへんさ / Variance, Standard Deviation</span></div><dl><dd>データが平均からどれだけ散らばっているかを表す値。標準偏差は分散の平方根</dd><dd class="pt"><span class="tag">ポイント</span>値が大きいほどばらつきが大きい</dd></dl></div><div class="term"><div class="box b1">正規分布<span>せいきぶんぷ / Normal Distribution</span></div><dl><dd>平均を中心に左右対称の釣り鐘型になる分布</dd><dd class="pt"><span class="tag">ポイント</span>平均±1標準偏差に約68%、±2標準偏差に約95%が入る</dd></dl></div></div>
+<div class="foot"><span>基本情報 基礎理論</span><span>9</span></div>
+</section>
+
+<section class="slide ">
+  <h1>1-2 応用数学<small>確率と統計</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">相関係数<span>そうかんけいすう / Correlation Coefficient</span></div><dl><dd>2つの値の関係の強さを −1〜1 で表す値</dd><dd class="pt"><span class="tag">ポイント</span>1に近いほど正の相関、−1に近いほど負の相関。相関があっても因果関係とは限らない</dd></dl></div><div class="term"><div class="box b1">回帰分析<span>かいきぶんせき / Regression Analysis</span></div><dl><dd>ある値から別の値を予測する式を求める分析</dd><dd class="pt"><span class="tag">例</span>広告費から売上を予測する</dd></dl></div><div class="term"><div class="box b1">主成分分析<span>しゅせいぶんぶんせき / Principal Component Analysis</span></div><dl><dd>多くの変数を、少数の総合的な指標にまとめる分析</dd><dd class="pt"><span class="tag">ポイント</span>クラスター分析は似たもの同士をグループ分けする</dd></dl></div><div class="term"><div class="box b1">待ち行列理論<span>まちぎょうれつりろん / Queueing Theory</span></div><dl><dd>窓口などで待ち時間がどれくらいになるかを計算する理論。M/M/1モデルが基本</dd><dd class="pt"><span class="tag">ポイント</span>利用率 ρ ＝ 平均到着率 × 平均サービス時間。平均待ち時間 ＝ ρ÷(1−ρ) × サービス時間</dd></dl></div><div class="term"><div class="box b1">グラフ理論<span>ぐらふりろん / Graph Theory</span></div><dl><dd>点（ノード）と線（エッジ）で、ものどうしのつながりを表す数学</dd><dd class="pt"><span class="tag">ポイント</span>最短経路問題などに使う</dd></dl></div></div>
+<div class="foot"><span>基本情報 基礎理論</span><span>10</span></div>
+</section>
+
+<section class="slide ">
+  <h1>1-3 情報に関する理論<small>符号化と単位</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">SI接頭語<span>えすあいせっとうご / SI Prefix</span></div><dl><dd>大きさを表す単位の頭につける記号</dd><dd class="pt"><span class="tag">ポイント</span>k＝10の3乗、M＝10の6乗、G＝10の9乗、T＝10の12乗。m＝10の−3乗、μ＝10の−6乗、n＝10の−9乗、p＝10の−12乗</dd><dd class="words">SI＝Système International（国際単位系）</dd></dl></div><div class="term"><div class="box b1">ビット・バイト<span>Bit, Byte</span></div><dl><dd>ビットは0か1の1桁、バイトは8ビット</dd><dd class="pt"><span class="tag">ポイント</span>nビットで2のn乗通りを表せる</dd></dl></div><div class="term"><div class="box b1">ハフマン符号化<span>はふまんふごうか / Huffman Coding</span></div><dl><dd>よく出る文字に短いビット列、まれな文字に長いビット列を割り当てて、平均のデータ量を減らす符号化</dd><dd class="pt"><span class="tag">ポイント</span>可逆圧縮の一種</dd></dl></div><div class="term"><div class="box b1">文字コード<span>もじこーど / Character Code</span></div><dl><dd>文字に割り当てた番号の決まり</dd><dd class="pt"><span class="tag">ポイント</span>ASCII（英数字7ビット）、Unicode（世界の文字を1つの体系に）、UTF-8 は Unicode の符号化方式の1つ</dd></dl></div><div class="term"><div class="box b1">アナログデータ・ディジタルデータ<span>Analog / Digital Data</span></div><dl><dd>アナログは連続した量、ディジタルは飛び飛びの数値で表したデータ</dd><dd class="pt"><span class="tag">ポイント</span>音や画像をディジタル化して扱う</dd></dl></div></div>
+<div class="foot"><span>基本情報 基礎理論</span><span>11</span></div>
+</section>
+
+<section class="slide ">
+  <h1>1-3 情報に関する理論<small>AI（人工知能）</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">機械学習<span>きかいがくしゅう / Machine Learning</span></div><dl><dd>データから規則やパターンをコンピュータに学ばせる技術</dd><dd class="pt"><span class="tag">ポイント</span>教師あり学習・教師なし学習・強化学習の3つに分かれる</dd></dl></div><div class="term"><div class="box b1">教師あり学習<span>きょうしありがくしゅう / Supervised Learning</span></div><dl><dd>正解ラベルの付いたデータで学習する方法</dd><dd class="pt"><span class="tag">例</span>迷惑メールかどうかの分類、売上の予測</dd></dl></div><div class="term"><div class="box b1">教師なし学習<span>きょうしなしがくしゅう / Unsupervised Learning</span></div><dl><dd>正解ラベルのないデータから、構造や似たまとまりを見つける方法</dd><dd class="pt"><span class="tag">例</span>似た顧客のグループ分け（クラスタリング）</dd></dl></div><div class="term"><div class="box b1">強化学習<span>きょうかがくしゅう / Reinforcement Learning</span></div><dl><dd>試行錯誤して、報酬が最大になる行動を学ぶ方法</dd><dd class="pt"><span class="tag">例</span>ゲームやロボットの制御</dd></dl></div><div class="term"><div class="box b1">過学習<span>かがくしゅう / Overfitting</span></div><dl><dd>学習データには合いすぎるが、新しいデータでは精度が低くなる状態</dd><dd class="pt"><span class="tag">ポイント</span>学習データを増やす、モデルを単純にするなどで防ぐ</dd></dl></div><div class="term"><div class="box b1">転移学習<span>てんいがくしゅう / Transfer Learning</span></div><dl><dd>ある課題で学習したモデルを、別の関連する課題に使い回す方法</dd><dd class="pt"><span class="tag">ポイント</span>少ないデータでも学習しやすい</dd></dl></div></div>
+<div class="foot"><span>基本情報 基礎理論</span><span>12</span></div>
+</section>
+
+<section class="slide ">
+  <h1>1-3 情報に関する理論<small>AI（人工知能）</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">ディープラーニング<span>Deep Learning</span></div><dl><dd>何層にも重ねたニューラルネットワークで学習する機械学習</dd><dd class="pt"><span class="tag">ポイント</span>特徴を人が決めなくても自動で見つけられる</dd></dl></div><div class="term"><div class="box b1">ニューラルネットワーク<span>Neural Network</span></div><dl><dd>人の脳の神経細胞のつながりをまねた計算の仕組み</dd><dd class="pt"><span class="tag">ポイント</span>入力層・中間層（隠れ層）・出力層からなる</dd></dl></div><div class="term"><div class="box b1">活性化関数<span>かっせいかかんすう / Activation Function</span></div><dl><dd>ニューロンで、入力の重み付き和を次へ渡す出力値に変換する関数</dd><dd class="pt"><span class="tag">ポイント</span>非線形にすることで、直線では分けられない複雑な境界を学習できる</dd></dl></div><div class="term"><div class="box b1">ReLU関数<span>れるかんすう / Rectified Linear Unit</span></div><dl><dd>負の入力は0、正の入力はそのまま出す活性化関数</dd><dd class="pt"><span class="tag">ポイント</span>f(x)＝max(0, x)。例: x＝−2 なら 0</dd><dd class="words">Rectified＝整流された（負を切る）／Linear＝線形の／Unit＝素子</dd></dl></div><div class="term"><div class="box b1">シグモイド関数<span>Sigmoid Function</span></div><dl><dd>出力を0〜1に収めるS字の活性化関数</dd><dd class="pt"><span class="tag">ポイント</span>確率のように扱いやすい。tanh関数は−1〜1に収める</dd></dl></div></div>
+<div class="foot"><span>基本情報 基礎理論</span><span>13</span></div>
+</section>
+
+<section class="slide ">
+  <h1>1-4 通信に関する理論<small>信号の変換</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">PCM<span>ぴーしーえむ / Pulse Code Modulation</span></div><dl><dd>音などのアナログ信号を、標本化・量子化・符号化の3段階でディジタルにする方式</dd><dd class="pt"><span class="tag">ポイント</span>標本化＝一定間隔で値を取る、量子化＝段階的な数値に丸める、符号化＝2進数にする</dd><dd class="words">Pulse＝パルス（信号の山）／Code＝符号／Modulation＝変調</dd></dl></div><div class="term"><div class="box b1">標本化定理<span>ひょうほんかていり / Sampling Theorem</span></div><dl><dd>元の信号の最高周波数の2倍以上の頻度で標本化すれば、元の信号を再現できるという定理</dd><dd class="pt"><span class="tag">ポイント</span>サンプリング周波数を考える問題で使う</dd></dl></div><div class="term"><div class="box b1">伝送誤り<span>でんそうあやまり / Transmission Error</span></div><dl><dd>通信の途中でビットが変わってしまうこと</dd><dd class="pt"><span class="tag">ポイント</span>パリティチェックやCRCで検出、ハミング符号は1ビットの誤りを訂正できる</dd></dl></div></div>
+<div class="foot"><span>基本情報 基礎理論</span><span>14</span></div>
+</section>
+
+<section class="slide ">
+  <h1>1-5 計測・制御に関する理論<small>制御の方式</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">フィードバック制御<span>Feedback Control</span></div><dl><dd>結果を測って目標との差を求め、その差がなくなるように調整する制御</dd><dd class="pt"><span class="tag">例</span>室温を測ってエアコンの出力を調整する</dd></dl></div><div class="term"><div class="box b1">フィードフォワード制御<span>Feedforward Control</span></div><dl><dd>外からの乱れを先に予測し、結果に影響が出る前に調整する制御</dd><dd class="pt"><span class="tag">ポイント</span>フィードバックは「後から直す」、フィードフォワードは「先回りする」</dd></dl></div><div class="term"><div class="box b1">シーケンス制御<span>Sequence Control</span></div><dl><dd>あらかじめ決めた順序に従って、段階的に動作を進める制御</dd><dd class="pt"><span class="tag">例</span>洗濯機、信号機</dd></dl></div><div class="term"><div class="box b1">センサ・アクチュエータ<span>Sensor, Actuator</span></div><dl><dd>センサは温度や光などの状態を測る部品、アクチュエータは電気信号を動きに変える部品</dd><dd class="pt"><span class="tag">ポイント</span>IoT機器の基本の組合せ</dd></dl></div><div class="term"><div class="box b1">A/D変換<span>えーでぃーへんかん / Analog-to-Digital Conversion</span></div><dl><dd>センサが測ったアナログの値をディジタルの値に変えること</dd><dd class="pt"><span class="tag">ポイント</span>逆はD/A変換</dd></dl></div></div>
+<div class="foot"><span>基本情報 基礎理論</span><span>15</span></div>
+</section>
+
+<section class="slide ">
+  <h1>まとめ<small>この分野で覚える用語</small></h1>
+  <table><thead><tr><th style="width:30%">小分類</th><th>用語</th></tr></thead><tbody>
+<tr><td>1-1 離散数学</td><td>基数・2進数・16進数・補数・固定小数点数・浮動小数点数・誤差・シフト演算・論理演算・ド・モルガンの法則・ベン図・逆ポーランド表記法・BNF記法</td></tr>
+<tr><td>1-2 応用数学</td><td>順列・組合せ・期待値・平均値・中央値・最頻値・分散・標準偏差・正規分布・相関係数・回帰分析・主成分分析・待ち行列理論・グラフ理論</td></tr>
+<tr><td>1-3 情報に関する理論</td><td>SI接頭語・ビット・バイト・ハフマン符号化・文字コード・アナログデータ・ディジタルデータ・機械学習・教師あり学習・教師なし学習・強化学習・過学習・転移学習・ディープラーニング・ニューラルネットワーク・活性化関数・ReLU関数・シグモイド関数</td></tr>
+<tr><td>1-4 通信に関する理論</td><td>PCM・標本化定理・伝送誤り</td></tr>
+<tr><td>1-5 計測・制御に関する理論</td><td>フィードバック制御・フィードフォワード制御・シーケンス制御・センサ・アクチュエータ・A/D変換</td></tr>
+  </tbody></table>
+<div class="foot"><span>基本情報 基礎理論</span><span>16</span></div>
+</section>
+</body>
+</html>
