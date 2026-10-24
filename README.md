@@ -22,7 +22,8 @@ kaku-ito.github.io/
 ├── ap/                     応用情報技術者試験（学習中）
 │   ├── index.html          分野マップ
 │   ├── field.html          中分類ページ（field.html?f=番号）
-│   └── notes/              ノート（apno1.html〜）
+│   ├── notes/              ノート（apno1.html〜）
+│   └── terms/              用語集（分野番号.md が中身、同名の .html が表示用）
 ├── fe/                     基本情報技術者試験（受験済み）
 │   ├── index.html          分野マップ＋日別復習
 │   ├── field.html          中分類ページ
@@ -41,6 +42,7 @@ kaku-ito.github.io/
         ├── catalog.js      教材の一覧データ（教材を追加したらここに登録）
         ├── site.js         ナビバー・一覧・分野マップ・正答率の描画
         ├── study-sync.js   回答をSupabaseへ記録（ログインもここ経由）
+        ├── terms.js        用語集の md を読んで一覧・カード・クイズにする（デザインは css/terms.css）
         └── review-answer-toggle.js 「答えを表示」ボタン
 ```
 
@@ -65,6 +67,32 @@ kaku-ito.github.io/
 戻るリンクは教材HTMLに書かない（ナビバーが表示する）。
 
 試験日は `catalog.js` の `topics` にある `exams` に書く。
+
+### 用語集を追加する
+
+1. md を `ap/terms/分野番号.md` に置く（例：`19.md`）
+2. 既存の `ap/terms/20.html` をコピーして同じ番号の名前にし、`<title>` と `data-field` を書き換える
+3. `catalog.js` に `{ type: "terms", file: "terms/19.html", ... fields: [19] }` を登録する
+
+md は次のどちらの書き方でも読める（混ぜてもよい）。
+
+```markdown
+## 大きな区切り
+### テーマ
+#### 用語名（よみ / English）⚠要確認
+- 意味：一言での定義
+- ポイント：試験で押さえる点
+
+| 用語 | 英語 | 解説 |      ← 1行1用語の表でもよい
+| :-: | :-: | :-: |
+| NPV | Net Present Value | 正味現在価値。… |
+```
+
+- `### まとめ` の下に書いた表や文は「まとめ表」として折りたたみで出る
+- 「意味」がない用語（名前だけの一覧）は札の形で並び、カード・クイズには出ない
+- `⚠重複` を付けた用語は一覧にだけ出す
+- 図解スライドのPDFは `data-pdf="ファイル名.pdf"` を `<main>` に付けるとボタンが出る
+- クイズの回答は `ap-分野番号-用語名` のIDで記録され、分野マップの正答率に入る
 
 回答記録（Supabase）の詳しい手順は [REVIEW_OPERATION.md](REVIEW_OPERATION.md) を参照。
 

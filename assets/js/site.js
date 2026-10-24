@@ -93,7 +93,8 @@
           index,
           path: `${topic}/${m.file}`,
           fields: m.fields || [],
-          qid: m.qid || `${stem(m.file)}-`,
+          // 回答記録の問題IDの頭。用語集は「資格-中分類-」、それ以外は「ファイル名-」
+          qid: m.qid || (m.type === "terms" && m.fields && m.fields.length ? `${topic}-${m.fields[0]}-` : `${stem(m.file)}-`),
         });
       });
     });
@@ -209,7 +210,7 @@
       .join("");
 
     let seq = "";
-    if (page.sequence) {
+    if (page.sequence && sequences[page.sequence].length > 1) {
       const list = sequences[page.sequence];
       const i = list.indexOf(path);
       const link = (target, rel, label) =>
