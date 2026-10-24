@@ -4,22 +4,24 @@
   夜の部屋に吊るしたランプの光をモチーフにした、チャコール×クリームの2色デザイン。
   ヘッダー（.hero）はランプから差す光の中にタイトルを置く。
   教材ページ本体には読み込まない（各教材の独自デザインを崩さないため）。
+  色・書体などの値は theme.css で決める。
 */
-@import url("https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&display=swap");
+@import url("theme.css");
 
+/* theme.css の値を、このファイルで使う短い名前に割り当てる */
 :root {
-  --bg: #1e1f21;
-  --cream: #e8e2d6;
-  --text: #e8e2d6;
-  --muted: rgba(232, 226, 214, 0.62);
-  --faint: rgba(232, 226, 214, 0.38);
-  --line: rgba(232, 226, 214, 0.16);
-  --surface: rgba(232, 226, 214, 0.035);
-  --surface-hover: rgba(232, 226, 214, 0.08);
-  --ink: #1e1f21;
-  --ink-muted: rgba(30, 31, 33, 0.72);
-  --serif: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", serif;
-  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --bg: var(--theme-bg);
+  --cream: var(--theme-cream);
+  --text: var(--theme-cream);
+  --muted: var(--theme-muted);
+  --faint: var(--theme-faint);
+  --line: var(--theme-line);
+  --surface: var(--theme-surface);
+  --surface-hover: var(--theme-surface-hover);
+  --ink: var(--theme-ink);
+  --ink-muted: var(--theme-ink-muted);
+  --serif: var(--theme-font-body);
+  --grain: var(--theme-grain);
 }
 
 * {
@@ -44,7 +46,7 @@ body::before {
   z-index: 1000;
   pointer-events: none;
   background-image: var(--grain);
-  opacity: 0.09;
+  opacity: var(--theme-grain-opacity);
 }
 
 /* 右端の縦書きサイト名 */
@@ -70,7 +72,7 @@ a {
 }
 
 main {
-  width: min(920px, calc(100% - 32px));
+  width: min(var(--theme-page-width), calc(100% - 32px));
   margin: 0 auto;
   padding: 0 0 72px;
 }
@@ -92,7 +94,7 @@ main {
     /* ランプのコード */
     linear-gradient(var(--cream), var(--cream)) no-repeat 50% 0 / 1px 40px,
     /* 光の円錐からこぼれる、まわりの淡い明かり */
-    radial-gradient(ellipse 60% 55% at 50% 78%, rgba(232, 226, 214, 0.07), transparent 70%);
+    radial-gradient(ellipse 60% 55% at 50% 78%, color-mix(in srgb, var(--cream) 7%, transparent), transparent 70%);
 }
 
 /* 光の円錐（下端は闇に溶かす） */
@@ -104,7 +106,7 @@ main {
   clip-path: polygon(calc(50% - 40px) 0, calc(50% + 40px) 0, 98% 100%, 2% 100%);
   background:
     var(--grain),
-    linear-gradient(180deg, rgba(232, 226, 214, 0.42) 0%, rgba(232, 226, 214, 0.9) 34%, var(--cream) 70%);
+    linear-gradient(180deg, color-mix(in srgb, var(--cream) 42%, transparent) 0%, color-mix(in srgb, var(--cream) 90%, transparent) 34%, var(--cream) 70%);
   background-blend-mode: soft-light, normal;
   -webkit-mask-image: linear-gradient(180deg, #000 86%, transparent 100%);
   mask-image: linear-gradient(180deg, #000 86%, transparent 100%);
@@ -177,8 +179,8 @@ h1 {
 
 .hero-meta > span {
   padding: 2px 12px;
-  border: 1px solid rgba(30, 31, 33, 0.45);
-  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--ink) 45%, transparent);
+  border-radius: var(--theme-radius-pill);
   font-size: 0.82rem;
   font-weight: 700;
 }
@@ -192,8 +194,8 @@ h1 {
   width: 100%;
   margin-top: 22px;
   padding: 14px 18px;
-  border-top: 1px solid rgba(30, 31, 33, 0.35);
-  border-bottom: 1px solid rgba(30, 31, 33, 0.35);
+  border-top: 1px solid color-mix(in srgb, var(--ink) 35%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 35%, transparent);
 }
 
 .today-box small {
@@ -278,20 +280,20 @@ h1 {
   align-items: flex-start;
   padding: 22px;
   border: 1px solid var(--line);
-  border-radius: 4px;
+  border-radius: var(--theme-radius);
   color: inherit;
   text-decoration: none;
   background: var(--surface);
-  transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  transition: background var(--theme-transition), border-color var(--theme-transition), box-shadow var(--theme-transition), transform var(--theme-transition);
 }
 
 /* カーソルを当てると、上から光が差す */
 a.card:hover {
-  border-color: rgba(232, 226, 214, 0.45);
+  border-color: color-mix(in srgb, var(--cream) 45%, transparent);
   background:
-    radial-gradient(ellipse 80% 70% at 50% -10%, rgba(232, 226, 214, 0.16), transparent 70%),
+    radial-gradient(ellipse 80% 70% at 50% -10%, color-mix(in srgb, var(--cream) 16%, transparent), transparent 70%),
     var(--surface-hover);
-  box-shadow: 0 0 48px rgba(232, 226, 214, 0.06);
+  box-shadow: 0 0 48px color-mix(in srgb, var(--cream) 6%, transparent);
   transform: translateY(-2px);
 }
 
@@ -304,7 +306,7 @@ a.card:focus-visible,
 .card-icon {
   padding: 1px 10px;
   border: 1px solid var(--faint);
-  border-radius: 2px;
+  border-radius: var(--theme-radius-small);
   color: var(--muted);
   font-size: 0.78rem;
   font-weight: 700;
@@ -333,10 +335,10 @@ a.card:focus-visible,
 }
 
 /* いま学習中の資格には、常に光を当てておく */
-.card.topic-ap {
-  border-color: rgba(232, 226, 214, 0.38);
+.card.is-active {
+  border-color: color-mix(in srgb, var(--cream) 38%, transparent);
   background:
-    radial-gradient(ellipse 80% 70% at 50% -10%, rgba(232, 226, 214, 0.13), transparent 70%),
+    radial-gradient(ellipse 80% 70% at 50% -10%, color-mix(in srgb, var(--cream) 13%, transparent), transparent 70%),
     var(--surface);
 }
 
@@ -350,13 +352,243 @@ a.card:focus-visible,
   color: var(--faint);
 }
 
+/* カード下部の補足（教材数など） */
+.card-foot {
+  margin-top: 12px;
+  color: var(--faint);
+  font-size: 0.8rem;
+}
+
+/* 正答率の札（ログイン中だけ表示） */
+.rate {
+  padding: 0 9px;
+  border: 1px solid var(--theme-good);
+  border-radius: var(--theme-radius-pill);
+  color: var(--theme-good);
+  font-family: var(--theme-font-ui);
+  font-size: 0.74rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.rate.is-low {
+  border-color: var(--theme-bad);
+  color: var(--theme-bad);
+}
+
+/* ---------- 分野マップ ---------- */
+
+.field-group + .field-group {
+  margin-top: 34px;
+}
+
+.field-group-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 12px;
+}
+
+.field-group-title h3 {
+  margin: 0;
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+}
+
+.field-group-title span {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+}
+
+.field-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 132px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--theme-radius);
+  color: inherit;
+  text-decoration: none;
+  background: var(--surface);
+  transition: background var(--theme-transition), border-color var(--theme-transition), transform var(--theme-transition);
+}
+
+a.field-tile:hover {
+  border-color: color-mix(in srgb, var(--cream) 45%, transparent);
+  background:
+    radial-gradient(ellipse 80% 70% at 50% -10%, color-mix(in srgb, var(--cream) 16%, transparent), transparent 70%),
+    var(--surface-hover);
+  transform: translateY(-2px);
+}
+
+a.field-tile:focus-visible {
+  outline: 2px solid var(--cream);
+  outline-offset: 3px;
+}
+
+.field-tile.is-empty {
+  border-style: dashed;
+  background: transparent;
+  color: var(--faint);
+}
+
+.field-tile-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.field-no {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.12em;
+}
+
+.field-major {
+  color: var(--faint);
+  font-size: 0.72rem;
+}
+
+.field-name {
+  font-weight: 800;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+}
+
+.field-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-top: auto;
+  padding-top: 8px;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.field-tile.is-empty .field-counts,
+.field-tile.is-empty .field-no {
+  color: var(--faint);
+}
+
+.legend {
+  margin: -6px 0 18px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+/* ---------- フォーム（ログイン） ---------- */
+
+.form-card {
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 28px 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--theme-radius);
+  background: var(--surface);
+}
+
+.form-card label {
+  display: block;
+  margin: 16px 0 6px;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.form-card input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--cream) 30%, transparent);
+  border-radius: var(--theme-radius);
+  color: var(--cream);
+  background: var(--theme-bg-deep);
+  font: inherit;
+  font-size: 16px;
+}
+
+.form-card input:focus {
+  border-color: var(--cream);
+  outline: none;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.button {
+  display: inline-block;
+  padding: 9px 22px;
+  border: 1px solid var(--cream);
+  border-radius: var(--theme-radius-small);
+  color: var(--ink);
+  background: var(--cream);
+  font: inherit;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity var(--theme-transition);
+}
+
+.button:hover {
+  opacity: 0.86;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.button-ghost {
+  color: var(--cream);
+  background: transparent;
+}
+
+.form-message {
+  min-height: 1.8em;
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.form-message.is-error {
+  color: var(--theme-bad);
+}
+
+.form-message.is-ok {
+  color: var(--theme-good);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+footer a {
+  color: var(--muted);
+}
+
 /* ---------- ステータス ---------- */
 
 .status {
   display: inline-block;
   padding: 1px 11px;
   border: 1px solid var(--faint);
-  border-radius: 999px;
+  border-radius: var(--theme-radius-pill);
   color: var(--muted);
   font-size: 0.78rem;
   font-weight: 700;
@@ -395,7 +627,7 @@ a.card:focus-visible,
   border-bottom: 1px solid var(--line);
   color: inherit;
   text-decoration: none;
-  transition: background 0.25s ease, padding 0.25s ease;
+  transition: background var(--theme-transition), padding var(--theme-transition);
 }
 
 .list-item:hover {
@@ -429,7 +661,7 @@ a.card:focus-visible,
 .list-arrow {
   flex: none;
   color: var(--muted);
-  transition: transform 0.25s ease;
+  transition: transform var(--theme-transition);
 }
 
 .list-item:hover .list-arrow {
@@ -502,6 +734,15 @@ footer {
 
   .grid {
     grid-template-columns: 1fr;
+  }
+
+  .field-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .field-tile {
+    min-height: 120px;
+    padding: 12px;
   }
 
   .list-item {

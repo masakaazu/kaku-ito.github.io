@@ -1,4 +1,6 @@
-# 復習HTMLの運用方針
+# 回答記録（問題演習）の運用方針
+
+> 基本情報の日別復習で始めた仕組みを、応用情報の問題演習・用語集クイズでも共通で使う。
 
 ## 目的
 
@@ -13,8 +15,6 @@
 ```text
 kaku-ito.github.io/
 ├── fe/
-│   ├── wbs/
-│   │   └── index.html
 │   └── review/
 │       ├── index.html
 │       ├── 2026-09-13/
@@ -29,16 +29,16 @@ kaku-ito.github.io/
     └── js/
         ├── catalog.js
         ├── site.js
-        └── fe-study-sync.js
+        └── study-sync.js
 ```
 
-`assets/js/fe-study-sync.js` は、すべての復習HTMLで共用する同期処理とする。
+`assets/js/study-sync.js` は、すべての問題演習で共用する同期処理とする（ログインは `login.html` で行う）。
 `assets/js/site.js` は、ページ上部のナビバー（現在地と前後の教材への移動）を表示する。
 `assets/js/catalog.js` は、教材の一覧データ。ここに登録した教材だけが一覧ページとナビバーに表示される。
 
 ## 共通JavaScriptの責務
 
-`fe-study-sync.js` に次の処理を集約する。
+`study-sync.js` に次の処理を集約する。
 
 - Supabaseクライアントの初期化
 - ログイン状態の確認
@@ -62,7 +62,7 @@ fe/review/YYYY-MM-DD/ファイル名.html
 この階層からルートの `assets/js` までは3階層戻る必要がある。
 
 ```html
-<script src="../../../assets/js/fe-study-sync.js"></script>
+<script src="../../../assets/js/study-sync.js"></script>
 <script src="../../../assets/js/site.js"></script>
 ```
 
@@ -170,6 +170,11 @@ function answer(box, btn) {
 
 同じ問題を複数回解いた場合は、問題IDをキーに正答数・誤答数を更新する。
 
+## 応用情報の問題ID
+
+応用情報の問題IDは `ap-中分類番号-問題名`（例：`ap-20-PoC`）にする。
+この形のIDは、分野マップの正答率に自動で集計される。
+
 ## ログイン方針
 
 初期方針は次のとおりとする。
@@ -179,7 +184,7 @@ function answer(box, btn) {
 - 未ログイン時は、保存できないことを教材の邪魔にならない形で表示する
 - 同期失敗時も、教材の閲覧自体は止めない
 
-WBSと復習HTMLは同じGitHub Pagesドメイン（`https://kaku-ito.github.io/`）で公開する。ローカルのLive Server（`http://127.0.0.1:5500/`）とGitHub Pagesの公開URLは別オリジンとして扱われるため、ログイン状態は共有されない。ログイン状態の同期確認は、必ず公開後の同一ドメイン上で行う。
+ログインページと教材は同じGitHub Pagesドメイン（`https://kaku-ito.github.io/`）で公開する。ローカルのLive Server（`http://127.0.0.1:5500/`）とGitHub Pagesの公開URLは別オリジンとして扱われるため、ログイン状態は共有されない。ログイン状態の同期確認は、必ず公開後の同一ドメイン上で行う。
 
 ## 毎日の作業手順
 
@@ -191,9 +196,9 @@ WBSと復習HTMLは同じGitHub Pagesドメイン（`https://kaku-ito.github.io/
 3. 問題ごとに固定問題IDを設定する（教材名を含める）
 4. 既存の回答判定関数を開き、実際の変数名を確認する
 5. 判定関数の内側、save() の直後に recordAnswer(...) を1行追加する
-6. HTML末尾で共通JS（../../../assets/js/fe-study-sync.js と site.js）を読み込む
+6. HTML末尾で共通JS（../../../assets/js/study-sync.js と site.js）を読み込む
 7. Git Bash で perl tools/darken.pl fe/review/YYYY-MM-DD/ファイル名.html を実行し、色を夜テーマに変換する
-8. assets/js/catalog.js の feReview に教材を1行登録する（一覧ページとナビバーに自動反映）
+8. assets/js/catalog.js の materials.fe に教材を1行登録する（date と fields も書く。一覧ページ・分野マップ・ナビバーに自動反映）
 9. ローカルまたは公開URLで、表示・回答・同期メッセージを確認する
 10. Safariコンソールでエラーが出ていないか確認する
 11. GitHub Pages公開後のURLで、再度1問だけ動作確認する
