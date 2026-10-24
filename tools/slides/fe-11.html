@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>基本情報 セキュリティ 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+</style>
+<style>
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
+.term .box { text-align: left; font-size: 15px; padding: 7px 12px; }
+.term dl { margin: 6px 2px 0; }
+.term dd { margin: 0 0 4px; font-size: 12.5px; line-height: 1.5; }
+.term dd.pt { color: #333; }
+.term dd.words { color: var(--navy2); font-size: 11.5px; }
+.term .tag { font-size: 10.5px; padding: 0 5px; }
+.slide .cap + table { margin-bottom: 14px; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">基本情報技術者試験　テクノロジ系　No.11</div>
+  <h1>セキュリティ</h1>
+  <p>情報セキュリティ・情報セキュリティ管理・セキュリティ技術評価・情報セキュリティ対策・セキュリティ実装技術</p>
+<div class="foot"><span>基本情報 セキュリティ</span><span>1</span></div>
+</section>
+
+<section class="slide ">
+  <h1>目次</h1>
+  <ol class="toc">
+    <li>11-1 情報セキュリティ（25語）</li>
+    <li>11-2 情報セキュリティ管理（9語）</li>
+    <li>11-3 セキュリティ技術評価（3語）</li>
+    <li>11-4 情報セキュリティ対策（14語）</li>
+    <li>11-5 セキュリティ実装技術（15語）</li>
+    <li>まとめ</li>
+  </ol>
+<div class="foot"><span>基本情報 セキュリティ</span><span>2</span></div>
+</section>
+
+<section class="slide ">
+  <h1>11-1 情報セキュリティ<small>まとめ表</small></h1>
+  <div class="cols"><div><div class="cap">情報セキュリティの3要素（CIA）</div>
+  <table><thead><tr><th>要素</th><th>意味</th><th>損なわれる例</th></tr></thead>
+  <tbody><tr><td>機密性</td><td>許された人だけが見られる</td><td>情報漏えい</td></tr><tr><td>完全性</td><td>正しく、改ざんされていない</td><td>改ざん</td></tr><tr><td>可用性</td><td>必要なときに使える</td><td>DoS攻撃でサービス停止</td></tr></tbody></table></div><div><div class="cap">暗号方式の比べ方</div>
+  <table><thead><tr><th></th><th>共通鍵暗号</th><th>公開鍵暗号</th></tr></thead>
+  <tbody><tr><td>鍵</td><td>暗号化と復号に同じ鍵</td><td>公開鍵と秘密鍵のペア</td></tr><tr><td>速さ</td><td>速い</td><td>遅い</td></tr><tr><td>鍵の数（n人）</td><td>n(n−1)/2 個</td><td>2n 個</td></tr><tr><td>例</td><td>AES</td><td>RSA、楕円曲線暗号</td></tr></tbody></table></div></div>
+<div class="foot"><span>基本情報 セキュリティ</span><span>3</span></div>
+</section>
+
+<section class="slide ">
+  <h1>11-1 情報セキュリティ<small>基本の考え方・攻撃の手口</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">情報セキュリティの3要素<span>CIA</span></div><dl><dd>機密性・完全性・可用性の3つ</dd><dd class="pt"><span class="tag">ポイント</span>JIS Q 27000では、これに真正性・責任追跡性・否認防止・信頼性を加えることもある</dd><dd class="words">Confidentiality＝機密性／Integrity＝完全性／Availability＝可用性</dd></dl></div><div class="term"><div class="box b1">脅威<span>きょうい / Threat</span></div><dl><dd>情報資産に損害を与えるおそれのあるもの</dd><dd class="pt"><span class="tag">ポイント</span>物理的脅威・技術的脅威・人的脅威に分かれる</dd></dl></div><div class="term"><div class="box b1">脆弱性<span>ぜいじゃくせい / Vulnerability</span></div><dl><dd>脅威に付け込まれる弱点</dd><dd class="pt"><span class="tag">ポイント</span>ソフトウェアの不具合（セキュリティホール）や管理の甘さ</dd></dl></div><div class="term"><div class="box b1">マルウェア<span>Malware</span></div><dl><dd>悪意のあるソフトウェアの総称</dd><dd class="pt"><span class="tag">ポイント</span>ウイルス・ワーム・トロイの木馬・スパイウェア・ランサムウェアなど</dd></dl></div><div class="term"><div class="box b1">ワーム<span>Worm</span></div><dl><dd>自分を複製し、ネットワークを通じて広がるマルウェア</dd><dd class="pt"><span class="tag">ポイント</span>ウイルスと違い、宿主のファイルを必要としない</dd></dl></div><div class="term"><div class="box b1">トロイの木馬<span>Trojan Horse</span></div><dl><dd>役に立つソフトを装って入り込み、裏で悪い動きをするマルウェア</dd></dl></div></div>
+<div class="foot"><span>基本情報 セキュリティ</span><span>4</span></div>
+</section>
+
+<section class="slide ">
+  <h1>11-1 情報セキュリティ<small>攻撃の手口</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">ランサムウェア<span>Ransomware</span></div><dl><dd>データを暗号化するなどして使えなくし、元に戻すための身代金を要求するマルウェア</dd><dd class="pt"><span class="tag">ポイント</span>オフラインのバックアップが有効な対策</dd></dl></div><div class="term"><div class="box b1">ボット<span>Bot</span></div><dl><dd>外部のC&amp;Cサーバからの指令で遠隔操作されるマルウェア</dd><dd class="pt"><span class="tag">ポイント</span>感染した端末の集まりをボットネットという</dd></dl></div><div class="term"><div class="box b1">ソーシャルエンジニアリング<span>Social Engineering</span></div><dl><dd>人の心理的な隙や油断を突いて、パスワードなどの情報を盗む手口</dd><dd class="pt"><span class="tag">例</span>電話でなりすまして聞き出す、肩越しに盗み見る</dd></dl></div><div class="term"><div class="box b1">フィッシング<span>Phishing</span></div><dl><dd>本物そっくりの偽サイトに誘導し、IDやパスワードを入力させて盗む手口</dd></dl></div><div class="term"><div class="box b1">標的型攻撃<span>ひょうてきがたこうげき / Targeted Attack</span></div><dl><dd>特定の組織を狙い、業務を装ったメールなどでマルウェアに感染させる攻撃</dd></dl></div><div class="term"><div class="box b1">水飲み場型攻撃<span>Watering Hole Attack</span></div><dl><dd>標的がよく見るWebサイトを改ざんし、訪れた人を感染させる攻撃</dd></dl></div></div>
+<div class="foot"><span>基本情報 セキュリティ</span><span>5</span></div>
+</section>
+
+<section class="slide ">
+  <h1>11-1 情報セキュリティ<small>攻撃の手口</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">ゼロデイ攻撃<span>Zero-day Attack</span></div><dl><dd>脆弱性が見つかってから修正プログラムが出るまでの間に、その脆弱性を突く攻撃</dd></dl></div><div class="term"><div class="box b1">ブルートフォース攻撃<span>総当たり攻撃 / Brute Force Attack</span></div><dl><dd>パスワードとして考えられるすべての組合せを試す攻撃</dd><dd class="pt"><span class="tag">ポイント</span>辞書攻撃はよく使われる単語を順に試す</dd></dl></div><div class="term"><div class="box b1">パスワードリスト攻撃<span>Password List Attack</span></div><dl><dd>ほかのサービスから漏れたIDとパスワードの組を使ってログインを試す攻撃</dd><dd class="pt"><span class="tag">ポイント</span>パスワードの使い回しが原因になる</dd></dl></div><div class="term"><div class="box b1">リバースブルートフォース攻撃<span>Reverse Brute Force Attack</span></div><dl><dd>パスワードを1つに固定し、IDを次々に変えて試す攻撃</dd><dd class="pt"><span class="tag">ポイント</span>一定回数の失敗でロックする対策が効きにくい</dd></dl></div><div class="term"><div class="box b1">SQLインジェクション<span>SQL Injection</span></div><dl><dd>入力欄に不正なSQLの一部を入れて、データベースを不正に操作する攻撃</dd><dd class="pt"><span class="tag">ポイント</span>対策はプレースホルダ（バインド機構）でSQL文と値を分けること</dd></dl></div><div class="term"><div class="box b1">クロスサイトスクリプティング<span>XSS / Cross Site Scripting</span></div><dl><dd>Webページに悪意のあるスクリプトを埋め込み、閲覧者のブラウザで実行させる攻撃</dd><dd class="pt"><span class="tag">ポイント</span>対策は出力時のエスケープ処理</dd></dl></div></div>
+<div class="foot"><span>基本情報 セキュリティ</span><span>6</span></div>
+</section>
+
+<section class="slide ">
+  <h1>11-1 情報セキュリティ<small>攻撃の手口</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">CSRF<span>しーさーふ / Cross Site Request Forgery</span></div><dl><dd>ログイン中の利用者に、意図しない操作の要求を送らせる攻撃</dd><dd class="pt"><span class="tag">ポイント</span>対策は正規の画面から送られたか確かめるトークン</dd><dd class="words">Cross Site＝サイトをまたいだ／Request＝要求／Forgery＝偽造</dd></dl></div><div class="term"><div class="box b1">DoS攻撃・DDoS攻撃<span>ドスこうげき / Denial of Service</span></div><dl><dd>大量の通信を送りつけて、サービスを使えなくする攻撃。多数の端末から行うのがDDoS</dd><dd class="words">Denial of Service＝サービスの妨害／Distributed＝分散した（DDoS）</dd></dl></div><div class="term"><div class="box b1">DNSキャッシュポイズニング<span>DNS Cache Poisoning</span></div><dl><dd>DNSサーバに偽の情報を覚えさせ、正しいドメイン名でも偽サイトへ誘導する攻撃</dd></dl></div><div class="term"><div class="box b1">中間者攻撃<span>MITM / Man-in-the-Middle Attack</span></div><dl><dd>通信の間に入り込んで、盗聴や改ざんをする攻撃</dd></dl></div><div class="term"><div class="box b1">敵対的サンプル<span>Adversarial Example</span></div><dl><dd>画像などに人には分からない小さな変化を加え、AIに誤認識させる攻撃</dd></dl></div><div class="term"><div class="box b1">モデル反転攻撃<span>Model Inversion Attack</span></div><dl><dd>AIの出力をもとに、学習に使ったデータ（個人情報など）を推測する攻撃</dd></dl></div></div>
+<div class="foot"><span>基本情報 セキュリティ</span><span>7</span></div>
+</section>
+
+<section class="slide ">
+  <h1>11-1 情報セキュリティ<small>攻撃の手口</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">適応的選択平文攻撃<span>Adaptive Chosen-plaintext Attack</span></div><dl><dd>攻撃者が選んだ平文と暗号文の組を、結果を見ながら次々に入手して鍵を推測する暗号解読の手法</dd></dl></div></div>
+<div class="foot"><span>基本情報 セキュリティ</span><span>8</span></div>
+</section>
+
+<section class="slide ">
+  <h1>11-2 情報セキュリティ管理<small>組織での管理</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">ISMS<span>あいえすえむえす / Information Security Management System</span></div><dl><dd>情報セキュリティを組織として管理し、PDCAで継続的に改善する仕組み</dd><dd class="pt"><span class="tag">ポイント</span>規格は JIS Q 27001（ISO/IEC 27001）</dd><dd class="words">Information Security＝情報セキュリティ／Management System＝管理の仕組み</dd></dl></div><div class="term"><div class="box b1">情報セキュリティポリシー<span>Information Security Policy</span></div><dl><dd>組織の情報セキュリティの方針や決まりをまとめたもの</dd><dd class="pt"><span class="tag">ポイント</span>基本方針・対策基準・実施手順の3階層</dd></dl></div><div class="term"><div class="box b1">リスクアセスメント<span>Risk Assessment</span></div><dl><dd>リスクを特定し、分析し、評価すること</dd></dl></div><div class="term"><div class="box b1">リスク対応<span>Risk Treatment</span></div><dl><dd>評価したリスクにどう対処するかを決めること</dd><dd class="pt"><span class="tag">ポイント</span>回避（やめる）・低減（対策で小さくする）・移転（保険などで他者へ）・保有（受け入れる）</dd></dl></div><div class="term"><div class="box b1">リスク移転<span>Risk Transfer</span></div><dl><dd>保険に入るなどして、損失の負担を第三者に移すこと</dd></dl></div><div class="term"><div class="box b1">リスク保有<span>Risk Retention</span></div><dl><dd>リスクを受け入れ、損失が出たら自分で負担すること</dd><dd class="pt"><span class="tag">ポイント</span>小さなリスクに選ぶ</dd></dl></div></div>
+<div class="foot"><span>基本情報 セキュリティ</span><span>9</span></div>
+</section>
+
+<section class="slide ">
+  <h1>11-2 情報セキュリティ管理<small>組織での管理</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">CSIRT<span>しーさーと / Computer Security Incident Response Team</span></div><dl><dd>セキュリティ事故（インシデント）が起きたときに、分析・対応・再発防止を担う組織</dd><dd class="words">Computer Security＝コンピュータセキュリティ／Incident＝事故／Response＝対応／Team＝チーム</dd></dl></div><div class="term"><div class="box b1">SOC<span>そっく / Security Operation Center</span></div><dl><dd>ネットワークや機器を24時間監視し、攻撃を見つけて分析する組織</dd><dd class="words">Security＝セキュリティ／Operation＝運用／Center＝拠点</dd></dl></div><div class="term"><div class="box b1">個人情報保護<span>Personal Information Protection</span></div><dl><dd>個人情報を適切に扱うこと</dd><dd class="pt"><span class="tag">ポイント</span>プライバシーマーク制度は、適切に扱う事業者を認定する</dd></dl></div></div>
+<div class="foot"><span>基本情報 セキュリティ</span><span>10</span></div>
+</section>
+
+<section class="slide ">
+  <h1>11-3 セキュリティ技術評価<small>評価と検査</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">ペネトレーションテスト<span>Penetration Test</span></div><dl><dd>実際の攻撃と同じ手順でシステムに侵入を試み、弱点を確かめる検査</dd></dl></div><div class="term"><div class="box b1">ファジング<span>Fuzzing</span></div><dl><dd>予想外のデータを大量に入力して、ソフトウェアの脆弱性を見つける検査</dd></dl></div><div class="term"><div class="box b1">CVSS<span>しーぶいえすえす / Common Vulnerability Scoring System</span></div><dl><dd>脆弱性の深刻さを、0〜10の点数で表す共通の評価方法</dd><dd class="words">Common＝共通の／Vulnerability＝脆弱性／Scoring System＝点数の付け方</dd></dl></div></div>
+<div class="foot"><span>基本情報 セキュリティ</span><span>11</span></div>
+</section>
+
+<section class="slide ">
+  <h1>11-4 情報セキュリティ対策<small>人と物の対策</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">多要素認証<span>たようそにんしょう / Multi-factor Authentication</span></div><dl><dd>知識（パスワード）・所持（スマートフォン）・生体（指紋）のうち、2種類以上を組み合わせる認証</dd><dd class="pt"><span class="tag">ポイント</span>同じ種類を2回使うのは二段階認証であっても多要素ではない</dd></dl></div><div class="term"><div class="box b1">ワンタイムパスワード<span>One-time Password</span></div><dl><dd>1回使うと無効になるパスワード</dd><dd class="pt"><span class="tag">ポイント</span>盗まれても再利用されにくい</dd></dl></div><div class="term"><div class="box b1">生体認証<span>せいたいにんしょう / Biometrics</span></div><dl><dd>指紋・顔・静脈など、体の特徴で本人を確認する方法</dd><dd class="pt"><span class="tag">ポイント</span>本人を拒否する率と、他人を受け入れる率のバランスが大切</dd></dl></div><div class="term"><div class="box b1">シングルサインオン<span>SSO / Single Sign-On</span></div><dl><dd>一度の認証で、複数のシステムを使えるようにする仕組み</dd></dl></div><div class="term"><div class="box b1">セキュアブート<span>Secure Boot</span></div><dl><dd>起動時に電子署名を確かめ、信頼できるOSだけを起動させる仕組み</dd></dl></div><div class="term"><div class="box b1">BIOSパスワード・HDDパスワード<span>BIOS / HDD Password</span></div><dl><dd>BIOSパスワードはPCの起動や設定の変更を制限し、HDDパスワードは記憶装置そのものの読み出しを制限する</dd></dl></div></div>
+<div class="foot"><span>基本情報 セキュリティ</span><span>12</span></div>
+</section>
+
+<section class="slide ">
+  <h1>11-4 情報セキュリティ対策<small>技術的な対策</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">ファイアウォール<span>Firewall</span></div><dl><dd>決めたルールに従って、通信を通すか止めるかを判断する仕組み</dd><dd class="pt"><span class="tag">ポイント</span>パケットフィルタリングはIPアドレスやポート番号で判断する</dd></dl></div><div class="term"><div class="box b1">DMZ<span>でぃーえむぜっと / DeMilitarized Zone</span></div><dl><dd>社内ネットワークとインターネットの間に置く、外部に公開するサーバ用の区域</dd><dd class="pt"><span class="tag">ポイント</span>Webサーバやメールサーバを置く</dd><dd class="words">DeMilitarized＝非武装の／Zone＝地帯</dd></dl></div><div class="term"><div class="box b1">WAF<span>わふ / Web Application Firewall</span></div><dl><dd>Webアプリケーションへの攻撃（SQLインジェクションやXSSなど）を見つけて防ぐ仕組み</dd><dd class="words">Web Application＝Webアプリ／Firewall＝防火壁</dd></dl></div><div class="term"><div class="box b1">IDS<span>あいでぃーえす / Intrusion Detection System</span></div><dl><dd>不正な侵入を見つけて知らせる仕組み</dd><dd class="pt"><span class="tag">ポイント</span>止めるところまで行うのがIPS（Intrusion Prevention System）</dd><dd class="words">Intrusion＝侵入／Detection＝検知／System＝仕組み</dd></dl></div><div class="term"><div class="box b1">マルウェア対策ソフト<span>Anti-malware Software</span></div><dl><dd>マルウェアを見つけて取り除くソフト</dd><dd class="pt"><span class="tag">ポイント</span>パターンマッチング法は定義ファイルと照合、ヒューリスティック法は怪しい振る舞いから検出、コンペア法は正常な状態と比べる</dd></dl></div></div>
+<div class="foot"><span>基本情報 セキュリティ</span><span>13</span></div>
+</section>
+
+<section class="slide ">
+  <h1>11-4 情報セキュリティ対策<small>技術的な対策</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">サンドボックス<span>Sandbox</span></div><dl><dd>隔離した環境で怪しいプログラムを動かし、振る舞いを観察する仕組み</dd></dl></div><div class="term"><div class="box b1">WORM<span>わーむ / Write Once Read Many</span></div><dl><dd>一度だけ書き込め、何度でも読める記録媒体や機能</dd><dd class="pt"><span class="tag">ポイント</span>ログなどの改ざん防止に使う</dd><dd class="words">Write Once＝一度だけ書く／Read Many＝何度も読む</dd></dl></div><div class="term"><div class="box b1">バックアップ<span>Backup</span></div><dl><dd>データの複製を別の場所に保存しておくこと</dd><dd class="pt"><span class="tag">ポイント</span>ランサムウェア対策ではネットワークから切り離した保管が有効</dd></dl></div></div>
+<div class="foot"><span>基本情報 セキュリティ</span><span>14</span></div>
+</section>
+
+<section class="slide ">
+  <h1>11-5 セキュリティ実装技術<small>暗号と認証の技術</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">共通鍵暗号方式<span>きょうつうかぎあんごうほうしき / Symmetric-key Cryptography</span></div><dl><dd>暗号化と復号に同じ鍵を使う方式</dd><dd class="pt"><span class="tag">ポイント</span>速いが、鍵を安全に渡す方法が課題。代表はAES</dd></dl></div><div class="term"><div class="box b1">公開鍵暗号方式<span>こうかいかぎあんごうほうしき / Public-key Cryptography</span></div><dl><dd>公開鍵と秘密鍵のペアを使う方式</dd><dd class="pt"><span class="tag">ポイント</span>受信者の公開鍵で暗号化し、受信者の秘密鍵で復号する。代表はRSA</dd></dl></div><div class="term"><div class="box b1">AES<span>えーいーえす / Advanced Encryption Standard</span></div><dl><dd>米国の標準になっている共通鍵暗号</dd><dd class="words">Advanced＝高度な／Encryption＝暗号化／Standard＝標準</dd></dl></div><div class="term"><div class="box b1">RSA<span>あーるえすえー / Rivest-Shamir-Adleman</span></div><dl><dd>大きな数の素因数分解が難しいことを安全性の根拠にする公開鍵暗号</dd><dd class="words">考案した3人（Rivest・Shamir・Adleman）の頭文字</dd></dl></div><div class="term"><div class="box b1">楕円曲線暗号<span>だえんきょくせんあんごう / Elliptic Curve Cryptography</span></div><dl><dd>楕円曲線の性質を使う公開鍵暗号</dd><dd class="pt"><span class="tag">ポイント</span>RSAより短い鍵で同じくらいの強さを出せる</dd></dl></div><div class="term"><div class="box b1">ハッシュ関数<span>Hash Function</span></div><dl><dd>データから決まった長さの値（ハッシュ値）を作る関数</dd><dd class="pt"><span class="tag">ポイント</span>元に戻せず、少しでも違うと値が変わるので改ざんの検出に使う。例: SHA-256</dd></dl></div></div>
+<div class="foot"><span>基本情報 セキュリティ</span><span>15</span></div>
+</section>
+
+<section class="slide ">
+  <h1>11-5 セキュリティ実装技術<small>暗号と認証の技術</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">ディジタル署名<span>Digital Signature</span></div><dl><dd>送信者が自分の秘密鍵で署名し、受信者が送信者の公開鍵で検証する仕組み</dd><dd class="pt"><span class="tag">ポイント</span>本人であることと、改ざんされていないことを確かめられる</dd></dl></div><div class="term"><div class="box b1">PKI<span>ぴーけーあい / Public Key Infrastructure</span></div><dl><dd>認証局（CA）が発行するディジタル証明書で、公開鍵が本人のものだと保証する仕組み</dd><dd class="words">Public Key＝公開鍵／Infrastructure＝基盤</dd></dl></div><div class="term"><div class="box b1">TLS<span>てぃーえるえす / Transport Layer Security</span></div><dl><dd>Webなどの通信を暗号化し、相手を認証するプロトコル</dd><dd class="pt"><span class="tag">ポイント</span>前身はSSL。HTTPSで使う</dd><dd class="words">Transport Layer＝トランスポート層の／Security＝安全</dd></dl></div><div class="term"><div class="box b1">IPsec<span>あいぴーせっく / IP Security</span></div><dl><dd>ネットワーク層でIP通信を暗号化・認証するプロトコル群</dd><dd class="pt"><span class="tag">ポイント</span>VPNで使われる</dd></dl></div><div class="term"><div class="box b1">VPN<span>ぶいぴーえぬ / Virtual Private Network</span></div><dl><dd>共用の回線の上に、暗号化で仮想的な専用線を作る技術</dd><dd class="words">Virtual＝仮想の／Private＝専用の／Network＝網</dd></dl></div></div>
+<div class="foot"><span>基本情報 セキュリティ</span><span>16</span></div>
+</section>
+
+<section class="slide ">
+  <h1>11-5 セキュリティ実装技術<small>暗号と認証の技術</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">WPA<span>だぶりゅーぴーえー / Wi-Fi Protected Access</span></div><dl><dd>無線LANの暗号化と認証の規格</dd><dd class="pt"><span class="tag">ポイント</span>今はWPA3が新しい</dd><dd class="words">Wi-Fi＝無線LAN／Protected＝守られた／Access＝接続</dd></dl></div><div class="term"><div class="box b1">DMARC<span>でぃーまーく / Domain-based Message Authentication, Reporting and Conformance</span></div><dl><dd>SPFやDKIMの送信元認証の結果をもとに、なりすましメールをどう扱うかを送信側が示す仕組み</dd><dd class="words">Domain-based＝ドメインに基づく／Message Authentication＝メールの認証／Reporting＝報告／Conformance＝適合</dd></dl></div><div class="term"><div class="box b1">SPF・DKIM<span>えすぴーえふ・でぃーきむ</span></div><dl><dd>送信元のメールサーバが正しいかを確かめる仕組み。SPFは送信元IPアドレス、DKIMは電子署名で確かめる</dd></dl></div><div class="term"><div class="box b1">プロキシサーバ<span>Proxy Server</span></div><dl><dd>社内の端末に代わって外部のサーバに接続する中継サーバ</dd><dd class="pt"><span class="tag">ポイント</span>アクセスの記録や制限に使う</dd></dl></div></div>
+<div class="foot"><span>基本情報 セキュリティ</span><span>17</span></div>
+</section>
+
+<section class="slide ">
+  <h1>まとめ<small>この分野で覚える用語</small></h1>
+  <table><thead><tr><th style="width:30%">小分類</th><th>用語</th></tr></thead><tbody>
+<tr><td>11-1 情報セキュリティ</td><td>情報セキュリティの3要素・脅威・脆弱性・マルウェア・ワーム・トロイの木馬・ランサムウェア・ボット・ソーシャルエンジニアリング・フィッシング・標的型攻撃・水飲み場型攻撃・ゼロデイ攻撃・ブルートフォース攻撃・パスワードリスト攻撃・リバースブルートフォース攻撃・SQLインジェクション・クロスサイトスクリプティング・CSRF・DoS攻撃・DDoS攻撃・DNSキャッシュポイズニング・中間者攻撃・敵対的サンプル・モデル反転攻撃・適応的選択平文攻撃</td></tr>
+<tr><td>11-2 情報セキュリティ管理</td><td>ISMS・情報セキュリティポリシー・リスクアセスメント・リスク対応・リスク移転・リスク保有・CSIRT・SOC・個人情報保護</td></tr>
+<tr><td>11-3 セキュリティ技術評価</td><td>ペネトレーションテスト・ファジング・CVSS</td></tr>
+<tr><td>11-4 情報セキュリティ対策</td><td>多要素認証・ワンタイムパスワード・生体認証・シングルサインオン・セキュアブート・BIOSパスワード・HDDパスワード・ファイアウォール・DMZ・WAF・IDS・マルウェア対策ソフト・サンドボックス・WORM・バックアップ</td></tr>
+<tr><td>11-5 セキュリティ実装技術</td><td>共通鍵暗号方式・公開鍵暗号方式・AES・RSA・楕円曲線暗号・ハッシュ関数・ディジタル署名・PKI・TLS・IPsec・VPN・WPA・DMARC・SPF・DKIM・プロキシサーバ</td></tr>
+  </tbody></table>
+<div class="foot"><span>基本情報 セキュリティ</span><span>18</span></div>
+</section>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>基本情報 ソフトウェア 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+</style>
+<style>
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
+.term .box { text-align: left; font-size: 15px; padding: 7px 12px; }
+.term dl { margin: 6px 2px 0; }
+.term dd { margin: 0 0 4px; font-size: 12.5px; line-height: 1.5; }
+.term dd.pt { color: #333; }
+.term dd.words { color: var(--navy2); font-size: 11.5px; }
+.term .tag { font-size: 10.5px; padding: 0 5px; }
+.slide .cap + table { margin-bottom: 14px; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">基本情報技術者試験　テクノロジ系　No.5</div>
+  <h1>ソフトウェア</h1>
+  <p>オペレーティングシステム・ミドルウェア・ファイルシステム・開発ツール・オープンソースソフトウェア</p>
+<div class="foot"><span>基本情報 ソフトウェア</span><span>1</span></div>
+</section>
+
+<section class="slide ">
+  <h1>目次</h1>
+  <ol class="toc">
+    <li>5-1 オペレーティングシステム（24語）</li>
+    <li>5-2 ミドルウェア（3語）</li>
+    <li>5-3 ファイルシステム（3語）</li>
+    <li>5-4 開発ツール（6語）</li>
+    <li>5-5 オープンソースソフトウェア（2語）</li>
+    <li>まとめ</li>
+  </ol>
+<div class="foot"><span>基本情報 ソフトウェア</span><span>2</span></div>
+</section>
+
+<section class="slide ">
+  <h1>5-1 オペレーティングシステム<small>まとめ表</small></h1>
+  <div class="cols"><div><div class="cap">タスクの3つの状態</div>
+  <table><thead><tr><th>状態</th><th>意味</th><th>次に移るとき</th></tr></thead>
+  <tbody><tr><td>実行可能状態</td><td>CPUが空くのを待っている</td><td>ディスパッチされると実行状態へ</td></tr><tr><td>実行状態</td><td>CPUを使って処理している</td><td>時間切れで実行可能へ、入出力待ちで待機へ</td></tr><tr><td>待機状態</td><td>入出力の完了などを待っている</td><td>完了すると実行可能へ</td></tr></tbody></table></div><div><div class="cap">ページ置換アルゴリズム</div>
+  <table><thead><tr><th>方式</th><th>追い出すページ</th></tr></thead>
+  <tbody><tr><td>FIFO</td><td>最も前に主記憶に入ったページ</td></tr><tr><td>LRU</td><td>最も長い間使われていないページ</td></tr><tr><td>LFU</td><td>使われた回数が最も少ないページ</td></tr></tbody></table></div></div>
+<div class="foot"><span>基本情報 ソフトウェア</span><span>3</span></div>
+</section>
+
+<section class="slide ">
+  <h1>5-1 オペレーティングシステム<small>OSの役割・タスク管理</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">OS<span>おーえす / Operating System</span></div><dl><dd>ハードウェアを管理し、アプリケーションが動く土台になる基本ソフトウェア</dd><dd class="words">Operating＝動かす・運用する／System＝仕組み</dd></dl></div><div class="term"><div class="box b1">ソフトウェアの分類<span>Software Classification</span></div><dl><dd>システムソフトウェア（OS・ミドルウェア）と応用ソフトウェア（業務ソフト・表計算など）に分かれる</dd><dd class="pt"><span class="tag">ポイント</span>表計算やワープロは応用ソフトウェア</dd></dl></div><div class="term"><div class="box b1">カーネル<span>Kernel</span></div><dl><dd>OSの中核部分。タスク管理・記憶管理・入出力管理などを行う</dd></dl></div><div class="term"><div class="box b1">スプーリング<span>Spooling</span></div><dl><dd>プリンタなど遅い装置への出力をいったん補助記憶にためて、CPUを早く解放する仕組み</dd></dl></div><div class="term"><div class="box b1">タスク<span>プロセス / Task, Process</span></div><dl><dd>OSから見た処理の単位</dd><dd class="pt"><span class="tag">ポイント</span>実行可能・実行・待機の3つの状態を行き来する</dd></dl></div><div class="term"><div class="box b1">ディスパッチャ<span>Dispatcher</span></div><dl><dd>実行可能状態のタスクに、実際にCPUを割り当てる機能</dd></dl></div></div>
+<div class="foot"><span>基本情報 ソフトウェア</span><span>4</span></div>
+</section>
+
+<section class="slide ">
+  <h1>5-1 オペレーティングシステム<small>タスク管理</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">到着順方式<span>FCFS / First Come First Served</span></div><dl><dd>実行可能になった順にCPUを割り当てる方式</dd><dd class="words">First Come＝先に来た／First Served＝先に扱われる</dd></dl></div><div class="term"><div class="box b1">優先度順方式<span>Priority Scheduling</span></div><dl><dd>優先度の高いタスクからCPUを割り当てる方式</dd><dd class="pt"><span class="tag">ポイント</span>低い優先度のタスクがずっと待たされることがある</dd></dl></div><div class="term"><div class="box b1">ラウンドロビン方式<span>Round Robin</span></div><dl><dd>一定の時間（タイムクウォンタム）ずつ順番にCPUを割り当てる方式</dd><dd class="pt"><span class="tag">ポイント</span>時間切れになると実行可能状態の最後に並び直す</dd></dl></div><div class="term"><div class="box b1">処理時間順方式<span>SPT / Shortest Processing Time First</span></div><dl><dd>処理時間の短いタスクから実行する方式</dd><dd class="pt"><span class="tag">ポイント</span>平均の待ち時間が短くなる</dd><dd class="words">Shortest＝最も短い／Processing Time＝処理時間／First＝先に</dd></dl></div><div class="term"><div class="box b1">プリエンプティブ方式<span>Preemptive</span></div><dl><dd>実行中のタスクを途中で止めて、ほかのタスクにCPUを渡せる方式</dd><dd class="pt"><span class="tag">ポイント</span>止められないのはノンプリエンプティブ方式</dd></dl></div><div class="term"><div class="box b1">マルチタスク<span>Multitask</span></div><dl><dd>複数のタスクを切り替えながら、同時に動いているように処理すること</dd></dl></div></div>
+<div class="foot"><span>基本情報 ソフトウェア</span><span>5</span></div>
+</section>
+
+<section class="slide ">
+  <h1>5-1 オペレーティングシステム<small>タスク管理・記憶管理</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">デッドロック<span>Deadlock</span></div><dl><dd>複数のタスクがお互いに相手の持つ資源を待って、どれも進めなくなる状態</dd><dd class="pt"><span class="tag">ポイント</span>資源を確保する順序をそろえると防げる</dd></dl></div><div class="term"><div class="box b1">固定区画方式<span>Fixed Partition</span></div><dl><dd>主記憶をあらかじめ決めた大きさの区画に分けて割り当てる方式</dd><dd class="pt"><span class="tag">ポイント</span>区画内の使われない部分（内部断片化）が生じる</dd></dl></div><div class="term"><div class="box b1">可変区画方式<span>Variable Partition</span></div><dl><dd>プログラムの大きさに合わせて区画を割り当てる方式</dd><dd class="pt"><span class="tag">ポイント</span>空きが細切れになる（外部断片化）ので、詰め直す（コンパクション）</dd></dl></div><div class="term"><div class="box b1">オーバレイ方式<span>Overlay</span></div><dl><dd>主記憶より大きいプログラムを部分に分け、必要な部分を入れ替えながら実行する方式</dd></dl></div><div class="term"><div class="box b1">スワッピング<span>Swapping</span></div><dl><dd>実行していないタスクを丸ごと補助記憶へ退避（スワップアウト）し、必要なときに戻す（スワップイン）方式</dd></dl></div><div class="term"><div class="box b1">仮想記憶<span>かそうきおく / Virtual Memory</span></div><dl><dd>補助記憶を使って、主記憶より大きな記憶空間があるように見せる仕組み</dd></dl></div></div>
+<div class="foot"><span>基本情報 ソフトウェア</span><span>6</span></div>
+</section>
+
+<section class="slide ">
+  <h1>5-1 オペレーティングシステム<small>記憶管理</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">ページング方式<span>Paging</span></div><dl><dd>仮想記憶を一定の大きさのページに分け、ページ単位で主記憶と補助記憶を入れ替える方式</dd><dd class="pt"><span class="tag">ポイント</span>必要なページが主記憶にないことをページフォールトという</dd></dl></div><div class="term"><div class="box b1">ページイン・ページアウト<span>Page In, Page Out</span></div><dl><dd>ページインは補助記憶から主記憶へ読み込むこと、ページアウトは主記憶から補助記憶へ追い出すこと</dd></dl></div><div class="term"><div class="box b1">スラッシング<span>Thrashing</span></div><dl><dd>ページインとページアウトが頻繁に起きて、処理がほとんど進まなくなる状態</dd><dd class="pt"><span class="tag">ポイント</span>主記憶を増やす、同時に動かすタスクを減らすなどで防ぐ</dd></dl></div><div class="term"><div class="box b1">LRU<span>えるあーるゆー / Least Recently Used</span></div><dl><dd>最も長い間使われていないページを追い出す方式</dd><dd class="words">Least＝最も少なく／Recently＝最近／Used＝使われた</dd></dl></div><div class="term"><div class="box b1">LFU<span>えるえふゆー / Least Frequently Used</span></div><dl><dd>使われた回数が最も少ないページを追い出す方式</dd><dd class="words">Least＝最も少なく／Frequently＝頻繁に／Used＝使われた</dd></dl></div><div class="term"><div class="box b1">メモリリーク<span>Memory Leak</span></div><dl><dd>使い終わったメモリが解放されず、使える量がだんだん減っていく現象</dd><dd class="pt"><span class="tag">ポイント</span>ガーベジコレクションは使わなくなった領域を自動で回収する</dd></dl></div></div>
+<div class="foot"><span>基本情報 ソフトウェア</span><span>7</span></div>
+</section>
+
+<section class="slide ">
+  <h1>5-2 ミドルウェア<small>OSとアプリの間</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">ミドルウェア<span>Middleware</span></div><dl><dd>OSとアプリケーションの間で、多くのアプリが使う共通の機能を提供するソフトウェア</dd><dd class="pt"><span class="tag">例</span>DBMS、Webサーバソフト</dd></dl></div><div class="term"><div class="box b1">API<span>えーぴーあい / Application Programming Interface</span></div><dl><dd>ソフトウェアの機能をほかのプログラムから呼び出すための窓口</dd><dd class="words">Application＝アプリケーション／Programming＝プログラムから使う／Interface＝窓口</dd></dl></div><div class="term"><div class="box b1">シェル<span>Shell</span></div><dl><dd>利用者が入力したコマンドを解釈して、OSに伝えるプログラム</dd></dl></div></div>
+<div class="foot"><span>基本情報 ソフトウェア</span><span>8</span></div>
+</section>
+
+<section class="slide ">
+  <h1>5-3 ファイルシステム<small>ファイルの管理</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">ディレクトリ<span>Directory</span></div><dl><dd>ファイルを分類して入れておく入れ物。階層（木構造）にできる</dd><dd class="pt"><span class="tag">ポイント</span>いちばん上がルートディレクトリ</dd></dl></div><div class="term"><div class="box b1">絶対パス・相対パス<span>Absolute / Relative Path</span></div><dl><dd>絶対パスはルートから、相対パスは今いる場所（カレントディレクトリ）からファイルの場所を示す</dd><dd class="pt"><span class="tag">ポイント</span>..は1つ上の階層を表す</dd></dl></div><div class="term"><div class="box b1">アクセス権<span>Access Right</span></div><dl><dd>ファイルを読む・書く・実行する権限を、利用者ごとに設定するもの</dd></dl></div></div>
+<div class="foot"><span>基本情報 ソフトウェア</span><span>9</span></div>
+</section>
+
+<section class="slide ">
+  <h1>5-4 開発ツール<small>言語処理</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">コンパイラ<span>Compiler</span></div><dl><dd>ソースプログラムを実行前にまとめて機械語（目的プログラム）に翻訳するプログラム</dd><dd class="pt"><span class="tag">ポイント</span>翻訳後は直接実行できるので速い</dd></dl></div><div class="term"><div class="box b1">インタプリタ<span>Interpreter</span></div><dl><dd>ソースプログラムを1行ずつ解釈しながら実行するプログラム</dd><dd class="pt"><span class="tag">ポイント</span>すぐ試せるが、実行は遅め</dd></dl></div><div class="term"><div class="box b1">リンカ<span>Linker</span></div><dl><dd>複数の目的プログラム（オブジェクトファイル）やライブラリを結合して、実行できる形にするプログラム</dd><dd class="pt"><span class="tag">ポイント</span>結合することをリンクという</dd></dl></div><div class="term"><div class="box b1">ローダ<span>Loader</span></div><dl><dd>実行できるプログラムを主記憶に読み込むプログラム</dd></dl></div><div class="term"><div class="box b1">IDE<span>あいでぃーいー / Integrated Development Environment</span></div><dl><dd>エディタ・コンパイラ・デバッガなどを1つにまとめた開発環境</dd><dd class="words">Integrated＝統合された／Development＝開発／Environment＝環境</dd></dl></div><div class="term"><div class="box b1">デバッガ<span>Debugger</span></div><dl><dd>プログラムを止めながら変数の値を見るなどして、誤り（バグ）を探す道具</dd></dl></div></div>
+<div class="foot"><span>基本情報 ソフトウェア</span><span>10</span></div>
+</section>
+
+<section class="slide ">
+  <h1>5-5 オープンソースソフトウェア<small>OSS</small></h1>
+  <div class="grid"><div class="term"><div class="box b1">OSS<span>おーえすえす / Open Source Software</span></div><dl><dd>ソースコードが公開され、決まったライセンスのもとで自由に使い・変え・配れるソフトウェア</dd><dd class="pt"><span class="tag">例</span>Linux、Apache、MySQL</dd><dd class="words">Open＝公開された／Source＝ソースコード／Software＝ソフトウェア</dd></dl></div><div class="term"><div class="box b1">GPL<span>じーぴーえる / GNU General Public License</span></div><dl><dd>OSSの代表的なライセンス。改変したものを配るときもソースを公開する必要がある（コピーレフト）</dd><dd class="words">GNU＝プロジェクト名／General Public＝一般に公開する／License＝利用許諾</dd></dl></div></div>
+<div class="foot"><span>基本情報 ソフトウェア</span><span>11</span></div>
+</section>
+
+<section class="slide ">
+  <h1>まとめ<small>この分野で覚える用語</small></h1>
+  <table><thead><tr><th style="width:30%">小分類</th><th>用語</th></tr></thead><tbody>
+<tr><td>5-1 オペレーティングシステム</td><td>OS・ソフトウェアの分類・カーネル・スプーリング・タスク・ディスパッチャ・到着順方式・優先度順方式・ラウンドロビン方式・処理時間順方式・プリエンプティブ方式・マルチタスク・デッドロック・固定区画方式・可変区画方式・オーバレイ方式・スワッピング・仮想記憶・ページング方式・ページイン・ページアウト・スラッシング・LRU・LFU・メモリリーク</td></tr>
+<tr><td>5-2 ミドルウェア</td><td>ミドルウェア・API・シェル</td></tr>
+<tr><td>5-3 ファイルシステム</td><td>ディレクトリ・絶対パス・相対パス・アクセス権</td></tr>
+<tr><td>5-4 開発ツール</td><td>コンパイラ・インタプリタ・リンカ・ローダ・IDE・デバッガ</td></tr>
+<tr><td>5-5 オープンソースソフトウェア</td><td>OSS・GPL</td></tr>
+  </tbody></table>
+<div class="foot"><span>基本情報 ソフトウェア</span><span>12</span></div>
+</section>
+</body>
+</html>
