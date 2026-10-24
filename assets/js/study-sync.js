@@ -83,6 +83,15 @@
     };
     const [background, color, border] = colors[type] || colors.info;
 
+    // 少し経ったら消す（エラーは残す）
+    clearTimeout(showSyncMessage.timer);
+    element.hidden = false;
+    if (type !== "error") {
+      showSyncMessage.timer = setTimeout(function () {
+        element.hidden = true;
+      }, 4000);
+    }
+
     element.style.background = background;
     element.style.color = color;
     element.style.borderColor = border;
