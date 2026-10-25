@@ -118,7 +118,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/12.html", title: "システム開発技術 用語集", desc: "要件定義・DFD・E-R図・UML・オブジェクト指向・モジュール結合度と強度・デザインパターン・JIS X 25010・テストの網羅基準・限界値分析・移行・保守のタイプなど317語と、IPA過去問（令和3〜7年度）を中心にした問題44問。ア〜エ全部に解説", fields: [12] },
       { type: "terms", file: "terms/13.html", title: "ソフトウェア開発管理技術 用語集", desc: "開発モデル・アジャイル宣言・XP・スクラムの役割とイベント・ベロシティ・DevOpsとFour Keys・SLCPとプロセス能力水準・著作権と特許・開発環境・構成管理など252語と、IPA過去問（令和3〜7年度）を中心にした問題37問。ア〜エ全部に解説", fields: [13] },
       { type: "terms", file: "terms/14.html", title: "プロジェクトマネジメント 用語集", desc: "JIS Q 21500の五つのプロセス群と十の対象群・プロジェクト憲章・WBS・RACI・タックマンモデル・アローダイアグラムとクリティカルパス・CCPM・EVM・リスクの戦略・品質コスト・契約のタイプなど321語と、IPA過去問（令和3〜7年度）を中心にした問題58問。ア〜エ全部に解説", fields: [14] },
-      { type: "terms", file: "terms/15.html", title: "サービスマネジメント 用語集", desc: "サービスマネジメント・サービスマネジメントシステムの計画及び運用・パフォーマンス評価及び改善・サービスの運用・ファシリティマネジメントなど105語と問題20問（仮版）", fields: [15] },
+      { type: "terms", file: "terms/15.html", title: "サービスマネジメント 用語集", desc: "SLA・SLO・OLA・サービスポートフォリオ・構成管理とCMDB・変更の種類・インシデント・問題・サービス要求・可用性と保守性（MTBF・MTRS）・RTOとRPO・是正処置・CSFとKPI・バックアップ・サービスデスク・データセンターの設備とPUEなど264語と、IPA過去問（令和3〜7年度）を中心にした問題45問。ア〜エ全部に解説", fields: [15] },
       { type: "terms", file: "terms/16.html", title: "システム監査 用語集", desc: "システム監査・内部統制など101語と問題20問（仮版）", fields: [16] },
       { type: "terms", file: "terms/17.html", title: "システム戦略 用語まとめ", desc: "EA・BPR・IT投資評価・UML・調達など54語", fields: [17] },
       { type: "terms", file: "terms/18.html", title: "システム企画 用語集", desc: "システム化計画・要件定義・調達と契約など157語", fields: [18] },
