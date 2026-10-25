@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<title>応用情報 ネットワーク 図解</title>
+<title>応用情報 #10 ネットワーク 図解</title>
 <style>
 @page { size: 960px 540px; margin: 0; }
 :root {
@@ -48,107 +48,1093 @@ ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; colu
 .flow .box { flex: 1; }
 .flow .to { color: var(--navy3); font-size: 20px; }
 svg text { font-family: "IPAPGothic", sans-serif; }
-</style>
-<style>
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
-.term .box { text-align: left; font-size: 15px; padding: 7px 12px; }
-.term dl { margin: 6px 2px 0; }
-.term dd { margin: 0 0 4px; font-size: 12.5px; line-height: 1.5; }
-.term dd.pt { color: #333; }
-.term dd.words { color: var(--navy2); font-size: 11.5px; }
-.term .tag { font-size: 10.5px; padding: 0 5px; }
-.slide .cap + table { margin-bottom: 14px; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
 </style>
 </head>
 <body>
+
 <section class="slide title">
-  <div class="k">応用情報技術者試験　テクノロジ系　No.10</div>
+  <div class="k">応用情報技術者試験　テクノロジ系　#10</div>
   <h1>ネットワーク</h1>
-  <p>ネットワーク方式・データ通信と制御・通信プロトコル・ネットワーク管理・ネットワーク応用</p>
-<div class="foot"><span>応用情報 ネットワーク</span><span>1</span></div>
+  <p>用語集まとめ ― 過去問10回分（令和3〜7年度）とシラバスの用語例から</p>
+  <div class="icons"><img src="img/net/globe_with_meridians_flat.svg" alt=""><img src="img/net/antenna_bars_flat.svg" alt=""><img src="img/net/link_flat.svg" alt=""><img src="img/net/envelope_with_arrow_flat.svg" alt=""><img src="img/net/mobile_phone_flat.svg" alt=""><img src="img/net/satellite_antenna_flat.svg" alt=""></div>
 </section>
 
-<section class="slide ">
-  <h1>目次</h1>
-  <ol class="toc">
-    <li>10-1 ネットワーク方式（5語）</li>
-    <li>10-2 データ通信と制御（6語）</li>
-    <li>10-3 通信プロトコル（14語）</li>
-    <li>10-4 ネットワーク管理（4語）</li>
-    <li>10-5 ネットワーク応用（4語）</li>
-    <li>まとめ</li>
-  </ol>
-<div class="foot"><span>応用情報 ネットワーク</span><span>2</span></div>
+<section class="slide">
+  <h1>全体像<small>シラバスの5つの項目を、そのまま5章で読む</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 ネットワーク方式<span>LAN・WAN・無線LAN・交換方式・伝送時間の計算・IPアドレスの種類・NAPT</span></div>
+      <div class="box b2">2 データ通信と制御<span>トポロジ・OSIの7層・LANの機器・CSMA/CD・スパニングツリー・プロキシ・誤り検出</span></div>
+      <div class="box b1">3 通信プロトコル<span>カプセル化・TCPとUDP・ポート番号・サブネット・ルーティング・ARP・ICMP・DHCP・IPv6・DNS</span></div>
+      <div class="box b3">4 ネットワーク管理<span>構成・障害・性能管理・ping・traceroute・arp・SNMP・SDN・NFV</span></div>
+      <div class="box b4">5 ネットワーク応用<span>メール・Web・FTP・VPN・WANのサービス・5G・モバイル・IoT（LPWA・MQTT）</span></div>
+    </div>
+    <div>
+      <div class="cap">午前での出方</div>
+      <table>
+        <tr><td style="width:30%">問題数</td><td>毎回 <b>5〜6問</b>（問29〜問36あたり）。10回で53問</td></tr>
+        <tr><td>同じ問題の再出題</td><td><b>4組</b>（FTPのポート・送信時間の差・TCPのヘッダー・ビット誤り率）。SDNは3回、NAPTは2回</td></tr>
+        <tr><td>問題の型</td><td><b>計算（伝送時間・サブネット）</b>と、<b>プロトコルの役割の入れ替え</b>が中心</td></tr>
+      </table>
+      <div class="point"><b>この資料の読み方：</b>計算は「ビットに直す」「ANDを取る」の2つの手順を体で覚える。プロトコルは「どの層で何をするか」を表で覚える。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>10-1 ネットワーク方式<small>まとめ表</small></h1>
-  <div class="cap">OSI参照モデルと機器</div>
-  <table><thead><tr><th>層</th><th>名前</th><th>主なプロトコル・機器</th></tr></thead>
-  <tbody><tr><td>7〜5</td><td>アプリケーション・プレゼンテーション・セッション</td><td>HTTP・SMTP・DNS／ゲートウェイ</td></tr><tr><td>4</td><td>トランスポート</td><td>TCP・UDP</td></tr><tr><td>3</td><td>ネットワーク</td><td>IP・ICMP／ルータ・L3スイッチ</td></tr><tr><td>2</td><td>データリンク</td><td>イーサネット／L2スイッチ・ブリッジ</td></tr><tr><td>1</td><td>物理</td><td>ケーブル／リピータ・ハブ</td></tr></tbody></table>
-<div class="foot"><span>応用情報 ネットワーク</span><span>3</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/net/bar_chart_flat.svg" alt="">通信プロトコルが半分。計算問題は毎回1〜2問</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="400" height="210" viewBox="0 0 400 210"><text x="150" y="28" font-size="12" text-anchor="end" fill="#1d1d1f">1 ネットワーク方式</text><rect x="160" y="15" width="112.5" height="22" rx="3" fill="#1f3a68"/><text x="278.5" y="31" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">15問</text><text x="150" y="68" font-size="12" text-anchor="end" fill="#1d1d1f">2 データ通信と制御</text><rect x="160" y="55" width="30.0" height="22" rx="3" fill="#5b80bf"/><text x="196.0" y="71" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">4問</text><text x="150" y="108" font-size="12" text-anchor="end" fill="#1d1d1f">3 通信プロトコル</text><rect x="160" y="95" width="202.5" height="22" rx="3" fill="#1f3a68"/><text x="368.5" y="111" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">27問</text><text x="150" y="148" font-size="12" text-anchor="end" fill="#1d1d1f">4 ネットワーク管理</text><rect x="160" y="135" width="30.0" height="22" rx="3" fill="#5b80bf"/><text x="196.0" y="151" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">4問</text><text x="150" y="188" font-size="12" text-anchor="end" fill="#1d1d1f">5 ネットワーク応用</text><rect x="160" y="175" width="22.5" height="22" rx="3" fill="#5b80bf"/><text x="188.5" y="191" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">3問</text></svg>
+      <div style="font-size:11px;color:#6e6e73">令和3年度春期〜令和7年度秋期の53問を、章ごとに数えた（同じ問題も1問ずつ数えた）</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:24%">よく出る型</th><th>中身</th><th style="width:28%">過去問</th></tr>
+        <tr><td>伝送時間</td><td>バイト→ビット、伝送効率で割る</td><td>R5秋31・R6秋32・R5春32</td></tr>
+        <tr><td>サブネット</td><td>ANDでネットワークアドレス、2^n−2で台数</td><td>R5秋34・R4春34・R4秋33・R7春32</td></tr>
+        <tr><td>NAPT</td><td>出るときは送信元、戻るときは宛先を書き換え</td><td>R3秋33・R5秋32</td></tr>
+        <tr><td>TCPとUDP</td><td>シーケンス番号はTCPだけ、NTP・DNSはUDP</td><td>R3秋34・R4春33・R4秋34</td></tr>
+        <tr><td>プロトコルの役割</td><td>ARP・ICMP・DHCP・RARPの説明の入れ替え</td><td>R3秋32・R6秋34・R4秋31</td></tr>
+        <tr><td>SDN</td><td>制御と転送を分けて、コントローラで集中制御</td><td>R3春35・R4春35・R6春34</td></tr>
+      </table>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>10-1 ネットワーク方式<small>ネットワークの形</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">LAN・WAN<span>Local / Wide Area Network</span></div><dl><dd>LANは建物の中などの狭い範囲、WANは離れた場所をつなぐ広い範囲のネットワーク</dd><dd class="words">Local＝構内の／Wide＝広い／Area＝範囲／Network＝網</dd></dl></div><div class="term"><div class="box b1">無線LAN<span>Wireless LAN</span></div><dl><dd>電波でつなぐLAN</dd><dd class="pt"><span class="tag">ポイント</span>IEEE 802.11。暗号化はWPA3。衝突を避けるCSMA/CA方式</dd></dl></div><div class="term"><div class="box b1">5G<span>第5世代移動通信システム</span></div><dl><dd>高速大容量・超低遅延・多数同時接続が特徴の移動通信</dd><dd class="pt"><span class="tag">ポイント</span>ローカル5Gは企業が自分の敷地で使う</dd></dl></div><div class="term"><div class="box b1">LPWA<span>えるぴーだぶりゅーえー / Low Power Wide Area</span></div><dl><dd>少ない電力で広い範囲を通信できる方式。速度は遅い</dd><dd class="pt"><span class="tag">ポイント</span>IoTのセンサに向く</dd><dd class="words">Low Power＝低消費電力／Wide Area＝広い範囲</dd></dl></div><div class="term"><div class="box b1">SDN<span>えすでぃーえぬ / Software-Defined Networking</span></div><dl><dd>ネットワークの制御をソフトウェアで集中して行う考え方</dd><dd class="pt"><span class="tag">ポイント</span>制御（コントロールプレーン）と転送（データプレーン）を分ける。OpenFlowが代表</dd><dd class="words">Software＝ソフトウェア／Defined＝定義された／Networking＝ネットワーク</dd></dl></div></div>
-<div class="foot"><span>応用情報 ネットワーク</span><span>4</span></div>
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/optical_fiber.png" alt=""><img src="img/irasutoya/antenna.png" alt=""><img src="img/irasutoya/mesh_network.png" alt=""><img src="img/irasutoya/stopwatch.png" alt=""></div>
+  <div class="k">第1章</div>
+  <h1>ネットワーク方式</h1>
+  <p>LAN・WAN・PAN ／ ケーブルとPoE・PLC ／ 無線LANの規格とチャネル ／ 隠れ端末問題 ／ 回線交換とパケット交換 ／ 伝送時間とトラフィックの計算 ／ IPアドレスの種類とNAPT</p>
 </section>
 
-<section class="slide ">
-  <h1>10-2 データ通信と制御<small>通信の制御</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">伝送時間<span>Transmission Time</span></div><dl><dd>データ量 ÷（回線速度 × 伝送効率）</dd></dl></div><div class="term"><div class="box b1">CSMA/CD<span>Carrier Sense Multiple Access with Collision Detection</span></div><dl><dd>送信前に回線を確かめ、衝突したら待って送り直す有線LANの方式</dd></dl></div><div class="term"><div class="box b1">CSMA/CA<span>Carrier Sense Multiple Access with Collision Avoidance</span></div><dl><dd>衝突を避けるために、待ち時間をおいて送る無線LANの方式</dd></dl></div><div class="term"><div class="box b1">MACアドレス<span>Media Access Control Address</span></div><dl><dd>ネットワーク機器に付けられた48ビットの固有の番号</dd><dd class="pt"><span class="tag">ポイント</span>先頭24ビットはメーカーの番号（OUI）</dd></dl></div><div class="term"><div class="box b1">VLAN<span>ぶいらん / Virtual LAN</span></div><dl><dd>物理的なつながりとは別に、論理的にLANを分ける技術</dd><dd class="words">Virtual＝仮想の／LAN＝構内網</dd></dl></div><div class="term"><div class="box b1">スパニングツリープロトコル<span>STP / Spanning Tree Protocol</span></div><dl><dd>スイッチのループ（輪）を見つけて、一部のポートを止めてループを防ぐ方式</dd></dl></div></div>
-<div class="foot"><span>応用情報 ネットワーク</span><span>5</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/net/globe_with_meridians_flat.svg" alt="">範囲で呼び名が変わる。WANだけは事業者の回線を借りる</h1>
+  <div class="cols">
+    <div><svg width="420" height="215" viewBox="0 0 420 215">
+<ellipse cx="210" cy="110" rx="205" ry="100" fill="#e8eef8" stroke="#5b80bf" stroke-width="1.5"/>
+<ellipse cx="150" cy="118" rx="120" ry="70" fill="#dfe8f6" stroke="#5b80bf" stroke-width="1.5"/>
+<ellipse cx="110" cy="128" rx="55" ry="36" fill="#c9daf2" stroke="#2f5596" stroke-width="1.5"/>
+<text x="110" y="124" font-size="14" text-anchor="middle" fill="#1f3a68" font-weight="700">PAN</text><text x="110" y="141" font-size="10" text-anchor="middle" fill="#1d1d1f">身の回り数m（BLE）</text>
+<text x="205" y="78" font-size="14" text-anchor="middle" fill="#1f3a68" font-weight="700">LAN</text><text x="205" y="95" font-size="10" text-anchor="middle" fill="#1d1d1f">建物・敷地の中</text>
+<text x="338" y="70" font-size="14" text-anchor="middle" fill="#1f3a68" font-weight="700">WAN</text><text x="338" y="87" font-size="10" text-anchor="middle" fill="#1d1d1f">拠点と拠点を</text><text x="338" y="101" font-size="10" text-anchor="middle" fill="#1d1d1f">事業者の回線で</text>
+<text x="338" y="150" font-size="10" text-anchor="middle" fill="#6e6e73">MAN：都市くらい</text>
+</svg>
+      <div class="point">建物の配線は「外の回線 → <b>MDF</b>（主配線盤、建物に1か所）→ <b>IDF</b>（中間配線盤、各階）→ 各部屋」。料金は使った分の<b>従量制</b>と、一定の<b>月額固定料金</b>。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:30%">ケーブル・給電</th><th>特徴</th></tr>
+        <tr><td><b>より対線</b>（UTP）</td><td>銅線をより合わせて雑音を打ち消す。○BASE-T、最大100m</td></tr>
+        <tr><td>同軸ケーブル</td><td>中心線を網で包む。テレビ・CATV、昔のバス型LAN</td></tr>
+        <tr><td><b>光ファイバ</b></td><td>光で送る。電磁雑音に強く、長距離・高速。FTTH</td></tr>
+        <tr><td><b>PLC</b></td><td><b>電力線</b>を通信回線に使う（R5春31）</td></tr>
+        <tr><td><b>PoE</b></td><td><b>LANケーブルで給電</b>も行う。天井のアクセスポイント・IP電話機（R7春29）</td></tr>
+      </table>
+      <div class="point warn">PLCとPoEは向きが逆。「電気の線でデータ」がPLC、「データの線で電気」がPoE。R3春32ではPLCが無線PANの誤答に並んだ。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>10-3 通信プロトコル<small>まとめ表</small></h1>
-  <div class="cap">よく出るポート番号</div>
-  <table><thead><tr><th>プロトコル</th><th>ポート</th></tr></thead>
-  <tbody><tr><td>HTTP</td><td>80</td></tr><tr><td>HTTPS</td><td>443</td></tr><tr><td>SMTP</td><td>25（送信の受付は587）</td></tr><tr><td>POP3</td><td>110</td></tr><tr><td>IMAP</td><td>143</td></tr><tr><td>DNS</td><td>53</td></tr></tbody></table>
-<div class="foot"><span>応用情報 ネットワーク</span><span>6</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/net/antenna_bars_flat.svg" alt="">無線LANの規格は「周波数帯」と「最大速度」の組で覚える</h1>
+  <div class="cols">
+    <div><svg width="420" height="180" viewBox="0 0 420 180">
+<text x="100" y="16" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">インフラストラクチャモード</text>
+<rect x="74" y="46" width="52" height="28" rx="6" fill="#1f3a68"/><text x="100" y="64" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">AP</text><line x1="100" y1="46" x2="100" y2="30" stroke="#9aa7bd" stroke-width="1.6"/><text x="100" y="26" font-size="9.5" text-anchor="middle" fill="#6e6e73">有線LANへ</text>
+<line x1="80" y1="72" x2="40" y2="120" stroke="#5b80bf" stroke-width="1.5" stroke-dasharray="4 3"/><line x1="100" y1="74" x2="100" y2="120" stroke="#5b80bf" stroke-width="1.5" stroke-dasharray="4 3"/><line x1="120" y1="72" x2="160" y2="120" stroke="#5b80bf" stroke-width="1.5" stroke-dasharray="4 3"/>
+<rect x="18" y="120" width="44" height="24" rx="4" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="40" y="136" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">端末</text><rect x="78" y="120" width="44" height="24" rx="4" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="100" y="136" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">端末</text><rect x="138" y="120" width="44" height="24" rx="4" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="160" y="136" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">端末</text>
+<text x="100" y="170" font-size="10" text-anchor="middle" fill="#1d1d1f">APを通して通信（ふつうはこれ）</text>
+<text x="320" y="16" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">アドホックモード</text>
+<rect x="248" y="58" width="44" height="24" rx="4" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="270" y="74" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">端末</text><rect x="348" y="58" width="44" height="24" rx="4" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="370" y="74" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">端末</text><rect x="298" y="118" width="44" height="24" rx="4" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="320" y="134" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">端末</text>
+<line x1="292" y1="70" x2="348" y2="70" stroke="#5b80bf" stroke-width="1.5" stroke-dasharray="4 3"/><line x1="280" y1="82" x2="310" y2="118" stroke="#5b80bf" stroke-width="1.5" stroke-dasharray="4 3"/><line x1="360" y1="82" x2="330" y2="118" stroke="#5b80bf" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="320" y="170" font-size="10" text-anchor="middle" fill="#1d1d1f">端末どうしが直接（APなし）</text>
+</svg>
+      <div class="point"><b>SSID</b>はネットワークの名前。複数のAPで同じSSIDにすると、移動しても同じネットワークとして使える。<b>メッシュWi-Fi</b>は親機どうしも無線でつないで範囲を広げる。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:24%">規格</th><th style="width:22%">別名</th><th style="width:26%">周波数帯</th><th>最大速度</th></tr>
+        <tr><td>802.11b</td><td>―</td><td>2.4GHz</td><td>11Mbps</td></tr>
+        <tr><td>802.11a</td><td>―</td><td>5GHz</td><td>54Mbps</td></tr>
+        <tr><td>802.11g</td><td>―</td><td>2.4GHz</td><td>54Mbps</td></tr>
+        <tr><td>802.11n</td><td>Wi-Fi 4</td><td>2.4／5GHz</td><td>600Mbps</td></tr>
+        <tr><td><b>802.11ac</b></td><td>Wi-Fi 5</td><td><b>5GHzだけ</b></td><td>6.9Gbps</td></tr>
+        <tr><td>802.11ax</td><td>Wi-Fi 6／6E</td><td>2.4／5（6E：＋6GHz）</td><td>9.6Gbps</td></tr>
+        <tr><td>802.11ah</td><td>Wi-Fi HaLow</td><td>920MHz（IoT向け）</td><td>遠くまで届く</td></tr>
+      </table>
+      <div class="point warn">R3春 問33：802.11acは<b>5GHz帯</b>（エが正解）。600Mbpsは802.11n、CSMA/CDは有線、802.11g（2.4GHz）の端末とは通信できない。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>10-3 通信プロトコル<small>TCP/IP</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">TCP/IP<span>Transmission Control Protocol / Internet Protocol</span></div><dl><dd>インターネットで使う4階層のプロトコル群</dd><dd class="pt"><span class="tag">ポイント</span>アプリケーション層・トランスポート層・インターネット層・ネットワークインタフェース層</dd></dl></div><div class="term"><div class="box b1">TCP・UDP<span>Transmission Control Protocol / User Datagram Protocol</span></div><dl><dd>TCPはコネクションを作り、届いたかを確かめる信頼性の高い通信。UDPは確認をせず速い通信で、動画・音声やDNSに使う</dd></dl></div><div class="term"><div class="box b1">3ウェイハンドシェイク<span>3-way Handshake</span></div><dl><dd>TCPで接続を始めるときの3回のやり取り（SYN → SYN/ACK → ACK）</dd></dl></div><div class="term"><div class="box b1">IPv4アドレスとサブネットマスク<span>Subnet Mask</span></div><dl><dd>IPアドレスのうちネットワーク部とホスト部の境目を示す値</dd><dd class="pt"><span class="tag">ポイント</span>/24なら使えるホストは 2^8 − 2 ＝ 254台</dd></dl></div><div class="term"><div class="box b1">CIDR<span>さいだー / Classless Inter-Domain Routing</span></div><dl><dd>クラスにとらわれず、ネットワーク部の長さを自由に決める方式</dd><dd class="pt"><span class="tag">例</span>192.168.1.0/24</dd><dd class="words">Classless＝クラスのない／Inter-Domain＝ドメイン間の／Routing＝経路制御</dd></dl></div></div>
-<div class="foot"><span>応用情報 ネットワーク</span><span>7</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/net/satellite_antenna_flat.svg" alt="">2.4GHz帯は隣のチャネルと重なる。隣のAPは1・6・11に分ける</h1>
+  <div class="cols">
+    <div><svg width="420" height="200" viewBox="0 0 420 200">
+<line x1="0" y1="150" x2="420" y2="150" stroke="#9aa7bd" stroke-width="1.2"/>
+<path d="M-20,150 Q20,40 60,150" fill="none" stroke="#1f3a68" stroke-width="2.6"/><text x="20" y="168" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">1</text><path d="M10,150 Q50,70 90,150" fill="none" stroke="#c3cad6" stroke-width="1.2"/><text x="50" y="168" font-size="11" text-anchor="middle" fill="#8a93a3">2</text><path d="M40,150 Q80,70 120,150" fill="none" stroke="#c3cad6" stroke-width="1.2"/><text x="80" y="168" font-size="11" text-anchor="middle" fill="#8a93a3">3</text><path d="M70,150 Q110,70 150,150" fill="none" stroke="#c3cad6" stroke-width="1.2"/><text x="110" y="168" font-size="11" text-anchor="middle" fill="#8a93a3">4</text><path d="M100,150 Q140,70 180,150" fill="none" stroke="#c3cad6" stroke-width="1.2"/><text x="140" y="168" font-size="11" text-anchor="middle" fill="#8a93a3">5</text><path d="M130,150 Q170,40 210,150" fill="none" stroke="#1f3a68" stroke-width="2.6"/><text x="170" y="168" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">6</text><path d="M160,150 Q200,70 240,150" fill="none" stroke="#c3cad6" stroke-width="1.2"/><text x="200" y="168" font-size="11" text-anchor="middle" fill="#8a93a3">7</text><path d="M190,150 Q230,70 270,150" fill="none" stroke="#c3cad6" stroke-width="1.2"/><text x="230" y="168" font-size="11" text-anchor="middle" fill="#8a93a3">8</text><path d="M220,150 Q260,70 300,150" fill="none" stroke="#c3cad6" stroke-width="1.2"/><text x="260" y="168" font-size="11" text-anchor="middle" fill="#8a93a3">9</text><path d="M250,150 Q290,70 330,150" fill="none" stroke="#c3cad6" stroke-width="1.2"/><text x="290" y="168" font-size="11" text-anchor="middle" fill="#8a93a3">10</text><path d="M280,150 Q320,40 360,150" fill="none" stroke="#1f3a68" stroke-width="2.6"/><text x="320" y="168" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">11</text><path d="M310,150 Q350,70 390,150" fill="none" stroke="#c3cad6" stroke-width="1.2"/><text x="350" y="168" font-size="11" text-anchor="middle" fill="#8a93a3">12</text><path d="M340,150 Q380,70 420,150" fill="none" stroke="#c3cad6" stroke-width="1.2"/><text x="380" y="168" font-size="11" text-anchor="middle" fill="#8a93a3">13</text>
+<text x="210" y="190" font-size="10.5" text-anchor="middle" fill="#1d1d1f">チャネル番号（5MHzおき）。1つの通信は約20MHz幅を使う</text>
+<text x="20" y="30" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">1</text><text x="170" y="30" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">6</text><text x="320" y="30" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">11</text>
+<text x="245" y="60" font-size="12" text-anchor="middle" fill="#b25000" font-weight="700">重ならないのは 1・6・11</text>
+</svg>
+      <div class="point">2.4GHz帯は障害物に強いが、電子レンジやBluetoothとも干渉する。<b>5GHz帯</b>はチャネルが重ならず速いが、障害物に弱い。</div>
+    </div>
+    <div>
+      <div class="cap">R3春 問36：複数のAPのチャネルの割当て</div>
+      <table>
+        <tr><th style="width:8%"></th><th>割当て方</th><th style="width:34%">判定</th></tr>
+        <tr><td>ア</td><td>移動しても設定を変えないよう、全部同じ番号に</td><td>隣どうしで干渉する（そろえるのはSSID）</td></tr>
+        <tr><td><b>イ</b></td><td><b>隣り合うAPは1と6、6と11のように離す</b></td><td><b>正解</b></td></tr>
+        <tr><td>ウ</td><td>SSIDを変えればチャネルは出荷時のままでよい</td><td>SSIDが違っても電波は干渉する</td></tr>
+        <tr><td>エ</td><td>端から1、2、3と順番に割り当てる</td><td>1・2・3はほぼ全部重なる</td></tr>
+      </table>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>10-3 通信プロトコル<small>TCP/IP</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">IPv6<span>Internet Protocol version 6</span></div><dl><dd>128ビットのアドレスを使うIP</dd><dd class="pt"><span class="tag">ポイント</span>アドレスが足りない問題を解決する。16ビットずつ16進数で8つに区切って書く</dd></dl></div><div class="term"><div class="box b1">NAT・NAPT<span>Network Address Translation / Network Address Port Translation</span></div><dl><dd>プライベートIPアドレスとグローバルIPアドレスを変換するしくみ</dd><dd class="pt"><span class="tag">ポイント</span>NAPTはポート番号も変換し、1つのグローバルアドレスを複数の端末で使える</dd></dl></div><div class="term"><div class="box b1">ARP<span>あーぷ / Address Resolution Protocol</span></div><dl><dd>IPアドレスからMACアドレスを調べるプロトコル</dd><dd class="words">Address＝アドレス／Resolution＝解決／Protocol＝通信規約</dd></dl></div><div class="term"><div class="box b1">ICMP<span>あいしーえむぴー / Internet Control Message Protocol</span></div><dl><dd>通信の誤りや状態を知らせるプロトコル</dd><dd class="pt"><span class="tag">ポイント</span>ping や traceroute が使う</dd><dd class="words">Internet＝インターネット／Control＝制御／Message＝通知</dd></dl></div><div class="term"><div class="box b1">DHCP<span>でぃーえいちしーぴー / Dynamic Host Configuration Protocol</span></div><dl><dd>端末にIPアドレスなどの設定を自動で配るプロトコル</dd><dd class="words">Dynamic＝動的な／Host＝端末／Configuration＝設定</dd></dl></div></div>
-<div class="foot"><span>応用情報 ネットワーク</span><span>8</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/net/speech_balloon_flat.svg" alt="">隠れ端末問題は「聞こえないので衝突」。RTS/CTSで予約する</h1>
+  <div class="cols">
+    <div><svg width="420" height="200" viewBox="0 0 420 200">
+<circle cx="120" cy="100" r="95" fill="#e8eef8" stroke="#5b80bf" stroke-dasharray="5 3"/>
+<circle cx="300" cy="100" r="95" fill="#e8eef8" fill-opacity="0.6" stroke="#5b80bf" stroke-dasharray="5 3"/>
+<rect x="184" y="86" width="52" height="28" rx="6" fill="#1f3a68"/><text x="210" y="104" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">AP</text><rect x="38" y="88" width="44" height="24" rx="4" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="60" y="104" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">端末A</text><rect x="338" y="88" width="44" height="24" rx="4" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="360" y="104" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">端末B</text>
+<text x="120" y="26" font-size="10" text-anchor="middle" fill="#1f3a68">Aの電波が届く範囲</text><text x="300" y="26" font-size="10" text-anchor="middle" fill="#1f3a68">Bの電波が届く範囲</text>
+<text x="210" y="150" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">APには両方届く</text>
+<text x="210" y="186" font-size="11.5" text-anchor="middle" fill="#b25000" font-weight="700">AとBは互いに聞こえない → 同時に送って衝突</text>
+</svg></div>
+    <div>
+      <table>
+        <tr><th style="width:30%">用語</th><th>中身</th></tr>
+        <tr><td><b>隠れ端末問題</b></td><td>端末どうしの電波が届かず、相手の送信に気付かないで衝突する</td></tr>
+        <tr><td>さらし端末問題</td><td>関係ない通信の電波が聞こえて、送るのを控えすぎる（効率が下がる）</td></tr>
+        <tr><td><b>RTS/CTS</b></td><td>送る前にRTS（送ってよいか）→ APがCTS（よい）を全員に返す。隠れた端末も待つ</td></tr>
+        <tr><td>キャリアセンス</td><td>送る前に電波が使われていないかを調べる。隠れ端末の電波は聞こえないので、これだけでは防げない</td></tr>
+      </table>
+      <div class="point">無線は衝突を<b>検出できない</b>ので、送る前にランダムな時間待って衝突を<b>避ける</b>（CSMA/CA）。届いたかはACKで確かめる。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>10-3 通信プロトコル<small>TCP/IP</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">DNS<span>でぃーえぬえす / Domain Name System</span></div><dl><dd>ドメイン名とIPアドレスを対応付けるしくみ</dd><dd class="words">Domain Name＝ドメイン名／System＝仕組み</dd></dl></div><div class="term"><div class="box b1">HTTP・HTTPS<span>HyperText Transfer Protocol / Secure</span></div><dl><dd>Webのやり取りのプロトコル。HTTPSはHTTPをTLSで暗号化したもの</dd><dd class="pt"><span class="tag">ポイント</span>要求（リクエスト）と応答（レスポンス）を繰り返す。状態を持たないのでCookieで状態を管理する</dd></dl></div><div class="term"><div class="box b2">SMTP・POP3・IMAP4</div><dl><dd>SMTPはメールの送信と転送、POP3はメールを端末に取り込む受信、IMAP4はメールをサーバに置いたまま見る受信</dd></dl></div><div class="term"><div class="box b1">カプセル化<span>Encapsulation</span></div><dl><dd>送信するとき、上の層のデータに下の層のヘッダを順に付けていくこと</dd><dd class="pt"><span class="tag">ポイント</span>受け取る側は逆に外していく</dd></dl></div></div>
-<div class="foot"><span>応用情報 ネットワーク</span><span>9</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/net/shuffle_tracks_button_flat.svg" alt="">回線交換は占有、パケット交換は共有。今の電話もパケットへ</h1>
+  <div class="cols">
+    <div><svg width="420" height="215" viewBox="0 0 420 215">
+<text x="210" y="16" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">回線交換：通信中ずっと1本を占有</text>
+<rect x="18" y="38" width="44" height="24" rx="4" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="40" y="54" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A</text><rect x="358" y="38" width="44" height="24" rx="4" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="380" y="54" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">B</text>
+<rect x="70" y="40" width="280" height="20" rx="4" fill="#1f3a68"/><text x="210" y="54" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">A ― B 専用の通り道（話していなくても確保）</text>
+<text x="210" y="104" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">パケット交換：小分けにして共有の網で</text>
+<rect x="18" y="148" width="44" height="24" rx="4" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="40" y="164" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A</text><rect x="358" y="148" width="44" height="24" rx="4" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="380" y="164" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">B</text>
+<rect x="90" y="122" width="240" height="78" rx="10" fill="#e8eef8" stroke="#5b80bf"/>
+<rect x="105" y="132" width="40" height="18" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="125.0" y="144.6" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">1</text><rect x="165" y="150" width="40" height="18" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="185.0" y="162.6" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">2</text><rect x="225" y="132" width="40" height="18" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="245.0" y="144.6" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">3</text>
+<rect x="140" y="174" width="40" height="18" rx="6" fill="#c3cad6" stroke="#c3cad6" stroke-width="1.5"/><text x="160.0" y="186.6" font-size="10" text-anchor="middle" fill="#1f3a68" font-weight="700">C</text><rect x="260" y="170" width="40" height="18" rx="6" fill="#c3cad6" stroke="#c3cad6" stroke-width="1.5"/><text x="280.0" y="182.6" font-size="10" text-anchor="middle" fill="#1f3a68" font-weight="700">D</text>
+<text x="210" y="212" font-size="10" text-anchor="middle" fill="#1d1d1f">ほかの人のパケット（C・D）と同じ回線を分け合う</text>
+</svg></div>
+    <div>
+      <table>
+        <tr><th style="width:24%"></th><th>回線交換</th><th>パケット交換</th></tr>
+        <tr><td>回線</td><td>通信中は占有</td><td>多くの通信で共有</td></tr>
+        <tr><td>品質</td><td>帯域が保証され遅延が一定</td><td>混むと遅れる</td></tr>
+        <tr><td>効率</td><td>話していない間も無駄</td><td>よい（蓄積交換）</td></tr>
+        <tr><td>例</td><td>昔の固定電話・ISDN</td><td>インターネット・VoLTE</td></tr>
+      </table>
+      <div class="point"><b>VoIP</b>＝音声をIPのパケットで送る技術（IP電話の土台）。<b>VoLTE</b>＝携帯電話網でパケット交換方式の音声通話（R4春35のイ）。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>10-4 ネットワーク管理<small>管理の道具</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">SNMP<span>えすえぬえむぴー / Simple Network Management Protocol</span></div><dl><dd>ネットワーク機器の状態を集めて管理するプロトコル</dd><dd class="pt"><span class="tag">ポイント</span>マネージャがエージェントに問い合わせる。異常はトラップで知らせる</dd><dd class="words">Simple＝簡単な／Network Management＝ネットワーク管理／Protocol＝規約</dd></dl></div><div class="term"><div class="box b2">ping・traceroute</div><dl><dd>ping はICMPで相手に届くかを確かめるコマンド、traceroute は経路上のルータを調べるコマンド</dd></dl></div><div class="term"><div class="box b1">NTP<span>えぬてぃーぴー / Network Time Protocol</span></div><dl><dd>機器の時刻を合わせるプロトコル</dd><dd class="pt"><span class="tag">ポイント</span>ログの時刻をそろえるのに大事</dd><dd class="words">Network＝ネットワーク／Time＝時刻／Protocol＝規約</dd></dl></div><div class="term"><div class="box b1">障害の切り分け<span>Troubleshooting</span></div><dl><dd>層ごとに確かめて原因の場所を絞ること</dd><dd class="pt"><span class="tag">ポイント</span>ping（3層）が通るのにWebだけ見られないなら、4層以上（ポートやファイアウォール）を疑う</dd></dl></div></div>
-<div class="foot"><span>応用情報 ネットワーク</span><span>10</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/net/stopwatch_flat.svg" alt="">伝送時間は「ビットに直して、実効速度で割る」だけ</h1>
+  <div class="cols">
+    <div>
+      <div class="formula">伝送時間 ＝ データ量（ビット）÷（回線速度 × 伝送効率）</div>
+      <div class="cap">R5秋 問31：100Mbps、1,000バイト×1,000件、伝送効率50%</div>
+      <table>
+        <tr><th style="width:12%">手順</th><th>計算</th></tr>
+        <tr><td>①</td><td>データ量：1,000×1,000＝10⁶バイト → <b>×8</b> → 8×10⁶ビット</td></tr>
+        <tr><td>②</td><td>実効速度：100×10⁶ × 0.5 ＝ 50×10⁶ ビット/秒</td></tr>
+        <tr><td>③</td><td>8×10⁶ ÷ 50×10⁶ ＝ <b>0.16秒</b>（ウ）</td></tr>
+      </table>
+      <div class="point warn">×8を忘れると0.02（ア）、伝送効率を忘れると0.08（イ）。誤答はこの2つの「忘れ」でできている。</div>
+    </div>
+    <div>
+      <div class="cap">R6秋 問32：1Mバイトを5秒以内、伝送効率60%</div>
+      <table>
+        <tr><th style="width:12%">手順</th><th>計算</th></tr>
+        <tr><td>①</td><td>1Mバイト ＝ 8Mビット</td></tr>
+        <tr><td>②</td><td>5秒で送る実効速度：8÷5 ＝ 1.6Mビット/秒</td></tr>
+        <tr><td>③</td><td>回線速度：1.6 ÷ 0.6 ≒ <b>2.67Mビット/秒以上</b></td></tr>
+        <tr><td>④</td><td>2Mでは足りない → <b>4Mビット/秒</b>（ウ）</td></tr>
+      </table>
+      <div class="point">「最低速度」を選ぶ問題では、計算結果以上で<b>いちばん小さい</b>選択肢を選ぶ。10Mでも間に合うが最低ではない。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>10-5 ネットワーク応用<small>応用</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">VPN<span>ぶいぴーえぬ / Virtual Private Network</span></div><dl><dd>公衆の回線の上に、暗号化した専用線のような通信路を作る技術</dd><dd class="pt"><span class="tag">ポイント</span>IPsec VPN・SSL/TLS VPNがある</dd><dd class="words">Virtual＝仮想の／Private＝専用の／Network＝網</dd></dl></div><div class="term"><div class="box b1">CDN<span>しーでぃーえぬ / Content Delivery Network</span></div><dl><dd>利用者の近くのサーバ（キャッシュ）からコンテンツを配信して、速くするしくみ</dd><dd class="words">Content＝内容／Delivery＝配送／Network＝網</dd></dl></div><div class="term"><div class="box b1">プロキシサーバ<span>Proxy Server</span></div><dl><dd>内部の端末の代わりに外部のWebサーバへアクセスするサーバ</dd><dd class="pt"><span class="tag">ポイント</span>キャッシュやアクセス制限に使う</dd></dl></div><div class="term"><div class="box b1">IoTネットワーク<span>IoT Network</span></div><dl><dd>多くの機器をつなぐネットワーク</dd><dd class="pt"><span class="tag">ポイント</span>MQTTなど軽いプロトコルを使う</dd></dl></div></div>
-<div class="foot"><span>応用情報 ネットワーク</span><span>11</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/net/abacus_flat.svg" alt="">差の問題は「同じ部分を消す」。誤り率は総ビット数にかける</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R5春 問32（＝R7秋 問30）：1,250バイトをN個、差が9ミリ秒</div>
+      <svg width="420" height="150" viewBox="0 0 420 150">
+<text x="60" y="34" font-size="11.5" text-anchor="end" fill="#1f3a68" font-weight="700">100Mbps</text>
+<rect x="70" y="20" width="40" height="22" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="90.0" y="34.6" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">0.1</text><rect x="110" y="20" width="60" height="22" fill="#e8eef8" stroke="#5b80bf"/><text x="140" y="35" font-size="10" text-anchor="middle" fill="#1f3a68">間隔1</text>
+<rect x="170" y="20" width="40" height="22" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="190.0" y="34.6" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">0.1</text><rect x="210" y="20" width="60" height="22" fill="#e8eef8" stroke="#5b80bf"/><text x="240" y="35" font-size="10" text-anchor="middle" fill="#1f3a68">間隔1</text><text x="290" y="35" font-size="12" text-anchor="middle" fill="#1f3a68">…</text>
+<text x="60" y="84" font-size="11.5" text-anchor="end" fill="#1f3a68" font-weight="700">1Gbps</text>
+<rect x="70" y="70" width="4" height="22" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="72.0" y="85.5" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700"></text><rect x="74" y="70" width="60" height="22" fill="#e8eef8" stroke="#5b80bf"/><text x="104" y="85" font-size="10" text-anchor="middle" fill="#1f3a68">間隔1</text>
+<rect x="134" y="70" width="4" height="22" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="136.0" y="85.5" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700"></text><rect x="138" y="70" width="60" height="22" fill="#e8eef8" stroke="#5b80bf"/><text x="168" y="85" font-size="10" text-anchor="middle" fill="#1f3a68">間隔1</text><text x="218" y="85" font-size="12" text-anchor="middle" fill="#1f3a68">…</text>
+<text x="210" y="126" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">間隔の1ミリ秒はどちらも同じ → 差は送信そのものの時間だけ</text>
+<text x="210" y="144" font-size="10" text-anchor="middle" fill="#6e6e73">（単位：ミリ秒。1Gbpsの送信は0.01ミリ秒）</text>
+</svg>
+      <table>
+        <tr><td style="width:44%">1パケット＝1,250×8</td><td>＝10,000ビット</td></tr>
+        <tr><td>100Mbps／1Gbps</td><td>0.1ミリ秒／0.01ミリ秒</td></tr>
+        <tr><td>1個あたりの差</td><td>0.09ミリ秒 → N＝9÷0.09＝<b>100</b>（ウ）</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">R6春 問33（＝R7秋 問35）：ビット誤り率0.0001%</div>
+      <table>
+        <tr><th style="width:12%">手順</th><th>計算</th></tr>
+        <tr><td>①</td><td>総ビット数：1,500×8×10,000 ＝ 1.2×10⁸ビット</td></tr>
+        <tr><td>②</td><td>0.0001% ＝ 0.000001 ＝ 10⁻⁶</td></tr>
+        <tr><td>③</td><td>1.2×10⁸ × 10⁻⁶ ＝ <b>約120個</b>（エ）</td></tr>
+      </table>
+      <div class="point">誤りがまれなら、1つのパケットに誤りが2つ入ることはほぼない。だから「誤ったビットの数≒誤りを含むパケットの数」。</div>
+      <div class="point warn">×8を忘れると15（イ）。%を小数に直すときは100で割る（0.0001% → 10⁻⁶）。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>まとめ<small>この分野で覚える用語</small></h1>
-  <table><thead><tr><th style="width:30%">小分類</th><th>用語</th></tr></thead><tbody>
-<tr><td>10-1 ネットワーク方式</td><td>LAN・WAN・無線LAN・5G・LPWA・SDN</td></tr>
-<tr><td>10-2 データ通信と制御</td><td>伝送時間・CSMA/CD・CSMA/CA・MACアドレス・VLAN・スパニングツリープロトコル</td></tr>
-<tr><td>10-3 通信プロトコル</td><td>TCP/IP・TCP・UDP・3ウェイハンドシェイク・IPv4アドレスとサブネットマスク・CIDR・IPv6・NAT・NAPT・ARP・ICMP・DHCP・DNS・HTTP・HTTPS・SMTP・POP3・IMAP4・カプセル化</td></tr>
-<tr><td>10-4 ネットワーク管理</td><td>SNMP・ping・traceroute・NTP・障害の切り分け</td></tr>
-<tr><td>10-5 ネットワーク応用</td><td>VPN・CDN・プロキシサーバ・IoTネットワーク</td></tr>
-  </tbody></table>
-<div class="foot"><span>応用情報 ネットワーク</span><span>12</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/net/telephone_receiver_flat.svg" alt="">呼量は「回線が使われた時間の合計（時間）」。単位はアーラン</h1>
+  <div class="cols">
+    <div>
+      <div class="formula">呼量（アーラン）＝ 1時間の呼数 × 平均保留時間（時間）</div>
+      <div class="cap">例：1時間に30回、1回平均4分（オリジナル問題）</div>
+      <table>
+        <tr><td style="width:44%">使われた時間の合計</td><td>30 × 4分 ＝ 120分</td></tr>
+        <tr><td>時間に直す</td><td>120 ÷ 60 ＝ <b>2アーラン</b></td></tr>
+        <tr><td>意味</td><td>平均して2回線分が同時に使われている</td></tr>
+      </table>
+      <div class="point warn">120のまま答えると「分」のまま。アーランは「1回線を1時間使い続けて1」。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:30%">用語</th><th>中身</th></tr>
+        <tr><td>トラフィック</td><td>ネットワークを流れるデータや通話の量</td></tr>
+        <tr><td><b>呼損率</b></td><td>回線が全部ふさがっていて、つながらなかった呼の割合</td></tr>
+        <tr><td>アーランB式</td><td>呼量と回線数から呼損率を求める式（つながらない呼は待たずに消える）</td></tr>
+        <tr><td>トラフィック設計</td><td>目標の呼損率になるよう回線数を決める。多すぎると費用の無駄</td></tr>
+        <tr><td>QoS</td><td>帯域・遅延・揺らぎ・損失の品質を保つ。保証しないのは<b>ベストエフォート</b></td></tr>
+      </table>
+      <div class="point">回線数を増やすと呼損率は下がるが費用は上がる。この釣り合いを決めるのがトラフィック設計。</div>
+    </div>
+  </div>
 </section>
-</body>
-</html>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/round_pushpin_flat.svg" alt="">プライベートの3つの範囲と、クラスDを覚えれば答えが出る</h1>
+  <div class="cols">
+    <div><svg width="420" height="190" viewBox="0 0 420 190">
+<text x="210" y="20" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">第1オクテットの値で決まるクラス</text>
+<rect x="10.0" y="40" width="198.4" height="34" fill="#1f3a68" stroke="#fff"/><text x="109.2" y="62" font-size="13" text-anchor="middle" fill="#fff" font-weight="700">A</text><text x="10.0" y="92" font-size="10" text-anchor="start" fill="#6e6e73">0</text><rect x="208.4" y="40" width="99.2" height="34" fill="#2f5596" stroke="#fff"/><text x="258.0" y="62" font-size="13" text-anchor="middle" fill="#fff" font-weight="700">B</text><text x="208.4" y="92" font-size="10" text-anchor="start" fill="#6e6e73">128</text><rect x="307.6" y="40" width="49.6" height="34" fill="#5b80bf" stroke="#fff"/><text x="332.40000000000003" y="62" font-size="13" text-anchor="middle" fill="#fff" font-weight="700">C</text><text x="307.6" y="92" font-size="10" text-anchor="start" fill="#6e6e73">192</text><rect x="357.2" y="40" width="24.8" height="34" fill="#b25000" stroke="#fff"/><text x="369.59999999999997" y="62" font-size="13" text-anchor="middle" fill="#fff" font-weight="700">D</text><text x="357.2" y="92" font-size="10" text-anchor="start" fill="#6e6e73">224</text><rect x="382.0" y="40" width="24.8" height="34" fill="#9aa7bd" stroke="#fff"/><text x="394.4" y="62" font-size="13" text-anchor="middle" fill="#fff" font-weight="700">E</text><text x="382.0" y="92" font-size="10" text-anchor="start" fill="#6e6e73">240</text><text x="406" y="92" font-size="10" text-anchor="end" fill="#6e6e73">255</text>
+<text x="357" y="112" font-size="10.5" text-anchor="middle" fill="#b25000" font-weight="700">D＝マルチキャスト</text>
+<rect x="10" y="126" width="400" height="56" rx="6" fill="#e8eef8"/>
+<text x="210" y="146" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">プライベート：10.0.0.0/8 ・ 172.16.0.0/12 ・ 192.168.0.0/16</text>
+<text x="210" y="168" font-size="11" text-anchor="middle" fill="#1d1d1f">それ以外のふつうのアドレス → グローバル（208.77.188.166 など）</text>
+</svg></div>
+    <div>
+      <div class="cap">R6春 問31：208.77.188.166はどのアドレスか</div>
+      <table>
+        <tr><th style="width:36%">選択肢</th><th>判定</th></tr>
+        <tr><td><b>グローバル</b></td><td><b>正解</b>。プライベートの範囲でも特別な用途でもない</td></tr>
+        <tr><td>プライベート</td><td>10・172.16〜31・192.168で始まらない</td></tr>
+        <tr><td>ブロードキャスト</td><td>ホスト部が全部1ではない</td></tr>
+        <tr><td>マルチキャスト</td><td>224〜239ではない（208はクラスC）</td></tr>
+      </table>
+      <div class="point">R6秋 問35：クラスDは<b>マルチキャスト</b>（エ）。クラスCは254台まで、クラスBは約65,000台。今はクラスにとらわれない<b>CIDR</b>で区切る（R7秋32）。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/repeat_button_flat.svg" alt="">NAPTは出るとき「送信元」、戻るとき「宛先」のIPとポートを書き換える</h1>
+  <div class="cols">
+    <div><svg width="430" height="230" viewBox="0 0 430 230"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<rect x="8" y="18" width="44" height="24" rx="4" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="30" y="34" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">PC</text><rect x="170" y="16" width="90" height="28" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="215.0" y="34.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">NAPTルータ</text><rect x="360" y="16" width="64" height="28" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="392.0" y="34.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">Web</text>
+<text x="30" y="62" font-size="9.5" text-anchor="middle" fill="#6e6e73">192.168.1.5</text><text x="215" y="62" font-size="9.5" text-anchor="middle" fill="#6e6e73">203.0.113.1</text><text x="392" y="62" font-size="9.5" text-anchor="middle" fill="#6e6e73">198.51.100.7</text>
+<text x="215" y="84" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">PC → Web（出ていく）</text>
+<rect x="0" y="92" width="150" height="20" fill="#fff" stroke="#9aa7bd"/><text x="6" y="106" font-size="9.5" text-anchor="start" fill="#6e6e73">送信元IP</text><text x="144" y="106" font-size="10" text-anchor="end" fill="#1d1d1f">192.168.1.5</text><rect x="0" y="112" width="150" height="20" fill="#fff" stroke="#9aa7bd"/><text x="6" y="126" font-size="9.5" text-anchor="start" fill="#6e6e73">送信元ポート</text><text x="144" y="126" font-size="10" text-anchor="end" fill="#1d1d1f">50001</text><line x1="156" y1="112" x2="268" y2="112" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/>
+<rect x="275" y="92" width="150" height="20" fill="#fde7cf" stroke="#9aa7bd"/><text x="281" y="106" font-size="9.5" text-anchor="start" fill="#6e6e73">送信元IP</text><text x="419" y="106" font-size="10" text-anchor="end" fill="#b25000" font-weight="700">203.0.113.1</text><rect x="275" y="112" width="150" height="20" fill="#fde7cf" stroke="#9aa7bd"/><text x="281" y="126" font-size="9.5" text-anchor="start" fill="#6e6e73">送信元ポート</text><text x="419" y="126" font-size="10" text-anchor="end" fill="#b25000" font-weight="700">60001</text>
+<text x="215" y="160" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">Web → PC（戻ってくる）</text>
+<rect x="275" y="168" width="150" height="20" fill="#fff" stroke="#9aa7bd"/><text x="281" y="182" font-size="9.5" text-anchor="start" fill="#6e6e73">宛先IP</text><text x="419" y="182" font-size="10" text-anchor="end" fill="#1d1d1f">203.0.113.1</text><rect x="275" y="188" width="150" height="20" fill="#fff" stroke="#9aa7bd"/><text x="281" y="202" font-size="9.5" text-anchor="start" fill="#6e6e73">宛先ポート</text><text x="419" y="202" font-size="10" text-anchor="end" fill="#1d1d1f">60001</text><line x1="270" y1="188" x2="160" y2="188" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/>
+<rect x="0" y="168" width="150" height="20" fill="#fde7cf" stroke="#9aa7bd"/><text x="6" y="182" font-size="9.5" text-anchor="start" fill="#6e6e73">宛先IP</text><text x="144" y="182" font-size="10" text-anchor="end" fill="#b25000" font-weight="700">192.168.1.5</text><rect x="0" y="188" width="150" height="20" fill="#fde7cf" stroke="#9aa7bd"/><text x="6" y="202" font-size="9.5" text-anchor="start" fill="#6e6e73">宛先ポート</text><text x="144" y="202" font-size="10" text-anchor="end" fill="#b25000" font-weight="700">50001</text>
+</svg></div>
+    <div>
+      <table>
+        <tr><th style="width:30%">過去問</th><th>向き</th><th style="width:36%">書き換えるもの</th></tr>
+        <tr><td>R3秋 問33</td><td>PC → インターネット</td><td><b>送信元</b>のIPアドレスとポート番号（エ）</td></tr>
+        <tr><td>R5秋 問32</td><td>Webサーバ → PC（応答）</td><td><b>宛先</b>のIPアドレスとポート番号（イ）</td></tr>
+      </table>
+      <div class="point">ポート番号まで変えるので、1つのグローバルIPアドレスを多くのPCで共有できる（IPマスカレード）。IPアドレスだけを1対1で変えるのは<b>NAT</b>。</div>
+      <div class="point warn">相手（Webサーバ）の側のIPアドレスとポート番号は、どちらの向きでも変えない。変えると届かなくなる。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/server.png" alt=""><img src="img/irasutoya/client_server.png" alt=""><img src="img/irasutoya/firewall.png" alt=""><img src="img/irasutoya/traffic_jam.png" alt=""></div>
+  <div class="k">第2章</div>
+  <h1>データ通信と制御</h1>
+  <p>トポロジ ／ OSI基本参照モデルの7層 ／ リピータ・スイッチ・ルータ ／ CSMA/CDとCSMA/CA ／ スパニングツリーとVRRP ／ プロキシとリバースプロキシ ／ 誤り検出と伝送制御</p>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/spider_web_flat.svg" alt="">トポロジは「どこが壊れると全体が止まるか」で比べる</h1>
+  <div class="cols">
+    <div><svg width="430" height="250" viewBox="0 0 430 250">
+<g transform="translate(0,0)"><text x="60" y="16" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">スター型</text><line x1="60" y1="70" x2="20" y2="40" stroke="#9aa7bd" stroke-width="1.6"/><line x1="60" y1="70" x2="100" y2="40" stroke="#9aa7bd" stroke-width="1.6"/><line x1="60" y1="70" x2="20" y2="100" stroke="#9aa7bd" stroke-width="1.6"/><line x1="60" y1="70" x2="100" y2="100" stroke="#9aa7bd" stroke-width="1.6"/><circle cx="20" cy="40" r="9" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><circle cx="100" cy="40" r="9" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><circle cx="20" cy="100" r="9" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><circle cx="100" cy="100" r="9" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><rect x="46" y="60" width="28" height="20" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="60.0" y="73.1" font-size="8.5" text-anchor="middle" fill="#fff" font-weight="700">HUB</text></g><g transform="translate(150,0)"><text x="60" y="16" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">バス型</text><line x1="5" y1="70" x2="115" y2="70" stroke="#1f3a68" stroke-width="3"/><line x1="20" y1="70" x2="20" y2="45" stroke="#9aa7bd" stroke-width="1.6"/><circle cx="20" cy="40" r="9" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><line x1="60" y1="70" x2="60" y2="45" stroke="#9aa7bd" stroke-width="1.6"/><circle cx="60" cy="40" r="9" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><line x1="100" y1="70" x2="100" y2="45" stroke="#9aa7bd" stroke-width="1.6"/><circle cx="100" cy="40" r="9" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><line x1="40" y1="70" x2="40" y2="95" stroke="#9aa7bd" stroke-width="1.6"/><circle cx="40" cy="100" r="9" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><line x1="80" y1="70" x2="80" y2="95" stroke="#9aa7bd" stroke-width="1.6"/><circle cx="80" cy="100" r="9" fill="#fff" stroke="#2f5596" stroke-width="1.6"/></g><g transform="translate(300,0)"><text x="60" y="16" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">リング型</text><circle cx="60" cy="70" r="36" fill="none" stroke="#1f3a68" stroke-width="2"/><circle cx="96.0" cy="70.0" r="9" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><circle cx="71.12588070058248" cy="104.23762226902456" r="9" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><circle cx="30.876956742421875" cy="91.16242782426518" r="9" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><circle cx="30.873035692655456" cy="48.84296924805663" r="9" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><circle cx="71.11953603237593" cy="35.76031661325278" r="9" fill="#fff" stroke="#2f5596" stroke-width="1.6"/></g>
+<g transform="translate(70,130)"><text x="60" y="16" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">ツリー型</text><line x1="60" y1="40" x2="30" y2="70" stroke="#9aa7bd" stroke-width="1.6"/><line x1="60" y1="40" x2="90" y2="70" stroke="#9aa7bd" stroke-width="1.6"/><line x1="30" y1="70" x2="15" y2="100" stroke="#9aa7bd" stroke-width="1.6"/><line x1="30" y1="70" x2="45" y2="100" stroke="#9aa7bd" stroke-width="1.6"/><line x1="90" y1="70" x2="90" y2="100" stroke="#9aa7bd" stroke-width="1.6"/><circle cx="60" cy="40" r="9" fill="#c9daf2" stroke="#2f5596" stroke-width="1.6"/><circle cx="30" cy="70" r="9" fill="#c9daf2" stroke="#2f5596" stroke-width="1.6"/><circle cx="90" cy="70" r="9" fill="#c9daf2" stroke="#2f5596" stroke-width="1.6"/><circle cx="15" cy="100" r="9" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><circle cx="45" cy="100" r="9" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><circle cx="90" cy="100" r="9" fill="#fff" stroke="#2f5596" stroke-width="1.6"/></g>
+<g transform="translate(240,130)"><text x="60" y="16" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">メッシュ型</text><line x1="20" y1="40" x2="100" y2="40" stroke="#9aa7bd" stroke-width="1.6"/><line x1="20" y1="40" x2="20" y2="100" stroke="#9aa7bd" stroke-width="1.6"/><line x1="20" y1="40" x2="100" y2="100" stroke="#9aa7bd" stroke-width="1.6"/><line x1="20" y1="40" x2="60" y2="70" stroke="#9aa7bd" stroke-width="1.6"/><line x1="100" y1="40" x2="20" y2="100" stroke="#9aa7bd" stroke-width="1.6"/><line x1="100" y1="40" x2="100" y2="100" stroke="#9aa7bd" stroke-width="1.6"/><line x1="100" y1="40" x2="60" y2="70" stroke="#9aa7bd" stroke-width="1.6"/><line x1="20" y1="100" x2="100" y2="100" stroke="#9aa7bd" stroke-width="1.6"/><line x1="20" y1="100" x2="60" y2="70" stroke="#9aa7bd" stroke-width="1.6"/><line x1="100" y1="100" x2="60" y2="70" stroke="#9aa7bd" stroke-width="1.6"/><circle cx="20" cy="40" r="9" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><circle cx="100" cy="40" r="9" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><circle cx="20" cy="100" r="9" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><circle cx="100" cy="100" r="9" fill="#fff" stroke="#2f5596" stroke-width="1.6"/><circle cx="60" cy="70" r="9" fill="#fff" stroke="#2f5596" stroke-width="1.6"/></g>
+</svg></div>
+    <div>
+      <table>
+        <tr><th style="width:22%">形</th><th>つなぎ方</th><th style="width:36%">弱いところ</th></tr>
+        <tr><td><b>スター型</b></td><td>中心のハブ・スイッチに放射状（今のLAN）</td><td>中心の機器が止まると全体が止まる</td></tr>
+        <tr><td>バス型</td><td>1本の幹線にぶら下げる（昔の同軸）</td><td>幹線が切れると全体が止まる</td></tr>
+        <tr><td>リング型</td><td>輪につなぎ一方向に回す（トークンリング）</td><td>1か所切れると止まる → 二重リング</td></tr>
+        <tr><td>ツリー型</td><td>スター型を階層に（カスケード接続）</td><td>上の機器が止まると下の枝が全部止まる</td></tr>
+        <tr><td><b>メッシュ型</b></td><td>網の目に複数の経路</td><td>強い。ただし配線と費用が多い</td></tr>
+      </table>
+      <div class="point">2台だけを1本で直接つなぐのは<b>ポイントツーポイント</b>（専用線・PPP）。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/card_index_dividers_flat.svg" alt="">OSIの7層は「その層の機器が何を見て中継するか」とセットで</h1>
+  <div class="cols wide-r">
+    <div><svg width="430" height="236" viewBox="0 0 430 236"><rect x="0" y="8" width="150" height="28" rx="4" fill="#5b80bf"/><text x="14" y="27" font-size="12" text-anchor="start" fill="#fff" font-weight="700">7</text><text x="84" y="27" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">アプリケーション層</text><text x="160" y="21" font-size="10" text-anchor="start" fill="#1d1d1f">サービスそのもの</text><text x="160" y="33" font-size="10" text-anchor="start" fill="#1f3a68" font-weight="700">HTTP・SMTP・DNS・FTP</text><rect x="330" y="11" width="100" height="22" rx="11" fill="#fde7cf" stroke="#b25000"/><text x="380" y="26" font-size="9.5" text-anchor="middle" fill="#b25000" font-weight="700">ゲートウェイ</text><rect x="0" y="40" width="150" height="28" rx="4" fill="#5b80bf"/><text x="14" y="59" font-size="12" text-anchor="start" fill="#fff" font-weight="700">6</text><text x="84" y="59" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">プレゼンテーション層</text><text x="160" y="53" font-size="10" text-anchor="start" fill="#1d1d1f">表現（文字コード・圧縮・暗号）</text><text x="160" y="65" font-size="10" text-anchor="start" fill="#1f3a68" font-weight="700">MIME</text><rect x="0" y="72" width="150" height="28" rx="4" fill="#5b80bf"/><text x="14" y="91" font-size="12" text-anchor="start" fill="#fff" font-weight="700">5</text><text x="84" y="91" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">セション層</text><text x="160" y="85" font-size="10" text-anchor="start" fill="#1d1d1f">会話の開始・終了</text><text x="160" y="97" font-size="10" text-anchor="start" fill="#1f3a68" font-weight="700"></text><rect x="0" y="104" width="150" height="28" rx="4" fill="#2f5596"/><text x="14" y="123" font-size="12" text-anchor="start" fill="#fff" font-weight="700">4</text><text x="84" y="123" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">トランスポート層</text><text x="160" y="117" font-size="10" text-anchor="start" fill="#1d1d1f">端末間の信頼性・ポート番号</text><text x="160" y="129" font-size="10" text-anchor="start" fill="#1f3a68" font-weight="700">TCP・UDP</text><rect x="0" y="136" width="150" height="28" rx="4" fill="#1f3a68"/><text x="14" y="155" font-size="12" text-anchor="start" fill="#fff" font-weight="700">3</text><text x="84" y="155" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">ネットワーク層</text><text x="160" y="149" font-size="10" text-anchor="start" fill="#1d1d1f">経路選択・IPアドレス</text><text x="160" y="161" font-size="10" text-anchor="start" fill="#1f3a68" font-weight="700">IP・ICMP</text><rect x="330" y="139" width="100" height="22" rx="11" fill="#fde7cf" stroke="#b25000"/><text x="380" y="154" font-size="9.5" text-anchor="middle" fill="#b25000" font-weight="700">ルータ・L3スイッチ</text><rect x="0" y="168" width="150" height="28" rx="4" fill="#1f3a68"/><text x="14" y="187" font-size="12" text-anchor="start" fill="#fff" font-weight="700">2</text><text x="84" y="187" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">データリンク層</text><text x="160" y="181" font-size="10" text-anchor="start" fill="#1d1d1f">隣までの転送・MACアドレス</text><text x="160" y="193" font-size="10" text-anchor="start" fill="#1f3a68" font-weight="700">イーサネット・PPP・ARP</text><rect x="330" y="171" width="100" height="22" rx="11" fill="#fde7cf" stroke="#b25000"/><text x="380" y="186" font-size="9.5" text-anchor="middle" fill="#b25000" font-weight="700">ブリッジ・L2スイッチ</text><rect x="0" y="200" width="150" height="28" rx="4" fill="#7d8798"/><text x="14" y="219" font-size="12" text-anchor="start" fill="#fff" font-weight="700">1</text><text x="84" y="219" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">物理層</text><text x="160" y="213" font-size="10" text-anchor="start" fill="#1d1d1f">電気・光の信号・ケーブル</text><text x="160" y="225" font-size="10" text-anchor="start" fill="#1f3a68" font-weight="700">10BASE-T</text><rect x="330" y="203" width="100" height="22" rx="11" fill="#fde7cf" stroke="#b25000"/><text x="380" y="218" font-size="9.5" text-anchor="middle" fill="#b25000" font-weight="700">リピータ・リピータハブ</text></svg></div>
+    <div>
+      <table>
+        <tr><th style="width:28%">TCP/IPの4層</th><th>OSIでいうと</th></tr>
+        <tr><td>アプリケーション層</td><td>5〜7層をまとめたもの</td></tr>
+        <tr><td>トランスポート層</td><td>4層（TCP・UDP）</td></tr>
+        <tr><td>インターネット層</td><td>3層（IP・ICMP）</td></tr>
+        <tr><td>ネットワークインタフェース層</td><td>1〜2層（イーサネット・ARP・スパニングツリー）</td></tr>
+      </table>
+      <div class="point"><b>覚え方：</b>リピータは信号だけ（宛先を見ない）→ スイッチはMACアドレス → ルータはIPアドレス → ゲートウェイはそれより上（プロトコルの変換）。</div>
+      <div class="point warn">R5春 問34：トランスポート層はUDP（エ）。ICMPはネットワーク層、HTTP・SMTPはアプリケーション層。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/electric_plug_flat.svg" alt="">ハブは全部に、スイッチは相手のポートだけに、ルータは別の網へ</h1>
+  <div class="cols">
+    <div><svg width="430" height="200" viewBox="0 0 430 200">
+<text x="10" y="14" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">リピータハブ</text><text x="10" y="30" font-size="9.5" text-anchor="start" fill="#6e6e73">宛先を見ず全ポートへ</text><rect x="150" y="4" width="70" height="30" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="185.0" y="22.6" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">リピータハブ</text><line x1="220" y1="19" x2="234" y2="19" stroke="#9aa7bd" stroke-width="1"/><rect x="234" y="8" width="32" height="22" rx="3" fill="#2f5596" stroke="#2f5596"/><text x="250" y="23" font-size="9.5" text-anchor="middle" fill="#fff" font-weight="700">PCA</text><line x1="220" y1="19" x2="284" y2="19" stroke="#9aa7bd" stroke-width="1"/><rect x="284" y="8" width="32" height="22" rx="3" fill="#2f5596" stroke="#2f5596"/><text x="300" y="23" font-size="9.5" text-anchor="middle" fill="#fff" font-weight="700">PCB</text><line x1="220" y1="19" x2="334" y2="19" stroke="#9aa7bd" stroke-width="1"/><rect x="334" y="8" width="32" height="22" rx="3" fill="#2f5596" stroke="#2f5596"/><text x="350" y="23" font-size="9.5" text-anchor="middle" fill="#fff" font-weight="700">PCC</text><line x1="220" y1="19" x2="384" y2="19" stroke="#9aa7bd" stroke-width="1"/><rect x="384" y="8" width="32" height="22" rx="3" fill="#2f5596" stroke="#2f5596"/><text x="400" y="23" font-size="9.5" text-anchor="middle" fill="#fff" font-weight="700">PCD</text>
+<text x="10" y="78" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">L2スイッチ</text><text x="10" y="94" font-size="9.5" text-anchor="start" fill="#6e6e73">宛先MACのポートだけ</text><rect x="150" y="68" width="70" height="30" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="185.0" y="86.6" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">L2スイッチ</text><line x1="220" y1="83" x2="234" y2="83" stroke="#9aa7bd" stroke-width="1"/><rect x="234" y="72" width="32" height="22" rx="3" fill="#fff" stroke="#2f5596"/><text x="250" y="87" font-size="9.5" text-anchor="middle" fill="#1f3a68" font-weight="700">PCA</text><line x1="220" y1="83" x2="284" y2="83" stroke="#9aa7bd" stroke-width="1"/><rect x="284" y="72" width="32" height="22" rx="3" fill="#fff" stroke="#2f5596"/><text x="300" y="87" font-size="9.5" text-anchor="middle" fill="#1f3a68" font-weight="700">PCB</text><line x1="220" y1="83" x2="334" y2="83" stroke="#9aa7bd" stroke-width="1"/><rect x="334" y="72" width="32" height="22" rx="3" fill="#2f5596" stroke="#2f5596"/><text x="350" y="87" font-size="9.5" text-anchor="middle" fill="#fff" font-weight="700">PCC</text><line x1="220" y1="83" x2="384" y2="83" stroke="#9aa7bd" stroke-width="1"/><rect x="384" y="72" width="32" height="22" rx="3" fill="#fff" stroke="#2f5596"/><text x="400" y="87" font-size="9.5" text-anchor="middle" fill="#1f3a68" font-weight="700">PCD</text>
+<text x="10" y="142" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">ルータ</text><text x="10" y="158" font-size="9.5" text-anchor="start" fill="#6e6e73">宛先IPで次の網へ</text><rect x="150" y="132" width="70" height="30" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="185.0" y="150.6" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">ルータ</text><line x1="220" y1="147" x2="234" y2="147" stroke="#9aa7bd" stroke-width="1"/><rect x="234" y="136" width="32" height="22" rx="3" fill="#fff" stroke="#2f5596"/><text x="250" y="151" font-size="9.5" text-anchor="middle" fill="#1f3a68" font-weight="700">PCA</text><line x1="220" y1="147" x2="284" y2="147" stroke="#9aa7bd" stroke-width="1"/><rect x="284" y="136" width="32" height="22" rx="3" fill="#fff" stroke="#2f5596"/><text x="300" y="151" font-size="9.5" text-anchor="middle" fill="#1f3a68" font-weight="700">PCB</text><line x1="220" y1="147" x2="334" y2="147" stroke="#9aa7bd" stroke-width="1"/><rect x="334" y="136" width="32" height="22" rx="3" fill="#fff" stroke="#2f5596"/><text x="350" y="151" font-size="9.5" text-anchor="middle" fill="#1f3a68" font-weight="700">PCC</text><line x1="220" y1="147" x2="384" y2="147" stroke="#9aa7bd" stroke-width="1"/><rect x="384" y="136" width="32" height="22" rx="3" fill="#2f5596" stroke="#2f5596"/><text x="400" y="151" font-size="9.5" text-anchor="middle" fill="#fff" font-weight="700">PCD</text>
+<text x="215" y="196" font-size="10" text-anchor="middle" fill="#1d1d1f">PC Cの宛てのフレームが届いたとき（濃い色が送られる先）</text>
+</svg>
+      <div class="point">L2スイッチは、届いたフレームの<b>送信元MACアドレスとポート</b>を覚えて<b>MACアドレステーブル</b>を作る（オリジナル問題）。表にない宛先は全ポートへ送る。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:28%">機器</th><th style="width:16%">層</th><th>見る情報・特徴</th></tr>
+        <tr><td>リピータ（ハブ）</td><td>1</td><td>信号を増幅するだけ。全ポートで衝突が起こり得る</td></tr>
+        <tr><td>ブリッジ</td><td>2</td><td>MACアドレスで、2つのLANの間を通すか決める</td></tr>
+        <tr><td><b>L2スイッチ</b></td><td>2</td><td>MACアドレスで転送先のポートを決める。全二重</td></tr>
+        <tr><td><b>ルータ</b></td><td>3</td><td>IPアドレスとルーティングテーブル。ブロードキャストは越えない</td></tr>
+        <tr><td>L3スイッチ</td><td>3</td><td>ルータの機能をハードウェアで高速に。VLAN間の接続</td></tr>
+        <tr><td>ゲートウェイ</td><td>4〜7</td><td>プロトコルの違う網どうしを変換してつなぐ</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/vertical_traffic_light_flat.svg" alt="">送信権の決め方は4つ。CDは「検出」、CAは「回避」</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R6春 問30：CSMA/CD方式のノードの送信動作</div>
+      <table>
+        <tr><th style="width:8%"></th><th>動作</th><th style="width:30%">方式</th></tr>
+        <tr><td>ア</td><td>論理的な順位で送信権を受け渡す</td><td>トークンバス</td></tr>
+        <tr><td><b>イ</b></td><td><b>使用中でなければ送る。衝突を検出したらランダムな時間の後に再送</b></td><td><b>CSMA/CD（正解）</b></td></tr>
+        <tr><td>ウ</td><td>環状につなぎ、特殊なフレームを巡回させる</td><td>トークンリング</td></tr>
+        <tr><td>エ</td><td>タイムスロットを割り当てられたノードだけ送る</td><td>TDMA</td></tr>
+      </table>
+      <div class="point">待ち時間をランダムにするのは、全員が同じ時間待って再び衝突するのを防ぐため。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:28%">方式</th><th>中身</th></tr>
+        <tr><td><b>CSMA/CD</b></td><td>有線LAN（半二重）。空いていれば送り、衝突を<b>検出</b>したら再送</td></tr>
+        <tr><td><b>CSMA/CA</b></td><td>無線LAN。空いていてもランダムに待ってから送り、衝突を<b>回避</b>。ACKで確認</td></tr>
+        <tr><td>トークンパッシング</td><td>トークンを受け取ったノードだけが送る。衝突しない</td></tr>
+        <tr><td>TDMA</td><td>時間を区切って順番に割り当てる</td></tr>
+      </table>
+      <div class="point warn">スイッチにつないだ全二重のイーサネットでは衝突が起きないので、CSMA/CDは働かない。無線LANはCSMA/CA（R3春33のウは誤り）。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/deciduous_tree_flat.svg" alt="">L2のループはスパニングツリー、ルータの故障はVRRPで守る</h1>
+  <div class="cols">
+    <div><svg width="420" height="200" viewBox="0 0 420 200">
+<text x="105" y="16" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">ループがあると…</text>
+<line x1="105" y1="50" x2="45" y2="130" stroke="#1f3a68" stroke-width="2"/><line x1="105" y1="50" x2="165" y2="130" stroke="#1f3a68" stroke-width="2"/><line x1="45" y1="130" x2="165" y2="130" stroke="#1f3a68" stroke-width="2"/>
+<rect x="77" y="37" width="56" height="26" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="105.0" y="53.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">SW1</text><rect x="17" y="117" width="56" height="26" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="45.0" y="133.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">SW2</text><rect x="137" y="117" width="56" height="26" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="165.0" y="133.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">SW3</text>
+<text x="105" y="175" font-size="10.5" text-anchor="middle" fill="#b25000" font-weight="700">ブロードキャストが回り続ける</text>
+<text x="315" y="16" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">STPで1か所を止める</text>
+<line x1="315" y1="50" x2="255" y2="130" stroke="#1f3a68" stroke-width="2"/><line x1="315" y1="50" x2="375" y2="130" stroke="#1f3a68" stroke-width="2"/><line x1="255" y1="130" x2="375" y2="130" stroke="#b25000" stroke-width="2" stroke-dasharray="4 3"/>
+<rect x="287" y="37" width="56" height="26" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="315.0" y="53.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">SW1</text><rect x="227" y="117" width="56" height="26" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="255.0" y="133.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">SW2</text><rect x="347" y="117" width="56" height="26" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="375.0" y="133.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">SW3</text>
+<text x="315" y="147" font-size="10.5" text-anchor="middle" fill="#b25000" font-weight="700">×ブロック</text>
+<text x="315" y="175" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">経路が切れたら止めた所を使う</text>
+</svg>
+      <div class="point">R7秋 問34：L2スイッチのループを防ぐネットワークインタフェース層のプロトコルは<b>スパニングツリープロトコル</b>（エ）。IGMPはマルチキャスト、RIPはルータの経路、SIPはIP電話。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:32%">冗長化の技術</th><th>中身</th></tr>
+        <tr><td><b>スパニングツリー（STP）</b></td><td>一部のポートを止めて木の形に。故障したら自動で迂回</td></tr>
+        <tr><td><b>VRRP</b></td><td>複数のルータを1台の仮想ルータに見せ、故障したら予備が引き継ぐ（R6春32）</td></tr>
+        <tr><td>リンクアグリゲーション</td><td>複数のケーブルを1本の太い回線として使う。1本切れても続く</td></tr>
+        <tr><td>カスケード接続</td><td>スイッチを数珠つなぎに。誤って輪にするとループ</td></tr>
+      </table>
+      <div class="point warn">VRRPでは、端末のデフォルトゲートウェイを<b>仮想ルータのIPアドレス</b>にしておく。だから故障しても端末の設定を変えなくてよい。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/busts_in_silhouette_flat.svg" alt="">プロキシは内から外、リバースプロキシは外から内への代理</h1>
+  <div class="cols">
+    <div><svg width="430" height="200" viewBox="0 0 430 200"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<rect x="0" y="22" width="190" height="170" rx="10" fill="#e8eef8" stroke="#5b80bf"/><text x="95" y="40" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">内部ネットワーク</text>
+<rect x="250" y="22" width="180" height="170" rx="10" fill="#f5f5f7" stroke="#9aa7bd"/><text x="340" y="40" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">インターネット</text>
+<rect x="18" y="63" width="44" height="24" rx="4" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="40" y="79" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">PC</text><rect x="110" y="62" width="70" height="26" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="145.0" y="78.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">プロキシ</text><line x1="62" y1="75" x2="108" y2="75" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/><line x1="180" y1="75" x2="300" y2="75" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/><rect x="300" y="62" width="74" height="26" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="337.0" y="78.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">外のWeb</text>
+<text x="215" y="104" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">内 → 外の中継</text>
+<rect x="20" y="136" width="74" height="26" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="57.0" y="152.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">公開Web</text><rect x="110" y="136" width="70" height="26" rx="6" fill="#b25000" stroke="#b25000" stroke-width="1.5"/><text x="145.0" y="152.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">リバース</text><line x1="300" y1="149" x2="182" y2="149" stroke="#b25000" stroke-width="2" marker-end="url(#ar)"/><line x1="110" y1="149" x2="96" y2="149" stroke="#b25000" stroke-width="2" marker-end="url(#ar)"/><rect x="318" y="137" width="44" height="24" rx="4" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="340" y="153" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">利用者</text>
+<text x="215" y="178" font-size="10.5" text-anchor="middle" fill="#b25000" font-weight="700">外 → 内の中継</text>
+</svg></div>
+    <div>
+      <div class="cap">R7秋 問31：リバースプロキシの説明</div>
+      <table>
+        <tr><th style="width:8%"></th><th>説明</th><th style="width:30%">正体</th></tr>
+        <tr><td><b>ア</b></td><td><b>インターネットから内部の公開Webサーバへの通信を中継</b></td><td><b>リバースプロキシ（正解）</b></td></tr>
+        <tr><td>イ</td><td>通信を監視して攻撃を検知</td><td>IDS</td></tr>
+        <tr><td>ウ</td><td>仮想的な専用ネットワークを確立</td><td>VPN</td></tr>
+        <tr><td>エ</td><td>内部のPCからインターネットへの通信を中継</td><td>プロキシ（フォワード）</td></tr>
+      </table>
+      <div class="point">リバースプロキシは負荷分散（<b>ロードバランサ</b>）・TLSの処理・シングルサインオンの入口にも使う。世界中のキャッシュから配るのは<b>CDN</b>。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/check_mark_button_flat.svg" alt="">誤りを「訂正」できるのはハミング符号。ほかは「検出」だけ</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th style="width:30%">方式</th><th>しくみ</th><th style="width:22%">できること</th></tr>
+        <tr><td>パリティチェック</td><td>1の数を偶数（奇数）にそろえる1ビットを足す</td><td>1ビットの検出</td></tr>
+        <tr><td>垂直＋水平パリティ</td><td>縦と横の両方にパリティを付ける</td><td>1ビットの訂正</td></tr>
+        <tr><td><b>CRC</b></td><td>生成多項式で割った余りを付ける</td><td>連続した誤りも検出</td></tr>
+        <tr><td><b>ハミング符号</b></td><td>複数の検査ビットで誤りの位置を特定</td><td><b>1ビット訂正</b>・2ビット検出</td></tr>
+        <tr><td>チェックサム</td><td>区切って足し合わせた値を付ける</td><td>検出（TCP・UDP・IP）</td></tr>
+      </table>
+      <div class="point">誤りが分かったら送り直す（<b>再送制御</b>）。受信側の能力に合わせるのが<b>フロー制御</b>（ウィンドウ制御）、網の混雑に合わせるのが<b>輻輳制御</b>。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:32%">伝送制御</th><th>中身</th></tr>
+        <tr><td>ベーシック手順</td><td>制御文字で文字単位に送る。1回ごとに確認を待つ</td></tr>
+        <tr><td><b>HDLC</b></td><td>フラグ（01111110）で区切り、任意のビット列を連続して送る。CRCで検査</td></tr>
+        <tr><td>コンテンション</td><td>主局なし。送りたい局が早い者勝ち</td></tr>
+        <tr><td><b>ポーリング/セレクティング</b></td><td>主局が順に「送るものは？」「受け取れる？」と聞く</td></tr>
+      </table>
+      <div class="point">同期の取り方：1文字ごとにスタート・ストップビット＝<b>調歩同期</b>、SYN文字＝<b>SYN同期</b>、フラグ＝<b>フラグ同期</b>（HDLC）。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/binary.png" alt=""><img src="img/irasutoya/calculator.png" alt=""><img src="img/irasutoya/search.png" alt=""><img src="img/irasutoya/datacenter.png" alt=""></div>
+  <div class="k">第3章</div>
+  <h1>通信プロトコル</h1>
+  <p>カプセル化とMTU ／ TCPとUDP ／ ポート番号 ／ サブネットの計算 ／ ルーティングとCIDR ／ ブロードキャストとマルチキャスト ／ ARP・ICMP・DHCP ／ IPv6 ／ DNS</p>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/package_flat.svg" alt="">上の層のデータは下の層のヘッダーに包まれる。外側ほど先に送る</h1>
+  <div class="cols">
+    <div><svg width="430" height="200" viewBox="0 0 430 200">
+<text x="215" y="18" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">送り出す順（左から）＝ MAC → IP → ポート番号</text>
+<rect x="0" y="40" width="47.6" height="40" fill="#7d8798" stroke="#fff"/><text x="23.8" y="58" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">Ether</text><text x="23.8" y="73" font-size="9" text-anchor="middle" fill="#fff">宛先MAC</text><rect x="47.6" y="40" width="68.0" height="40" fill="#1f3a68" stroke="#fff"/><text x="81.6" y="58" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">IP</text><text x="81.6" y="73" font-size="9" text-anchor="middle" fill="#fff">宛先IP</text><rect x="115.6" y="40" width="68.0" height="40" fill="#2f5596" stroke="#fff"/><text x="149.6" y="58" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">TCP</text><text x="149.6" y="73" font-size="9" text-anchor="middle" fill="#fff">宛先ポート</text><rect x="183.6" y="40" width="204.0" height="40" fill="#c9daf2" stroke="#fff"/><text x="285.6" y="58" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">データ</text><rect x="387.6" y="40" width="20.4" height="40" fill="#7d8798" stroke="#fff"/><text x="397.8" y="58" font-size="8.5" text-anchor="middle" fill="#fff" font-weight="700">FCS</text>
+<path d="M1,90 L1,100 L407,100 L407,90" fill="none" stroke="#5b80bf"/><text x="204" y="116" font-size="10.5" text-anchor="middle" fill="#1f3a68">フレーム（データリンク層）</text>
+<path d="M48,124 L48,134 L387,134 L387,124" fill="none" stroke="#5b80bf"/><text x="218" y="150" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">IPパケット（ここが最大でMTU＝1,500バイト）</text>
+<path d="M116,158 L116,168 L387,168 L387,158" fill="none" stroke="#5b80bf"/><text x="252" y="184" font-size="10.5" text-anchor="middle" fill="#1f3a68">TCPセグメント</text>
+</svg>
+      <div class="point">R5春 問33：宛先情報の送出順は<b>宛先MACアドレス → 宛先IPアドレス → 宛先ポート番号</b>（ウ）。いちばん外側がイーサネットのヘッダー。</div>
+    </div>
+    <div>
+      <div class="cap">R7春 問30：MTU 1,500バイトで2,000バイトをTCPで送る</div>
+      <table>
+        <tr><th style="width:12%">手順</th><th>計算</th></tr>
+        <tr><td>①</td><td>MTUはIPパケットの最大。<b>イーサネットのヘッダー（14）とトレーラー（4）は含まない</b></td></tr>
+        <tr><td>②</td><td>1パケットのデータ＝1,500−20（IP）−20（TCP）＝<b>1,460バイト</b></td></tr>
+        <tr><td>③</td><td>2,000 ＝ 1,460 ＋ <b>540</b> → 二つ目は540バイト（イ）</td></tr>
+      </table>
+      <div class="point warn">ヘッダーを引き忘れると500（ア）。MTUに入らないイーサネットのヘッダーまで引くと、値がずれる。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/handshake_flat.svg" alt="">TCPは確実、UDPは軽い。「UDPにない」のはシーケンス番号</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">TCPの3ウェイハンドシェイク</div>
+      <svg width="420" height="190" viewBox="0 0 420 190"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<text x="70" y="16" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">クライアント</text><text x="350" y="16" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">サーバ</text>
+<line x1="70" y1="24" x2="70" y2="180" stroke="#9aa7bd" stroke-width="1.6"/><line x1="350" y1="24" x2="350" y2="180" stroke="#9aa7bd" stroke-width="1.6"/>
+<line x1="70" y1="44" x2="350" y2="74" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar)"/><text x="210" y="50" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">① SYN（つないでいい？）</text>
+<line x1="350" y1="94" x2="70" y2="124" stroke="#2f5596" stroke-width="2" marker-end="url(#ar)"/><text x="210" y="100" font-size="11" text-anchor="middle" fill="#2f5596" font-weight="700">② SYN＋ACK（いいよ。こっちも）</text>
+<line x1="70" y1="144" x2="350" y2="174" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar)"/><text x="210" y="150" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">③ ACK（了解）</text>
+</svg>
+      <div class="point">UDPはこの手順なしでいきなり送る（コネクションレス）。だから速いが、届いたかは分からない。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:26%"></th><th>TCP</th><th>UDP</th></tr>
+        <tr><td>接続</td><td>コネクション型</td><td>コネクションレス</td></tr>
+        <tr><td>確認応答・再送</td><td>あり</td><td>なし（R4秋34）</td></tr>
+        <tr><td>順序制御</td><td>シーケンス番号で並べ直す</td><td>なし</td></tr>
+        <tr><td>ヘッダー</td><td>20バイト〜</td><td>8バイト</td></tr>
+        <tr><td>使う例</td><td>HTTP・SMTP・POP3・FTP・TELNET・SSH</td><td>DNS・DHCP・<b>NTP</b>・SNMP・音声・HTTP/3</td></tr>
+      </table>
+      <div class="point warn">R3秋 問34（＝R7秋 問33）：UDPにはないがTCPにはある＝<b>シーケンス番号</b>（イ）。ポート番号とチェックサムは両方にある。R4春 問33：UDPを使うのは<b>NTP</b>（イ）。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/door_flat.svg" alt="">IPアドレスで「どの機械」、ポート番号で「どのアプリ」</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th style="width:20%">番号</th><th style="width:30%">プロトコル</th><th>TCP/UDP・メモ</th></tr>
+        <tr><td><b>20・21</b></td><td><b>FTP</b></td><td>TCP。データ転送用20・制御用21</td></tr>
+        <tr><td>22</td><td>SSH</td><td>TCP。暗号化した遠隔ログイン</td></tr>
+        <tr><td>23</td><td>TELNET</td><td>TCP。暗号化しない</td></tr>
+        <tr><td>25・587</td><td>SMTP</td><td>TCP。587はPCからの送信</td></tr>
+        <tr><td>53</td><td>DNS</td><td>UDP（大きい応答はTCP）</td></tr>
+        <tr><td>67・68</td><td>DHCP</td><td>UDP</td></tr>
+        <tr><td>80・443</td><td>HTTP・HTTPS</td><td>TCP（HTTP/3はUDP 443）</td></tr>
+        <tr><td>110・143</td><td>POP3・IMAP4</td><td>TCP</td></tr>
+        <tr><td>123</td><td>NTP</td><td>UDP</td></tr>
+        <tr><td>161・162</td><td>SNMP</td><td>UDP。162はトラップ</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">R4秋 問32（＝R7春 問33）：データ転送用と制御用に違う番号</div>
+      <table>
+        <tr><th style="width:24%">選択肢</th><th>判定</th></tr>
+        <tr><td><b>FTP</b></td><td><b>正解</b>。20番（データ）と21番（制御）の2本のコネクション</td></tr>
+        <tr><td>POP3</td><td>110番の1つだけ</td></tr>
+        <tr><td>SMTP</td><td>25番。分かれていない</td></tr>
+        <tr><td>SNMP</td><td>161と162に分かれるが「要求」と「トラップ」の区別</td></tr>
+      </table>
+      <div class="point">0〜1023が<b>ウェルノウンポート</b>。クライアントの送信元には、OSが一時的な番号（<b>エフェメラルポート</b>）を割り当てる。URLでは「ホスト名<b>:8080</b>」のように書く（R4秋35）。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/input_numbers_flat.svg" alt="">ネットワーク部はAND、ブロードキャストは「ホスト部を全部1」</h1>
+  <div class="cols">
+    <div><svg width="420" height="200" viewBox="0 0 420 200">
+<text x="210" y="16" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">172.30.123.45 ／ 255.255.252.0 の第3オクテット</text>
+<text x="142" y="49" font-size="11" text-anchor="end" fill="#1f3a68" font-weight="700">123</text><rect x="150" y="34" width="24" height="22" rx="3" fill="#c9daf2" stroke="#5b80bf"/><text x="162" y="50" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">0</text><rect x="176" y="34" width="24" height="22" rx="3" fill="#c9daf2" stroke="#5b80bf"/><text x="188" y="50" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">1</text><rect x="202" y="34" width="24" height="22" rx="3" fill="#c9daf2" stroke="#5b80bf"/><text x="214" y="50" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">1</text><rect x="228" y="34" width="24" height="22" rx="3" fill="#c9daf2" stroke="#5b80bf"/><text x="240" y="50" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">1</text><rect x="254" y="34" width="24" height="22" rx="3" fill="#c9daf2" stroke="#5b80bf"/><text x="266" y="50" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">1</text><rect x="280" y="34" width="24" height="22" rx="3" fill="#c9daf2" stroke="#5b80bf"/><text x="292" y="50" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">0</text><rect x="306" y="34" width="24" height="22" rx="3" fill="#fff" stroke="#5b80bf"/><text x="318" y="50" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">1</text><rect x="332" y="34" width="24" height="22" rx="3" fill="#fff" stroke="#5b80bf"/><text x="344" y="50" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">1</text><text x="370" y="50" font-size="10" text-anchor="start" fill="#6e6e73">IPアドレス</text>
+<text x="142" y="81" font-size="11" text-anchor="end" fill="#1f3a68" font-weight="700">252</text><rect x="150" y="66" width="24" height="22" rx="3" fill="#c9daf2" stroke="#5b80bf"/><text x="162" y="82" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">1</text><rect x="176" y="66" width="24" height="22" rx="3" fill="#c9daf2" stroke="#5b80bf"/><text x="188" y="82" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">1</text><rect x="202" y="66" width="24" height="22" rx="3" fill="#c9daf2" stroke="#5b80bf"/><text x="214" y="82" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">1</text><rect x="228" y="66" width="24" height="22" rx="3" fill="#c9daf2" stroke="#5b80bf"/><text x="240" y="82" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">1</text><rect x="254" y="66" width="24" height="22" rx="3" fill="#c9daf2" stroke="#5b80bf"/><text x="266" y="82" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">1</text><rect x="280" y="66" width="24" height="22" rx="3" fill="#c9daf2" stroke="#5b80bf"/><text x="292" y="82" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">1</text><rect x="306" y="66" width="24" height="22" rx="3" fill="#fff" stroke="#5b80bf"/><text x="318" y="82" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">0</text><rect x="332" y="66" width="24" height="22" rx="3" fill="#fff" stroke="#5b80bf"/><text x="344" y="82" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">0</text><text x="370" y="82" font-size="10" text-anchor="start" fill="#6e6e73">マスク</text>
+<line x1="140" y1="98" x2="362" y2="98" stroke="#1f3a68" stroke-width="2"/><text x="130" y="116" font-size="11" text-anchor="end" fill="#b25000" font-weight="700">AND</text>
+<text x="142" y="119" font-size="11" text-anchor="end" fill="#1f3a68" font-weight="700">120</text><rect x="150" y="104" width="24" height="22" rx="3" fill="#c9daf2" stroke="#5b80bf"/><text x="162" y="120" font-size="12" text-anchor="middle" fill="#b25000" font-weight="700">0</text><rect x="176" y="104" width="24" height="22" rx="3" fill="#c9daf2" stroke="#5b80bf"/><text x="188" y="120" font-size="12" text-anchor="middle" fill="#b25000" font-weight="700">1</text><rect x="202" y="104" width="24" height="22" rx="3" fill="#c9daf2" stroke="#5b80bf"/><text x="214" y="120" font-size="12" text-anchor="middle" fill="#b25000" font-weight="700">1</text><rect x="228" y="104" width="24" height="22" rx="3" fill="#c9daf2" stroke="#5b80bf"/><text x="240" y="120" font-size="12" text-anchor="middle" fill="#b25000" font-weight="700">1</text><rect x="254" y="104" width="24" height="22" rx="3" fill="#c9daf2" stroke="#5b80bf"/><text x="266" y="120" font-size="12" text-anchor="middle" fill="#b25000" font-weight="700">1</text><rect x="280" y="104" width="24" height="22" rx="3" fill="#c9daf2" stroke="#5b80bf"/><text x="292" y="120" font-size="12" text-anchor="middle" fill="#b25000" font-weight="700">0</text><rect x="306" y="104" width="24" height="22" rx="3" fill="#fff" stroke="#5b80bf"/><text x="318" y="120" font-size="12" text-anchor="middle" fill="#b25000" font-weight="700">0</text><rect x="332" y="104" width="24" height="22" rx="3" fill="#fff" stroke="#5b80bf"/><text x="344" y="120" font-size="12" text-anchor="middle" fill="#b25000" font-weight="700">0</text><text x="370" y="120" font-size="10" text-anchor="start" fill="#6e6e73">結果</text>
+<text x="210" y="154" font-size="11" text-anchor="middle" fill="#1d1d1f">マスクが1の所（色付き）だけ残り、0の所は0になる</text>
+<text x="210" y="180" font-size="12.5" text-anchor="middle" fill="#b25000" font-weight="700">答え：172.30.120.0（R5秋 問34のイ）</text>
+</svg></div>
+    <div>
+      <table>
+        <tr><th style="width:36%">求めるもの</th><th>式（a＝IPアドレス、m＝マスク）</th></tr>
+        <tr><td>ネットワークアドレス</td><td><b>a ＆ m</b>（ホスト部を全部0）</td></tr>
+        <tr><td>ホストアドレス</td><td><b>a ＆ ～m</b>（R3春 問34のウ）</td></tr>
+        <tr><td>ブロードキャストアドレス</td><td><b>a ｜ ～m</b>（R3秋 問35のエ）</td></tr>
+      </table>
+      <div class="point">～m（マスクを反転）はホスト部だけが1。ANDでホスト部を取り出し、ORでホスト部を全部1にする。</div>
+      <div class="point warn">マスクの値（252）をそのまま答える（エ）、/24と思い込んで123を残す（ウ）のが典型的な誤答。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/straight_ruler_flat.svg" alt="">つなげる台数は 2^(ホスト部) − 2。両端の2つは使えない</h1>
+  <div class="cols">
+    <div><svg width="420" height="200" viewBox="0 0 420 200">
+<text x="0" y="44" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">/28</text><line x1="70" y1="40" x2="410" y2="40" stroke="#9aa7bd" stroke-width="2"/><line x1="70.0" y1="36" x2="70.0" y2="44" stroke="#9aa7bd" stroke-width="1"/><text x="70.0" y="58" font-size="9" text-anchor="middle" fill="#6e6e73">24</text><line x1="112.5" y1="36" x2="112.5" y2="44" stroke="#9aa7bd" stroke-width="1"/><text x="112.5" y="58" font-size="9" text-anchor="middle" fill="#6e6e73">28</text><line x1="155.0" y1="36" x2="155.0" y2="44" stroke="#9aa7bd" stroke-width="1"/><text x="155.0" y="58" font-size="9" text-anchor="middle" fill="#6e6e73">32</text><line x1="197.5" y1="36" x2="197.5" y2="44" stroke="#9aa7bd" stroke-width="1"/><text x="197.5" y="58" font-size="9" text-anchor="middle" fill="#6e6e73">36</text><line x1="240.0" y1="36" x2="240.0" y2="44" stroke="#9aa7bd" stroke-width="1"/><text x="240.0" y="58" font-size="9" text-anchor="middle" fill="#6e6e73">40</text><line x1="282.5" y1="36" x2="282.5" y2="44" stroke="#9aa7bd" stroke-width="1"/><text x="282.5" y="58" font-size="9" text-anchor="middle" fill="#6e6e73">44</text><line x1="325.0" y1="36" x2="325.0" y2="44" stroke="#9aa7bd" stroke-width="1"/><text x="325.0" y="58" font-size="9" text-anchor="middle" fill="#6e6e73">48</text><line x1="367.5" y1="36" x2="367.5" y2="44" stroke="#9aa7bd" stroke-width="1"/><text x="367.5" y="58" font-size="9" text-anchor="middle" fill="#6e6e73">52</text><line x1="410.0" y1="36" x2="410.0" y2="44" stroke="#9aa7bd" stroke-width="1"/><text x="410.0" y="58" font-size="9" text-anchor="middle" fill="#6e6e73">56</text><rect x="155.0" y="32" width="159.375" height="16" rx="3" fill="#c9daf2" stroke="#2f5596"/><text x="234.6875" y="26" font-size="10" text-anchor="middle" fill="#b25000" font-weight="700">32〜47：16個 → 14台</text>
+<text x="0" y="104" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">/29</text><line x1="70" y1="100" x2="410" y2="100" stroke="#9aa7bd" stroke-width="2"/><line x1="70.0" y1="96" x2="70.0" y2="104" stroke="#9aa7bd" stroke-width="1"/><text x="70.0" y="118" font-size="9" text-anchor="middle" fill="#6e6e73">32</text><line x1="112.5" y1="96" x2="112.5" y2="104" stroke="#9aa7bd" stroke-width="1"/><text x="112.5" y="118" font-size="9" text-anchor="middle" fill="#6e6e73">35</text><line x1="155.0" y1="96" x2="155.0" y2="104" stroke="#9aa7bd" stroke-width="1"/><text x="155.0" y="118" font-size="9" text-anchor="middle" fill="#6e6e73">38</text><line x1="197.5" y1="96" x2="197.5" y2="104" stroke="#9aa7bd" stroke-width="1"/><text x="197.5" y="118" font-size="9" text-anchor="middle" fill="#6e6e73">41</text><line x1="240.0" y1="96" x2="240.0" y2="104" stroke="#9aa7bd" stroke-width="1"/><text x="240.0" y="118" font-size="9" text-anchor="middle" fill="#6e6e73">44</text><line x1="282.5" y1="96" x2="282.5" y2="104" stroke="#9aa7bd" stroke-width="1"/><text x="282.5" y="118" font-size="9" text-anchor="middle" fill="#6e6e73">47</text><line x1="325.0" y1="96" x2="325.0" y2="104" stroke="#9aa7bd" stroke-width="1"/><text x="325.0" y="118" font-size="9" text-anchor="middle" fill="#6e6e73">50</text><line x1="367.5" y1="96" x2="367.5" y2="104" stroke="#9aa7bd" stroke-width="1"/><text x="367.5" y="118" font-size="9" text-anchor="middle" fill="#6e6e73">53</text><line x1="410.0" y1="96" x2="410.0" y2="104" stroke="#9aa7bd" stroke-width="1"/><text x="410.0" y="118" font-size="9" text-anchor="middle" fill="#6e6e73">56</text><rect x="183.33333333333331" y="92" width="99.16666666666669" height="16" rx="3" fill="#c9daf2" stroke="#2f5596"/><text x="232.91666666666666" y="86" font-size="10" text-anchor="middle" fill="#b25000" font-weight="700">40〜47：8個 → 6台</text>
+<text x="0" y="164" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">/26</text><line x1="70" y1="160" x2="410" y2="160" stroke="#9aa7bd" stroke-width="2"/><line x1="70.0" y1="156" x2="70.0" y2="164" stroke="#9aa7bd" stroke-width="1"/><text x="70.0" y="178" font-size="9" text-anchor="middle" fill="#6e6e73">48</text><line x1="112.5" y1="156" x2="112.5" y2="164" stroke="#9aa7bd" stroke-width="1"/><text x="112.5" y="178" font-size="9" text-anchor="middle" fill="#6e6e73">60</text><line x1="155.0" y1="156" x2="155.0" y2="164" stroke="#9aa7bd" stroke-width="1"/><text x="155.0" y="178" font-size="9" text-anchor="middle" fill="#6e6e73">72</text><line x1="197.5" y1="156" x2="197.5" y2="164" stroke="#9aa7bd" stroke-width="1"/><text x="197.5" y="178" font-size="9" text-anchor="middle" fill="#6e6e73">84</text><line x1="240.0" y1="156" x2="240.0" y2="164" stroke="#9aa7bd" stroke-width="1"/><text x="240.0" y="178" font-size="9" text-anchor="middle" fill="#6e6e73">96</text><line x1="282.5" y1="156" x2="282.5" y2="164" stroke="#9aa7bd" stroke-width="1"/><text x="282.5" y="178" font-size="9" text-anchor="middle" fill="#6e6e73">108</text><line x1="325.0" y1="156" x2="325.0" y2="164" stroke="#9aa7bd" stroke-width="1"/><text x="325.0" y="178" font-size="9" text-anchor="middle" fill="#6e6e73">120</text><line x1="367.5" y1="156" x2="367.5" y2="164" stroke="#9aa7bd" stroke-width="1"/><text x="367.5" y="178" font-size="9" text-anchor="middle" fill="#6e6e73">132</text><line x1="410.0" y1="156" x2="410.0" y2="164" stroke="#9aa7bd" stroke-width="1"/><text x="410.0" y="178" font-size="9" text-anchor="middle" fill="#6e6e73">144</text><rect x="126.66666666666666" y="152" width="223.12499999999997" height="16" rx="3" fill="#c9daf2" stroke="#2f5596"/><text x="238.22916666666663" y="146" font-size="10" text-anchor="middle" fill="#b25000" font-weight="700">64〜127：使えるのは65〜126</text>
+</svg></div>
+    <div>
+      <table>
+        <tr><th style="width:28%">過去問</th><th>考え方</th><th style="width:22%">答え</th></tr>
+        <tr><td>R4春 問34<br>192.168.30.32/28</td><td>ホスト部4ビット → 2⁴−2</td><td><b>14</b>（ア）</td></tr>
+        <tr><td>R4秋 問33<br>192.168.16.40/29</td><td>ホスト部3ビット → 2³−2、範囲は40〜47、マスクは255.255.255.248</td><td><b>最大6個</b>（ウ）</td></tr>
+        <tr><td>R7春 問32<br>10.16.32.64/26</td><td>64〜127。127はブロードキャスト。126から降順に10番目</td><td><b>.117</b>（ウ）</td></tr>
+      </table>
+      <div class="point warn">−2を忘れると16（R4春のイ）。/29の「29」はネットワーク部のビット数で、ホスト部ではない（R4秋のエ）。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/compass_flat.svg" alt="">ルーティングテーブルは「いちばん長く一致した行」を選ぶ</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R7春 問31：宛先192.168.1.1のパケット</div>
+      <table>
+        <tr><th style="width:40%">宛先ネットワーク</th><th style="width:30%">範囲</th><th>ネクストホップ</th></tr>
+        <tr><td>0.0.0.0/0</td><td>全部（デフォルトルート）</td><td>10.1.0.1</td></tr>
+        <tr><td>192.168.0.0/16</td><td>192.168.0〜255.x</td><td>10.1.0.2</td></tr>
+        <tr><td>192.168.1.0/24</td><td>192.168.1.0〜255</td><td>10.1.0.3</td></tr>
+        <tr><td><b>192.168.1.0/26</b></td><td><b>192.168.1.0〜63</b></td><td><b>10.1.0.4（エ）</b></td></tr>
+      </table>
+      <div class="point">4行全部に当てはまるが、プレフィックス長が最も長い/26を選ぶ（<b>ロンゲストマッチ</b>）。長いほど範囲が狭く具体的。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:30%">用語</th><th>中身</th></tr>
+        <tr><td><b>CIDR</b></td><td>クラスにとらわれず任意のビット数で区切る（R7秋32のア）</td></tr>
+        <tr><td>スタティック</td><td>経路を手で設定する</td></tr>
+        <tr><td><b>RIP</b></td><td>ホップ数で決める。RIP-2はマルチキャストで送る</td></tr>
+        <tr><td><b>OSPF</b></td><td>回線の速さのコストで最短経路。組織の中</td></tr>
+        <tr><td>BGP</td><td>ISPなどの組織（AS）どうしの間</td></tr>
+        <tr><td>デフォルトゲートウェイ</td><td>端末が外へ出るときに渡すルータ</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/loudspeaker_flat.svg" alt="">「全員に一度」はブロードキャスト、「グループに一度」はマルチキャスト</h1>
+  <div class="cols">
+    <div><svg width="420" height="150" viewBox="0 0 420 150">
+<g transform="translate(0,0)"><text x="48" y="16" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">ユニキャスト</text><circle cx="48" cy="44" r="11" fill="#b25000"/><text x="48" y="48" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">送</text><line x1="48" y1="56" x2="10" y2="94" stroke="#dde2ea" stroke-width="1"/><circle cx="10" cy="104" r="10" fill="#fff" stroke="#2f5596" stroke-width="1.4"/><line x1="48" y1="56" x2="36" y2="102" stroke="#5b80bf" stroke-width="1.6"/><circle cx="36" cy="112" r="10" fill="#1f3a68" stroke="#2f5596" stroke-width="1.4"/><line x1="48" y1="56" x2="62" y2="102" stroke="#dde2ea" stroke-width="1"/><circle cx="62" cy="112" r="10" fill="#fff" stroke="#2f5596" stroke-width="1.4"/><line x1="48" y1="56" x2="88" y2="94" stroke="#dde2ea" stroke-width="1"/><circle cx="88" cy="104" r="10" fill="#fff" stroke="#2f5596" stroke-width="1.4"/><text x="48" y="140" font-size="9.5" text-anchor="middle" fill="#1d1d1f">1対1</text></g><g transform="translate(108,0)"><text x="48" y="16" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">ブロードキャスト</text><circle cx="48" cy="44" r="11" fill="#b25000"/><text x="48" y="48" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">送</text><line x1="48" y1="56" x2="10" y2="94" stroke="#5b80bf" stroke-width="1.6"/><circle cx="10" cy="104" r="10" fill="#1f3a68" stroke="#2f5596" stroke-width="1.4"/><line x1="48" y1="56" x2="36" y2="102" stroke="#5b80bf" stroke-width="1.6"/><circle cx="36" cy="112" r="10" fill="#1f3a68" stroke="#2f5596" stroke-width="1.4"/><line x1="48" y1="56" x2="62" y2="102" stroke="#5b80bf" stroke-width="1.6"/><circle cx="62" cy="112" r="10" fill="#1f3a68" stroke="#2f5596" stroke-width="1.4"/><line x1="48" y1="56" x2="88" y2="94" stroke="#5b80bf" stroke-width="1.6"/><circle cx="88" cy="104" r="10" fill="#1f3a68" stroke="#2f5596" stroke-width="1.4"/><text x="48" y="140" font-size="9.5" text-anchor="middle" fill="#1d1d1f">全員に一度で</text></g>
+<g transform="translate(216,0)"><text x="48" y="16" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">マルチキャスト</text><circle cx="48" cy="44" r="11" fill="#b25000"/><text x="48" y="48" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">送</text><line x1="48" y1="56" x2="10" y2="94" stroke="#5b80bf" stroke-width="1.6"/><circle cx="10" cy="104" r="10" fill="#1f3a68" stroke="#2f5596" stroke-width="1.4"/><line x1="48" y1="56" x2="36" y2="102" stroke="#dde2ea" stroke-width="1"/><circle cx="36" cy="112" r="10" fill="#fff" stroke="#2f5596" stroke-width="1.4"/><line x1="48" y1="56" x2="62" y2="102" stroke="#5b80bf" stroke-width="1.6"/><circle cx="62" cy="112" r="10" fill="#1f3a68" stroke="#2f5596" stroke-width="1.4"/><line x1="48" y1="56" x2="88" y2="94" stroke="#5b80bf" stroke-width="1.6"/><circle cx="88" cy="104" r="10" fill="#1f3a68" stroke="#2f5596" stroke-width="1.4"/><text x="48" y="140" font-size="9.5" text-anchor="middle" fill="#1d1d1f">グループに一度で</text></g><g transform="translate(324,0)"><text x="48" y="16" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">エニーキャスト</text><circle cx="48" cy="44" r="11" fill="#b25000"/><text x="48" y="48" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">送</text><line x1="48" y1="56" x2="10" y2="94" stroke="#dde2ea" stroke-width="1"/><circle cx="10" cy="104" r="10" fill="#fff" stroke="#2f5596" stroke-width="1.4"/><line x1="48" y1="56" x2="36" y2="102" stroke="#dde2ea" stroke-width="1"/><circle cx="36" cy="112" r="10" fill="#fff" stroke="#2f5596" stroke-width="1.4"/><line x1="48" y1="56" x2="62" y2="102" stroke="#5b80bf" stroke-width="1.6"/><circle cx="62" cy="112" r="10" fill="#1f3a68" stroke="#2f5596" stroke-width="1.4"/><line x1="48" y1="56" x2="88" y2="94" stroke="#dde2ea" stroke-width="1"/><circle cx="88" cy="104" r="10" fill="#fff" stroke="#2f5596" stroke-width="1.4"/><text x="48" y="140" font-size="9.5" text-anchor="middle" fill="#1d1d1f">いちばん近い1台</text></g>
+</svg>
+      <div class="point">R3秋 問31：ブロードキャストフレームは<b>同一セグメント内の全てのノードに、一度の送信で</b>（ア）。順番に送るのは、ユニキャストを繰り返しているだけ。</div>
+    </div>
+    <div>
+      <div class="cap">R5秋 問35：IPv4のマルチキャストの使用例</div>
+      <table>
+        <tr><th style="width:8%"></th><th>例</th><th style="width:28%">実際は</th></tr>
+        <tr><td>ア</td><td>初めて接続するPCがDHCPでアドレスを取得</td><td>ブロードキャスト</td></tr>
+        <tr><td>イ</td><td>ARPでMACアドレスを問い合わせ</td><td>ブロードキャスト</td></tr>
+        <tr><td>ウ</td><td>メーリングリストでSMTPの一斉送信</td><td>1通ずつユニキャスト</td></tr>
+        <tr><td><b>エ</b></td><td><b>ルータがRIP-2で隣のルータのグループに経路を送る</b></td><td><b>マルチキャスト（正解）</b></td></tr>
+      </table>
+      <div class="point">IPv4のマルチキャストはクラスD（224〜239）。グループへの参加はIGMPで管理する。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/puzzle_piece_flat.svg" alt="">ARP・RARP・ICMP・DHCP・NATは「説明の入れ替え」で出る</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th style="width:20%">プロトコル</th><th>役割</th></tr>
+        <tr><td><b>ARP</b></td><td>IPアドレス → MACアドレス（ブロードキャストで聞く）</td></tr>
+        <tr><td>RARP</td><td>MACアドレス → 自分のIPアドレス</td></tr>
+        <tr><td><b>ICMP</b></td><td>エラーの報告などの制御メッセージを送信元へ。pingで使う</td></tr>
+        <tr><td><b>DHCP</b></td><td>IPアドレス・マスク・ゲートウェイ・DNSサーバを自動で割り当てる</td></tr>
+        <tr><td>NAT/NAPT</td><td>グローバルとプライベートを変換</td></tr>
+        <tr><td>RIP</td><td>ホップ数で経路を制御</td></tr>
+      </table>
+      <div class="point">R3秋 問32（ARP）・R6秋 問34（ICMP）・R5秋 問33（pingはICMP）は、この表の行を入れ替えただけの選択肢が並ぶ。</div>
+    </div>
+    <div>
+      <div class="cap">R4秋 問31：DHCPの環境の説明</div>
+      <table>
+        <tr><th style="width:8%"></th><th>説明</th><th style="width:30%">判定</th></tr>
+        <tr><td>ア</td><td>マスクやゲートウェイは自動設定できない</td><td>一緒に設定できる</td></tr>
+        <tr><td>イ</td><td>固定のPCと混在できない</td><td>配る範囲から外せば混在できる</td></tr>
+        <tr><td><b>ウ</b></td><td><b>PCにDHCPサーバのアドレスを設定しておく必要はない</b></td><td><b>正解（ブロードキャストで探す）</b></td></tr>
+        <tr><td>エ</td><td>電源を切っても必ず同じアドレス</td><td>リース期間がある</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/label_flat.svg" alt="">IPv6は128ビット。「::」は1か所だけ、IPsecは拡張ヘッダで</h1>
+  <div class="cols">
+    <div>
+      <div class="formula" style="font-size:16px">2001:0db8:0000:0000:0000:0000:03ab:ff01</div>
+      <div class="arrow">↓ 先頭の0を省く ／ 0が続くブロックを「::」に</div>
+      <div class="formula" style="font-size:16px">2001:db8::3ab:ff01</div>
+      <div class="cap">R4春 問31：IPv6アドレスの表記</div>
+      <table>
+        <tr><td style="width:46%">2001:db8::3ab::ff01</td><td>「::」が2か所 → 何ブロック省いたか決まらない</td></tr>
+        <tr><td><b>2001:db8::3ab:ff01</b></td><td><b>正解（イ）</b></td></tr>
+        <tr><td>2001:db8.3ab:ff01 など</td><td>「.」は使わない</td></tr>
+      </table>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:32%">用語</th><th>中身</th></tr>
+        <tr><td><b>拡張ヘッダ</b></td><td>基本ヘッダ（40バイト固定）の後ろに必要なときだけ付ける。IPsecのAH・ESP</td></tr>
+        <tr><td>IPsec</td><td>ネットワーク層で暗号化と改ざん検知。インターネットVPN</td></tr>
+        <tr><td>デュアルスタック</td><td>IPv4とIPv6を両方動かす</td></tr>
+        <tr><td>リンクローカルアドレス</td><td>fe80::で始まる。ルータを越えない</td></tr>
+        <tr><td>近隣探索（NDP）</td><td>IPv6にはARPがない。ICMPv6でMACアドレスを調べる</td></tr>
+      </table>
+      <div class="point warn">R3秋 問36：拡張ヘッダで実現できるのは<b>暗号化通信機能</b>（イ）。URLフィルタリング・情報漏えい検知・マルウェア検知は、ヘッダの機能ではない。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/magnifying_glass_tilted_left_flat.svg" alt="">DNSは上から順にたどる。レコードの名前と中身を入れ替えて出る</h1>
+  <div class="cols">
+    <div><svg width="420" height="210" viewBox="0 0 420 210"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<rect x="18" y="93" width="44" height="24" rx="4" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="40" y="109" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">PC</text><rect x="100" y="90" width="90" height="30" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="145.0" y="108.6" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">キャッシュDNS</text>
+<rect x="290" y="10" width="100" height="28" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="340.0" y="27.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">ルート</text><rect x="290" y="62" width="100" height="28" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="340.0" y="79.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">jp</text><rect x="290" y="114" width="100" height="28" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="340.0" y="131.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">example.jp</text>
+<line x1="62" y1="105" x2="98" y2="105" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/>
+<line x1="190" y1="98" x2="288" y2="26" stroke="#9aa7bd" stroke-width="1.6" marker-end="url(#ar)"/><line x1="190" y1="104" x2="288" y2="76" stroke="#9aa7bd" stroke-width="1.6" marker-end="url(#ar)"/><line x1="190" y1="112" x2="288" y2="128" stroke="#b25000" stroke-width="2" marker-end="url(#ar)"/>
+<text x="340" y="160" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">権威DNSサーバ</text><text x="340" y="176" font-size="9.5" text-anchor="middle" fill="#6e6e73">（答えを正式にもつ）</text>
+<text x="145" y="140" font-size="10" text-anchor="middle" fill="#1d1d1f">上から順にたどる</text><text x="145" y="155" font-size="10" text-anchor="middle" fill="#1d1d1f">答えをしばらく覚える</text>
+<text x="210" y="202" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">www.example.jp は？ → ルート → jp → example.jp の順に聞く</text>
+</svg></div>
+    <div>
+      <table>
+        <tr><th style="width:24%">レコード</th><th>登録するもの</th></tr>
+        <tr><td>A／AAAA</td><td>ホスト名 → IPv4／IPv6アドレス（正引き）</td></tr>
+        <tr><td><b>MX</b></td><td>そのドメイン宛ての<b>メールサーバ</b></td></tr>
+        <tr><td><b>NS</b></td><td>そのドメインの<b>DNSサーバ</b></td></tr>
+        <tr><td><b>CNAME</b></td><td>別名 → 正式な名前</td></tr>
+        <tr><td>PTR</td><td>IPアドレス → ホスト名（逆引き）</td></tr>
+      </table>
+      <div class="point warn">R6秋 問33：正解は「IPアドレスに対応するホスト名を調べることを<b>逆引き</b>という」（ウ）。DNSサーバのホスト名はMXでなくNS、別名はNSでなくCNAME、問い合わせるソフトはレゾリューションでなく<b>リゾルバ</b>。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/server.png" alt=""><img src="img/irasutoya/gear.png" alt=""><img src="img/irasutoya/pc_doctor.png" alt=""><img src="img/irasutoya/cloud.png" alt=""></div>
+  <div class="k">第4章</div>
+  <h1>ネットワーク管理</h1>
+  <p>SNMPとMIB ／ 障害を調べるコマンド ／ SDNとOpenFlow ／ NFV・SD-WAN</p>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/bar_chart_flat.svg" alt="">SNMPは「聞きに行く get」と「向こうから知らせる trap」</h1>
+  <div class="cols">
+    <div><svg width="420" height="210" viewBox="0 0 420 210"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<rect x="10" y="80" width="120" height="50" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="70.0" y="103.0" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">管理ステーション</text><text x="70.0" y="118.0" font-size="10.5" text-anchor="middle" fill="#fff">（マネージャ）</text>
+<rect x="290" y="30" width="120" height="40" rx="6" fill="#c9daf2" stroke="#5b80bf" stroke-width="1.5"/><text x="350.0" y="54.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">ルータ</text><rect x="290" y="140" width="120" height="40" rx="6" fill="#c9daf2" stroke="#5b80bf" stroke-width="1.5"/><text x="350.0" y="164.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">スイッチ</text>
+<text x="350" y="86" font-size="10" text-anchor="middle" fill="#1f3a68" font-weight="700">エージェント＋MIB</text><text x="350" y="196" font-size="10" text-anchor="middle" fill="#1f3a68" font-weight="700">エージェント＋MIB</text>
+<line x1="132" y1="92" x2="288" y2="50" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/><text x="206" y="58" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">get / set（ポーリング）</text>
+<line x1="288" y1="160" x2="132" y2="120" stroke="#b25000" stroke-width="2.2" marker-end="url(#ar)"/><text x="206" y="160" font-size="10.5" text-anchor="middle" fill="#b25000" font-weight="700">trap（異常を自分から通知）</text>
+<text x="206" y="104" font-size="9.5" text-anchor="middle" fill="#6e6e73">UDP 161</text><text x="206" y="176" font-size="9.5" text-anchor="middle" fill="#6e6e73">UDP 162</text>
+</svg></div>
+    <div>
+      <table>
+        <tr><th style="width:26%">メッセージ</th><th>向き・中身</th></tr>
+        <tr><td>get要求</td><td>マネージャ → エージェント。MIBの値を読む</td></tr>
+        <tr><td>set要求</td><td>マネージャ → エージェント。設定を書き換える</td></tr>
+        <tr><td>get応答</td><td>エージェント → マネージャ。聞かれた値を返す</td></tr>
+        <tr><td><b>trap</b></td><td>エージェント → マネージャ。<b>異常を自発的に</b>通知</td></tr>
+      </table>
+      <div class="point warn">「自発的に」「異常発生時に」と書かれていたらtrap。get応答もエージェントから送るが、聞かれたから返すだけ。</div>
+      <div class="point">管理の5分野 <b>FCAPS</b>：障害（Fault）・構成（Configuration）・課金（Accounting）・性能（Performance）・機密（Security）。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/wrench_flat.svg" alt="">障害を調べるコマンドは「何が分かるか」で選ぶ</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">traceroute（Windowsはtracert）：どこで途切れたか</div>
+      <svg width="420" height="150" viewBox="0 0 420 150"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<rect x="8" y="48" width="44" height="24" rx="4" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="30" y="64" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">PC</text><rect x="100" y="45" width="60" height="30" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="130.0" y="64.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">R1</text><rect x="200" y="45" width="60" height="30" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="230.0" y="64.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">R2</text><rect x="300" y="45" width="60" height="30" rx="6" fill="#c7ccd5" stroke="#c7ccd5" stroke-width="1.5"/><text x="330.0" y="64.0" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">R3</text>
+<line x1="52" y1="60" x2="98" y2="60" stroke="#5b80bf" stroke-width="2"/><line x1="160" y1="60" x2="198" y2="60" stroke="#5b80bf" stroke-width="2"/><line x1="260" y1="60" x2="298" y2="60" stroke="#b25000" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="280" y="40" font-size="18" text-anchor="middle" fill="#b25000" font-weight="700">×</text>
+<text x="130" y="100" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">1 応答あり</text><text x="230" y="100" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">2 応答あり</text><text x="330" y="100" font-size="10.5" text-anchor="middle" fill="#b25000" font-weight="700">3 * * *</text>
+<text x="210" y="135" font-size="10.5" text-anchor="middle" fill="#1d1d1f">TTLを1, 2, 3…と増やし、返ってくるICMPで経路を順に表示</text>
+</svg>
+      <div class="point">ネットワーク問題 o07：経路上のルータを近い順に表示するのは<b>traceroute</b>（ウ）。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:30%">コマンド</th><th>分かること</th></tr>
+        <tr><td>ping</td><td>相手まで届くか・往復時間（ICMP）</td></tr>
+        <tr><td>traceroute</td><td>途中のルータの順番</td></tr>
+        <tr><td><b>arp</b></td><td>IPアドレスとMACアドレスの対応表</td></tr>
+        <tr><td>ipconfig / ifconfig</td><td><b>自分の</b>IPアドレス・MACアドレス</td></tr>
+        <tr><td>netstat</td><td>自分の接続状態・開いているポート</td></tr>
+        <tr><td>nslookup / dig</td><td>DNSの名前解決</td></tr>
+      </table>
+      <div class="point warn">R6春 問36：同じLANのプリンターのMACアドレスを調べる＝<b>arp</b>（ア）。直前に通信していればARPテーブルに載っている。ipconfigは自分のPCの情報しか出ない。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/joystick_flat.svg" alt="">SDNは「制御」と「転送」を分けて、コントローラで集中制御</h1>
+  <div class="cols">
+    <div><svg width="420" height="220" viewBox="0 0 420 220"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<text x="105" y="16" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">従来</text><text x="315" y="16" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">SDN（OpenFlow）</text>
+<line x1="210" y1="24" x2="210" y2="214" stroke="#e1e5ec" stroke-width="1"/>
+<rect x="40" y="32" width="130" height="46" rx="6" fill="#fff" stroke="#5b80bf" stroke-width="1.5"/><text x="105.0" y="59.5" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700"></text><rect x="48" y="38" width="114" height="15" rx="3" fill="#1f3a68"/><text x="105" y="49" font-size="9.5" text-anchor="middle" fill="#fff" font-weight="700">制御（経路を決める）</text><rect x="48" y="57" width="114" height="15" rx="3" fill="#c9daf2"/><text x="105" y="68" font-size="9.5" text-anchor="middle" fill="#1f3a68" font-weight="700">転送（パケットを流す）</text><rect x="40" y="86" width="130" height="46" rx="6" fill="#fff" stroke="#5b80bf" stroke-width="1.5"/><text x="105.0" y="113.5" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700"></text><rect x="48" y="92" width="114" height="15" rx="3" fill="#1f3a68"/><text x="105" y="103" font-size="9.5" text-anchor="middle" fill="#fff" font-weight="700">制御（経路を決める）</text><rect x="48" y="111" width="114" height="15" rx="3" fill="#c9daf2"/><text x="105" y="122" font-size="9.5" text-anchor="middle" fill="#1f3a68" font-weight="700">転送（パケットを流す）</text><rect x="40" y="140" width="130" height="46" rx="6" fill="#fff" stroke="#5b80bf" stroke-width="1.5"/><text x="105.0" y="167.5" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700"></text><rect x="48" y="146" width="114" height="15" rx="3" fill="#1f3a68"/><text x="105" y="157" font-size="9.5" text-anchor="middle" fill="#fff" font-weight="700">制御（経路を決める）</text><rect x="48" y="165" width="114" height="15" rx="3" fill="#c9daf2"/><text x="105" y="176" font-size="9.5" text-anchor="middle" fill="#1f3a68" font-weight="700">転送（パケットを流す）</text><rect x="250" y="36" width="130" height="40" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="315.0" y="54.0" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">コントローラ</text><text x="315.0" y="69.0" font-size="10.5" text-anchor="middle" fill="#fff">（ソフトウェア）</text><rect x="212" y="160" width="56" height="36" rx="6" fill="#c9daf2" stroke="#5b80bf" stroke-width="1.5"/><text x="240.0" y="182.0" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">転送</text><line x1="315" y1="78" x2="240" y2="158" stroke="#b25000" stroke-width="1.6" marker-end="url(#ar)"/><rect x="272" y="160" width="56" height="36" rx="6" fill="#c9daf2" stroke="#5b80bf" stroke-width="1.5"/><text x="300.0" y="182.0" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">転送</text><line x1="315" y1="78" x2="300" y2="158" stroke="#b25000" stroke-width="1.6" marker-end="url(#ar)"/><rect x="332" y="160" width="56" height="36" rx="6" fill="#c9daf2" stroke="#5b80bf" stroke-width="1.5"/><text x="360.0" y="182.0" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">転送</text><line x1="315" y1="78" x2="360" y2="158" stroke="#b25000" stroke-width="1.6" marker-end="url(#ar)"/><text x="105" y="208" font-size="10" text-anchor="middle" fill="#1d1d1f">機器ごとに制御と転送が一体</text><text x="315" y="208" font-size="10" text-anchor="middle" fill="#b25000" font-weight="700">OpenFlowで転送機器に指示</text></svg></div>
+    <div>
+      <div class="cap">R3春 問35・R4春 問35・R6春 問34：3回出た</div>
+      <table>
+        <tr><th style="width:36%">ひっかけの選択肢</th><th>本当は</th></tr>
+        <tr><td>MIBを定期的に取得して監視</td><td>SNMP</td></tr>
+        <tr><td>機器同士で経路情報を交換</td><td>ルーティングプロトコル（RIP・OSPF）</td></tr>
+        <tr><td>制御と転送のソフトを仮想環境で動かす</td><td>NFVに近い。分離していない</td></tr>
+        <tr><td>物理サーバ内の仮想スイッチ</td><td>仮想スイッチ</td></tr>
+        <tr><td>WWNで識別するストレージ用網</td><td>FC-SAN</td></tr>
+      </table>
+      <div class="point warn">正解の決め手は「<b>論理的に分離</b>」「<b>集中的に制御</b>」の2語。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/cloud_flat.svg" alt="">専用機器をソフトにするのがNFV、拠点間の回線を賢く使うのがSD-WAN</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th style="width:24%">用語</th><th>一言で</th><th style="width:28%">見分けるキーワード</th></tr>
+        <tr><td><b>SDN</b></td><td>ネットワークの制御をソフトで集中管理</td><td>制御と転送の分離</td></tr>
+        <tr><td><b>NFV</b></td><td>ファイアウォールやロードバランサを<b>汎用サーバの仮想マシン</b>で動かす</td><td>専用機器 → ソフト</td></tr>
+        <tr><td><b>SD-WAN</b></td><td>複数のWAN回線（インターネット・閉域網）をソフトで使い分ける</td><td>拠点間・回線の選択</td></tr>
+        <tr><td>VLAN</td><td>1台のスイッチを論理的に分ける</td><td>LANの中の分割</td></tr>
+        <tr><td>ネットワークスライシング</td><td>5Gの網を用途ごとに分ける</td><td>5G</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="hero-icons ira" style="justify-content:center"><img src="img/irasutoya/datacenter.png" alt=""><img src="img/irasutoya/firewall.png" alt=""></div>
+      <div class="point">ネットワーク問題 o08：専用機器の機能を汎用サーバ上の仮想マシンで実現＝<b>NFV</b>（エ）。</div>
+      <div class="point warn">SDNとNFVは一緒に使われることが多いが、別物。SDNは「誰が経路を決めるか」、NFVは「機能を何の上で動かすか」。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/spam_mail.png" alt=""><img src="img/irasutoya/smartphone.png" alt=""><img src="img/irasutoya/cloud.png" alt=""><img src="img/irasutoya/self_driving.png" alt=""></div>
+  <div class="k">第5章</div>
+  <h1>ネットワーク応用</h1>
+  <p>電子メールとbase64 ／ URLとHTTP ／ FTP ／ VPNとWANサービス ／ モバイルと5G ／ IoT（LPWA・MQTT）</p>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/envelope_with_arrow_flat.svg" alt="">メールは送るSMTP、読むPOP3/IMAP4。添付はbase64で4/3倍</h1>
+  <div class="cols">
+    <div><svg width="420" height="170" viewBox="0 0 420 170"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<rect x="8" y="58" width="44" height="24" rx="4" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="30" y="74" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">送信者</text><rect x="90" y="52" width="90" height="36" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="135.0" y="73.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">送信側サーバ</text><rect x="230" y="52" width="90" height="36" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="275.0" y="73.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">受信側サーバ</text><rect x="363" y="28" width="44" height="24" rx="4" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="385" y="44" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">PC</text><rect x="363" y="88" width="44" height="24" rx="4" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="385" y="104" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">スマホ</text>
+<line x1="54" y1="70" x2="88" y2="70" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/><line x1="180" y1="70" x2="228" y2="70" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/>
+<line x1="320" y1="62" x2="361" y2="44" stroke="#b25000" stroke-width="2" marker-end="url(#ar)"/><line x1="320" y1="78" x2="361" y2="98" stroke="#b25000" stroke-width="2" marker-end="url(#ar)"/>
+<text x="70" y="108" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">SMTP</text><text x="204" y="108" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">SMTP</text>
+<text x="350" y="140" font-size="10" text-anchor="middle" fill="#b25000" font-weight="700">POP3：取り出して手元に</text><text x="350" y="156" font-size="10" text-anchor="middle" fill="#b25000" font-weight="700">IMAP4：サーバに置いたまま</text>
+<text x="120" y="30" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">送る＝SMTP</text><text x="350" y="16" font-size="12" text-anchor="middle" fill="#b25000" font-weight="700">受け取る</text>
+</svg>
+      <div class="point">ネットワーク問題 o09：サーバに保存したまま複数の端末で同じ既読状態＝<b>IMAP4</b>（ウ）。MIMEは添付や日本語を送るための形式。</div>
+    </div>
+    <div>
+      <div class="cap">R7秋 問34：30kバイトのJPEGをbase64で添付</div>
+      <table>
+        <tr><th style="width:12%">手順</th><th>考え方</th></tr>
+        <tr><td>①</td><td>base64は<b>3バイト（24ビット）</b>を6ビットずつ<b>4文字</b>にする</td></tr>
+        <tr><td>②</td><td>1文字＝1バイトで送るので、大きさは <b>4/3倍</b></td></tr>
+        <tr><td>③</td><td>30 × 4/3 ＝ <b>40kバイト</b>（ウ）</td></tr>
+      </table>
+      <div class="point warn">メールはもともと7ビットの文字しか通せない。だからバイナリを文字に直す。増えるのであって、減る（ア 20）ことはない。</div>
+      <div class="point">S/MIME＝メールの暗号化と署名。SPF・DKIM＝送信元ドメインの確認（11 セキュリティ）。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/globe_with_meridians_flat.svg" alt="">ポート番号はホスト名の直後。HTTP/3はUDPの上で動く</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R4秋 問35：ポート番号8080を書く場所</div>
+      <svg width="430" height="80" viewBox="0 0 430 80"><rect x="0" y="20" width="64.0" height="30" rx="4" fill="#1f3a68"/><text x="32.0" y="40" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">https://</text><text x="32.0" y="68" font-size="10" text-anchor="middle" fill="#1f3a68" font-weight="700">スキーム</text><rect x="66.0" y="20" width="113.0" height="30" rx="4" fill="#2f5596"/><text x="122.5" y="40" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">www.example.com</text><text x="122.5" y="68" font-size="10" text-anchor="middle" fill="#2f5596" font-weight="700">ホスト名</text><rect x="181.0" y="20" width="43.0" height="30" rx="4" fill="#b25000"/><text x="202.5" y="40" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">:8080</text><text x="202.5" y="68" font-size="10" text-anchor="middle" fill="#b25000" font-weight="700">ポート番号</text><rect x="226.0" y="20" width="99.0" height="30" rx="4" fill="#5b80bf"/><text x="275.5" y="40" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">/member/login</text><text x="275.5" y="68" font-size="10" text-anchor="middle" fill="#5b80bf" font-weight="700">パス</text><rect x="327.0" y="20" width="64.0" height="30" rx="4" fill="#7d8798"/><text x="359.0" y="40" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">?id=user</text><text x="359.0" y="68" font-size="10" text-anchor="middle" fill="#7d8798" font-weight="700">クエリ</text></svg>
+      <div class="point">答えはホスト名の直後（エ）。スキームの後・パスの後・クエリの後に書いても、ポート番号とは読まれない。</div>
+      <div class="cap">FTPのアクティブとパッシブ（o14）</div>
+      <table>
+        <tr><th style="width:26%">モード</th><th>データ用コネクションを張る向き</th></tr>
+        <tr><td>アクティブ</td><td>サーバ → クライアント（外からの接続はファイアウォールで止まりやすい）</td></tr>
+        <tr><td><b>パッシブ</b></td><td><b>クライアント → サーバ</b>。ファイアウォールやNAPTを通りやすい（ア）</td></tr>
+      </table>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:22%">版</th><th>特徴</th></tr>
+        <tr><td>HTTP/1.1</td><td>キープアライブ。1本のTCPで要求を順番に</td></tr>
+        <tr><td>HTTP/2</td><td>1本のTCPの中で複数の要求を同時に並べる（多重化）</td></tr>
+        <tr><td><b>HTTP/3</b></td><td><b>UDP上のQUIC</b>。一部が失われても他のストリームは待たされない</td></tr>
+        <tr><td>WebSocket</td><td>接続後、双方向にいつでも送り合える</td></tr>
+        <tr><td>WebDAV</td><td>Webサーバ上のファイルを作成・更新・削除・ロック</td></tr>
+      </table>
+      <div class="point warn">o13：HTTP/3＝ア。イはHTTP/2、ウはWebSocket、エはWebDAVの説明。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/locked_flat.svg" alt="">拠点をつなぐ網は「どこを通るか」と「何層でつなぐか」で分ける</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th style="width:24%">サービス</th><th style="width:22%">通る網</th><th style="width:14%">層</th><th>特徴</th></tr>
+        <tr><td>インターネットVPN</td><td>インターネット</td><td>3</td><td>安い。IPsecで暗号化</td></tr>
+        <tr><td>SSL-VPN</td><td>インターネット</td><td>4〜7</td><td>ブラウザ（TLS）で社内へ</td></tr>
+        <tr><td><b>IP-VPN</b></td><td>事業者の閉域網</td><td><b>3</b></td><td>MPLSで転送。IPだけ通す</td></tr>
+        <tr><td><b>広域Ethernet</b></td><td>事業者の閉域網</td><td><b>2</b></td><td>IP以外も通せる。ルーティングを自由に設計</td></tr>
+        <tr><td>専用線</td><td>1対1の回線</td><td>1</td><td>高いが帯域を占有</td></tr>
+      </table>
+      <div class="point warn">o10：閉域網・<b>レイヤー2</b>・IP以外も通す＝<b>広域Ethernet</b>（ウ）。IP-VPNはレイヤー3なのでIPしか通らない。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:34%">アクセス回線</th><th>中身</th></tr>
+        <tr><td>FTTH</td><td>光ファイバーを家まで引く</td></tr>
+        <tr><td>ADSL</td><td>電話線。上りと下りの速さが違う</td></tr>
+        <tr><td>CATV</td><td>ケーブルテレビの同軸ケーブル</td></tr>
+        <tr><td>ベストエフォート</td><td>最大速度は保証しない</td></tr>
+      </table>
+      <div class="point">VPN＝共有の網の上に、自社専用のように使える仮想の線を作ること。閉域網は事業者の契約者だけが使う網で、インターネットとはつながっていない。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/mobile_phone_flat.svg" alt="">移動中の乗り換えはハンドオーバー。5Gは網を用途ごとにスライス</h1>
+  <div class="cols">
+    <div><svg width="420" height="150" viewBox="0 0 420 150"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<rect x="30" y="20" width="90" height="32" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="75.0" y="40.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">基地局A</text><rect x="300" y="20" width="90" height="32" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="345.0" y="40.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">基地局B</text>
+<path d="M75,52 Q75,90 120,110" fill="none" stroke="#9aa7bd" stroke-width="1.6" stroke-dasharray="4 3"/>
+<path d="M345,52 Q345,90 300,110" fill="none" stroke="#b25000" stroke-width="2"/>
+<line x1="110" y1="120" x2="300" y2="120" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/><rect x="78" y="108" width="44" height="24" rx="4" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="100" y="124" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">スマホ</text><rect x="298" y="108" width="44" height="24" rx="4" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="320" y="124" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">スマホ</text>
+<text x="210" y="108" font-size="10.5" text-anchor="middle" fill="#b25000" font-weight="700">通話を切らずに乗り換え</text><text x="210" y="144" font-size="11.5" text-anchor="middle" fill="#b25000" font-weight="700">＝ハンドオーバー</text>
+</svg>
+      <table>
+        <tr><th style="width:30%">R5春 問35</th><th>意味</th></tr>
+        <tr><td>テザリング</td><td>スマホを親機にしてPCをつなぐ</td></tr>
+        <tr><td><b>ハンドオーバー</b></td><td><b>接続を保ったまま基地局を切り替え（イ）</b></td></tr>
+        <tr><td>フォールバック</td><td>つながらないとき下の世代（4G等）に落とす</td></tr>
+        <tr><td>ローミング</td><td>契約外の事業者（海外など）の網を使う</td></tr>
+      </table>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:38%">5Gの技術</th><th>中身</th></tr>
+        <tr><td><b>ネットワークスライシング</b></td><td>1つの物理網を用途ごとの仮想網に分ける（o11 ア）</td></tr>
+        <tr><td>キャリアアグリゲーション</td><td>複数の周波数帯を束ねて速くする</td></tr>
+        <tr><td>ビームフォーミング</td><td>電波を端末の方向に絞って送る</td></tr>
+        <tr><td>MIMO</td><td>複数のアンテナで同時に送受信</td></tr>
+        <tr><td>MEC</td><td>基地局の近くで処理して遅延を減らす</td></tr>
+      </table>
+      <div class="point">5Gの3つの特徴：<b>超高速大容量（eMBB）・超低遅延（URLLC）・多数同時接続（mMTC）</b>。SIM・eSIM・MVNO（回線を借りる事業者）もこの節。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/satellite_antenna_flat.svg" alt="">IoTは「遠くまで・電池で長く」がLPWA、「ブローカ経由」がMQTT</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">MQTT（o12 ア）：パブリッシュ／サブスクライブ型</div>
+      <svg width="420" height="170" viewBox="0 0 420 170"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<rect x="10" y="20" width="96" height="30" rx="6" fill="#c9daf2" stroke="#5b80bf" stroke-width="1.5"/><text x="58.0" y="38.8" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">温度センサー</text><rect x="10" y="70" width="96" height="30" rx="6" fill="#c9daf2" stroke="#5b80bf" stroke-width="1.5"/><text x="58.0" y="88.8" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">湿度センサー</text>
+<rect x="160" y="45" width="100" height="40" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="210.0" y="69.3" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">ブローカ</text>
+<rect x="314" y="20" width="96" height="30" rx="6" fill="#c9daf2" stroke="#5b80bf" stroke-width="1.5"/><text x="362.0" y="38.8" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">アプリA</text><rect x="314" y="70" width="96" height="30" rx="6" fill="#c9daf2" stroke="#5b80bf" stroke-width="1.5"/><text x="362.0" y="88.8" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">アプリB</text>
+<line x1="106" y1="35" x2="158" y2="58" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/><line x1="106" y1="85" x2="158" y2="72" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/>
+<line x1="262" y1="58" x2="312" y2="35" stroke="#b25000" stroke-width="2" marker-end="url(#ar)"/><line x1="262" y1="72" x2="312" y2="85" stroke="#b25000" stroke-width="2" marker-end="url(#ar)"/>
+<text x="58" y="126" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">publish（発行）</text><text x="362" y="126" font-size="10.5" text-anchor="middle" fill="#b25000" font-weight="700">subscribe（購読）</text>
+<text x="210" y="158" font-size="10.5" text-anchor="middle" fill="#1d1d1f">送る側と受ける側は互いを知らなくてよい</text>
+</svg>
+      <div class="point">CoAPはUDP上のREST風の軽いプロトコル（ブローカは使わない）。SIPはIP電話の呼制御。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:24%">無線</th><th style="width:24%">距離</th><th>特徴</th></tr>
+        <tr><td><b>LPWA</b></td><td>数km〜数十km</td><td><b>低消費電力・広域</b>。速度は遅い（LoRaWAN・Sigfox・NB-IoT）</td></tr>
+        <tr><td>BLE</td><td>数十m</td><td>Bluetoothの省電力版</td></tr>
+        <tr><td>ZigBee</td><td>数十m</td><td>メッシュ型のセンサー網</td></tr>
+        <tr><td>NFC</td><td>数cm</td><td>かざす（ICカード・スマホ決済）</td></tr>
+      </table>
+      <div class="point warn">o15：「数km以上」「電池で長期間」＝<b>LPWA</b>（ア）。BLEやZigBeeも省電力だが、届く距離が短い。</div>
+      <div class="point">エッジコンピューティング＝機器の近くで処理して、クラウドへの通信と遅延を減らす。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/net/check_mark_button_flat.svg" alt="">まとめ：本番で迷う組み合わせ</h1>
+  <table class="mini">
+    <tr><th style="width:24%">迷う組み合わせ</th><th>見分け方</th></tr>
+    <tr><td>ブリッジ ／ ルータ</td><td>MACアドレスで中継＝第2層、IPアドレスで中継＝第3層</td></tr>
+    <tr><td>プロキシ ／ リバースプロキシ</td><td>利用者側の代理 ／ サーバ側の代理（負荷分散・キャッシュ）</td></tr>
+    <tr><td>STP ／ VRRP</td><td>ループを止める ／ ルータを冗長化</td></tr>
+    <tr><td>TCP ／ UDP</td><td>シーケンス番号・確認応答・再送はTCPだけ。DNS・DHCP・NTP・SNMPはUDP</td></tr>
+    <tr><td>ネットワーク ／ ブロードキャスト</td><td>a ＆ m ／ a ｜ ～m。台数は 2^(ホスト部) − 2</td></tr>
+    <tr><td>ARP ／ RARP ／ ICMP</td><td>IP→MAC ／ MAC→IP ／ エラー報告とping</td></tr>
+    <tr><td>MX ／ NS ／ CNAME ／ PTR</td><td>メールサーバ ／ DNSサーバ ／ 別名 ／ 逆引き</td></tr>
+    <tr><td>SNMPのget ／ trap</td><td>マネージャが聞く ／ エージェントが自発的に通知</td></tr>
+    <tr><td>SDN ／ NFV ／ SD-WAN</td><td>制御と転送の分離 ／ 専用機器を仮想マシンに ／ WAN回線の使い分け</td></tr>
+    <tr><td>POP3 ／ IMAP4</td><td>取り出す ／ サーバに置いたまま</td></tr>
+    <tr><td>IP-VPN ／ 広域Ethernet</td><td>第3層でIPだけ ／ 第2層でIP以外も</td></tr>
+    <tr><td>LPWA ／ BLE ／ NFC</td><td>数km ／ 数十m ／ 数cm</td></tr>
+  </table>
+</section>
