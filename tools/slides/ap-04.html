@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<title>応用情報 システム構成要素 図解</title>
+<title>応用情報 #4 システム構成要素 図解</title>
 <style>
 @page { size: 960px 540px; margin: 0; }
 :root {
@@ -48,97 +48,1010 @@ ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; colu
 .flow .box { flex: 1; }
 .flow .to { color: var(--navy3); font-size: 20px; }
 svg text { font-family: "IPAPGothic", sans-serif; }
-</style>
-<style>
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
-.term .box { text-align: left; font-size: 15px; padding: 7px 12px; }
-.term dl { margin: 6px 2px 0; }
-.term dd { margin: 0 0 4px; font-size: 12.5px; line-height: 1.5; }
-.term dd.pt { color: #333; }
-.term dd.words { color: var(--navy2); font-size: 11.5px; }
-.term .tag { font-size: 10.5px; padding: 0 5px; }
-.slide .cap + table { margin-bottom: 14px; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
 </style>
 </head>
 <body>
+
+<!-- 表紙 -->
 <section class="slide title">
-  <div class="k">応用情報技術者試験　テクノロジ系　No.4</div>
+  <div class="k">応用情報技術者試験　テクノロジ系　#4</div>
   <h1>システム構成要素</h1>
-  <p>システムの構成・システムの評価指標</p>
-<div class="foot"><span>応用情報 システム構成要素</span><span>1</span></div>
+  <p>用語集まとめ ― 過去問10回分（令和3〜7年度）で出たところを中心に</p>
+  <div class="icons"><img src="img/sys/office_building_flat.svg" alt=""><img src="img/sys/cloud_flat.svg" alt=""><img src="img/sys/file_cabinet_flat.svg" alt=""><img src="img/sys/shield_flat.svg" alt=""><img src="img/sys/stopwatch_flat.svg" alt=""><img src="img/sys/money_bag_flat.svg" alt=""></div>
 </section>
 
-<section class="slide ">
-  <h1>目次</h1>
-  <ol class="toc">
-    <li>4-1 システムの構成（14語）</li>
-    <li>4-2 システムの評価指標（14語）</li>
-    <li>まとめ</li>
-  </ol>
-<div class="foot"><span>応用情報 システム構成要素</span><span>2</span></div>
+<!-- 全体像 -->
+<section class="slide">
+  <h1>全体像<small>シラバスの2つの小分類を、6章に分けて読む</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 システムの構成<span>集中と分散・冗長化・待機系・災害対策・仮想化・クラウド・IaC</span></div>
+      <div class="box b2">2 クライアントサーバとWeb<span>3層構成・RPCとストアドプロシージャ・負荷分散とセッション</span></div>
+      <div class="box b2">3 ストレージ<span>RAID・DAS／NAS／SAN・ブロック／ファイル／オブジェクト</span></div>
+      <div class="box b3">4 信頼性設計<span>フォールトトレランス・フェールセーフ・フェールソフト・フールプルーフ</span></div>
+      <div class="box b4">5 システムの性能<span>レスポンスタイム・スループット・ベンチマーク・キャパシティプランニング・スケール</span></div>
+      <div class="box b5">6 信頼性と経済性の評価<span>MTBF・MTTR・稼働率の計算・RASIS・バスタブ曲線・TCO</span></div>
+    </div>
+    <div>
+      <div class="cap">午前での出方</div>
+      <table>
+        <tr><td>問題数</td><td>毎回 <b>問12〜問16 あたりで3〜4問</b>。10回で37問（#3 の位置で出た2問を含む）</td></tr>
+        <tr><td>同じ問題の再出題</td><td>2組。信頼性設計の考え方（<b>3回</b>：R3春 問13＝R4秋 問13＝R6春 問12）、クライアントサーバの処理件数（R4秋 問15＝R6秋 問15）</td></tr>
+        <tr><td>問題の型</td><td><b>稼働率の計算・グラフが約4分の1</b>。残りは「説明を選ぶ」で、誤りの選択肢は同じ仲間の用語（スケール4種、仮想化3方式、ストレージ3方式）</td></tr>
+      </table>
+      <div class="point"><b>この資料の読み方：</b>1枚に1つのメッセージ。見出しの一文と、図や表の数字を自分で計算し直せれば、過去問が解けるようにしてある。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>4-1 システムの構成<small>まとめ表</small></h1>
-  <div class="cols"><div><div class="cap">クラウドのサービスの形</div>
-  <table><thead><tr><th>形</th><th>事業者が用意する範囲</th></tr></thead>
-  <tbody><tr><td>IaaS</td><td>サーバ・ストレージ・ネットワーク</td></tr><tr><td>PaaS</td><td>＋OS・ミドルウェア・実行環境</td></tr><tr><td>SaaS</td><td>＋アプリケーション</td></tr></tbody></table></div><div><div class="cap">RAIDの種類</div>
-  <table><thead><tr><th>RAID</th><th>方式</th><th>特徴</th></tr></thead>
-  <tbody><tr><td>RAID0</td><td>ストライピング</td><td>速いが冗長性なし</td></tr><tr><td>RAID1</td><td>ミラーリング</td><td>同じ内容を2台に書く</td></tr><tr><td>RAID5</td><td>分散パリティ</td><td>1台壊れても復元できる</td></tr><tr><td>RAID6</td><td>二重パリティ</td><td>2台壊れても復元できる</td></tr></tbody></table></div></div>
-<div class="foot"><span>応用情報 システム構成要素</span><span>3</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/sys/bar_chart_flat.svg" alt="">出題の4分の1は稼働率。直列・並列の式とMTBF・MTTRの関係で解ける</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="440" height="285" viewBox="0 0 440 285"><text x="196" y="25" font-size="12" text-anchor="end" fill="#1d1d1f">稼働率・MTBF・MTTR</text><rect x="206" y="13" width="200" height="18" rx="3" fill="#1f3a68"/><text x="412" y="26" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">10問</text><text x="196" y="55" font-size="12" text-anchor="end" fill="#1d1d1f">信頼性設計の考え方</text><rect x="206" y="43" width="100" height="18" rx="3" fill="#1f3a68"/><text x="312" y="56" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">5問</text><text x="196" y="85" font-size="12" text-anchor="end" fill="#1d1d1f">スケールアウト・イン</text><rect x="206" y="73" width="60" height="18" rx="3" fill="#5b80bf"/><text x="272" y="86" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">3問</text><text x="196" y="115" font-size="12" text-anchor="end" fill="#1d1d1f">処理件数・使用率の計算</text><rect x="206" y="103" width="80" height="18" rx="3" fill="#5b80bf"/><text x="292" y="116" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">4問</text><text x="196" y="145" font-size="12" text-anchor="end" fill="#1d1d1f">仮想化・IaC</text><rect x="206" y="133" width="80" height="18" rx="3" fill="#5b80bf"/><text x="292" y="146" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">4問</text><text x="196" y="175" font-size="12" text-anchor="end" fill="#1d1d1f">ストレージ（SAN・オブジェクト）</text><rect x="206" y="163" width="80" height="18" rx="3" fill="#5b80bf"/><text x="292" y="176" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">4問</text><text x="196" y="205" font-size="12" text-anchor="end" fill="#1d1d1f">待機系・Webサーバの信頼性</text><rect x="206" y="193" width="40" height="18" rx="3" fill="#5b80bf"/><text x="252" y="206" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">2問</text><text x="196" y="235" font-size="12" text-anchor="end" fill="#1d1d1f">性能評価・キャパシティ</text><rect x="206" y="223" width="40" height="18" rx="3" fill="#5b80bf"/><text x="252" y="236" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">2問</text><text x="196" y="265" font-size="12" text-anchor="end" fill="#1d1d1f">マルチプロセッサ・グリッド</text><rect x="206" y="253" width="60" height="18" rx="3" fill="#5b80bf"/><text x="272" y="266" font-size="11.5" text-anchor="start" fill="#1f3a68" font-weight="700">3問</text></svg>
+      <div style="font-size:11px;color:#6e6e73">令和3年度春期〜令和7年度秋期の37問を、論点ごとに数えた（同じ問題も1問ずつ数えた）</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:36%">論点</th><th>押さえること</th></tr>
+        <tr><td>稼働率</td><td>直列は掛け算、並列は「1−全部止まる確率」。MTBF÷(MTBF＋MTTR)。グラフは x＝0.5 と 0.9 で計算して比べる</td></tr>
+        <tr><td>信頼性設計</td><td>5つの考え方の<b>定義をずらした誤り</b>が定番。表を1枚覚える</td></tr>
+        <tr><td>スケール</td><td>台数を変える＝アウト／イン、1台の能力を変える＝アップ／ダウン</td></tr>
+        <tr><td>処理件数</td><td>重ねて実行するなら<b>一番遅い段階</b>で決まる</td></tr>
+        <tr><td>仮想化・ストレージ</td><td>方式どうしの違い（ゲストOSの有無、読み書きの単位）</td></tr>
+      </table>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>4-1 システムの構成<small>処理の形と構成</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">クライアントサーバシステム<span>Client Server System</span></div><dl><dd>依頼する側（クライアント）と処理する側（サーバ）に役割を分けたシステム</dd></dl></div><div class="term"><div class="box b1">3層クライアントサーバ<span>3-tier Client Server</span></div><dl><dd>プレゼンテーション層・ファンクション層（アプリケーション）・データベース層の3つに分けた構成</dd><dd class="pt"><span class="tag">ポイント</span>層ごとに変更しやすい</dd></dl></div><div class="term"><div class="box b1">デュプレックスシステム<span>Duplex System</span></div><dl><dd>主系と待機系の2つを用意し、主系が故障したら待機系に切り替える構成</dd><dd class="pt"><span class="tag">ポイント</span>ホットスタンバイ（待機系を動かしておく）とコールドスタンバイがある</dd></dl></div><div class="term"><div class="box b1">デュアルシステム<span>Dual System</span></div><dl><dd>2つのシステムで同じ処理を同時に行い、結果を照合する構成</dd><dd class="pt"><span class="tag">ポイント</span>信頼性が高い</dd></dl></div><div class="term"><div class="box b1">クラスタ構成<span>Cluster</span></div><dl><dd>複数のサーバをまとめて1つのシステムのように動かす構成</dd><dd class="pt"><span class="tag">ポイント</span>HAクラスタ（可用性）と負荷分散クラスタがある</dd></dl></div><div class="term"><div class="box b1">ロードバランサ<span>Load Balancer</span></div><dl><dd>複数のサーバに処理を振り分ける装置</dd></dl></div></div>
-<div class="foot"><span>応用情報 システム構成要素</span><span>4</span></div>
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/datacenter.png" alt=""><img src="img/irasutoya/client_server.png" alt=""><img src="img/irasutoya/twins.png" alt=""><img src="img/irasutoya/online_storage.png" alt=""></div>
+  <div class="k">第1章</div>
+  <h1>システムの構成</h1>
+  <p>集中と分散 ／ 利用形態 ／ 冗長化と待機系 ／ 災害対策 ／ 端末の形 ／ 仮想化 ／ クラウド ／ IaC</p>
 </section>
 
-<section class="slide ">
-  <h1>4-1 システムの構成<small>処理の形と構成</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">スケールアウト・スケールアップ<span>Scale-out / Scale-up</span></div><dl><dd>スケールアウトはサーバの台数を増やすこと、スケールアップはサーバ1台の性能を上げること</dd></dl></div><div class="term"><div class="box b1">仮想化<span>Virtualization</span></div><dl><dd>1台の物理サーバの上で、複数の仮想的なサーバを動かす技術</dd><dd class="pt"><span class="tag">ポイント</span>ハイパーバイザ型・ホスト型・コンテナ型がある</dd></dl></div><div class="term"><div class="box b1">コンテナ型仮想化<span>Container</span></div><dl><dd>OSのカーネルを共有し、アプリの実行環境だけを分ける仮想化</dd><dd class="pt"><span class="tag">ポイント</span>軽くて起動が速い</dd></dl></div><div class="term"><div class="box b1">ライブマイグレーション<span>Live Migration</span></div><dl><dd>動いている仮想マシンを、止めずに別の物理サーバに移すこと</dd></dl></div><div class="term"><div class="box b1">RAID<span>れいど / Redundant Arrays of Independent Disks</span></div><dl><dd>複数のディスクを組み合わせ、速さや信頼性を高める技術</dd><dd class="words">Redundant＝冗長な／Arrays＝並び／Independent＝独立した／Disks＝ディスク</dd></dl></div><div class="term"><div class="box b1">NAS・SAN<span>Network Attached Storage / Storage Area Network</span></div><dl><dd>NASはLANにつなぐファイルサーバ型の記憶装置、SANはサーバと記憶装置を専用のネットワークでつなぐ方式</dd><dd class="words">Attached＝接続された／Storage＝記憶装置／Area＝領域</dd></dl></div></div>
-<div class="foot"><span>応用情報 システム構成要素</span><span>5</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/sys/office_building_flat.svg" alt="">分散は「機能で分ける」か「量で分ける」か。上下に分けるのが垂直</h1>
+  <div class="cols">
+    <div><svg width="420" height="250" viewBox="0 0 420 250"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<text x="70" y="14" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700">垂直機能分散</text>
+<rect x="25" y="24" width="90" height="30" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="70.0" y="43.5" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700">ホスト</text><line x1="70" y1="54" x2="40" y2="92" stroke="#9aa7bd" stroke-width="1.6"/><line x1="70" y1="54" x2="100" y2="92" stroke="#9aa7bd" stroke-width="1.6"/>
+<rect x="0" y="92" width="80" height="28" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="40.0" y="110.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">部門サーバ</text><rect x="62" y="92" width="80" height="28" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="102.0" y="110.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">部門サーバ</text>
+<line x1="40" y1="120" x2="25" y2="152" stroke="#9aa7bd" stroke-width="1.6"/><line x1="40" y1="120" x2="55" y2="152" stroke="#9aa7bd" stroke-width="1.6"/><line x1="100" y1="120" x2="90" y2="152" stroke="#9aa7bd" stroke-width="1.6"/><line x1="100" y1="120" x2="120" y2="152" stroke="#9aa7bd" stroke-width="1.6"/>
+<rect x="12" y="152" width="26" height="22" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="25.0" y="166.2" font-size="9" text-anchor="middle" fill="#1f3a68" font-weight="700">端末</text><rect x="42" y="152" width="26" height="22" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="55.0" y="166.2" font-size="9" text-anchor="middle" fill="#1f3a68" font-weight="700">端末</text><rect x="77" y="152" width="26" height="22" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="90.0" y="166.2" font-size="9" text-anchor="middle" fill="#1f3a68" font-weight="700">端末</text><rect x="107" y="152" width="26" height="22" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="120.0" y="166.2" font-size="9" text-anchor="middle" fill="#1f3a68" font-weight="700">端末</text>
+<text x="70" y="196" font-size="11" text-anchor="middle" fill="#6e6e73">上下の階層で</text><text x="70" y="210" font-size="11" text-anchor="middle" fill="#6e6e73">違う機能を受け持つ</text>
+<text x="210" y="14" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700">水平機能分散</text>
+<rect x="165" y="40" width="90" height="28" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="210.0" y="58.1" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">受注</text><rect x="165" y="80" width="90" height="28" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="210.0" y="98.1" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">在庫</text><rect x="165" y="120" width="90" height="28" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="210.0" y="138.1" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">会計</text>
+<line x1="210" y1="68" x2="210" y2="80" stroke="#5b80bf" stroke-width="1.6"/><line x1="210" y1="108" x2="210" y2="120" stroke="#5b80bf" stroke-width="1.6"/>
+<text x="210" y="196" font-size="11" text-anchor="middle" fill="#6e6e73">対等だが</text><text x="210" y="210" font-size="11" text-anchor="middle" fill="#6e6e73">機能ごとに担当</text>
+<text x="350" y="14" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700">水平負荷分散</text>
+<rect x="305" y="24" width="90" height="26" rx="6" fill="#fde7cf" stroke="#b25000" stroke-width="1.5"/><text x="350.0" y="41.0" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">振分け</text>
+<line x1="350" y1="50" x2="318" y2="80" stroke="#9aa7bd" stroke-width="1.6"/><line x1="350" y1="50" x2="350" y2="80" stroke="#9aa7bd" stroke-width="1.6"/><line x1="350" y1="50" x2="382" y2="80" stroke="#9aa7bd" stroke-width="1.6"/>
+<rect x="304" y="80" width="28" height="60" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="318.0" y="113.6" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">同じ</text><rect x="336" y="80" width="28" height="60" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="350.0" y="113.6" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">同じ</text><rect x="368" y="80" width="28" height="60" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="382.0" y="113.6" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">同じ</text>
+<text x="350" y="196" font-size="11" text-anchor="middle" fill="#6e6e73">同じ機能を</text><text x="350" y="210" font-size="11" text-anchor="middle" fill="#6e6e73">量で分け合う</text>
+</svg></div>
+    <div>
+      <table>
+        <tr><th style="width:24%">観点</th><th>集中処理</th><th>分散処理</th></tr>
+        <tr><td>管理・保守</td><td><b>保守要員を集中化</b>できる</td><td>拠点ごとに必要。<b>管理責任</b>があいまいに</td></tr>
+        <tr><td>データの一貫性</td><td>保ちやすい</td><td>保つのが難しい</td></tr>
+        <tr><td>障害の影響</td><td>ホストが止まると全部止まる</td><td>一部だけで済む</td></tr>
+        <tr><td>拡張・組織</td><td>大型機ごと買い替え</td><td>少しずつ増設。<b>組織への対応性</b>が高い</td></tr>
+        <tr><td>費用</td><td>―</td><td>安い機械を並べ、<b>コスト性能比</b>が良い</td></tr>
+      </table>
+      <div class="point">クライアントサーバシステムは<b>垂直機能分散</b>の一種。台数を増やして性能を上げる（スケールアウト）のは<b>水平負荷分散</b>。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>4-1 システムの構成<small>処理の形と構成</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">IaaS・PaaS・SaaS<span>Infrastructure / Platform / Software as a Service</span></div><dl><dd>クラウドで提供される範囲の違い</dd><dd class="words">Infrastructure＝基盤／Platform＝土台／Software＝ソフトウェア／as a Service＝サービスとして</dd></dl></div><div class="term"><div class="box b1">エッジコンピューティング<span>Edge Computing</span></div><dl><dd>端末の近くでデータを処理し、遅れや通信量を減らす考え方</dd></dl></div></div>
-<div class="foot"><span>応用情報 システム構成要素</span><span>6</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/sys/hourglass_done_flat.svg" alt="">利用形態は「いつ処理するか」で分ける。ためてまとめるのがバッチ</h1>
+  <table class="vs">
+    <tr><th style="width:20%">形態</th><th>処理のしかた</th><th style="width:30%">向いている業務</th><th style="width:20%">速さの指標</th></tr>
+    <tr><td><b>バッチ処理</b></td><td>データを一定期間・一定量ためて、まとめて一度に処理する</td><td>給与計算、月末の集計、夜間の一括更新</td><td>ターンアラウンドタイム</td></tr>
+    <tr><td><b>リアルタイム処理</b></td><td>データが発生したら、決められた時間内にすぐ処理する</td><td>座席予約、ATM、機械の制御</td><td>応答の締切りを守れるか</td></tr>
+    <tr><td><b>対話型処理</b></td><td>利用者が入力し、システムが応答する、を繰り返す</td><td>画面で操作する業務全般</td><td>レスポンスタイム</td></tr>
+    <tr><td><b>オンライントランザクション処理（OLTP）</b></td><td>端末から送られた取引を、回線経由でその場で1件ずつ処理する</td><td>銀行の勘定系、ネット通販の注文</td><td>1秒あたりの処理件数（スループット）</td></tr>
+  </table>
+  <div class="point">同じシステムの中でも、昼は対話型・OLTP、夜はバッチ、と使い分けることが多い。性能の指標（第5章）とセットで覚える。</div>
+  <img class="illust" src="img/irasutoya/stopwatch.png" alt="" style="height:80px;bottom:36px">
 </section>
 
-<section class="slide ">
-  <h1>4-2 システムの評価指標<small>まとめ表</small></h1>
-  <div class="cap">稼働率の計算</div>
-  <table><thead><tr><th>構成</th><th>稼働率</th></tr></thead>
-  <tbody><tr><td>1台</td><td>MTBF ÷（MTBF ＋ MTTR）</td></tr><tr><td>直列</td><td>A × B</td></tr><tr><td>並列</td><td>1 −（1 − A）×（1 − B）</td></tr></tbody></table>
-<div class="foot"><span>応用情報 システム構成要素</span><span>7</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/sys/repeat_button_flat.svg" alt="">冗長化は4つ。「照合するのがデュアル、待たせるのがデュプレックス」</h1>
+  <svg width="856" height="190" viewBox="0 0 856 190"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<text x="80" y="14" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700">シンプレックス</text><rect x="40" y="40" width="80" height="40" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="80.0" y="64.5" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700">1系統</text><text x="80" y="150" font-size="11" text-anchor="middle" fill="#1d1d1f">予備なし</text><text x="80" y="165" font-size="11" text-anchor="middle" fill="#1d1d1f">壊れたら止まる</text><text x="80" y="182" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">最も安い</text>
+<text x="305" y="14" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700">デュアル</text><rect x="225" y="40" width="70" height="40" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="260.0" y="64.5" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700">系1</text><rect x="315" y="40" width="70" height="40" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="350.0" y="64.5" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700">系2</text><rect x="265" y="104" width="80" height="26" rx="6" fill="#fde7cf" stroke="#b25000" stroke-width="1.5"/><text x="305.0" y="121.0" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">照合</text><line x1="260" y1="80" x2="295" y2="104" stroke="#9aa7bd" stroke-width="1.6"/><line x1="350" y1="80" x2="315" y2="104" stroke="#9aa7bd" stroke-width="1.6"/><text x="305" y="150" font-size="11" text-anchor="middle" fill="#1d1d1f">2系統が同じ処理をして</text><text x="305" y="165" font-size="11" text-anchor="middle" fill="#1d1d1f">結果を照合する</text><text x="305" y="182" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">切替え時間なし・最も高い</text>
+<text x="530" y="14" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700">デュプレックス</text><rect x="450" y="40" width="70" height="40" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="485.0" y="64.5" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700">現用系</text><rect x="540" y="40" width="70" height="40" rx="6" fill="#fff" stroke="#2f5596" stroke-width="1.5" stroke-dasharray="5 3"/><text x="575.0" y="64.5" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700">待機系</text><line x1="520" y1="60" x2="540" y2="60" stroke="#5b80bf" stroke-width="1.6" marker-end="url(#ar)"/><text x="530" y="104" font-size="11" text-anchor="middle" fill="#b25000">壊れたら切替え</text><text x="530" y="150" font-size="11" text-anchor="middle" fill="#1d1d1f">現用系だけが処理し</text><text x="530" y="165" font-size="11" text-anchor="middle" fill="#1d1d1f">待機系は控える</text><text x="530" y="182" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">＝アクティブ-スタンバイ</text>
+<text x="755" y="14" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700">ロードシェアリング</text><rect x="715" y="36" width="80" height="22" rx="6" fill="#fde7cf" stroke="#b25000" stroke-width="1.5"/><text x="755.0" y="50.8" font-size="10.5" text-anchor="middle" fill="#b25000" font-weight="700">振分け</text><rect x="675" y="70" width="70" height="34" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="710.0" y="91.5" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700">系1</text><rect x="765" y="70" width="70" height="34" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="800.0" y="91.5" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700">系2</text><line x1="735" y1="58" x2="710" y2="70" stroke="#9aa7bd" stroke-width="1.6"/><line x1="775" y1="58" x2="800" y2="70" stroke="#9aa7bd" stroke-width="1.6"/><text x="755" y="150" font-size="11" text-anchor="middle" fill="#1d1d1f">全部の系で</text><text x="755" y="165" font-size="11" text-anchor="middle" fill="#1d1d1f">処理を分け合う</text><text x="755" y="182" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">＝アクティブ-アクティブ</text>
+</svg>
+  <div class="cols" style="margin-top:6px">
+    <div class="point" style="margin-top:0"><b>見分け方：</b>2系統とも同じ処理をしているか（デュアル）、片方は待っているだけか（デュプレックス）、処理を分け合っているか（ロードシェアリング）。</div>
+    <div class="point warn" style="margin-top:0"><b>R5秋 問15</b>（アクティブ-スタンバイの稼働率）では、止まるのは<b>切り替える間だけ</b>。修理中は待機系が動いている（第6章で計算）。</div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>4-2 システムの評価指標<small>性能・信頼性</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">スループット<span>Throughput</span></div><dl><dd>単位時間あたりに処理できる仕事の量</dd></dl></div><div class="term"><div class="box b1">レスポンスタイム<span>Response Time</span></div><dl><dd>要求を出し終えてから、最初の応答が返ってくるまでの時間</dd></dl></div><div class="term"><div class="box b1">ターンアラウンドタイム<span>Turnaround Time</span></div><dl><dd>仕事を出してから、結果をすべて受け取るまでの時間</dd></dl></div><div class="term"><div class="box b1">ベンチマーク<span>Benchmark</span></div><dl><dd>決まったプログラムを動かして性能を比べる方法</dd><dd class="pt"><span class="tag">ポイント</span>SPECやTPCがある</dd></dl></div><div class="term"><div class="box b1">キャパシティプランニング<span>Capacity Planning</span></div><dl><dd>将来の負荷を予測し、必要な性能や台数を計画すること</dd></dl></div><div class="term"><div class="box b1">RASIS<span>らしす</span></div><dl><dd>信頼性を評価する5つの観点</dd><dd class="words">Reliability＝信頼性／Availability＝可用性／Serviceability＝保守性／Integrity＝完全性／Security＝安全性</dd></dl></div></div>
-<div class="foot"><span>応用情報 システム構成要素</span><span>8</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/sys/high_voltage_flat.svg" alt="">待機系は「どこまで準備して待つか」で速さと費用が決まる</h1>
+  <div class="cols">
+    <div><svg width="400" height="215" viewBox="0 0 400 215"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<rect x="10" y="30" width="120" height="60" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="70.0" y="58.0" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700">現用系</text><text x="70.0" y="73.0" font-size="10.5" text-anchor="middle" fill="#fff">処理中</text>
+<rect x="270" y="30" width="120" height="60" rx="6" fill="#fff" stroke="#2f5596" stroke-width="1.5" stroke-dasharray="5 3"/><text x="330.0" y="58.0" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700">待機系</text><text x="330.0" y="73.0" font-size="10.5" text-anchor="middle" fill="#1f3a68">同期して待つ</text>
+<circle cx="150" cy="60" r="5" fill="#b25000"/><circle cx="172" cy="60" r="5" fill="#b25000"/><circle cx="194" cy="60" r="5" fill="#b25000"/><circle cx="216" cy="60" r="5" fill="#b25000"/><circle cx="238" cy="60" r="5" fill="#b25000"/>
+<text x="200" y="18" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">ハートビート（定期的な「生きてるよ」）</text>
+<line x1="140" y1="72" x2="262" y2="72" stroke="#5b80bf" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="200" y="118" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">信号が途切れた</text><text x="200" y="134" font-size="11.5" text-anchor="middle" fill="#1f3a68">→ 待機系が障害と判断して自動で引き継ぐ</text>
+<text x="200" y="150" font-size="11" text-anchor="middle" fill="#6e6e73">（フェールオーバ。戻すのはフェールバック）</text>
+<rect x="10" y="168" width="120" height="36" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="70.0" y="184.0" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">ホット</text><text x="70.0" y="199.0" font-size="10.5" text-anchor="middle" fill="#fff">動かして同期</text><rect x="140" y="168" width="120" height="36" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="200.0" y="184.0" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">ウォーム</text><text x="200.0" y="199.0" font-size="10.5" text-anchor="middle" fill="#fff">機器だけ起動</text><rect x="270" y="168" width="120" height="36" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="330.0" y="184.0" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">コールド</text><text x="330.0" y="199.0" font-size="10.5" text-anchor="middle" fill="#1f3a68">電源も切って保管</text>
+</svg></div>
+    <div>
+      <div class="cap">R4春 問13：ホットスタンバイが切り替わる契機</div>
+      <table class="mini">
+        <tr><td><b>ア</b></td><td><b>現用系から定期的に送られる「動作中」のメッセージが途切れたとき（正解）</b></td></tr>
+        <tr><td>イ</td><td>オペレータが気づいてコンソールを操作したとき → 人を待つので遅い</td></tr>
+        <tr><td>ウ</td><td>処理の残量が一定量を超えたとき → 混んでいるだけで障害ではない</td></tr>
+        <tr><td>エ</td><td>待機系が現用系に診断プログラムを送って実行 → 止まった現用系では動かない</td></tr>
+      </table>
+      <div class="point warn"><b>R6秋 問12：</b>コールドスタンバイは障害のあとで予備を立ち上げるので、<b>サービスは中断し、処理中のトランザクションも引き継げない</b>。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>4-2 システムの評価指標<small>信頼性</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">MTBF<span>えむてぃーびーえふ / Mean Time Between Failures</span></div><dl><dd>故障から次の故障までの平均の時間（平均故障間隔）。長いほど信頼性が高い</dd><dd class="words">Mean＝平均の／Time Between＝間の時間／Failures＝故障</dd></dl></div><div class="term"><div class="box b1">MTTR<span>えむてぃーてぃーあーる / Mean Time To Repair</span></div><dl><dd>故障してから直るまでの平均の時間（平均修復時間）。短いほど保守性が高い</dd><dd class="words">Mean＝平均の／Time To＝〜までの時間／Repair＝修理</dd></dl></div><div class="term"><div class="box b1">稼働率<span>Availability</span></div><dl><dd>システムが使える状態にある時間の割合</dd><dd class="pt"><span class="tag">ポイント</span>MTBF÷(MTBF＋MTTR)</dd></dl></div><div class="term"><div class="box b1">バスタブ曲線<span>Bathtub Curve</span></div><dl><dd>故障率が時間とともに「初期故障期→偶発故障期→摩耗故障期」と変わる様子を表した曲線</dd></dl></div><div class="term"><div class="box b1">フォールトトレラント<span>Fault Tolerant</span></div><dl><dd>故障が起きても、システム全体としては機能を続ける考え方</dd><dd class="pt"><span class="tag">ポイント</span>フェールセーフ・フェールソフト・フールプルーフなどの設計がある</dd></dl></div><div class="term"><div class="box b1">フェールセーフ<span>Fail Safe</span></div><dl><dd>故障したとき、安全な側に止まるようにする設計</dd><dd class="pt"><span class="tag">例</span>故障したら信号を赤にする</dd></dl></div></div>
-<div class="foot"><span>応用情報 システム構成要素</span><span>9</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/sys/building_construction_flat.svg" alt="">災害対策は別の拠点（バックアップサイト）を、RPOとRTOに合わせて選ぶ</h1>
+  <svg width="856" height="120" viewBox="0 0 856 120"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<line x1="20" y1="60" x2="836" y2="60" stroke="#1f3a68" stroke-width="2"/>
+<rect x="250" y="40" width="0" height="0"/>
+<text x="140" y="30" font-size="11.5" text-anchor="middle" fill="#1f3a68">最後にバックアップを取った時点</text><line x1="140" y1="38" x2="140" y2="60" stroke="#5b80bf" stroke-width="1.5"/>
+<circle cx="140" cy="60" r="6" fill="#5b80bf"/>
+<path d="M398,35 l12,-18 l12,18 z" fill="#b25000"/><text x="410" y="12" font-size="1" text-anchor="middle" fill="#1f3a68"></text>
+<text x="410" y="82" font-size="13" text-anchor="middle" fill="#b25000" font-weight="700">災害発生</text><circle cx="410" cy="60" r="7" fill="#b25000"/>
+<circle cx="700" cy="60" r="6" fill="#1f3a68"/><text x="700" y="30" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">業務を再開</text><line x1="700" y1="38" x2="700" y2="60" stroke="#1f3a68" stroke-width="1.5"/>
+<path d="M140,96 L410,96" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/><path d="M410,96 L140,96" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/>
+<text x="275" y="114" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">RPO：どの時点まで戻すか（失ってよいデータの幅）</text>
+<path d="M410,96 L700,96" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar)"/><path d="M700,96 L410,96" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar)"/>
+<text x="555" y="114" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">RTO：いつまでに再開するか</text>
+</svg>
+  <div class="cols" style="margin-top:4px">
+    <table>
+      <tr><th>拠点</th><th>待っている状態</th><th style="width:22%">再開まで</th></tr>
+      <tr><td><b>ホットサイト</b></td><td>同じ機器を動かし、データも同期</td><td>すぐ（最も高い）</td></tr>
+      <tr><td><b>ウォームサイト</b></td><td>機器はあり、データ等を入れてから</td><td>数時間〜</td></tr>
+      <tr><td><b>コールドサイト</b></td><td>建物・電源・回線だけ</td><td>数日（最も安い）</td></tr>
+    </table>
+    <div>
+      <div class="point" style="margin-top:0"><b>ホットスタンバイとの違い：</b>スタンバイは同じ拠点の中のサーバの二重化。拠点ごと被災すると役に立たないので、災害には<b>離れた場所のサイト</b>で備える（ディザスタリカバリ）。</div>
+      <div class="point">RPOが短いほどデータを頻繁に複製し、RTOが短いほどホットに近い拠点が要る。どちらも短くすると費用が上がる。全体の計画は<b>BCP（事業継続計画）</b>。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>4-2 システムの評価指標<small>信頼性</small></h1>
-  <div class="grid"><div class="term"><div class="box b1">フェールソフト<span>Fail Soft</span></div><dl><dd>故障した部分を切り離し、機能を落としてでも動き続ける設計</dd></dl></div><div class="term"><div class="box b1">フールプルーフ<span>Fool Proof</span></div><dl><dd>人が誤った操作をしても、危険にならないようにする設計</dd></dl></div></div>
-<div class="foot"><span>応用情報 システム構成要素</span><span>10</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/sys/card_file_box_flat.svg" alt="">データは「共有する」か「分けて持つ」か。端末は「処理を持つ」か「画面だけ」か</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="150" viewBox="0 0 410 150">
+<text x="100" y="14" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700">シェアードエブリシング</text>
+<rect x="14" y="26" width="52" height="30" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="40.0" y="44.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">サーバ</text><rect x="74" y="26" width="52" height="30" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="100.0" y="44.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">サーバ</text><rect x="134" y="26" width="52" height="30" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="160.0" y="44.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">サーバ</text>
+<line x1="40" y1="56" x2="100" y2="92" stroke="#9aa7bd" stroke-width="1.6"/><line x1="100" y1="56" x2="100" y2="92" stroke="#9aa7bd" stroke-width="1.6"/><line x1="160" y1="56" x2="100" y2="92" stroke="#9aa7bd" stroke-width="1.6"/>
+<rect x="50" y="92" width="100" height="34" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="100.0" y="113.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">共有ディスク</text>
+<text x="100" y="144" font-size="11" text-anchor="middle" fill="#b25000">取り合い（排他制御）が増える</text>
+<text x="310" y="14" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700">シェアードナッシング</text>
+<rect x="224" y="26" width="52" height="30" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="250.0" y="44.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">サーバ</text><line x1="250" y1="56" x2="250" y2="92" stroke="#9aa7bd" stroke-width="1.6"/><rect x="224" y="92" width="52" height="34" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="250.0" y="112.8" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">専用</text><rect x="284" y="26" width="52" height="30" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="310.0" y="44.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">サーバ</text><line x1="310" y1="56" x2="310" y2="92" stroke="#9aa7bd" stroke-width="1.6"/><rect x="284" y="92" width="52" height="34" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="310.0" y="112.8" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">専用</text><rect x="344" y="26" width="52" height="30" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="370.0" y="44.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">サーバ</text><line x1="370" y1="56" x2="370" y2="92" stroke="#9aa7bd" stroke-width="1.6"/><rect x="344" y="92" width="52" height="34" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="370.0" y="112.8" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">専用</text>
+<text x="310" y="144" font-size="11" text-anchor="middle" fill="#1f3a68">増やすほど伸びる。データの分け方が鍵</text>
+</svg>
+      <div class="point" style="margin-top:4px">データを分けて置くのが<b>シャーディング</b>、複製を別のサーバに置いて同じ内容に保つのが<b>レプリケーション</b>。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:30%">端末の形</th><th>処理とデータ</th></tr>
+        <tr><td><b>シンクライアント</b></td><td>端末は画面と入力だけ。処理と保存は全部サーバ。<b>紛失しても漏れにくい</b></td></tr>
+        <tr><td>ファットクライアント</td><td>アプリケーションを端末に入れて処理。回線が切れても動く</td></tr>
+        <tr><td><b>VDI</b>（デスクトップ仮想化）</td><td>利用者ごとのPC環境をサーバの仮想マシンで動かし、画面だけを送る。シンクライアントの実現方法</td></tr>
+        <tr><td>ピアツーピア</td><td>サーバを置かず、対等な端末どうしで直接やり取り</td></tr>
+      </table>
+      <div class="point warn"><b>R3秋 問14</b>の誤りの選択肢ウ「サーバで実行した画面情報を送り、操作情報を返す」は、画面転送型のシンクライアント（VDI）の説明。仮想化の方式ではない。</div>
+    </div>
+  </div>
 </section>
 
-<section class="slide ">
-  <h1>まとめ<small>この分野で覚える用語</small></h1>
-  <table><thead><tr><th style="width:30%">小分類</th><th>用語</th></tr></thead><tbody>
-<tr><td>4-1 システムの構成</td><td>クライアントサーバシステム・3層クライアントサーバ・デュプレックスシステム・デュアルシステム・クラスタ構成・ロードバランサ・スケールアウト・スケールアップ・仮想化・コンテナ型仮想化・ライブマイグレーション・RAID・NAS・SAN・IaaS・PaaS・SaaS・エッジコンピューティング</td></tr>
-<tr><td>4-2 システムの評価指標</td><td>スループット・レスポンスタイム・ターンアラウンドタイム・ベンチマーク・キャパシティプランニング・RASIS・MTBF・MTTR・稼働率・バスタブ曲線・フォールトトレラント・フェールセーフ・フェールソフト・フールプルーフ</td></tr>
-  </tbody></table>
-<div class="foot"><span>応用情報 システム構成要素</span><span>11</span></div>
+<section class="slide">
+  <h1><img class="ico" src="img/sys/globe_with_meridians_flat.svg" alt="">グリッドは「ネットワーク上のばらばらな機械」を1台のように使う</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R3春 問11：グリッドコンピューティングの説明</div>
+      <table class="mini">
+        <tr><td style="width:14%">ア</td><td>OS用・アプリ用と役割を決めた複数のプロセッサで分担 → <b>AMP</b>（非対称型）</td></tr>
+        <tr><td><b>イ</b></td><td><b>PCから大型機まで、ネットワーク上の複数のプロセッサに分散して大規模な処理（正解）</b></td></tr>
+        <tr><td>ウ</td><td>カーネルとユーザのプロセスを区別せず同等に分担 → <b>SMP</b>（対称型）</td></tr>
+        <tr><td>エ</td><td>スレッド単位の並列化でプロセッサの利用効率を上げる → <b>SMT</b></td></tr>
+      </table>
+      <div class="point">ア・ウ・エは「1台の中の複数プロセッサ」の話（#3 の範囲）。<b>ネットワークの向こうまで広がる</b>のがグリッド。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:36%">HPCの作り方</th><th>特徴</th></tr>
+        <tr><td><b>HPC</b>（ハイパフォーマンスコンピューティング）</td><td>大量の計算を高速に行う技術・環境の総称</td></tr>
+        <tr><td><b>グリッドコンピューティング</b></td><td>性能も種類も違う機械を、ネットワーク越しに束ねる</td></tr>
+        <tr><td>PCクラスタ</td><td>同じ種類の機械を同じ場所に並べ、高速な網でつなぐ</td></tr>
+        <tr><td>ボランティアコンピューティング</td><td>一般の人のPCの空き時間を集めるグリッド</td></tr>
+      </table>
+      <div class="point">大規模並列・アレイプロセッサは #3 の「マルチプロセッサの構成」を参照。</div>
+    </div>
+  </div>
+  <img class="illust" src="img/irasutoya/mesh_network.png" alt="" style="height:70px;bottom:36px">
 </section>
-</body>
-</html>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/package_flat.svg" alt="">仮想化は「ホストOSがあるか」「ゲストOSがあるか」の2点で見分ける</h1>
+  <svg width="856" height="232" viewBox="0 0 856 232">
+<text x="85" y="14" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">ホスト型</text><rect x="0" y="26" width="170" height="30" rx="6" fill="#e8eef8" stroke="#e8eef8" stroke-width="1.5"/><text x="85.0" y="45.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">アプリ ／ アプリ</text><rect x="0" y="60" width="170" height="30" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="85.0" y="79.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">ゲストOS ／ ゲストOS</text><rect x="0" y="94" width="170" height="30" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="85.0" y="113.1" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">仮想化ソフト</text><rect x="0" y="128" width="170" height="30" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="85.0" y="147.1" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">ホストOS</text><rect x="0" y="162" width="170" height="30" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="85.0" y="181.1" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">物理サーバ</text><text x="85" y="210" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">ホストOSを経由するので遅い</text>
+<text x="385" y="14" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">ハイパーバイザー型</text><rect x="300" y="26" width="170" height="30" rx="6" fill="#e8eef8" stroke="#e8eef8" stroke-width="1.5"/><text x="385.0" y="45.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">アプリ ／ アプリ</text><rect x="300" y="60" width="170" height="30" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="385.0" y="79.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">ゲストOS ／ ゲストOS</text><rect x="300" y="94" width="170" height="30" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="385.0" y="113.1" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">ハイパーバイザー</text><rect x="300" y="128" width="170" height="30" rx="6" fill="#fff" stroke="#fff" stroke-width="1.5"/><text x="385.0" y="147.1" font-size="11.5" text-anchor="middle" fill="#6e6e73" font-weight="700">（ホストOSなし）</text><rect x="300" y="162" width="170" height="30" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="385.0" y="181.1" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">物理サーバ</text><text x="385" y="210" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">直接動くので速い。サーバの主流</text>
+<text x="685" y="14" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">コンテナ型</text><rect x="600" y="26" width="170" height="30" rx="6" fill="#e8eef8" stroke="#e8eef8" stroke-width="1.5"/><text x="685.0" y="45.1" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">アプリ＋ライブラリ ×3</text><rect x="600" y="60" width="170" height="30" rx="6" fill="#fff" stroke="#fff" stroke-width="1.5"/><text x="685.0" y="79.1" font-size="11.5" text-anchor="middle" fill="#6e6e73" font-weight="700">（ゲストOSなし）</text><rect x="600" y="94" width="170" height="30" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="685.0" y="113.1" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">コンテナエンジン</text><rect x="600" y="128" width="170" height="30" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="685.0" y="147.1" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">ホストOS（カーネル共有）</text><rect x="600" y="162" width="170" height="30" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="685.0" y="181.1" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">物理サーバ</text><text x="685" y="210" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">軽くすぐ起動。別種のOSは不可</text>
+</svg>
+  <div class="cols" style="margin-top:2px">
+    <div class="point" style="margin-top:0"><b>R3秋 問14（正解ア）・R4秋 問12（正解ウ）</b>：どちらも答えは「必要なプログラムやライブラリをまとめてホストOSで動かす」「仮想サーバに個別のゲストOSをもたない」＝コンテナ型。</div>
+    <div class="point warn" style="margin-top:0">誤りの選択肢は残りの2方式。「ホストOSをもたず…ゲストOS」はハイパーバイザー型、「ホストOSにインストールした仮想化ソフト…ゲストOS」はホスト型。</div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/gear_flat.svg" alt="">仮想化すると、サーバを「まとめる・動かす・水増しする」ができる</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="200" viewBox="0 0 400 200"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+        <text x="200" y="14" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700">サーバコンソリデーション（集約）</text>
+        <rect x="10" y="30" width="40" height="50" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="30.0" y="58.6" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">物理</text><rect x="58" y="30" width="40" height="50" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="78.0" y="58.6" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">物理</text><rect x="106" y="30" width="40" height="50" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="126.0" y="58.6" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">物理</text><rect x="154" y="30" width="40" height="50" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="174.0" y="58.6" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">物理</text>
+        <line x1="200" y1="55" x2="250" y2="55" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/>
+        <rect x="262" y="22" width="120" height="66" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="322.0" y="59.5" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700"></text><rect x="270" y="30" width="23" height="50" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="281.5" y="58.2" font-size="9" text-anchor="middle" fill="#1f3a68" font-weight="700">VM</text><rect x="297" y="30" width="23" height="50" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="308.5" y="58.2" font-size="9" text-anchor="middle" fill="#1f3a68" font-weight="700">VM</text><rect x="324" y="30" width="23" height="50" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="335.5" y="58.2" font-size="9" text-anchor="middle" fill="#1f3a68" font-weight="700">VM</text><rect x="351" y="30" width="23" height="50" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="362.5" y="58.2" font-size="9" text-anchor="middle" fill="#1f3a68" font-weight="700">VM</text>
+        <text x="200" y="106" font-size="11" text-anchor="middle" fill="#1d1d1f">台数・電力・場所・保守の費用を減らす</text>
+        <text x="200" y="134" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700">ライブマイグレーション</text>
+        <rect x="40" y="146" width="110" height="44" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="95.0" y="172.5" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700">物理A</text><rect x="250" y="146" width="110" height="44" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="305.0" y="172.5" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700">物理B</text>
+        <rect x="70" y="152" width="50" height="32" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="95.0" y="172.0" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">VM</text><line x1="126" y1="168" x2="262" y2="168" stroke="#b25000" stroke-width="2" marker-end="url(#ar)"/>
+        <text x="195" y="160" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">動かしたまま移す</text>
+      </svg>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:36%">用語</th><th>何をするか</th></tr>
+        <tr><td><b>ライブマイグレーション</b></td><td>仮想マシンを<b>止めずに</b>別の物理サーバへ移す。保守や負荷の偏りの解消に使う</td></tr>
+        <tr><td>コールドマイグレーション</td><td>いったん止めてから移す</td></tr>
+        <tr><td><b>サーバコンソリデーション</b></td><td>多数の物理サーバを、少ない台数に仮想化して集約する</td></tr>
+        <tr><td>オーバーコミット</td><td>物理の量より多くのCPU・メモリを仮想マシンに割り当てる。同時に使い切ると遅くなる</td></tr>
+        <tr><td>準仮想化</td><td>ゲストOSを仮想化向けに書き換えて速くする</td></tr>
+      </table>
+      <div class="point">仮想マシン（VM）の上で動くのが<b>ゲストOS</b>、物理サーバの上で動くのが<b>ホストOS</b>。それを割り振るソフトが<b>ハイパーバイザー</b>。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/cloud_flat.svg" alt="">クラウドの種類は「どこまで事業者が用意するか」。置き場所は公共か専用か</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="470" height="190" viewBox="0 0 470 190">
+<text x="70" y="14" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">IaaS</text><rect x="0" y="24" width="140" height="30" rx="6" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="70.0" y="42.8" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">アプリケーション</text><rect x="0" y="58" width="140" height="30" rx="6" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="70.0" y="76.8" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">ミドルウェア・実行環境</text><rect x="0" y="92" width="140" height="30" rx="6" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="70.0" y="110.8" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">OS</text><rect x="0" y="126" width="140" height="30" rx="6" fill="#1f3a68" stroke="#2f5596" stroke-width="1.5"/><text x="70.0" y="144.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">基盤（仮想マシン・網・ディスク）</text><text x="230" y="14" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">PaaS</text><rect x="160" y="24" width="140" height="30" rx="6" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><text x="230.0" y="42.8" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">アプリケーション</text><rect x="160" y="58" width="140" height="30" rx="6" fill="#1f3a68" stroke="#2f5596" stroke-width="1.5"/><text x="230.0" y="76.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">ミドルウェア・実行環境</text><rect x="160" y="92" width="140" height="30" rx="6" fill="#1f3a68" stroke="#2f5596" stroke-width="1.5"/><text x="230.0" y="110.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">OS</text><rect x="160" y="126" width="140" height="30" rx="6" fill="#1f3a68" stroke="#2f5596" stroke-width="1.5"/><text x="230.0" y="144.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">基盤（仮想マシン・網・ディスク）</text><text x="390" y="14" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">SaaS</text><rect x="320" y="24" width="140" height="30" rx="6" fill="#1f3a68" stroke="#2f5596" stroke-width="1.5"/><text x="390.0" y="42.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">アプリケーション</text><rect x="320" y="58" width="140" height="30" rx="6" fill="#1f3a68" stroke="#2f5596" stroke-width="1.5"/><text x="390.0" y="76.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">ミドルウェア・実行環境</text><rect x="320" y="92" width="140" height="30" rx="6" fill="#1f3a68" stroke="#2f5596" stroke-width="1.5"/><text x="390.0" y="110.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">OS</text><rect x="320" y="126" width="140" height="30" rx="6" fill="#1f3a68" stroke="#2f5596" stroke-width="1.5"/><text x="390.0" y="144.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">基盤（仮想マシン・網・ディスク）</text>
+<rect x="0" y="170" width="14" height="12" fill="#1f3a68"/><text x="20" y="181" font-size="11" text-anchor="start" fill="#1d1d1f">事業者が提供</text>
+<rect x="110" y="170" width="14" height="12" fill="#fff" stroke="#2f5596"/><text x="130" y="181" font-size="11" text-anchor="start" fill="#1d1d1f">利用者が用意</text>
+</svg>
+      <div class="point" style="margin-top:4px"><b>FaaS</b>は関数を登録し、イベントのときだけ動かす（サーバレスの代表）。<b>DaaS</b>はデスクトップ環境（VDI）をクラウドで借りる。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:34%">置き場所</th><th>特徴</th></tr>
+        <tr><td>パブリッククラウド</td><td>事業者の設備を多数の利用者で共有。すぐ使え、使った分だけ払う</td></tr>
+        <tr><td>プライベートクラウド</td><td>1社だけが使うクラウド環境</td></tr>
+        <tr><td>ハイブリッドクラウド</td><td>共用のクラウドと自社専用の環境を組み合わせる</td></tr>
+        <tr><td>オンプレミス</td><td>自社で機器を買って自社に置く（クラウドの対義語）</td></tr>
+      </table>
+      <table style="margin-top:8px">
+        <tr><th style="width:34%">処理を置く場所</th><th>特徴</th></tr>
+        <tr><td>クラウド</td><td>遠くのデータセンタで処理</td></tr>
+        <tr><td>フォグ</td><td>機器とクラウドの間（ゲートウェイ等）</td></tr>
+        <tr><td><b>エッジ</b></td><td>データが発生する機器の近くで処理。<b>応答が速く、通信量が減る</b></td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/hammer_and_wrench_flat.svg" alt="">IaCは「構成をコードに書いて自動で作る」。手作業と比べて覚える</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R7秋 問12：IaCの説明（正解ウ）</div>
+      <table class="mini">
+        <tr><td style="width:12%">ア</td><td>OSも仮想化ソフトも入っていない初期状態のサーバ → <b>ベアメタルサーバ</b></td></tr>
+        <tr><td>イ</td><td>申請があったら資源の割当てや設定を<b>手動で</b>行う → 手作業の<b>プロビジョニング</b></td></tr>
+        <tr><td><b>ウ</b></td><td><b>構成・設定をプログラムとして記述し、専用ソフトが自動で適用する（正解）</b></td></tr>
+        <tr><td>エ</td><td>利用者がOSやアプリを基盤に<b>手動で</b>実装して操作できる → <b>IaaS</b></td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">R5秋 問14：IaCに関する記述（正解エ）</div>
+      <table class="mini">
+        <tr><td style="width:12%">ア</td><td>インシデントへの対応手順をコードに → 運用手順の自動化</td></tr>
+        <tr><td>イ</td><td>開発支援ツールの連携手順をコードに → ツールチェーン</td></tr>
+        <tr><td>ウ</td><td>アプリの生成・試験の手順をコードに → <b>CI</b>（継続的インテグレーション）</td></tr>
+        <tr><td><b>エ</b></td><td><b>自動実行のために、システムの構成や状態をコードに定義（正解）</b></td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="point"><b>コードにするのは「インフラ（基盤）の構成と状態」。</b>同じ環境を何度でも同じように作れ、変更の履歴も残る。作り直して入れ替える運用が<b>イミュータブルインフラストラクチャ</b>、大量のコンテナの配置を自動で管理するのが<b>オーケストレーション</b>。</div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/chart_increasing_flat.svg" alt="">台数を増やしても性能は比例しない。原因は取り合いとオーバーヘッド</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="200" viewBox="0 0 420 200">
+<line x1="40" y1="170" x2="410" y2="170" stroke="#1d1d1f" stroke-width="1.2"/><line x1="40" y1="170" x2="40" y2="10" stroke="#1d1d1f" stroke-width="1.2"/>
+<line x1="40" y1="30" x2="410" y2="30" stroke="#b25000" stroke-width="1.4" stroke-dasharray="4 3"/><text x="408" y="24" font-size="11.5" text-anchor="end" fill="#b25000" font-weight="700">上限 1/a ＝ 10</text>
+<polyline points="46,156.0 52,144.5 58,135.0 64,126.9 70,120.0 76,114.0 82,108.8 88,104.1 94,100.0 100,96.3 106,93.0 112,90.0 118,87.3 124,84.8 130,82.5 136,80.4 142,78.5 148,76.7 154,75.0 160,73.4 166,72.0 172,70.6 178,69.4 184,68.2 190,67.1 196,66.0 202,65.0 208,64.1 214,63.2 220,62.3 226,61.5 232,60.7 238,60.0 244,59.3 250,58.6 256,58.0 262,57.4 268,56.8 274,56.3 280,55.7 286,55.2 292,54.7 298,54.2 304,53.8 310,53.3 316,52.9 322,52.5 328,52.1 334,51.7 340,51.4 346,51.0 352,50.7 358,50.3 364,50.0 370,49.7 376,49.4 382,49.1 388,48.8 394,48.5 400,48.3" fill="none" stroke="#1f3a68" stroke-width="2.4"/>
+<text x="225" y="192" font-size="11.5" text-anchor="middle" fill="#6e6e73">CPUの台数 n</text><text x="30" y="20" font-size="12" text-anchor="middle" fill="#6e6e73">P</text>
+<circle cx="64" cy="126.9" r="4" fill="#b25000"/><text x="78" y="114" font-size="11" text-anchor="start" fill="#b25000">n＝4で約3</text>
+<text x="46" y="186" font-size="10" text-anchor="middle" fill="#6e6e73">0</text><text x="400" y="186" font-size="10" text-anchor="middle" fill="#6e6e73">60</text>
+</svg>
+      <div class="formula" style="font-size:16px">P ＝ n ÷ (1 ＋ (n − 1)a) → n→∞ で 1 ÷ a</div>
+    </div>
+    <div>
+      <div class="cap">R6春 問14：a＝0.1 のときの P の上限</div>
+      <table class="mini">
+        <tr><td>分母分子を n で割る</td><td>P ＝ 1 ÷ (1/n ＋ (1 − 1/n)a)</td></tr>
+        <tr><td>n を大きくすると</td><td>1/n → 0 なので P → 1/a</td></tr>
+        <tr><td><b>答え</b></td><td><b>1 ÷ 0.1 ＝ 10（イ）</b></td></tr>
+      </table>
+      <div class="cap" style="margin-top:12px">R3春 問15：密結合で性能が比例しない要因</div>
+      <table class="mini">
+        <tr><td><b>ア</b></td><td><b>主記憶へのアクセスの競合（正解）</b>：1つの主記憶を共有するので取り合いになる</td></tr>
+        <tr><td>イ</td><td>通信回線を介したプロセッサ間通信 → 主記憶を共有しない<b>疎結合</b>の要因</td></tr>
+        <tr><td>ウ・エ</td><td>ディスパッチ・割込み → 1台でも起きる処理で、台数に特有の原因ではない</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/client_server.png" alt=""><img src="img/irasutoya/server.png" alt=""><img src="img/sys/desktop_computer_flat.svg" alt=""><img src="img/sys/link_flat.svg" alt=""></div>
+  <div class="k">第2章</div>
+  <h1>クライアントサーバと<br>Webシステム</h1>
+  <p>2層と3層 ／ クライアントサーバのよしあし ／ RPC・ストアドプロシージャ ／ Webシステムの負荷分散とセッション</p>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/brick_flat.svg" alt="">3層は「画面・業務・データ」。業務の処理を真ん中に分けたのが2層との違い</h1>
+  <div class="cols">
+    <div><svg width="420" height="250" viewBox="0 0 420 250"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<text x="70" y="14" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">2層</text>
+<rect x="10" y="26" width="120" height="70" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="70.0" y="59.0" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700">クライアント</text><text x="70.0" y="74.0" font-size="10.5" text-anchor="middle" fill="#fff">画面＋業務の処理</text>
+<line x1="70" y1="96" x2="70" y2="140" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/>
+<rect x="10" y="146" width="120" height="60" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="70.0" y="174.0" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700">DBサーバ</text><text x="70.0" y="189.0" font-size="10.5" text-anchor="middle" fill="#fff">データの管理</text>
+<text x="70" y="228" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">業務を変えると全端末を入替え</text>
+<text x="300" y="14" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">3層</text>
+<rect x="200" y="26" width="200" height="50" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="300.0" y="49.0" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700">プレゼンテーション層</text><text x="300.0" y="64.0" font-size="10.5" text-anchor="middle" fill="#1f3a68">画面の表示・入力（ブラウザ）</text>
+<line x1="300" y1="76" x2="300" y2="92" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/>
+<rect x="200" y="96" width="200" height="50" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="300.0" y="119.0" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700">ファンクション層</text><text x="300.0" y="134.0" font-size="10.5" text-anchor="middle" fill="#fff">業務の計算・判断（APサーバ）</text>
+<line x1="300" y1="146" x2="300" y2="162" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/>
+<rect x="200" y="166" width="200" height="50" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="300.0" y="189.0" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700">データベースアクセス層</text><text x="300.0" y="204.0" font-size="10.5" text-anchor="middle" fill="#fff">検索・更新（DBサーバ）</text>
+<text x="300" y="236" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">層ごとに作り直せる</text>
+</svg></div>
+    <div>
+      <table>
+        <tr><th style="width:30%">観点</th><th>クライアントサーバのよしあし</th></tr>
+        <tr><td>ローカル処理の応答速度</td><td>手元で済む処理（入力チェックなど）は速い</td></tr>
+        <tr><td>コスト性能比・柔軟性</td><td>安い機械を組み合わせ、少しずつ増やせる</td></tr>
+        <tr><td>サーバへの利用集中</td><td>利用者が増えるとサーバが混んで遅くなる</td></tr>
+        <tr><td>管理責任・運用管理</td><td>機器が部門に散らばり、管理の責任があいまいに</td></tr>
+      </table>
+      <table style="margin-top:8px">
+        <tr><th style="width:30%">サーバに頼む方法</th><th>しくみ</th></tr>
+        <tr><td><b>RPC</b></td><td>別のコンピュータの手続きを、手元の手続きと同じように呼ぶ</td></tr>
+        <tr><td><b>ストアドプロシージャ</b></td><td>一連のSQLをDBサーバに登録し、名前で呼ぶ。<b>通信回数が減る</b></td></tr>
+        <tr><td>メッセージキューイング</td><td>キューにためて非同期に受け渡す</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/link_flat.svg" alt="">1台が止まっても取引を続けるには、セッションを全サーバで共有する</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="215" viewBox="0 0 420 215"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<rect x="6" y="20" width="64" height="32" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="38.0" y="39.8" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">ブラウザ</text><rect x="6" y="64" width="64" height="32" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="38.0" y="83.8" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">ブラウザ</text><rect x="6" y="108" width="64" height="32" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="38.0" y="127.8" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">ブラウザ</text>
+<line x1="70" y1="36" x2="110" y2="80" stroke="#9aa7bd" stroke-width="1.6"/><line x1="70" y1="80" x2="110" y2="80" stroke="#9aa7bd" stroke-width="1.6"/><line x1="70" y1="124" x2="110" y2="80" stroke="#9aa7bd" stroke-width="1.6"/>
+<rect x="110" y="60" width="70" height="40" rx="6" fill="#fde7cf" stroke="#b25000" stroke-width="1.5"/><text x="145.0" y="84.0" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">負荷分散</text>
+<line x1="180" y1="72" x2="220" y2="40" stroke="#9aa7bd" stroke-width="1.6"/><line x1="180" y1="88" x2="220" y2="120" stroke="#9aa7bd" stroke-width="1.6"/>
+<rect x="220" y="22" width="90" height="36" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="265.0" y="44.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">APサーバ1</text><rect x="220" y="102" width="90" height="36" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="265.0" y="124.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">APサーバ2</text>
+<line x1="310" y1="40" x2="340" y2="72" stroke="#9aa7bd" stroke-width="1.6"/><line x1="310" y1="120" x2="340" y2="88" stroke="#9aa7bd" stroke-width="1.6"/>
+<rect x="340" y="60" width="70" height="40" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="375.0" y="78.0" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">セッション</text><text x="375.0" y="93.0" font-size="10.5" text-anchor="middle" fill="#fff">共有の置き場</text>
+<line x1="265" y1="138" x2="265" y2="166" stroke="#9aa7bd" stroke-width="1.6"/>
+<rect x="215" y="166" width="100" height="36" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="265.0" y="188.1" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">DBサーバ</text>
+<path d="M260,60 l10,-6 l-4,10 z" fill="#b25000"/>
+<text x="265" y="76" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">×障害</text>
+<text x="130" y="200" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">2が引き継いで処理を続ける</text>
+</svg>
+      <div class="point" style="margin-top:2px">同じ利用者を毎回同じサーバへ送る<b>スティッキーセッション</b>は、そのサーバが止まると状態が消える。<b>リバースプロキシ</b>はサーバの手前で要求を受けて中継する。</div>
+    </div>
+    <div>
+      <div class="cap">R6秋 問12：Webアプリケーションサーバの信頼性（正解エ）</div>
+      <table class="mini">
+        <tr><th>構成</th><th style="width:22%">サービス</th><th style="width:26%">トランザクション</th></tr>
+        <tr><td>コールドスタンバイ（ア・イ）</td><td>中断する</td><td>継続できない</td></tr>
+        <tr><td>セッションを共有しないクラスタ（ウ）</td><td>継続できる</td><td>継続できない</td></tr>
+        <tr><td><b>セッションを共有するクラスタ（エ）</b></td><td><b>継続できる</b></td><td><b>継続できる</b></td></tr>
+      </table>
+      <div class="point warn">アは「中断しない」、イは「トランザクションは継続できる」、ウは2つを<b>逆にした</b>誤り。表の○×の位置で覚える。</div>
+      <div class="point">3層の対応：ブラウザ＝プレゼンテーション層、APサーバ＝ファンクション層、DBサーバ＝データベースアクセス層。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/hdd.png" alt=""><img src="img/irasutoya/portable_hdd.png" alt=""><img src="img/irasutoya/online_storage.png" alt=""><img src="img/sys/floppy_disk_flat.svg" alt=""></div>
+  <div class="k">第3章</div>
+  <h1>ストレージ</h1>
+  <p>RAIDの種類と容量の計算 ／ DAS・NAS・SAN ／ ブロック・ファイル・オブジェクト ／ 容量を上手に使う技術</p>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/file_cabinet_flat.svg" alt="">RAIDは「分けて書く・同じものを書く・パリティを書く」の組合せ</h1>
+  <svg width="856" height="160" viewBox="0 0 856 160">
+<text x="92" y="12" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">RAID0（ストライピング）</text><rect x="0" y="20" width="86" height="104" rx="8" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><rect x="4" y="26" width="78" height="20" rx="3" fill="#c9daf2"/><text x="43.0" y="40" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A1</text><rect x="4" y="50" width="78" height="20" rx="3" fill="#c9daf2"/><text x="43.0" y="64" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A3</text><rect x="4" y="74" width="78" height="20" rx="3" fill="#c9daf2"/><text x="43.0" y="88" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A5</text><rect x="4" y="98" width="78" height="20" rx="3" fill="#c9daf2"/><text x="43.0" y="112" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A7</text><rect x="92" y="20" width="86" height="104" rx="8" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><rect x="96" y="26" width="78" height="20" rx="3" fill="#c9daf2"/><text x="135.0" y="40" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A2</text><rect x="96" y="50" width="78" height="20" rx="3" fill="#c9daf2"/><text x="135.0" y="64" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A4</text><rect x="96" y="74" width="78" height="20" rx="3" fill="#c9daf2"/><text x="135.0" y="88" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A6</text><rect x="96" y="98" width="78" height="20" rx="3" fill="#c9daf2"/><text x="135.0" y="112" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A8</text><text x="92" y="144" font-size="11" text-anchor="middle" fill="#1d1d1f">速い・全容量・冗長なし</text>
+<text x="314" y="12" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">RAID1（ミラーリング）</text><rect x="222" y="20" width="86" height="104" rx="8" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><rect x="226" y="26" width="78" height="20" rx="3" fill="#c9daf2"/><text x="265.0" y="40" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A1</text><rect x="226" y="50" width="78" height="20" rx="3" fill="#c9daf2"/><text x="265.0" y="64" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A2</text><rect x="226" y="74" width="78" height="20" rx="3" fill="#c9daf2"/><text x="265.0" y="88" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A3</text><rect x="226" y="98" width="78" height="20" rx="3" fill="#c9daf2"/><text x="265.0" y="112" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A4</text><rect x="314" y="20" width="86" height="104" rx="8" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><rect x="318" y="26" width="78" height="20" rx="3" fill="#c9daf2"/><text x="357.0" y="40" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A1</text><rect x="318" y="50" width="78" height="20" rx="3" fill="#c9daf2"/><text x="357.0" y="64" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A2</text><rect x="318" y="74" width="78" height="20" rx="3" fill="#c9daf2"/><text x="357.0" y="88" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A3</text><rect x="318" y="98" width="78" height="20" rx="3" fill="#c9daf2"/><text x="357.0" y="112" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A4</text><text x="314" y="144" font-size="11" text-anchor="middle" fill="#1d1d1f">同じものを2台に・容量は半分</text>
+<text x="536" y="12" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">RAID10（1＋0）</text><rect x="444" y="20" width="40" height="104" rx="8" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><rect x="448" y="26" width="32" height="20" rx="3" fill="#c9daf2"/><text x="464.0" y="40" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A1</text><rect x="448" y="50" width="32" height="20" rx="3" fill="#c9daf2"/><text x="464.0" y="64" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A3</text><rect x="448" y="74" width="32" height="20" rx="3" fill="#c9daf2"/><text x="464.0" y="88" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A5</text><rect x="448" y="98" width="32" height="20" rx="3" fill="#c9daf2"/><text x="464.0" y="112" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A7</text><rect x="490" y="20" width="40" height="104" rx="8" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><rect x="494" y="26" width="32" height="20" rx="3" fill="#c9daf2"/><text x="510.0" y="40" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A1</text><rect x="494" y="50" width="32" height="20" rx="3" fill="#c9daf2"/><text x="510.0" y="64" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A3</text><rect x="494" y="74" width="32" height="20" rx="3" fill="#c9daf2"/><text x="510.0" y="88" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A5</text><rect x="494" y="98" width="32" height="20" rx="3" fill="#c9daf2"/><text x="510.0" y="112" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A7</text><rect x="536" y="20" width="40" height="104" rx="8" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><rect x="540" y="26" width="32" height="20" rx="3" fill="#c9daf2"/><text x="556.0" y="40" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A2</text><rect x="540" y="50" width="32" height="20" rx="3" fill="#c9daf2"/><text x="556.0" y="64" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A4</text><rect x="540" y="74" width="32" height="20" rx="3" fill="#c9daf2"/><text x="556.0" y="88" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A6</text><rect x="540" y="98" width="32" height="20" rx="3" fill="#c9daf2"/><text x="556.0" y="112" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A8</text><rect x="582" y="20" width="40" height="104" rx="8" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><rect x="586" y="26" width="32" height="20" rx="3" fill="#c9daf2"/><text x="602.0" y="40" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A2</text><rect x="586" y="50" width="32" height="20" rx="3" fill="#c9daf2"/><text x="602.0" y="64" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A4</text><rect x="586" y="74" width="32" height="20" rx="3" fill="#c9daf2"/><text x="602.0" y="88" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A6</text><rect x="586" y="98" width="32" height="20" rx="3" fill="#c9daf2"/><text x="602.0" y="112" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A8</text><text x="536" y="144" font-size="11" text-anchor="middle" fill="#1d1d1f">ミラーの組をストライプ</text>
+<text x="758" y="12" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">RAID5（パリティ分散）</text><rect x="666" y="20" width="40" height="104" rx="8" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><rect x="670" y="26" width="32" height="20" rx="3" fill="#c9daf2"/><text x="686.0" y="40" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A1</text><rect x="670" y="50" width="32" height="20" rx="3" fill="#c9daf2"/><text x="686.0" y="64" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">B1</text><rect x="670" y="74" width="32" height="20" rx="3" fill="#c9daf2"/><text x="686.0" y="88" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">C1</text><rect x="670" y="98" width="32" height="20" rx="3" fill="#fde7cf"/><text x="686.0" y="112" font-size="10.5" text-anchor="middle" fill="#b25000" font-weight="700">P4</text><rect x="712" y="20" width="40" height="104" rx="8" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><rect x="716" y="26" width="32" height="20" rx="3" fill="#c9daf2"/><text x="732.0" y="40" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A2</text><rect x="716" y="50" width="32" height="20" rx="3" fill="#c9daf2"/><text x="732.0" y="64" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">B2</text><rect x="716" y="74" width="32" height="20" rx="3" fill="#fde7cf"/><text x="732.0" y="88" font-size="10.5" text-anchor="middle" fill="#b25000" font-weight="700">P3</text><rect x="716" y="98" width="32" height="20" rx="3" fill="#c9daf2"/><text x="732.0" y="112" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">D1</text><rect x="758" y="20" width="40" height="104" rx="8" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><rect x="762" y="26" width="32" height="20" rx="3" fill="#c9daf2"/><text x="778.0" y="40" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">A3</text><rect x="762" y="50" width="32" height="20" rx="3" fill="#fde7cf"/><text x="778.0" y="64" font-size="10.5" text-anchor="middle" fill="#b25000" font-weight="700">P2</text><rect x="762" y="74" width="32" height="20" rx="3" fill="#c9daf2"/><text x="778.0" y="88" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">C2</text><rect x="762" y="98" width="32" height="20" rx="3" fill="#c9daf2"/><text x="778.0" y="112" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">D2</text><rect x="804" y="20" width="40" height="104" rx="8" fill="#fff" stroke="#2f5596" stroke-width="1.5"/><rect x="808" y="26" width="32" height="20" rx="3" fill="#fde7cf"/><text x="824.0" y="40" font-size="10.5" text-anchor="middle" fill="#b25000" font-weight="700">P1</text><rect x="808" y="50" width="32" height="20" rx="3" fill="#c9daf2"/><text x="824.0" y="64" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">B3</text><rect x="808" y="74" width="32" height="20" rx="3" fill="#c9daf2"/><text x="824.0" y="88" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">C3</text><rect x="808" y="98" width="32" height="20" rx="3" fill="#c9daf2"/><text x="824.0" y="112" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">D3</text><text x="758" y="144" font-size="11" text-anchor="middle" fill="#1d1d1f">1台分がパリティ・1台まで</text>
+</svg>
+  <div class="cols" style="margin-top:4px">
+    <table>
+      <tr><th>種類</th><th>使える容量（n台・1台C）</th><th style="width:26%">壊れても大丈夫</th></tr>
+      <tr><td>RAID0</td><td>n × C</td><td>0台</td></tr>
+      <tr><td>RAID1・RAID10</td><td>n × C ÷ 2</td><td>組ごとに1台</td></tr>
+      <tr><td>RAID3・RAID4（パリティ専用1台）</td><td>(n − 1) × C</td><td>1台</td></tr>
+      <tr><td><b>RAID5</b>（パリティを分散）</td><td><b>(n − 1) × C</b></td><td>1台</td></tr>
+      <tr><td><b>RAID6</b>（パリティ2種類を分散）</td><td><b>(n − 2) × C</b></td><td><b>2台</b></td></tr>
+    </table>
+    <div>
+      <div class="point" style="margin-top:0"><b>計算例：</b>4Tバイト×6台なら、RAID5 は 5台分の20T、RAID6 は 4台分の<b>16T</b>、RAID10 は半分の12T。<b>ホットスペア</b>（予備のディスク）があれば、その台数を先に引く。</div>
+      <div class="point warn">RAID4はパリティ専用ディスクに書込みが集中する。それを分散させたのがRAID5。RAIDは<b>バックアップの代わりにならない</b>（消したデータは全部のディスクから消える）。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/link_flat.svg" alt="">ストレージのつなぎ方は3つ。「直結」「LANでファイル」「専用網でブロック」</h1>
+  <div class="cols">
+    <div><svg width="420" height="230" viewBox="0 0 420 230">
+<text x="60" y="14" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">DAS</text>
+<rect x="10" y="26" width="100" height="34" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="60.0" y="47.5" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700">サーバ</text><line x1="60" y1="60" x2="60" y2="84" stroke="#2f5596" stroke-width="2"/><rect x="10" y="84" width="100" height="34" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="60.0" y="105.5" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700">ディスク</text>
+<text x="60" y="136" font-size="11" text-anchor="middle" fill="#1d1d1f">1対1で直結</text><text x="60" y="151" font-size="11" text-anchor="middle" fill="#6e6e73">SATA・SAS</text>
+<text x="210" y="14" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">NAS</text>
+<rect x="150" y="26" width="50" height="30" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="175.0" y="44.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">PC</text><rect x="220" y="26" width="50" height="30" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="245.0" y="44.8" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">PC</text>
+<line x1="140" y1="72" x2="280" y2="72" stroke="#5b80bf" stroke-width="3"/><text x="210" y="66" font-size="10.5" text-anchor="middle" fill="#5b80bf">LAN</text>
+<line x1="175" y1="56" x2="175" y2="72" stroke="#9aa7bd" stroke-width="1.6"/><line x1="245" y1="56" x2="245" y2="72" stroke="#9aa7bd" stroke-width="1.6"/><line x1="210" y1="72" x2="210" y2="86" stroke="#9aa7bd" stroke-width="1.6"/>
+<rect x="160" y="86" width="100" height="34" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="210.0" y="107.5" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700">NAS</text>
+<text x="210" y="136" font-size="11" text-anchor="middle" fill="#1d1d1f">ファイル単位で共有</text><text x="210" y="151" font-size="11" text-anchor="middle" fill="#6e6e73">NFS・CIFS（SMB）</text>
+<text x="360" y="14" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">SAN</text>
+<rect x="305" y="26" width="50" height="30" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="330.0" y="44.6" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">サーバ</text><rect x="365" y="26" width="50" height="30" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="390.0" y="44.6" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">サーバ</text>
+<line x1="300" y1="72" x2="420" y2="72" stroke="#b25000" stroke-width="3"/><text x="360" y="66" font-size="10" text-anchor="middle" fill="#b25000">専用ネットワーク</text>
+<line x1="330" y1="56" x2="330" y2="72" stroke="#9aa7bd" stroke-width="1.6"/><line x1="390" y1="56" x2="390" y2="72" stroke="#9aa7bd" stroke-width="1.6"/><line x1="330" y1="72" x2="330" y2="86" stroke="#9aa7bd" stroke-width="1.6"/><line x1="390" y1="72" x2="390" y2="86" stroke="#9aa7bd" stroke-width="1.6"/>
+<rect x="305" y="86" width="50" height="34" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="330.0" y="106.8" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">装置</text><rect x="365" y="86" width="50" height="34" rx="6" fill="#c9daf2" stroke="#c9daf2" stroke-width="1.5"/><text x="390.0" y="106.8" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">装置</text>
+<text x="360" y="136" font-size="11" text-anchor="middle" fill="#1d1d1f">ブロック単位</text><text x="360" y="151" font-size="11" text-anchor="middle" fill="#6e6e73">FC-SAN・IP-SAN</text>
+<rect x="10" y="176" width="400" height="44" rx="6" fill="#e8eef8" stroke="#c9daf2" stroke-width="1.5"/><text x="210.0" y="202.5" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700"></text>
+<text x="210" y="196" font-size="11.5" text-anchor="middle" fill="#1f3a68">SANの種類：FC-SAN＝ファイバチャネル（速いが高い）</text>
+<text x="210" y="212" font-size="11.5" text-anchor="middle" fill="#1f3a68">IP-SAN＝iSCSIでSCSIの命令をTCP/IPに載せる（既存のLAN機器で安い）</text>
+</svg></div>
+    <div>
+      <div class="cap">R5秋 問12：SANの接続形態（正解イ）</div>
+      <table class="mini">
+        <tr><td style="width:12%">ア</td><td>シリアルATAなどで内蔵ストレージとして1対1に接続 → <b>DAS</b></td></tr>
+        <tr><td><b>イ</b></td><td><b>ファイバチャネルなどによる専用ネットワークで接続（正解）</b></td></tr>
+        <tr><td>ウ</td><td>CIFSを使い、LANで接続 → <b>NAS</b></td></tr>
+        <tr><td>エ</td><td>NFSを使い、LANで接続 → <b>NAS</b></td></tr>
+      </table>
+      <div class="point">見分けの鍵は<b>プロトコル名</b>。NFS・CIFS（SMB）が出たらファイル共有なのでNAS。SATA・SASならDAS。ファイバチャネル・iSCSIならSAN。</div>
+      <div class="point warn">#3 の R6秋 問11：FCは名前に「ファイバ」とあるが、<b>電気ケーブルも光ケーブルも</b>使える。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/card_file_box_flat.svg" alt="">オブジェクトストレージは「データ＋メタデータ」を識別子で取り出す。階層はない</h1>
+  <table class="vs">
+    <tr><th style="width:18%">方式</th><th style="width:20%">単位</th><th style="width:22%">探し方</th><th>向いている用途</th></tr>
+    <tr><td>ブロックストレージ</td><td>決まった大きさのブロック</td><td>ブロックの番号</td><td>データベース・仮想マシンのディスク（SAN・DAS）</td></tr>
+    <tr><td>ファイルストレージ</td><td>ファイル</td><td>フォルダの<b>階層</b>とファイル名</td><td>部門のファイル共有（NAS）</td></tr>
+    <tr><td><b>オブジェクトストレージ</b></td><td>データ＋<b>メタデータ</b></td><td><b>一意な識別子（ID）</b></td><td>画像・動画・バックアップなど、<b>更新の少ない大量の非構造データ</b>。いくらでも広げやすい</td></tr>
+  </table>
+  <div class="cols" style="margin-top:12px;grid-template-columns:1fr 1fr 1fr;gap:14px">
+    <div class="point" style="margin-top:0"><b>R6春 問13（ア）</b>：更新頻度の少ない非構造型データに適し、大容量で拡張性のある空間。誤りはSAN（イ）・DAS（ウ）・ストレージ仮想化（エ）。</div>
+    <div class="point" style="margin-top:0"><b>R6秋 問13（エ）</b>：データとメタデータをセットで保存し、固有の識別子でアクセス。ウは同じ前半に「階層構造」を付けた誤り。</div>
+    <div class="point" style="margin-top:0"><b>R7春 問10（ア）</b>：ユニークな識別子でアクセス。「上書き更新する」「静止点を設けて同期」「ディレクトリの階層構造」は誤り。</div>
+  </div>
+  <div class="point">容量の工夫：<b>シンプロビジョニング</b>（書いた分だけ割り当てる）、<b>重複排除</b>（同じデータは1つだけ）、<b>ストレージ階層化</b>（よく使うものをSSDへ）、<b>スナップショット</b>（ある瞬間の状態を記録）。</div>
+</section>
+
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/broken_pc.png" alt=""><img src="img/irasutoya/twins.png" alt=""><img src="img/irasutoya/blackout.png" alt=""><img src="img/sys/shield_flat.svg" alt=""></div>
+  <div class="k">第4章</div>
+  <h1>信頼性設計</h1>
+  <p>5つの考え方（毎年のように出る） ／ インタロック ／ フォールトマスキング ／ 止めないための設備 ／ 故障をあらわす言葉</p>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/shield_flat.svg" alt="">信頼性設計の5つ：避ける・耐える・止める・続ける・誤りを防ぐ</h1>
+  <table class="vs">
+    <tr><th style="width:21%">考え方</th><th style="width:20%">ひとことで</th><th>具体例</th><th style="width:22%">何に備えるか</th></tr>
+    <tr><td><b>フォールトアボイダンス</b></td><td>そもそも故障させない</td><td>品質の高い部品、点検・予防保守</td><td>故障（起こさない）</td></tr>
+    <tr><td><b>フォールトトレランス</b></td><td>故障しても機能を続ける</td><td>重要な部品やシステムを<b>多重化</b></td><td>故障（起きる前提）</td></tr>
+    <tr><td><b>フェールセーフ</b></td><td>故障したら<b>安全な側に止める</b></td><td>故障した信号機を全部赤に、エレベータを停止</td><td>故障による危険</td></tr>
+    <tr><td><b>フェールソフト</b></td><td>故障したら<b>機能を落として続ける</b></td><td>故障した部分を切り離して<b>縮退運転</b></td><td>故障による全面停止</td></tr>
+    <tr><td><b>フールプルーフ</b></td><td>人がまちがえても大丈夫にする</td><td>扉を閉めないと動かない（<b>インタロック</b>）、誤入力を受け付けない</td><td>人の誤り</td></tr>
+  </table>
+  <div class="point">フォールト（Fault）＝故障、フェール（Fail）＝故障したとき、フール（Fool）＝人のうっかり。<b>アボイダンス＝避ける、トレランス＝耐える、セーフ＝安全に、ソフト＝やわらかく</b>。</div>
+  <img class="illust" src="img/irasutoya/pc_doctor.png" alt="" style="height:70px;bottom:36px">
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/warning_flat.svg" alt="">過去問は用語と説明をずらすひっかけ。説明から本当の用語を当てる</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R3春 問13＝R4秋 問13＝R6春 問12（正解ウ）</div>
+      <table class="mini">
+        <tr><th style="width:30%">書かれた用語</th><th>説明の中身は本当は…</th></tr>
+        <tr><td>ア フェールセーフ</td><td>誤操作で異常終了しないよう単純なミスを防ぐ → <b>フールプルーフ</b></td></tr>
+        <tr><td>イ フェールソフト</td><td>機能を<b>縮退させることなく</b>継続 → 縮退させるのが正しい</td></tr>
+        <tr><td><b>ウ フォールトアボイダンス</b></td><td><b>個々の品質を高めて故障を起こさない → 正しい</b></td></tr>
+        <tr><td>エ フォールトトレランス</td><td>安全状態に固定して安全を維持 → <b>フェールセーフ</b></td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">R5春 問15（正解エ）</div>
+      <table class="mini">
+        <tr><th style="width:30%">書かれた用語</th><th>説明の中身は本当は…</th></tr>
+        <tr><td>ア フェールセーフ</td><td>部品の信頼性を高めて故障させない → <b>フォールトアボイダンス</b></td></tr>
+        <tr><td>イ フェールソフト</td><td>ソフトウェアのフォールトに対処 → 「ソフト」は<b>やわらかく</b>の意味</td></tr>
+        <tr><td>ウ フォールトアボイダンス</td><td>故障しても運用を継続 → <b>フォールトトレランス</b></td></tr>
+        <tr><td><b>エ フォールトトレランス</b></td><td><b>重要部品を多重化して故障に備える → 正しい</b></td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="point warn"><b>解き方：</b>選択肢の用語名を手で隠し、説明だけを読んで「これは何の説明か」を先に決める。それが書かれた用語と一致するものが正解。</div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/stop_sign_flat.svg" alt="">インタロックは「危ない条件では動かない」。フールプルーフの一種</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R3秋 問13：インタロックの例（正解エ）</div>
+      <table class="mini">
+        <tr><td style="width:10%">ア</td><td>故障した機械を止め、代替の機械に自動で切り替える → <b>予備切替</b>（機械の故障に備える）</td></tr>
+        <tr><td>イ</td><td>ある条件下では特定の人だけが使える → <b>アクセス制御</b>（セキュリティ）</td></tr>
+        <tr><td>ウ</td><td>不具合の部分を止め、機能を縮小して稼働を続ける → <b>縮退運転</b>（フェールソフト）</td></tr>
+        <tr><td><b>エ</b></td><td><b>人が機械の近くに入ったことをセンサが感知したら、機械を止める（正解）</b></td></tr>
+      </table>
+      <div class="point">電子レンジは扉を閉めないと加熱できない、車はブレーキを踏まないとエンジンがかからない。どれも<b>まちがった順序の操作を受け付けない</b>。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:36%">故障を表に出さない工夫</th><th>しくみ</th></tr>
+        <tr><td><b>フォールトマスキング</b></td><td>冗長な部分が故障の影響を打ち消し、外からは故障していないように見せる（ECC、命令の再試行）</td></tr>
+        <tr><td>多数決冗長</td><td>3台で同じ処理をして多数決。1台が誤っても正しい結果が残る</td></tr>
+        <tr><td>予備切替・並列運転</td><td>待たせて切り替える／全部動かして分け合う</td></tr>
+        <tr><td>競合制御</td><td>同じ資源を同時に使うときの順番を決め、矛盾を防ぐ</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/battery_flat.svg" alt="">止めないための設備は「電源」と「部品交換」。単一障害点をなくすのが出発点</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="120" viewBox="0 0 420 120"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<rect x="0" y="30" width="120" height="50" rx="6" fill="#5b80bf" stroke="#5b80bf" stroke-width="1.5"/><text x="60.0" y="53.0" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700">フォールト</text><text x="60.0" y="68.0" font-size="10.5" text-anchor="middle" fill="#fff">欠陥（原因）</text>
+<line x1="120" y1="55" x2="150" y2="55" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/>
+<rect x="150" y="30" width="120" height="50" rx="6" fill="#2f5596" stroke="#2f5596" stroke-width="1.5"/><text x="210.0" y="53.0" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700">エラー</text><text x="210.0" y="68.0" font-size="10.5" text-anchor="middle" fill="#fff">内部の状態のずれ</text>
+<line x1="270" y1="55" x2="300" y2="55" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/>
+<rect x="300" y="30" width="120" height="50" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="360.0" y="53.0" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700">障害</text><text x="360.0" y="68.0" font-size="10.5" text-anchor="middle" fill="#fff">外から見える停止</text>
+<text x="210" y="108" font-size="11.5" text-anchor="middle" fill="#b25000" font-weight="700">フォールトマスキングは、エラーを障害にしない工夫</text>
+</svg>
+      <div class="point"><b>単一障害点（SPOF）：</b>そこが1か所壊れるだけで全体が止まる、多重化されていない部分。電源・ネットワーク機器・共有ディスクが見落とされやすい。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:30%">設備</th><th>役目</th></tr>
+        <tr><td><b>UPS</b>（無停電電源装置）</td><td>停電したら電池から<b>数分〜数十分</b>だけ給電。その間に安全に止めるか、自家発電に切り替える</td></tr>
+        <tr><td>自家発電装置</td><td>長い停電でも発電を続ける。立ち上がりまでをUPSでつなぐ</td></tr>
+        <tr><td>ホットスワップ</td><td>電源を入れたまま部品を交換できる（活線挿抜）</td></tr>
+        <tr><td>無停止コンピュータ</td><td>CPU・メモリ・電源まで全部多重化し、止まらずに動き続ける（FTサーバ）</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/stopwatch.png" alt=""><img src="img/irasutoya/data_analysis.png" alt=""><img src="img/irasutoya/queue.png" alt=""><img src="img/sys/chart_increasing_flat.svg" alt=""></div>
+  <div class="k">第5章</div>
+  <h1>システムの性能</h1>
+  <p>レスポンスタイムとスループット ／ ボトルネックで決まる処理件数 ／ 使用率 ／ 性能評価の方法 ／ キャパシティプランニングとスケール</p>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/stopwatch_flat.svg" alt="">レスポンスは返り始めるまで、ターンアラウンドは全部終わるまで</h1>
+  <svg width="856" height="130" viewBox="0 0 856 130"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
+<line x1="20" y1="70" x2="836" y2="70" stroke="#1d1d1f" stroke-width="1.5"/>
+<rect x="80" y="54" width="130" height="32" fill="#c9daf2"/><text x="145" y="75" font-size="11.5" text-anchor="middle" fill="#1f3a68">入力・送信</text>
+<rect x="210" y="54" width="230" height="32" fill="#5b80bf"/><text x="325" y="75" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">処理</text>
+<rect x="440" y="54" width="300" height="32" fill="#1f3a68"/><text x="590" y="75" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">結果を出し続ける（印刷・表示）</text>
+<line x1="80" y1="40" x2="80" y2="100" stroke="#b25000" stroke-width="1.5" stroke-dasharray="4 3"/><line x1="210" y1="40" x2="210" y2="100" stroke="#2f5596" stroke-width="1.5" stroke-dasharray="4 3"/><line x1="440" y1="40" x2="440" y2="100" stroke="#2f5596" stroke-width="1.5" stroke-dasharray="4 3"/><line x1="740" y1="40" x2="740" y2="100" stroke="#b25000" stroke-width="1.5" stroke-dasharray="4 3"/>
+<path d="M210,30 L440,30" stroke="#2f5596" stroke-width="2" marker-end="url(#ar)"/>
+<text x="325" y="22" font-size="11.5" text-anchor="middle" fill="#2f5596" font-weight="700">レスポンスタイム：入力を終えてから応答が返り始めるまで</text>
+<path d="M80,114 L740,114" stroke="#b25000" stroke-width="2" marker-end="url(#ar)"/>
+<text x="410" y="128" font-size="11.5" text-anchor="middle" fill="#b25000" font-weight="700">ターンアラウンドタイム：依頼してから結果を全部受け取るまで</text>
+</svg>
+  <div class="cols" style="margin-top:6px">
+    <table>
+      <tr><th style="width:32%">指標</th><th>意味</th></tr>
+      <tr><td><b>レスポンスタイム</b></td><td>対話型・オンラインの速さ</td></tr>
+      <tr><td><b>ターンアラウンドタイム</b></td><td>バッチ処理の速さ（待ち・処理・出力を全部含む）</td></tr>
+      <tr><td><b>スループット</b></td><td>単位時間あたりの処理量（件／秒）</td></tr>
+      <tr><td>使用率（利用率）</td><td>装置が動いていた時間の割合。1に近いと待ちが急に増える</td></tr>
+    </table>
+    <div class="point" style="margin-top:0">処理を重ねて並行させると、1件の時間（ターンアラウンド）は変わらなくても、<b>スループットは上がる</b>。時間を問うのか量を問うのかを先に確かめる。待ち時間の計算（M/M/1）は #1 基礎理論を参照。</div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/hourglass_done_flat.svg" alt="">処理件数は「一番遅いところ（ボトルネック）」で決まる</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R3秋 問15：読取り40ms・CPU30ms・書込み50msを重ねる</div>
+      <svg width="420" height="150" viewBox="0 0 420 150">
+<text x="30" y="47" font-size="10.5" text-anchor="end" fill="#6e6e73">読取り</text><text x="30" y="77" font-size="10.5" text-anchor="end" fill="#6e6e73">CPU</text><text x="30" y="107" font-size="10.5" text-anchor="end" fill="#6e6e73">書込み</text>
+<rect x="40.0" y="30" width="64.0" height="24" fill="#c9daf2" stroke="#fff"/><text x="72.0" y="47" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">読1</text><rect x="120.0" y="60" width="48.0" height="24" fill="#5b80bf" stroke="#fff"/><text x="144.0" y="77" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">CPU1</text><rect x="200.0" y="90" width="80.0" height="24" fill="#1f3a68" stroke="#fff"/><text x="240.0" y="107" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">書1</text><rect x="120.0" y="30" width="64.0" height="24" fill="#c9daf2" stroke="#fff"/><text x="152.0" y="47" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">読2</text><rect x="200.0" y="60" width="48.0" height="24" fill="#5b80bf" stroke="#fff"/><text x="224.0" y="77" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">CPU2</text><rect x="280.0" y="90" width="80.0" height="24" fill="#1f3a68" stroke="#fff"/><text x="320.0" y="107" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">書2</text><rect x="200.0" y="30" width="64.0" height="24" fill="#c9daf2" stroke="#fff"/><text x="232.0" y="47" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">読3</text><rect x="280.0" y="60" width="48.0" height="24" fill="#5b80bf" stroke="#fff"/><text x="304.0" y="77" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">CPU3</text><rect x="360.0" y="90" width="80.0" height="24" fill="#1f3a68" stroke="#fff"/><text x="400.0" y="107" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">書3</text><rect x="280.0" y="30" width="64.0" height="24" fill="#c9daf2" stroke="#fff"/><text x="312.0" y="47" font-size="10.5" text-anchor="middle" fill="#1f3a68" font-weight="700">読4</text><rect x="360.0" y="60" width="48.0" height="24" fill="#5b80bf" stroke="#fff"/><text x="384.0" y="77" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">CPU4</text><rect x="440.0" y="90" width="80.0" height="24" fill="#1f3a68" stroke="#fff"/><text x="480.0" y="107" font-size="10.5" text-anchor="middle" fill="#fff" font-weight="700">書4</text>
+<text x="220" y="140" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">50msごとに1件ずつ書込みが終わる → 1分で 60,000÷50＝1,200件</text>
+</svg>
+      <table class="mini">
+        <tr><td>重ねない（500件・ア）</td><td>60,000 ÷ (40＋30＋50)</td></tr>
+        <tr><td><b>重ねる（1,200件・エ）</b></td><td><b>60,000 ÷ 50（一番遅い書込み）</b></td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">R4秋 問15＝R6秋 問15：1秒に処理できる検索の件数</div>
+      <table class="mini">
+        <tr><td>サーバ</td><td>100MIPS ÷ 100万命令 ＝ <b>100件/秒</b></td></tr>
+        <tr><td>ネットワーク</td><td>8×10⁷ビット ÷ 8 ＝ 10⁷バイト/秒 → ÷ 2×10⁵バイト ＝ <b>50件/秒</b></td></tr>
+        <tr><td><b>全体</b></td><td><b>遅い方の 50件（ア）</b></td></tr>
+      </table>
+      <div class="point warn">400件（エ）はビットをバイトに直し忘れた値。100件（イ）はサーバだけで考えた値。<b>単位（ビットとバイト）</b>と<b>遅い方</b>の2点を確かめる。</div>
+      <div class="point">ボトルネック以外をいくら速くしても全体は速くならない。性能を直す<b>パフォーマンスチューニング</b>は、まずボトルネックを探す。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/bar_chart_flat.svg" alt="">使用率は「動いていた時間 ÷ 全体の時間」。全体の時間を図にして数える</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R5春 問14：ジョブA（CPU 3秒→ディスク7秒）、B（CPU 12秒→ディスク10秒）</div>
+      <svg width="420" height="140" viewBox="0 0 420 140">
+<text x="52" y="37" font-size="11.5" text-anchor="end" fill="#6e6e73">CPU</text><text x="52" y="77" font-size="11.5" text-anchor="end" fill="#6e6e73">ディスク</text>
+<rect x="60" y="20" width="42" height="26" fill="#5b80bf" stroke="#fff"/><text x="81.0" y="37" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">A</text><rect x="102" y="20" width="168" height="26" fill="#1f3a68" stroke="#fff"/><text x="186.0" y="37" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">B 12秒</text>
+<rect x="102" y="60" width="98" height="26" fill="#c9daf2" stroke="#fff"/><text x="151.0" y="77" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">A 7秒</text><rect x="270" y="60" width="140" height="26" fill="#2f5596" stroke="#fff"/><text x="340.0" y="77" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">B 10秒</text>
+<line x1="60" y1="100" x2="60" y2="106" stroke="#6e6e73" stroke-width="1"/><text x="60" y="120" font-size="10" text-anchor="middle" fill="#6e6e73">0</text><line x1="102" y1="100" x2="102" y2="106" stroke="#6e6e73" stroke-width="1"/><text x="102" y="120" font-size="10" text-anchor="middle" fill="#6e6e73">3</text><line x1="200" y1="100" x2="200" y2="106" stroke="#6e6e73" stroke-width="1"/><text x="200" y="120" font-size="10" text-anchor="middle" fill="#6e6e73">10</text><line x1="270" y1="100" x2="270" y2="106" stroke="#6e6e73" stroke-width="1"/><text x="270" y="120" font-size="10" text-anchor="middle" fill="#6e6e73">15</text><line x1="410" y1="100" x2="410" y2="106" stroke="#6e6e73" stroke-width="1"/><text x="410" y="120" font-size="10" text-anchor="middle" fill="#6e6e73">25</text>
+<text x="240" y="136" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">ディスクのBは、CPUのBが終わる15秒から</text>
+</svg>
+      <table class="mini">
+        <tr><td>全体</td><td>0〜25秒</td></tr>
+        <tr><td>CPU</td><td>3＋12＝15秒 → 15÷25＝<b>0.60</b></td></tr>
+        <tr><td>ディスク</td><td>7＋10＝17秒 → 17÷25＝<b>0.68</b>（イ）</td></tr>
+      </table>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:28%">誤りの選択肢</th><th>どう間違えたか</th></tr>
+        <tr><td>ア 0.47・0.53</td><td>15と17を、合計の32で割った</td></tr>
+        <tr><td>ウ 0.79・0.89</td><td>全体を19秒とした（ディスクのBが早く始まると考えた）</td></tr>
+        <tr><td>エ 0.88・1.00</td><td>全体をディスクの使用時間17秒とした（空き時間を見落とした）</td></tr>
+      </table>
+      <div class="point"><b>解き方：</b>時間の線を1本引き、装置ごとに「いつからいつまで使うか」を塗る。<b>前の段階が終わるまで次は始まらない</b>、<b>装置は1つずつしか処理しない</b>、の2つの条件で並べる。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/magnifying_glass_tilted_left_flat.svg" alt="">性能の測り方は4つ。式で解けないときに動かして求めるのがシミュレーション</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th style="width:26%">方法</th><th>やり方</th><th style="width:28%">長所・短所</th></tr>
+        <tr><td><b>ベンチマーク</b></td><td>標準のプログラムを実機で動かして測る</td><td>具体的。選ぶ処理で結果が変わる</td></tr>
+        <tr><td><b>解析的手法</b></td><td>待ち行列理論などの式で計算</td><td>計算量が少なく正確。単純なモデルだけ</td></tr>
+        <tr><td><b>シミュレーション</b></td><td>モデルを作り、乱数で要求を発生させて動かす</td><td>複雑でも求まる。計算量が多く誤差あり</td></tr>
+        <tr><td>モニタリング</td><td>稼働中のシステムを継続して測る（システムモニタ）</td><td>実際の姿がわかる</td></tr>
+      </table>
+      <div class="point warn"><b>R6春 問15（正解ウ）：</b>「計算量が少ない（ア）」は解析的手法の特徴。「乱数で高精度（イ）」は逆で誤差が出る。「解析的に解けるモデルの検証に使えない（エ）」は誤り（検証に使える）。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:30%">ベンチマーク</th><th>測るもの</th></tr>
+        <tr><td><b>TPC-C</b></td><td>受注処理のようなオンライントランザクション処理（tpmC＝1分あたりの件数）</td></tr>
+        <tr><td><b>SPECint</b></td><td>CPUの整数演算</td></tr>
+        <tr><td><b>SPECfp</b></td><td>CPUの浮動小数点演算</td></tr>
+        <tr><td>ギブソンミックス</td><td>科学技術計算の命令の出現割合から1命令の平均時間を求める（命令ミックス）</td></tr>
+      </table>
+      <div class="point">TPCとSPECは、ベンチマークを定めている<b>団体の名前</b>でもある。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/crystal_ball_flat.svg" alt="">キャパシティプランニングは将来も目標を守る計画。スケールは4種</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R7秋 問14：キャパシティプランニングの目的（正解イ）</div>
+      <table class="mini">
+        <tr><td style="width:10%">ア</td><td>ボトルネックだけに着目して変更 → <b>パフォーマンスチューニング</b></td></tr>
+        <tr><td><b>イ</b></td><td><b>今の応答時間を調べ、長期的に監視して、将来を含めて応答時間を維持する（正解）</b></td></tr>
+        <tr><td>ウ</td><td>チューニングで現状の能力を最大限に引き出す → <b>チューニング</b></td></tr>
+        <tr><td>エ</td><td>特定のリソースの有効利用を上げる → 部分の最適化</td></tr>
+      </table>
+      <div class="point">手順：<b>負荷</b>と<b>性能要件</b>を決める → 必要な機器の大きさ・台数を決める（<b>サイジング</b>）→ 運用しながら監視して見直す（<b>容量・能力管理</b>）。</div>
+    </div>
+    <div>
+      <table class="kmap" style="margin-bottom:8px">
+        <tr><th></th><th>増やす</th><th>減らす</th></tr>
+        <tr><th>台数を変える</th><td class="on">スケールアウト</td><td class="on2">スケールイン</td></tr>
+        <tr><th>1台の能力を変える</th><td>スケールアップ</td><td>スケールダウン</td></tr>
+      </table>
+      <div class="point" style="margin-top:4px"><b>R3秋 問12・R5春 問13：</b>スケールインは<b>台数を減らして無駄な費用を削る</b>こと（イ）。ほかの選択肢は表の残り3マス。</div>
+      <div class="point"><b>R5秋 問13：</b>スケールアウトが向くのは<b>参照系が多く、すでに分散処理しているシステム</b>（イ）。更新が多く整合性を取る手間が大きい処理や、並列化できない処理は向かない（1台の能力を上げるスケールアップ向き）。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide chapter">
+  <div class="hero-icons ira"><img src="img/irasutoya/balance.png" alt=""><img src="img/irasutoya/pc_doctor.png" alt=""><img src="img/sys/bathtub_flat.svg" alt=""><img src="img/sys/money_bag_flat.svg" alt=""></div>
+  <div class="k">第6章</div>
+  <h1>信頼性と経済性の評価</h1>
+  <p>MTBF・MTTR・稼働率 ／ 直列と並列の計算 ／ 稼働率のグラフ ／ 構成の比べ方 ／ RASIS ／ バスタブ曲線 ／ TCO</p>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/balance_scale_flat.svg" alt="">稼働率 ＝ MTBF ÷ (MTBF ＋ MTTR)。MTBFは長く、MTTRは短くが良い</h1>
+  <svg width="856" height="96" viewBox="0 0 856 96">
+<rect x="20" y="30" width="220" height="30" fill="#1f3a68" stroke="#1f3a68"/><text x="130.0" y="50" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">稼働</text><rect x="240" y="30" width="50" height="30" fill="#fde7cf" stroke="#b25000"/><text x="265.0" y="50" font-size="11.5" text-anchor="middle" fill="#b25000" font-weight="700">修理</text><rect x="290" y="30" width="260" height="30" fill="#1f3a68" stroke="#1f3a68"/><text x="420.0" y="50" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">稼働</text><rect x="550" y="30" width="40" height="30" fill="#fde7cf" stroke="#b25000"/><text x="570.0" y="50" font-size="11.5" text-anchor="middle" fill="#b25000" font-weight="700">修理</text><rect x="590" y="30" width="240" height="30" fill="#1f3a68" stroke="#1f3a68"/><text x="710.0" y="50" font-size="11.5" text-anchor="middle" fill="#fff" font-weight="700">稼働</text>
+<text x="130" y="20" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">MTBF（故障と故障の間の動いている時間の平均）</text>
+<text x="420" y="84" font-size="11.5" text-anchor="middle" fill="#b25000" font-weight="700">MTTR（直るまでの時間の平均）</text>
+</svg>
+  <div class="cols" style="margin-top:2px;grid-template-columns:1fr 1fr 1fr;gap:14px">
+    <div>
+      <div class="cap">R4秋 問14：両方1.5倍</div>
+      <table class="mini"><tr><td>1.5MTBF ÷ (1.5MTBF＋1.5MTTR) → 1.5が消えて<b>変わらない（エ）</b></td></tr></table>
+      <div class="point">稼働率は MTTR／MTBF の比だけで決まる（<b>R7春 問12</b>：稼働率が等しければ MTTR／MTBF も等しい。イ）。</div>
+    </div>
+    <div>
+      <div class="cap">R7秋 問13：正しい記述（ア）</div>
+      <table class="mini">
+        <tr><td><b>MTBF÷(MTBF＋MTTR)は稼働している時間の割合</b></td></tr>
+        <tr><td>MTBFは「最初の故障までの時間」ではない（それは MTTF）</td></tr>
+        <tr><td>MTTRは「回復から次の故障まで」ではない（それは MTBF）</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">R4春 問14：MTTRを短くするもの</div>
+      <table class="mini">
+        <tr><td><b>エラーログ取得（ア）</b>：原因がすぐわかる</td></tr>
+        <tr><td>ビット誤り訂正・命令再試行：故障を隠す → <b>MTBF</b>が延びる</td></tr>
+        <tr><td>予防保全：故障を防ぐ → <b>MTBF</b>が延びる</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="point">故障率 ＝ 1 ÷ MTBF。修理せず使い捨てる部品の寿命は MTTF（故障までの平均時間）で表す。</div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/puzzle_piece_flat.svg" alt="">直列は掛け算、並列は「1 − 全部止まる確率」。迷ったら場合分け</h1>
+  <div class="cols">
+    <div><svg width="420" height="200" viewBox="0 0 420 200">
+<text x="100" y="14" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">直列</text>
+<line x1="10" y1="50" x2="190" y2="50" stroke="#2f5596" stroke-width="2"/><rect x="30" y="34" width="50" height="32" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="55.0" y="54.5" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700">0.9</text><rect x="120" y="34" width="50" height="32" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="145.0" y="54.5" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700">0.8</text>
+<text x="100" y="90" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">0.9 × 0.8 ＝ 0.72</text>
+<text x="310" y="14" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">並列</text>
+<line x1="220" y1="56" x2="250" y2="56" stroke="#2f5596" stroke-width="2"/><line x1="370" y1="56" x2="400" y2="56" stroke="#2f5596" stroke-width="2"/><line x1="250" y1="36" x2="250" y2="76" stroke="#2f5596" stroke-width="2"/><line x1="370" y1="36" x2="370" y2="76" stroke="#2f5596" stroke-width="2"/>
+<line x1="250" y1="36" x2="285" y2="36" stroke="#2f5596" stroke-width="2"/><line x1="335" y1="36" x2="370" y2="36" stroke="#2f5596" stroke-width="2"/><line x1="250" y1="76" x2="285" y2="76" stroke="#2f5596" stroke-width="2"/><line x1="335" y1="76" x2="370" y2="76" stroke="#2f5596" stroke-width="2"/>
+<rect x="285" y="22" width="50" height="28" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="310.0" y="40.5" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700">0.9</text><rect x="285" y="62" width="50" height="28" rx="6" fill="#1f3a68" stroke="#1f3a68" stroke-width="1.5"/><text x="310.0" y="80.5" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700">0.8</text>
+<text x="310" y="112" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">1 − 0.1 × 0.2 ＝ 0.98</text>
+<rect x="10" y="130" width="400" height="62" rx="6" fill="#e8eef8" stroke="#c9daf2" stroke-width="1.5"/><text x="210.0" y="165.5" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700"></text>
+<text x="210" y="152" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">3台中2台以上（稼働率 x）＝ 3x²(1−x) ＋ x³ ＝ 3x² − 2x³</text>
+<text x="210" y="176" font-size="12" text-anchor="middle" fill="#1f3a68">x＝0.9 → 0.243 ＋ 0.729 ＝ 0.972</text>
+</svg></div>
+    <div>
+      <div class="cap">R4春 問15：0.7と0.6のプリンタで「一方だけ動く」確率</div>
+      <table class="mini">
+        <tr><td>0.7の方だけ動く</td><td>0.7 × (1 − 0.6) ＝ 0.28</td></tr>
+        <tr><td>0.6の方だけ動く</td><td>(1 − 0.7) × 0.6 ＝ 0.18</td></tr>
+        <tr><td><b>合計</b></td><td><b>0.46（エ）</b></td></tr>
+      </table>
+      <div class="point warn">0.28・0.18 は片方だけ、0.42 は「両方動く」確率（0.7×0.6）。「少なくとも一方が動く」なら 1 − 0.3×0.4 ＝ 0.88 で、問われ方によって答えが変わる。</div>
+      <div class="point">並べ方を書いた図を<b>信頼性ブロック図</b>という。どれか1つでも止まると止まる部分は直列、どれか1つ動けばよい部分は並列に描く。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/chart_increasing_flat.svg" alt="">稼働率のグラフは、直列が多いと下、並列が多いと上にふくらむ</h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+<rect x="30" y="24" width="150" height="150" fill="#fff" stroke="#1d1d1f" stroke-width="1"/><line x1="30" y1="174" x2="180" y2="24" stroke="#9aa7bd" stroke-width="1.2" stroke-dasharray="4 3"/><text x="105.0" y="16" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">R3春 問14：直列2台×2組を並列</text><text x="105.0" y="190" font-size="10.5" text-anchor="middle" fill="#6e6e73">装置単体の稼働率 x</text><polyline points="30.0,174.0 31.5,174.0 33.0,173.9 34.5,173.7 36.0,173.5 37.5,173.3 39.0,172.9 40.5,172.5 42.0,172.1 43.5,171.6 45.0,171.0 46.5,170.4 48.0,169.7 49.5,169.0 51.0,168.2 52.5,167.3 54.0,166.4 55.5,165.5 57.0,164.4 58.5,163.4 60.0,162.2 61.5,161.1 63.0,159.8 64.5,158.5 66.0,157.2 67.5,155.8 69.0,154.4 70.5,152.9 72.0,151.4 73.5,149.8 75.0,148.2 76.5,146.6 78.0,144.9 79.5,143.1 81.0,141.3 82.5,139.5 84.0,137.6 85.5,135.7 87.0,133.8 88.5,131.8 90.0,129.8 91.5,127.8 93.0,125.7 94.5,123.7 96.0,121.5 97.5,119.4 99.0,117.2 100.5,115.0 102.0,112.8 103.5,110.6 105.0,108.4 106.5,106.1 108.0,103.8 109.5,101.6 111.0,99.3 112.5,97.0 114.0,94.7 115.5,92.4 117.0,90.1 118.5,87.7 120.0,85.4 121.5,83.1 123.0,80.8 124.5,78.6 126.0,76.3 127.5,74.0 129.0,71.8 130.5,69.6 132.0,67.4 133.5,65.2 135.0,63.0 136.5,60.9 138.0,58.8 139.5,56.7 141.0,54.7 142.5,52.7 144.0,50.8 145.5,48.9 147.0,47.0 148.5,45.2 150.0,43.4 151.5,41.7 153.0,40.1 154.5,38.5 156.0,37.0 157.5,35.6 159.0,34.2 160.5,32.9 162.0,31.6 163.5,30.5 165.0,29.4 166.5,28.4 168.0,27.5 169.5,26.7 171.0,26.0 172.5,25.4 174.0,24.9 175.5,24.5 177.0,24.2 178.5,24.1 180.0,24.0" fill="none" stroke="#1f3a68" stroke-width="2.4"/>
+<circle cx="122.7" cy="81.3" r="4" fill="#b25000"/><text x="130.7" y="99.3" font-size="10.5" text-anchor="start" fill="#b25000" font-weight="700">x≒0.618で交わる</text>
+<rect x="260" y="24" width="150" height="150" fill="#fff" stroke="#1d1d1f" stroke-width="1"/><line x1="260" y1="174" x2="410" y2="24" stroke="#9aa7bd" stroke-width="1.2" stroke-dasharray="4 3"/><text x="335.0" y="16" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">R7春 問13：並列2台＋1台を直列</text><text x="335.0" y="190" font-size="10.5" text-anchor="middle" fill="#6e6e73">装置単体の稼働率 x</text><polyline points="260.0,174.0 261.5,174.0 263.0,173.9 264.5,173.7 266.0,173.5 267.5,173.3 269.0,173.0 270.5,172.6 272.0,172.2 273.5,171.7 275.0,171.2 276.5,170.6 278.0,169.9 279.5,169.3 281.0,168.5 282.5,167.8 284.0,166.9 285.5,166.1 287.0,165.2 288.5,164.2 290.0,163.2 291.5,162.2 293.0,161.1 294.5,160.0 296.0,158.8 297.5,157.6 299.0,156.4 300.5,155.1 302.0,153.8 303.5,152.4 305.0,151.1 306.5,149.6 308.0,148.2 309.5,146.7 311.0,145.2 312.5,143.7 314.0,142.1 315.5,140.5 317.0,138.9 318.5,137.3 320.0,135.6 321.5,133.9 323.0,132.2 324.5,130.5 326.0,128.7 327.5,126.9 329.0,125.1 330.5,123.3 332.0,121.5 333.5,119.6 335.0,117.8 336.5,115.9 338.0,114.0 339.5,112.1 341.0,110.1 342.5,108.2 344.0,106.3 345.5,104.3 347.0,102.3 348.5,100.4 350.0,98.4 351.5,96.4 353.0,94.4 354.5,92.4 356.0,90.4 357.5,88.4 359.0,86.4 360.5,84.4 362.0,82.4 363.5,80.4 365.0,78.5 366.5,76.5 368.0,74.5 369.5,72.5 371.0,70.5 372.5,68.5 374.0,66.6 375.5,64.6 377.0,62.7 378.5,60.7 380.0,58.8 381.5,56.9 383.0,55.0 384.5,53.1 386.0,51.2 387.5,49.4 389.0,47.5 390.5,45.7 392.0,43.9 393.5,42.1 395.0,40.3 396.5,38.6 398.0,36.9 399.5,35.2 401.0,33.5 402.5,31.9 404.0,30.2 405.5,28.6 407.0,27.1 408.5,25.5 410.0,24.0" fill="none" stroke="#1f3a68" stroke-width="2.4"/>
+<text x="268" y="46" font-size="10.5" text-anchor="start" fill="#b25000" font-weight="700">常に単体より低い</text>
+<rect x="470" y="24" width="370" height="160" rx="6" fill="#e8eef8" stroke="#c9daf2" stroke-width="1.5"/><text x="655.0" y="108.5" font-size="12.5" text-anchor="middle" fill="#fff" font-weight="700"></text>
+<text x="655" y="50" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700">グラフ問題の解き方：x＝0.5 と 0.9 を入れる</text>
+<text x="490" y="80" font-size="12" text-anchor="start" fill="#1d1d1f">R3春 問14：f＝1−(1−x²)²</text>
+<text x="500" y="100" font-size="11.5" text-anchor="start" fill="#1f3a68">x＝0.5 → 0.44（下）、x＝0.9 → 0.96（上）→ エ</text>
+<text x="490" y="128" font-size="12" text-anchor="start" fill="#1d1d1f">R7春 問13：f＝(2x−x²)×x</text>
+<text x="500" y="148" font-size="11.5" text-anchor="start" fill="#1f3a68">x＝0.5 → 0.375（下）、x＝0.9 → 0.89（下）→ エ</text>
+<text x="655" y="174" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">破線（y＝x）より上か下かだけ見れば選べる</text>
+</svg>
+  <div class="cols" style="margin-top:4px">
+    <div class="point" style="margin-top:0"><b>R3春 問14：</b>xが小さいときは直列の弱さが勝って単体より低く、大きいときは並列の強さが勝って高い。だから途中で破線と交わるS字（エ）。</div>
+    <div class="point" style="margin-top:0"><b>R7春 問13：</b>直列の1台の稼働率に、1より小さい並列部分の稼働率を掛けるので、どこでも単体以下。x＝1でだけ一致する（エ）。</div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/balance_scale_flat.svg" alt="">構成どうしを比べるときは、引き算して符号を見るか、x＝0.9を入れる</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">R6秋 問14：同じ装置Xで作った3つの構成</div>
+      <table class="mini">
+        <tr><th>構成</th><th>式</th><th>x＝0.9</th></tr>
+        <tr><td>A：2台並列</td><td>2x − x²</td><td><b>0.99</b></td></tr>
+        <tr><td>C：2台直列を2組並列</td><td>2x² − x⁴</td><td>0.964</td></tr>
+        <tr><td>B：1台と2台並列を直列</td><td>2x² − x³</td><td>0.891</td></tr>
+      </table>
+      <div class="point"><b>A ＞ C ＞ B（イ）。</b>C は装置が4台でも、直列の組が弱いので、2台並列だけの A に負ける。B は直列の1台が止まると全部止まる。</div>
+    </div>
+    <div>
+      <div class="cap">R5春 問16：A＝(X‖Y)→Z、B＝(X→Z)‖Y</div>
+      <table class="mini">
+        <tr><td>A</td><td>(x ＋ y − xy) × z ＝ xz ＋ yz − xyz</td></tr>
+        <tr><td>B</td><td>1 − (1 − xz)(1 − y) ＝ xz ＋ y − xyz</td></tr>
+        <tr><td><b>B − A</b></td><td><b>y − yz ＝ y(1 − z) ＞ 0 → 常にBが高い（エ）</b></td></tr>
+      </table>
+      <div class="point">A は Z が止まると全体が止まる（Zが単一障害点）。B は Y さえ動けば全体が動く。<b>単一障害点があるかどうか</b>で見当をつけられる。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/repeat_button_flat.svg" alt="">待機系があると止まるのは切替えの間だけ。MTTRは停止に入らない</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="150" viewBox="0 0 420 150">
+        <text x="10" y="20" font-size="11.5" text-anchor="start" fill="#6e6e73">アクティブ</text>
+        <rect x="90" y="8" width="200" height="22" fill="#1f3a68"/><text x="190" y="24" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">稼働 99時間</text>
+        <rect x="290" y="8" width="110" height="22" fill="#fde7cf" stroke="#b25000"/><text x="345" y="24" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">修理 10時間</text>
+        <text x="10" y="62" font-size="11.5" text-anchor="start" fill="#6e6e73">スタンバイ</text>
+        <rect x="290" y="50" width="24" height="22" fill="#b25000"/><text x="302" y="88" font-size="10.5" text-anchor="middle" fill="#b25000" font-weight="700">切替え2時間</text>
+        <rect x="314" y="50" width="86" height="22" fill="#1f3a68"/><text x="357" y="66" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">引き継いで稼働</text>
+        <text x="210" y="120" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">システムが止まるのは切替えの2時間だけ</text>
+        <text x="210" y="140" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700">稼働率 ＝ 99 ÷ (99 ＋ 2) ≒ 0.98（エ）</text>
+      </svg>
+    </div>
+    <div>
+      <div class="cap">R5秋 問15：MTBF 99時間・MTTR 10時間・切替え2時間</div>
+      <table class="mini">
+        <tr><th style="width:26%">選択肢</th><th>どう計算したか</th></tr>
+        <tr><td>ア 0.82</td><td>1台の稼働率 99÷109 を2台の<b>直列</b>として掛けた</td></tr>
+        <tr><td>イ 0.89</td><td>止まる時間を MTTR＋切替え の12時間とした（99÷111）</td></tr>
+        <tr><td>ウ 0.91</td><td>待機系を考えず、1台構成として 99÷109</td></tr>
+        <tr><td><b>エ 0.98</b></td><td><b>止まるのは切替えの2時間だけ（99÷101）</b></td></tr>
+      </table>
+      <div class="point">「二重に障害は発生しない」＝修理中にもう1台は壊れない、という条件。だから修理の10時間はシステムの停止に入らない。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/bathtub_flat.svg" alt="">RASISは評価の5つの観点。故障率の時間変化はバスタブ曲線</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th style="width:36%">観点</th><th>意味</th><th style="width:18%">指標</th></tr>
+        <tr><td><b>R</b>eliability（信頼性）</td><td>故障しにくい</td><td>MTBF</td></tr>
+        <tr><td><b>A</b>vailability（可用性）</td><td>使いたいときに使える</td><td>稼働率</td></tr>
+        <tr><td><b>S</b>erviceability（保守性）</td><td>直しやすい</td><td>MTTR</td></tr>
+        <tr><td><b>I</b>ntegrity（完全性）</td><td>データが壊れず矛盾しない</td><td>―</td></tr>
+        <tr><td><b>S</b>ecurity（安全性）</td><td>不正に使われない・漏れない</td><td>―</td></tr>
+      </table>
+      <div class="point">保守のしかた：故障の前に直す<b>予防保守</b>（MTBFが延びる）、故障してから直す<b>事後保守</b>、離れた場所から直す<b>遠隔保守</b>（MTTRが縮む）。</div>
+    </div>
+    <div>
+      <svg width="420" height="190" viewBox="0 0 420 190">
+<rect x="20" y="20" width="95" height="130" fill="#fde7cf" opacity=".6"/><rect x="115" y="20" width="171" height="130" fill="#e8eef8"/><rect x="286" y="20" width="114" height="130" fill="#fde7cf" opacity=".6"/>
+<line x1="20" y1="150" x2="404" y2="150" stroke="#1d1d1f" stroke-width="1.2"/><line x1="20" y1="150" x2="20" y2="14" stroke="#1d1d1f" stroke-width="1.2"/>
+<polyline points="20.0,48.0 23.8,54.6 27.6,60.9 31.4,67.0 35.2,72.7 39.0,78.2 42.8,83.5 46.6,88.5 50.4,93.2 54.2,97.6 58.0,101.8 61.8,105.7 65.6,109.3 69.4,112.6 73.2,115.7 77.0,118.6 80.8,121.1 84.6,123.4 88.4,125.4 92.2,127.2 96.0,128.6 99.8,129.8 103.6,130.8 107.4,131.5 111.2,131.9 115.0,132.0 118.8,132.0 122.6,132.0 126.4,132.0 130.2,132.0 134.0,132.0 137.8,132.0 141.6,132.0 145.4,132.0 149.2,132.0 153.0,132.0 156.8,132.0 160.6,132.0 164.4,132.0 168.2,132.0 172.0,132.0 175.8,132.0 179.6,132.0 183.4,132.0 187.2,132.0 191.0,132.0 194.8,132.0 198.6,132.0 202.4,132.0 206.2,132.0 210.0,132.0 213.8,132.0 217.6,132.0 221.4,132.0 225.2,132.0 229.0,132.0 232.8,132.0 236.6,132.0 240.4,132.0 244.2,132.0 248.0,132.0 251.8,132.0 255.6,132.0 259.4,132.0 263.2,132.0 267.0,132.0 270.8,132.0 274.6,132.0 278.4,132.0 282.2,132.0 286.0,132.0 289.8,131.9 293.6,131.6 297.4,131.0 301.2,130.3 305.0,129.3 308.8,128.2 312.6,126.8 316.4,125.2 320.2,123.4 324.0,121.3 327.8,119.1 331.6,116.6 335.4,114.0 339.2,111.1 343.0,108.0 346.8,104.7 350.6,101.2 354.4,97.4 358.2,93.5 362.0,89.3 365.8,85.0 369.6,80.4 373.4,75.6 377.2,70.6 381.0,65.3 384.8,59.9 388.6,54.2 392.4,48.4 396.2,42.3 400.0,36.0" fill="none" stroke="#1f3a68" stroke-width="2.6"/>
+<text x="67" y="168" font-size="11.5" text-anchor="middle" fill="#b25000" font-weight="700">初期故障期</text><text x="200" y="168" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">偶発故障期</text><text x="343" y="168" font-size="11.5" text-anchor="middle" fill="#b25000" font-weight="700">摩耗故障期</text>
+<text x="67" y="184" font-size="10.5" text-anchor="middle" fill="#6e6e73">下がる</text><text x="200" y="184" font-size="10.5" text-anchor="middle" fill="#6e6e73">低く一定</text><text x="343" y="184" font-size="10.5" text-anchor="middle" fill="#6e6e73">上がる</text>
+<text x="26" y="12" font-size="10.5" text-anchor="start" fill="#6e6e73">故障率</text>
+</svg>
+      <div class="point" style="margin-top:2px">初期の不良は出荷前の試運転で減らし、摩耗の時期は予防保守で部品を替える。使う期間の大半は<b>偶発故障期</b>（いつ起きるか予測できない）。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/money_bag_flat.svg" alt="">TCOは「持っている間の費用の総額」。見えにくい間接コストまで入れて比べる</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="200" viewBox="0 0 420 200">
+        <rect x="40" y="120" width="90" height="60" fill="#5b80bf"/><text x="85" y="155" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">初期コスト</text>
+        <rect x="40" y="20" width="90" height="100" fill="#1f3a68"/><text x="85" y="66" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">運用コスト</text><text x="85" y="84" font-size="10.5" text-anchor="middle" fill="#fff">（毎年）</text>
+        <text x="85" y="196" font-size="13" text-anchor="middle" fill="#1f3a68" font-weight="700">TCO</text>
+        <text x="170" y="150" font-size="11.5" text-anchor="start" fill="#1d1d1f">購入・開発・導入</text><line x1="132" y1="146" x2="165" y2="146" stroke="#9aa7bd" stroke-width="1.6"/>
+        <text x="170" y="54" font-size="11.5" text-anchor="start" fill="#1d1d1f">保守料・電気代・回線料</text><line x1="132" y1="50" x2="165" y2="50" stroke="#9aa7bd" stroke-width="1.6"/>
+        <text x="170" y="72" font-size="11.5" text-anchor="start" fill="#1d1d1f">運用する人の人件費</text>
+        <text x="170" y="100" font-size="11.5" text-anchor="start" fill="#b25000">利用者が自分で調べる時間・</text><text x="170" y="116" font-size="11.5" text-anchor="start" fill="#b25000">止まっている間の損失（間接コスト）</text><line x1="132" y1="104" x2="165" y2="104" stroke="#9aa7bd" stroke-width="1.6"/>
+      </svg>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:34%">分け方</th><th>中身</th></tr>
+        <tr><td>初期コスト（イニシャル）</td><td>使い始めるまでに一度だけかかる費用</td></tr>
+        <tr><td>運用コスト（ランニング）</td><td>使い続ける間、毎月・毎年かかる費用。長く使うほど大きい</td></tr>
+        <tr><td>直接コスト</td><td>見積りや請求書に出てくる費用</td></tr>
+        <tr><td>間接コスト</td><td>利用者の手間や停止の損失など、見えにくい費用</td></tr>
+      </table>
+      <div class="point warn">「購入費が安い」製品が、保守や利用者の手間まで入れたTCOでは高くつくことがある。初期コストだけ、運用コストだけの選択肢は<b>TCOの一部</b>にすぎない。</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/clipboard_flat.svg" alt="">まとめ：この表の式と見分け方で、過去問37問の論点を押さえられる</h1>
+  <table>
+    <tr><th style="width:24%">論点</th><th>覚えること</th><th style="width:22%">過去問</th></tr>
+    <tr><td>信頼性設計の5つ</td><td>アボイダンス＝避ける、トレランス＝耐える、セーフ＝安全に止める、ソフト＝落として続ける、フールプルーフ＝人の誤り</td><td>R3春13・R5春15・R3秋13</td></tr>
+    <tr><td>稼働率</td><td>MTBF÷(MTBF＋MTTR)。直列は積、並列は 1−(1−a)(1−b)。グラフは x＝0.5・0.9 を入れる</td><td>R3春14・R5春16・R6秋14・R7春13 ほか</td></tr>
+    <tr><td>MTBFとMTTR</td><td>故障を防ぐ・隠す→MTBF、原因を早く知る・早く直す→MTTR</td><td>R4春14・R7秋13</td></tr>
+    <tr><td>冗長化・待機系</td><td>照合するデュアル、待たせるデュプレックス。ハートビートが途切れたら切替え</td><td>R4春13・R5秋15・R6秋12</td></tr>
+    <tr><td>スケール</td><td>台数＝アウト／イン、1台の能力＝アップ／ダウン。参照系はスケールアウト向き</td><td>R3秋12・R5春13・R5秋13</td></tr>
+    <tr><td>処理件数・使用率</td><td>一番遅いところで決まる。ビット÷8＝バイト。時間の線を引いて塗る</td><td>R3秋15・R4秋15・R5春14</td></tr>
+    <tr><td>仮想化・IaC</td><td>コンテナ型はゲストOSなし。IaCは構成をコードに書いて自動で適用</td><td>R3秋14・R4秋12・R5秋14・R7秋12</td></tr>
+    <tr><td>ストレージ</td><td>DAS直結・NASはLANでファイル・SANは専用網でブロック。オブジェクトは識別子とメタデータ</td><td>R5秋12・R6春13・R6秋13・R7春10</td></tr>
+  </table>
+  <img class="illust" src="img/irasutoya/data_analysis.png" alt="" style="height:60px;bottom:36px">
+</section>
