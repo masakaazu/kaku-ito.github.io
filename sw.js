@@ -8,7 +8,7 @@
 
   中身を大きく変えたときは VERSION を上げると、古い保存分が消える。
 */
-const VERSION = "v11";
+const VERSION = "v12";
 const CACHE = `site-${VERSION}`;
 const CORE = [
   "./",
