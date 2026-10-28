@@ -324,6 +324,168 @@
       .map((type) => ({ type, count: list.filter((m) => m.type === type).length }))
       .filter((t) => t.count > 0);
 
+  /* ---------- 分野マップの目印の色 ---------- */
+
+  /*
+    分野カードの右下の丸を押すと、色を選べる（なし＋5色）。
+    色の意味（何周目か等）は決めない。使う人が自分で決める。
+    - いつもこの端末（localStorage）に保存する
+    - ログイン中で Supabase に field_colors テーブルがあれば、端末間で同期する
+      （テーブルは tools/supabase/field_colors.sql で作る）
+  */
+  const MARK_COLORS = [
+    { id: "none", name: "なし" },
+    { id: "red", name: "赤" },
+    { id: "orange", name: "オレンジ" },
+    { id: "green", name: "緑" },
+    { id: "blue", name: "青" },
+    { id: "purple", name: "紫" },
+  ];
+  const MARK_STORE = "site-field-colors";
+
+  const colorPicker = (field) => `
+            <button type="button" class="field-color-btn" aria-haspopup="true" aria-expanded="false" aria-label="${escapeHtml(field.name)}の目印の色を選ぶ"></button>
+            <div class="field-color-menu" role="radiogroup" aria-label="目印の色" hidden>${MARK_COLORS.map(
+              (c) =>
+                `<button type="button" class="field-color-option" role="radio" aria-checked="false" data-color="${c.id}" title="${c.name}" aria-label="${c.name}"${
+                  c.id === "none" ? "" : ` style="--swatch: var(--theme-mark-${c.id})"`
+                }></button>`
+            ).join("")}</div>`;
+
+  const fieldColors = (() => {
+    // { "ap:11": { c: "red", t: "2026-10-28T00:00:00.000Z" } }。c が "none" は色なしに戻したこと
+    let marks = {};
+    let sync = null; // ログイン中でテーブルが使えるときだけ入る
+
+    const read = () => {
+      try {
+        return JSON.parse(localStorage.getItem(MARK_STORE)) || {};
+      } catch {
+        return {};
+      }
+    };
+    const write = () => {
+      try {
+        localStorage.setItem(MARK_STORE, JSON.stringify(marks));
+      } catch {
+        /* 保存できない環境（プライベートモード等）では、開いている間だけ有効 */
+      }
+    };
+    const nameOf = (id) => (MARK_COLORS.find((c) => c.id === id) || MARK_COLORS[0]).name;
+
+    const apply = () => {
+      document.querySelectorAll(".field-cell[data-field-key]").forEach((cell) => {
+        const mark = marks[cell.dataset.fieldKey];
+        const color = mark && mark.c !== "none" ? mark.c : "";
+        if (color) cell.dataset.mark = color;
+        else delete cell.dataset.mark;
+        cell.querySelectorAll(".field-color-option").forEach((opt) =>
+          opt.setAttribute("aria-checked", String(opt.dataset.color === (color || "none")))
+        );
+        const btn = cell.querySelector(".field-color-btn");
+        const name = cell.querySelector(".field-name");
+        if (btn && name) btn.setAttribute("aria-label", `${name.textContent}の目印の色を選ぶ（いま：${nameOf(color || "none")}）`);
+      });
+    };
+
+    const closeMenus = (except) => {
+      document.querySelectorAll(".field-color-menu:not([hidden])").forEach((menu) => {
+        if (menu === except) return;
+        menu.hidden = true;
+        const btn = menu.parentElement.querySelector(".field-color-btn");
+        if (btn) btn.setAttribute("aria-expanded", "false");
+      });
+    };
+
+    const setColor = (key, color) => {
+      const mark = { c: color, t: new Date().toISOString() };
+      marks[key] = mark;
+      write();
+      apply();
+      if (sync) {
+        sync.saveFieldColors([{ field_key: key, color: mark.c, updated_at: mark.t }]).catch((error) => {
+          console.warn("[site] 目印の色を同期できませんでした", error);
+        });
+      }
+    };
+
+    // クラウドと端末の色を、新しいほうに合わせる
+    const pull = async (studySync) => {
+      sync = null;
+      let rows;
+      try {
+        rows = await studySync.fetchFieldColors();
+      } catch (error) {
+        console.warn("[site] 目印の色の同期は使えません（この端末にだけ保存します）", error);
+        return;
+      }
+      if (!rows) return; // 未ログイン
+      const cloud = {};
+      rows.forEach((r) => (cloud[r.field_key] = { c: r.color, t: new Date(r.updated_at).toISOString() }));
+      Object.entries(cloud).forEach(([key, mark]) => {
+        if (!marks[key] || mark.t > marks[key].t) marks[key] = mark;
+      });
+      const push = Object.entries(marks)
+        .filter(([key, mark]) => !cloud[key] || mark.t > cloud[key].t)
+        .map(([key, mark]) => ({ field_key: key, color: mark.c, updated_at: mark.t }));
+      write();
+      apply();
+      sync = studySync;
+      if (push.length) {
+        await studySync.saveFieldColors(push).catch((error) => console.warn("[site] 目印の色を同期できませんでした", error));
+      }
+    };
+
+    const setup = async () => {
+      if (!document.querySelector(".field-cell[data-field-key]")) return;
+      marks = read();
+      apply();
+
+      document.addEventListener("click", (event) => {
+        const option = event.target.closest(".field-color-option");
+        if (option) {
+          const cell = option.closest(".field-cell");
+          setColor(cell.dataset.fieldKey, option.dataset.color);
+          closeMenus();
+          cell.querySelector(".field-color-btn").focus();
+          return;
+        }
+        const btn = event.target.closest(".field-color-btn");
+        if (btn) {
+          const menu = btn.parentElement.querySelector(".field-color-menu");
+          closeMenus(menu);
+          menu.hidden = !menu.hidden;
+          btn.setAttribute("aria-expanded", String(!menu.hidden));
+          if (!menu.hidden) (menu.querySelector('[aria-checked="true"]') || menu.firstElementChild).focus();
+          return;
+        }
+        if (!event.target.closest(".field-color-menu")) closeMenus();
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        const open = document.querySelector(".field-color-menu:not([hidden])");
+        if (!open) return;
+        closeMenus();
+        open.parentElement.querySelector(".field-color-btn").focus();
+      });
+
+      const studySync = await loadStudySync();
+      if (!studySync || !studySync.fetchFieldColors) return;
+      let lastUser;
+      const onUser = (user) => {
+        const id = user ? user.id : null;
+        if (id === lastUser) return;
+        lastUser = id;
+        if (user) pull(studySync);
+        else sync = null;
+      };
+      studySync.onChange(onUser);
+      onUser(await studySync.ready);
+    };
+
+    return { setup };
+  })();
+
   const lists = {
     /* トップ：資格カード */
     topics: (site) =>
@@ -372,9 +534,10 @@
                 ? counts.map((t) => `<span>${escapeHtml(site.types[t.type].label)} ${t.count}</span>`).join("")
                 : "<span>教材なし</span>"
             }</span>`;
-              return inField.length
+              const tile = inField.length
                 ? `<a class="field-tile" href="${url(fieldPath(topic, field.no))}">${body}</a>`
                 : `<div class="field-tile is-empty">${body}</div>`;
+              return `<div class="field-cell" data-field-key="${topic}:${field.no}">${tile}${colorPicker(field)}</div>`;
             })
             .join("");
           const filled = fields.filter((f) => items.some((m) => m.fields.includes(f.no))).length;
@@ -527,8 +690,9 @@
 
   /* ---------- 正答率（ログイン中だけ） ---------- */
 
+  let studySyncPromise = null;
   const loadStudySync = () =>
-    new Promise((resolve) => {
+    (studySyncPromise ||= new Promise((resolve) => {
       if (window.StudySync) return resolve(window.StudySync);
       const tag = document.createElement("script");
       tag.src = url("assets/js/study-sync.js");
@@ -536,7 +700,7 @@
       tag.onload = () => resolve(window.StudySync || null);
       tag.onerror = () => resolve(null);
       document.head.append(tag);
-    });
+    }));
 
   /*
     回答記録の問題IDから、教材と中分類を割り出して集計する。
@@ -664,6 +828,7 @@
     // 一覧ページは正答率を、教材ページはログイン表示だけを更新する
     if (document.querySelector('link[href$="assets/css/site.css"]')) {
       renderRates(site);
+      fieldColors.setup();
       revealOnScroll();
     }
   };

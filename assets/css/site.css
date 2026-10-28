@@ -371,6 +371,145 @@ a.field-tile:hover {
   font-size: var(--theme-size-caption);
 }
 
+/* ---------- 分野マップの目印の色 ---------- */
+
+/* カード1枚分の枠。カード（リンク）と色ボタンを重ねる */
+.field-cell {
+  position: relative;
+  display: flex;
+  transition: transform 0.5s var(--theme-ease);
+}
+
+/* 色の選択肢を開いているカードは、隣のカードより手前に出す */
+.field-cell:has(.field-color-menu:not([hidden])) {
+  z-index: 10;
+}
+
+.field-cell > .field-tile {
+  flex: 1;
+  min-width: 0;
+}
+
+.field-cell:has(a.field-tile:hover) {
+  transform: scale(1.02);
+}
+
+.field-cell a.field-tile:hover {
+  transform: none;
+}
+
+.field-cell[data-mark="red"] { --mark: var(--theme-mark-red); }
+.field-cell[data-mark="orange"] { --mark: var(--theme-mark-orange); }
+.field-cell[data-mark="green"] { --mark: var(--theme-mark-green); }
+.field-cell[data-mark="blue"] { --mark: var(--theme-mark-blue); }
+.field-cell[data-mark="purple"] { --mark: var(--theme-mark-purple); }
+
+/* 色を選んだカードは、面をその色で薄く染めて縁を付ける */
+.field-cell[data-mark] > .field-tile {
+  background: color-mix(in srgb, var(--mark) 13%, var(--theme-bg));
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--mark) 55%, transparent);
+}
+
+.field-cell[data-mark] > a.field-tile:hover {
+  background: color-mix(in srgb, var(--mark) 20%, var(--theme-bg));
+}
+
+/* 右下の小さな丸。押すと色を選べる */
+.field-color-btn {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.field-color-btn::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1.5px var(--theme-line);
+  transition: transform var(--theme-transition);
+}
+
+.field-color-btn:hover::before,
+.field-color-btn[aria-expanded="true"]::before {
+  transform: scale(1.15);
+  box-shadow: inset 0 0 0 1.5px var(--theme-muted);
+}
+
+.field-cell[data-mark] .field-color-btn::before {
+  background: var(--mark);
+  box-shadow: none;
+}
+
+.field-color-btn:focus-visible {
+  outline: 2px solid var(--theme-accent);
+  outline-offset: -2px;
+}
+
+/* 色の選択肢（なし＋5色） */
+.field-color-menu {
+  position: absolute;
+  right: 6px;
+  bottom: 44px;
+  z-index: 20;
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+  border-radius: var(--theme-radius-pill);
+  background: var(--theme-bg);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.16), 0 0 0 1px var(--theme-line-soft);
+}
+
+.field-color-menu[hidden] {
+  display: none;
+}
+
+.field-color-option {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--swatch);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.field-color-option[data-color="none"] {
+  background:
+    linear-gradient(135deg, transparent calc(50% - 1px), var(--theme-faint) calc(50% - 1px), var(--theme-faint) calc(50% + 1px), transparent calc(50% + 1px)),
+    var(--theme-bg);
+  box-shadow: inset 0 0 0 1.5px var(--theme-line);
+}
+
+.field-color-option[aria-checked="true"] {
+  box-shadow: 0 0 0 2px var(--theme-bg), 0 0 0 4px var(--theme-heading);
+}
+
+.field-color-option[data-color="none"][aria-checked="true"] {
+  box-shadow: inset 0 0 0 1.5px var(--theme-line), 0 0 0 2px var(--theme-bg), 0 0 0 4px var(--theme-heading);
+}
+
+.field-color-option:focus-visible {
+  outline: 2px solid var(--theme-accent);
+  outline-offset: 3px;
+}
+
+/* 色ボタンと教材数の文字が重ならないようにする */
+.field-cell .field-counts {
+  padding-right: 26px;
+}
+
 /* ---------- 一覧（行形式：教材・日付など） ---------- */
 
 .list {
@@ -565,6 +704,18 @@ footer a {
 
   .field-name {
     font-size: 0.94rem;
+  }
+
+  /* スマホでは選択肢を3つずつ2段にして、カードの幅に収める */
+  .field-color-menu {
+    display: grid;
+    grid-template-columns: repeat(3, 30px);
+    gap: 8px;
+    border-radius: 18px;
+  }
+
+  .field-color-menu[hidden] {
+    display: none;
   }
 
   .list-item {
