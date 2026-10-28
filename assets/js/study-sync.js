@@ -31,6 +31,9 @@
   /* Supabase側のテーブル名 */
   const ANSWERS_TABLE = "quiz_results";
 
+  /* 分野マップの目印の色を保存するテーブル（tools/supabase/field_colors.sql で作る） */
+  const FIELD_COLORS_TABLE = "field_colors";
+
   /* Supabase JavaScript SDKの読み込み先 */
   const SUPABASE_SCRIPT_URL =
     "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
@@ -383,6 +386,47 @@
       }
       currentUser = null;
       notify();
+    },
+
+    /*
+      分野マップの目印の色。[{ field_key: "ap:11", color: "red" | "none", updated_at }]
+      未ログインなら null、テーブルがまだ無いなどで使えないときは例外を投げる
+    */
+    fetchFieldColors: async function () {
+      await ready;
+      if (!currentUser || !supabaseClient) {
+        return null;
+      }
+      const { data, error } = await supabaseClient
+        .from(FIELD_COLORS_TABLE)
+        .select("field_key, color, updated_at")
+        .eq("user_id", currentUser.id);
+      if (error) {
+        throw error;
+      }
+      return data || [];
+    },
+
+    /* 目印の色を保存する。rows は [{ field_key, color, updated_at }]（"none" は色なし） */
+    saveFieldColors: async function (rows) {
+      await ready;
+      if (!currentUser || !supabaseClient || !rows.length) {
+        return;
+      }
+      const { error } = await supabaseClient.from(FIELD_COLORS_TABLE).upsert(
+        rows.map(function (row) {
+          return {
+            user_id: currentUser.id,
+            field_key: row.field_key,
+            color: row.color,
+            updated_at: row.updated_at,
+          };
+        }),
+        { onConflict: "user_id,field_key" }
+      );
+      if (error) {
+        throw error;
+      }
     },
 
     /* 自分の全回答記録（正答率の集計に使う）。未ログインなら空 */
