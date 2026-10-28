@@ -125,7 +125,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/19.html", title: "経営戦略マネジメント 用語集", desc: "PPM・競争戦略・マーケティング・BSCなど206語", fields: [19] },
       { type: "terms", file: "terms/20.html", title: "技術戦略マネジメント 用語集", desc: "MOT・イノベーション・PoC・知的財産など68語", fields: [20] },
       { type: "terms", file: "terms/21.html", title: "ビジネスインダストリ 用語集", desc: "ビジネスシステム・エンジニアリングシステム・e-ビジネス・民生機器・産業機器など289語と問題14問（仮版）", fields: [21] },
-      { type: "terms", file: "terms/22.html", title: "企業活動 用語集", desc: "経営・組織論・OR・IE・会計・財務など126語と問題20問（仮版）", fields: [22] },
+      { type: "terms", file: "terms/22.html", title: "企業活動 用語集", desc: "企業理念とガバナンス・情報開示・人材育成と人事制度・動機づけとリーダーシップ理論（SL・PM・コンティンジェンシー）・組織形態・BCPとレジリエンス・線形計画法・在庫管理・ゲーム理論とナッシュ均衡・QC七つ道具と新QC七つ道具・需要予測・データ利活用と統計のバイアス・損益分岐点・財務諸表とキャッシュフロー・財務指標・減価償却・NPVなど345語と、IPA過去問（令和3〜7年度）を中心にした問題50問。ア〜エ全部に解説", fields: [22] },
       { type: "terms", file: "terms/23.html", title: "法務 用語集", desc: "知的財産権・セキュリティ関連法規・労働関連・取引関連法規・その他の法律・ガイドライン・技術者倫理・標準化関連など120語と問題20問（仮版）", fields: [23] },
     ],
 
