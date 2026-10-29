@@ -381,6 +381,8 @@
     stage: 0, // 0＝用語だけ、1＝正式名称（略語のとき）、最後＝意味まで
   };
 
+  // 意味を出したあとのタップで次のカードへ進むか（応用情報だけ）
+  const tapToNext = topic === "ap";
   const lastStage = (term) => (isAbbr(term) ? 2 : 1);
 
   /* 前回間違えたままの用語（回答記録から読む。ログインしていなければ空） */
@@ -421,12 +423,16 @@
         ${term.reading && abbr && stage >= 1 ? `<p class="term-sub">${escapeHtml(term.reading)}</p>` : ""}
         ${fullName}
         <div class="flash-body">${open ? termBody(term) : `<p class="flash-hint">${hint}</p>`}</div>
+        ${open && tapToNext ? `<p class="flash-next">タップして次の用語へ →</p>` : ""}
       </div>
       <div class="terms-controls">
         <button type="button" class="terms-button" data-move="-1">← 前へ</button>
         <button type="button" class="terms-button" data-move="1">次へ →</button>
       </div>`;
-    box.querySelector(".flash").addEventListener("click", () => {
+    box.querySelector(".flash").addEventListener("click", (e) => {
+      if (e.target.closest("a")) return;
+      // 応用情報は、意味まで出たカードをもう一度タップすると次の用語へ進む
+      if (tapToNext && open) return moveCard(doc, 1);
       cards.stage = cards.stage >= last ? 0 : cards.stage + 1;
       renderCard(doc);
     });
