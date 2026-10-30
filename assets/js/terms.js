@@ -328,7 +328,8 @@
 
   /* ---------- 画面 ---------- */
 
-  const termId = (term) => `${topic}-${field}-${term.name}`;
+  // 回答記録のID。ほかの分野の用語集から出した用語は、その分野の番号で記録する
+  const termId = (term) => `${topic}-${term.field || field}-${term.name}`;
 
   /* 略語かどうか（英字の見出しに、別の綴りの正式名称が付いている） */
   const isAbbr = (term) => term.english && term.english !== term.name && /^[A-Za-z0-9/.&+\- ]+$/.test(term.name) && /[A-Z]/.test(term.name);
@@ -395,11 +396,71 @@
   const questionPool = (doc, range) =>
     doc.questions.filter((q) => (range === WRONG ? wrongIds.has(q.id) : !range || q.section === range));
 
-  /* クイズに出す範囲。kind は terms（用語の4択）／questions（問題演習）／mix（まぜる） */
-  const quizPool = (doc, range, kind) => [
-    ...(kind === "questions" ? [] : pool(doc, range).map((term) => ({ term }))),
-    ...(kind === "terms" ? [] : questionPool(doc, range).map((question) => ({ question }))),
-  ];
+  /* クイズに出す範囲。kind は terms（用語の4択）／questions（問題演習）／mix（まぜる）
+     docs は出題する分野の用語集（応用情報は複数の分野をまぜられる） */
+  const quizPool = (docs, range, kind) =>
+    docs.flatMap((doc) => [
+      ...(kind === "questions" ? [] : pool(doc, range).map((term) => ({ term }))),
+      ...(kind === "terms" ? [] : questionPool(doc, range).map((question) => ({ question }))),
+    ]);
+
+  /* ---------- 複数の分野をまぜたクイズ（応用情報だけ） ---------- */
+
+  const multiField = topic === "ap" && !!field;
+  const docsByField = new Map(); // 分野番号 → 読み込んだ用語集
+  const quizFields = new Set(field ? [String(Number(field))] : []); // クイズに出す分野（最初はこのページの分野だけ）
+  let statsRows = null; // 回答記録（間違えた問題を探すのに使う）
+
+  // 用語・問題に分野の番号と名前を付けておく（記録のIDと、問題の上の表示に使う）
+  const tagDoc = (doc, no, name) => {
+    doc.field = String(Number(no));
+    doc.fieldName = name;
+    doc.studyTerms.forEach((t) => {
+      t.field = doc.field;
+    });
+    doc.questions.forEach((q) => {
+      q.field = doc.field;
+    });
+    return doc;
+  };
+
+  // 応用情報の用語集の一覧（catalog.js から。まだ読めていなければ空）
+  const fieldCatalog = () => {
+    const catalog = window.SITE_CATALOG;
+    if (!catalog) return [];
+    const names = new Map((catalog.fields || []).map((f) => [String(f.no), f.name]));
+    const seen = new Set();
+    return ((catalog.materials && catalog.materials[topic]) || [])
+      .filter((m) => m.type === "terms" && m.fields && m.fields.length && /^terms\/\d+\.html$/.test(m.file))
+      .map((m) => ({ no: String(m.fields[0]), name: names.get(String(m.fields[0])) || m.title, src: m.file.replace(/^terms\//, "").replace(/\.html$/, ".md") }))
+      .filter((f) => !seen.has(f.no) && seen.add(f.no))
+      .sort((a, b) => Number(a.no) - Number(b.no));
+  };
+
+  const loadFieldDoc = async (info) => {
+    if (docsByField.has(info.no)) return docsByField.get(info.no);
+    const response = await fetch(info.src, { cache: "no-cache" });
+    if (!response.ok) throw new Error(`${info.src} ${response.status}`);
+    const doc = tagDoc(parse(await response.text()), info.no, info.name);
+    docsByField.set(info.no, doc);
+    collectWrong(doc);
+    return doc;
+  };
+
+  // いま選んでいる分野のうち、読み込み済みの用語集（分野の番号順）
+  const quizDocs = () =>
+    [...quizFields]
+      .sort((a, b) => Number(a) - Number(b))
+      .map((no) => docsByField.get(no))
+      .filter(Boolean);
+
+  const isMixed = () => quizFields.size > 1 || (field && !quizFields.has(String(Number(field))));
+
+  // 問題の上に出すラベル。複数の分野をまぜているときは分野名も付ける
+  const quizLabel = (item, sectionText) => {
+    const f = item.field && docsByField.get(item.field);
+    return isMixed() && f ? `${f.fieldName}・${sectionText}` : sectionText;
+  };
 
   const renderCard = (doc) => {
     const box = main.querySelector("[data-cards]");
@@ -469,7 +530,9 @@
   const renderQuiz = (doc) => {
     const box = main.querySelector("[data-quiz]");
     if (!quiz.list.length) {
-      box.innerHTML = `<p class="terms-empty">${doc.studyTerms.length || doc.questions.length ? "この範囲に問題がありません。" : "この用語集は用語名だけなので、クイズは使えません。"}</p>`;
+      const docs = multiField ? quizDocs() : [doc];
+      const usable = docs.some((d) => d.studyTerms.length || d.questions.length);
+      box.innerHTML = `<p class="terms-empty">${!docs.length ? "分野を1つ以上選んでください。" : usable ? "この範囲に問題がありません。" : "選んだ用語集は用語名だけなので、クイズは使えません。"}</p>`;
       return;
     }
     if (quiz.index >= quiz.list.length) {
@@ -499,12 +562,13 @@
       return;
     }
     const q = quiz.list[quiz.index];
-    const others = pickDistractors(doc, q.term);
+    // 誤りの選択肢は、その用語と同じ分野の用語集から選ぶ
+    const others = pickDistractors(docsByField.get(q.term.field) || doc, q.term);
     const choices = shuffle([q.term, ...others]);
 
     box.innerHTML = `
       <div class="quiz-card">
-        <p class="flash-count">第${quiz.index + 1}問 / ${quiz.list.length}<span>${escapeHtml(q.term.section)}</span></p>
+        <p class="flash-count">第${quiz.index + 1}問 / ${quiz.list.length}<span>${escapeHtml(quizLabel(q.term, q.term.section))}</span></p>
         <p class="quiz-question">${inline(maskName(q.term.meaning, q.term))}</p>
         <p class="quiz-ask">この説明にあてはまる用語は？</p>
         <div class="quiz-choices">${choices
@@ -597,7 +661,7 @@
     const KANA = "アイウエオカ";
     box.innerHTML = `
       <div class="quiz-card">
-        <p class="flash-count">第${quiz.index + 1}問 / ${quiz.list.length}<span>問題演習${q.section ? `・${escapeHtml(q.section)}` : ""}</span></p>
+        <p class="flash-count">第${quiz.index + 1}問 / ${quiz.list.length}<span>${escapeHtml(quizLabel(q, `問題演習${q.section ? `・${q.section}` : ""}`))}</span></p>
         <p class="quiz-question">${inline(q.text)}</p>
         <div class="quiz-choices">${q.choices
           .map((c, i) => `<button type="button" class="quiz-choice" data-choice="${i}">${KANA[i]}　${inline(c)}</button>`)
@@ -648,7 +712,7 @@
     const count = Number(main.querySelector("[data-quiz-count]").value);
     const kindSelect = main.querySelector("[data-quiz-kind]");
     const kind = kindSelect ? kindSelect.value : "terms";
-    const base = only || quizPool(doc, range, kind);
+    const base = only || quizPool(multiField ? quizDocs() : [doc], range, kind);
     quiz.list = shuffle(base).slice(0, only ? base.length : count || base.length);
     quiz.index = 0;
     quiz.correct = 0;
@@ -659,8 +723,9 @@
 
   /* 範囲の選択肢に「前に間違えた用語」を足す（1語以上あるときだけ） */
   const updateWrongOption = (doc) => {
-    const count = pool(doc, WRONG).length + questionPool(doc, WRONG).length;
+    const wrongCount = (docs) => docs.reduce((n, d) => n + pool(d, WRONG).length + questionPool(d, WRONG).length, 0);
     main.querySelectorAll("[data-quiz-range], [data-card-range]").forEach((select) => {
+      const count = wrongCount(select.matches("[data-quiz-range]") && multiField ? quizDocs() : [doc]);
       let option = select.querySelector(`option[value="${WRONG}"]`);
       if (!count) {
         if (option && select.value !== WRONG) option.remove();
@@ -676,17 +741,24 @@
     });
   };
 
+  /* 回答記録から、この用語集で最後の回答が不正解の用語・問題を集める */
+  const collectWrong = (doc) => {
+    if (!statsRows) return;
+    const prefix = `${topic}-${doc.field || field}-`;
+    const questionIds = new Set(doc.questions.map((q) => q.id));
+    statsRows.forEach((row) => {
+      const id = row.question_id;
+      if ((id.startsWith(prefix) || questionIds.has(id)) && row.last_answer_correct === false) wrongIds.add(id);
+    });
+  };
+
   /* 回答記録を読み、最後の回答が不正解の用語を集める */
   const loadWrong = async (doc) => {
     if (!window.StudySync) return;
     try {
-      const rows = await window.StudySync.fetchAllStats();
-      const prefix = `${topic}-${field}-`;
-      const questionIds = new Set(doc.questions.map((q) => q.id));
-      rows.forEach((row) => {
-        const id = row.question_id;
-        if ((id.startsWith(prefix) || questionIds.has(id)) && row.last_answer_correct === false) wrongIds.add(id);
-      });
+      statsRows = await window.StudySync.fetchAllStats();
+      collectWrong(doc);
+      docsByField.forEach((d) => collectWrong(d));
     } catch (error) {
       console.error("[terms]", error);
       return;
@@ -718,7 +790,98 @@
     store.set("mode", mode);
   };
 
+  /* クイズの「分野」選び。チェックを変えるたびに、選んだ分野の用語集を読んでシャッフルし直す */
+  const fieldSummary = () => {
+    const names = [...quizFields].sort((a, b) => Number(a) - Number(b)).map((no) => {
+      const info = fieldCatalog().find((f) => f.no === no);
+      return info ? info.name : `分野${no}`;
+    });
+    if (!names.length) return "分野：未選択";
+    if (names.length === 1) return `分野：${names[0]}だけ`;
+    if (names.length === 2) return `分野：${names.join("・")}`;
+    return `分野：${names.length}分野をまぜる`;
+  };
+
+  let fieldLoadSeq = 0;
+  const applyFields = async (doc) => {
+    const picker = main.querySelector("[data-quiz-fields]");
+    if (!picker) return;
+    picker.querySelector("summary").textContent = fieldSummary();
+    picker.querySelectorAll("[data-field-check]").forEach((c) => (c.checked = quizFields.has(c.value)));
+    const status = picker.querySelector("[data-fields-status]");
+    const seq = (fieldLoadSeq += 1);
+    const need = fieldCatalog().filter((f) => quizFields.has(f.no) && !docsByField.has(f.no));
+    if (need.length) status.textContent = "用語集を読み込んでいます…";
+    const failed = [];
+    await Promise.all(
+      need.map((info) =>
+        loadFieldDoc(info).catch((error) => {
+          console.error("[terms]", error);
+          failed.push(info.name);
+        })
+      )
+    );
+    if (seq !== fieldLoadSeq) return; // 読み込み中に選び直したら、新しいほうだけ反映する
+    status.textContent = failed.length ? `読み込めなかった分野：${failed.join("・")}` : "";
+    refreshQuizRange(doc);
+    startQuiz(doc);
+  };
+
+  // 複数の分野をまぜるときは、小分類の範囲は選べない（「すべて」と「前に間違えた問題」だけ）
+  const refreshQuizRange = (doc) => {
+    const select = main.querySelector("[data-quiz-range]");
+    const mixed = isMixed();
+    const keep = select.value;
+    select.innerHTML = `<option value="">すべて</option>${
+      mixed
+        ? ""
+        : doc.sections
+            .filter((s) => s.title)
+            .map((s) => `<option value="${escapeHtml(s.title)}">${escapeHtml(s.title)}</option>`)
+            .join("")
+    }`;
+    if (keep === WRONG || [...select.options].some((o) => o.value === keep)) {
+      if (keep === WRONG) {
+        const option = document.createElement("option");
+        option.value = WRONG;
+        select.insertBefore(option, select.options[1] || null);
+      }
+      select.value = keep;
+    }
+    updateWrongOption(doc);
+  };
+
+  const fillFieldPicker = (doc) => {
+    const picker = main.querySelector("[data-quiz-fields]");
+    const list = picker && picker.querySelector("[data-fields-list]");
+    if (!list || list.children.length) return;
+    const fields = fieldCatalog();
+    if (!fields.length) {
+      list.innerHTML = `<p class="quiz-fields-status">分野の一覧を読み込めませんでした。ページを開き直してください。</p>`;
+      return;
+    }
+    list.innerHTML = fields
+      .map(
+        (f) => `<label class="quiz-field"><input type="checkbox" data-field-check value="${escapeHtml(f.no)}" ${quizFields.has(f.no) ? "checked" : ""}>
+          <span class="quiz-field-no">${String(f.no).padStart(2, "0")}</span>${escapeHtml(f.name)}</label>`
+      )
+      .join("");
+    list.querySelectorAll("[data-field-check]").forEach((c) =>
+      c.addEventListener("change", () => {
+        if (c.checked) quizFields.add(c.value);
+        else quizFields.delete(c.value);
+        applyFields(doc);
+      })
+    );
+    picker.querySelector("summary").textContent = fieldSummary();
+  };
+
   const build = (doc) => {
+    if (multiField) {
+      const own = fieldCatalog().find((f) => f.no === String(Number(field)));
+      tagDoc(doc, field, own ? own.name : doc.title);
+      docsByField.set(doc.field, doc);
+    }
     const rangeOptions = `<option value="">すべて</option>${doc.sections
       .filter((s) => s.title)
       .map((s) => `<option value="${escapeHtml(s.title)}">${escapeHtml(s.title)}</option>`)
@@ -749,10 +912,24 @@
       </div>
 
       <div data-panel="quiz" hidden>
+        ${
+          multiField
+            ? `<details class="quiz-fields" data-quiz-fields>
+          <summary>分野：この分野だけ</summary>
+          <p class="quiz-fields-help">チェックした分野の問題をまぜて、シャッフルで出します。</p>
+          <div class="quiz-fields-actions">
+            <button type="button" class="terms-button" data-fields-all>すべての分野</button>
+            <button type="button" class="terms-button" data-fields-own>この分野だけ</button>
+          </div>
+          <div class="quiz-fields-list" data-fields-list></div>
+          <p class="quiz-fields-status" data-fields-status></p>
+        </details>`
+            : ""
+        }
         <div class="terms-options">
           <label>範囲 <select data-quiz-range>${rangeOptions}</select></label>
           ${
-            doc.questions.length
+            doc.questions.length || multiField
               ? `<label>出題 <select data-quiz-kind>
             <option value="mix">用語と問題をまぜる</option>
             <option value="terms">用語の4択だけ</option>
@@ -784,6 +961,31 @@
     main.querySelector("[data-quiz-new]").addEventListener("click", () => startQuiz(doc));
     main.querySelector("[data-quiz-range]").addEventListener("change", () => startQuiz(doc));
     if (main.querySelector("[data-quiz-kind]")) main.querySelector("[data-quiz-kind]").addEventListener("change", () => startQuiz(doc));
+
+    const picker = main.querySelector("[data-quiz-fields]");
+    if (picker) {
+      // catalog.js は site.js があとから読み込むので、開いたときに分野の一覧を作る
+      picker.addEventListener("toggle", () => picker.open && fillFieldPicker(doc));
+      picker.querySelector("[data-fields-all]").addEventListener("click", () => {
+        fillFieldPicker(doc);
+        fieldCatalog().forEach((f) => quizFields.add(f.no));
+        applyFields(doc);
+      });
+      picker.querySelector("[data-fields-own]").addEventListener("click", () => {
+        quizFields.clear();
+        quizFields.add(doc.field);
+        applyFields(doc);
+      });
+      const fillWhenReady = (tries = 0) => {
+        if (window.SITE_CATALOG) {
+          fillFieldPicker(doc);
+          const own = fieldCatalog().find((f) => f.no === doc.field);
+          if (own) doc.fieldName = own.name;
+          picker.querySelector("summary").textContent = fieldSummary();
+        } else if (tries < 40) setTimeout(() => fillWhenReady(tries + 1), 250);
+      };
+      fillWhenReady();
+    }
 
     // カード画面ではキーボードの ← → とスペースで操作できる
     document.addEventListener("keydown", (e) => {
