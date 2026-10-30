@@ -807,7 +807,8 @@
   };
 
   main.innerHTML = `<p class="terms-empty">用語集を読み込んでいます…</p>`;
-  fetch(src)
+  // 更新した用語集がすぐ反映されるよう、ブラウザの保存分を使う前に必ずサーバーに確認する
+  fetch(src, { cache: "no-cache" })
     .then((response) => {
       if (!response.ok) throw new Error(`${response.status}`);
       return response.text();
