@@ -389,7 +389,7 @@
     },
 
     /*
-      分野マップの目印の色。[{ field_key: "ap:11", color: "red" | "none", updated_at }]
+      分野マップの目印の色。[{ field_key: "ap:11", color: "red" | "none", in_progress, updated_at }]
       未ログインなら null、テーブルがまだ無いなどで使えないときは例外を投げる
     */
     fetchFieldColors: async function () {
@@ -399,7 +399,7 @@
       }
       const { data, error } = await supabaseClient
         .from(FIELD_COLORS_TABLE)
-        .select("field_key, color, updated_at")
+        .select("field_key, color, in_progress, updated_at")
         .eq("user_id", currentUser.id);
       if (error) {
         throw error;
@@ -407,7 +407,7 @@
       return data || [];
     },
 
-    /* 目印の色を保存する。rows は [{ field_key, color, updated_at }]（"none" は色なし） */
+    /* 目印の色を保存する。rows は [{ field_key, color, in_progress, updated_at }]（"none" は色なし） */
     saveFieldColors: async function (rows) {
       await ready;
       if (!currentUser || !supabaseClient || !rows.length) {
@@ -419,6 +419,7 @@
             user_id: currentUser.id,
             field_key: row.field_key,
             color: row.color,
+            in_progress: Boolean(row.in_progress),
             updated_at: row.updated_at,
           };
         }),
