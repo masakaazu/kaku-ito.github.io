@@ -6,6 +6,7 @@ create table if not exists public.field_colors (
   user_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
   field_key text not null check (field_key ~ '^[a-z]+:[0-9]{1,2}$'),
   color text not null check (color in ('none', 'red', 'orange', 'green', 'blue', 'purple')),
+  in_progress boolean not null default false,  -- 「着手中」の印
   updated_at timestamptz not null default now(),
   primary key (user_id, field_key)
 );
@@ -22,3 +23,6 @@ create policy "自分の分野色だけ削除できる" on public.field_colors
   for delete to authenticated using ((select auth.uid()) = user_id);
 
 grant select, insert, update, delete on public.field_colors to authenticated;
+
+-- 2026-10-30 追加：「着手中」の印（上の create を実行済みの場合はこれだけ実行する）
+alter table public.field_colors add column if not exists in_progress boolean not null default false;

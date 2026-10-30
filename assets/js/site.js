@@ -329,6 +329,7 @@
   /*
     分野カードの右下の丸を押すと、色を選べる（なし＋5色）。
     色の意味（何周目か等）は決めない。使う人が自分で決める。
+    色の横の「着手中」は色とは別の印で、押すたびに付く／外れる。
     - いつもこの端末（localStorage）に保存する
     - ログイン中で Supabase に field_colors テーブルがあれば、端末間で同期する
       （テーブルは tools/supabase/field_colors.sql で作る）
@@ -342,6 +343,9 @@
     { id: "purple", name: "紫" },
   ];
   const MARK_STORE = "site-field-colors";
+  // 着手中の印（半分塗りの丸）
+  const WORKING_ICON =
+    '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 3.5a4.5 4.5 0 0 1 0 9z" fill="currentColor"/></svg>';
 
   const colorPicker = (field) => `
             <button type="button" class="field-color-btn" aria-haspopup="true" aria-expanded="false" aria-label="${escapeHtml(field.name)}の目印の色を選ぶ"></button>
@@ -350,10 +354,11 @@
                 `<button type="button" class="field-color-option" role="radio" aria-checked="false" data-color="${c.id}" title="${c.name}" aria-label="${c.name}"${
                   c.id === "none" ? "" : ` style="--swatch: var(--theme-mark-${c.id})"`
                 }></button>`
-            ).join("")}</div>`;
+            ).join("")}<span class="field-color-sep" aria-hidden="true"></span><button type="button" class="field-working-toggle" aria-pressed="false" title="着手中" aria-label="着手中">${WORKING_ICON}</button></div>`;
 
   const fieldColors = (() => {
-    // { "ap:11": { c: "red", t: "2026-10-28T00:00:00.000Z" } }。c が "none" は色なしに戻したこと
+    // { "ap:11": { c: "red", w: true, t: "2026-10-28T00:00:00.000Z" } }
+    // c が "none" は色なしに戻したこと。w は着手中の印
     let marks = {};
     let sync = null; // ログイン中でテーブルが使えるときだけ入る
 
@@ -377,14 +382,26 @@
       document.querySelectorAll(".field-cell[data-field-key]").forEach((cell) => {
         const mark = marks[cell.dataset.fieldKey];
         const color = mark && mark.c !== "none" ? mark.c : "";
+        const working = Boolean(mark && mark.w);
         if (color) cell.dataset.mark = color;
         else delete cell.dataset.mark;
+        cell.classList.toggle("is-working", working);
+        const toggle = cell.querySelector(".field-working-toggle");
+        if (toggle) toggle.setAttribute("aria-pressed", String(working));
+        const head = cell.querySelector(".field-tile-head");
+        let badge = cell.querySelector(".field-working");
+        if (working && !badge && head) {
+          badge = document.createElement("span");
+          badge.className = "field-working";
+          badge.innerHTML = `${WORKING_ICON}着手中`;
+          head.querySelector(".field-no").after(badge);
+        } else if (!working && badge) badge.remove();
         cell.querySelectorAll(".field-color-option").forEach((opt) =>
           opt.setAttribute("aria-checked", String(opt.dataset.color === (color || "none")))
         );
         const btn = cell.querySelector(".field-color-btn");
         const name = cell.querySelector(".field-name");
-        if (btn && name) btn.setAttribute("aria-label", `${name.textContent}の目印の色を選ぶ（いま：${nameOf(color || "none")}）`);
+        if (btn && name) btn.setAttribute("aria-label", `${name.textContent}の目印の色を選ぶ（いま：${nameOf(color || "none")}${working ? "・着手中" : ""}）`);
       });
     };
 
@@ -397,13 +414,16 @@
       });
     };
 
-    const setColor = (key, color) => {
-      const mark = { c: color, t: new Date().toISOString() };
+    const toRow = (key, mark) => ({ field_key: key, color: mark.c, in_progress: Boolean(mark.w), updated_at: mark.t });
+
+    // change は { c: "red" } や { w: true } のように、変える項目だけ渡す
+    const update = (key, change) => {
+      const mark = { c: "none", w: false, ...marks[key], ...change, t: new Date().toISOString() };
       marks[key] = mark;
       write();
       apply();
       if (sync) {
-        sync.saveFieldColors([{ field_key: key, color: mark.c, updated_at: mark.t }]).catch((error) => {
+        sync.saveFieldColors([toRow(key, mark)]).catch((error) => {
           console.warn("[site] 目印の色を同期できませんでした", error);
         });
       }
@@ -421,13 +441,13 @@
       }
       if (!rows) return; // 未ログイン
       const cloud = {};
-      rows.forEach((r) => (cloud[r.field_key] = { c: r.color, t: new Date(r.updated_at).toISOString() }));
+      rows.forEach((r) => (cloud[r.field_key] = { c: r.color, w: Boolean(r.in_progress), t: new Date(r.updated_at).toISOString() }));
       Object.entries(cloud).forEach(([key, mark]) => {
         if (!marks[key] || mark.t > marks[key].t) marks[key] = mark;
       });
       const push = Object.entries(marks)
         .filter(([key, mark]) => !cloud[key] || mark.t > cloud[key].t)
-        .map(([key, mark]) => ({ field_key: key, color: mark.c, updated_at: mark.t }));
+        .map(([key, mark]) => toRow(key, mark));
       write();
       apply();
       sync = studySync;
@@ -445,7 +465,15 @@
         const option = event.target.closest(".field-color-option");
         if (option) {
           const cell = option.closest(".field-cell");
-          setColor(cell.dataset.fieldKey, option.dataset.color);
+          update(cell.dataset.fieldKey, { c: option.dataset.color });
+          closeMenus();
+          cell.querySelector(".field-color-btn").focus();
+          return;
+        }
+        const toggle = event.target.closest(".field-working-toggle");
+        if (toggle) {
+          const cell = toggle.closest(".field-cell");
+          update(cell.dataset.fieldKey, { w: toggle.getAttribute("aria-pressed") !== "true" });
           closeMenus();
           cell.querySelector(".field-color-btn").focus();
           return;
