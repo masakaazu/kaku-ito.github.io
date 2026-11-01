@@ -78,6 +78,18 @@ table.vs td { font-size: 13.5px; padding: 9px 8px; }
 .big { font-size: 15px; line-height: 1.7; }
 .chapter p { max-width: 500px; line-height: 1.7; }
 svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+
 /* 参照元リンク（tools/slides/addrefs.py が付ける） */
 a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
 a.ref.q, a.src { color: var(--blue, #0071e3); }
@@ -92,12 +104,11 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 <section class="slide title">
   <div class="k">応用情報技術者試験　テクノロジ系　#3</div>
   <h1>コンピュータ構成要素</h1>
-  <p>用語集まとめ ― 過去問10回分（令和3〜7年度）で出たところを中心に</p>
+  <p>用語集まとめ ― 過去問33回・125問と規格団体の公開資料で確かめた図解・例題つき</p>
   <div class="icons"><img src="img/comp/desktop_computer_flat.svg" alt=""><img src="img/comp/gear_flat.svg" alt=""><img src="img/comp/floppy_disk_flat.svg" alt=""><img src="img/comp/bus_flat.svg" alt=""><img src="img/comp/electric_plug_flat.svg" alt=""><img src="img/comp/printer_flat.svg" alt=""></div>
   <div class="refs-legend">点線の下線の用語・青い過去問番号・各ページ下の「詳しく：」を押すと、参照元のサイト（e-Words／応用情報技術者試験.com）で詳しい解説が開く</div>
 </section>
 
-<!-- 全体像 -->
 <section class="slide">
   <h1>全体像<small>シラバスの5つの小分類で読む</small></h1>
   <div class="cols">
@@ -121,7 +132,6 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-2/">応用情報.com 用語集 3-2 メモリ</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
 </section>
 
-<!-- 出題傾向 -->
 <section class="slide">
   <h1>過去10回・40問の内訳<small>令和3年度春期〜令和7年度秋期</small></h1>
   <div class="cols" style="grid-template-columns:1.25fr .75fr">
@@ -145,7 +155,46 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/3/3-2/">応用情報.com 用語集 3-2 メモリ</a></div>
 </section>
 
-<!-- 第1章 -->
+<section class="slide">
+  <h1><img class="ico" src="img/comp/chart_increasing_flat.svg" alt="">33回・125問で見ると、キャッシュ・高速化・主記憶が3本柱<small>H21春〜R7秋</small></h1>
+  <div class="cols" style="grid-template-columns:1.05fr .95fr;gap:26px">
+    <div>
+      <div class="cap">テーマ別の出題数（午前・この分野の全125問）</div>
+      <svg viewBox="0 0 440 300" width="440" height="300">
+        <g font-size="12" fill="#1d1d1f">
+          <text x="0" y="24">キャッシュメモリ</text><rect x="150" y="10" width="230" height="20" rx="3" fill="#1f3a68"/><text x="386" y="25" font-weight="700">23</text>
+          <text x="0" y="58">パイプライン・高速化</text><rect x="150" y="44" width="230" height="20" rx="3" fill="#1f3a68"/><text x="386" y="59" font-weight="700">23</text>
+          <text x="0" y="92">主記憶・フラッシュ</text><rect x="150" y="78" width="230" height="20" rx="3" fill="#1f3a68"/><text x="386" y="93" font-weight="700">23</text>
+          <text x="0" y="126">レジスタ・命令・割込み</text><rect x="150" y="112" width="120" height="20" rx="3" fill="#2f5596"/><text x="276" y="127" font-weight="700">12</text>
+          <text x="0" y="160">並列・GPU・量子・省電力</text><rect x="150" y="146" width="120" height="20" rx="3" fill="#2f5596"/><text x="276" y="161" font-weight="700">12</text>
+          <text x="0" y="194">性能の計算</text><rect x="150" y="180" width="110" height="20" rx="3" fill="#5b80bf"/><text x="266" y="195" font-weight="700">11</text>
+          <text x="0" y="228">入出力インタフェース</text><rect x="150" y="214" width="110" height="20" rx="3" fill="#5b80bf"/><text x="266" y="229" font-weight="700">11</text>
+          <text x="0" y="262">入出力装置</text><rect x="150" y="248" width="100" height="20" rx="3" fill="#5b80bf"/><text x="256" y="263" font-weight="700">10</text>
+          <text x="150" y="292" fill="#6e6e73" font-size="11">1回あたり3〜5問。上の3つで全体の55%</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="cap">何度も出た論点（同じ論点の回数）</div>
+      <table class="mini">
+        <tr><th>論点</th><th style="width:15%">回数</th><th>この資料</th></tr>
+        <tr><td>実効アクセス時間・ヒット率</td><td><b>9</b></td><td>キャッシュの計算</td></tr>
+        <tr><td><a class="ref" href="https://www.ap-siken.com/keyword/3/3-2/#02525e72ba1bf91c07f26da894ee10ff997c7131">ライトスルー</a>と<a class="ref" href="https://www.ap-siken.com/keyword/3/3-2/#8f3835b0ed1b6612344d54f8afdaef087a3268af">ライトバック</a></td><td><b>9</b></td><td>ダーティビットの例題</td></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/CPI.html">CPI</a>・<a class="ref" href="https://e-words.jp/w/MIPS.html">MIPS</a>・<a class="ref" href="https://e-words.jp/w/FLOPS.html">FLOPS</a> の計算</td><td><b>9</b></td><td><a class="ref" href="https://e-words.jp/w/%E5%91%BD%E4%BB%A4%E3%83%9F%E3%83%83%E3%82%AF%E3%82%B9.html">命令ミックス</a>の例題</td></tr>
+        <tr><td>メモリインタリーブ</td><td><b>8</b></td><td>バンクのタイミング図</td></tr>
+        <tr><td>パイプラインのサイクル数・図</td><td><b>8</b></td><td>k＋(n−1) の式</td></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/SIMD.html">SIMD</a>・<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/#56d15d7d801923c4cae763764f2d2ea617024411">MIMD</a>・<a class="ref" href="https://e-words.jp/w/GPU.html">GPU</a></td><td><b>7</b></td><td>4つを一度に足す図</td></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/%E3%82%B9%E3%83%BC%E3%83%91%E3%83%BC%E3%82%B9%E3%82%AB%E3%83%A9.html">スーパースカラ</a>／<a class="ref" href="https://e-words.jp/w/VLIW.html">VLIW</a></td><td><b>5／5</b></td><td>判断するのは誰か</td></tr>
+        <tr><td>スタックポインタ・PC</td><td><b>5</b></td><td><a class="ref" href="https://e-words.jp/w/%E3%83%AC%E3%82%B8%E3%82%B9%E3%82%BF.html">レジスタ</a>で追う例題</td></tr>
+        <tr><td>ハミング符号・<a class="ref" href="https://e-words.jp/w/DMA.html">DMA</a>・<a class="ref" href="https://e-words.jp/w/USB.html">USB</a></td><td><b>4ずつ</b></td><td>手で直す・流れ図・世代表</td></tr>
+      </table>
+      <div class="point"><b>使い方：</b>回数の多い論点ほど、そっくりの問題がまた出る。平成の問題も令和の問題も、選択肢の顔ぶれはほとんど変わらない。</div>
+    </div>
+  </div>
+  <div class="cite">集計：IPA 応用情報技術者試験 午前 問題冊子（<a href="https://www.ipa.go.jp/shiken/mondai-kaiotu/index.html">IPA 過去問題</a>）33回分の問7〜問13 を読み、分野は<a href="https://www.ap-siken.com/">応用情報技術者試験.com</a>の分類で確かめた。論点の分け方と数はClaudeによる</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/3/3-2/">応用情報.com 用語集 3-2 メモリ</a></div>
+</section>
+
 <section class="slide chapter">
   <div class="hero-icons ira"><img src="img/irasutoya/cpu.png" alt=""><img src="img/irasutoya/conveyor.png" alt=""><img src="img/irasutoya/fast.png" alt=""><img src="img/comp/atom_symbol_flat.svg" alt=""></div>
   <div class="k">第1章</div>
@@ -194,6 +243,45 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
     </div>
   </div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/3/3-5/">応用情報.com 用語集 3-5 入出力装置</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/comp/gear_flat.svg" alt="">命令1つの一生をレジスタで追う：「GR1 に 200番地の値を足す」</h1>
+  <div class="cols" style="grid-template-columns:.95fr 1.05fr;gap:24px">
+    <svg viewBox="0 0 420 330" width="420" height="330">
+      <defs><marker id="ar1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#b25000"/></marker></defs>
+      <rect x="0" y="0" width="260" height="330" rx="10" fill="#e8eef8" stroke="#c9daf2"/>
+      <text x="10" y="20" font-size="13" font-weight="700" fill="#1f3a68">CPU</text>
+      <g font-size="12">
+        <rect x="14" y="34" width="110" height="40" rx="6" fill="#1f3a68"/><text x="69" y="52" fill="#fff" text-anchor="middle" font-weight="700">PC</text><text x="69" y="67" fill="#fff" text-anchor="middle">100 → 101</text>
+        <rect x="136" y="34" width="110" height="40" rx="6" fill="#1f3a68"/><text x="191" y="52" fill="#fff" text-anchor="middle" font-weight="700">IR（命令）</text><text x="191" y="67" fill="#fff" text-anchor="middle">ADD GR1,200</text>
+        <rect x="136" y="100" width="110" height="40" rx="6" fill="#2f5596"/><text x="191" y="118" fill="#fff" text-anchor="middle" font-weight="700">デコーダ</text><text x="191" y="133" fill="#fff" text-anchor="middle">「足し算」と解読</text>
+        <rect x="14" y="100" width="110" height="40" rx="6" fill="#2f5596"/><text x="69" y="118" fill="#fff" text-anchor="middle" font-weight="700">MAR（番地）</text><text x="69" y="133" fill="#fff" text-anchor="middle">100 → 200</text>
+        <rect x="14" y="166" width="110" height="40" rx="6" fill="#2f5596"/><text x="69" y="184" fill="#fff" text-anchor="middle" font-weight="700">DR（データ）</text><text x="69" y="199" fill="#fff" text-anchor="middle">命令 → 30</text>
+        <rect x="136" y="166" width="110" height="40" rx="6" fill="#5b80bf"/><text x="191" y="184" fill="#fff" text-anchor="middle" font-weight="700">GR1</text><text x="191" y="199" fill="#fff" text-anchor="middle">12 → 42</text>
+        <path d="M70,240 L170,240 L150,290 L90,290 Z" fill="#c9daf2" stroke="#5b80bf"/><text x="120" y="270" text-anchor="middle" fill="#1f3a68" font-weight="700">ALU 12＋30</text>
+        <line x1="69" y1="206" x2="100" y2="240" stroke="#5b80bf" stroke-width="2"/><line x1="191" y1="206" x2="150" y2="240" stroke="#5b80bf" stroke-width="2"/>
+        <path d="M150,290 C230,300 250,250 220,208" fill="none" stroke="#b25000" stroke-width="2" marker-end="url(#ar1)"/>
+      </g>
+      <rect x="290" y="20" width="130" height="300" rx="10" fill="#fff" stroke="#d2d2d7"/>
+      <text x="300" y="40" font-size="13" font-weight="700" fill="#1f3a68">主記憶</text>
+      <g font-size="12"><rect x="300" y="56" width="110" height="46" rx="5" fill="#f5f5f7" stroke="#d2d2d7"/><text x="306" y="74">100番地</text><text x="306" y="92" font-weight="700">ADD GR1,200</text>
+      <rect x="300" y="200" width="110" height="46" rx="5" fill="#f5f5f7" stroke="#d2d2d7"/><text x="306" y="218">200番地</text><text x="306" y="236" font-weight="700">30</text></g>
+      <path d="M124,118 C200,95 250,85 298,80" fill="none" stroke="#b25000" stroke-width="2" marker-end="url(#ar1)"/><text x="215" y="86" font-size="11" fill="#b25000">①③</text>
+      <path d="M298,224 C230,220 160,200 126,190" fill="none" stroke="#b25000" stroke-width="2" marker-end="url(#ar1)"/><text x="232" y="232" font-size="11" fill="#b25000">③</text>
+    </svg>
+    <div>
+      <ol class="steps">
+        <li><b>命令の取出し（<a class="ref" href="https://e-words.jp/w/%E3%83%95%E3%82%A7%E3%83%83%E3%83%81.html">フェッチ</a>）</b>：PC の100を MAR に移して主記憶を読む。届いた命令は DR を通って IR へ。PC は次の101に進める</li>
+        <li><b>解読（デコード）</b>：デコーダが IR の命令部を読み「足し算・相手は200番地」と分かる</li>
+        <li><b>データの取出し</b>：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/#3938baf8a8c3b17e1d989440b7cb54399be13ce3">アドレス部</a>の200（<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/#85e3e7849f6da5ffb4662302c3b40536ecf3c342">有効アドレス</a>）を MAR に入れて読む。DR に 30 が届く</li>
+        <li><b>実行</b>：ALU が GR1 の12と DR の30を足し、42を GR1 に書く。結果がゼロか・負か・あふれたかはフラグ（PSW）に残る</li>
+      </ol>
+      <div class="point"><b>過去問の選択肢はこの役割分担から作られる：</b>「次の命令の番地」＝PC、「読み出した命令」＝IR、「読み出したデータ」＝DR、「演算結果の状態」＝フラグ（<a class="ref q" href="https://www.ap-siken.com/kakomon/01_aki/q9.html">R1秋 問9</a>・H29春 問8）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA シラバス Ver.7.2 中分類3（5）プロセッサの構造と方式・（6）②命令の実行手順。数値はClaudeが作った例</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
 </section>
 
 <section class="slide">
@@ -266,6 +354,83 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/comp/package_flat.svg" alt="">スタックは「最後に積んだものから出す」。スタックポインタは一番上の番地</h1>
+  <div class="cols" style="grid-template-columns:1.2fr .8fr;gap:24px">
+    <div>
+      <div class="cap">メイン → 関数A → 関数B と呼び、Bから戻るまで</div>
+      <svg viewBox="0 98 470 154" width="470" height="154">
+        <g font-size="12">
+          <g transform="translate(0,0)"><text x="50" y="112" text-anchor="middle" font-weight="700" fill="#1f3a68">① 最初</text>
+            <rect x="10" y="190" width="80" height="34" fill="#f5f5f7" stroke="#d2d2d7"/><text x="50" y="211" text-anchor="middle" fill="#6e6e73">（空）</text>
+            <text x="50" y="244" text-anchor="middle">SP＝1000</text></g>
+          <g transform="translate(120,0)"><text x="50" y="112" text-anchor="middle" font-weight="700" fill="#1f3a68">② Aを呼ぶ</text>
+            <rect x="10" y="156" width="80" height="34" fill="#2f5596"/><text x="50" y="177" text-anchor="middle" fill="#fff">戻り先 101</text>
+            <rect x="10" y="190" width="80" height="34" fill="#f5f5f7" stroke="#d2d2d7"/>
+            <text x="50" y="244" text-anchor="middle">SP＝999</text></g>
+          <g transform="translate(240,0)"><text x="50" y="112" text-anchor="middle" font-weight="700" fill="#1f3a68">③ AがBを呼ぶ</text>
+            <rect x="10" y="122" width="80" height="34" fill="#1f3a68"/><text x="50" y="143" text-anchor="middle" fill="#fff">戻り先 305</text>
+            <rect x="10" y="156" width="80" height="34" fill="#2f5596"/><text x="50" y="177" text-anchor="middle" fill="#fff">戻り先 101</text>
+            <rect x="10" y="190" width="80" height="34" fill="#f5f5f7" stroke="#d2d2d7"/>
+            <text x="50" y="244" text-anchor="middle">SP＝998</text></g>
+          <g transform="translate(360,0)"><text x="50" y="112" text-anchor="middle" font-weight="700" fill="#1f3a68">④ Bから戻る</text>
+            <rect x="10" y="122" width="80" height="34" fill="none" stroke="#b25000" stroke-dasharray="4 3"/><text x="50" y="143" text-anchor="middle" fill="#b25000">305を取出し</text>
+            <rect x="10" y="156" width="80" height="34" fill="#2f5596"/><text x="50" y="177" text-anchor="middle" fill="#fff">戻り先 101</text>
+            <rect x="10" y="190" width="80" height="34" fill="#f5f5f7" stroke="#d2d2d7"/>
+            <text x="50" y="244" text-anchor="middle">SP＝999</text></g>
+        </g>
+      </svg>
+      <div class="point">呼ぶたびに戻り先を積み（プッシュ）、戻るときに一番上から取り出す（ポップ）。だから入れ子の呼出しも、再帰呼出しも、正しい順番で戻れる。割込みのときも、元のPCや<a class="ref" href="https://e-words.jp/w/%E3%83%AC%E3%82%B8%E3%82%B9%E3%82%BF.html">レジスタ</a>をここに退避する。</div>
+    </div>
+    <div>
+      <div class="cap">レジスタの役割（選択肢に並ぶ顔ぶれ）</div>
+      <table class="mini">
+        <tr><th>レジスタ</th><th>中身</th></tr>
+        <tr><td><b>スタックポインタ</b></td><td>スタックの一番上の番地</td></tr>
+        <tr><td>プログラムカウンタ</td><td>次に取り出す命令の番地</td></tr>
+        <tr><td>命令レジスタ</td><td>取り出した命令そのもの</td></tr>
+        <tr><td>PSW・フラグ</td><td>演算結果の状態、割込みの許可</td></tr>
+        <tr><td>MAR／DR</td><td>読み書きする番地／データ</td></tr>
+      </table>
+      <div class="point warn"><b>3回同じ問題：</b>H24秋 問10・H28春 問8・<a class="ref q" href="https://www.ap-siken.com/kakomon/02_aki/q8.html">R2秋 問8</a>「スタックポインタが示すもの」。誤りの3つは PC・IR・PSW の中身。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA シラバス Ver.7.2 中分類3（5）用語例「スタックポインタ」／IPA 平成24年度秋期・平成28年度春期・令和2年度10月 午前 問題。番地はClaudeが作った例</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/comp/puzzle_piece_flat.svg" alt="">RISCとCISC：命令をそろえて速く回すか、1命令に多くを詰めるか</h1>
+  <div class="cols" style="grid-template-columns:1.1fr .9fr;gap:24px">
+    <div>
+      <table>
+        <tr><th></th><th>RISC</th><th>CISC</th></tr>
+        <tr><td>命令の長さ</td><td><b>固定長</b>（例：32ビット）</td><td><b>可変長</b>（短い命令も長い命令も）</td></tr>
+        <tr><td>命令の数と中身</td><td>少なく単純。メモリを触るのはロードとストアだけ</td><td>多く複雑。1命令でメモリの値を直接計算できる</td></tr>
+        <tr><td>制御のしかた</td><td>回路で直接（ワイヤードロジック）</td><td>マイクロプログラム制御が多い</td></tr>
+        <tr><td>パイプライン</td><td>段をそろえやすく向いている</td><td>中で単純な命令に分けてから流す</td></tr>
+        <tr><td>実物の例</td><td>Arm（スマートフォン、Apple M1）、RISC-V</td><td>インテル・AMD の x86</td></tr>
+      </table>
+      <div class="point"><b>RISC-V</b> は「誰でも使用料なしで使える、オープンな命令セットの規格」（RISC-V International）。命令セット（ISA）は、ソフトとハードの間の約束ごとの一覧のこと。</div>
+    </div>
+    <div>
+      <div class="cap">マイクロプログラム制御</div>
+      <div class="flow" style="margin:8px 0">
+        <div class="box b1">機械語命令<span>ADD など</span></div><div class="to">→</div>
+        <div class="box b2">マイクロプログラム<span>制御記憶にある小さな手順</span></div><div class="to">→</div>
+        <div class="box b3">回路を動かす<span>信号の列</span></div>
+      </div>
+      <table class="mini">
+        <tr><th>種類</th><th>特徴</th></tr>
+        <tr><td>水平型</td><td>1語が長く、多くの回路を同時に直接動かす。速い</td></tr>
+        <tr><td>垂直型</td><td>1語が短く、解読してから動かす。メモリが少なくて済む</td></tr>
+      </table>
+      <div class="point">マイクロプログラムを書き換えると、別のコンピュータの命令をまねて動かせる（エミュレーション）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA シラバス Ver.7.2 中分類3（4）③命令セット・（7）マイクロプログラム制御／<a href="https://riscv.org/about/">RISC-V International「About」</a>／<a href="https://www.apple.com/newsroom/2020/11/apple-unleashes-m1/">Apple Newsroom「Apple unleashes M1」(2020)</a>／<a href="https://en.wikipedia.org/wiki/Reduced_instruction_set_computer">Wikipedia「Reduced instruction set computer」</a>／<a href="https://en.wikipedia.org/wiki/Microcode">「Microcode」</a></div>
+</section>
+
+<section class="slide">
   <h1><img class="ico" src="img/comp/magnifying_glass_tilted_left_flat.svg" alt="">アドレス指定は「アドレス部の値に何を足すか、何回たどるか」の違い</h1>
   <div class="cols">
     <div>
@@ -300,6 +465,38 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
       <div class="point warn">「有効アドレス」は<b>番地</b>。その番地に入っている<b>データ</b>（例では700）と取り違える誤りの選択肢が定番。</div>
     </div>
   </div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/comp/magnifying_glass_tilted_left_flat.svg" alt="">アドレス指定は、1枚のメモリ表で6つとも計算できる</h1>
+  <div class="cols" style="grid-template-columns:.62fr 1.38fr;gap:22px">
+    <div>
+      <div class="ex"><span class="lbl">例題</span>命令「LD GR0, <b>100</b>」（<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/#3938baf8a8c3b17e1d989440b7cb54399be13ce3">アドレス部</a>＝100）。<a class="ref" href="https://e-words.jp/w/%E3%82%A4%E3%83%B3%E3%83%87%E3%83%83%E3%82%AF%E3%82%B9%E3%83%AC%E3%82%B8%E3%82%B9%E3%82%BF.html">インデックスレジスタ</a>＝<b>3</b>、<a class="ref" href="https://e-words.jp/w/%E3%83%99%E3%83%BC%E3%82%B9%E3%83%AC%E3%82%B8%E3%82%B9%E3%82%BF.html">ベースレジスタ</a>＝<b>500</b>、PC（次の命令の番地）＝<b>40</b>。</div>
+      <table class="mini" style="margin-top:10px">
+        <tr><th>番地</th><th>中身</th></tr>
+        <tr><td>100</td><td>250</td></tr>
+        <tr><td>103</td><td>77</td></tr>
+        <tr><td>140</td><td>55</td></tr>
+        <tr><td>250</td><td>999</td></tr>
+        <tr><td>600</td><td>12</td></tr>
+      </table>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:17%">方式</th><th style="width:33%"><a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/#85e3e7849f6da5ffb4662302c3b40536ecf3c342">有効アドレス</a>の出し方</th><th style="width:16%">有効アドレス</th><th>GR0 に入る値</th></tr>
+        <tr><td>即値</td><td>アドレス部がデータそのもの</td><td>（なし）</td><td><b>100</b></td></tr>
+        <tr><td>直接（絶対）</td><td>アドレス部のまま</td><td>100</td><td><b>250</b></td></tr>
+        <tr><td>間接</td><td>100番地の中身を番地として使う</td><td>250</td><td><b>999</b></td></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/%E3%82%A4%E3%83%B3%E3%83%87%E3%83%83%E3%82%AF%E3%82%B9.html">インデックス</a></td><td>100 ＋ インデックス 3</td><td>103</td><td><b>77</b></td></tr>
+        <tr><td>ベース</td><td>ベース 500 ＋ 100</td><td>600</td><td><b>12</b></td></tr>
+        <tr><td>相対</td><td>PC 40 ＋ 100</td><td>140</td><td><b>55</b></td></tr>
+      </table>
+      <div class="point"><b>2段で考える：</b>まず「有効アドレス（データのある番地）」を出し、次に「その番地の中身」を読む。問題が番地を聞いているのか、データを聞いているのかで答えが変わる。</div>
+      <div class="point warn"><b>過去問：</b>H26春 問10（絶対アドレス＝アドレス部をそのまま使う）、H28秋 問9（間接＝「アドレスが入っている場所のアドレス」）。どちらも誤りの選択肢はこの表のほかの行。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA シラバス Ver.7.2 中分類3（6）②アドレス修飾の用語例／IPA 平成26年度春期 午前 問10・平成28年度秋期 午前 問9。数値はClaudeが作った例題</div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
 </section>
 
@@ -341,6 +538,30 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/comp/bell_flat.svg" alt="">多重割込みはタイムラインに描けば解ける</h1>
+  <div class="ex"><span class="lbl">H26春 問9</span>割込みA（0.5ミリ秒・優先度 高）は 1.0・2.5・3.5 ミリ秒に、割込みB（1.5ミリ秒・優先度 低）は 0・5.0 ミリ秒に発生。0〜5ミリ秒でメイン処理が使える<a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a>時間は？</div>
+  <svg viewBox="0 0 856 170" width="856" height="170" style="margin-top:8px">
+    <g font-size="12">
+      <text x="0" y="40" font-weight="700" fill="#1f3a68">割込みA</text><text x="0" y="82" font-weight="700" fill="#1f3a68">割込みB</text><text x="0" y="124" font-weight="700" fill="#1f3a68">メイン</text>
+      <g stroke="#d2d2d7"><line x1="90" y1="18" x2="90" y2="140"/><line x1="230" y1="18" x2="230" y2="140"/><line x1="370" y1="18" x2="370" y2="140"/><line x1="510" y1="18" x2="510" y2="140"/><line x1="650" y1="18" x2="650" y2="140"/><line x1="790" y1="18" x2="790" y2="140"/></g>
+      <g fill="#6e6e73" text-anchor="middle"><text x="90" y="158">0</text><text x="230" y="158">1</text><text x="370" y="158">2</text><text x="510" y="158">3</text><text x="650" y="158">4</text><text x="790" y="158">5ミリ秒</text></g>
+      <rect x="230" y="26" width="70" height="24" fill="#1f3a68"/><rect x="440" y="26" width="70" height="24" fill="#1f3a68"/><rect x="580" y="26" width="70" height="24" fill="#1f3a68"/>
+      <rect x="90" y="68" width="140" height="24" fill="#5b80bf"/><rect x="300" y="68" width="70" height="24" fill="#5b80bf"/>
+      <text x="160" y="85" fill="#fff" text-anchor="middle">B 1.0</text><text x="335" y="85" fill="#fff" text-anchor="middle">B 0.5</text>
+      <rect x="370" y="110" width="70" height="24" fill="#b25000"/><rect x="510" y="110" width="70" height="24" fill="#b25000"/><rect x="650" y="110" width="140" height="24" fill="#b25000"/>
+      <text x="405" y="127" fill="#fff" text-anchor="middle">0.5</text><text x="545" y="127" fill="#fff" text-anchor="middle">0.5</text><text x="720" y="127" fill="#fff" text-anchor="middle">1.0</text>
+      <text x="265" y="20" text-anchor="middle" fill="#b25000" font-size="11">Bを中断してAが割り込む</text>
+    </g>
+  </svg>
+  <div class="cols" style="grid-template-columns:1fr 1fr;gap:20px">
+    <div class="point"><b>答え：</b>メインは 0.5＋0.5＋1.0＝<b>2ミリ秒（ア）</b>。高い優先度のAは、実行中のBを中断して先に動く。5.0ミリ秒のBは範囲の外。</div>
+    <div class="point"><b>H26春 問8（割合の型）：</b>100MIPS のCPUで、1ミリ秒ごとに1万命令の割込み処理。1ミリ秒に10万命令なので割込みが10%。残りは <b>90MIPS 相当</b>。</div>
+  </div>
+  <div class="cite">出典：IPA 平成26年度春期 応用情報技術者試験 午前 問8・問9（表と図をClaudeが図に描き直した）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
+</section>
+
+<section class="slide">
   <h1><img class="ico" src="img/comp/stopwatch_flat.svg" alt="">性能の計算は「1命令の平均時間」を出してから逆数にする</h1>
   <div class="cols">
     <div>
@@ -367,6 +588,65 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
       <div class="point warn">誤りの選択肢は計算の途中の数（25）や、重みを付けずに足した数（90、その逆数の11）。<b>最後に逆数にしたか</b>を確かめる。</div>
     </div>
   </div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/comp/abacus_flat.svg" alt="">CPIは命令ミックスの加重平均。3つの手順で MIPS まで行く</h1>
+  <div class="cols" style="grid-template-columns:1fr 1fr;gap:24px">
+    <div>
+      <div class="ex"><span class="lbl">H22秋 問9</span>700MHz の<a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a>。命令の種類ごとのクロック数と出現率は下の表。約何<a class="ref" href="https://e-words.jp/w/MIPS.html">MIPS</a>か。</div>
+      <table style="margin-top:8px">
+        <tr><th>命令</th><th>クロック数</th><th>出現率</th><th>クロック×率</th></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/%E3%83%AC%E3%82%B8%E3%82%B9%E3%82%BF.html">レジスタ</a>間演算</td><td>4</td><td>30%</td><td>1.2</td></tr>
+        <tr><td>メモリ・レジスタ間演算</td><td>8</td><td>60%</td><td>4.8</td></tr>
+        <tr><td>無条件分岐</td><td>10</td><td>10%</td><td>1.0</td></tr>
+        <tr><td colspan="3"><b>平均（<a class="ref" href="https://e-words.jp/w/CPI.html">CPI</a>）</b></td><td><b>7</b></td></tr>
+      </table>
+    </div>
+    <div>
+      <ol class="steps">
+        <li><b>CPIを出す</b>：クロック数×出現率を足す → <b>7クロック／命令</b></li>
+        <li><b>1秒のクロック数</b>：700MHz → <b>7億クロック／秒</b></li>
+        <li><b>割る</b>：7億 ÷ 7 ＝ 1億命令／秒 ＝ <b>100MIPS（エ）</b></li>
+      </ol>
+      <div class="formula" style="font-size:15px">MIPS ＝ <a class="ref" href="https://e-words.jp/w/%E3%82%AF%E3%83%AD%E3%83%83%E3%82%AF%E5%91%A8%E6%B3%A2%E6%95%B0.html">クロック周波数</a>（MHz）÷ CPI</div>
+      <div class="point">時間で考えても同じ。1クロック＝1÷700M≒1.43ナノ秒、1命令＝7×1.43≒10ナノ秒、1÷10ナノ秒＝1億命令／秒。</div>
+      <div class="point warn"><b>誤りの選択肢：</b>70 は700を一番遅い分岐の10で割った値（重み付けなし）。10 は桁の取り違え。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成22年度秋期 応用情報技術者試験 午前 問9（表をClaudeが書き直した）／<a href="https://en.wikipedia.org/wiki/Cycles_per_instruction">Wikipedia「Cycles per instruction」</a>／<a href="https://en.wikipedia.org/wiki/Instructions_per_second">「Instructions per second」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/comp/stopwatch_flat.svg" alt="">処理時間＝命令数×CPI×サイクルタイム。比べる問題は3回出た</h1>
+  <div class="formula"><a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a>時間 ＝ 命令数 × <a class="ref" href="https://e-words.jp/w/CPI.html">CPI</a> × サイクルタイム（＝1÷<a class="ref" href="https://e-words.jp/w/%E3%82%AF%E3%83%AD%E3%83%83%E3%82%AF%E5%91%A8%E6%B3%A2%E6%95%B0.html">クロック周波数</a>）</div>
+  <div class="cols" style="grid-template-columns:1fr 1fr;gap:24px">
+    <div>
+      <div class="ex"><span class="lbl">例題</span>同じ命令セットのコンピュータ A と B。A：クロック周期 1ナノ秒・CPI 4.0、B：クロック周期 4ナノ秒・CPI 0.5。A の処理時間は B の何倍か。</div>
+      <ol class="steps" style="margin-top:8px">
+        <li>同じ命令セット・同じプログラムなので<b>命令数は同じ</b>。比べるのは「CPI×周期」だけ</li>
+        <li>A：4.0×1＝4ナノ秒／命令、B：0.5×4＝2ナノ秒／命令</li>
+        <li>4÷2＝<b>2倍</b>（A の方が遅い）</li>
+      </ol>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th>出た回</th><th>型</th></tr>
+        <tr><td>H22春 問10・H24春 問12・<a class="ref q" href="https://www.ap-siken.com/kakomon/07_haru/q8.html">R7春 問8</a></td><td>この例題と同じ型（3回）</td></tr>
+        <tr><td><a class="ref q" href="https://www.ap-siken.com/kakomon/05_haru/q8.html">R5春 問8</a></td><td>1.25GHz で毎秒10億命令 → CPI＝1.25</td></tr>
+      </table>
+      <div class="cap" style="margin-top:12px">単位の早見</div>
+      <table class="mini">
+        <tr><td>k＝10³　M＝10⁶　G＝10⁹　T＝10¹²</td></tr>
+        <tr><td>m＝10⁻³　μ＝10⁻⁶　n＝10⁻⁹　p＝10⁻¹²</td></tr>
+        <tr><td>1GHz ⇔ 1ナノ秒、1MHz ⇔ 1マイクロ秒</td></tr>
+      </table>
+      <div class="point warn"><b>落とし穴：</b>「クロックが速い方が速い」とは限らない。CPI が大きいと逆転する。誤りの選択肢 1/32 や 8 は、片方だけで比べた値。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成22年度春期 午前 問10・平成24年度春期 午前 問12・令和7年度春期 午前 問8・令和5年度春期 午前 問8。例題の数値は令和7年度春期 問8の形に合わせてClaudeが書いた</div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
 </section>
 
@@ -414,6 +694,60 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/comp/construction_flat.svg" alt="">ハザードを図で見る：データは「待つか横流し」、分岐は「捨ててやり直す」</h1>
+  <div class="cols" style="grid-template-columns:1fr 1fr;gap:22px">
+    <div>
+      <div class="cap"><a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/#6644be6efa601178491875cc2ae09418a5ea517c">データハザード</a>：SUB が ADD の結果 R1 を使う</div>
+      <svg viewBox="0 0 410 120" width="410" height="120">
+        <g font-size="11" text-anchor="middle">
+          <g fill="#6e6e73"><text x="105" y="12">1</text><text x="145" y="12">2</text><text x="185" y="12">3</text><text x="225" y="12">4</text><text x="265" y="12">5</text><text x="305" y="12">6</text><text x="345" y="12">7</text><text x="385" y="12">8</text></g>
+          <text x="40" y="38" text-anchor="start" x="0">ADD R1</text>
+          <rect x="88" y="22" width="36" height="22" fill="#1f3a68"/><text x="106" y="37" fill="#fff">F</text>
+          <rect x="128" y="22" width="36" height="22" fill="#2f5596"/><text x="146" y="37" fill="#fff">D</text>
+          <rect x="168" y="22" width="36" height="22" fill="#5b80bf"/><text x="186" y="37" fill="#fff">E</text>
+          <rect x="208" y="22" width="36" height="22" fill="#c9daf2"/><text x="226" y="37" fill="#1f3a68">M</text>
+          <rect x="248" y="22" width="36" height="22" fill="#e8eef8" stroke="#c9daf2"/><text x="266" y="37" fill="#1f3a68">W</text>
+          <text x="40" y="68">SUB ←R1</text>
+          <rect x="128" y="52" width="36" height="22" fill="#1f3a68"/><text x="146" y="67" fill="#fff">F</text>
+          <rect x="168" y="52" width="36" height="22" fill="#fde7cf" stroke="#b25000"/><text x="186" y="67" fill="#b25000">待</text>
+          <rect x="208" y="52" width="36" height="22" fill="#fde7cf" stroke="#b25000"/><text x="226" y="67" fill="#b25000">待</text>
+          <rect x="248" y="52" width="36" height="22" fill="#fde7cf" stroke="#b25000"/><text x="266" y="67" fill="#b25000">待</text>
+          <rect x="288" y="52" width="36" height="22" fill="#2f5596"/><text x="306" y="67" fill="#fff">D</text>
+          <rect x="328" y="52" width="36" height="22" fill="#5b80bf"/><text x="346" y="67" fill="#fff">E</text>
+          <text x="210" y="102" fill="#b25000" font-size="11.5">R1 が書かれる(W)まで解読を待つ → 3サイクルの空き（バブル）</text>
+        </g>
+      </svg>
+      <div class="point"><b>対策：</b>フォワーディング（E段の結果を、<a class="ref" href="https://e-words.jp/w/%E3%83%AC%E3%82%B8%E3%82%B9%E3%82%BF.html">レジスタ</a>に書く前に次の命令へ横流しする）、関係のない命令を間に入れる（並べ替え）。</div>
+    </div>
+    <div>
+      <div class="cap"><a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/#012b7f8e3de8365042a3bb3d5e8e528db2814e0e">制御ハザード</a>：分岐の結果が E段で分かる</div>
+      <svg viewBox="0 0 410 120" width="410" height="120">
+        <g font-size="11" text-anchor="middle">
+          <g fill="#6e6e73"><text x="105" y="12">1</text><text x="145" y="12">2</text><text x="185" y="12">3</text><text x="225" y="12">4</text><text x="265" y="12">5</text><text x="305" y="12">6</text><text x="345" y="12">7</text></g>
+          <text x="40" y="38">分岐命令</text>
+          <rect x="88" y="22" width="36" height="22" fill="#1f3a68"/><text x="106" y="37" fill="#fff">F</text>
+          <rect x="128" y="22" width="36" height="22" fill="#2f5596"/><text x="146" y="37" fill="#fff">D</text>
+          <rect x="168" y="22" width="36" height="22" fill="#5b80bf"/><text x="186" y="37" fill="#fff">E</text>
+          <text x="40" y="60">次の命令1</text>
+          <rect x="128" y="46" width="36" height="20" fill="#fde7cf" stroke="#b25000"/><text x="146" y="60" fill="#b25000">F×</text>
+          <rect x="168" y="46" width="36" height="20" fill="#fde7cf" stroke="#b25000"/><text x="186" y="60" fill="#b25000">D×</text>
+          <text x="40" y="82">次の命令2</text>
+          <rect x="168" y="68" width="36" height="20" fill="#fde7cf" stroke="#b25000"/><text x="186" y="82" fill="#b25000">F×</text>
+          <text x="40" y="104">分岐先</text>
+          <rect x="208" y="90" width="36" height="20" fill="#1f3a68"/><text x="226" y="104" fill="#fff">F</text>
+          <rect x="248" y="90" width="36" height="20" fill="#2f5596"/><text x="266" y="104" fill="#fff">D</text>
+          <text x="330" y="70" fill="#b25000" font-size="11.5">取り出し済みの</text><text x="330" y="84" fill="#b25000" font-size="11.5">2命令を捨てる</text>
+        </g>
+      </svg>
+      <div class="point"><b>対策：</b>分岐予測＋投機実行（先に予測した方を進めておく）、分岐を減らすプログラム（H27秋 問8）。</div>
+    </div>
+  </div>
+  <div class="ex" style="margin-top:10px"><span class="lbl">例題</span>命令の20%が分岐、そのうち予測が外れるのが10%、外れると2サイクル失う。理想の <a class="ref" href="https://e-words.jp/w/CPI.html">CPI</a> が1のとき、実際の CPI は？　→ 1 ＋ 0.2 × 0.1 × 2 ＝ <b>1.04</b>（4%遅くなる）。予測が当たらないと 1 ＋ 0.2 × 2 ＝ 1.4。</div>
+  <div class="cite">出典：IPA 平成25年度春期 午前 問10（制御ハザード＝<a class="ref" href="https://e-words.jp/w/%E5%88%86%E5%B2%90%E5%91%BD%E4%BB%A4.html">分岐命令</a>）・平成26年度秋期 午前 問7・平成27年度秋期 午前 問8／<a href="https://en.wikipedia.org/wiki/Hazard_(computer_architecture)">Wikipedia「Hazard (computer architecture)」</a>／<a href="https://en.wikipedia.org/wiki/Branch_predictor">「Branch predictor」</a>。例題の数値はClaudeが作った</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
+</section>
+
+<section class="slide">
   <h1><img class="ico" src="img/comp/chart_increasing_flat.svg" alt="">もっと速くする方法は「段を細かく」「本数を増やす」「まとめ役をコンパイラに」</h1>
   <div class="cols" style="grid-template-columns:1fr 1fr 1fr;gap:18px">
     <div>
@@ -449,6 +783,40 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/comp/repeat_button_flat.svg" alt="">投機実行・アウトオブオーダー・SMT は「空いている時間を何で埋めるか」</h1>
+  <div class="cols" style="grid-template-columns:.95fr 1.05fr;gap:22px">
+    <div>
+      <div class="cap">アウトオブオーダー実行の例</div>
+      <table class="mini">
+        <tr><th>#</th><th>命令</th><th>状況</th></tr>
+        <tr><td>1</td><td>LD R1, [a]</td><td>キャッシュミスで約80ナノ秒待つ</td></tr>
+        <tr><td>2</td><td>ADD R2, R1, 1</td><td>1の結果が要る → 待つ</td></tr>
+        <tr><td>3</td><td>MUL R3, R4, R5</td><td>1・2と無関係</td></tr>
+        <tr><td>4</td><td>SUB R6, R7, R8</td><td>1・2と無関係</td></tr>
+      </table>
+      <div class="flow" style="margin-top:10px">
+        <div class="box b5">順番どおり<span>3・4も1を待つ</span></div><div class="to">→</div>
+        <div class="box b2">順番を入れ替え<span>待つ間に3・4を先に実行</span></div>
+      </div>
+      <div class="point">結果を<a class="ref" href="https://e-words.jp/w/%E3%83%AC%E3%82%B8%E3%82%B9%E3%82%BF.html">レジスタ</a>に書き込む順番だけは、プログラムの順に戻してから確定する。だから外から見ると順番どおりに動いたのと同じになる。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th>技術</th><th>空きを埋めるもの</th><th>外れたら</th></tr>
+        <tr><td>分岐予測</td><td>分岐先を過去の結果から当てる</td><td>—</td></tr>
+        <tr><td><b>投機実行</b></td><td>予測した分岐先の命令を先に実行</td><td>結果を捨てる</td></tr>
+        <tr><td>アウトオブオーダー</td><td>後ろの無関係な命令</td><td>（予測しないので外れない）</td></tr>
+        <tr><td>SMT（ハイパースレッディング）</td><td><b>別の<a class="ref" href="https://e-words.jp/w/%E3%82%B9%E3%83%AC%E3%83%83%E3%83%89.html">スレッド</a></b>の命令</td><td>—</td></tr>
+      </table>
+      <div class="point"><b>SMT：</b>インテルは「1つの物理コアを2つの論理コアのように動かす技術」と説明している。演算器の空きに別スレッドの命令を入れるので、コアが2倍になるわけではない。</div>
+      <div class="point warn"><b>過去問：</b>H27春 問10（投機実行）の誤りの選択肢は、ア＝アウトオブオーダー、イ＝SMT、ウ＝マルチコア。<a class="ref q" href="https://www.ap-siken.com/kakomon/05_aki/q9.html">R5秋 問9</a>も同じ顔ぶれ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成27年度春期 午前 問10・令和5年度秋期 午前 問9／<a href="https://www.intel.co.jp/content/www/jp/ja/gaming/resources/hyper-threading.html">インテル「ハイパースレッディングとは？」</a>／<a href="https://en.wikipedia.org/wiki/Out-of-order_execution">Wikipedia「Out-of-order execution」</a>・<a href="https://en.wikipedia.org/wiki/Speculative_execution">「Speculative execution」</a>。待ち時間約80ナノ秒はメモリ編の記憶階層の表（DDR5の実測例 82.5ナノ秒）から</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
+</section>
+
+<section class="slide">
   <h1><img class="ico" src="img/comp/mobile_phone_flat.svg" alt="">コアの組合せは「同じ種類か、違う種類か」「役割を決めるか、対等か」</h1>
   <div class="cols">
     <div>
@@ -479,6 +847,35 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/comp/battery_flat.svg" alt="">省電力は「何を止めるか」で見分ける。電圧を下げるのが一番効く</h1>
+  <div class="cols" style="grid-template-columns:1.1fr .9fr;gap:22px">
+    <div>
+      <table>
+        <tr><th style="width:27%">技術</th><th>止める・変えるもの</th><th style="width:28%">効き方</th></tr>
+        <tr><td>DVFS</td><td>仕事が少ないとき<b>電圧と周波数</b>を下げる</td><td>電力は電圧の2乗に効く</td></tr>
+        <tr><td>クロックゲーティング</td><td>使わない回路への<b>クロック</b>を止める</td><td>切替えの電力が0。漏れ電流は残る</td></tr>
+        <tr><td><b>パワーゲーティング</b></td><td>使わない回路の<b>電源</b>を切る</td><td>漏れ電流まで0。戻すのに時間</td></tr>
+        <tr><td>電力枠の融通</td><td>止めたコアの余裕で動くコアのクロックを上げる</td><td>速くするための技術</td></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/big.LITTLE.html">big.LITTLE</a></td><td>軽い仕事は省電力コアに回す</td><td>コアを使い分ける</td></tr>
+      </table>
+      <div class="point"><b>Arm の説明：</b>big.LITTLE は最大3種類のコアを使い分けるヘテロジニアス（異種）構成。LITTLE は電力効率最優先、big は持続的な性能のためのコア。</div>
+    </div>
+    <div>
+      <div class="formula" style="font-size:17px">動的な電力 ∝ 容量 × 電圧² × 周波数</div>
+      <div class="ex"><span class="lbl">例題</span>電圧を 1.0V→0.8V、周波数を 2.0GHz→1.6GHz に下げた。電力は何倍か。</div>
+      <ol class="steps" style="margin-top:6px">
+        <li>電圧の比 0.8 を2乗 → 0.64</li>
+        <li>周波数の比 → 0.8</li>
+        <li>0.64 × 0.8 ＝ <b>約0.51倍</b>（速さは0.8倍なのに電力は半分）</li>
+      </ol>
+      <div class="point warn"><b>過去問：</b>H29春 問9（パワーゲーティング）の誤りは、ア＝DVFS、イ＝クロックゲーティング、エ＝電力枠の融通。<a class="ref q" href="https://www.ap-siken.com/kakomon/05_aki/q8.html">R5秋 問8</a>は<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/#7b6d0b62f8befd9958ea0019ee4c49a98b5ed7e4">ヘテロジニアスマルチコア</a>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成29年度春期 午前 問9・令和5年度秋期 午前 問8／<a href="https://www.arm.com/technologies/big-little">Arm「big.LITTLE」</a>／<a href="https://en.wikipedia.org/wiki/Processor_power_dissipation">Wikipedia「Processor power dissipation」</a>（動的電力は周波数と電圧の2乗に比例）・<a href="https://en.wikipedia.org/wiki/Power_gating">「Power gating」</a>・<a href="https://en.wikipedia.org/wiki/Dynamic_frequency_scaling">「Dynamic frequency scaling」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
+</section>
+
+<section class="slide">
   <h1><img class="ico" src="img/comp/card_index_dividers_flat.svg" alt="">フリンの分類は「命令の流れ」と「データの流れ」が1つか複数か</h1>
   <div class="cols">
     <div>
@@ -502,6 +899,44 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
       </svg>
     </div>
   </div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/comp/rocket_flat.svg" alt="">SIMDは1命令で4つの足し算。GPUとTPUはこれを数千並べたもの</h1>
+  <div class="cols" style="grid-template-columns:1.05fr .95fr;gap:22px">
+    <div>
+      <svg viewBox="0 0 430 210" width="430" height="210">
+        <g font-size="12" text-anchor="middle">
+          <text x="100" y="14" font-weight="700" fill="#1f3a68">SISD：4命令</text>
+          <g><rect x="10" y="24" width="180" height="24" rx="4" fill="#5b80bf"/><text x="100" y="41" fill="#fff">ADD a0＋b0</text>
+          <rect x="10" y="52" width="180" height="24" rx="4" fill="#5b80bf"/><text x="100" y="69" fill="#fff">ADD a1＋b1</text>
+          <rect x="10" y="80" width="180" height="24" rx="4" fill="#5b80bf"/><text x="100" y="97" fill="#fff">ADD a2＋b2</text>
+          <rect x="10" y="108" width="180" height="24" rx="4" fill="#5b80bf"/><text x="100" y="125" fill="#fff">ADD a3＋b3</text></g>
+          <text x="320" y="14" font-weight="700" fill="#1f3a68">SIMD：1命令</text>
+          <rect x="230" y="24" width="180" height="24" rx="4" fill="#1f3a68"/><text x="320" y="41" fill="#fff">VADD（全部に同じ足し算）</text>
+          <g><rect x="230" y="60" width="40" height="22" fill="#e8eef8" stroke="#5b80bf"/><text x="250" y="76">a0</text><rect x="276" y="60" width="40" height="22" fill="#e8eef8" stroke="#5b80bf"/><text x="296" y="76">a1</text><rect x="322" y="60" width="40" height="22" fill="#e8eef8" stroke="#5b80bf"/><text x="342" y="76">a2</text><rect x="368" y="60" width="40" height="22" fill="#e8eef8" stroke="#5b80bf"/><text x="388" y="76">a3</text></g>
+          <text x="320" y="98" fill="#5b80bf">＋　＋　＋　＋</text>
+          <g><rect x="230" y="104" width="40" height="22" fill="#e8eef8" stroke="#5b80bf"/><text x="250" y="120">b0</text><rect x="276" y="104" width="40" height="22" fill="#e8eef8" stroke="#5b80bf"/><text x="296" y="120">b1</text><rect x="322" y="104" width="40" height="22" fill="#e8eef8" stroke="#5b80bf"/><text x="342" y="120">b2</text><rect x="368" y="104" width="40" height="22" fill="#e8eef8" stroke="#5b80bf"/><text x="388" y="120">b3</text></g>
+          <text x="320" y="142" fill="#5b80bf">↓　↓　↓　↓</text>
+          <g><rect x="230" y="148" width="40" height="22" fill="#2f5596"/><text x="250" y="164" fill="#fff">c0</text><rect x="276" y="148" width="40" height="22" fill="#2f5596"/><text x="296" y="164" fill="#fff">c1</text><rect x="322" y="148" width="40" height="22" fill="#2f5596"/><text x="342" y="164" fill="#fff">c2</text><rect x="368" y="148" width="40" height="22" fill="#2f5596"/><text x="388" y="164" fill="#fff">c3</text></g>
+          <text x="215" y="200" fill="#6e6e73">1,024個の足し算：SISD は1,024命令、8個ずつの SIMD なら128命令</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th>実物</th><th>どんな<a class="ref" href="https://e-words.jp/w/SIMD.html">SIMD</a>／並列か</th></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a> の<a class="ref" href="https://www.ap-siken.com/keyword/1/1-2/#23179fc54f8ea49a6f20a3f653df8e45a3624686">ベクトル</a>命令</td><td>インテル・AMD の AVX、Arm の NEON など。1命令で複数の値を処理</td></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/GPU.html">GPU</a></td><td>単純な演算器を数千個並べ、同じ計算を一斉に行う。行列の計算が速い（<a class="ref q" href="https://www.ap-siken.com/kakomon/03_haru/q10.html">R3春 問10</a>）</td></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/TPU.html">TPU</a></td><td>Google の<a class="ref" href="https://e-words.jp/w/%E6%A9%9F%E6%A2%B0%E5%AD%A6%E7%BF%92.html">機械学習</a>専用の ASIC。行列の掛け算を行う MXU（シストリックアレイ）が中心</td></tr>
+        <tr><td><a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/#56d15d7d801923c4cae763764f2d2ea617024411">MIMD</a></td><td>コアごとに<b>別の命令</b>。マルチコア、クラスタ（H26秋 問8）</td></tr>
+      </table>
+      <div class="point"><b>Google の説明：</b>行列の計算が中心のモデルは TPU で速いが、足し算・並べ替えなど行列以外の処理が多いと MXU を使い切れない。<b>得意な計算を一斉にやる</b>のが SIMD 系の共通点。</div>
+      <div class="point warn">SIMD は H21春・H25春・H27秋・H28春の4回。選択肢はフリンの分類の4つ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成21年度春期 問9・平成25年度春期 問11・平成27年度秋期 問9・平成28年度春期 問9・平成26年度秋期 問8・令和3年度春期 問10（午前）／<a href="https://cloud.google.com/tpu/docs/intro-to-tpu">Google Cloud「Introduction to Cloud TPU」</a>／<a href="https://en.wikipedia.org/wiki/Single_instruction,_multiple_data">Wikipedia「Single instruction, multiple data」</a></div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
 </section>
 
@@ -535,6 +970,100 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/comp/chart_increasing_flat.svg" alt="">アムダールの法則を数字で：90%並列にできても、上限は10倍</h1>
+  <div class="cols" style="grid-template-columns:1.05fr .95fr;gap:22px">
+    <div>
+      <svg viewBox="0 0 440 270" width="440" height="270">
+        <g font-size="11">
+          <line x1="40" y1="230" x2="420" y2="230" stroke="#6e6e73"/><line x1="40" y1="10" x2="40" y2="230" stroke="#6e6e73"/>
+          <g fill="#6e6e73" text-anchor="end"><text x="34" y="234">1</text><text x="34" y="189">5</text><text x="34" y="132">10</text><text x="34" y="76">15</text><text x="34" y="19">20</text></g>
+          <g stroke="#e8eef8"><line x1="40" y1="185" x2="420" y2="185"/><line x1="40" y1="128" x2="420" y2="128"/><line x1="40" y1="72" x2="420" y2="72"/></g>
+          <g fill="#6e6e73" text-anchor="middle"><text x="40" y="248">1</text><text x="103" y="248">2</text><text x="167" y="248">4</text><text x="230" y="248">8</text><text x="293" y="248">16</text><text x="357" y="248">32</text><text x="420" y="248">64</text><text x="230" y="264">プロセッサ数（目盛は2倍ずつ）</text></g>
+          <polyline fill="none" stroke="#1f3a68" stroke-width="2.5" points="40,230 103,220 167,202 230,174 293,138 357,99 420,67"/>
+          <polyline fill="none" stroke="#5b80bf" stroke-width="2.5" points="40,230 103,221 167,207 230,188 293,169 357,153 420,142"/>
+          <polyline fill="none" stroke="#b25000" stroke-width="2.5" points="40,230 103,226 167,223 230,221 293,220 357,219 420,219"/>
+          <line x1="40" y1="128" x2="420" y2="128" stroke="#5b80bf" stroke-dasharray="4 4"/>
+          <text x="380" y="60" fill="#1f3a68" font-weight="700">p＝95%</text><text x="380" y="160" fill="#5b80bf" font-weight="700">p＝90%</text><text x="380" y="212" fill="#b25000" font-weight="700">p＝50%</text>
+          <text x="250" y="122" fill="#5b80bf">p＝90%の上限＝10倍</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="formula" style="font-size:16px">速度向上比 ＝ 1 ÷ {(1−p) ＋ p÷n}<span style="display:block;font-size:12px;font-weight:400;color:#6e6e73;margin-top:4px">p＝並列にできる割合、n＝プロセッサ数</span></div>
+      <table class="mini">
+        <tr><th>n</th><th>p＝0.5</th><th>p＝0.9</th><th>p＝0.95</th></tr>
+        <tr><td>2</td><td>1.33</td><td>1.82</td><td>1.90</td></tr>
+        <tr><td>8</td><td>1.78</td><td>4.71</td><td>5.93</td></tr>
+        <tr><td>64</td><td>1.97</td><td>8.77</td><td>15.4</td></tr>
+        <tr><td>∞</td><td><b>2</b></td><td><b>10</b></td><td><b>20</b></td></tr>
+      </table>
+      <div class="ex" style="margin-top:8px"><span class="lbl">手順</span>p＝0.9、n＝8：並列部分 0.9÷8＝0.1125、逐次部分 0.1。足して 0.2125、逆数で <b>約4.7倍</b>。nを無限にしても 1÷0.1＝10倍で止まる。</div>
+      <div class="point warn"><b>過去問：</b><a class="ref q" href="https://www.ap-siken.com/kakomon/04_haru/q12.html">R4春 問12</a>（グラフの読み取り）・<a class="ref q" href="https://www.ap-siken.com/kakomon/07_haru/q11.html">R7春 問11</a>（式に代入）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 令和4年度春期 午前 問12・令和7年度春期 午前 問11／<a href="https://en.wikipedia.org/wiki/Amdahl%27s_law">Wikipedia「Amdahl's law」</a>（G. Amdahl, AFIPS 1967）。表とグラフの値はClaudeが式から計算した</div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/comp/link_flat.svg" alt="">マルチプロセッサのつなぎ方は「メモリを共有するか」で2つに分かれる</h1>
+  <div class="cols" style="grid-template-columns:1fr 1fr;gap:22px">
+    <div>
+      <svg viewBox="0 0 420 170" width="420" height="170">
+        <g font-size="12" text-anchor="middle">
+          <text x="100" y="14" font-weight="700" fill="#1f3a68">密結合（共有メモリ）</text>
+          <rect x="10" y="26" width="50" height="30" rx="5" fill="#1f3a68"/><text x="35" y="46" fill="#fff">CPU</text>
+          <rect x="75" y="26" width="50" height="30" rx="5" fill="#1f3a68"/><text x="100" y="46" fill="#fff">CPU</text>
+          <rect x="140" y="26" width="50" height="30" rx="5" fill="#1f3a68"/><text x="165" y="46" fill="#fff">CPU</text>
+          <line x1="35" y1="56" x2="35" y2="80" stroke="#5b80bf" stroke-width="2"/><line x1="100" y1="56" x2="100" y2="80" stroke="#5b80bf" stroke-width="2"/><line x1="165" y1="56" x2="165" y2="80" stroke="#5b80bf" stroke-width="2"/>
+          <rect x="10" y="80" width="180" height="30" rx="5" fill="#c9daf2"/><text x="100" y="100" fill="#1f3a68">1つの主記憶・1つのOS</text>
+          <text x="100" y="134" fill="#6e6e73" font-size="11">例：SMP、今のマルチコアCPU</text>
+          <text x="320" y="14" font-weight="700" fill="#1f3a68">疎結合（それぞれ別）</text>
+          <g><rect x="230" y="26" width="52" height="30" rx="5" fill="#2f5596"/><text x="256" y="46" fill="#fff">CPU</text><rect x="230" y="60" width="52" height="24" rx="4" fill="#c9daf2"/><text x="256" y="77" fill="#1f3a68" font-size="11">記憶+OS</text></g>
+          <g><rect x="294" y="26" width="52" height="30" rx="5" fill="#2f5596"/><text x="320" y="46" fill="#fff">CPU</text><rect x="294" y="60" width="52" height="24" rx="4" fill="#c9daf2"/><text x="320" y="77" fill="#1f3a68" font-size="11">記憶+OS</text></g>
+          <g><rect x="358" y="26" width="52" height="30" rx="5" fill="#2f5596"/><text x="384" y="46" fill="#fff">CPU</text><rect x="358" y="60" width="52" height="24" rx="4" fill="#c9daf2"/><text x="384" y="77" fill="#1f3a68" font-size="11">記憶+OS</text></g>
+          <line x1="230" y1="100" x2="410" y2="100" stroke="#b25000" stroke-width="2"/><line x1="256" y1="84" x2="256" y2="100" stroke="#b25000" stroke-width="2"/><line x1="320" y1="84" x2="320" y2="100" stroke="#b25000" stroke-width="2"/><line x1="384" y1="84" x2="384" y2="100" stroke="#b25000" stroke-width="2"/>
+          <text x="320" y="118" fill="#b25000" font-size="11">ネットワーク</text>
+          <text x="320" y="134" fill="#6e6e73" font-size="11">例：クラスタ、スーパーコンピュータ</text>
+          <text x="210" y="162" fill="#6e6e73" font-size="11">プロセッサが増えると、共有メモリは取り合い（隘路）になりやすい</text>
+        </g>
+      </svg>
+      <table class="mini">
+        <tr><th>用語</th><th>意味</th></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/SMP.html">SMP</a></td><td>対等な<a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a>が1つの主記憶を共有（密結合）</td></tr>
+        <tr><td>NUMA</td><td>CPUごとに近いメモリ・遠いメモリがあり、遠いと遅い</td></tr>
+        <tr><td>タンデム</td><td>処理を段に分けて、前のCPUの結果を次のCPUが受け継ぐ</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">つなぎ方（トポロジ）</div>
+      <svg viewBox="0 0 410 110" width="410" height="110">
+        <g font-size="11" text-anchor="middle" fill="#1f3a68">
+          <g><circle cx="20" cy="20" r="7" fill="#2f5596"/><circle cx="60" cy="20" r="7" fill="#2f5596"/><circle cx="100" cy="20" r="7" fill="#2f5596"/><circle cx="20" cy="60" r="7" fill="#2f5596"/><circle cx="60" cy="60" r="7" fill="#2f5596"/><circle cx="100" cy="60" r="7" fill="#2f5596"/>
+          <g stroke="#5b80bf" stroke-width="1.5"><line x1="27" y1="20" x2="53" y2="20"/><line x1="67" y1="20" x2="93" y2="20"/><line x1="27" y1="60" x2="53" y2="60"/><line x1="67" y1="60" x2="93" y2="60"/><line x1="20" y1="27" x2="20" y2="53"/><line x1="60" y1="27" x2="60" y2="53"/><line x1="100" y1="27" x2="100" y2="53"/></g>
+          <path d="M20,13 C20,0 100,0 100,13" fill="none" stroke="#b25000" stroke-dasharray="3 2"/><path d="M20,67 C20,80 100,80 100,67" fill="none" stroke="#b25000" stroke-dasharray="3 2"/>
+          <text x="60" y="100">トーラス</text></g>
+          <g transform="translate(150,0)"><g fill="#2f5596"><circle cx="20" cy="30" r="7"/><circle cx="70" cy="30" r="7"/><circle cx="20" cy="75" r="7"/><circle cx="70" cy="75" r="7"/><circle cx="40" cy="12" r="7"/><circle cx="90" cy="12" r="7"/><circle cx="40" cy="57" r="7"/><circle cx="90" cy="57" r="7"/></g>
+          <g stroke="#5b80bf" stroke-width="1.5"><line x1="20" y1="30" x2="70" y2="30"/><line x1="20" y1="75" x2="70" y2="75"/><line x1="20" y1="30" x2="20" y2="75"/><line x1="70" y1="30" x2="70" y2="75"/><line x1="40" y1="12" x2="90" y2="12"/><line x1="40" y1="57" x2="90" y2="57"/><line x1="40" y1="12" x2="40" y2="57"/><line x1="90" y1="12" x2="90" y2="57"/><line x1="20" y1="30" x2="40" y2="12"/><line x1="70" y1="30" x2="90" y2="12"/><line x1="20" y1="75" x2="40" y2="57"/><line x1="70" y1="75" x2="90" y2="57"/></g>
+          <text x="55" y="100">ハイパーキューブ</text></g>
+          <g transform="translate(300,0)"><g fill="#2f5596"><circle cx="55" cy="12" r="7"/><circle cx="25" cy="45" r="7"/><circle cx="85" cy="45" r="7"/><circle cx="10" cy="78" r="6"/><circle cx="40" cy="78" r="6"/><circle cx="70" cy="78" r="6"/><circle cx="100" cy="78" r="6"/></g>
+          <g stroke="#5b80bf" stroke-width="1.5"><line x1="55" y1="12" x2="25" y2="45"/><line x1="55" y1="12" x2="85" y2="45"/><line x1="25" y1="45" x2="10" y2="78"/><line x1="25" y1="45" x2="40" y2="78"/><line x1="85" y1="45" x2="70" y2="78"/><line x1="85" y1="45" x2="100" y2="78"/></g>
+          <text x="55" y="100">ハイパーツリー</text></g>
+        </g>
+      </svg>
+      <div class="cap" style="margin-top:8px">実物：2025年11月 TOP500 の1位</div>
+      <table class="mini">
+        <tr><td>El Capitan（米ローレンス・リバモア研究所）</td><td><b>1.809 エクサ<a class="ref" href="https://e-words.jp/w/FLOPS.html">FLOPS</a></b></td></tr>
+        <tr><td>コア数</td><td>1,134万（AMD EPYC＋MI300A）</td></tr>
+        <tr><td>電力あたりの性能</td><td>60.9 ギガFLOPS／W</td></tr>
+      </table>
+      <div class="point">エクサ＝10¹⁸。4位の JUPITER（独）が米国以外で初めて1エクサFLOPSに届いた。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA シラバス Ver.7.2 中分類3（10）②並列処理の隘路・（11）マルチプロセッサシステムの用語例／<a href="https://www.top500.org/lists/top500/2025/11/">TOP500「November 2025」</a>／<a href="https://en.wikipedia.org/wiki/Symmetric_multiprocessing">Wikipedia「Symmetric multiprocessing」</a>・<a href="https://en.wikipedia.org/wiki/Non-uniform_memory_access">「Non-uniform memory access」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
+</section>
+
+<section class="slide">
   <h1><img class="ico" src="img/comp/atom_symbol_flat.svg" alt="">量子コンピュータは「0と1を重ね合わせた量子ビット」で計算する</h1>
   <div class="cols">
     <div>
@@ -558,6 +1087,34 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
       <div class="point" style="margin-top:0">従来のコンピュータでは<b>実用的な時間で処理できない計算</b>を、<a class="ref" href="https://e-words.jp/w/%E9%87%8F%E5%AD%90%E3%82%B3%E3%83%B3%E3%83%94%E3%83%A5%E3%83%BC%E3%82%BF.html">量子コンピュータ</a>が高速に実行できること（<b>ウ</b>）。「量子力学で作られている」「小さい」ではない。</div>
     </div>
   </div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/1/1-2/">応用情報.com 用語集 1-2 応用数学</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/comp/atom_symbol_flat.svg" alt="">量子ゲート方式は「汎用の回路」、アニーリング方式は「最適化専用」</h1>
+  <div class="cols" style="grid-template-columns:1.1fr .9fr;gap:22px">
+    <div>
+      <table>
+        <tr><th></th><th>量子ゲート方式</th><th>量子アニーリング方式</th></tr>
+        <tr><td>しくみ</td><td><a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/#99eb7e5cbcb215bdb525d625d0a0f5543ba5c54a">量子ビット</a>に「ゲート」を順にかけて回路を作る（古典の論理回路の量子版）</td><td>問題をエネルギーの形に置き換え、量子の揺らぎを弱めながら一番低い状態に落ち着かせる</td></tr>
+        <tr><td>得意</td><td>汎用（素<a class="ref" href="https://www.ap-siken.com/keyword/1/1-2/#c05f1e9a2dfeb08a3dd125f210b4f7d111f594fb">因数分解</a>・量子化学・探索など）</td><td>組合せ最適化（配送ルート・割当て）</td></tr>
+        <tr><td>実例</td><td>Google の Sycamore（2019）、IBM の<a class="ref" href="https://e-words.jp/w/%E9%87%8F%E5%AD%90%E3%82%B3%E3%83%B3%E3%83%94%E3%83%A5%E3%83%BC%E3%82%BF.html">量子コンピュータ</a></td><td>D-Wave の量子アニーリングマシン</td></tr>
+      </table>
+      <div class="point"><b>D-Wave の説明：</b>アニーリング型は「エネルギーの低い解」を自然に返す。<a class="ref" href="https://e-words.jp/w/%E6%9C%80%E9%81%A9%E5%8C%96%E5%95%8F%E9%A1%8C.html">最適化問題</a>は一番低い解（最小値）が欲しく、サンプリングの問題は低い解を多く集めたい。</div>
+    </div>
+    <div>
+      <div class="cap">押さえる3つの言葉（IBM の説明より）</div>
+      <table class="mini">
+        <tr><td><b>重ね合わせ</b></td><td>0と1の両方の状態を同時にとる。測ると0か1に決まる</td></tr>
+        <tr><td><b>もつれ</b></td><td>複数の量子ビットの状態が結び付き、1つを測ると他の状態も分かる</td></tr>
+        <tr><td><b>干渉</b></td><td>答えの確率を波のように強め合い・打ち消し合いさせ、正解を出やすくする</td></tr>
+      </table>
+      <div class="cap" style="margin-top:10px">量子超越性（Nature, 2019）</div>
+      <div class="point" style="margin-top:0">Google は 54量子ビット（うち動いたのは53）の Sycamore で、乱数の回路の出力を集める課題を約200秒で行い、当時のスーパーコンピュータなら約1万年かかると主張した。<b>「古典コンピュータでは現実的な時間で解けない計算を量子で解いた」</b>ことが量子超越性。</div>
+      <div class="point warn"><b>過去問：</b><a class="ref q" href="https://www.ap-siken.com/kakomon/06_haru/q9.html">R6春 問9</a>（ゲート方式）・<a class="ref q" href="https://www.ap-siken.com/kakomon/06_aki/q9.html">R6秋 問9</a>（量子超越性）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 令和6年度春期・秋期 午前 問9／<a href="https://www.nature.com/articles/s41586-019-1666-5">Arute et al.「Quantum supremacy using a programmable superconducting processor」Nature 574 (2019)</a>／<a href="https://www.ibm.com/think/topics/quantum-computing">IBM「What is quantum computing?」</a>／<a href="https://docs.dwavequantum.com/en/latest/quantum_research/quantum_annealing_intro.html">D-Wave「What is Quantum Annealing?」</a></div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/1/1-2/">応用情報.com 用語集 1-2 応用数学</a></div>
 </section>
 
@@ -599,6 +1156,76 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/1/1-1/">応用情報.com 用語集 1-1 離散数学</a></div>
 </section>
 
+<section class="slide">
+  <h1><img class="ico" src="img/comp/puzzle_piece_flat.svg" alt="">全加算器は「半加算器2つ＋OR」。真理値表から組み立てる</h1>
+  <div class="cols" style="grid-template-columns:.8fr 1.2fr;gap:22px">
+    <div>
+      <div class="cap">半加算器（1桁の足し算）</div>
+      <table class="kmap"><tr><th>A</th><th>B</th><th>和 S</th><th>桁上げ C</th></tr>
+        <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>0</td><td>1</td><td class="on">1</td><td>0</td></tr><tr><td>1</td><td>0</td><td class="on">1</td><td>0</td></tr><tr><td>1</td><td>1</td><td>0</td><td class="on2">1</td></tr></table>
+      <div class="point">S は「片方だけ1」＝<b>XOR</b>、C は「両方1」＝<b>AND</b>。</div>
+      <div class="point warn"><b>覚え方：</b>和は XOR、桁上げは AND。全加算器の桁上げ出力だけは2つの桁上げを OR でまとめる。</div>
+      <div class="point"><b>例題の答え：</b>1101＝13。桁上げが下から順に伝わるので、桁が多いほど遅い（だから実物は桁上げを先読みする回路を使う）。</div>
+    </div>
+    <div>
+      <div class="cap">全加算器（下の桁からの桁上げ Cin も足す）</div>
+      <svg viewBox="0 0 545 150" width="520" height="143">
+        <g font-size="12" text-anchor="middle">
+          <text x="14" y="34">A</text><text x="14" y="64">B</text><text x="14" y="122">Cin</text>
+          <line x1="26" y1="30" x2="70" y2="30" stroke="#1d1d1f"/><line x1="26" y1="60" x2="70" y2="60" stroke="#1d1d1f"/>
+          <rect x="70" y="18" width="90" height="56" rx="6" fill="#2f5596"/><text x="115" y="44" fill="#fff" font-weight="700">半加算器1</text><text x="115" y="62" fill="#fff" font-size="11">XOR／AND</text>
+          <line x1="160" y1="32" x2="230" y2="32" stroke="#1d1d1f"/><text x="195" y="27" font-size="11">S1</text>
+          <line x1="40" y1="118" x2="230" y2="118" stroke="#1d1d1f"/><line x1="230" y1="32" x2="230" y2="52" stroke="#1d1d1f"/><line x1="230" y1="118" x2="230" y2="84" stroke="#1d1d1f"/>
+          <rect x="230" y="40" width="90" height="56" rx="6" fill="#2f5596"/><text x="275" y="66" fill="#fff" font-weight="700">半加算器2</text><text x="275" y="84" fill="#fff" font-size="11">XOR／AND</text>
+          <line x1="320" y1="54" x2="500" y2="54" stroke="#1d1d1f"/><text x="508" y="58">S</text>
+          <line x1="160" y1="66" x2="190" y2="66" stroke="#1d1d1f"/><line x1="190" y1="66" x2="190" y2="140" stroke="#1d1d1f"/><line x1="190" y1="140" x2="380" y2="140" stroke="#1d1d1f"/><text x="205" y="136" font-size="11">C1</text>
+          <line x1="320" y1="86" x2="380" y2="86" stroke="#1d1d1f"/><line x1="380" y1="86" x2="380" y2="104" stroke="#1d1d1f"/><text x="345" y="81" font-size="11">C2</text>
+          <path d="M380,100 Q420,100 440,118 Q420,136 380,136 Q395,118 380,100 Z" fill="#c9daf2" stroke="#1f3a68"/><text x="410" y="122" fill="#1f3a68" font-weight="700">OR</text>
+          <line x1="380" y1="140" x2="380" y2="132" stroke="#1d1d1f"/>
+          <line x1="440" y1="118" x2="500" y2="118" stroke="#1d1d1f"/><text x="520" y="122">Cout</text>
+        </g>
+      </svg>
+      <div class="ex"><span class="lbl">例題</span>4ビットの 0110（6）＋ 0111（7）を、下の桁から全加算器でつないで計算（リプルキャリー）。</div>
+      <table class="mini" style="margin-top:6px">
+        <tr><th>桁</th><th>A</th><th>B</th><th>Cin</th><th>S</th><th>Cout</th></tr>
+        <tr><td>0桁目</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+        <tr><td>1桁目</td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td></tr>
+        <tr><td>2桁目</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+        <tr><td>3桁目</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：IPA シラバス Ver.7.2 中分類3（6）①演算の仕組み（半加算器・全加算器・組合せ回路）／<a href="https://en.wikipedia.org/wiki/Adder_(electronics)">Wikipedia「Adder (electronics)」</a>。例題はClaudeが作った</div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/comp/high_voltage_flat.svg" alt="">2の補数のあふれは「同じ符号を足したのに、答えの符号が変わる」</h1>
+  <div class="cols" style="grid-template-columns:1fr 1fr;gap:22px">
+    <div>
+      <div class="cap">8ビットの<a class="ref" href="https://e-words.jp/w/2%E3%81%AE%E8%A3%9C%E6%95%B0.html">2の補数</a>で表せる範囲：−128〜＋127</div>
+      <table class="mini mono">
+        <tr><th>計算</th><th>2進数</th><th>結果</th></tr>
+        <tr><td>100＋50</td><td>01100100＋00110010＝<span class="hl">1</span>0010110</td><td><b>−106（あふれ）</b></td></tr>
+        <tr><td>−100＋(−50)</td><td>10011100＋11001110＝(1)<span class="hl">0</span>1101010</td><td><b>＋106（あふれ）</b></td></tr>
+        <tr><td>100＋(−50)</td><td>01100100＋11001110＝(1)00110010</td><td>＋50（正しい）</td></tr>
+      </table>
+      <div class="point"><b>判定のしかた：</b>正＋正なのに負になった、負＋負なのに正になったら<b>あふれ（<a class="ref" href="https://e-words.jp/w/%E3%82%AA%E3%83%BC%E3%83%90%E3%83%BC%E3%83%95%E3%83%AD%E3%83%BC.html">オーバーフロー</a>）</b>。正＋負は絶対にあふれない。一番上の桁から出た(1)は捨ててよい。</div>
+    </div>
+    <div>
+      <div class="ex"><span class="lbl"><a class="ref q" href="https://www.ap-siken.com/kakomon/03_aki/q8.html">R3秋 問8</a>の型</span>16ビットの符号付き整数 x1, x2 を足して、あふれないのはどんなときか。</div>
+      <ol class="steps" style="margin-top:6px">
+        <li>16ビットの範囲は −2¹⁵〜2¹⁵−1 ＝ <b>−32,768〜32,767</b></li>
+        <li>符号が違う2数（正と負）は、足すと絶対値が小さくなる → <b>必ず範囲内</b></li>
+        <li>同じ符号どうしは、和が範囲を超えるとあふれる</li>
+      </ol>
+      <div class="formula" style="font-size:15px">nビットの範囲 ＝ −2ⁿ⁻¹ 〜 2ⁿ⁻¹ − 1</div>
+      <div class="point warn">負の数の作り方：ビットを全部反転して1を足す。50＝00110010 → 11001101 → 11001110（−50）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 令和3年度秋期 応用情報技術者試験 午前 問8／<a href="https://en.wikipedia.org/wiki/Two%27s_complement">Wikipedia「Two's complement」</a>。8ビットの例はClaudeが計算した</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/1/1-1/">応用情報.com 用語集 1-1 離散数学</a></div>
+</section>
+
 <section class="slide chapter">
   <div class="hero-icons ira"><img src="img/irasutoya/memory.png" alt=""><img src="img/irasutoya/ssd.png" alt=""><img src="img/irasutoya/usb_memory.png" alt=""><img src="img/comp/floppy_disk_flat.svg" alt=""></div>
   <div class="k">第2章</div>
@@ -635,6 +1262,36 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/comp/hourglass_done_flat.svg" alt="">記憶階層を実測値で見る：1段下りるたびに数倍〜数千倍遅い</h1>
+  <div class="cols" style="grid-template-columns:1.15fr .85fr;gap:22px">
+    <div>
+      <table>
+        <tr><th>段</th><th>容量の例</th><th>待ち時間</th><th>1サイクルを1秒に引き伸ばすと</th></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/%E3%83%AC%E3%82%B8%E3%82%B9%E3%82%BF.html">レジスタ</a></td><td>約2KB</td><td>0.25ナノ秒</td><td>1秒</td></tr>
+        <tr><td>L1キャッシュ</td><td>32KB</td><td>1ナノ秒</td><td>4秒</td></tr>
+        <tr><td>L2キャッシュ</td><td>1MB</td><td>3.5ナノ秒</td><td>14秒</td></tr>
+        <tr><td>L3キャッシュ</td><td>16〜32MB</td><td>11.75ナノ秒</td><td>47秒</td></tr>
+        <tr><td><b>主記憶（DDR5）</b></td><td>64GB</td><td><b>82.5ナノ秒</b></td><td><b>約5分半</b></td></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/SSD.html">SSD</a>（<a class="ref" href="https://e-words.jp/w/NVMe.html">NVMe</a>）</td><td>2TB</td><td>0.2ミリ秒</td><td>約9日</td></tr>
+        <tr><td>HDD</td><td>18TB</td><td>4.16ミリ秒</td><td>約半年</td></tr>
+        <tr><td>テープライブラリ</td><td>エクサバイト級</td><td>数分</td><td>数千年</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="point" style="margin-top:0"><b>読み方：</b>4.0GHz の <a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a>（AMD Zen 4）で測った例。主記憶はL1の約80倍、HDD は主記憶の約5万倍遅い。だから「よく使うものを上の段に置く」キャッシュの効果が大きい。</div>
+      <div class="cap" style="margin-top:12px">キャッシュが効く理由＝局所性</div>
+      <table class="mini">
+        <tr><td><b>時間的局所性</b></td><td>使ったデータはすぐまた使われる（ループの変数）</td></tr>
+        <tr><td><b>空間的局所性</b></td><td>近くの番地もすぐ使われる（配列を順に読む）→ ブロック単位で運ぶ</td></tr>
+      </table>
+      <div class="point warn"><b>試験では：</b>「上ほど速く・小さく・ビット単価が高い」の順番と、<a class="ref" href="https://e-words.jp/w/%E3%83%87%E3%82%A3%E3%82%B9%E3%82%AF%E3%82%AD%E3%83%A3%E3%83%83%E3%82%B7%E3%83%A5.html">ディスクキャッシュ</a>（主記憶の一部をディスクの手前に使う）と<a class="ref" href="https://e-words.jp/w/%E3%82%AD%E3%83%A3%E3%83%83%E3%82%B7%E3%83%A5%E3%83%A1%E3%83%A2%E3%83%AA.html">キャッシュメモリ</a>（CPUと主記憶の間）の区別が問われる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a href="https://en.wikipedia.org/wiki/Memory_hierarchy">Wikipedia「Memory hierarchy」</a>の表（AMD Zen 4・4.0GHz換算、主記憶は DDR5-6000、SSD は Samsung 960 Pro、HDD は Seagate Exos 2X18 の値）。「引き伸ばすと」の列はClaudeが0.25ナノ秒＝1秒として換算した</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-2/">応用情報.com 用語集 3-2 メモリ</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
+</section>
+
+<section class="slide">
   <h1><img class="ico" src="img/comp/electric_plug_flat.svg" alt="">RAMは電源を切ると消え、ROMは消えない。DRAMは「リフレッシュが要る」</h1>
   <table>
     <tr><th style="width:15%">種類</th><th style="width:12%">電源を切ると</th><th>記憶のしくみ</th><th style="width:30%">特徴・用途</th></tr>
@@ -649,6 +1306,91 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   </table>
   <div class="point warn">D（Dynamic）＝記憶を保つのに動作が要る、S（Static）＝何もしなくても保つ。「リフレッシュ不要で高速」はSRAMの方。</div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-2/">応用情報.com 用語集 3-2 メモリ</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/comp/electric_plug_flat.svg" alt="">DRAMは「コンデンサ1つ」、SRAMは「トランジスタ6つ」。作りの差が性質の差</h1>
+  <div class="cols" style="grid-template-columns:1fr 1fr;gap:22px">
+    <div>
+      <svg viewBox="0 0 420 150" width="420" height="150">
+        <g font-size="12" text-anchor="middle">
+          <text x="100" y="14" font-weight="700" fill="#1f3a68">DRAM の1ビット</text>
+          <rect x="40" y="30" width="50" height="40" rx="4" fill="#2f5596"/><text x="65" y="55" fill="#fff">Tr</text>
+          <line x1="90" y1="50" x2="130" y2="50" stroke="#1d1d1f"/>
+          <line x1="130" y1="35" x2="130" y2="65" stroke="#1d1d1f" stroke-width="3"/><line x1="142" y1="35" x2="142" y2="65" stroke="#1d1d1f" stroke-width="3"/>
+          <text x="136" y="84" font-size="11">コンデンサ</text>
+          <text x="100" y="108" fill="#b25000" font-size="11">電荷が少しずつ漏れる</text>
+          <text x="100" y="124" fill="#b25000" font-size="11">→ 定期的に読んで書き直す</text>
+          <text x="100" y="140" fill="#b25000" font-size="11">（リフレッシュ）</text>
+          <text x="315" y="14" font-weight="700" fill="#1f3a68">SRAM の1ビット</text>
+          <g><rect x="235" y="28" width="34" height="26" rx="3" fill="#5b80bf"/><rect x="275" y="28" width="34" height="26" rx="3" fill="#5b80bf"/><rect x="315" y="28" width="34" height="26" rx="3" fill="#5b80bf"/><rect x="235" y="60" width="34" height="26" rx="3" fill="#5b80bf"/><rect x="275" y="60" width="34" height="26" rx="3" fill="#5b80bf"/><rect x="315" y="60" width="34" height="26" rx="3" fill="#5b80bf"/></g>
+          <text x="370" y="62" font-size="11" text-anchor="start">×6</text>
+          <text x="300" y="108" fill="#1f3a68" font-size="11">フリップフロップで値を保つ</text>
+          <text x="300" y="124" fill="#1f3a68" font-size="11">→ リフレッシュ不要・速い</text>
+          <text x="300" y="140" fill="#1f3a68" font-size="11">ただし1ビットが大きい</text>
+        </g>
+      </svg>
+      <table class="mini">
+        <tr><th></th><th><a class="ref" href="https://e-words.jp/w/DRAM.html">DRAM</a></th><th><a class="ref" href="https://e-words.jp/w/SRAM.html">SRAM</a></th></tr>
+        <tr><td>速さ</td><td>遅め</td><td>速い</td></tr>
+        <tr><td>集積度・ビット単価</td><td>高い・安い</td><td>低い・高い</td></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/%E3%83%AA%E3%83%95%E3%83%AC%E3%83%83%E3%82%B7%E3%83%A5.html">リフレッシュ</a></td><td><b>要る</b>（各行を64ミリ秒以内に。DDR5は32ミリ秒）</td><td>要らない</td></tr>
+        <tr><td>用途</td><td>主記憶</td><td><a class="ref" href="https://e-words.jp/w/%E3%82%AD%E3%83%A3%E3%83%83%E3%82%B7%E3%83%A5%E3%83%A1%E3%83%A2%E3%83%AA.html">キャッシュメモリ</a></td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">主記憶の規格 DDR4 と DDR5</div>
+      <table class="mini">
+        <tr><th></th><th>DDR4</th><th>DDR5</th></tr>
+        <tr><td>電圧</td><td>1.2V</td><td>1.1V</td></tr>
+        <tr><td>標準の速さ</td><td>1,600〜3,200 MT/s</td><td>4,000〜6,400 MT/s</td></tr>
+        <tr><td>1枚の中のチャネル</td><td>64ビット×1</td><td>32ビット×2（独立）</td></tr>
+        <tr><td>チップ内のECC</td><td>なし</td><td>あり（オンダイECC）</td></tr>
+      </table>
+      <div class="ex" style="margin-top:8px"><span class="lbl">例題</span>DDR5-4800 のメモリ1枚（データ幅64ビット）の最大転送速度は？</div>
+      <ol class="steps" style="margin-top:4px">
+        <li>1秒に 4,800M回 転送（MT/s＝100万回／秒）</li>
+        <li>1回に 64ビット＝8バイト</li>
+        <li>4,800M × 8 ＝ <b>38.4GB/秒</b>（だから「PC5-38400」と呼ぶ）</li>
+      </ol>
+      <div class="point">DDR はクロックの立上り・立下りの両方で送る。DIMM＝デスクトップ用、SO-DIMM＝ノート用。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA シラバス Ver.7.2 中分類3 2.（1）用語例／<a href="https://en.wikipedia.org/wiki/Dynamic_random-access_memory">Wikipedia「Dynamic random-access memory」</a>（JEDEC 規格で各行64ミリ秒以内のリフレッシュ）／<a href="https://en.wikipedia.org/wiki/DDR5_SDRAM">「DDR5 <a class="ref" href="https://e-words.jp/w/SDRAM.html">SDRAM</a>」</a>（1.1V、4,000〜6,400MT/s、2つのサブチャネル、オンダイECC）。<a href="https://en.wikipedia.org/wiki/DDR4_SDRAM">「DDR4 SDRAM」</a>（1.2V、1,600〜3,200MT/s）。例題はClaudeが計算した</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-2/">応用情報.com 用語集 3-2 メモリ</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/comp/floppy_disk_flat.svg" alt="">不揮発メモリは「どうやって書き換えるか」で見分ける</h1>
+  <div class="cols" style="grid-template-columns:1.2fr .8fr;gap:22px">
+    <div>
+      <table>
+        <tr><th style="width:22%">名前</th><th>書き方・消し方</th><th style="width:28%">決め手のことば</th></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/%E3%83%9E%E3%82%B9%E3%82%AFROM.html">マスクROM</a></td><td>製造時に書き込む。変えられない</td><td>製造時</td></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/PROM.html">PROM</a></td><td>利用者が1回だけ書ける</td><td>一度だけ</td></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/EPROM.html">EPROM</a></td><td>紫外線を当てて全部消す</td><td>紫外線</td></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/EEPROM.html">EEPROM</a></td><td>電気でバイト単位に消して書く</td><td>電気的に</td></tr>
+        <tr><td>フラッシュ</td><td>電気でブロック単位にまとめて消す</td><td>ブロック単位で一括消去</td></tr>
+        <tr><td><a class="ref" href="https://www.ap-siken.com/keyword/3/3-2/#fc56d191f0477ff80ccd40041da35acaee37bb5c">FeRAM</a></td><td>強誘電体の分極の向きで記憶</td><td>強誘電体</td></tr>
+        <tr><td>MRAM</td><td>磁気の向き（磁気トンネル接合）で記憶</td><td>磁気</td></tr>
+        <tr><td><b>相変化メモリ</b></td><td>熱で<b>結晶とアモルファス</b>を切り替え、抵抗の差で記憶</td><td>結晶／非結晶</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">1つのセルに何ビット入れるか（NAND）</div>
+      <table class="mini">
+        <tr><th>種類</th><th>ビット／セル</th><th>電圧の段階</th></tr>
+        <tr><td>SLC</td><td>1</td><td>2</td></tr>
+        <tr><td>MLC</td><td>2</td><td>4</td></tr>
+        <tr><td>TLC</td><td>3</td><td>8</td></tr>
+        <tr><td>QLC</td><td>4</td><td>16</td></tr>
+      </table>
+      <div class="point">段階を細かく分けるほど大容量・安価になるが、読み分けが難しくなり、書換え回数の上限と速さは下がる。キオクシア（旧東芝メモリ）は2001年に MLC の NAND を世界で初めて製品にした。</div>
+      <div class="point warn"><b>過去問：</b>H30秋 問10（相変化メモリ）の誤りは、PROM・<a class="ref" href="https://e-words.jp/w/SRAM.html">SRAM</a>・<a class="ref" href="https://e-words.jp/w/DRAM.html">DRAM</a> の説明。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA シラバス Ver.7.2 中分類3 2.（1）用語例・IPA 平成30年度秋期 午前 問10／<a href="https://www.kioxia.com/ja-jp/business/memory/slc-nand.html">キオクシア「SLC NAND」</a>（多値化技術）／<a href="https://en.wikipedia.org/wiki/Phase-change_memory">Wikipedia「Phase-change memory」</a>・<a href="https://en.wikipedia.org/wiki/Ferroelectric_RAM">「Ferroelectric <a class="ref" href="https://e-words.jp/w/RAM.html">RAM</a>」</a>・<a href="https://en.wikipedia.org/wiki/Flash_memory">「Flash memory」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-2/">応用情報.com 用語集 3-2 メモリ</a></div>
 </section>
 
 <section class="slide">
@@ -689,6 +1431,80 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/comp/card_index_dividers_flat.svg" alt="">NANDは「ページで書き、ブロックで消す」。だから上書きできない</h1>
+  <div class="cols" style="grid-template-columns:1.1fr .9fr;gap:22px">
+    <div>
+      <svg viewBox="0 0 440 190" width="440" height="190">
+        <g font-size="11" text-anchor="middle">
+          <text x="100" y="14" font-weight="700" fill="#1f3a68" font-size="12">① ページ2を書き換えたい</text>
+          <rect x="20" y="22" width="160" height="150" rx="6" fill="#f5f5f7" stroke="#d2d2d7"/><text x="100" y="186" fill="#6e6e73">ブロックA（消去の単位）</text>
+          <rect x="30" y="30" width="140" height="22" fill="#2f5596"/><text x="100" y="45" fill="#fff">ページ0 有効</text>
+          <rect x="30" y="56" width="140" height="22" fill="#2f5596"/><text x="100" y="71" fill="#fff">ページ1 有効</text>
+          <rect x="30" y="82" width="140" height="22" fill="#fde7cf" stroke="#b25000"/><text x="100" y="97" fill="#b25000">ページ2 → 無効の印</text>
+          <rect x="30" y="108" width="140" height="22" fill="#fff" stroke="#d2d2d7"/><text x="100" y="123" fill="#6e6e73">ページ3 空き</text>
+          <path d="M175,93 C215,93 220,123 172,121" fill="none" stroke="#b25000" stroke-width="1.5"/>
+          <text x="100" y="152" fill="#b25000">↑ 新しい内容は空きページ3へ</text>
+          <text x="330" y="14" font-weight="700" fill="#1f3a68" font-size="12">② 無効が増えたら</text>
+          <rect x="250" y="40" width="170" height="64" rx="6" fill="#e8eef8" stroke="#c9daf2"/>
+          <text x="335" y="60" fill="#1f3a68">有効なページだけ別のブロックへ</text><text x="335" y="76" fill="#1f3a68">移し、ブロックAを丸ごと消す</text><text x="335" y="94" fill="#1f3a68" font-weight="700">（ガーベジコレクション）</text>
+          <rect x="250" y="130" width="170" height="44" rx="6" fill="#1f3a68"/>
+          <text x="335" y="148" fill="#fff">消去回数の少ないブロックを</text><text x="335" y="164" fill="#fff">優先して使う＝ウェアレベリング</text>
+        </g>
+      </svg>
+      <div class="point"><a class="ref" href="https://e-words.jp/w/OS.html">OS</a> がファイルを消したことを <a class="ref" href="https://e-words.jp/w/SSD.html">SSD</a> に伝える命令が TRIM。どのページが要らないか分かるので、ガーベジコレクションの無駄が減る。</div>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th></th><th>NAND型</th><th>NOR型</th></tr>
+        <tr><td>読み書きの単位</td><td>ページ単位</td><td>バイト単位で読める</td></tr>
+        <tr><td>消去の単位</td><td colspan="2">ブロック（数KB〜数MB）単位</td></tr>
+        <tr><td>得意</td><td>大容量・順に読む</td><td>プログラムをそのまま実行</td></tr>
+        <tr><td>用途</td><td>SSD、SDカード、<a class="ref" href="https://e-words.jp/w/USB.html">USB</a>メモリ</td><td>機器の設定・起動プログラム</td></tr>
+      </table>
+      <div class="ex" style="margin-top:8px"><span class="lbl">H29春 問11＝<a class="ref q" href="https://www.ap-siken.com/kakomon/06_haru/q11.html">R6春 問11</a></span>15MB のプログラムを40%に圧縮してフラッシュに格納。転送 20MB/秒、1MB の展開に 0.03秒。転送と展開は同時に行わない。</div>
+      <ol class="steps" style="margin-top:4px">
+        <li>圧縮後：15 × 0.4 ＝ 6MB</li>
+        <li>転送：6 ÷ 20 ＝ 0.3秒</li>
+        <li>展開：6 × 0.03 ＝ 0.18秒 → 合計 <b>0.48秒</b></li>
+      </ol>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成30年度春期 午前 問10（NAND＝ページ単位）・平成29年度春期 午前 問11・令和6年度春期 午前 問11・令和5年度春期 問11・秋期 問10（<a class="ref" href="https://e-words.jp/w/%E3%82%A6%E3%82%A7%E3%82%A2%E3%83%AC%E3%83%99%E3%83%AA%E3%83%B3%E3%82%B0.html">ウェアレベリング</a>）／<a href="https://en.wikipedia.org/wiki/Flash_memory">Wikipedia「Flash memory」</a>（ブロックは4KB〜4MB程度）・<a href="https://en.wikipedia.org/wiki/Wear_leveling">「Wear leveling」</a>・<a href="https://en.wikipedia.org/wiki/Trim_(computing)">「Trim (computing)」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-2/">応用情報.com 用語集 3-2 メモリ</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/comp/package_flat.svg" alt="">SDカードは「容量の規格」と「速さの規格」を分けて読む</h1>
+  <div class="cols" style="grid-template-columns:1fr 1fr;gap:22px">
+    <div>
+      <div class="cap">容量の規格（SD Association）</div>
+      <table>
+        <tr><th>規格</th><th>容量</th><th>ファイルシステム</th></tr>
+        <tr><td>SD</td><td>〜2GB</td><td>FAT12／16</td></tr>
+        <tr><td>SDHC</td><td>2GB超〜32GB</td><td>FAT32</td></tr>
+        <tr><td><b>SDXC</b></td><td><b>32GB超〜2TB</b></td><td><b>exFAT</b></td></tr>
+        <tr><td>SDUC</td><td>2TB超〜128TB</td><td>exFAT</td></tr>
+      </table>
+      <div class="point warn"><b><a class="ref q" href="https://www.ap-siken.com/kakomon/01_aki/q12.html">R1秋 問12</a>：</b>SDXC＝exFAT・最大2TB（エ）。誤りは SDIO（カード形の周辺機器）、microSDHC（小型・32GB）、AACS（Blu-ray の著作権保護。SD は CPRM）。</div>
+    </div>
+    <div>
+      <div class="cap">速さ（バスの規格）</div>
+      <table class="mini">
+        <tr><th>バス</th><th>最大の速さ</th><th>しくみ</th></tr>
+        <tr><td>Default（SD1.0）</td><td>12.5MB/秒</td><td>—</td></tr>
+        <tr><td>High Speed（SD1.1）</td><td>25MB/秒</td><td>デジタルカメラ向け</td></tr>
+        <tr><td>UHS-I</td><td>104MB/秒</td><td>1列のピン・1.8V</td></tr>
+        <tr><td>UHS-II／III</td><td>312／624MB/秒</td><td>2列目のピンで2レーン</td></tr>
+        <tr><td>SD Express</td><td>3,940MB/秒</td><td>PCIe Gen4 ＋ <a class="ref" href="https://e-words.jp/w/NVMe.html">NVMe</a></td></tr>
+      </table>
+      <div class="point">容量の規格と速さの規格は別。「SDXC で UHS-I」のように組み合わせて表示する。速いバスは SDHC・SDXC・SDUC のどれにも使える。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 令和元年度秋期 午前 問12／SD Association <a href="https://www.sdcard.org/developers/sd-standard-overview/capacity-sd-sdhc-sdxc-sduc/">「Capacity (SD/SDHC/SDXC/SDUC)」</a>・<a href="https://www.sdcard.org/developers/sd-standard-overview/bus-speed-default-speed-high-speed-uhs-sd-express/">「Bus Speed」</a>／<a href="https://en.wikipedia.org/wiki/SD_card">Wikipedia「SD card」</a>（UHS-I 104MB/秒、1.8V）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-3/">応用情報.com 用語集 3-3 バス</a></div>
+</section>
+
+<section class="slide">
   <h1><img class="ico" src="img/comp/stopwatch_flat.svg" alt="">キャッシュの計算は1つの式：当たった分＋外れた分</h1>
   <div class="formula">実効アクセス時間 ＝ h × キャッシュの時間 ＋ (1 − h) × 主記憶の時間<span style="display:block;font-size:12px;font-weight:400;color:#6e6e73;margin-top:4px">h＝ヒット率</span></div>
   <div class="cols" style="grid-template-columns:1fr 1fr 1fr;gap:16px">
@@ -723,6 +1539,37 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
       <div class="point">0.57（0.95×0.6）は「両方に当たる確率」で誤り。</div>
     </div>
   </div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/comp/stopwatch_flat.svg" alt="">実効アクセス時間は2つの書き方がある。どちらも同じ答えになる</h1>
+  <div class="cols" style="grid-template-columns:1fr 1fr;gap:22px">
+    <div>
+      <div class="cap">書き方1：重み付き平均（試験の定番）</div>
+      <div class="formula" style="font-size:15px">h × キャッシュ ＋ (1−h) × 主記憶</div>
+      <div class="cap">書き方2：ミスしたら追加で待つ</div>
+      <div class="formula" style="font-size:15px">キャッシュ ＋ (1−h) × (主記憶 − キャッシュ)</div>
+      <div class="ex"><span class="lbl">H21秋 問11</span>キャッシュ10ナノ秒、主記憶60ナノ秒、ヒット率90%。<br>書き方1：0.9×10＋0.1×60＝9＋6＝<b>15</b>　書き方2：10＋0.1×50＝<b>15</b></div>
+      <div class="point">書き方2は「ヒットしてもしなくてもまずキャッシュを見る」考え方。問題文に「キャッシュを見てから主記憶を読む」とあれば、10＋0.1×60＝16 のように足し方が変わるので条件を読む。</div>
+    </div>
+    <div>
+      <div class="ex"><span class="lbl"><a class="ref q" href="https://www.ap-siken.com/kakomon/01_aki/q10.html">R1秋 問10</a></span>キャッシュ容量 a、時間 x。主記憶容量 b、時間 y。キャッシュに<b>ない</b>確率 r。平均アクセス時間の式は？</div>
+      <ol class="steps" style="margin-top:6px">
+        <li>r は「ない」確率＝ミス率。ヒット率は 1−r</li>
+        <li>容量 a・b は式に入らない（じゃまの数）</li>
+        <li>(1−r)x ＋ ry（<b>イ</b>）</li>
+      </ol>
+      <div class="cap" style="margin-top:10px">この型の出題（9回）</div>
+      <table class="mini">
+        <tr><td>数値を入れる</td><td>H21秋・H22秋・H25秋・H29秋、<a class="ref q" href="https://www.ap-siken.com/kakomon/04_haru/q9.html">R4春 問9</a></td></tr>
+        <tr><td>ヒット率を逆算</td><td><a class="ref q" href="https://www.ap-siken.com/kakomon/06_haru/q10.html">R6春 問10</a></td></tr>
+        <tr><td>2段キャッシュ</td><td><a class="ref q" href="https://www.ap-siken.com/kakomon/04_aki/q10.html">R4秋 問10</a></td></tr>
+        <tr><td>記号の式</td><td><a class="ref q" href="https://www.ap-siken.com/kakomon/01_aki/q10.html">R1秋 問10</a></td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成21年度秋期 問11・令和元年度秋期 問10 ほか表の回（午前）／<a href="https://en.wikipedia.org/wiki/CPU_cache">Wikipedia「<a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a> cache」</a>。書き方2との対応はClaudeが式を変形して確かめた</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
 </section>
 
 <section class="slide">
@@ -766,6 +1613,36 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/comp/repeat_button_flat.svg" alt="">ライトバックの動きを追う：3回書いても主記憶に書くのは1回</h1>
+  <div class="cols" style="grid-template-columns:1.25fr .75fr;gap:22px">
+    <div>
+      <table class="mini">
+        <tr><th>#</th><th><a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a>の操作</th><th>キャッシュ（X）</th><th>ダーティ</th><th>主記憶（X）</th><th>主記憶へ書く回数<br>WB／WT</th></tr>
+        <tr><td>1</td><td>X を読む（ミス）</td><td>5 を持ってくる</td><td>0</td><td>5</td><td>0／0</td></tr>
+        <tr><td>2</td><td>X に 6 を書く</td><td>6</td><td><b>1</b></td><td>5（古いまま）</td><td>0／1</td></tr>
+        <tr><td>3</td><td>X に 7 を書く</td><td>7</td><td>1</td><td>5</td><td>0／2</td></tr>
+        <tr><td>4</td><td>X に 8 を書く</td><td>8</td><td>1</td><td>5</td><td>0／3</td></tr>
+        <tr><td>5</td><td>X が追い出される</td><td>—</td><td>—</td><td><b>8 に書き戻す</b></td><td><b>1／3</b></td></tr>
+      </table>
+      <div class="point"><b>ダーティビット：</b>「キャッシュだけ書き換わって、主記憶はまだ古い」という印。追い出すとき、印が1のブロックだけ書き戻す。印が0なら捨てるだけでよい。</div>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th></th><th><a class="ref" href="https://www.ap-siken.com/keyword/3/3-2/#02525e72ba1bf91c07f26da894ee10ff997c7131">ライトスルー</a></th><th><a class="ref" href="https://www.ap-siken.com/keyword/3/3-2/#8f3835b0ed1b6612344d54f8afdaef087a3268af">ライトバック</a></th></tr>
+        <tr><td>書く先</td><td>両方に毎回</td><td>キャッシュだけ</td></tr>
+        <tr><td>主記憶への書込み</td><td>多い</td><td><b>少ない</b></td></tr>
+        <tr><td>一致（一貫性）</td><td>いつも一致</td><td>しばらくずれる</td></tr>
+        <tr><td>追い出し時</td><td>捨てるだけ</td><td>書き戻しが要る</td></tr>
+      </table>
+      <div class="point warn"><b>9回出た：</b>目的を問う（H25春・H26秋＝書込み頻度を減らす）、説明を選ぶ（H29春・R3春・R4秋）など。「一貫性が保たれる」「書き戻し不要」はライトスルーの側。</div>
+      <div class="point">マルチコアでは、ほかのコアのキャッシュとのずれを見張る仕組み（スヌープ方式など）でつじつまを合わせる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成25年度春期 問12・平成26年度秋期 問9・平成29年度春期 問10・令和3年度春期 問12・令和4年度秋期 問9（午前）／<a href="https://en.wikipedia.org/wiki/CPU_cache">Wikipedia「CPU cache」</a>・<a href="https://en.wikipedia.org/wiki/Cache_coherence">「Cache coherence」</a>。表の値はClaudeが作った例</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-2/">応用情報.com 用語集 3-2 メモリ</a></div>
+</section>
+
+<section class="slide">
   <h1><img class="ico" src="img/comp/link_flat.svg" alt="">キャッシュの対応付けは「置ける場所が1か所・決まった組の中・どこでも」</h1>
   <svg width="860" height="150" viewBox="0 0 860 150"><g font-size="11.5" text-anchor="middle"><text x="140" y="14" fill="#1f3a68" font-weight="700">ダイレクトマップ</text><rect x="20" y="26" width="70" height="24" rx="3" fill="#c9daf2"/><text x="55" y="42" fill="#1f3a68">主記憶0</text><rect x="20" y="54" width="70" height="24" rx="3" fill="#c9daf2"/><text x="55" y="70" fill="#1f3a68">主記憶1</text><rect x="20" y="82" width="70" height="24" rx="3" fill="#c9daf2"/><text x="55" y="98" fill="#1f3a68">主記憶2</text><rect x="20" y="110" width="70" height="24" rx="3" fill="#c9daf2"/><text x="55" y="126" fill="#1f3a68">主記憶3</text><rect x="190" y="26" width="70" height="24" rx="3" fill="#1f3a68"/><text x="225" y="42" fill="#fff">枠0</text><rect x="190" y="54" width="70" height="24" rx="3" fill="#1f3a68"/><text x="225" y="70" fill="#fff">枠1</text><rect x="190" y="82" width="70" height="24" rx="3" fill="#1f3a68"/><text x="225" y="98" fill="#fff">枠2</text><rect x="190" y="110" width="70" height="24" rx="3" fill="#1f3a68"/><text x="225" y="126" fill="#fff">枠3</text><path d="M90,38 L190,38" stroke="#b25000" stroke-width="1.6"/><path d="M90,66 L190,66" stroke="#b25000" stroke-width="1.6"/><path d="M90,94 L190,94" stroke="#b25000" stroke-width="1.6"/><path d="M90,122 L190,122" stroke="#b25000" stroke-width="1.6"/><text x="430" y="14" fill="#1f3a68" font-weight="700">セットアソシエイティブ（2ウェイ）</text><rect x="310" y="26" width="70" height="24" rx="3" fill="#c9daf2"/><text x="345" y="42" fill="#1f3a68">主記憶0</text><rect x="310" y="54" width="70" height="24" rx="3" fill="#c9daf2"/><text x="345" y="70" fill="#1f3a68">主記憶1</text><rect x="310" y="82" width="70" height="24" rx="3" fill="#c9daf2"/><text x="345" y="98" fill="#1f3a68">主記憶2</text><rect x="310" y="110" width="70" height="24" rx="3" fill="#c9daf2"/><text x="345" y="126" fill="#1f3a68">主記憶3</text><rect x="480" y="26" width="70" height="24" rx="3" fill="#1f3a68"/><text x="515" y="42" fill="#fff">枠0</text><rect x="480" y="54" width="70" height="24" rx="3" fill="#1f3a68"/><text x="515" y="70" fill="#fff">枠1</text><rect x="480" y="82" width="70" height="24" rx="3" fill="#1f3a68"/><text x="515" y="98" fill="#fff">枠2</text><rect x="480" y="110" width="70" height="24" rx="3" fill="#1f3a68"/><text x="515" y="126" fill="#fff">枠3</text><path d="M380,38 L480,38" stroke="#b25000" stroke-width="1"/><path d="M380,38 L480,66" stroke="#b25000" stroke-width="1"/><path d="M380,66 L480,94" stroke="#b25000" stroke-width="1"/><path d="M380,66 L480,122" stroke="#b25000" stroke-width="1"/><path d="M380,94 L480,38" stroke="#b25000" stroke-width="1"/><path d="M380,94 L480,66" stroke="#b25000" stroke-width="1"/><path d="M380,122 L480,94" stroke="#b25000" stroke-width="1"/><path d="M380,122 L480,122" stroke="#b25000" stroke-width="1"/><text x="570" y="58" fill="#6e6e73" text-anchor="start">組0</text><text x="570" y="114" fill="#6e6e73" text-anchor="start">組1</text><text x="720" y="14" fill="#1f3a68" font-weight="700">フルアソシエイティブ</text><rect x="600" y="26" width="70" height="24" rx="3" fill="#c9daf2"/><text x="635" y="42" fill="#1f3a68">主記憶0</text><rect x="600" y="54" width="70" height="24" rx="3" fill="#c9daf2"/><text x="635" y="70" fill="#1f3a68">主記憶1</text><rect x="600" y="82" width="70" height="24" rx="3" fill="#c9daf2"/><text x="635" y="98" fill="#1f3a68">主記憶2</text><rect x="600" y="110" width="70" height="24" rx="3" fill="#c9daf2"/><text x="635" y="126" fill="#1f3a68">主記憶3</text><rect x="770" y="26" width="70" height="24" rx="3" fill="#1f3a68"/><text x="805" y="42" fill="#fff">枠0</text><rect x="770" y="54" width="70" height="24" rx="3" fill="#1f3a68"/><text x="805" y="70" fill="#fff">枠1</text><rect x="770" y="82" width="70" height="24" rx="3" fill="#1f3a68"/><text x="805" y="98" fill="#fff">枠2</text><rect x="770" y="110" width="70" height="24" rx="3" fill="#1f3a68"/><text x="805" y="126" fill="#fff">枠3</text><path d="M670,38 L770,38" stroke="#b25000" stroke-width="0.7"/><path d="M670,38 L770,66" stroke="#b25000" stroke-width="0.7"/><path d="M670,38 L770,94" stroke="#b25000" stroke-width="0.7"/><path d="M670,38 L770,122" stroke="#b25000" stroke-width="0.7"/><path d="M670,66 L770,38" stroke="#b25000" stroke-width="0.7"/><path d="M670,66 L770,66" stroke="#b25000" stroke-width="0.7"/><path d="M670,66 L770,94" stroke="#b25000" stroke-width="0.7"/><path d="M670,66 L770,122" stroke="#b25000" stroke-width="0.7"/><path d="M670,94 L770,38" stroke="#b25000" stroke-width="0.7"/><path d="M670,94 L770,66" stroke="#b25000" stroke-width="0.7"/><path d="M670,94 L770,94" stroke="#b25000" stroke-width="0.7"/><path d="M670,94 L770,122" stroke="#b25000" stroke-width="0.7"/><path d="M670,122 L770,38" stroke="#b25000" stroke-width="0.7"/><path d="M670,122 L770,66" stroke="#b25000" stroke-width="0.7"/><path d="M670,122 L770,94" stroke="#b25000" stroke-width="0.7"/><path d="M670,122 L770,122" stroke="#b25000" stroke-width="0.7"/></g></svg>
   <div class="cols" style="margin-top:4px">
@@ -783,6 +1660,77 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
     </div>
   </div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-2/">応用情報.com 用語集 3-2 メモリ</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/comp/magnifying_glass_tilted_left_flat.svg" alt="">ダイレクトマップは番地を3つに切る：タグ・インデックス・オフセット</h1>
+  <div class="ex"><span class="lbl">例題</span>主記憶の番地は16ビット。1ブロック＝16バイト、キャッシュは8ブロック（ダイレクトマップ）。番地 <b>0x1234</b> はキャッシュのどこに入るか。</div>
+  <div class="cols" style="grid-template-columns:1.15fr .85fr;gap:22px;margin-top:10px">
+    <div>
+      <svg viewBox="0 0 480 120" width="480" height="120">
+        <g font-family="IPAGothic, monospace" font-size="15" text-anchor="middle">
+          <rect x="0" y="20" width="270" height="36" fill="#1f3a68"/><text x="135" y="44" fill="#fff">0001 0010 0</text>
+          <rect x="270" y="20" width="90" height="36" fill="#5b80bf"/><text x="315" y="44" fill="#fff">011</text>
+          <rect x="360" y="20" width="120" height="36" fill="#c9daf2"/><text x="420" y="44" fill="#1f3a68">0100</text>
+        </g>
+        <g font-size="12" text-anchor="middle">
+          <text x="135" y="14" fill="#1f3a68" font-weight="700">タグ 9ビット</text><text x="315" y="14" fill="#1f3a68" font-weight="700">インデックス 3ビット</text><text x="420" y="14" fill="#1f3a68" font-weight="700">オフセット 4ビット</text>
+          <text x="135" y="76">＝ 36（0x024）</text><text x="315" y="76">＝ 3番の枠</text><text x="420" y="76">＝ ブロックの4バイト目</text>
+          <text x="135" y="96" fill="#6e6e73" font-size="11">枠に入っているのが誰かの名札</text><text x="315" y="96" fill="#6e6e73" font-size="11">2³＝8枠</text><text x="420" y="96" fill="#6e6e73" font-size="11">2⁴＝16バイト</text>
+        </g>
+      </svg>
+      <ol class="steps">
+        <li>0x1234 を2進数に：0001 0010 0011 0100</li>
+        <li>下から4ビットがオフセット、次の3ビットが<a class="ref" href="https://e-words.jp/w/%E3%82%A4%E3%83%B3%E3%83%87%E3%83%83%E3%82%AF%E3%82%B9.html">インデックス</a>、残り9ビットがタグ</li>
+        <li>3番の枠を見て、名札（タグ）が36ならヒット、違えばミス</li>
+      </ol>
+    </div>
+    <div>
+      <div class="cap">衝突の例</div>
+      <table class="mini mono">
+        <tr><th>番地</th><th>インデックス</th><th>タグ</th></tr>
+        <tr><td>0x1234</td><td>3</td><td>36</td></tr>
+        <tr><td>0x1A34</td><td>3</td><td>52</td></tr>
+      </table>
+      <div class="point">2つを交互に使うと、同じ3番の枠を取り合って毎回ミスする（競合ミス）。2ウェイのセットアソシエイティブなら同じ組に2つとも置けるので、両方ヒットする。</div>
+      <div class="point warn"><b>過去問：</b>H21春 問13（複数の特定ブロック＝セットアソシエイティブ）、H21秋 問10・H24春 問10（単一のロケーション＝ダイレクトマップ）、<a class="ref q" href="https://www.ap-siken.com/kakomon/04_haru/q10.html">R4春 問10</a>（任意＝フルアソシエイティブ）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成21年度春期 問13・平成21年度秋期 問10・平成24年度春期 問10・令和4年度春期 問10（午前）／<a href="https://en.wikipedia.org/wiki/CPU_cache">Wikipedia「<a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a> cache」</a>（タグ・インデックス・オフセット）。例題はClaudeが作った</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/5/5-3/">応用情報.com 用語集 5-3 ファイルシステム</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/comp/repeat_button_flat.svg" alt="">追い出す相手の選び方：LRU と FIFO を手で追う</h1>
+  <div class="ex"><span class="lbl">例題</span>3つの枠に入るキャッシュ（どこにでも置ける）。A B C A D A B の順に使う。最初は空。ヒットは何回か。</div>
+  <div class="cols" style="grid-template-columns:1fr 1fr;gap:22px;margin-top:10px">
+    <div>
+      <div class="cap"><a class="ref" href="https://e-words.jp/w/LRU.html">LRU</a>（最後に使ってから一番長いものを出す）</div>
+      <table class="mini mono">
+        <tr><th>使う</th><th>結果</th><th>中身（古い→新しい使用順）</th></tr>
+        <tr><td>A</td><td>ミス</td><td>A</td></tr><tr><td>B</td><td>ミス</td><td>A B</td></tr><tr><td>C</td><td>ミス</td><td>A B C</td></tr>
+        <tr><td>A</td><td><b>ヒット</b></td><td>B C A</td></tr>
+        <tr><td>D</td><td>ミス（Bを出す）</td><td>C A D</td></tr>
+        <tr><td>A</td><td><b>ヒット</b></td><td>C D A</td></tr>
+        <tr><td>B</td><td>ミス（Cを出す）</td><td>D A B</td></tr>
+      </table>
+      <div class="point"><b>ヒット2回。</b>よく使う A が残り続ける。</div>
+    </div>
+    <div>
+      <div class="cap">FIFO（入れたのが一番古いものを出す）</div>
+      <table class="mini mono">
+        <tr><th>使う</th><th>結果</th><th>中身（入れた順）</th></tr>
+        <tr><td>A</td><td>ミス</td><td>A</td></tr><tr><td>B</td><td>ミス</td><td>A B</td></tr><tr><td>C</td><td>ミス</td><td>A B C</td></tr>
+        <tr><td>A</td><td><b>ヒット</b></td><td>A B C（順番は変わらない）</td></tr>
+        <tr><td>D</td><td>ミス（Aを出す）</td><td>B C D</td></tr>
+        <tr><td>A</td><td>ミス（Bを出す）</td><td>C D A</td></tr>
+        <tr><td>B</td><td>ミス（Cを出す）</td><td>D A B</td></tr>
+      </table>
+      <div class="point"><b>ヒット1回。</b>使ったかどうかを見ないので、よく使う A を追い出してしまう。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a href="https://en.wikipedia.org/wiki/Cache_replacement_policies">Wikipedia「Cache replacement policies」</a>。同じ考え方は<a class="ref" href="https://www.ap-siken.com/keyword/5/5-1/#c767273d48553c5ccf20ab7f7c874b873930b2ac">仮想記憶</a>のページ置換え（#5 ソフトウェア）でも計算問題になる。例題はClaudeが作った</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/5/5-1/">応用情報.com 用語集 5-1 オペレーティングシステム</a></div>
 </section>
 
 <section class="slide">
@@ -816,6 +1764,116 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
     </div>
   </div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/5/5-1/">応用情報.com 用語集 5-1 オペレーティングシステム</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/comp/link_flat.svg" alt="">インタリーブはバンクの「準備時間」を重ねる。8回出た最頻出テーマ</h1>
+  <div class="cols" style="grid-template-columns:1.2fr .8fr;gap:22px">
+    <div>
+      <div class="cap">連続した8語を読む（1回の読出しにバンクは4サイクル占有される）</div>
+      <svg viewBox="0 0 500 200" width="500" height="200">
+        <g font-size="11" text-anchor="middle">
+          <g fill="#6e6e73"><text x="80" y="12">0</text><text x="120" y="12">2</text><text x="160" y="12">4</text><text x="200" y="12">6</text><text x="240" y="12">8</text><text x="280" y="12">10</text><text x="320" y="12">12</text><text x="360" y="12">14</text><text x="400" y="12">16</text><text x="480" y="12">20</text></g>
+          <text x="30" y="37">なし</text>
+          <g fill="#5b80bf"><rect x="80" y="24" width="78" height="18"/><rect x="160" y="24" width="78" height="18"/><rect x="240" y="24" width="78" height="18"/><rect x="320" y="24" width="78" height="18"/><rect x="400" y="24" width="78" height="18"/></g>
+          <g fill="#fff"><text x="119" y="37">0番地</text><text x="199" y="37">1番地</text><text x="279" y="37">2番地</text><text x="359" y="37">3番地</text><text x="439" y="37">4番地</text></g>
+          <text x="400" y="58" fill="#b25000">… 8語で 8×4＝32サイクル</text>
+          <text x="30" y="89">バンク0</text><text x="30" y="112">バンク1</text><text x="30" y="136">バンク2</text><text x="30" y="160">バンク3</text>
+          <rect x="80" y="76" width="78" height="18" fill="#1f3a68"/><text x="119" y="89" fill="#fff">0番地</text><rect x="160" y="76" width="78" height="18" fill="#1f3a68"/><text x="199" y="89" fill="#fff">4番地</text>
+          <rect x="100" y="100" width="78" height="18" fill="#2f5596"/><text x="139" y="113" fill="#fff">1番地</text><rect x="180" y="100" width="78" height="18" fill="#2f5596"/><text x="219" y="113" fill="#fff">5番地</text>
+          <rect x="120" y="124" width="78" height="18" fill="#5b80bf"/><text x="159" y="137" fill="#fff">2番地</text><rect x="200" y="124" width="78" height="18" fill="#5b80bf"/><text x="239" y="137" fill="#fff">6番地</text>
+          <rect x="140" y="148" width="78" height="18" fill="#c9daf2"/><text x="179" y="161" fill="#1f3a68">3番地</text><rect x="220" y="148" width="78" height="18" fill="#c9daf2"/><text x="259" y="161" fill="#1f3a68">7番地</text>
+          <text x="400" y="130" fill="#1f3a68" font-weight="700">4ウェイなら</text><text x="400" y="146" fill="#1f3a68" font-weight="700">4＋(8−1)＝11サイクル</text>
+          <text x="250" y="190" fill="#6e6e73">番地 ÷ 4 の余り＝バンク番号。連続した番地は順にちがうバンクへ</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="point" style="margin-top:0"><b>考え方はパイプラインと同じ：</b>1つのバンクが準備している間に、次のバンクに読出しを始めさせる。最初の1語は4サイクル、あとは1サイクルごとに届く。</div>
+      <table class="mini">
+        <tr><th>誤りの選択肢</th><th>何の説明か</th></tr>
+        <tr><td>主記憶と外部記憶を一元的にアドレス付け</td><td><a class="ref" href="https://www.ap-siken.com/keyword/5/5-1/#c767273d48553c5ccf20ab7f7c874b873930b2ac">仮想記憶</a></td></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a>と主記憶の間に高速の記憶を置く</td><td><a class="ref" href="https://e-words.jp/w/%E3%82%AD%E3%83%A3%E3%83%83%E3%82%B7%E3%83%A5%E3%83%A1%E3%83%A2%E3%83%AA.html">キャッシュメモリ</a></td></tr>
+        <tr><td>CPUと磁気ディスクの間にバッファ</td><td><a class="ref" href="https://e-words.jp/w/%E3%83%87%E3%82%A3%E3%82%B9%E3%82%AF%E3%82%AD%E3%83%A3%E3%83%83%E3%82%B7%E3%83%A5.html">ディスクキャッシュ</a></td></tr>
+        <tr><td>1つのバンクの故障に備える</td><td>ミラーリング・ECC</td></tr>
+      </table>
+      <div class="point warn">H21春・H23秋・H25秋・H28秋・H29秋・H30春・R2秋・<a class="ref q" href="https://www.ap-siken.com/kakomon/03_aki/q9.html">R3秋 問9</a>。正解はいつも「複数のバンクに分けて並行してアクセス」。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 応用情報技術者試験 午前（表に挙げた8回）／<a href="https://en.wikipedia.org/wiki/Memory_interleaving">Wikipedia「Memory interleaving」</a>。サイクル数の例はClaudeが作った</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-2/">応用情報.com 用語集 3-2 メモリ</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/comp/wrench_flat.svg" alt="">ハミング符号で1ビットの誤りを直してみる</h1>
+  <div class="cols" style="grid-template-columns:1.15fr .85fr;gap:22px">
+    <div>
+      <div class="ex"><span class="lbl">例題</span>データ 1011 に検査ビット3つを付けて7ビットにする（ハミング(7,4)符号）。送る途中で5ビット目が反転した。</div>
+      <table class="kmap" style="margin-top:8px">
+        <tr><th>位置</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th></tr>
+        <tr><td>役割</td><td>p1</td><td>p2</td><td>d1</td><td>p4</td><td>d2</td><td>d3</td><td>d4</td></tr>
+        <tr><td>送った</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+        <tr><td>届いた</td><td>0</td><td>1</td><td>1</td><td>0</td><td class="on2">1</td><td>1</td><td>1</td></tr>
+      </table>
+      <ol class="steps" style="margin-top:6px">
+        <li>p1 は位置1・3・5・7、p2 は2・3・6・7、p4 は4・5・6・7 の1の数を偶数にする検査ビット</li>
+        <li>届いた側で検査し直す：1・3・5・7 → 0＋1＋1＋1＝奇数（×）、2・3・6・7 → 偶数（○）、4・5・6・7 → 奇数（×）</li>
+        <li>×の検査ビットの番号を足す：1＋4＝<b>5</b> → 5ビット目が誤り。反転すれば直る</li>
+      </ol>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th>方式</th><th>検出</th><th>訂正</th></tr>
+        <tr><td>パリティ（奇数・偶数）</td><td>1ビット</td><td>できない</td></tr>
+        <tr><td>水平＋垂直パリティ</td><td>1ビット</td><td>1ビット</td></tr>
+        <tr><td>チェックサム</td><td>できる</td><td>できない</td></tr>
+        <tr><td>CRC</td><td>連続した誤りに強い</td><td>できない</td></tr>
+        <tr><td><b>ハミング符号</b>＋全体パリティ</td><td><b>2ビット</b></td><td><b>1ビット</b></td></tr>
+      </table>
+      <div class="point"><b>ECCメモリ：</b>64ビットのデータに8ビットの検査ビットを足し、72ビットで記憶する（SECDED＝1ビット訂正・2ビット検出）。サーバの主記憶で使う。</div>
+      <div class="point warn"><b>4回とも同じ問い：</b>「2ビット検出・1ビット訂正」はどれか（H21春・H22春・H30秋・R2秋）。答えはハミング符号。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成21年度春期 問12・平成22年度春期 問11・平成30年度秋期 問9・令和2年度10月 問10（午前）／<a href="https://en.wikipedia.org/wiki/Hamming_code">Wikipedia「Hamming code」</a>・<a href="https://en.wikipedia.org/wiki/ECC_memory">「ECC memory」</a>・<a href="https://en.wikipedia.org/wiki/DDR5_SDRAM">「DDR5 <a class="ref" href="https://e-words.jp/w/SDRAM.html">SDRAM</a>」</a>（ECCなし64本・ECCあり72本のデータ線）。例題はClaudeが計算した</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-2/">応用情報.com 用語集 3-2 メモリ</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/comp/gear_flat.svg" alt="">MMU は仮想アドレスを物理アドレスに変える「番地の翻訳係」</h1>
+  <div class="cols" style="grid-template-columns:1.1fr .9fr;gap:22px">
+    <div>
+      <div class="ex"><span class="lbl">例題</span>ページの大きさ 4KB（＝2¹²バイト）。仮想アドレス <b>0x3A7F</b> は物理アドレスのどこか。ページ表では、ページ3 → ページ枠7。</div>
+      <svg viewBox="0 0 460 120" width="460" height="120" style="margin-top:6px">
+        <g font-size="12" text-anchor="middle">
+          <rect x="0" y="20" width="80" height="34" fill="#1f3a68"/><text x="40" y="42" fill="#fff" font-family="IPAGothic,monospace">3</text>
+          <rect x="80" y="20" width="120" height="34" fill="#c9daf2"/><text x="140" y="42" fill="#1f3a68" font-family="IPAGothic,monospace">A7F</text>
+          <text x="40" y="14" fill="#1f3a68">ページ番号</text><text x="140" y="14" fill="#1f3a68">位置（12ビット）</text>
+          <rect x="230" y="20" width="90" height="34" rx="6" fill="#2f5596"/><text x="275" y="36" fill="#fff">ページ表</text><text x="275" y="50" fill="#fff" font-size="11">3 → 7</text>
+          <line x1="80" y1="70" x2="80" y2="70"/>
+          <path d="M40,56 C40,90 230,90 260,56" fill="none" stroke="#b25000" stroke-width="1.5"/>
+          <rect x="340" y="20" width="40" height="34" fill="#1f3a68"/><text x="360" y="42" fill="#fff" font-family="IPAGothic,monospace">7</text>
+          <rect x="380" y="20" width="80" height="34" fill="#c9daf2"/><text x="420" y="42" fill="#1f3a68" font-family="IPAGothic,monospace">A7F</text>
+          <line x1="320" y1="37" x2="338" y2="37" stroke="#b25000" stroke-width="2"/>
+          <text x="400" y="74" fill="#1f3a68" font-weight="700">物理アドレス 0x7A7F</text>
+          <text x="230" y="110" fill="#6e6e73" font-size="11">ページ内の位置はそのまま。ページ番号だけを置き換える</text>
+        </g>
+      </svg>
+      <div class="point">ページ表は主記憶にあるので毎回引くと遅い。最近の変換結果を覚えておく小さな速い記憶が <b>TLB</b>。ページが主記憶になければ<b><a class="ref" href="https://e-words.jp/w/%E3%83%9A%E3%83%BC%E3%82%B8%E3%83%95%E3%82%A9%E3%83%BC%E3%83%AB%E3%83%88.html">ページフォールト</a></b>を起こし、<a class="ref" href="https://e-words.jp/w/OS.html">OS</a> がディスクから読み込む。</div>
+    </div>
+    <div>
+      <div class="cap">H27秋 問10「MMUの説明」</div>
+      <table class="mini">
+        <tr><th>選択肢の中身</th><th>本当は</th></tr>
+        <tr><td><b>仮想アドレスを物理アドレスに対応させる</b></td><td><b>正解</b></td></tr>
+        <tr><td>ページフォールトを受けてスワップする</td><td>OS の仕事</td></tr>
+        <tr><td>OS の一部でキャッシュ制御・バス調整</td><td>MMU はハードウェア</td></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a> と主記憶の速度差を吸収</td><td><a class="ref" href="https://e-words.jp/w/%E3%82%AD%E3%83%A3%E3%83%83%E3%82%B7%E3%83%A5%E3%83%A1%E3%83%A2%E3%83%AA.html">キャッシュメモリ</a></td></tr>
+      </table>
+      <div class="point warn"><a class="ref" href="https://www.ap-siken.com/keyword/5/5-1/#c767273d48553c5ccf20ab7f7c874b873930b2ac">仮想記憶</a>のしくみ（ページング・置換え）は #5 ソフトウェアで、翻訳するハードウェア（MMU）がこの分野。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成27年度秋期 応用情報技術者試験 午前 問10／<a href="https://en.wikipedia.org/wiki/Memory_management_unit">Wikipedia「Memory management unit」</a>・<a href="https://en.wikipedia.org/wiki/Virtual_memory">「Virtual memory」</a>。例題はClaudeが作った</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/5/5-1/">応用情報.com 用語集 5-1 オペレーティングシステム</a></div>
 </section>
 
 <section class="slide chapter">
@@ -863,6 +1921,58 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/comp/bus_flat.svg" alt="">転送速度は「1回に運ぶ量 × 1秒間の回数」。3つの例で練習</h1>
+  <div class="cols3">
+    <div>
+      <div class="cap">H31春 問10：メモリ</div>
+      <table class="mini">
+        <tr><td>1回に運ぶ量</td><td>16ビット＝2バイト</td></tr>
+        <tr><td>1秒間の回数</td><td>1 ÷ 80ナノ秒 ＝ 1,250万回</td></tr>
+        <tr><td><b>答え</b></td><td><b>25Mバイト/秒（イ）</b></td></tr>
+      </table>
+      <div class="point warn">200 はビットのまま、12.5 は1バイトと取り違えた値。</div>
+    </div>
+    <div>
+      <div class="cap">DDR5-4800 のメモリ1枚</div>
+      <table class="mini">
+        <tr><td>1回に運ぶ量</td><td>64ビット＝8バイト</td></tr>
+        <tr><td>1秒間の回数</td><td>48億回（4,800MT/s）</td></tr>
+        <tr><td><b>答え</b></td><td><b>38.4Gバイト/秒</b></td></tr>
+      </table>
+      <div class="point">「MT/s」は1秒に何百万回送るか。<a class="ref" href="https://e-words.jp/w/%E3%82%AF%E3%83%AD%E3%83%83%E3%82%AF%E5%91%A8%E6%B3%A2%E6%95%B0.html">クロック周波数</a>（2,400MHz）の2倍。</div>
+    </div>
+    <div>
+      <div class="cap"><a class="ref" href="https://www.ap-siken.com/keyword/3/3-3/#f33ddbcb868dcbbee2da97d6e2f04fc3d529ed13">PCI Express</a> 4.0 ×16</div>
+      <table class="mini">
+        <tr><td>1レーン</td><td>16GT/s、符号化 128b/130b</td></tr>
+        <tr><td>1レーンの実効</td><td>16 × 128/130 ÷ 8 ≒ 1.97GB/秒</td></tr>
+        <tr><td><b>16レーン</b></td><td><b>約31.5GB/秒（片方向）</b></td></tr>
+      </table>
+      <div class="point">符号化の分だけ目減りする。8b/10b なら2割減。</div>
+    </div>
+  </div>
+  <div class="cols" style="grid-template-columns:1.1fr .9fr;gap:22px;margin-top:12px">
+    <table class="mini">
+      <tr><th>PCIe の世代</th><th>1レーンの転送</th><th>符号化</th><th>×16 の片方向</th></tr>
+      <tr><td>3.0（2010）</td><td>8GT/s</td><td>128b/130b</td><td>約15.8GB/秒</td></tr>
+      <tr><td>4.0</td><td>16GT/s</td><td>128b/130b</td><td>約31.5GB/秒</td></tr>
+      <tr><td>5.0</td><td>32GT/s</td><td>128b/130b</td><td>約63GB/秒</td></tr>
+      <tr><td>6.0</td><td>64GT/s</td><td>PAM4＋FLIT</td><td>約128GB/秒</td></tr>
+    </table>
+    <div>
+      <table class="mini">
+        <tr><th></th><th>SATA（AHCI）</th><th><a class="ref" href="https://e-words.jp/w/NVMe.html">NVMe</a></th></tr>
+        <tr><td>つなぐ線</td><td>SATA 6Gbit/秒</td><td>PCI Express</td></tr>
+        <tr><td>命令の列（キュー）</td><td>1本・32個まで</td><td>最大65,535本</td></tr>
+      </table>
+      <div class="point" style="margin-top:6px">NVMe は <a class="ref" href="https://e-words.jp/w/SSD.html">SSD</a> のために作られた手順。たくさんの列で並行して命令を受けられる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成31年度春期 午前 問10／<a href="https://en.wikipedia.org/wiki/PCI_Express">Wikipedia「PCI Express」</a>（世代ごとの GT/s・符号化・×16 の帯域）／<a href="https://nvmexpress.org/about/">NVM Express「About」</a>／<a href="https://en.wikipedia.org/wiki/NVM_Express">Wikipedia「NVM Express」</a>（最大65,535キュー）・<a href="https://en.wikipedia.org/wiki/SATA">「SATA」</a>。計算はClaudeが行った</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-3/">応用情報.com 用語集 3-3 バス</a></div>
+</section>
+
+<section class="slide">
   <h1><img class="ico" src="img/comp/electric_plug_flat.svg" alt="">有線のインタフェースは今ほぼ全部シリアル。名前と用途の組で覚える</h1>
   <div class="cols" style="grid-template-columns:1.15fr .85fr">
     <div>
@@ -898,6 +2008,40 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/comp/electric_plug_flat.svg" alt="">USBの世代は「1レーンの速さ × レーン数」。名前が変わったので表で整理</h1>
+  <div class="cols" style="grid-template-columns:1.2fr .8fr;gap:22px">
+    <div>
+      <table class="mini">
+        <tr><th style="width:38%">規格（今の呼び方）</th><th style="width:20%">最大の速さ</th><th style="width:13%">通信</th><th>過去問</th></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/USB.html">USB</a> 1.1 ロー／フルスピード</td><td>1.5／12Mbps</td><td>半二重</td><td>—</td></tr>
+        <tr><td>USB 2.0 ハイスピード</td><td>480Mbps</td><td>半二重</td><td>H21秋 問12</td></tr>
+        <tr><td>USB 3.0 スーパースピード（3.2 Gen1）</td><td>5Gbps</td><td><b>全二重</b></td><td>H28春 問10・H30春 問12</td></tr>
+        <tr><td>USB 3.2 Gen2／Gen2×2</td><td>10／20Gbps</td><td>全二重</td><td>—</td></tr>
+        <tr><td>USB4（<a class="ref" href="https://e-words.jp/w/Thunderbolt.html">Thunderbolt</a> の方式がもと）</td><td>40Gbps → 80Gbps</td><td>全二重</td><td>—</td></tr>
+      </table>
+      <div class="point"><b>USB-IF の説明：</b>USB 3.2 は以前の 3.x を吸収し、5・10・20Gbps の3つの速さを定める。20Gbps は 10Gbps のレーンを2本使う。USB4 は インテルが提供した Thunderbolt の方式をもとに、80Gbps 対応ケーブルで最大80Gbps。</div>
+    </div>
+    <div>
+      <div class="cap">給電（USB Power Delivery）</div>
+      <table class="mini">
+        <tr><td>USB 2.0 ／ 3.0 の標準</td><td>500mA ／ 900mA</td></tr>
+        <tr><td>USB PD（〜2021）</td><td>20V×5A＝<b>100W</b></td></tr>
+        <tr><td>USB PD 3.1</td><td>48V×5A＝<b>240W</b></td></tr>
+      </table>
+      <div class="point">給電する向きも固定されない。モニタからノートPCに給電しながら映像を映すこともできる。</div>
+      <div class="cap" style="margin-top:8px">映像のインタフェース</div>
+      <table class="mini">
+        <tr><td><a class="ref" href="https://e-words.jp/w/DisplayPort.html">DisplayPort</a>（VESA）</td><td>映像と音声を<b>パケット</b>にして送る。1.4 で 32.4Gbps、2.1 で最大80Gbps</td></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/HDMI.html">HDMI</a> 2.2</td><td>最大96Gbps（Ultra96 ケーブル）</td></tr>
+      </table>
+      <div class="point warn"><b><a class="ref q" href="https://www.ap-siken.com/kakomon/01_aki/q11.html">R1秋 問11</a>：</b>DisplayPort は「パケット化してシリアル伝送」。アナログは送れない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前（表の各回・令和元年度秋期 問11）／USB-IF <a href="https://www.usb.org/usb-32-0">「USB 3.2」</a>・<a href="https://www.usb.org/usb4">「USB4」</a>・<a href="https://www.usb.org/usb-charger-pd">「USB Charger (USB Power Delivery)」</a>／<a href="https://vesa.org/displayport-developer/about-displayport/">VESA「About DisplayPort」</a>／<a href="https://www.hdmi.org/spec/hdmi2_1">HDMI Licensing「HDMI 2.2」</a>／<a href="https://en.wikipedia.org/wiki/USB">Wikipedia「USB」</a>・<a href="https://en.wikipedia.org/wiki/DisplayPort">「DisplayPort」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-4/">応用情報.com 用語集 3-4 入出力デバイス</a></div>
+</section>
+
+<section class="slide">
   <h1><img class="ico" src="img/comp/antenna_bars_flat.svg" alt="">近距離の無線は「届く距離」と「電力」で選ぶ</h1>
   <div class="cols" style="grid-template-columns:1.1fr .9fr">
     <div>
@@ -927,6 +2071,25 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
       <div class="point warn">これらはまとめて<b><a class="ref" href="https://www.ap-siken.com/keyword/3/3-4/#01bc3dd675c2e14b1de31b9987db3ccc21936161">無線PAN</a></b>（個人の周りのネットワーク）。周波数が低いほど回り込んで遠くまで届く。</div>
     </div>
   </div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-4/">応用情報.com 用語集 3-4 入出力デバイス</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/comp/satellite_antenna_flat.svg" alt="">無線の規格を、規格団体の公式の数字で比べる</h1>
+  <table class="mini">
+    <tr><th style="width:14%">規格</th><th style="width:17%">周波数</th><th style="width:19%">距離・速さ</th><th>決め手（公式の説明）</th><th style="width:13%">規格団体</th></tr>
+    <tr><td><b><a class="ref" href="https://e-words.jp/w/NFC.html">NFC</a></b></td><td>13.56MHz</td><td>ふつう2cmまで・46kbps〜1.7Mbps</td><td>「かざす」のが前提。片方から電力も送れるので電池のないカードも動く。スマホがカードのふりをする「カードエミュレーション」が主な使い方</td><td>NFC Forum</td></tr>
+    <tr><td><a class="ref" href="https://e-words.jp/w/Bluetooth.html">Bluetooth</a> Classic</td><td>2.4GHz帯・79チャネル</td><td>身の回り</td><td>1対1で音声などを流し続ける（ワイヤレスイヤホン）</td><td>Bluetooth SIG</td></tr>
+    <tr><td><b>Bluetooth LE</b></td><td>2.4GHz帯・40チャネル</td><td>身の回り</td><td>とても低い電力で動くように設計。メッシュネットワークや LE Audio もある</td><td>Bluetooth SIG</td></tr>
+    <tr><td><b>Zigbee</b></td><td>2.4GHz帯・サブGHz帯</td><td>低速</td><td>自己修復するメッシュネットワーク。電池を長くもたせる（センサ・スマートホーム）</td><td>CSA</td></tr>
+    <tr><td>Wi-Fi 7</td><td>2.4・5・6GHz帯</td><td>数Gbps</td><td>6GHz帯で320MHz幅のチャネル、複数の帯域を同時に使うマルチリンク（2024年〜）</td><td>Wi-Fi Alliance</td></tr>
+    <tr><td>LPWA</td><td>主にサブGHz帯</td><td>数km〜10km超・低速</td><td>広い範囲・低電力・少ないデータ（スマートメーター、IoT）</td><td>（各方式）</td></tr>
+  </table>
+  <div class="cols" style="grid-template-columns:1fr 1fr;gap:20px">
+    <div class="point warn"><b>H31春 問11（<a class="ref" href="https://e-words.jp/w/ZigBee.html">ZigBee</a>）：</b>正解は「低消費電力・低速・センサーネットワーク」。誤りは Bluetooth・赤外線・トランシーバ。</div>
+    <div class="point"><b>コツ：</b>近い順に NFC（cm）→ Bluetooth（m）→ Wi-Fi（建物）→ LPWA（km）。</div>
+  </div>
+  <div class="cite">出典：IPA 平成31年度春期 午前 問11／<a href="https://nfc-forum.org/learn/nfc-technology/">NFC Forum「NFC Technology」</a>／<a href="https://www.bluetooth.com/learn-about-bluetooth/tech-overview/">Bluetooth SIG「Tech Overview」</a>／<a href="https://csa-iot.org/all-solutions/zigbee/">CSA「Zigbee」</a>／<a href="https://www.wi-fi.org/discover-wi-fi/wi-fi-certified-7">Wi-Fi Alliance「Wi-Fi CERTIFIED 7」</a>／<a href="https://en.wikipedia.org/wiki/LPWAN">Wikipedia「LPWAN」</a></div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-4/">応用情報.com 用語集 3-4 入出力デバイス</a></div>
 </section>
 
@@ -987,6 +2150,40 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/5/5-1/">応用情報.com 用語集 5-1 オペレーティングシステム</a></div>
 </section>
 
+<section class="slide">
+  <h1><img class="ico" src="img/comp/package_flat.svg" alt="">DMA転送の流れ：CPUは「頼んで、終わりの合図を待つ」だけ</h1>
+  <div class="cols" style="grid-template-columns:1.2fr .8fr;gap:22px">
+    <div>
+      <svg viewBox="0 0 500 260" width="500" height="260">
+        <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#1f3a68"/></marker></defs>
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="10" width="100" height="30" rx="6" fill="#1f3a68"/><text x="60" y="30" fill="#fff">CPU</text>
+          <rect x="200" y="10" width="110" height="30" rx="6" fill="#2f5596"/><text x="255" y="30" fill="#fff">DMAコントローラ</text>
+          <rect x="390" y="10" width="100" height="30" rx="6" fill="#5b80bf"/><text x="440" y="30" fill="#fff">主記憶・装置</text>
+          <g stroke="#d2d2d7"><line x1="60" y1="40" x2="60" y2="250"/><line x1="255" y1="40" x2="255" y2="250"/><line x1="440" y1="40" x2="440" y2="250"/></g>
+          <g stroke="#1f3a68" stroke-width="1.5" marker-end="url(#ar2)"><line x1="60" y1="66" x2="250" y2="66"/><line x1="255" y1="100" x2="65" y2="100"/><line x1="60" y1="124" x2="250" y2="124"/><line x1="255" y1="160" x2="435" y2="160"/><line x1="255" y1="182" x2="435" y2="182"/><line x1="255" y1="230" x2="65" y2="230"/></g>
+          <text x="157" y="60">① 転送元・転送先・量を設定</text>
+          <text x="157" y="94">② バスを使わせて（要求）</text>
+          <text x="157" y="118">③ どうぞ（許可）</text>
+          <text x="348" y="154">④ データを運ぶ</text><text x="348" y="176">（くり返し）</text>
+          <text x="157" y="224">⑤ 終わった（割込み）</text>
+          <rect x="4" y="136" width="112" height="60" rx="6" fill="#e8eef8" stroke="#c9daf2"/><text x="60" y="160" fill="#1f3a68">その間 CPU は</text><text x="60" y="178" fill="#1f3a68">ほかの処理</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="cap">バスの使い方の違い</div>
+      <table class="mini">
+        <tr><td><b>バースト</b>（ブロック転送）</td><td>許可をもらったら全部まとめて運ぶ。その間 <a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a> はバスを使えない</td></tr>
+        <tr><td><b>サイクルスチール</b></td><td>1回分運ぶたびにバスを CPU に返す。CPU の命令と交互に進む</td></tr>
+      </table>
+      <div class="point warn"><b><a class="ref" href="https://e-words.jp/w/DMA.html">DMA</a> は4回出た：</b>H22秋 問12・H23秋 問13・H25秋 問12・<a class="ref q" href="https://www.ap-siken.com/kakomon/07_haru/q9.html">R7春 問9</a>。誤りの選択肢は、<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/#d3d45f1a18f150a3e4db24f488f34cbf25a9c8a7">DSP</a>（積和演算）、MMU（仮想メモリ）、タイマ（時間を数える）、パイプライン（命令を重ねる）、メモリマップドI/O（装置の<a class="ref" href="https://e-words.jp/w/%E3%83%AC%E3%82%B8%E3%82%B9%E3%82%BF.html">レジスタ</a>に番地を割り当てる）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成22年度秋期 問12・平成23年度秋期 問13・平成25年度秋期 問12・令和7年度春期 問9（午前）／<a href="https://en.wikipedia.org/wiki/Direct_memory_access">Wikipedia「Direct memory access」</a>（バースト・サイクルスチール、BR・BG の信号）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
+</section>
+
 <section class="slide chapter">
   <div class="hero-icons ira"><img src="img/irasutoya/display.png" alt=""><img src="img/irasutoya/printer.png" alt=""><img src="img/irasutoya/hdd.png" alt=""><img src="img/irasutoya/keyboard.png" alt=""></div>
   <div class="k">第4章</div>
@@ -1026,6 +2223,44 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/comp/television_flat.svg" alt="">ディスプレイを断面で比べる。光をどこで作るかがすべて</h1>
+  <div class="cols3">
+    <div>
+      <div class="cap">液晶（LCD）</div>
+      <div class="stack" style="gap:3px">
+        <div class="box b5" style="padding:2px 4px;font-size:12.5px">偏光フィルタ</div><div class="box b4" style="padding:2px 4px;font-size:12.5px">カラーフィルタ（赤緑青）</div><div class="box b3" style="padding:2px 4px;font-size:12.5px">液晶（電圧で向きが変わる）</div><div class="box b2" style="padding:2px 4px;font-size:12.5px">TFT（画素ごとのスイッチ）</div><div class="box b5" style="padding:2px 4px;font-size:12.5px">偏光フィルタ</div><div class="box b1" style="padding:2px 4px;font-size:12.5px">バックライト ← 光はここ</div>
+      </div>
+    </div>
+    <div>
+      <div class="cap">有機EL（OLED）</div>
+      <div class="stack" style="gap:3px">
+        <div class="box b5" style="padding:2px 4px;font-size:12.5px">保護ガラス・フィルム</div><div class="box b1" style="padding:2px 4px;font-size:12.5px">有機層 ← 自分で光る</div><div class="box b2" style="padding:2px 4px;font-size:12.5px">TFT（画素ごとのスイッチ）</div><div class="box b5" style="padding:2px 4px;font-size:12.5px">基板（曲げられる樹脂も）</div>
+      </div>
+      <div class="point">液晶は光の<b>通る量</b>を変えるだけ。有機ELはバックライトがなく、黒は<b>消灯</b>で真っ黒。</div>
+    </div>
+    <div>
+      <div class="cap"><a class="ref" href="https://e-words.jp/w/%E9%9B%BB%E5%AD%90%E3%83%9A%E3%83%BC%E3%83%91%E3%83%BC.html">電子ペーパー</a></div>
+      <div class="stack" style="gap:3px">
+        <div class="box b5" style="padding:2px 4px;font-size:12.5px">透明電極</div><div class="box b3" style="padding:2px 4px;font-size:12.5px">白と黒の帯電粒子 ← 外の光を反射</div><div class="box b5" style="padding:2px 4px;font-size:12.5px">電極</div>
+      </div>
+      <div class="point">電圧で粒子を上下に集める。表示を保つのに電力が要らない。</div>
+    </div>
+  </div>
+  <div class="cols" style="grid-template-columns:1fr 1fr;gap:20px;margin-top:6px">
+    <table class="mini">
+      <tr><th>3D の方式（<a class="ref q" href="https://www.ap-siken.com/kakomon/02_aki/q11.html">R2秋 問11</a>）</th><th>しくみ</th></tr>
+      <tr><td><b>アクティブシャッタ</b></td><td>左右の映像を<b>交互</b>に出し、眼鏡が同期して片目ずつ閉じる</td></tr>
+      <tr><td>偏光方式</td><td>左右を同時に出し、偏光の向きが違う眼鏡で分ける</td></tr>
+      <tr><td>アナグリフ</td><td>赤と青で重ね、赤青の眼鏡で見る</td></tr>
+      <tr><td>視差バリア</td><td>画面の細かい格子で左右に振り分ける（裸眼）</td></tr>
+    </table>
+    <div class="ex"><span class="lbl">H22秋 問13 の型</span>音を記録するとき：録音＝<b>A/D</b>変換（アナログ→数値）、再生＝<b>D/A</b>変換。音質はサンプリング周波数と量子化ビット数の両方で決まる。<br>例：44.1kHz × 16ビット × 2ch ＝ 1,411,200ビット/秒 → 1分で約10.6Mバイト</div>
+  </div>
+  <div class="cite">出典：IPA 平成21年度秋期 問13・平成27年度秋期 問11・平成28年度春期 問11・令和2年度10月 問11・平成22年度秋期 問13（午前）／<a href="https://en.wikipedia.org/wiki/Liquid-crystal_display">Wikipedia「Liquid-crystal display」</a>・<a href="https://en.wikipedia.org/wiki/OLED">「OLED」</a>・<a href="https://en.wikipedia.org/wiki/Electronic_paper">「Electronic paper」</a>。音のデータ量はClaudeが計算した</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-5/">応用情報.com 用語集 3-5 入出力装置</a></div>
+</section>
+
+<section class="slide">
   <h1><img class="ico" src="img/comp/printer_flat.svg" alt="">入力装置は「何を読むか」、プリンタは「何単位で、どう付けるか」</h1>
   <div class="cols">
     <div>
@@ -1057,6 +2292,35 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
     </div>
   </div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-5/">応用情報.com 用語集 3-5 入出力装置</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/comp/printer_flat.svg" alt="">プリンタのしくみ：インクジェットは「熱か圧電」、レーザは6つの工程</h1>
+  <div class="cols" style="grid-template-columns:.9fr 1.1fr;gap:22px">
+    <div>
+      <table class="mini">
+        <tr><th>インクジェット</th><th>インクを押し出す力</th></tr>
+        <tr><td>サーマル（バブルジェット）</td><td>ヒーターで瞬間的に加熱 → <b>泡</b>ができてインクを押し出す。キヤノンの遠藤一郎氏の発想がもと</td></tr>
+        <tr><td>ピエゾ（圧電）</td><td>電圧をかけると形が変わる<b>圧電素子</b>でインクを押し出す</td></tr>
+      </table>
+      <div class="ex" style="margin-top:10px"><span class="lbl">例題</span>A4（8.27×11.69インチ）を 600dpi で印刷する点の数は？<br>8.27×600≒4,961、11.69×600≒7,016 → 約<b>3,480万点</b>。カラーで1点24ビットなら約104Mバイト。</div>
+      <div class="point">dpi＝1インチ（2.54cm）に並ぶ点の数。スキャナの細かさも dpi で表す。</div>
+    </div>
+    <div>
+      <div class="cap">レーザプリンタ（電子写真方式）</div>
+      <div class="flow" style="flex-wrap:wrap;gap:6px">
+        <div class="box b1" style="flex:0 0 30%">① 帯電<span>ドラムに電気を帯びさせる</span></div>
+        <div class="box b1" style="flex:0 0 30%">② 露光<span>レーザで文字の形に電気を消す</span></div>
+        <div class="box b2" style="flex:0 0 30%">③ 現像<span>トナーを形どおりに付ける</span></div>
+        <div class="box b2" style="flex:0 0 30%">④ 転写<span>トナーを紙に移す</span></div>
+        <div class="box b3" style="flex:0 0 30%">⑤ 定着<span>熱と圧力で溶かして固める</span></div>
+        <div class="box b4" style="flex:0 0 30%">⑥ クリーニング<span>残ったトナーを落とす</span></div>
+      </div>
+      <div class="point">1ページ分をまとめて作るので<b>ページプリンタ</b>で、ピンで打たないので<b>ノンインパクト</b>。速さは ppm（1分あたりの枚数）。</div>
+      <div class="point warn">インパクトプリンタ（ドット）だけが、カーボン複写の伝票を一度に印字できる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA シラバス Ver.7.2 中分類3 5.（2）出力装置の用語例／<a href="https://en.wikipedia.org/wiki/Laser_printing">Wikipedia「Laser printing」</a>・<a href="https://en.wikipedia.org/wiki/Inkjet_printing">「Inkjet printing」</a>（キヤノンの遠藤一郎氏のバブルジェット）。例題はClaudeが計算した</div>
 </section>
 
 <section class="slide">
@@ -1098,6 +2362,36 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/comp/optical_disk_flat.svg" alt="">平均アクセス時間を手順どおりに：位置決め＋半回転＋転送</h1>
+  <div class="cols" style="grid-template-columns:1.1fr .9fr;gap:22px">
+    <div>
+      <div class="ex"><span class="lbl">H24秋 問12</span>毎分6,000回転、平均位置決め時間20ミリ秒、1トラック20kバイト。4kバイトを1ブロック読む平均アクセス時間は？</div>
+      <ol class="steps" style="margin-top:6px">
+        <li><b>1回転の時間</b>：6,000回転/分 ＝ 100回転/秒 → 1回転 10ミリ秒</li>
+        <li><b>平均回転待ち</b>：半回転 ＝ 5ミリ秒（運が良ければ0、悪ければ1回転。平均は半分）</li>
+        <li><b>転送時間</b>：1回転で20kバイト読める → 4kバイトは 10 × 4/20 ＝ 2ミリ秒</li>
+        <li><b>合計</b>：20 ＋ 5 ＋ 2 ＝ <b>27ミリ秒（ウ）</b></li>
+      </ol>
+      <div class="point warn">誤りの選択肢：20（位置決めだけ）、22（回転待ちを忘れた）、32（回転待ちを1回転にした）。</div>
+    </div>
+    <div>
+      <div class="cap">回転数と平均回転待ち時間</div>
+      <table class="mini">
+        <tr><th>回転数</th><th>1回転</th><th>平均回転待ち</th></tr>
+        <tr><td>5,400rpm</td><td>11.1ミリ秒</td><td>5.6ミリ秒</td></tr>
+        <tr><td>7,200rpm</td><td>8.3ミリ秒</td><td>4.2ミリ秒</td></tr>
+        <tr><td>10,000rpm</td><td>6.0ミリ秒</td><td>3.0ミリ秒</td></tr>
+        <tr><td>15,000rpm</td><td>4.0ミリ秒</td><td>2.0ミリ秒</td></tr>
+      </table>
+      <div class="formula" style="font-size:14px">平均回転待ち ＝ 60 ÷ 回転数 ÷ 2</div>
+      <div class="point">東芝のエンタープライズ向け HDD には 10,000rpm（10Krpm）の製品群がある。<a class="ref" href="https://e-words.jp/w/SSD.html">SSD</a> には回転も位置決めもないので、ランダムな読出しが桁違いに速い（記憶階層の表で HDD 4.16ミリ秒、SSD 0.2ミリ秒）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成24年度秋期 応用情報技術者試験 午前 問12／<a href="https://en.wikipedia.org/wiki/Hard_disk_drive_performance_characteristics">Wikipedia「Hard disk drive performance characteristics」</a>（平均回転待ち＝最大の半分、最大＝60/rpm）／<a href="https://toshiba.semicon-storage.com/jp/storage/product/data-center-enterprise.html">東芝デバイス＆ストレージ「データセンター・エンタープライズ向けHDD」</a>。表の値はClaudeが式から計算した</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-2/">応用情報.com 用語集 3-2 メモリ</a></div>
+</section>
+
+<section class="slide">
   <h1><img class="ico" src="img/comp/videocassette_flat.svg" alt="">RAID5は「1台分をパリティに」、テープは「ブロックにまとめてすき間を減らす」</h1>
   <div class="cols">
     <div>
@@ -1130,6 +2424,39 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/comp/file_cabinet_flat.svg" alt="">RAIDは容量と「何台まで壊れてよいか」の表で覚える。復元は XOR</h1>
+  <div class="cols" style="grid-template-columns:1.1fr .9fr;gap:22px">
+    <div>
+      <div class="cap">4TB のディスク4台で組んだとき（RAID1 は2台1組）</div>
+      <table>
+        <tr><th>RAID</th><th>しくみ</th><th>使える容量</th><th>壊れてよい台数</th></tr>
+        <tr><td>RAID0</td><td>ストライピング（分けて並べる）</td><td>16TB</td><td>0台</td></tr>
+        <tr><td>RAID1</td><td>ミラーリング（同じものを2台に）</td><td>2台で4TB</td><td>1台</td></tr>
+        <tr><td><a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#fda4ac0f769284754334ca5f35bc5bec63063b13">RAID5</a></td><td>パリティを全ディスクに分散</td><td><b>12TB</b>（1台分減る）</td><td><b>1台</b></td></tr>
+        <tr><td>RAID6</td><td>パリティを2種類</td><td>8TB（2台分減る）</td><td>2台</td></tr>
+        <tr><td>RAID1＋0</td><td>ミラーしたものをストライピング</td><td>8TB</td><td>1台（組が違えば2台）</td></tr>
+      </table>
+      <div class="point">RAID は「安価なディスクを束ねて速く・壊れにくく」という1988年のバークレー校の論文で整理された。</div>
+    </div>
+    <div>
+      <div class="ex"><span class="lbl">例題</span>RAID5 で D1＝1010、D2＝0110、D3＝0011 のパリティ P と、D2 が壊れたときの復元。</div>
+      <table class="mini mono" style="margin-top:6px">
+        <tr><td>P ＝ D1⊕D2⊕D3</td><td>1010⊕0110＝1100、⊕0011＝<b>1111</b></td></tr>
+        <tr><td>D2 ＝ D1⊕D3⊕P</td><td>1010⊕0011＝1001、⊕1111＝<b>0110</b></td></tr>
+      </table>
+      <div class="point">XOR は「同じなら0、違えば1」。どの1台が欠けても、残り全部の XOR で戻る。</div>
+      <div class="cap" style="margin-top:8px">磁気テープ LTO の互換（LTO公式）</div>
+      <table class="mini">
+        <tr><td>LTO-9 ドライブ</td><td>LTO-8・9 を読み書き</td></tr>
+        <tr><td>LTO-10 ドライブ</td><td>LTO-10 だけ（30TB／40TB の媒体）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 令和4年度春期 午前 問11（RAID5の容量）／<a href="https://en.wikipedia.org/wiki/Standard_RAID_levels">Wikipedia「Standard RAID levels」</a>（Patterson, Gibson, Katz「A Case for Redundant Arrays of Inexpensive Disks」1988）／<a href="https://www.lto.org/technology/">LTO Program「LTO Generation Compatibility」</a>。例題はClaudeが計算した</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
+</section>
+
+<section class="slide">
   <h1>試験で狙われやすい比較10選（1/2）</h1>
   <table class="vs">
     <tr><th style="width:4%"></th><th style="width:32%">比較</th><th>見分ける一言</th></tr>
@@ -1158,14 +2485,24 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
-  <h1>出典</h1>
-  <dl class="def">
-    <dt class="refs-src">参照リンク</dt><dd>各ページのリンク先は、<a class="src" href="https://e-words.jp/">IT用語辞典 e-Words</a>、<a class="src" href="https://www.ap-siken.com/keyword/">応用情報技術者試験.com（用語集・過去問解説）</a>。2026年11月1日にリンク先が開けることを確かめた</dd>
-    <dt>過去問</dt><dd>IPA 応用情報技術者試験 午前 問題冊子・解答例（令和3年度春期〜令和7年度秋期の10回分）。この分野の問題（各回の問8〜問12のうち3〜5問。計40問）を1問ずつ読み、正解と誤りの選択肢を確認した。問番号の並びではこの位置にあるが、シラバスでは中分類4に当たる2問（グリッドコンピューティング、オブジェクトストレージ）は #4 に回した。IPAの過去問題は許諾・使用料なしで利用できる（IPA「過去問題」ページ）</dd>
-    <dt>シラバス</dt><dd>IPA「応用情報技術者試験（レベル3）シラバス Ver.7.2」中分類3 コンピュータ構成要素（小分類1〜5の用語例）</dd>
-    <dt>イラスト</dt><dd>Microsoft Fluent Emoji（MIT License）。ライセンス全文は tools/slides/img/comp/LICENSE-fluentui-emoji.txt</dd>
-    <dt>イラスト（2）</dt><dd>いらすとや（https://www.irasutoya.com/）</dd>
-    <dt>作成</dt><dd>上の資料をもとにClaudeがまとめた。解説はIPAの公式解説ではなく、Claudeが自分の言葉で書いたもの。サイトの用語集（349語）と問題演習（47問）も同じ資料から作っている</dd>
+  <h1>出典（1/2）：試験・規格団体・メーカー</h1>
+  <dl class="def" style="font-size:12px">
+    <dt>IPA（試験の公式資料）</dt><dd>応用情報技術者試験 午前 問題冊子・解答例 平成21年度春期〜令和7年度秋期の33回分（<a class="src" href="https://www.ipa.go.jp/shiken/mondai-kaiotu/index.html">IPA 過去問題</a>。許諾・使用料なしで利用できる）。この分野の125問を読み、分野は<a class="src" href="https://www.ap-siken.com/">応用情報技術者試験.com</a>の分類で確かめた／<a class="src" href="https://www.ipa.go.jp/shiken/syllabus/index.html">応用情報技術者試験（レベル3）シラバス Ver.7.2</a> 中分類3</dd>
+    <dt>規格団体</dt><dd><a class="src" href="https://www.usb.org/usb4">USB-IF（USB4・USB 3.2・USB Power Delivery）</a>／<a class="src" href="https://www.sdcard.org/developers/sd-standard-overview/">SD Association（容量・バス速度）</a>／<a class="src" href="https://nvmexpress.org/about/">NVM Express</a>／<a class="src" href="https://vesa.org/displayport-developer/about-displayport/">VESA（DisplayPort）</a>／<a class="src" href="https://www.hdmi.org/spec/hdmi2_1">HDMI Licensing（HDMI 2.2）</a>／<a class="src" href="https://nfc-forum.org/learn/nfc-technology/">NFC Forum</a>／<a class="src" href="https://www.bluetooth.com/learn-about-bluetooth/tech-overview/">Bluetooth SIG</a>／<a class="src" href="https://csa-iot.org/all-solutions/zigbee/">CSA（Zigbee）</a>／<a class="src" href="https://www.wi-fi.org/discover-wi-fi/wi-fi-certified-7">Wi-Fi Alliance（Wi-Fi 7）</a>／<a class="src" href="https://www.lto.org/technology/">LTO Program</a>／<a class="src" href="https://riscv.org/about/">RISC-V International</a></dd>
+    <dt>メーカー・研究機関</dt><dd><a class="src" href="https://www.arm.com/technologies/big-little">Arm（big.LITTLE）</a>／<a class="src" href="https://www.intel.co.jp/content/www/jp/ja/gaming/resources/hyper-threading.html">インテル（ハイパースレッディング）</a>／<a class="src" href="https://www.apple.com/newsroom/2020/11/apple-unleashes-m1/">Apple（M1・ユニファイドメモリ）</a>／<a class="src" href="https://cloud.google.com/tpu/docs/intro-to-tpu">Google Cloud（TPU）</a>／<a class="src" href="https://www.ibm.com/think/topics/quantum-computing">IBM（量子コンピュータ）</a>／<a class="src" href="https://docs.dwavequantum.com/en/latest/quantum_research/quantum_annealing_intro.html">D-Wave（量子アニーリング）</a>／<a class="src" href="https://www.kioxia.com/ja-jp/business/memory/slc-nand.html">キオクシア（多値NAND）</a>／<a class="src" href="https://toshiba.semicon-storage.com/jp/storage/product/data-center-enterprise.html">東芝デバイス＆ストレージ（HDD）</a>／<a class="src" href="https://www.top500.org/lists/top500/2025/11/">TOP500（2025年11月）</a></dd>
+    <dt>論文</dt><dd>Arute et al.「<a class="src" href="https://www.nature.com/articles/s41586-019-1666-5">Quantum supremacy using a programmable superconducting processor</a>」Nature 574, 2019</dd>
+  </dl>
+  <div class="cite">すべて2026年11月1日に開いて内容を確かめた。数値は各ページに書かれていたもの</div>
+</section>
+
+<section class="slide">
+  <h1>出典（2/2）：解説・辞典とこの資料の作り方</h1>
+  <dl class="def" style="font-size:12px">
+    <dt>Wikipedia（英語版。数値と定義の確認に使った項目）</dt><dd style="font-size:11px;line-height:1.5">Memory hierarchy（実測の待ち時間）／CPU cache／Cache replacement policies／Cache coherence／Memory interleaving／Hamming code／ECC memory／Parity bit／Dynamic random-access memory／DDR4 SDRAM／DDR5 SDRAM／Flash memory／Wear leveling／Trim／Phase-change memory／Ferroelectric RAM／SD card／Memory management unit／Virtual memory／Instruction pipelining／Hazard／Branch predictor／Out-of-order execution／Speculative execution／Superscalar processor／Very long instruction word／Simultaneous multithreading／Flynn's taxonomy／SIMD／Vector processor／Amdahl's law／Symmetric multiprocessing／Non-uniform memory access／Processor power dissipation／Power gating／Dynamic frequency scaling／Reduced instruction set computer／Microcode／Adder／Two's complement／Cycles per instruction／Instructions per second／FLOPS／Endianness／Tensor Processing Unit／Quantum annealing／PCI Express／NVM Express／SATA／USB／Thunderbolt／DisplayPort／HDMI／LPWAN／Direct memory access／Liquid-crystal display／OLED／Electronic paper／Laser printing／Inkjet printing／Hard disk drive performance characteristics／Standard RAID levels／Linear Tape-Open</dd>
+    <dt>参照リンク</dt><dd>各ページのリンク先は、<a class="src" href="https://e-words.jp/">IT用語辞典 e-Words</a>、<a class="src" href="https://www.ap-siken.com/keyword/">応用情報技術者試験.com（用語集・過去問解説）</a>。2026年11月1日にリンク先が開けることを確かめた</dd>
+    <dt>イラスト</dt><dd>Microsoft Fluent Emoji（MIT License。全文は tools/slides/img/comp/LICENSE-fluentui-emoji.txt）／いらすとや（https://www.irasutoya.com/）</dd>
+    <dt>作成</dt><dd>上の資料を読んでClaudeがまとめた。解説・例題・図はClaudeが自分の言葉と計算で作ったもので、IPA の公式解説ではない。ほかのサイトの解説文は写していない。サイトの用語集（349語）と問題演習（87問）も同じ資料から作っている</dd>
+    <dt>読めなかった資料</dt><dd>JEDEC（DDR の規格本文）と PCI-SIG（PCIe の規格本文）はサイトに接続を断られたため、数値は Wikipedia の該当項目（それぞれ規格を出典に挙げている）で確かめた。RAID の原論文（バークレー校の技術報告 PDF）は画像だけで読めなかった</dd>
   </dl>
 </section>
 <script>
