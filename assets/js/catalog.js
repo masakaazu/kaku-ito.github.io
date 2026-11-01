@@ -225,6 +225,6 @@ window.SITE_CATALOG = {
 
   common: [
     { file: "it-english-300.html", icon: "EN", title: "IT English 300", desc: "ITエンジニア向けの英単語を一覧・カード・暗記・クイズで学ぶ。" },
-    { file: "it-acronyms-300.html", icon: "AC", title: "IT Acronyms 300", desc: "ITエンジニア向けの略語を一覧・カード・暗記・クイズで学ぶ。" },
+    { file: "it-acronyms-300.html", icon: "AC", title: "IT Acronyms 300", desc: "ITエンジニア向けの略語を一覧・カード・暗記・クイズで学ぶ。応用情報に出る略語だけ・分野ごとにも選べる（791語）。" },
   ],
 };
