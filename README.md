@@ -102,6 +102,7 @@ md は次のどちらの書き方でも読める（混ぜてもよい）。
 - 最後に `## 問題演習` を置くと、手作りの4択問題もクイズに出せる。`### 小分類名`（上の ## と同じ名前）の下に `#### 問 問題ID`、`- 問：` `- ア：`〜`- エ：` `- 正解：イ` `- 解説：` を書く。回答は問題IDのまま記録する
 - ほかのページから問題を移したときは、`catalog.js` の `ids` に元の問題IDを書くと、これまでの回答記録が新しいページに引き継がれる（例：`fe/terms/10.md`）
 - 図解スライドは `tools/slides/` のHTMLから `node tools/slides/topdf.js tools/slides/fe-10.html fe/terms/10.pdf` でPDFにできる
+- 図解スライドに参照元リンク（用語→解説サイト、過去問番号→応用情報技術者試験.com の解説、各ページ下の「詳しく：」）を付けるときは、`tools/slides/refs/ap-01.json` のようにリンク表を作り、`python3 tools/slides/addrefs.py tools/slides/ap-01.html tools/slides/refs/ap-01.json` のあと topdf.js でPDFにする（何度実行しても同じ結果になる）。いらすとやの画像（`tools/slides/img/irasutoya/`）はリポジトリに入っていないので、PDFを作り直す前に用意する
 - md から図解スライドを自動で作るときは `node tools/slides/md2slides.js ap/terms/12.md tools/slides/ap-12.html` のあと topdf.js でPDFにする
 - 応用情報の 01〜16・21〜23 の md は、Claudeが作った仮版（出典の行に「仮版」と書いてある）。自分の md や PDF ができたら、その分野の .md・.pdf を差し替える（問題演習の節は残してもよい）
 - 「意味」がない用語（名前だけの一覧）は札の形で並び、カード・クイズには出ない
