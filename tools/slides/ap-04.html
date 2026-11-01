@@ -78,6 +78,17 @@ table.vs td { font-size: 13.5px; padding: 9px 8px; }
 .big { font-size: 15px; line-height: 1.7; }
 .chapter p { max-width: 500px; line-height: 1.7; }
 svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
 /* 参照元リンク（tools/slides/addrefs.py が付ける） */
 a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
 a.ref.q, a.src { color: var(--blue, #0071e3); }
@@ -92,7 +103,7 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 <section class="slide title">
   <div class="k">応用情報技術者試験　テクノロジ系　#4</div>
   <h1>システム構成要素</h1>
-  <p>用語集まとめ ― 過去問10回分（令和3〜7年度）で出たところを中心に</p>
+  <p>用語集まとめ ― 過去問33回分（平成21年度〜令和7年度）の論点と例題</p>
   <div class="icons"><img src="img/sys/office_building_flat.svg" alt=""><img src="img/sys/cloud_flat.svg" alt=""><img src="img/sys/file_cabinet_flat.svg" alt=""><img src="img/sys/shield_flat.svg" alt=""><img src="img/sys/stopwatch_flat.svg" alt=""><img src="img/sys/money_bag_flat.svg" alt=""></div>
   <div class="refs-legend">点線の下線の用語・青い過去問番号・各ページ下の「詳しく：」を押すと、参照元のサイト（e-Words／応用情報技術者試験.com）で詳しい解説が開く</div>
 </section>
@@ -112,7 +123,7 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
     <div>
       <div class="cap">午前での出方</div>
       <table>
-        <tr><td>問題数</td><td>毎回 <b>問12〜問16 あたりで3〜4問</b>。10回で37問（#3 の位置で出た2問を含む）</td></tr>
+        <tr><td>問題数</td><td>毎回 <b>問12〜問16 あたりで3〜5問</b>。令和3〜7年度の10回で37問（#3 の位置で出た2問を含む）、平成21年度からの33回で139問</td></tr>
         <tr><td>同じ問題の再出題</td><td>2組。信頼性設計の考え方（<b>3回</b>：<a class="ref q" href="https://www.ap-siken.com/kakomon/03_haru/q13.html">R3春 問13</a>＝<a class="ref q" href="https://www.ap-siken.com/kakomon/04_aki/q13.html">R4秋 問13</a>＝<a class="ref q" href="https://www.ap-siken.com/kakomon/06_haru/q12.html">R6春 問12</a>）、クライアントサーバの処理件数（<a class="ref q" href="https://www.ap-siken.com/kakomon/04_aki/q15.html">R4秋 問15</a>＝<a class="ref q" href="https://www.ap-siken.com/kakomon/06_aki/q15.html">R6秋 問15</a>）</td></tr>
         <tr><td>問題の型</td><td><b>稼働率の計算・グラフが約4分の1</b>。残りは「説明を選ぶ」で、誤りの選択肢は同じ仲間の用語（スケール4種、仮想化3方式、ストレージ3方式）</td></tr>
       </table>
@@ -142,6 +153,42 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   </div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/">応用情報.com 用語集 4-2 システムの評価指標</a></div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/telescope_flat.svg" alt="">17年・33回・139問で見ても、稼働率と処理能力の計算で4割</h1>
+  <div class="cols" style="grid-template-columns:1.05fr .95fr;gap:22px">
+    <div>
+      <svg viewBox="0 0 450 300" width="450" height="300">
+        <g font-size="12">
+        <text x="190" y="24" text-anchor="end">稼働率・MTBF・MTTR</text><rect x="200" y="12" width="192" height="18" rx="3" fill="#b25000"/><text x="398" y="26" fill="#b25000" font-weight="700">32</text>
+        <text x="190" y="54" text-anchor="end">処理件数・使用率・応答の計算</text><rect x="200" y="42" width="138" height="18" rx="3" fill="#b25000"/><text x="344" y="56" fill="#b25000" font-weight="700">23</text>
+        <text x="190" y="84" text-anchor="end">信頼性設計・待機系</text><rect x="200" y="72" width="126" height="18" rx="3" fill="#1f3a68"/><text x="332" y="86" fill="#1f3a68" font-weight="700">21</text>
+        <text x="190" y="114" text-anchor="end">クライアントサーバ・Web</text><rect x="200" y="102" width="96" height="18" rx="3" fill="#1f3a68"/><text x="302" y="116" fill="#1f3a68" font-weight="700">16</text>
+        <text x="190" y="144" text-anchor="end">ストレージ（RAID・NAS・SAN）</text><rect x="200" y="132" width="84" height="18" rx="3" fill="#1f3a68"/><text x="290" y="146" fill="#1f3a68" font-weight="700">14</text>
+        <text x="190" y="174" text-anchor="end">仮想化・クラウド・IaC</text><rect x="200" y="162" width="54" height="18" rx="3" fill="#5b80bf"/><text x="260" y="176" fill="#1f3a68" font-weight="700">9</text>
+        <text x="190" y="204" text-anchor="end">マルチプロセッサ・HPC</text><rect x="200" y="192" width="54" height="18" rx="3" fill="#5b80bf"/><text x="260" y="206" fill="#1f3a68" font-weight="700">9</text>
+        <text x="190" y="234" text-anchor="end">性能評価・キャパシティ・TCO</text><rect x="200" y="222" width="54" height="18" rx="3" fill="#5b80bf"/><text x="260" y="236" fill="#1f3a68" font-weight="700">9</text>
+        <text x="190" y="264" text-anchor="end">スケールアウト・イン</text><rect x="200" y="252" width="36" height="18" rx="3" fill="#5b80bf"/><text x="242" y="266" fill="#1f3a68" font-weight="700">6</text>
+        <text x="0" y="292" font-size="11" fill="#6e6e73">平成21年度春期〜令和7年度秋期の午前、この分野の139問（同じ問題の再出題も1問と数えた）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th style="width:36%"></th><th>平成21〜令和2年度（23回）</th><th>令和3〜7年度（10回）</th></tr>
+        <tr><td>問題数</td><td>102問（1回 約4.4問）</td><td>37問（1回 約3.7問）</td></tr>
+        <tr><td>クライアントサーバ・Web</td><td><b>14問</b>（3層・<a class="ref" href="https://e-words.jp/w/RPC.html">RPC</a>・CDN）</td><td>2問</td></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/%E4%BB%AE%E6%83%B3%E5%8C%96.html">仮想化</a>・クラウド・<a class="ref" href="https://e-words.jp/w/IaC.html">IaC</a></td><td>5問</td><td>4問（コンテナ・IaC が<b>新顔</b>）</td></tr>
+        <tr><td>ストレージ</td><td>RAID・<a class="ref" href="https://e-words.jp/w/NAS.html">NAS</a> 中心</td><td><b><a class="ref" href="https://e-words.jp/w/%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88%E3%82%B9%E3%83%88%E3%83%AC%E3%83%BC%E3%82%B8.html">オブジェクトストレージ</a></b>が3回</td></tr>
+        <tr><td>同じ問題の再出題</td><td colspan="2">139問のうち<b>約40問（3割近く）</b>が、それより前の回とほぼ同じ問題</td></tr>
+      </table>
+      <div class="point"><b>読み取れること：</b>計算（オレンジ）は昔から毎回出る。用語は、3層クライアントサーバが減り、コンテナ・IaC・オブジェクトストレージなど<b>クラウドの用語</b>に入れ替わってきた。この資料の後半の例題は、計算の型を全部1回ずつ解けるように並べてある。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 応用情報技術者試験 午前 問題 平成21年度春期〜令和7年度秋期（33回）。分野の分け方は応用情報技術者試験.com の過去問ページの分類（テクノロジ系 » システム構成要素）を使い、論点の数え方はClaudeが決めた</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
+</section>
+
 
 <section class="slide chapter">
   <div class="hero-icons ira"><img src="img/irasutoya/datacenter.png" alt=""><img src="img/irasutoya/client_server.png" alt=""><img src="img/irasutoya/twins.png" alt=""><img src="img/irasutoya/online_storage.png" alt=""></div>
@@ -185,6 +232,83 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   </div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/12/12-2/">応用情報.com 用語集 12-2 設計</a></div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/balance_scale_flat.svg" alt="">集中と分散は7つの観点で比べる。分散でも「1台に見せる」のが透過性</h1>
+  <div class="cols" style="grid-template-columns:1.15fr .85fr;gap:24px">
+    <div>
+      <table class="mini">
+        <tr><th style="width:30%">観点（シラバスの用語例）</th><th><a class="ref" href="https://e-words.jp/w/%E9%9B%86%E4%B8%AD%E5%87%A6%E7%90%86.html">集中処理</a></th><th><a class="ref" href="https://e-words.jp/w/%E5%88%86%E6%95%A3%E5%87%A6%E7%90%86.html">分散処理</a></th></tr>
+        <tr><td><a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#b9b229bf3554e79fa28cf00d1bf5a018c957255c">コスト性能比</a></td><td>大型機は高価。昔は大きいほど割安（グロッシュの法則）</td><td>安い機械を必要なだけ足せる</td></tr>
+        <tr><td>保守要員の集中化</td><td><b>1か所</b>に専門の要員を置ける</td><td>拠点ごとに要員や手順が要る</td></tr>
+        <tr><td>管理責任</td><td>情報システム部門に<b>一本化</b></td><td>部門ごとに分かれ、<b>あいまい</b>になりやすい</td></tr>
+        <tr><td>情報資源の組織への対応性</td><td>全社共通の形に合わせる</td><td>部門の業務に合わせて<b>作り分け</b>られる</td></tr>
+        <tr><td>障害の影響</td><td>中央が止まると<b>全部</b>止まる</td><td>止まるのは<b>一部</b>だけ</td></tr>
+        <tr><td>拡張</td><td>大型機ごと入れ替え（<a class="ref" href="https://e-words.jp/w/%E3%82%B9%E3%82%B1%E3%83%BC%E3%83%AB%E3%82%A2%E3%83%83%E3%83%97.html">スケールアップ</a>）</td><td>台数を足す（<a class="ref" href="https://e-words.jp/w/%E3%82%B9%E3%82%B1%E3%83%BC%E3%83%AB%E3%82%A2%E3%82%A6%E3%83%88.html">スケールアウト</a>）</td></tr>
+        <tr><td>セキュリティ・整合性</td><td>守る場所が1か所で楽</td><td>データの重複・食違いに注意</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">分散システムの「透過性」</div>
+      <table class="mini">
+        <tr><td style="width:36%"><b>アクセス透過性</b></td><td>遠くの資源も<b>手元と同じ操作</b>で使える</td></tr>
+        <tr><td><b>位置透過性</b></td><td>資源が<b>どこにあるか</b>を知らなくてよい</td></tr>
+        <tr><td><b>移動透過性</b></td><td>資源を移しても使い方が変わらない</td></tr>
+        <tr><td><b>複製透過性</b></td><td>コピーが何個あっても1つに見える</td></tr>
+        <tr><td><b>障害透過性</b></td><td>一部が壊れても気づかずに使える</td></tr>
+      </table>
+      <div class="ex" style="margin-top:10px"><span class="lbl">過去問</span>H25秋 問14・H28春 問15「アクセス透過性」の正解は「遠隔地の資源を、処理方式を知らなくても<b>手元と同じ操作</b>で使える」。誤りの選択肢は「組織ごとに運用」（＝組織への対応性）、「発生場所で処理して通信コスト削減」（＝分散の利点）、「対等なコンピュータで信頼性向上」（＝P2P）</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA シラバス Ver.7.2 中分類4 1.（1）①②の用語例／IPA 平成25年度秋期 午前 問14・平成28年度春期 午前 問15／<a href="https://en.wikipedia.org/wiki/Distributed_computing">Wikipedia「Distributed computing」</a>（透過性の種類）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/12/12-2/">応用情報.com 用語集 12-2 設計</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/">応用情報.com 用語集 4-2 システムの評価指標</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/link_flat.svg" alt="">マルチプロセッサは「主記憶を共有するか」で密結合と疎結合に分かれる</h1>
+  <div class="cols" style="grid-template-columns:1.05fr .95fr;gap:22px">
+    <div>
+      <svg viewBox="0 0 440 300" width="440" height="300">
+        <text x="0" y="16" font-size="13" font-weight="700" fill="#1f3a68">密結合（主記憶を1つ共有）</text>
+        <rect x="10" y="28" width="80" height="34" rx="6" fill="#1f3a68"/><text x="50" y="50" fill="#fff" font-size="12" text-anchor="middle">CPU1</text>
+        <rect x="110" y="28" width="80" height="34" rx="6" fill="#1f3a68"/><text x="150" y="50" fill="#fff" font-size="12" text-anchor="middle">CPU2</text>
+        <rect x="210" y="28" width="80" height="34" rx="6" fill="#1f3a68"/><text x="250" y="50" fill="#fff" font-size="12" text-anchor="middle">CPU3</text>
+        <line x1="50" y1="62" x2="50" y2="82" stroke="#5b80bf" stroke-width="2"/><line x1="150" y1="62" x2="150" y2="82" stroke="#5b80bf" stroke-width="2"/><line x1="250" y1="62" x2="250" y2="82" stroke="#5b80bf" stroke-width="2"/>
+        <rect x="10" y="82" width="280" height="10" rx="3" fill="#5b80bf"/><text x="300" y="91" font-size="11" fill="#5b80bf">共有バス</text>
+        <rect x="80" y="104" width="140" height="34" rx="6" fill="#c9daf2"/><text x="150" y="126" fill="#1f3a68" font-size="12" font-weight="700" text-anchor="middle">主記憶（1つ）</text>
+        <line x1="150" y1="92" x2="150" y2="104" stroke="#5b80bf" stroke-width="2"/>
+        <text x="300" y="120" font-size="11.5" fill="#b25000">取り合い＝</text><text x="300" y="136" font-size="11.5" fill="#b25000">台数倍にならない</text>
+        <text x="0" y="176" font-size="13" font-weight="700" fill="#1f3a68">疎結合（主記憶もOSも別々）</text>
+        <rect x="10" y="188" width="150" height="70" rx="8" fill="#e8eef8" stroke="#c9daf2"/>
+        <rect x="20" y="196" width="60" height="26" rx="5" fill="#1f3a68"/><text x="50" y="214" fill="#fff" font-size="11.5" text-anchor="middle">CPU</text>
+        <rect x="90" y="196" width="60" height="26" rx="5" fill="#c9daf2"/><text x="120" y="214" fill="#1f3a68" font-size="11.5" text-anchor="middle">主記憶</text>
+        <text x="85" y="245" fill="#1f3a68" font-size="11.5" text-anchor="middle">OS・通信ポート</text>
+        <rect x="270" y="188" width="150" height="70" rx="8" fill="#e8eef8" stroke="#c9daf2"/>
+        <rect x="280" y="196" width="60" height="26" rx="5" fill="#1f3a68"/><text x="310" y="214" fill="#fff" font-size="11.5" text-anchor="middle">CPU</text>
+        <rect x="350" y="196" width="60" height="26" rx="5" fill="#c9daf2"/><text x="380" y="214" fill="#1f3a68" font-size="11.5" text-anchor="middle">主記憶</text>
+        <text x="345" y="245" fill="#1f3a68" font-size="11.5" text-anchor="middle">OS・通信ポート</text>
+        <line x1="160" y1="240" x2="270" y2="240" stroke="#b25000" stroke-width="2.5"/><text x="215" y="234" font-size="11" fill="#b25000" text-anchor="middle">伝送ライン</text>
+        <ellipse cx="215" cy="282" rx="48" ry="14" fill="#fff" stroke="#5b80bf"/><text x="215" y="286" font-size="11" fill="#1f3a68" text-anchor="middle">共有ディスク</text>
+        <line x1="120" y1="258" x2="175" y2="278" stroke="#5b80bf"/><line x1="310" y1="258" x2="255" y2="278" stroke="#5b80bf"/>
+      </svg>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th style="width:28%"></th><th><a class="ref" href="https://e-words.jp/w/%E5%AF%86%E7%B5%90%E5%90%88.html">密結合</a></th><th><a class="ref" href="https://e-words.jp/w/%E7%96%8E%E7%B5%90%E5%90%88.html">疎結合</a>（クラスタ）</th></tr>
+        <tr><td>主記憶</td><td><b>共有</b>（1つ）</td><td>プロセッサ<b>ごと</b></td></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/OS.html">OS</a></td><td>1つのOSが全<a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a>を管理</td><td>それぞれ別のOS</td></tr>
+        <tr><td>やり取り</td><td>主記憶を読み書き</td><td>通信回線・共有ディスク</td></tr>
+        <tr><td>伸び悩む原因</td><td><b>主記憶へのアクセスの競合</b></td><td>プロセッサ間通信の遅さ</td></tr>
+        <tr><td>例</td><td>マルチコアCPU、<a class="ref" href="https://e-words.jp/w/SMP.html">SMP</a>サーバ</td><td>PCクラスタ、タンデム結合</td></tr>
+      </table>
+      <div class="ex" style="margin-top:10px"><span class="lbl">過去問</span>H22春 問13 は左下と同じ図（主記憶が別々で、伝送ラインと共有ディスクでつながる）を見せて名前を問う→<b>疎結合マルチプロセッサ</b>。H25春 問14・<a class="ref q" href="https://www.ap-siken.com/kakomon/03_haru/q15.html">R3春 問15</a>「密結合の性能が台数倍にならない要因」→<b>主記憶へのアクセスの競合</b>（「通信回線を介したプロセッサ間通信」は疎結合の話）</div>
+      <div class="point"><b>タンデム結合：</b>処理を前後2段に分け、2台を<b>直列</b>につないで流れ作業にする構成（垂直機能分散に近い）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA シラバス Ver.7.2 中分類4 1.（2）用語例（密結合・疎結合・タンデム結合）／IPA 平成22年度春期 午前 問13（図をClaudeが描き直した）・平成25年度春期 午前 問14・令和3年度春期 午前 問15</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
+</section>
+
 
 <section class="slide">
   <h1><img class="ico" src="img/sys/hourglass_done_flat.svg" alt="">利用形態は「いつ処理するか」で分ける。ためてまとめるのがバッチ</h1>
@@ -243,6 +367,31 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/sys/repeat_button_flat.svg" alt="">フェールオーバは「気づく→引き継ぐ→再開」。足した時間が切替え時間</h1>
+  <svg viewBox="0 0 856 190" width="856" height="190">
+    <text x="0" y="16" font-size="12.5" font-weight="700" fill="#1f3a68">ホットスタンバイのクラスタで、現用系のサーバが 10:00:00 に止まった例</text>
+    <line x1="20" y1="110" x2="840" y2="110" stroke="#d2d2d7" stroke-width="2"/>
+    <rect x="20" y="40" width="140" height="40" rx="6" fill="#1f3a68"/><text x="90" y="58" fill="#fff" font-size="12" text-anchor="middle" font-weight="700">現用系で稼働</text><text x="90" y="73" fill="#fff" font-size="11" text-anchor="middle">1秒ごとにハートビート</text>
+    <rect x="160" y="40" width="190" height="40" rx="6" fill="#b25000"/><text x="255" y="58" fill="#fff" font-size="12" text-anchor="middle" font-weight="700">① 検知：3回続けて応答なし</text><text x="255" y="73" fill="#fff" font-size="11" text-anchor="middle">約3秒</text>
+    <rect x="350" y="40" width="210" height="40" rx="6" fill="#2f5596"/><text x="455" y="58" fill="#fff" font-size="12" text-anchor="middle" font-weight="700">② 引継ぎ：フェンシング・IP・ディスク</text><text x="455" y="73" fill="#fff" font-size="11" text-anchor="middle">旧現用系を確実に止めてから約10秒</text>
+    <rect x="560" y="40" width="160" height="40" rx="6" fill="#5b80bf"/><text x="640" y="58" fill="#fff" font-size="12" text-anchor="middle" font-weight="700">③ 待機系で業務を再開</text><text x="640" y="73" fill="#fff" font-size="11" text-anchor="middle">起動済みなので数秒</text>
+    <rect x="720" y="40" width="120" height="40" rx="6" fill="#c9daf2"/><text x="780" y="64" fill="#1f3a68" font-size="12" text-anchor="middle" font-weight="700">待機系で稼働</text>
+    <text x="160" y="128" font-size="11" fill="#6e6e73">10:00:00</text><text x="560" y="128" font-size="11" fill="#6e6e73">10:00:13</text><text x="720" y="128" font-size="11" fill="#6e6e73">10:00:16 ごろ</text>
+    <path d="M160,140 L720,140" stroke="#b25000" stroke-width="2"/><path d="M160,134 L160,146 M720,134 L720,146" stroke="#b25000" stroke-width="2"/>
+    <text x="440" y="160" font-size="12.5" fill="#b25000" text-anchor="middle" font-weight="700">利用者から見て止まっていた時間 ＝ 切替え時間（約16秒）</text>
+    <text x="440" y="180" font-size="11.5" fill="#6e6e73" text-anchor="middle">ウォームなら③で業務を起動する分、コールドならOSの起動から必要な分だけ長くなる</text>
+  </svg>
+  <div class="cols3" style="margin-top:4px">
+    <div class="ex"><span class="lbl">用語</span><b>ハートビート</b>：決まった間隔で「生きている」と送り合う信号。途切れたら障害とみなす</div>
+    <div class="ex"><span class="lbl">落とし穴</span><b>スプリットブレイン</b>：通信だけが切れて両方が「相手が死んだ」と思い、2台とも現用系になる。データが壊れるので、相手の電源を切る<b>フェンシング</b>で防ぐ</div>
+    <div class="ex"><span class="lbl">過去問</span>H27秋 問12「ノード障害時に信頼性を上げる機能」→<b>フェールオーバ</b>。「ホットプラグ」は部品の抜き差し、「フェールバック」は<b>復旧後に元へ戻す</b>こと（H24春 問16）</div>
+  </div>
+  <div class="cite">出典：<a href="https://clusterlabs.org/projects/pacemaker/doc/3.0/Clusters_from_Scratch/html/fencing.html">ClusterLabs「Clusters from Scratch 5. Configure Fencing」</a>（スプリットブレインとフェンシング）／IPA 平成23年度秋期 午前 問15・平成24年度春期 午前 問16・平成27年度秋期 午前 問12。秒数は説明のための例（Claudeが作った）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
+</section>
+
+
+<section class="slide">
   <h1><img class="ico" src="img/sys/building_construction_flat.svg" alt="">災害対策は別の拠点（バックアップサイト）を、RPOとRTOに合わせて選ぶ</h1>
   <svg width="856" height="120" viewBox="0 0 856 120"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
 <line x1="20" y1="60" x2="836" y2="60" stroke="#1f3a68" stroke-width="2"/>
@@ -271,6 +420,29 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   </div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/15/15-2/">応用情報.com 用語集 15-2 サービスマネジメントシステムの計画及び運用</a></div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/hourglass_done_flat.svg" alt="">RPOは「どこまで戻るか」、RTOは「いつまでに戻すか」</h1>
+  <svg viewBox="0 0 856 165" width="856" height="165">
+    <line x1="20" y1="80" x2="840" y2="80" stroke="#1d1d1f" stroke-width="2"/>
+    <circle cx="160" cy="80" r="7" fill="#1f3a68"/><text x="160" y="60" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">最後のバックアップ</text><text x="160" y="104" font-size="11.5" text-anchor="middle">前日 0:00</text>
+    <circle cx="470" cy="80" r="9" fill="#b25000"/><text x="470" y="60" font-size="12" text-anchor="middle" fill="#b25000" font-weight="700">災害発生</text><text x="470" y="104" font-size="11.5" text-anchor="middle">当日 15:00</text>
+    <circle cx="700" cy="80" r="7" fill="#2f5596"/><text x="700" y="60" font-size="12" text-anchor="middle" fill="#2f5596" font-weight="700">業務再開</text><text x="700" y="104" font-size="11.5" text-anchor="middle">当日 20:00</text>
+    <rect x="160" y="118" width="310" height="22" rx="4" fill="#fde7cf"/><text x="315" y="134" font-size="12" text-anchor="middle" fill="#b25000" font-weight="700">失うデータ＝15時間分 → RPO と比べる</text>
+    <rect x="470" y="118" width="230" height="22" rx="4" fill="#c9daf2"/><text x="585" y="134" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">止まった時間＝5時間 → RTO と比べる</text>
+    <text x="0" y="160" font-size="11.5" fill="#6e6e73">バックアップを1日1回にすると、最悪で約24時間分を失う。RPO を1時間にしたければ、1時間ごとのバックアップかレプリケーションが要る</text>
+  </svg>
+  <table class="mini" style="margin-top:6px">
+    <tr><th style="width:20%">AWS の4つの戦略</th><th style="width:18%">近い拠点の種類</th><th>待機側の準備</th><th style="width:22%"><a class="ref" href="https://e-words.jp/w/RPO.html">RPO</a>・<a class="ref" href="https://e-words.jp/w/RTO.html">RTO</a> の目安</th></tr>
+    <tr><td><a class="ref" href="https://e-words.jp/w/%E3%83%90%E3%83%83%E3%82%AF%E3%82%A2%E3%83%83%E3%83%97.html">バックアップ</a>と復元</td><td><a class="ref" href="https://e-words.jp/w/%E3%82%B3%E3%83%BC%E3%83%AB%E3%83%89%E3%82%B5%E3%82%A4%E3%83%88.html">コールドサイト</a></td><td>バックアップだけ置き、災害後に環境を作る</td><td>時間単位（いちばん安い）</td></tr>
+    <tr><td>パイロットライト</td><td><a class="ref" href="https://e-words.jp/w/%E3%82%A6%E3%82%A9%E3%83%BC%E3%83%A0%E3%82%B5%E3%82%A4%E3%83%88.html">ウォームサイト</a>寄り</td><td>データは複製し続け、サーバは<b>止めて</b>置く</td><td>数十分</td></tr>
+    <tr><td>ウォームスタンバイ</td><td>ウォーム〜ホット</td><td>小さい規模で<b>動かして</b>おき、災害時に拡大</td><td>数分</td></tr>
+    <tr><td>マルチサイト（アクティブ/アクティブ）</td><td><a class="ref" href="https://e-words.jp/w/%E3%83%9B%E3%83%83%E3%83%88%E3%82%B5%E3%82%A4%E3%83%88.html">ホットサイト</a></td><td>両方で本番を動かす。非同期の複製でRPOはほぼ0</td><td>ほぼ0（いちばん高い）</td></tr>
+  </table>
+  <div class="cite">出典：<a href="https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html">AWS ホワイトペーパー「Disaster Recovery of Workloads on AWS」Disaster recovery options in the cloud（Figure 6）</a>／<a href="https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/disaster-recovery-dr-objectives.html">AWS Well-Architected「Disaster recovery (DR) objectives」</a>。時刻の例はClaudeが作った</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/15/15-2/">応用情報.com 用語集 15-2 サービスマネジメントシステムの計画及び運用</a></div>
+</section>
+
 
 <section class="slide">
   <h1><img class="ico" src="img/sys/card_file_box_flat.svg" alt="">データは「共有する」か「分けて持つ」か。端末は「処理を持つ」か「画面だけ」か</h1>
@@ -303,6 +475,40 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/sys/card_file_box_flat.svg" alt="">シャーディングは「行を分けて持つ」、レプリケーションは「同じものを複製する」</h1>
+  <div class="cols" style="gap:26px">
+    <div>
+      <div class="cap"><a class="ref" href="https://e-words.jp/w/%E3%82%B7%E3%83%A3%E3%83%BC%E3%83%87%E3%82%A3%E3%83%B3%E3%82%B0.html">シャーディング</a>の例：会員番号を4で割った余りで振り分け</div>
+      <svg viewBox="0 0 400 190" width="400" height="190">
+        <rect x="140" y="6" width="120" height="34" rx="6" fill="#1f3a68"/><text x="200" y="28" font-size="12" fill="#fff" text-anchor="middle" font-weight="700">会員番号 1037</text>
+        <text x="200" y="58" font-size="12" text-anchor="middle" fill="#b25000" font-weight="700">1037 ÷ 4 ＝ 259 余り 1</text>
+        <g font-size="11.5"><rect x="0" y="80" width="92" height="56" rx="6" fill="#e8eef8" stroke="#c9daf2"/><text x="46" y="102" text-anchor="middle" fill="#1f3a68" font-weight="700">シャード0</text><text x="46" y="122" text-anchor="middle">余り0の会員</text>
+        <rect x="102" y="80" width="92" height="56" rx="6" fill="#1f3a68"/><text x="148" y="102" text-anchor="middle" fill="#fff" font-weight="700">シャード1</text><text x="148" y="122" text-anchor="middle" fill="#fff">ここに入る</text>
+        <rect x="204" y="80" width="92" height="56" rx="6" fill="#e8eef8" stroke="#c9daf2"/><text x="250" y="102" text-anchor="middle" fill="#1f3a68" font-weight="700">シャード2</text><text x="250" y="122" text-anchor="middle">余り2の会員</text>
+        <rect x="306" y="80" width="92" height="56" rx="6" fill="#e8eef8" stroke="#c9daf2"/><text x="352" y="102" text-anchor="middle" fill="#1f3a68" font-weight="700">シャード3</text><text x="352" y="122" text-anchor="middle">余り3の会員</text></g>
+        <path d="M200,64 L148,78" stroke="#b25000" stroke-width="2"/>
+        <text x="0" y="162" font-size="11.5">各サーバは<b>自分のディスクだけ</b>を持つ＝シェアードナッシング。</text>
+        <text x="0" y="180" font-size="11.5">台数を足せば容量も性能も伸びる。ただし全会員の集計は全シャードに聞く</text>
+      </svg>
+    </div>
+    <div>
+      <div class="cap"><a class="ref" href="https://e-words.jp/w/%E3%83%AC%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3.html">レプリケーション</a>：同期と非同期</div>
+      <table class="mini">
+        <tr><th style="width:22%"></th><th>同期</th><th>非同期</th></tr>
+        <tr><td>書込み完了</td><td>複製先にも書けてから「完了」</td><td>自分に書けたら「完了」、複製は後から</td></tr>
+        <tr><td>失うデータ</td><td>なし（<a class="ref" href="https://e-words.jp/w/RPO.html">RPO</a>＝0）</td><td>送り切れていない数秒分</td></tr>
+        <tr><td>速さ</td><td>複製先が遠いと遅くなる</td><td>距離の影響を受けにくい</td></tr>
+        <tr><td>向く場面</td><td>同じデータセンタ内の二重化</td><td>遠くの災害対策サイト</td></tr>
+      </table>
+      <div class="point"><b>シェアードエブリシング</b>は全サーバが1つのディスクを共有する形。どのサーバでも全データを扱えるが、共有ディスクの取り合いと排他制御が伸び悩みの原因になる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA シラバス Ver.7.2 中分類4 1.（2）用語例（シェアードエブリシング，シェアードナッシング）／<a href="https://en.wikipedia.org/wiki/Shard_(database_architecture)">Wikipedia「Shard (database architecture)」</a>／<a href="https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html">AWS DR ホワイトペーパー</a>（非同期複製で RPO をほぼ0に）。会員番号の例はClaudeが作った</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-5/">応用情報.com 用語集 9-5 データベース応用</a></div>
+</section>
+
+
+<section class="slide">
   <h1><img class="ico" src="img/sys/globe_with_meridians_flat.svg" alt="">グリッドは「ネットワーク上のばらばらな機械」を1台のように使う</h1>
   <div class="cols">
     <div>
@@ -329,6 +535,51 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   <img class="illust" src="img/irasutoya/mesh_network.png" alt="" style="height:70px;bottom:36px">
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/5/5-1/">応用情報.com 用語集 5-1 オペレーティングシステム</a></div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/rocket_flat.svg" alt="">HPCの性能は「1コアの性能×コア数」。富岳で確かめる</h1>
+  <div class="cols" style="gap:26px">
+    <div>
+      <div class="ex"><span class="lbl">例題</span>H21秋 問14（<a class="ref q" href="https://www.ap-siken.com/kakomon/02_aki/q12.html">R2秋 問12</a>・H28春 問13 も同じ）：1コア10GFLOPS、1ノード8コア、1,000ノードのHPCを、①1コアの性能2倍 ②1ノードのコア数2倍 ③総コア数4倍 に更新する。ノード数と総理論ピーク性能は？</div>
+      <ol class="steps" style="margin-top:6px">
+        <li>今の総コア数：8コア×1,000ノード＝<b>8,000コア</b></li>
+        <li>更新後の総コア数：8,000×4＝<b>32,000コア</b></li>
+        <li>ノード数：32,000 ÷ 16コア（8の2倍）＝<b>2,000ノード</b></li>
+        <li>性能：32,000コア×20GFLOPS＝640,000GFLOPS＝<b>640TFLOPS</b></li>
+      </ol>
+      <div class="point">誤りの選択肢は 4,000ノード（コア数2倍を忘れる）や 320TFLOPS（1コア2倍を忘れる）。<b>倍率を1つずつ掛ける</b>。</div>
+    </div>
+    <div>
+      <div class="cap">実物で確かめる：スーパーコンピュータ「富岳」</div>
+      <table class="mini">
+        <tr><td style="width:46%">1ノードの性能（倍精度・通常）</td><td><b>3.072 TFLOPS</b>（48コア）</td></tr>
+        <tr><td>総ノード数</td><td><b>158,976</b></td></tr>
+        <tr><td>掛け算</td><td>3.072T×158,976 ≒ <b>488 PFLOPS</b></td></tr>
+        <tr><td>理研の公表値（倍精度理論最高値）</td><td>488 ペタフロップス（ブースト時 537）</td></tr>
+        <tr><td>TOP500 2025年11月</td><td>7位。実測 Rmax 442.01 / 理論 Rpeak 537.21 PFLOPS</td></tr>
+      </table>
+      <div class="point"><b>理論ピークと実測は違う：</b>442.01 ÷ 537.21 ≒ 82%。通信待ちや主記憶の待ちで、全部の演算器が休まず動くことはない（TOP500 の1位 El Capitan は 1.809 EFLOPS）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成21年度秋期 午前 問14・平成28年度春期 午前 問13・令和2年度10月 午前 問12／<a href="https://www.r-ccs.riken.jp/fugaku/system/">理化学研究所 計算科学研究センター「富岳 システム構成」</a>／<a href="https://www.top500.org/lists/top500/2025/11/">TOP500「November 2025」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/globe_with_meridians_flat.svg" alt="">大勢で計算する方式は「どこにある機械を、どうつなぐか」で5つに分かれる</h1>
+  <table>
+    <tr><th style="width:20%">方式</th><th style="width:30%">使う機械とつなぎ方</th><th>ひとことで</th><th style="width:22%">例</th></tr>
+    <tr><td><b>スーパーコンピュータ（大規模並列）</b></td><td>専用のノードを数万〜数十万台、専用の高速網で</td><td>1か所に集めた専用機で、1つの大きな計算を分け合う</td><td>富岳、El Capitan</td></tr>
+    <tr><td><b>PCクラスタ</b></td><td>市販のPC・サーバを <a class="ref" href="https://e-words.jp/w/LAN.html">LAN</a> でつなぐ</td><td>安い機械を束ねて1台のように使う（<a class="ref" href="https://e-words.jp/w/%E7%96%8E%E7%B5%90%E5%90%88.html">疎結合</a>）</td><td>大学の計算機室</td></tr>
+    <tr><td><b>グリッドコンピューティング</b></td><td>組織や場所が違う、性能もばらばらな機械をネットワークで</td><td>余っている資源を集めて1つの大きな処理をする</td><td>研究機関どうしの共同計算</td></tr>
+    <tr><td><b>ボランティアコンピューティング</b></td><td>一般の人の PC の空き時間をインターネットで</td><td>グリッドの一種。参加者が計算力を寄付する</td><td>BOINC（カリフォルニア大学バークレー校）</td></tr>
+    <tr><td><b><a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#c3cddd74909f7bce7cf04937e9297064d2cfbc08">アレイプロセッサ</a></b></td><td>1台の中に同じ演算器をたくさん並べる</td><td>1つの命令で多くのデータを一斉に計算（SIMD）</td><td>ベクトル計算機、GPU の考え方</td></tr>
+  </table>
+  <div class="ex" style="margin-top:12px"><span class="lbl">過去問</span><a class="ref q" href="https://www.ap-siken.com/kakomon/03_haru/q11.html">R3春 問11</a>「グリッドコンピューティング」の正解は「PCから大型コンピュータまで、ネットワーク上の複数のプロセッサに処理を分散して大規模な一つの処理を行う」。H29秋 問12 の誤りの選択肢にある<b>シストリックアレイ</b>は、演算器を格子状に並べてデータを隣へ流す専用回路、<b>デスクトップグリッド</b>は社内PCの空き時間を集めるグリッドで、どちらも「仮想マシンを作る機能」ではない（正解はハイパーバイザ）</div>
+  <div class="cite">出典：IPA シラバス Ver.7.2 中分類4 1.（3）用語例（大規模並列，アレイプロセッサ）／IPA 令和3年度春期 午前 問11・平成29年度秋期 午前 問12／<a href="https://boinc.berkeley.edu/">BOINC（UC Berkeley）</a>／<a href="https://www.top500.org/lists/top500/2025/11/">TOP500</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
+</section>
+
 
 <section class="slide">
   <h1><img class="ico" src="img/sys/package_flat.svg" alt="">仮想化は「ホストOSがあるか」「ゲストOSがあるか」の2点で見分ける</h1>
@@ -376,6 +627,71 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/sys/package_flat.svg" alt="">ライブマイグレーションは「動かしたままメモリを写し、最後の一瞬だけ止める」</h1>
+  <div class="cols" style="grid-template-columns:1.1fr .9fr;gap:24px">
+    <div>
+      <svg viewBox="0 0 450 250" width="450" height="250">
+        <rect x="0" y="0" width="150" height="250" rx="10" fill="#e8eef8" stroke="#c9daf2"/><text x="75" y="20" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700">移動元の物理サーバ</text>
+        <rect x="300" y="0" width="150" height="250" rx="10" fill="#e8eef8" stroke="#c9daf2"/><text x="375" y="20" font-size="12.5" text-anchor="middle" fill="#1f3a68" font-weight="700">移動先の物理サーバ</text>
+        <rect x="20" y="40" width="110" height="60" rx="6" fill="#1f3a68"/><text x="75" y="64" fill="#fff" font-size="12" text-anchor="middle" font-weight="700">VM（動作中）</text><text x="75" y="82" fill="#fff" font-size="11" text-anchor="middle">メモリ 16GB</text>
+        <g font-size="11.5">
+        <path d="M150,60 L300,60" stroke="#2f5596" stroke-width="3"/><text x="225" y="52" text-anchor="middle" fill="#2f5596">① 全ページを送る（16GB）</text>
+        <path d="M150,100 L300,100" stroke="#5b80bf" stroke-width="3"/><text x="225" y="92" text-anchor="middle" fill="#2f5596">② その間に書き換わった分（例 2GB）</text>
+        <path d="M150,140 L300,140" stroke="#5b80bf" stroke-width="2"/><text x="225" y="132" text-anchor="middle" fill="#2f5596">③ さらに書き換わった分（例 0.3GB）</text>
+        <path d="M150,180 L300,180" stroke="#b25000" stroke-width="3"/><text x="225" y="172" text-anchor="middle" fill="#b25000" font-weight="700">④ 一瞬止めて残りを送る</text>
+        </g>
+        <rect x="320" y="196" width="110" height="44" rx="6" fill="#1f3a68"/><text x="375" y="222" fill="#fff" font-size="12" text-anchor="middle" font-weight="700">VM 再開</text>
+        <text x="75" y="130" font-size="11" text-anchor="middle" fill="#6e6e73">②③の間も</text><text x="75" y="146" font-size="11" text-anchor="middle" fill="#6e6e73">利用者は使える</text>
+        <rect x="20" y="196" width="110" height="44" rx="6" fill="#fff" stroke="#c9daf2"/><text x="75" y="222" font-size="11.5" text-anchor="middle" fill="#6e6e73">ディスクは共有ストレージ</text>
+      </svg>
+    </div>
+    <div>
+      <ol class="steps">
+        <li><a class="ref" href="https://e-words.jp/w/VM.html">VM</a> を動かしたまま、メモリの全ページを移動先へ写す</li>
+        <li>写している間に書き換わったページ（ダーティページ）だけを、もう一度写す</li>
+        <li>残りが十分小さくなるまで2を繰り返す</li>
+        <li>VM を<b>ごく短時間だけ止め</b>、残りと <a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a> の状態を送って移動先で再開</li>
+      </ol>
+      <div class="point">これを <b>プレコピー方式</b> と呼ぶ。止まるのは最後の一瞬だけなので「停止することなく移す」と言える。止めて移すのは<b>コールド<a class="ref" href="https://e-words.jp/w/%E3%83%9E%E3%82%A4%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3.html">マイグレーション</a></b>。</div>
+      <div class="ex" style="margin-top:8px"><span class="lbl">過去問</span>H28春 問14・H30秋 問12 の誤りの選択肢は、データを使い方に応じて置き場所を変える（＝<b>ストレージ階層化</b>）、利用者ごとにDBを分ける（＝<b>マルチテナント</b>）、資源を動的に割り当て・回収（＝<b><a class="ref" href="https://e-words.jp/w/%E3%83%97%E3%83%AD%E3%83%93%E3%82%B8%E3%83%A7%E3%83%8B%E3%83%B3%E3%82%B0.html">プロビジョニング</a></b>）</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a href="https://en.wikipedia.org/wiki/Live_migration">Wikipedia「Live migration」</a>（Pre-copy memory migration の手順）／IPA 平成28年度春期 午前 問14・平成30年度秋期 午前 問12。GB の数字は説明のための例</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/chart_increasing_flat.svg" alt="">統合とオーバーコミットは「足し算」で確かめる</h1>
+  <div class="cols" style="gap:26px">
+    <div>
+      <div class="ex"><span class="lbl">例題1</span><a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a> 使用率がそれぞれ 15%・10%・20%・25%・10% の物理サーバ5台を、同じ性能の物理サーバ1台に<a class="ref" href="https://e-words.jp/w/%E4%BB%AE%E6%83%B3%E5%8C%96.html">仮想化</a>して統合する。統合後の CPU 使用率は？</div>
+      <ol class="steps" style="margin-top:6px">
+        <li>同じ性能なので、使用率をそのまま足せる</li>
+        <li>15＋10＋20＋25＋10＝<b>80%</b>（仮想化のオーバーヘッドは別に加わる）</li>
+        <li>台数は5→1。電気代・置き場所・保守の手間が減る＝<b><a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#c5ca300dcab7de2bee65c6d3b176fd2b1f998f58">サーバコンソリデーション</a></b></li>
+      </ol>
+      <table class="mini" style="margin-top:8px">
+        <tr><th>H21春 問15 の表</th><th>資源の運用管理</th><th>資源の利用率</th><th>オーバーヘッド</th></tr>
+        <tr><td>仮想化して1台に統合</td><td><b>簡易</b></td><td><b>高い</b></td><td><b>高い</b></td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="ex"><span class="lbl">例題2</span>メモリ 64GB の物理サーバに、メモリ 8GB を割り当てた <a class="ref" href="https://e-words.jp/w/VM.html">VM</a> を12台載せた。</div>
+      <ol class="steps" style="margin-top:6px">
+        <li>割り当ての合計：8GB×12＝<b>96GB</b></li>
+        <li>96 ÷ 64＝<b>1.5倍</b>。物理より多く割り当てている＝<b>オーバーコミット</b></li>
+        <li>全 VM が同時に8GBを使うことはまれなので動く。ただし同時に使うと足りなくなり、ディスクへの退避で急に遅くなる</li>
+      </ol>
+      <div class="point"><b>同じ考え方がストレージにもある：</b>実際の使用量に応じて物理ディスクを割り当てるのが<b>シン<a class="ref" href="https://e-words.jp/w/%E3%83%97%E3%83%AD%E3%83%93%E3%82%B8%E3%83%A7%E3%83%8B%E3%83%B3%E3%82%B0.html">プロビジョニング</a></b>（ストレージの章）。</div>
+      <div class="ex" style="margin-top:8px"><span class="lbl">過去問</span><a class="ref q" href="https://www.ap-siken.com/kakomon/02_aki/q13.html">R2秋 問13</a> サーバコンソリデーション＝「仮想化ソフトウェアで元のサーバ数より少なくして管理コストを削減」。誤りは<b>ストレージ統合</b>（磁気ディスクを特定サーバから使う）・<b>縮退運転</b>（故障時にサーバ数を減らして継続）</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成21年度春期 午前 問15（表をClaudeが書き直した）・令和2年度10月 午前 問13／IPA シラバス Ver.7.2 中分類4 1.（2）用語例（サーバコンソリデーション）。例題の数値はClaudeが作った</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
+</section>
+
+
+<section class="slide">
   <h1><img class="ico" src="img/sys/cloud_flat.svg" alt="">クラウドの種類は「どこまで事業者が用意するか」。置き場所は公共か専用か</h1>
   <div class="cols wide-r">
     <div>
@@ -406,6 +722,74 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/sys/cloud_flat.svg" alt="">クラウドの定義は NIST の「5つの特徴・3つのサービス・4つの配置」</h1>
+  <div class="cols3">
+    <div>
+      <div class="cap">5つの特徴</div>
+      <table class="mini">
+        <tr><td><b>オンデマンド・セルフサービス</b>：事業者と話さず、自分で必要なだけ用意できる</td></tr>
+        <tr><td><b>幅広いネットワークアクセス</b>：標準的なしくみで、いろいろな端末から使える</td></tr>
+        <tr><td><b>リソースの共用</b>：多くの利用者で資源を分け合う（マルチテナント）</td></tr>
+        <tr><td><b>スピーディな拡張性</b>：すぐ増やし、すぐ減らせる</td></tr>
+        <tr><td><b>サービスが計測可能</b>：使った量を測って請求・管理する</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">3つのサービスモデル</div>
+      <table class="mini">
+        <tr><td><b>SaaS</b>：事業者の<b>アプリケーション</b>を使う</td></tr>
+        <tr><td><b>PaaS</b>：事業者の言語・ライブラリ・ツールで作った<b>自分のアプリを載せる</b></td></tr>
+        <tr><td><b><a class="ref" href="https://e-words.jp/w/IaaS.html">IaaS</a></b>：<a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a>・ストレージ・ネットワークを借り、<b><a class="ref" href="https://e-words.jp/w/OS.html">OS</a>から</b>自分で入れる</td></tr>
+      </table>
+      <div class="point" style="margin-top:8px"><b><a class="ref" href="https://e-words.jp/w/FaaS.html">FaaS</a>／<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#593873f5ec816e837d5a00c8ef6c81badea2daf5">サーバレス</a></b>（シラバスの用語例）は NIST の3分類より後に広まった形。<b>関数</b>だけを置き、サーバの用意も台数の調整も事業者に任せる（例：AWS Lambda）。</div>
+    </div>
+    <div>
+      <div class="cap">4つの配置モデル</div>
+      <table class="mini">
+        <tr><td><b>プライベート</b>：1つの組織だけが使う</td></tr>
+        <tr><td><b>コミュニティ</b>：目的が同じ複数の組織で使う</td></tr>
+        <tr><td><b>パブリック</b>：一般の誰でも使える</td></tr>
+        <tr><td><b>ハイブリッド</b>：2つ以上を組み合わせ、データやアプリを行き来できる</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="point"><b>エッジコンピューティング</b>は、データが生まれる場所（工場・店舗・基地局）の近くで処理し、クラウドへは結果だけを送る形。遅れが小さく、回線の負担も減る（令和の過去問の誤りの選択肢によく出る）。</div>
+  <div class="cite">出典：<a href="https://csrc.nist.gov/pubs/sp/800/145/final">NIST SP 800-145「The NIST Definition of Cloud Computing」</a>（2011）／<a href="https://docs.aws.amazon.com/lambda/latest/dg/welcome.html">AWS「What is AWS Lambda?」</a>／<a href="https://en.wikipedia.org/wiki/Edge_computing">Wikipedia「Edge computing」</a>。日本語訳はClaudeが付けた</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/building_construction_flat.svg" alt="">誰が何を管理するかは「積み木の何段目まで事業者か」で決まる</h1>
+  <div class="cols" style="grid-template-columns:1.15fr .85fr;gap:22px">
+    <svg viewBox="0 0 470 320" width="470" height="320">
+      <g font-size="11">
+      <text x="45" y="14" text-anchor="middle" font-weight="700" fill="#1f3a68">オンプレ</text>
+      <text x="140" y="14" text-anchor="middle" font-weight="700" fill="#1f3a68">IaaS</text>
+      <text x="235" y="14" text-anchor="middle" font-weight="700" fill="#1f3a68">PaaS</text>
+      <text x="330" y="14" text-anchor="middle" font-weight="700" fill="#1f3a68">FaaS</text>
+      <text x="425" y="14" text-anchor="middle" font-weight="700" fill="#1f3a68">SaaS</text>
+      </g>
+      <g id="rows" font-size="11">
+        <rect x="0" y="24" width="90" height="28" rx="4" fill="#1f3a68"/><text x="45" y="42" text-anchor="middle" fill="#fff">アプリ（関数）</text><rect x="95" y="24" width="90" height="28" rx="4" fill="#1f3a68"/><text x="140" y="42" text-anchor="middle" fill="#fff">アプリ（関数）</text><rect x="190" y="24" width="90" height="28" rx="4" fill="#1f3a68"/><text x="235" y="42" text-anchor="middle" fill="#fff">アプリ（関数）</text><rect x="285" y="24" width="90" height="28" rx="4" fill="#1f3a68"/><text x="330" y="42" text-anchor="middle" fill="#fff">アプリ（関数）</text><rect x="380" y="24" width="90" height="28" rx="4" fill="#c9daf2"/><text x="425" y="42" text-anchor="middle" fill="#1f3a68">アプリ（関数）</text><rect x="0" y="56" width="90" height="28" rx="4" fill="#1f3a68"/><text x="45" y="74" text-anchor="middle" fill="#fff">データ</text><rect x="95" y="56" width="90" height="28" rx="4" fill="#1f3a68"/><text x="140" y="74" text-anchor="middle" fill="#fff">データ</text><rect x="190" y="56" width="90" height="28" rx="4" fill="#1f3a68"/><text x="235" y="74" text-anchor="middle" fill="#fff">データ</text><rect x="285" y="56" width="90" height="28" rx="4" fill="#1f3a68"/><text x="330" y="74" text-anchor="middle" fill="#fff">データ</text><rect x="380" y="56" width="90" height="28" rx="4" fill="#1f3a68"/><text x="425" y="74" text-anchor="middle" fill="#fff">データ</text><rect x="0" y="88" width="90" height="28" rx="4" fill="#1f3a68"/><text x="45" y="106" text-anchor="middle" fill="#fff">台数の調整</text><rect x="95" y="88" width="90" height="28" rx="4" fill="#1f3a68"/><text x="140" y="106" text-anchor="middle" fill="#fff">台数の調整</text><rect x="190" y="88" width="90" height="28" rx="4" fill="#1f3a68"/><text x="235" y="106" text-anchor="middle" fill="#fff">台数の調整</text><rect x="285" y="88" width="90" height="28" rx="4" fill="#c9daf2"/><text x="330" y="106" text-anchor="middle" fill="#1f3a68">台数の調整</text><rect x="380" y="88" width="90" height="28" rx="4" fill="#c9daf2"/><text x="425" y="106" text-anchor="middle" fill="#1f3a68">台数の調整</text><rect x="0" y="120" width="90" height="28" rx="4" fill="#1f3a68"/><text x="45" y="138" text-anchor="middle" fill="#fff">実行環境</text><rect x="95" y="120" width="90" height="28" rx="4" fill="#1f3a68"/><text x="140" y="138" text-anchor="middle" fill="#fff">実行環境</text><rect x="190" y="120" width="90" height="28" rx="4" fill="#c9daf2"/><text x="235" y="138" text-anchor="middle" fill="#1f3a68">実行環境</text><rect x="285" y="120" width="90" height="28" rx="4" fill="#c9daf2"/><text x="330" y="138" text-anchor="middle" fill="#1f3a68">実行環境</text><rect x="380" y="120" width="90" height="28" rx="4" fill="#c9daf2"/><text x="425" y="138" text-anchor="middle" fill="#1f3a68">実行環境</text><rect x="0" y="152" width="90" height="28" rx="4" fill="#1f3a68"/><text x="45" y="170" text-anchor="middle" fill="#fff">ミドルウェア</text><rect x="95" y="152" width="90" height="28" rx="4" fill="#1f3a68"/><text x="140" y="170" text-anchor="middle" fill="#fff">ミドルウェア</text><rect x="190" y="152" width="90" height="28" rx="4" fill="#c9daf2"/><text x="235" y="170" text-anchor="middle" fill="#1f3a68">ミドルウェア</text><rect x="285" y="152" width="90" height="28" rx="4" fill="#c9daf2"/><text x="330" y="170" text-anchor="middle" fill="#1f3a68">ミドルウェア</text><rect x="380" y="152" width="90" height="28" rx="4" fill="#c9daf2"/><text x="425" y="170" text-anchor="middle" fill="#1f3a68">ミドルウェア</text><rect x="0" y="184" width="90" height="28" rx="4" fill="#1f3a68"/><text x="45" y="202" text-anchor="middle" fill="#fff">OS</text><rect x="95" y="184" width="90" height="28" rx="4" fill="#1f3a68"/><text x="140" y="202" text-anchor="middle" fill="#fff">OS</text><rect x="190" y="184" width="90" height="28" rx="4" fill="#c9daf2"/><text x="235" y="202" text-anchor="middle" fill="#1f3a68">OS</text><rect x="285" y="184" width="90" height="28" rx="4" fill="#c9daf2"/><text x="330" y="202" text-anchor="middle" fill="#1f3a68">OS</text><rect x="380" y="184" width="90" height="28" rx="4" fill="#c9daf2"/><text x="425" y="202" text-anchor="middle" fill="#1f3a68">OS</text><rect x="0" y="216" width="90" height="28" rx="4" fill="#1f3a68"/><text x="45" y="234" text-anchor="middle" fill="#fff">仮想化</text><rect x="95" y="216" width="90" height="28" rx="4" fill="#c9daf2"/><text x="140" y="234" text-anchor="middle" fill="#1f3a68">仮想化</text><rect x="190" y="216" width="90" height="28" rx="4" fill="#c9daf2"/><text x="235" y="234" text-anchor="middle" fill="#1f3a68">仮想化</text><rect x="285" y="216" width="90" height="28" rx="4" fill="#c9daf2"/><text x="330" y="234" text-anchor="middle" fill="#1f3a68">仮想化</text><rect x="380" y="216" width="90" height="28" rx="4" fill="#c9daf2"/><text x="425" y="234" text-anchor="middle" fill="#1f3a68">仮想化</text><rect x="0" y="248" width="90" height="28" rx="4" fill="#1f3a68"/><text x="45" y="266" text-anchor="middle" fill="#fff">サーバ・ストレージ</text><rect x="95" y="248" width="90" height="28" rx="4" fill="#c9daf2"/><text x="140" y="266" text-anchor="middle" fill="#1f3a68">サーバ・ストレージ</text><rect x="190" y="248" width="90" height="28" rx="4" fill="#c9daf2"/><text x="235" y="266" text-anchor="middle" fill="#1f3a68">サーバ・ストレージ</text><rect x="285" y="248" width="90" height="28" rx="4" fill="#c9daf2"/><text x="330" y="266" text-anchor="middle" fill="#1f3a68">サーバ・ストレージ</text><rect x="380" y="248" width="90" height="28" rx="4" fill="#c9daf2"/><text x="425" y="266" text-anchor="middle" fill="#1f3a68">サーバ・ストレージ</text><rect x="0" y="280" width="90" height="28" rx="4" fill="#1f3a68"/><text x="45" y="298" text-anchor="middle" fill="#fff">ネットワーク</text><rect x="95" y="280" width="90" height="28" rx="4" fill="#c9daf2"/><text x="140" y="298" text-anchor="middle" fill="#1f3a68">ネットワーク</text><rect x="190" y="280" width="90" height="28" rx="4" fill="#c9daf2"/><text x="235" y="298" text-anchor="middle" fill="#1f3a68">ネットワーク</text><rect x="285" y="280" width="90" height="28" rx="4" fill="#c9daf2"/><text x="330" y="298" text-anchor="middle" fill="#1f3a68">ネットワーク</text><rect x="380" y="280" width="90" height="28" rx="4" fill="#c9daf2"/><text x="425" y="298" text-anchor="middle" fill="#1f3a68">ネットワーク</text>
+      </g>
+    </svg>
+    <div>
+      <div class="ex"><span class="lbl">読み方</span><span style="display:inline-block;width:14px;height:14px;background:#1f3a68;border-radius:3px;vertical-align:-2px"></span> 利用者が管理　<span style="display:inline-block;width:14px;height:14px;background:#c9daf2;border-radius:3px;vertical-align:-2px"></span> 事業者が管理</div>
+      <ol class="steps" style="margin-top:6px">
+        <li><b><a class="ref" href="https://e-words.jp/w/IaaS.html">IaaS</a></b>：<a class="ref" href="https://e-words.jp/w/OS.html">OS</a> から上は利用者。OS の修正プログラムを当てるのも利用者の仕事</li>
+        <li><b>PaaS</b>：アプリとデータだけ利用者。OS やミドルウェアの更新は事業者</li>
+        <li><b><a class="ref" href="https://e-words.jp/w/FaaS.html">FaaS</a></b>：書くのは関数だけ。何台で動かすかも事業者が自動で決める</li>
+        <li><b>SaaS</b>：アプリまで事業者。利用者に残るのは<b>データとアカウントの管理</b></li>
+      </ol>
+      <div class="point"><b>どの形でもデータは利用者の責任</b>（AWS の「責任共有モデル」では、クラウド<b>の</b>セキュリティは事業者、クラウド<b>の中の</b>セキュリティは利用者）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a href="https://aws.amazon.com/compliance/shared-responsibility-model/">AWS「Shared Responsibility Model」</a>／<a href="https://csrc.nist.gov/pubs/sp/800/145/final">NIST SP 800-145</a>（各サービスモデルで利用者が管理するもの）。図はClaudeがこの2つから描いた</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
+</section>
+
+
+<section class="slide">
   <h1><img class="ico" src="img/sys/hammer_and_wrench_flat.svg" alt="">IaCは「構成をコードに書いて自動で作る」。手作業と比べて覚える</h1>
   <div class="cols">
     <div>
@@ -430,6 +814,39 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   <div class="point"><b>コードにするのは「インフラ（基盤）の構成と状態」。</b>同じ環境を何度でも同じように作れ、変更の履歴も残る。作り直して入れ替える運用が<b>イミュータブルインフラストラクチャ</b>、大量のコンテナの配置を自動で管理するのが<b>オーケストレーション</b>。</div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/spiral_notepad_flat.svg" alt="">IaCの例：「Webサーバ2台」と書いて実行すると、足りない分だけ作られる</h1>
+  <div class="cols" style="grid-template-columns:1fr 1fr;gap:24px">
+    <div>
+      <div class="cap">構成ファイルの例（Terraform の書き方）</div>
+      <pre class="mono" style="margin:0;background:#f5f5f7;border:1px solid #d2d2d7;border-top:0;padding:10px 12px;font-size:12px;line-height:1.55;white-space:pre">resource "aws_instance" "web" {
+  count         = 2            # 台数
+  ami           = "ami-0abc..." # <a class="ref" href="https://e-words.jp/w/OS.html">OS</a>のイメージ
+  instance_type = "t3.small"   # 性能
+  tags = { Name = "web" }
+}</pre>
+      <ol class="steps" style="margin-top:8px">
+        <li><b>plan</b>：今ある環境とファイルを比べ、何を作る・変える・消すかの計画を出す</li>
+        <li><b>apply</b>：計画どおりに作る。1台しかなければ<b>1台だけ</b>足す</li>
+        <li>同じファイルで何度実行しても結果は「2台」。これを<b>べき等性</b>という</li>
+      </ol>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th style="width:26%"></th><th>手作業（手順書）</th><th><a class="ref" href="https://e-words.jp/w/IaC.html">IaC</a></th></tr>
+        <tr><td>再現性</td><td>人によって設定がずれる</td><td>同じファイルから<b>同じ環境</b></td></tr>
+        <tr><td>変更の記録</td><td>手順書と実物がずれていく</td><td><b>バージョン管理</b>で差分と履歴が残る</td></tr>
+        <tr><td>レビュー</td><td>作業後に確認</td><td>変更前にコードとして読める</td></tr>
+        <tr><td>台数が多いとき</td><td>時間とミスが台数分増える</td><td>count を変えるだけ</td></tr>
+      </table>
+      <div class="ex" style="margin-top:10px"><span class="lbl">過去問</span><a class="ref q" href="https://www.ap-siken.com/kakomon/05_aki/q14.html">R5秋 問14</a>・<a class="ref q" href="https://www.ap-siken.com/kakomon/07_aki/q12.html">R7秋 問12</a>。正解は「システムの構成や設定を<b>コードに定義</b>し、ソフトウェアが<b>自動で適用</b>する」。誤りの選択肢は、障害対応の手順をコードにする（運用の自動化）、アプリのビルドと試験の手順をコードにする（<b>CI</b>）、手作業で資源を割り当てる（手動の<b><a class="ref" href="https://e-words.jp/w/%E3%83%97%E3%83%AD%E3%83%93%E3%82%B8%E3%83%A7%E3%83%8B%E3%83%B3%E3%82%B0.html">プロビジョニング</a></b>）、何も入っていないサーバ（<b>ベアメタル</b>）など、似ているが「インフラの構成をコードで」ではないもの</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a href="https://developer.hashicorp.com/terraform/intro">HashiCorp「What is Terraform?」</a>（人が読める構成ファイル、Write→Plan→Apply の流れ）／IPA 令和5年度秋期 午前 問14・令和7年度秋期 午前 問12。構成ファイルはClaudeが書いた例で、ami の値は省略</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
+</section>
+
 
 <section class="slide">
   <h1><img class="ico" src="img/sys/chart_increasing_flat.svg" alt="">台数を増やしても性能は比例しない。原因は取り合いとオーバーヘッド</h1>
@@ -508,6 +925,77 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/sys/gear_flat.svg" alt="">Web処理の順は「接続→SQL→読む→HTML→送信→切断」</h1>
+  <div class="cols" style="grid-template-columns:1.1fr .9fr;gap:22px">
+    <div>
+      <svg viewBox="0 0 460 300" width="460" height="300">
+        <defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#5b80bf"/></marker></defs>
+        <g font-size="12">
+        <rect x="0" y="0" width="90" height="300" rx="8" fill="#e8eef8" stroke="#c9daf2"/><text x="45" y="20" text-anchor="middle" font-weight="700" fill="#1f3a68">ブラウザ</text>
+        <rect x="150" y="0" width="160" height="300" rx="8" fill="#1f3a68"/><text x="230" y="20" text-anchor="middle" font-weight="700" fill="#fff">Webサーバ（AP）</text>
+        <rect x="370" y="0" width="90" height="300" rx="8" fill="#e8eef8" stroke="#c9daf2"/><text x="415" y="20" text-anchor="middle" font-weight="700" fill="#1f3a68">DB</text>
+        <path d="M90,44 L148,44" stroke="#5b80bf" stroke-width="2" marker-end="url(#a2)"/><text x="94" y="38" font-size="10.5" fill="#2f5596">リクエスト</text>
+        <text x="230" y="50" text-anchor="middle" fill="#c9daf2" font-size="11">受信・解読</text>
+        <text x="160" y="84" fill="#fff">③ DBへの接続</text><path d="M310,80 L368,80" stroke="#5b80bf" stroke-width="2" marker-end="url(#a2)"/>
+        <text x="160" y="118" fill="#fff">⑤ SQL文の組立て</text>
+        <text x="160" y="152" fill="#fff">② DBへのアクセス</text><path d="M310,148 L368,148" stroke="#5b80bf" stroke-width="2" marker-end="url(#a2)"/><path d="M368,162 L312,162" stroke="#5b80bf" stroke-width="2" marker-end="url(#a2)"/><text x="340" y="176" font-size="10" fill="#2f5596" text-anchor="middle">結果</text>
+        <text x="160" y="200" fill="#fff">④ HTML文書の組立て</text>
+        <text x="160" y="234" fill="#fff">⑥ ブラウザへの送信</text><path d="M148,230 L92,230" stroke="#5b80bf" stroke-width="2" marker-end="url(#a2)"/>
+        <text x="160" y="268" fill="#fff">① DBの切断</text><path d="M310,264 L368,264" stroke="#5b80bf" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#a2)"/>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="ex"><span class="lbl">過去問</span>H28秋 問12：リクエストごとに DB へ接続・切断する Web サーバの処理順は？ → <b>③→⑤→②→④→⑥→①</b></div>
+      <ol class="steps" style="margin-top:6px">
+        <li><a class="ref" href="https://e-words.jp/w/SQL.html">SQL</a> はアクセスの<b>前</b>に組み立てる（⑤→②）</li>
+        <li>HTML は DB の結果が出て<b>から</b>組み立てる（②→④）</li>
+        <li>切断はいちばん最後（①）。順番を1つずつ<b>理由で</b>決めれば選べる</li>
+      </ol>
+      <div class="cap" style="margin-top:10px">MVC モデル（H23特別 問15）</div>
+      <table class="mini">
+        <tr><td style="width:30%"><b>モデル</b></td><td>業務の処理とデータ</td></tr>
+        <tr><td><b>ビュー</b></td><td>処理結果を画面に表示</td></tr>
+        <tr><td><b>コントローラ</b></td><td>入力を受けてモデルとビューに振り分ける</td></tr>
+      </table>
+      <div class="point">正解は「業務処理はモデル層が行い、結果はビュー層に渡されて表示」。「コントローラ層が業務処理」は誤り。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成28年度秋期 午前 問12・平成23年度特別 午前 問15／IPA シラバス Ver.7.2 中分類4 1.（5）Web システム。図はClaudeが描いた</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-3/">応用情報.com 用語集 9-3 データ操作</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/link_flat.svg" alt="">ストアドプロシージャで往復が5回から1回へ。遠いほど効く</h1>
+  <div class="cols" style="gap:24px">
+    <div>
+      <div class="ex"><span class="lbl">例題</span>注文1件で <a class="ref" href="https://e-words.jp/w/SQL.html">SQL</a> を5回実行する。クライアントと DB サーバの1往復に 20 ミリ秒かかるとき、通信の待ち時間は？（DB の処理時間は別）</div>
+      <table class="mini" style="margin-top:8px">
+        <tr><th></th><th>SQL を1文ずつ送る</th><th>ストアドプロシージャ</th></tr>
+        <tr><td>往復の回数</td><td>5回</td><td><b>1回</b>（名前と引数だけ送る）</td></tr>
+        <tr><td>待ち時間</td><td>5×20＝100ミリ秒</td><td><b>20ミリ秒</b></td></tr>
+        <tr><td>SQL の置き場所</td><td>クライアントの中</td><td>DB サーバに<b>登録済み</b>（解析も済み）</td></tr>
+      </table>
+      <div class="point">PostgreSQL では <span class="mono">CREATE PROCEDURE 注文登録(…)</span> で登録し、<span class="mono">CALL 注文登録(…)</span> で呼ぶ。中身を変えてもクライアントは直さなくてよい。</div>
+      <div class="ex" style="margin-top:8px"><span class="lbl">過去問</span>H24春 問15「ストアドプロシージャで通信回数を減らす機能分担」→ クライアント＝<b>FN層とPR層</b>、サーバ＝<b>DB層とFN層</b>。業務処理（FN層）の一部をストアドプロシージャとして DB サーバ側に置くのがポイント</div>
+    </div>
+    <div>
+      <div class="cap"><a class="ref" href="https://e-words.jp/w/RPC.html">RPC</a>（Remote Procedure Call）</div>
+      <svg viewBox="0 0 400 120" width="400" height="120">
+        <rect x="0" y="10" width="150" height="90" rx="8" fill="#e8eef8" stroke="#c9daf2"/><text x="75" y="32" font-size="12" text-anchor="middle" font-weight="700" fill="#1f3a68">クライアント</text><text x="75" y="58" font-size="12" text-anchor="middle" class="mono">price = getPrice(42)</text><text x="75" y="82" font-size="11" text-anchor="middle" fill="#6e6e73">ふつうの関数呼出しに見える</text>
+        <rect x="250" y="10" width="150" height="90" rx="8" fill="#1f3a68"/><text x="325" y="32" font-size="12" text-anchor="middle" font-weight="700" fill="#fff">サーバ</text><text x="325" y="58" font-size="12" text-anchor="middle" fill="#fff" class="mono">getPrice(id) の本体</text>
+        <path d="M150,48 L248,48" stroke="#b25000" stroke-width="2"/><path d="M248,72 L150,72" stroke="#5b80bf" stroke-width="2"/><text x="200" y="42" font-size="10.5" text-anchor="middle" fill="#b25000">引数を送る</text><text x="200" y="88" font-size="10.5" text-anchor="middle" fill="#2f5596">結果を返す</text>
+      </svg>
+      <div class="point">通信の手続きはライブラリ（スタブ）が隠すので、<b>別のコンピュータの手続きを手元と同じように呼べる</b>。今は gRPC などが使われる（「リモートの機械のメソッドを、ローカルのオブジェクトのように直接呼べる」）。</div>
+      <div class="ex" style="margin-top:8px"><span class="lbl">過去問</span>H23秋 問14 の誤りの選択肢は「同じ<a class="ref" href="https://e-words.jp/w/OS.html">OS</a>どうしだけ」「同じ言語だけ」「手続群をファイルで転送」。RPC は<b>OS や言語が違っても</b>呼べる。H21春 問14 では ACID（<a class="ref" href="https://e-words.jp/w/%E3%83%88%E3%83%A9%E3%83%B3%E3%82%B6%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3.html">トランザクション</a>の性質）・<a class="ref" href="https://e-words.jp/w/NFS.html">NFS</a>（ファイル共有）が並んだ</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a href="https://www.postgresql.org/docs/current/sql-createprocedure.html">PostgreSQL Documentation「CREATE PROCEDURE」</a>／<a href="https://grpc.io/docs/what-is-grpc/introduction/">gRPC「Introduction to gRPC」</a>／IPA 平成24年度春期 午前 問15・平成23年度秋期 午前 問14・平成21年度春期 午前 問14。往復時間の例はClaudeが作った</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-3/">応用情報.com 用語集 9-3 データ操作</a></div>
+</section>
+
+
+<section class="slide">
   <h1><img class="ico" src="img/sys/link_flat.svg" alt="">1台が止まっても取引を続けるには、セッションを全サーバで共有する</h1>
   <div class="cols">
     <div>
@@ -542,6 +1030,118 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
 </section>
 
+<section class="slide">
+  <h1><img class="ico" src="img/sys/vertical_traffic_light_flat.svg" alt="">ロードバランサの振り分けは3通り。セッションは「くっつける」か「共有する」</h1>
+  <div class="cols" style="gap:24px">
+    <div>
+      <div class="cap">振り分けのしかた（AWS ALB で選べるもの）</div>
+      <table class="mini">
+        <tr><td style="width:34%"><b>ラウンドロビン</b>（既定）</td><td>1→2→3→1… と<b>順番</b>に渡す。処理の重さが揃っていればこれで十分</td></tr>
+        <tr><td><b>未処理リクエスト最小</b></td><td>いま抱えている要求が<b>いちばん少ない</b>サーバへ。重い処理が混ざるとき</td></tr>
+        <tr><td><b>重み付きランダム</b></td><td>性能に応じた<b>重み</b>で確率的に振る</td></tr>
+      </table>
+      <div class="ex" style="margin-top:8px"><span class="lbl">例</span>3台に要求1〜7が来た。ラウンドロビンなら 1台目＝1・4・7、2台目＝2・5、3台目＝3・6。2台目だけ重い処理で詰まっていても順番どおり渡してしまう。<b>未処理最小</b>なら2台目を飛ばせる</div>
+    </div>
+    <div>
+      <div class="cap">セッション（ログイン状態・カートの中身）の持ち方</div>
+      <table class="mini">
+        <tr><th style="width:26%"></th><th>スティッキーセッション</th><th>共有ストア</th></tr>
+        <tr><td>しくみ</td><td>Cookie（ALB なら <span class="mono">AWSALB</span>）で<b>同じ利用者を同じサーバへ</b></td><td>セッションを <b>Redis などのキャッシュや DB</b> に置き、どのサーバからも読む</td></tr>
+        <tr><td>サーバが止まると</td><td>そのサーバの<b>セッションが消える</b>（再ログイン）</td><td>別のサーバで<b>続けられる</b></td></tr>
+        <tr><td>台数の増減</td><td>偏りが出やすい</td><td>自由に増減できる</td></tr>
+      </table>
+      <div class="point"><a class="ref q" href="https://www.ap-siken.com/kakomon/06_aki/q12.html">R6秋 問12</a> の正解「セッションを共有するクラスタ」が強いのはこのため。止まったサーバの利用者も、次の要求から別サーバで続きができる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html">AWS「Target groups for your Application Load Balancers」</a>（round_robin・least_outstanding_requests・weighted_random）／<a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/application/edit-target-group-attributes.html">AWS「Edit target group attributes」</a>（AWSALB の Cookie）／<a href="https://aws.amazon.com/caching/session-management/">AWS「Session Management」</a>／IPA 令和6年度秋期 午前 問12</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/stopwatch_flat.svg" alt="">タイムアウトは「外側ほど長く」。内側が先に切れないと原因が分からない</h1>
+  <div class="cols" style="grid-template-columns:1.15fr .85fr;gap:22px">
+    <div>
+      <svg viewBox="0 0 470 230" width="470" height="230">
+        <g font-size="12">
+        <rect x="0" y="10" width="470" height="200" rx="10" fill="#e8eef8" stroke="#5b80bf"/><text x="12" y="32" font-weight="700" fill="#1f3a68">③ Webサーバ：APサーバに送ってから返信を受けるまで（いちばん長い）</text>
+        <rect x="30" y="50" width="420" height="140" rx="10" fill="#c9daf2" stroke="#2f5596"/><text x="42" y="72" font-weight="700" fill="#1f3a68">① APサーバのAP：処理の開始から終了まで</text>
+        <rect x="60" y="90" width="300" height="80" rx="10" fill="#1f3a68"/><text x="74" y="114" font-weight="700" fill="#fff">② AP内のトランザクション：</text><text x="74" y="134" fill="#fff">DBアクセスなどの開始から終了まで</text><text x="74" y="156" fill="#c9daf2" font-size="11">（いちばん短い）</text>
+        </g>
+      </svg>
+      <div class="ex"><span class="lbl">過去問</span>H31春 問12：長い順は？ → <b>③，①，②</b>（ウ）</div>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>②<a class="ref" href="https://e-words.jp/w/%E3%83%88%E3%83%A9%E3%83%B3%E3%82%B6%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3.html">トランザクション</a>は①AP処理の<b>中で</b>起きる → ② &lt; ①</li>
+        <li>①AP処理は③Webサーバが待つ時間の<b>中で</b>起きる → ① &lt; ③</li>
+        <li>もし③が①より短いと、AP はまだ動いているのに Web サーバが先に諦める。利用者にはエラー、AP では処理が続き、<b>どこで詰まったか分からない</b></li>
+      </ol>
+      <div class="point"><b>覚え方：</b>入れ子の図を描き、<b>外側の箱ほど長く</b>する。DB 側の「ロック待ちのタイムアウト」も同じ考えで、さらに内側に来る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成31年度春期 応用情報技術者試験 午前 問12（3種類のタイムアウトを入れ子の図にClaudeが描き直した）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/hourglass_done_flat.svg" alt="">許された時間から処理時間を引けば、通信に使える時間と必要な速度が出る</h1>
+  <div class="cols" style="grid-template-columns:.95fr 1.05fr;gap:24px">
+    <div>
+      <div class="ex"><span class="lbl">例題</span>H26秋 問13：1件の処理は <a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a> 命令300万ステップ（1ステップ300ナノ秒）とデータ入出力40回（1回20ミリ秒）。送受信のデータはそれぞれ1,000バイト。送信開始から受信完了まで2.5秒以内にしたい。ネットワークに必要な転送速度は最低何ビット/秒か。</div>
+      <svg viewBox="0 0 400 70" width="400" height="70" style="margin-top:10px">
+        <rect x="0" y="10" width="144" height="34" fill="#1f3a68"/><text x="72" y="32" font-size="12" fill="#fff" text-anchor="middle">CPU 0.9秒</text>
+        <rect x="144" y="10" width="128" height="34" fill="#2f5596"/><text x="208" y="32" font-size="12" fill="#fff" text-anchor="middle">入出力 0.8秒</text>
+        <rect x="272" y="10" width="128" height="34" fill="#fde7cf"/><text x="336" y="32" font-size="12" fill="#b25000" text-anchor="middle" font-weight="700">通信 0.8秒</text>
+        <text x="200" y="62" font-size="11.5" text-anchor="middle" fill="#6e6e73">合計 2.5 秒（1目盛り＝0.1秒＝16px）</text>
+      </svg>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>CPU：3,000,000 × 300ナノ秒 ＝ 900,000,000ナノ秒 ＝ <b>0.9秒</b></li>
+        <li>入出力：40回 × 20ミリ秒 ＝ <b>0.8秒</b></li>
+        <li>通信に使える時間：2.5 − 0.9 − 0.8 ＝ <b>0.8秒</b></li>
+        <li>送る量：送信1,000＋受信1,000＝2,000バイト ＝ <b>16,000ビット</b></li>
+        <li>速度：16,000 ÷ 0.8 ＝ <span class="hl">20,000ビット/秒</span>（ウ）</li>
+      </ol>
+      <div class="point"><b>誤りの選択肢の作られ方：</b>16,000 はビット数をそのまま答えた（秒で割っていない）値、10,000 は送信か受信の<b>片方だけ</b>（8,000ビット）を0.8秒で割った値。単位をナノ・ミリ・秒にそろえるのが一番の山。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成26年度秋期 応用情報技術者試験 午前 問13（帯の図はClaudeが描いた）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/">応用情報.com 用語集 4-2 システムの評価指標</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/globe_with_meridians_flat.svg" alt="">CDN は「利用者の近くにコピーを置く」。遠くの1台に全員が取りに行かない</h1>
+  <div class="cols" style="gap:24px">
+    <svg viewBox="0 0 420 260" width="420" height="260">
+      <g font-size="11.5">
+      <rect x="150" y="10" width="120" height="44" rx="8" fill="#1f3a68"/><text x="210" y="30" fill="#fff" text-anchor="middle" font-weight="700">オリジンサーバ</text><text x="210" y="46" fill="#fff" text-anchor="middle">（東京）</text>
+      <rect x="10" y="110" width="110" height="40" rx="8" fill="#2f5596"/><text x="65" y="135" fill="#fff" text-anchor="middle">エッジ（大阪）</text>
+      <rect x="155" y="110" width="110" height="40" rx="8" fill="#2f5596"/><text x="210" y="135" fill="#fff" text-anchor="middle">エッジ（福岡）</text>
+      <rect x="300" y="110" width="110" height="40" rx="8" fill="#2f5596"/><text x="355" y="135" fill="#fff" text-anchor="middle">エッジ（海外）</text>
+      <path d="M190,54 L70,110 M210,54 L210,110 M230,54 L350,110" stroke="#5b80bf" stroke-width="1.5" stroke-dasharray="5 3"/>
+      <text x="300" y="80" fill="#5b80bf">はじめの1回だけ取りに行く</text>
+      <g fill="#c9daf2"><circle cx="40" cy="200" r="14"/><circle cx="90" cy="200" r="14"/><circle cx="185" cy="200" r="14"/><circle cx="235" cy="200" r="14"/><circle cx="330" cy="200" r="14"/><circle cx="380" cy="200" r="14"/></g>
+      <path d="M40,186 L60,150 M90,186 L70,150 M185,186 L200,150 M235,186 L220,150 M330,186 L345,150 M380,186 L365,150" stroke="#1f3a68" stroke-width="1.5"/>
+      <text x="210" y="238" text-anchor="middle" fill="#1d1d1f">利用者は近いエッジからコピーを受け取る</text>
+      </g>
+    </svg>
+    <div>
+      <table class="mini">
+        <tr><th style="width:30%">効くこと</th><th>理由</th></tr>
+        <tr><td>表示が速い</td><td>距離が短く、往復の遅れが小さい</td></tr>
+        <tr><td>回線・オリジンが楽</td><td>同じ動画を何度も遠くから送らない</td></tr>
+        <tr><td>アクセス集中に強い</td><td>多くのエッジで負荷を分け合う</td></tr>
+      </table>
+      <div class="ex" style="margin-top:10px"><span class="lbl">過去問</span>H29春 問12 の正解は「動画や音声など大容量のデータを利用する際に、インターネット回線の負荷を軽減するように<b>サーバを分散配置</b>する」。誤りの選択肢は、Web・AP・DB の3つに分ける（＝<b>3層構成</b>）、人と人のつながり（＝<b>SNS</b>）、再生用の部品を組み込む（＝<b>プラグイン</b>）</div>
+      <div class="point">CDN は「キャッシュを近くに置く」点で、プロキシサーバのキャッシュやエッジコンピューティングと考え方が同じ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a href="https://en.wikipedia.org/wiki/Content_delivery_network">Wikipedia「Content delivery network」</a>／IPA 平成29年度春期 応用情報技術者試験 午前 問12。拠点名は説明のための例</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
+</section>
+
+
 <section class="slide chapter">
   <div class="hero-icons ira"><img src="img/irasutoya/hdd.png" alt=""><img src="img/irasutoya/portable_hdd.png" alt=""><img src="img/irasutoya/online_storage.png" alt=""><img src="img/sys/floppy_disk_flat.svg" alt=""></div>
   <div class="k">第3章</div>
@@ -574,6 +1174,69 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   </div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/file_cabinet_flat.svg" alt="">RAID2〜5は「何を単位に分けるか」と「パリティをどこに置くか」の組合せ</h1>
+  <div class="cols" style="grid-template-columns:1.1fr .9fr;gap:22px">
+    <div>
+      <table class="mini">
+        <tr><th style="width:16%">RAID</th><th>分ける単位</th><th>冗長データ</th><th>置き場所</th></tr>
+        <tr><td>RAID2</td><td>ビット</td><td>ハミング符号</td><td>専用ディスク複数</td></tr>
+        <tr><td><a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#84ed3794e531e1de0ea45197b8d7735b9ebb54f4">RAID3</a></td><td><b>ビット（バイト）</b></td><td>パリティ</td><td>専用ディスク1台（<b>固定</b>）</td></tr>
+        <tr><td><a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#78431f1c5dbc94b02dd39762356d5caf058ff8e9">RAID4</a></td><td><b>ブロック</b></td><td>パリティ</td><td>専用ディスク1台（<b>固定</b>）</td></tr>
+        <tr><td><a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#fda4ac0f769284754334ca5f35bc5bec63063b13">RAID5</a></td><td><b>ブロック</b></td><td>パリティ</td><td>全ディスクに<b>分散</b></td></tr>
+        <tr><td><a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#5a7bf5c539ee8c9d3d1636e6ac156941243d54cf">RAID6</a></td><td>ブロック</td><td>パリティ2種類</td><td>全ディスクに分散</td></tr>
+      </table>
+      <div class="ex" style="margin-top:8px"><span class="lbl">過去問</span>H22春 問12：a＝ビット・固定、b＝ブロック・固定、c＝ブロック・分散 → <b>a RAID3, b RAID4, c RAID5</b>（H26春 問11 も同じ）。H23特別 問13「<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#188679ac5f4fd50a31cfd3ffcb04f9fd95dec8b3">RAID1</a>〜5 は何で区別されるか」→ <b>データと冗長ビットの記録方法と記録位置の組合せ</b>（アクセス性能や <a class="ref" href="https://e-words.jp/w/MTBF.html">MTBF</a> ではない）</div>
+    </div>
+    <div>
+      <div class="cap">チャンクサイズ（ストライプの1切れの大きさ）</div>
+      <svg viewBox="0 0 380 120" width="380" height="120">
+        <g font-size="11">
+        <text x="0" y="16" fill="#1f3a68" font-weight="700">256KBのファイルを4台に書く</text>
+        <text x="0" y="40">64KB単位</text>
+        <rect x="80" y="28" width="70" height="18" fill="#1f3a68"/><rect x="155" y="28" width="70" height="18" fill="#2f5596"/><rect x="230" y="28" width="70" height="18" fill="#5b80bf"/><rect x="305" y="28" width="70" height="18" fill="#c9daf2"/>
+        <text x="80" y="64" fill="#6e6e73">4台が同時に動く → 大きなファイルの読み書きが速い</text>
+        <text x="0" y="90">256KB単位</text>
+        <rect x="80" y="78" width="70" height="18" fill="#1f3a68"/><rect x="155" y="78" width="70" height="18" fill="#fff" stroke="#d2d2d7"/><rect x="230" y="78" width="70" height="18" fill="#fff" stroke="#d2d2d7"/><rect x="305" y="78" width="70" height="18" fill="#fff" stroke="#d2d2d7"/>
+        <text x="80" y="114" fill="#6e6e73">1台で済む → 小さな読み書きが多いときに他の3台が空く</text>
+        </g>
+      </svg>
+      <div class="ex" style="margin-top:6px"><span class="lbl">例題</span>H25秋 問13：80Gバイトのディスク8台で、<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#90218e73dbf4e794abd751a709a7794696099885">RAID0</a> と RAID1 を<b>両方</b>満たす構成の実効容量は？<br>ミラーで半分 → 80×8÷2＝<b>320Gバイト</b>。480 は RAID6 風、560 は RAID5 風（1台引く）、640 は RAID0 だけの値</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成22年度春期 午前 問12・平成26年度春期 午前 問11・平成23年度特別 午前 問13・平成25年度秋期 午前 問13（表をClaudeが書き直した）／<a href="https://www2.eecs.berkeley.edu/Pubs/TechRpts/1987/5853.html">Patterson, Gibson, Katz「A Case for Redundant Arrays of Inexpensive Disks (RAID)」UC Berkeley 1987</a>（5つのレベル）／<a href="https://en.wikipedia.org/wiki/Standard_RAID_levels">Wikipedia「Standard RAID levels」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/warning_flat.svg" alt="">RAID5の弱点：小さな書込みが遅く、1台壊れた後が危ない</h1>
+  <div class="cols" style="gap:24px">
+    <div>
+      <div class="cap">小さな書込み1回で、ディスクの読み書きは4回</div>
+      <ol class="steps">
+        <li>古いデータを<b>読む</b></li>
+        <li>古いパリティを<b>読む</b></li>
+        <li>新パリティ＝古パリティ XOR 古データ XOR 新データ を計算</li>
+        <li>新データと新パリティを<b>書く</b>（2回）</li>
+      </ol>
+      <div class="point">これを<b>リード・モディファイ・ライト</b>という。1ストライプ全部を書き換えるときは読まずに済むので速い。書込みが多い DB に <a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#b13c5225fadb90a6b4c5d44035036ee37ccd1aa6">RAID10</a> が好まれる理由。</div>
+    </div>
+    <div>
+      <div class="cap">1台壊れた後（縮退運転）からリビルド完了まで</div>
+      <table class="mini">
+        <tr><td style="width:36%">読むとき</td><td>壊れた1台分を、残り全部の XOR で毎回計算するので遅い</td></tr>
+        <tr><td>リビルド</td><td>交換したディスクへ全データを作り直す。容量が大きいと<b>何時間も</b>かかる</td></tr>
+        <tr><td>この間に2台目が壊れると</td><td><a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#fda4ac0f769284754334ca5f35bc5bec63063b13">RAID5</a> は<b>全データを失う</b>。<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#5a7bf5c539ee8c9d3d1636e6ac156941243d54cf">RAID6</a> なら耐える</td></tr>
+      </table>
+      <div class="ex" style="margin-top:8px"><span class="lbl">計算</span>1台が1年で壊れる確率を5%とする。3台のうち2台以上が1年で壊れる確率は 1 − 0.95³ − 3×0.05×0.95² ≒ <b>0.7%</b>。台数が増え、同じ時期に買った同じ型のディスクだと、さらに起きやすい</div>
+      <div class="point warn"><b>RAID は<a class="ref" href="https://e-words.jp/w/%E3%83%90%E3%83%83%E3%82%AF%E3%82%A2%E3%83%83%E3%83%97.html">バックアップ</a>ではない。</b>消したファイル・ランサムウェアの暗号化は全ディスクに同時に反映される。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a href="https://en.wikipedia.org/wiki/Standard_RAID_levels">Wikipedia「Standard RAID levels」</a>（read-modify-write、2台故障の確率の計算例 1 − 0.95³ − 3×5%×0.95² ≒ 0.7%）／IPA シラバス Ver.7.2 中分類4 1.（6）用語例</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
+</section>
+
 
 <section class="slide">
   <h1><img class="ico" src="img/sys/link_flat.svg" alt="">ストレージのつなぎ方は3つ。「直結」「LANでファイル」「専用網でブロック」</h1>
@@ -614,6 +1277,71 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/sys/magnifying_glass_tilted_left_flat.svg" alt="">NASとSANの違いは「ファイルシステムがどちら側にあるか」</h1>
+  <div class="cols" style="grid-template-columns:1fr 1fr;gap:24px">
+    <svg viewBox="0 0 420 270" width="420" height="270">
+      <g font-size="11.5">
+      <text x="95" y="16" text-anchor="middle" font-weight="700" fill="#1f3a68">NAS</text>
+      <text x="320" y="16" text-anchor="middle" font-weight="700" fill="#1f3a68">SAN</text>
+      <rect x="20" y="28" width="150" height="88" rx="8" fill="#e8eef8" stroke="#c9daf2"/><text x="95" y="46" text-anchor="middle" fill="#1f3a68" font-weight="700">サーバ／PC</text>
+      <rect x="35" y="56" width="120" height="24" rx="4" fill="#5b80bf"/><text x="95" y="73" fill="#fff" text-anchor="middle">アプリ</text>
+      <rect x="245" y="28" width="150" height="118" rx="8" fill="#e8eef8" stroke="#c9daf2"/><text x="320" y="46" text-anchor="middle" fill="#1f3a68" font-weight="700">サーバ</text>
+      <rect x="260" y="56" width="120" height="24" rx="4" fill="#5b80bf"/><text x="320" y="73" fill="#fff" text-anchor="middle">アプリ</text>
+      <rect x="260" y="86" width="120" height="24" rx="4" fill="#b25000"/><text x="320" y="103" fill="#fff" text-anchor="middle" font-weight="700">ファイルシステム</text>
+      <text x="95" y="140" text-anchor="middle" fill="#1f3a68">LAN（NFS・SMB）</text><text x="95" y="156" text-anchor="middle" fill="#6e6e73">「このファイルを読んで」</text>
+      <text x="320" y="170" text-anchor="middle" fill="#1f3a68">専用網（FC・iSCSI）</text><text x="320" y="186" text-anchor="middle" fill="#6e6e73">「このブロックを読んで」</text>
+      <path d="M95,116 L95,170" stroke="#1f3a68" stroke-width="3"/><path d="M320,146 L320,196" stroke="#1f3a68" stroke-width="3"/>
+      <rect x="20" y="170" width="150" height="90" rx="8" fill="#1f3a68"/><text x="95" y="188" text-anchor="middle" fill="#fff" font-weight="700">NAS 装置</text>
+      <rect x="35" y="196" width="120" height="24" rx="4" fill="#b25000"/><text x="95" y="213" fill="#fff" text-anchor="middle" font-weight="700">ファイルシステム</text>
+      <rect x="35" y="226" width="120" height="24" rx="4" fill="#c9daf2"/><text x="95" y="243" fill="#1f3a68" text-anchor="middle">ディスク</text>
+      <rect x="245" y="200" width="150" height="60" rx="8" fill="#1f3a68"/><text x="320" y="220" text-anchor="middle" fill="#fff" font-weight="700">ストレージ装置</text>
+      <rect x="260" y="228" width="120" height="24" rx="4" fill="#c9daf2"/><text x="320" y="245" fill="#1f3a68" text-anchor="middle">ディスク（LUN）</text>
+      </g>
+    </svg>
+    <div>
+      <table class="mini">
+        <tr><th style="width:26%"></th><th><a class="ref" href="https://e-words.jp/w/NAS.html">NAS</a></th><th><a class="ref" href="https://e-words.jp/w/SAN.html">SAN</a></th></tr>
+        <tr><td>サーバから見ると</td><td>ネットワーク上の<b>共有フォルダ</b></td><td>自分につながった<b>ディスク</b></td></tr>
+        <tr><td>共有のしやすさ</td><td><a class="ref" href="https://e-words.jp/w/OS.html">OS</a> が違っても同じファイルを共有できる</td><td>1つの領域は基本1台のサーバ用</td></tr>
+        <tr><td>向く業務</td><td>部門のファイル共有・データ交換</td><td>DB など速さが要る業務</td></tr>
+      </table>
+      <div class="ex" style="margin-top:8px"><span class="lbl">過去問</span>H24秋 問13 NAS の特徴＝「<b>各種OSからファイルを共有</b>できるので、データを交換する業務に適している」。H26秋 問12 NAS で達成できる＝「サーバごとの専用ディスクより、システム全体で<b>ディスク群を効率的に</b>使える」。誤りは <a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#fda4ac0f769284754334ca5f35bc5bec63063b13">RAID5</a> の復元・デフラグ・表計算感覚の DB アクセス</div>
+      <div class="point">iSCSI は SCSI の命令を <b>TCP の上で</b>運ぶ規格（RFC 7143）。だから既存の <a class="ref" href="https://e-words.jp/w/LAN.html">LAN</a> 機器で SAN を作れる＝IP-SAN。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a href="https://www.snia.org/education/online-dictionary/term/network-attached-storage">SNIA Dictionary「Network Attached Storage」</a>（<a class="ref" href="https://e-words.jp/w/NFS.html">NFS</a>・SMB でファイルサービス）／<a href="https://www.snia.org/education/online-dictionary/term/storage-area-network">SNIA Dictionary「Storage Area Network」</a>（通常ブロックサービス）／<a href="https://www.rfc-editor.org/rfc/rfc7143">RFC 7143 iSCSI</a>／IPA 平成24年度秋期 午前 問13・平成26年度秋期 午前 問12</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/5/5-1/">応用情報.com 用語集 5-1 オペレーティングシステム</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/package_flat.svg" alt="">シンプロビジョニングは「見せる容量」と「本当に使う容量」を分ける</h1>
+  <div class="cols" style="gap:26px">
+    <div>
+      <svg viewBox="0 0 400 230" width="400" height="230">
+        <g font-size="11.5">
+        <text x="0" y="16" font-weight="700" fill="#1f3a68">3部門に 10TB ずつの仮想ボリュームを見せる</text>
+        <rect x="0" y="30" width="120" height="120" rx="6" fill="#fff" stroke="#5b80bf" stroke-dasharray="5 3"/><rect x="0" y="114" width="120" height="36" fill="#1f3a68"/><text x="60" y="136" fill="#fff" text-anchor="middle">実使用 3TB</text><text x="60" y="70" text-anchor="middle" fill="#2f5596">見える 10TB</text>
+        <rect x="140" y="30" width="120" height="120" rx="6" fill="#fff" stroke="#5b80bf" stroke-dasharray="5 3"/><rect x="140" y="126" width="120" height="24" fill="#1f3a68"/><text x="200" y="143" fill="#fff" text-anchor="middle">1TB</text><text x="200" y="70" text-anchor="middle" fill="#2f5596">見える 10TB</text>
+        <rect x="280" y="30" width="120" height="120" rx="6" fill="#fff" stroke="#5b80bf" stroke-dasharray="5 3"/><rect x="280" y="126" width="120" height="24" fill="#1f3a68"/><text x="340" y="143" fill="#fff" text-anchor="middle">2TB</text><text x="340" y="70" text-anchor="middle" fill="#2f5596">見える 10TB</text>
+        <rect x="0" y="176" width="400" height="40" rx="6" fill="#c9daf2"/><rect x="0" y="176" width="133" height="40" rx="6" fill="#2f5596"/><text x="66" y="201" fill="#fff" text-anchor="middle">使用 6TB</text><text x="270" y="201" fill="#1f3a68" text-anchor="middle">物理ディスクは 18TB だけ用意</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>見せた容量の合計は 10×3＝<b>30TB</b>、実際に使っているのは 3＋1＋2＝<b>6TB</b></li>
+        <li>物理ディスクは使った分だけ割り当てる。最初から30TB買わずに済む</li>
+        <li>使用量が増えてきたら物理ディスクを<b>足す</b>。足りなくなると書けなくなるので、使用率の監視が欠かせない</li>
+      </ol>
+      <div class="ex" style="margin-top:8px"><span class="lbl">過去問</span>H26秋 問10・H30秋 問11 の正解は「仮想ボリュームを提供し、物理ディスクは実際の使用量に応じて割り当てる」。誤りの選択肢は<b>ミラーリング</b>（同じデータを複数台に）、<b>パーティション分割</b>（<a class="ref" href="https://e-words.jp/w/OS.html">OS</a>用とデータ用に分ける）、<b><a class="ref" href="https://e-words.jp/w/SAN.html">SAN</a></b>（ファイバチャネルでネットワーク化）</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a href="https://www.snia.org/education/online-dictionary/term/thin-provisioning">SNIA Dictionary「thin provisioning」</a>（物理容量を全部先に割り当てる方法の代わり）／IPA 平成26年度秋期 午前 問10・平成30年度秋期 午前 問11。容量の数字はClaudeが作った例</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
+</section>
+
+
+<section class="slide">
   <h1><img class="ico" src="img/sys/card_file_box_flat.svg" alt="">オブジェクトストレージは「データ＋メタデータ」を識別子で取り出す。階層はない</h1>
   <table class="vs">
     <tr><th style="width:18%">方式</th><th style="width:20%">単位</th><th style="width:22%">探し方</th><th>向いている用途</th></tr>
@@ -629,6 +1357,26 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   <div class="point">容量の工夫：<b>シン<a class="ref" href="https://e-words.jp/w/%E3%83%97%E3%83%AD%E3%83%93%E3%82%B8%E3%83%A7%E3%83%8B%E3%83%B3%E3%82%B0.html">プロビジョニング</a></b>（書いた分だけ割り当てる）、<b>重複排除</b>（同じデータは1つだけ）、<b>ストレージ階層化</b>（よく使うものを<a class="ref" href="https://e-words.jp/w/SSD.html">SSD</a>へ）、<b><a class="ref" href="https://e-words.jp/w/%E3%82%B9%E3%83%8A%E3%83%83%E3%83%97%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88.html">スナップショット</a></b>（ある瞬間の状態を記録）。</div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/card_file_box_flat.svg" alt="">ブロック・ファイル・オブジェクトは「何を単位に、どう呼び出すか」で比べる</h1>
+  <table>
+    <tr><th style="width:15%"></th><th><a class="ref" href="https://e-words.jp/w/%E3%83%96%E3%83%AD%E3%83%83%E3%82%AF%E3%82%B9%E3%83%88%E3%83%AC%E3%83%BC%E3%82%B8.html">ブロックストレージ</a></th><th>ファイルストレージ</th><th><a class="ref" href="https://e-words.jp/w/%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88%E3%82%B9%E3%83%88%E3%83%AC%E3%83%BC%E3%82%B8.html">オブジェクトストレージ</a></th></tr>
+    <tr><td>読み書きの単位</td><td>固定長の<b>ブロック</b>（番号で指定）</td><td><b>ファイル</b>（フォルダの階層とパス）</td><td><b>オブジェクト</b>＝データ＋<a class="ref" href="https://e-words.jp/w/%E3%83%A1%E3%82%BF%E3%83%87%E3%83%BC%E3%82%BF.html">メタデータ</a>＋<b>ID（キー）</b></td></tr>
+    <tr><td>呼び出し方</td><td>FC・iSCSI（<a class="ref" href="https://e-words.jp/w/SAN.html">SAN</a>）</td><td><a class="ref" href="https://e-words.jp/w/NFS.html">NFS</a>・SMB（<a class="ref" href="https://e-words.jp/w/NAS.html">NAS</a>）</td><td><b>HTTP の API</b>（PUT・GET）</td></tr>
+    <tr><td>階層</td><td>なし（上に <a class="ref" href="https://e-words.jp/w/OS.html">OS</a> がファイルシステムを作る）</td><td>フォルダの<b>木構造</b></td><td><b>なし</b>（フラットな空間。「/」はキーの一部）</td></tr>
+    <tr><td>書き換え</td><td>一部だけ書き換えられる</td><td>一部だけ書き換えられる</td><td>基本は<b>まるごと置き換え</b></td></tr>
+    <tr><td>得意なこと</td><td>DB・仮想マシンのディスク</td><td>部門の共有フォルダ</td><td>画像・動画・ログ・<a class="ref" href="https://e-words.jp/w/%E3%83%90%E3%83%83%E3%82%AF%E3%82%A2%E3%83%83%E3%83%97.html">バックアップ</a>を<b>大量に</b>安く</td></tr>
+    <tr><td>クラウドの例</td><td>Amazon EBS</td><td>Amazon EFS</td><td>Amazon S3</td></tr>
+  </table>
+  <div class="cols" style="margin-top:12px;gap:20px">
+    <div class="ex"><span class="lbl">実物</span>Amazon S3 は「99.999999999%（イレブンナイン）の耐久性」をうたい、データを1つのリージョン内の<b>3か所以上のアベイラビリティゾーン</b>の複数の装置に保存する。オブジェクトのアドレスは <span class="mono">https://バケット名.s3.amazonaws.com/2026/11/photo.jpg</span> のような URL</div>
+    <div class="ex"><span class="lbl">過去問</span><a class="ref q" href="https://www.ap-siken.com/kakomon/06_haru/q13.html">R6春 問13</a>・<a class="ref q" href="https://www.ap-siken.com/kakomon/06_aki/q13.html">R6秋 問13</a>・<a class="ref q" href="https://www.ap-siken.com/kakomon/07_haru/q10.html">R7春 問10</a> で3回。正解は「<b>識別子</b>を使ってアクセスする」「更新の少ない<b>非構造型データ</b>を、大容量で拡張しやすい空間に置く」。誤りの選択肢は、<b>上書き更新</b>する、<b>ディレクトリの階層構造</b>（＝ファイル）、専用網で共有（＝SAN）、サーバ専用（＝DAS）</div>
+  </div>
+  <div class="cite">出典：<a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/DataDurability.html">AWS「Data protection in Amazon S3」</a>（99.999999999% の耐久性、3つ以上の AZ）／<a href="https://www.snia.org/education/online-dictionary/term/storage-area-network">SNIA Dictionary</a>／IPA シラバス Ver.7.2 中分類4 1.（6）用語例／IPA 令和6年度春期・令和6年度秋期 午前 問13・令和7年度春期 午前 問10</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/5/5-1/">応用情報.com 用語集 5-1 オペレーティングシステム</a></div>
+</section>
+
 
 <section class="slide chapter">
   <div class="hero-icons ira"><img src="img/irasutoya/broken_pc.png" alt=""><img src="img/irasutoya/twins.png" alt=""><img src="img/irasutoya/blackout.png" alt=""><img src="img/sys/shield_flat.svg" alt=""></div>
@@ -652,6 +1400,22 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   <img class="illust" src="img/irasutoya/pc_doctor.png" alt="" style="height:70px;bottom:36px">
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/shield_flat.svg" alt="">5つの考え方を身近な機械で覚える。「止めて安全」と「落として続ける」は逆</h1>
+  <table class="mini">
+    <tr><th style="width:17%">考え方</th><th style="width:31%">身近な例</th><th>なぜその分類か</th></tr>
+    <tr><td><b><a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#8ebb607ff20f4ce890e21d4d94c95e7a02a4d388">フェールセーフ</a></b></td><td>鉄道の空気ブレーキ：管が切れて空気が抜けると<b>ブレーキがかかる</b>。エレベータはケーブルが切れるとブレーキがレールをつかむ</td><td>壊れたときに「止まる・ブレーキ」という<b>安全な側</b>へ倒れる</td></tr>
+    <tr><td><b><a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#52c0d8057580db09ab5711e0b02020bf0b915270">フェールソフト</a></b></td><td>エンジン4基の旅客機が1基止まっても飛び続ける。サーバを1台外して残りで運転（<b>縮退運転</b>）</td><td>機能や性能を<b>落として</b>でも<b>止めない</b></td></tr>
+    <tr><td><b><a class="ref" href="https://e-words.jp/w/%E3%83%95%E3%83%BC%E3%83%AB%E3%83%97%E3%83%AB%E3%83%BC%E3%83%95.html">フールプルーフ</a></b></td><td>電子レンジは扉が開いたままでは<b>始動できない</b>。<a class="ref" href="https://e-words.jp/w/ATM.html">ATM</a> で現金より先にカードを返す（取り忘れ防止）</td><td>人の<b>誤った操作</b>を、そもそもできなくする（ポカヨケ）</td></tr>
+    <tr><td><b><a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#e10ad6ff0d73ff5744ea6a850e01ee9a2c67ed9b">フォールト</a>トレランス</b></td><td><a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#188679ac5f4fd50a31cfd3ffcb04f9fd95dec8b3">RAID1</a> のミラーディスク、電源ユニットの二重化、<a class="ref" href="https://www.ap-siken.com/keyword/1/1-4/#b6bceb369e0cc5e85d219b376e80d087ce08e25c">ECC</a> メモリ</td><td>部品が壊れる前提で<b>多重化</b>し、壊れても機能を保つ</td></tr>
+    <tr><td><b><a class="ref" href="https://e-words.jp/w/%E3%83%95%E3%82%A9%E3%83%BC%E3%83%AB%E3%83%88%E3%82%A2%E3%83%9C%E3%82%A4%E3%83%80%E3%83%B3%E3%82%B9.html">フォールトアボイダンス</a></b></td><td>出荷前に高温で動かして初期不良を出し切る（バーンイン）、品質の高い部品、<a class="ref" href="https://e-words.jp/w/%E4%BA%88%E9%98%B2%E4%BF%9D%E5%AE%88.html">予防保守</a></td><td>故障<b>そのものを減らす</b></td></tr>
+  </table>
+  <div class="ex" style="margin-top:10px"><span class="lbl">過去問</span><a class="ref q" href="https://www.ap-siken.com/kakomon/01_aki/q16.html">R1秋 問16</a>（H22秋 問16・H25春 問15・H27春 問14 も同じ）は4つの説明の<b>用語名だけを入れ替える</b>問題。「安全な状態に保つ＝フェールソフト」「縮小した範囲のサービス＝<a class="ref" href="https://e-words.jp/w/%E3%83%95%E3%82%A9%E3%83%BC%E3%83%AB%E3%83%88%E3%83%9E%E3%82%B9%E3%82%AD%E3%83%B3%E3%82%B0.html">フォールトマスキング</a>」「誤りが外に出ないよう訂正＝フェールセーフ」は全部ずれていて、正しいのは「品質管理などで構成要素の信頼性を高める＝<b>フォールトアボイダンス</b>」だけ。<b>説明から用語を当て直して</b>から選ぶ</div>
+  <div class="cite">出典：<a href="https://en.wikipedia.org/wiki/Fail-safe">Wikipedia「Fail-safe」</a>（鉄道の空気ブレーキ・エレベータのブレーキ）／<a href="https://en.wikipedia.org/wiki/Poka-yoke">「Poka-yoke」</a>（扉が開いていると電子レンジは始動できない）／IPA 令和元年度秋期 午前 問16・平成22年度秋期 午前 問16・平成25年度春期 午前 問15・平成27年度春期 午前 問14</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
+</section>
+
 
 <section class="slide">
   <h1><img class="ico" src="img/sys/warning_flat.svg" alt="">過去問は用語と説明をずらすひっかけ。説明から本当の用語を当てる</h1>
@@ -734,6 +1498,69 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
 </section>
 
+<section class="slide">
+  <h1><img class="ico" src="img/sys/battery_flat.svg" alt="">停電の瞬間からの流れ：UPSでつなぎ、発電機に渡し、だめなら安全に止める</h1>
+  <svg viewBox="0 0 856 150" width="856" height="150">
+    <g font-size="12">
+    <line x1="10" y1="100" x2="846" y2="100" stroke="#d2d2d7" stroke-width="2"/>
+    <rect x="10" y="40" width="120" height="44" rx="6" fill="#c9daf2"/><text x="70" y="60" text-anchor="middle" fill="#1f3a68" font-weight="700">商用電源</text><text x="70" y="76" text-anchor="middle" fill="#1f3a68" font-size="11">ふだん</text>
+    <rect x="130" y="40" width="220" height="44" rx="6" fill="#b25000"/><text x="240" y="60" text-anchor="middle" fill="#fff" font-weight="700">UPS の電池で給電</text><text x="240" y="76" text-anchor="middle" fill="#fff" font-size="11">切れ目なし（数分〜数十分）</text>
+    <rect x="350" y="40" width="260" height="44" rx="6" fill="#1f3a68"/><text x="480" y="60" text-anchor="middle" fill="#fff" font-weight="700">自家発電機で給電</text><text x="480" y="76" text-anchor="middle" fill="#fff" font-size="11">起動まで数十秒。燃料があるあいだ続く</text>
+    <rect x="610" y="40" width="236" height="44" rx="6" fill="#5b80bf"/><text x="728" y="60" text-anchor="middle" fill="#fff" font-weight="700">復電 → 商用電源へ戻す</text><text x="728" y="76" text-anchor="middle" fill="#fff" font-size="11">発電機がなければここで計画停止</text>
+    <path d="M130,24 L130,100" stroke="#b25000" stroke-width="2" stroke-dasharray="4 3"/><text x="134" y="20" fill="#b25000" font-weight="700">停電</text>
+    <text x="10" y="126" font-size="11.5" fill="#6e6e73">UPS の役目は「発電機が立ち上がるまで」または「OS を正しく終了させるまで」の時間かせぎ。何時間も動かすものではない</text>
+    </g>
+  </svg>
+  <div class="cols" style="gap:20px;margin-top:2px">
+    <table class="mini">
+      <tr><th style="width:30%"><a class="ref" href="https://e-words.jp/w/UPS.html">UPS</a> の方式</th><th>ふだん</th><th>停電時の切替え</th></tr>
+      <tr><td>常時商用（オフライン）</td><td>商用電源をそのまま流す</td><td>瞬間的に途切れる。安い</td></tr>
+      <tr><td>ラインインタラクティブ</td><td>電圧の上下を整えて流す</td><td>途切れはごく短い</td></tr>
+      <tr><td><b>常時インバータ</b>（オンライン）</td><td>いったん直流にして電池を通し、交流に戻して流す</td><td><b>途切れない</b>。サーバ室向け</td></tr>
+    </table>
+    <div>
+      <div class="point" style="margin-top:0"><b><a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#0b762581a55e5d383b509ab7f215334a90aa208c">無停止コンピュータ</a>（<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#e10ad6ff0d73ff5744ea6a850e01ee9a2c67ed9b">フォールト</a>トレラントコンピュータ）：</b><a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a>・メモリ・電源・入出力をすべて二重化し、片方が壊れても<b>切替えなしで</b>処理を続ける機械。クラスタのフェールオーバ（数秒〜数分止まる）より止まらないが高価。</div>
+      <div class="point"><b>ホットスワップ（活線挿抜）：</b>電源を入れたまま壊れた部品を交換できること。止めずに直せるので、停止時間（<a class="ref" href="https://e-words.jp/w/MTTR.html">MTTR</a>）を短くする側の対策。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a href="https://en.wikipedia.org/wiki/Uninterruptible_power_supply">Wikipedia「Uninterruptible power supply」</a>（Offline/standby・Line-interactive・Online/double-conversion）／IPA シラバス Ver.7.2 中分類4 1.（7）用語例（無停止コンピュータ，UPS）／IPA 令和4年度春期・平成29年度秋期・令和2年度10月 午前 問14。時間は目安</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/magnifying_glass_tilted_left_flat.svg" alt="">単一障害点は、信頼性ブロック図で「並列になっていない箱」</h1>
+  <div class="cols" style="grid-template-columns:1.1fr .9fr;gap:22px">
+    <svg viewBox="0 0 470 270" width="470" height="270">
+      <defs><marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#5b80bf"/></marker></defs>
+      <g font-size="11.5">
+      <text x="0" y="14" font-weight="700" fill="#1f3a68">ネットショップの構成（直す前）</text>
+      <rect x="0" y="110" width="70" height="40" rx="6" fill="#fde7cf" stroke="#b25000" stroke-width="2"/><text x="35" y="128" text-anchor="middle" fill="#b25000" font-weight="700">ルータ</text><text x="35" y="143" text-anchor="middle" fill="#b25000">1台</text>
+      <rect x="95" y="110" width="70" height="40" rx="6" fill="#fde7cf" stroke="#b25000" stroke-width="2"/><text x="130" y="128" text-anchor="middle" fill="#b25000" font-weight="700">LB</text><text x="130" y="143" text-anchor="middle" fill="#b25000">1台</text>
+      <rect x="190" y="70" width="80" height="36" rx="6" fill="#1f3a68"/><text x="230" y="93" text-anchor="middle" fill="#fff">Web/AP 1</text>
+      <rect x="190" y="154" width="80" height="36" rx="6" fill="#1f3a68"/><text x="230" y="177" text-anchor="middle" fill="#fff">Web/AP 2</text>
+      <rect x="295" y="110" width="70" height="40" rx="6" fill="#fde7cf" stroke="#b25000" stroke-width="2"/><text x="330" y="128" text-anchor="middle" fill="#b25000" font-weight="700">DB</text><text x="330" y="143" text-anchor="middle" fill="#b25000">1台</text>
+      <rect x="390" y="110" width="80" height="40" rx="6" fill="#fde7cf" stroke="#b25000" stroke-width="2"/><text x="430" y="128" text-anchor="middle" fill="#b25000" font-weight="700">ディスク</text><text x="430" y="143" text-anchor="middle" fill="#b25000">RAIDなし</text>
+      <path d="M70,130 L93,130 M165,130 L178,130 L178,88 L188,88 M178,130 L178,172 L188,172 M270,88 L282,88 L282,130 L293,130 M270,172 L282,172 L282,130 M365,130 L388,130" stroke="#5b80bf" stroke-width="2" fill="none"/>
+      <text x="0" y="222" fill="#b25000" font-weight="700">オレンジ＝1つ壊れると全体が止まる（単一障害点）</text>
+      <text x="0" y="242" fill="#1d1d1f">稼働率がすべて 0.99 なら：0.99⁴ × (1 − 0.01²) ≒ <tspan font-weight="700">0.961</tspan></text>
+      <text x="0" y="262" fill="#1d1d1f">LB・DB を2台、ディスクを RAID1 にすると：0.99 × 0.9999⁴ ≒ <tspan font-weight="700">0.990</tspan></text>
+      </g>
+    </svg>
+    <div>
+      <ol class="steps">
+        <li>要求が通る順に箱を<b>左から右へ</b>並べる（<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#b110970af7d1de847a452e99a6cb859920215ca0">信頼性ブロック図</a>）</li>
+        <li>同じ役目の箱が2つ以上あれば<b>並列</b>、1つなら<b>直列</b>に描く</li>
+        <li>直列の箱が単一障害点。電源・スイッチ・共有ディスク・DNS など<b>見落としやすい箱</b>も足す</li>
+        <li>止まると困る順に二重化する。並列にした部分の<a class="ref" href="https://e-words.jp/w/%E7%A8%BC%E5%83%8D%E7%8E%87.html">稼働率</a>は 1 − (1 − a)² で上がる</li>
+      </ol>
+      <div class="point">Web/AP だけ2台にしても、直列のまま残る LB・DB・ディスクが全体の稼働率を決めてしまう。<b>いちばん弱い直列の箱</b>から直すのが効く。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA シラバス Ver.7.2 中分類4 1.（7）用語例（信頼性ブロック図，<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#e10ad6ff0d73ff5744ea6a850e01ee9a2c67ed9b">フォールト</a>）。構成と数値はClaudeが作った例（計算は直列＝掛け算、並列＝1−(1−a)²）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
+</section>
+
+
 <section class="slide chapter">
   <div class="hero-icons ira"><img src="img/irasutoya/stopwatch.png" alt=""><img src="img/irasutoya/data_analysis.png" alt=""><img src="img/irasutoya/queue.png" alt=""><img src="img/sys/chart_increasing_flat.svg" alt=""></div>
   <div class="k">第5章</div>
@@ -769,6 +1596,71 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/sys/stopwatch_flat.svg" alt="">ターンアラウンドタイムは「到着から終了まで」。待ち時間も含めて線を引く</h1>
+  <div class="cols" style="grid-template-columns:1.1fr .9fr;gap:22px">
+    <div>
+      <div class="ex"><span class="lbl">例題</span>H23秋 問17（H29秋 問15 も同じ）：多重度1、到着順に実行。A（到着0秒・処理5秒）、B（到着2秒・処理6秒）、C（到着3秒・処理3秒）。C の<a class="ref" href="https://e-words.jp/w/%E3%82%BF%E3%83%BC%E3%83%B3%E3%82%A2%E3%83%A9%E3%82%A6%E3%83%B3%E3%83%89%E3%82%BF%E3%82%A4%E3%83%A0.html">ターンアラウンドタイム</a>は？</div>
+      <svg viewBox="0 0 460 170" width="460" height="170" style="margin-top:8px">
+        <g font-size="11.5">
+        <line x1="40" y1="130" x2="460" y2="130" stroke="#1d1d1f"/>
+        <g fill="#6e6e73" text-anchor="middle">
+        <text x="40" y="148">0</text><text x="66" y="148">1</text><text x="92" y="148">2</text><text x="118" y="148">3</text><text x="170" y="148">5</text><text x="326" y="148">11</text><text x="404" y="148">14</text></g>
+        <text x="0" y="34" fill="#1f3a68" font-weight="700">A</text><rect x="40" y="20" width="130" height="22" fill="#1f3a68"/><text x="105" y="36" fill="#fff" text-anchor="middle">実行 5秒</text>
+        <text x="0" y="72" fill="#1f3a68" font-weight="700">B</text><rect x="92" y="58" width="78" height="22" fill="#fff" stroke="#5b80bf" stroke-dasharray="4 3"/><text x="131" y="74" text-anchor="middle" fill="#5b80bf">待ち</text><rect x="170" y="58" width="156" height="22" fill="#2f5596"/><text x="248" y="74" fill="#fff" text-anchor="middle">実行 6秒</text>
+        <text x="0" y="110" fill="#1f3a68" font-weight="700">C</text><rect x="118" y="96" width="208" height="22" fill="#fff" stroke="#b25000" stroke-dasharray="4 3"/><text x="222" y="112" text-anchor="middle" fill="#b25000">待ち 8秒</text><rect x="326" y="96" width="78" height="22" fill="#b25000"/><text x="365" y="112" fill="#fff" text-anchor="middle">実行 3秒</text>
+        <text x="260" y="166" text-anchor="middle" fill="#b25000" font-weight="700">C：到着3秒 → 終了14秒 ＝ 11秒（ア）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>到着順に並べ、前のジョブが終わってから次を始める（多重度1）</li>
+        <li>A：0〜5秒。B：5〜11秒（2秒に着いて3秒待つ）</li>
+        <li>C：11〜14秒。到着は3秒なので 14 − 3 ＝ <b>11秒</b></li>
+      </ol>
+      <div class="point"><b>誤りの選択肢：</b>14 は「時刻0から数えた終了時刻」、12 は B の到着時刻（2秒）を引いた値。<b>引くのは C の到着時刻</b>。</div>
+      <div class="point">処理時間3秒なのにターンアラウンドは11秒。<b>待ち時間のほうが長い</b>のがふつう。だから「短いジョブを先に」（SJF）にすると平均が縮む（#5 ソフトウェアのスケジューリング）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成23年度秋期 午前 問17・平成29年度秋期 午前 問15（表をClaudeがガントチャートに描き直した）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/">応用情報.com 用語集 4-2 システムの評価指標</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/chart_increasing_flat.svg" alt="">使用率が1に近づくと応答時間は急に延びる（端末数との関係）</h1>
+  <div class="cols" style="grid-template-columns:1fr 1fr;gap:24px">
+    <svg viewBox="0 0 420 290" width="420" height="290">
+      <g font-size="11">
+      <line x1="50" y1="250" x2="410" y2="250" stroke="#1d1d1f"/><line x1="50" y1="250" x2="50" y2="10" stroke="#1d1d1f"/>
+      <text x="230" y="282" text-anchor="middle">使用率 ρ（端末を増やすと右へ）</text>
+      <text x="14" y="130" transform="rotate(-90 14 130)" text-anchor="middle">平均応答時間（秒）</text>
+      <g fill="#6e6e73" text-anchor="middle"><text x="50" y="266">0</text><text x="194" y="266">0.4</text><text x="266" y="266">0.6</text><text x="338" y="266">0.8</text><text x="374" y="266">0.9</text><text x="410" y="266">1</text></g>
+      <g fill="#6e6e73" text-anchor="end"><text x="44" y="254">0</text><text x="44" y="214">0.2</text><text x="44" y="174">0.4</text><text x="44" y="134">0.6</text><text x="44" y="94">0.8</text><text x="44" y="54">1.0</text></g>
+      <path d="M50,230 L122,225 L194,217 L230,210 L266,200 L302,183 L338,150 L356,117 L374,50 L381,0" fill="none" stroke="#1f3a68" stroke-width="3"/>
+      <circle cx="194" cy="217" r="4" fill="#1f3a68"/><text x="194" y="204.66" text-anchor="middle" fill="#1f3a68">0.17</text>
+      <circle cx="338" cy="150" r="4" fill="#b25000"/><text x="328" y="144" text-anchor="end" fill="#b25000" font-weight="700">0.5</text>
+      <circle cx="374" cy="50" r="4" fill="#b25000"/><text x="364" y="46" text-anchor="end" fill="#b25000" font-weight="700">1.0</text>
+      <line x1="410" y1="10" x2="410" y2="250" stroke="#b25000" stroke-dasharray="4 3"/>
+      </g>
+    </svg>
+    <div>
+      <div class="formula" style="font-size:16px">平均応答時間 ＝ 処理時間 ÷ (1 − ρ)</div>
+      <table class="mini">
+        <tr><th>使用率 ρ</th><th>処理時間 0.1秒のとき</th><th>使用率0.4のときの何倍</th></tr>
+        <tr><td>0.4</td><td>0.1 ÷ 0.6 ≒ 0.17秒</td><td>1倍</td></tr>
+        <tr><td>0.8</td><td>0.1 ÷ 0.2 ＝ <b>0.5秒</b></td><td>3倍</td></tr>
+        <tr><td>0.9</td><td>0.1 ÷ 0.1 ＝ <b>1.0秒</b></td><td>6倍</td></tr>
+      </table>
+      <div class="ex" style="margin-top:8px"><span class="lbl">過去問</span>H21秋 問16：端末1台あたりの要求が一定のとき、端末数と平均応答時間のグラフは？ → 端末が少ないうちは<b>ゆるやか</b>で、ある台数を超えると端末数に<b>比例して</b>延びていき、点線（漸近線）に上から近づく曲線（エ）。応答時間が1件の処理時間（下の点線）より短くなるもの（ア）、直線（イ）、途中で頭打ちになるもの（ウ）は誤り</div>
+      <div class="point">待ち行列の式（M/M/1）は #1 基礎理論で扱う。ここでは「<b>使用率が7〜8割を超えたら増強を考える</b>」という<a class="ref" href="https://e-words.jp/w/%E3%82%AD%E3%83%A3%E3%83%91%E3%82%B7%E3%83%86%E3%82%A3%E3%83%97%E3%83%A9%E3%83%B3%E3%83%8B%E3%83%B3%E3%82%B0.html">キャパシティプランニング</a>の目安として使う。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成21年度秋期 応用情報技術者試験 午前 問16／IPA シラバス Ver.7.2 中分類4 2.（1）。式は M/M/1 待ち行列の平均応答時間（#1 基礎理論）。数値はClaudeが計算した</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/">応用情報.com 用語集 4-2 システムの評価指標</a></div>
+</section>
+
+
+<section class="slide">
   <h1><img class="ico" src="img/sys/hourglass_done_flat.svg" alt="">処理件数は「一番遅いところ（ボトルネック）」で決まる</h1>
   <div class="cols">
     <div>
@@ -795,6 +1687,64 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
     </div>
   </div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/bar_chart_flat.svg" alt="">CPU使用率＝CPUが使う時間 ÷ 時間の長さ</h1>
+  <div class="cols" style="gap:24px">
+    <div>
+      <div class="ex"><span class="lbl">例題1</span><a class="ref q" href="https://www.ap-siken.com/kakomon/02_aki/q15.html">R2秋 問15</a>（H27秋 問13・H29秋 問14 も同じ）：1日 54,000件、ピークの1時間に20%が集中。1件はレコード100件×1ミリ秒＋計算100ミリ秒。ピーク時の <a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a> 使用率は？</div>
+      <ol class="steps" style="margin-top:6px">
+        <li>ピーク1時間の件数：54,000×0.2＝<b>10,800件</b></li>
+        <li>1件の CPU 時間：100×1＋100＝<b>200ミリ秒</b>＝0.2秒</li>
+        <li>1時間の CPU 時間：10,800×0.2＝<b>2,160秒</b></li>
+        <li>使用率：2,160 ÷ 3,600＝<span class="hl">60%</span>（エ）</li>
+      </ol>
+      <div class="point">20%（ア）は「割合をそのまま答えた」、30%（イ）はレコードアクセスか計算の<b>片方だけ</b>で計算した値。</div>
+    </div>
+    <div>
+      <div class="ex"><span class="lbl">例題2</span>H28秋 問15：1分に平均1,200件、1件100万命令、CPU は 100MIPS。平均利用率は？</div>
+      <ol class="steps" style="margin-top:6px">
+        <li>1秒の件数：1,200 ÷ 60＝<b>20件/秒</b></li>
+        <li>1秒に必要な命令数：20×100万＝<b>2,000万命令</b>＝20MIPS 分</li>
+        <li>利用率：20 ÷ 100＝<span class="hl">20%</span>（エ）</li>
+      </ol>
+      <div class="point">命令数で比べても、時間で比べても同じ答え（1件 100万÷1億＝0.01秒、20件で0.2秒→20%）。<b>どちらか解きやすい方で</b>。</div>
+      <div class="ex" style="margin-top:8px"><span class="lbl">練習</span>同じ CPU で利用率を 70% までに抑えたい。1分に何件まで受けられる？ → 70MIPS ÷ 100万命令＝70件/秒＝<b>4,200件/分</b></div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 令和2年度10月 午前 問15・平成27年度秋期 午前 問13・平成29年度秋期 午前 問14・平成28年度秋期 午前 問15。「練習」はClaudeが作った問題</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/">応用情報.com 用語集 4-2 システムの評価指標</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/desktop_computer_flat.svg" alt="">ピークの1秒を出して表に当てる。キャッシュはヒット率で平均を出す</h1>
+  <div class="cols" style="gap:24px">
+    <div>
+      <div class="ex"><span class="lbl">例題1</span>H22秋 問14（H30秋 問13 も同じ）：Web システムに必要な <a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a> 数は最低いくつか</div>
+      <table class="mini" style="margin-top:6px">
+        <tr><th>時間帯</th><th>9〜10時</th><th>11〜12時</th><th>13〜14時</th></tr>
+        <tr><td>商品検索</td><td>12,000</td><td>48,000</td><td>24,000</td></tr>
+        <tr><td>発注入力</td><td>6,000</td><td>24,000</td><td>12,000</td></tr>
+        <tr><td>1秒あたり</td><td>5 TPS</td><td><b>20 TPS</b></td><td>10 TPS</td></tr>
+      </table>
+      <table class="mini" style="margin-top:6px"><tr><th>TPS</th><td>〜10</td><td>〜20</td><td>〜30</td><td>〜40</td></tr><tr><th>CPU数</th><td>1</td><td><b>2</b></td><td>3</td><td>4</td></tr></table>
+      <div class="point">いちばん混む11〜12時：(48,000＋24,000) ÷ 3,600 秒＝20 TPS → <b>2個</b>（イ）。1日の合計で割ると混雑を見落とす。</div>
+    </div>
+    <div>
+      <div class="ex"><span class="lbl">例題2</span>H31春 問14：キャッシュにヒットすると0.2秒、しないと2.2秒。今の平均は1.0秒。3年後はヒット率が<b>今の半分</b>になる。3年後の平均は？</div>
+      <ol class="steps" style="margin-top:6px">
+        <li>今のヒット率を h とする：0.2h ＋ 2.2(1 − h) ＝ 1.0</li>
+        <li>2.2 − 2.0h ＝ 1.0 → h ＝ <b>0.6</b></li>
+        <li>3年後のヒット率 0.3：0.2×0.3 ＋ 2.2×0.7 ＝ 0.06 ＋ 1.54</li>
+        <li>＝ <span class="hl">1.6秒</span>（ウ）</li>
+      </ol>
+      <div class="point">「平均＝ヒット時×ヒット率＋ミス時×(1−ヒット率)」は #3 のキャッシュメモリの実効アクセス時間と<b>同じ式</b>。1.9（エ）はヒット率を0.15（今の4分の1）にしたときの値。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成22年度秋期 午前 問14・平成30年度秋期 午前 問13（表をClaudeが書き直した）・平成31年度春期 午前 問14</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/">応用情報.com 用語集 4-2 システムの評価指標</a></div>
+</section>
+
 
 <section class="slide">
   <h1><img class="ico" src="img/sys/bar_chart_flat.svg" alt="">使用率は「動いていた時間 ÷ 全体の時間」。全体の時間を図にして数える</h1>
@@ -855,6 +1805,36 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/sys/test_tube_flat.svg" alt="">ベンチマークは「何を測るか」で選ぶ。複数の結果は相乗平均でまとめる</h1>
+  <div class="cols" style="grid-template-columns:1.1fr .9fr;gap:22px">
+    <div>
+      <table class="mini">
+        <tr><th style="width:24%">名前</th><th>測るもの</th><th style="width:26%">単位・特徴</th></tr>
+        <tr><td><b><a class="ref" href="https://e-words.jp/w/SPEC.html">SPEC</a> <a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a> 2017</b></td><td>CPU・メモリ・コンパイラの性能。整数（<a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/#5a9592ea1bb36a99efd85bb19b3aeb147aa27021">SPECint</a>）と浮動小数点（<a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/#4d64a17ab6c25e2ae5e2b2964aa8fec2b74de383">SPECfp</a>）に分かれる</td><td>1本を速く＝SPECspeed、たくさん同時に＝SPECrate</td></tr>
+        <tr><td><b>TPC-C</b></td><td>受注業務を模した<b>オンライン<a class="ref" href="https://e-words.jp/w/%E3%83%88%E3%83%A9%E3%83%B3%E3%82%B6%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3.html">トランザクション</a>処理</b>。5種類の取引を同時に流す</td><td><b>tpmC</b>（1分あたりの処理件数）</td></tr>
+        <tr><td>TPC-H など</td><td>大量データの集計・分析の問合せ</td><td>意思決定支援向け</td></tr>
+        <tr><td>HPL（LINPACK）</td><td>連立一次方程式を解く速さ</td><td>FLOPS。TOP500 の順位</td></tr>
+        <tr><td><b><a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/#bfd602a41ed3976d1e6b2fb62ee57902e8018af1">ギブソンミックス</a></b></td><td>命令の種類ごとの<b>出現頻度で重み付け</b>した平均の実行速度</td><td>科学技術計算向けの古い尺度</td></tr>
+      </table>
+      <div class="point">H22春 問15・H29春 問14「モニタリング」の正解は「実行状態や資源の利用状況を<b>測定</b>し、改善のデータを得る」。ほかの選択肢は、カタログ値から算出、典型的なプログラムを実行（＝<b><a class="ref" href="https://e-words.jp/w/%E3%83%99%E3%83%B3%E3%83%81%E3%83%9E%E3%83%BC%E3%82%AF.html">ベンチマーク</a></b>）、命令の使用頻度で加重平均（＝<b><a class="ref" href="https://e-words.jp/w/%E5%91%BD%E4%BB%A4%E3%83%9F%E3%83%83%E3%82%AF%E3%82%B9.html">命令ミックス</a></b>）。</div>
+    </div>
+    <div>
+      <div class="ex"><span class="lbl">例題</span>H23特別 問18：ベンチマーク2本の処理時間（秒）。<b>相乗平均</b>で性能の高い順は？</div>
+      <table class="mini" style="margin-top:6px">
+        <tr><th></th><th>プログラム1</th><th>プログラム2</th><th>相乗平均</th></tr>
+        <tr><td>X</td><td>10</td><td>40</td><td>√400＝<b>20</b></td></tr>
+        <tr><td>Y</td><td>20</td><td>30</td><td>√600≒<b>24.5</b></td></tr>
+        <tr><td>Z</td><td>25</td><td>25</td><td>√625＝<b>25</b></td></tr>
+      </table>
+      <div class="point">時間が<b>短いほど</b>性能が高い → X, Y, Z（ア）。相加平均だと3台とも25秒で差が出ない。比率どうしをまとめるには相乗平均を使う（SPEC も各プログラムの比の相乗平均）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a href="https://www.spec.org/cpu2017/">SPEC「SPEC CPU 2017」</a>（SPECspeed・SPECrate）／<a href="https://www.tpc.org/tpcc/"><a class="ref" href="https://e-words.jp/w/TPC.html">TPC</a>「TPC-C」</a>（5種類の同時トランザクション、tpmC）／IPA シラバス Ver.7.2 中分類4 2.（1）①用語例／IPA 平成23年度特別 午前 問18・平成22年度春期 午前 問15・平成29年度春期 午前 問14</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/">応用情報.com 用語集 4-2 システムの評価指標</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
+</section>
+
+
+<section class="slide">
   <h1><img class="ico" src="img/sys/crystal_ball_flat.svg" alt="">キャパシティプランニングは将来も目標を守る計画。スケールは4種</h1>
   <div class="cols">
     <div>
@@ -879,6 +1859,38 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   </div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/">応用情報.com 用語集 4-2 システムの評価指標</a></div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/repeat_button_flat.svg" alt="">キャパシティ管理は4つの活動を回す。自動で台数を変えるのがオートスケール</h1>
+  <div class="cols" style="gap:24px">
+    <div>
+      <svg viewBox="0 0 400 210" width="400" height="210">
+        <g font-size="12">
+        <rect x="140" y="0" width="120" height="44" rx="8" fill="#1f3a68"/><text x="200" y="20" fill="#fff" text-anchor="middle" font-weight="700">モニタリング</text><text x="200" y="36" fill="#fff" text-anchor="middle" font-size="10.5">使用率・応答を測る</text>
+        <rect x="280" y="82" width="120" height="44" rx="8" fill="#2f5596"/><text x="340" y="102" fill="#fff" text-anchor="middle" font-weight="700">分析</text><text x="340" y="118" fill="#fff" text-anchor="middle" font-size="10.5">傾向と将来の予測</text>
+        <rect x="140" y="164" width="120" height="44" rx="8" fill="#b25000"/><text x="200" y="184" fill="#fff" text-anchor="middle" font-weight="700">チューニング</text><text x="200" y="200" fill="#fff" text-anchor="middle" font-size="10.5">変更箇所と変更策を決める</text>
+        <rect x="0" y="82" width="120" height="44" rx="8" fill="#5b80bf"/><text x="60" y="102" fill="#fff" text-anchor="middle" font-weight="700">実装</text><text x="60" y="118" fill="#fff" text-anchor="middle" font-size="10.5">変更を本番に入れる</text>
+        <path d="M262,34 Q320,40 336,80 M336,128 Q320,170 262,180 M138,180 Q80,170 64,128 M64,80 Q80,40 138,34" fill="none" stroke="#5b80bf" stroke-width="2"/>
+        </g>
+      </svg>
+      <div class="ex" style="margin-top:10px"><span class="lbl">過去問</span>H23秋 問16「チューニング」＝<b>既存システムの性能を最適化するために、変更箇所と変更策を決める</b>（ウ）。測定周期の計画（ア）・将来の必要量の計画（イ）・負荷の傾向の分析（エ）はほかの活動。H26春 問13 では「性能・経済性・拡張性を考えて<b>システムの構成を決める</b>」が正解</div>
+    </div>
+    <div>
+      <div class="cap">オートスケールの計算（Kubernetes の HPA）</div>
+      <div class="formula" style="font-size:14px;margin-top:0;border-radius:0 0 8px 8px">必要な台数 ＝ ⌈ 今の台数 × 今の値 ÷ 目標値 ⌉</div>
+      <ol class="steps">
+        <li>今 4台、<a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a> 使用率の平均 90%、目標 60%</li>
+        <li>4 × 90 ÷ 60 ＝ 6.0 → <b>6台</b>に増やす（<a class="ref" href="https://e-words.jp/w/%E3%82%B9%E3%82%B1%E3%83%BC%E3%83%AB%E3%82%A2%E3%82%A6%E3%83%88.html">スケールアウト</a>）</li>
+        <li>夜になって平均 20% なら 4 × 20 ÷ 60 ≒ 1.33 → 切り上げて <b>2台</b>（スケールイン）</li>
+        <li>比が 1.0 に近い（既定で ±0.1 以内）ときは何もしない。小さな揺れで増減を繰り返さないため</li>
+      </ol>
+      <div class="point">AWS の Auto Scaling も、<b>最小・最大・希望</b>の台数を決め、その範囲で自動で増減する。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a href="https://kubernetes.io/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale/">Kubernetes「Horizontal Pod Autoscaling」</a>（desiredReplicas の式、既定の許容幅 0.1）／<a href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html">AWS「What is Amazon EC2 Auto Scaling?」</a>／IPA 平成23年度秋期 午前 問16・平成26年度春期 午前 問13。台数の例はClaudeが作った</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/">応用情報.com 用語集 4-2 システムの評価指標</a></div>
+</section>
+
 
 <section class="slide chapter">
   <div class="hero-icons ira"><img src="img/irasutoya/balance.png" alt=""><img src="img/irasutoya/pc_doctor.png" alt=""><img src="img/sys/bathtub_flat.svg" alt=""><img src="img/sys/money_bag_flat.svg" alt=""></div>
@@ -923,6 +1935,68 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/sys/clipboard_flat.svg" alt="">運転記録からMTBF・MTTRを出し、稼働率を確かめる</h1>
+  <div class="cols" style="gap:24px">
+    <div>
+      <div class="ex"><span class="lbl">例題1</span>ある装置の1,000時間の運転記録（オレンジ＝修理中、数字は時間。Claudeの作例）</div>
+      <svg viewBox="0 0 410 70" width="410" height="70" style="margin-top:6px">
+        <g font-size="11"><rect x="0.0" y="10" width="80.0" height="28" fill="#1f3a68"/><text x="40" y="29" fill="#fff" text-anchor="middle">稼働 200</text><rect x="80.0" y="10" width="3.2" height="28" fill="#b25000"/><text x="82" y="56" fill="#b25000" text-anchor="middle">8</text><rect x="83.2" y="10" width="120.0" height="28" fill="#1f3a68"/><text x="143" y="29" fill="#fff" text-anchor="middle">稼働 300</text><rect x="203.2" y="10" width="4.8" height="28" fill="#b25000"/><text x="206" y="56" fill="#b25000" text-anchor="middle">12</text><rect x="208.0" y="10" width="88.0" height="28" fill="#1f3a68"/><text x="252" y="29" fill="#fff" text-anchor="middle">稼働 220</text><rect x="296.0" y="10" width="2.4" height="28" fill="#b25000"/><text x="297" y="56" fill="#b25000" text-anchor="middle">6</text><rect x="298.4" y="10" width="96.0" height="28" fill="#1f3a68"/><text x="346" y="29" fill="#fff" text-anchor="middle">稼働 240</text><rect x="394.4" y="10" width="5.6" height="28" fill="#b25000"/><text x="397" y="56" fill="#b25000" text-anchor="middle">14</text></g>
+      </svg>
+      <ol class="steps">
+        <li>故障は4回。<a class="ref" href="https://e-words.jp/w/MTBF.html">MTBF</a>＝稼働時間の合計 ÷ 故障回数＝(200＋300＋220＋240) ÷ 4＝960 ÷ 4＝<b>240時間</b></li>
+        <li><a class="ref" href="https://e-words.jp/w/MTTR.html">MTTR</a>＝修理時間の合計 ÷ 故障回数＝(8＋12＋6＋14) ÷ 4＝<b>10時間</b></li>
+        <li><a class="ref" href="https://e-words.jp/w/%E7%A8%BC%E5%83%8D%E7%8E%87.html">稼働率</a>＝240 ÷ (240＋10)＝<b>0.96</b>。全体で見ても 960 ÷ 1,000＝0.96 で一致する</li>
+      </ol>
+    </div>
+    <div>
+      <div class="ex"><span class="lbl">例題2</span>H22春 問16：100時間に2回故障し毎回2時間で復旧 → 機器交換で100時間に1回、復旧1時間に。稼働率は幾ら上がったか？</div>
+      <ol class="steps" style="margin-top:4px">
+        <li>前：MTBF 50・MTTR 2 → 50 ÷ 52 ≒ 0.962</li>
+        <li>後：MTBF 100・MTTR 1 → 100 ÷ 101 ≒ 0.990</li>
+        <li>差 ≒ <span class="hl">0.03</span>（ウ）</li>
+      </ol>
+      <table class="mini" style="margin-top:6px">
+        <tr><th>よく出る性質</th><th>理由</th></tr>
+        <tr><td>MTBF・MTTR が<b>ともに1.5倍</b>→稼働率は<b>同じ</b>（H23秋 問18・<a class="ref q" href="https://www.ap-siken.com/kakomon/04_aki/q14.html">R4秋 問14</a>）</td><td>分子と分母が同じ倍率</td></tr>
+        <tr><td>MTBF＝MTTR なら稼働率は<b>0.5</b>（H26春 問15・H30秋 問15）</td><td>x ÷ (x＋x)＝1/2</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成22年度春期 午前 問16・平成23年度秋期 午前 問18・平成26年度春期 午前 問15・平成30年度秋期 午前 問15・令和4年度秋期 午前 問14／<a href="https://en.wikipedia.org/wiki/Failure_rate">Wikipedia「Failure rate」</a>（MTBF＝1/λ）。例題1の記録はClaudeが作った</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/">応用情報.com 用語集 4-2 システムの評価指標</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/hourglass_done_flat.svg" alt="">「9」が1つ増えると、止まってよい時間は10分の1</h1>
+  <div class="cols" style="grid-template-columns:1.05fr .95fr;gap:22px">
+    <div>
+      <table>
+        <tr><th><a class="ref" href="https://e-words.jp/w/%E7%A8%BC%E5%83%8D%E7%8E%87.html">稼働率</a></th><th>1年で止まってよい時間</th><th>1か月（30日）</th><th>1日</th></tr>
+        <tr><td>99%</td><td>3.65日</td><td>7.2時間</td><td>14.4分</td></tr>
+        <tr><td>99.5%</td><td>1.83日</td><td>3.6時間</td><td>7.2分</td></tr>
+        <tr><td><b>99.9%</b></td><td><b>8.76時間</b></td><td>43.2分</td><td>1.44分</td></tr>
+        <tr><td>99.95%</td><td>4.38時間</td><td>21.6分</td><td>43.2秒</td></tr>
+        <tr><td><b>99.99%</b></td><td><b>52.6分</b></td><td>4.32分</td><td>8.64秒</td></tr>
+        <tr><td>99.999%</td><td>5.26分</td><td>25.9秒</td><td>0.87秒</td></tr>
+      </table>
+      <div class="point">計算：止まってよい時間＝(1 − 稼働率) × 期間。99.9% なら 0.001 × 8,760時間＝8.76時間。</div>
+    </div>
+    <div>
+      <div class="cap">実物の SLA（サービス水準の約束）</div>
+      <table class="mini">
+        <tr><td style="width:56%">Amazon EC2：2つ以上の AZ に分けて動かしたとき（リージョン単位）</td><td><b>99.99%</b>／月</td></tr>
+        <tr><td>Amazon EC2：インスタンス1台ずつ</td><td><b>99.5%</b>／月</td></tr>
+      </table>
+      <div class="ex" style="margin-top:8px"><span class="lbl">計算</span>1台だけなら 99.5%＝1か月で約3.6時間止まりうる。2か所に分けると約4.3分。<b>並列にすると桁が変わる</b>のは、稼働率の式 1 −(1 − a)² と同じ理屈</div>
+      <div class="point"><b>直列に重ねると下がる：</b>Microsoft の例では、99.95% のサービスと 99.99999% のサービスに両方依存すると、合わせて 99.95% × 99.99999% ≒ <b>99.95%</b>。いちばん低いものに引きずられる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a href="https://sre.google/sre-book/availability-table/">Google「Site Reliability Engineering」Appendix A. Availability Table</a>／<a href="https://aws.amazon.com/compute/sla/">AWS「Amazon Compute Service Level Agreement」</a>／<a href="https://learn.microsoft.com/ja-jp/azure/well-architected/reliability/metrics">Microsoft Learn「信頼性メトリックを定義するための推奨事項」</a>（複合 SLO の例）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/">応用情報.com 用語集 4-2 システムの評価指標</a></div>
+</section>
+
+
+<section class="slide">
   <h1><img class="ico" src="img/sys/puzzle_piece_flat.svg" alt="">直列は掛け算、並列は「1 − 全部止まる確率」。迷ったら場合分け</h1>
   <div class="cols">
     <div><svg width="420" height="200" viewBox="0 0 420 200">
@@ -953,6 +2027,64 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/sys/link_flat.svg" alt="">故障率λ＝1÷MTBF。直列にした装置は故障率を足し、信頼度は掛ける</h1>
+  <div class="cols" style="gap:24px">
+    <div>
+      <div class="formula" style="font-size:16px">故障率 λ ＝ 1 ÷ <a class="ref" href="https://e-words.jp/w/MTBF.html">MTBF</a>　　信頼度 R(t) ＝ e<sup>−λt</sup></div>
+      <ol class="steps">
+        <li>MTBF 1,000時間の装置 → λ＝0.001回/時間</li>
+        <li>同じ装置を<b>直列に2台</b>：どちらが壊れても止まる → λ＝0.001＋0.001＝0.002 → MTBF＝<b>500時間</b></li>
+        <li>100時間動かして1度も壊れない確率：1台 e<sup>−0.1</sup> ≒ 0.905、直列2台 e<sup>−0.2</sup> ≒ 0.819 ＝ 0.905²（<b>掛け算</b>）</li>
+      </ol>
+      <div class="point">λ が一定とみなせるのは<a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/#573e95de3c9a31dd9a60ca3200c051d515f75dd3">バスタブ曲線</a>の<b>偶発故障期</b>だけ。初期故障期・摩耗故障期では MTBF から寿命を見積もれない。</div>
+    </div>
+    <div>
+      <div class="ex"><span class="lbl">過去問</span>H24春 問17：信頼度関数 R1(t)・R2(t) の2台のシステムについて正しいのは？</div>
+      <table class="mini" style="margin-top:6px">
+        <tr><th>選択肢</th><th>正誤</th><th>正しい形</th></tr>
+        <tr><td>ア 直列 R1＋R2</td><td>×</td><td rowspan="2">直列＝<b>R1×R2</b>（イが正解）</td></tr>
+        <tr><td>イ 直列 R1×R2</td><td>○</td></tr>
+        <tr><td>ウ 並列 R1＋R2</td><td>×</td><td rowspan="2">並列＝<b>1−(1−R1)(1−R2)</b><br>＝R1＋R2−R1R2</td></tr>
+        <tr><td>エ 並列 R1×R2</td><td>×</td></tr>
+      </table>
+      <div class="point">足し算は1を超えうるので確率としてありえない（ウ）。<a class="ref" href="https://e-words.jp/w/%E7%A8%BC%E5%83%8D%E7%8E%87.html">稼働率</a>の計算と<b>まったく同じ形</b>になる、と覚えればよい。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a href="https://en.wikipedia.org/wiki/Failure_rate">Wikipedia「Failure rate」</a>（MTBF＝1/λ、一定の故障率と指数分布）／<a href="https://en.wikipedia.org/wiki/Bathtub_curve">「Bathtub curve」</a>／IPA 平成24年度春期 応用情報技術者試験 午前 問17。数値はClaudeが計算した</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/">応用情報.com 用語集 4-2 システムの評価指標</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/puzzle_piece_flat.svg" alt="">「片方だけ動く」「3台中2台」は、場合を全部書き出して足す</h1>
+  <div class="cols" style="gap:24px">
+    <div>
+      <div class="ex"><span class="lbl">例題1</span>H21秋 問17（<a class="ref q" href="https://www.ap-siken.com/kakomon/04_haru/q15.html">R4春 問15</a> も同じ）：<a class="ref" href="https://e-words.jp/w/%E7%A8%BC%E5%83%8D%E7%8E%87.html">稼働率</a>0.7と0.6のプリンタ。<b>どちらか一方だけ</b>が動いている確率は？</div>
+      <table class="mini" style="margin-top:6px">
+        <tr><th>1台目</th><th>2台目</th><th>確率</th><th></th></tr>
+        <tr><td>動く 0.7</td><td>動く 0.6</td><td>0.42</td><td>両方</td></tr>
+        <tr><td>動く 0.7</td><td>止まる 0.4</td><td><b>0.28</b></td><td>一方だけ</td></tr>
+        <tr><td>止まる 0.3</td><td>動く 0.6</td><td><b>0.18</b></td><td>一方だけ</td></tr>
+        <tr><td>止まる 0.3</td><td>止まる 0.4</td><td>0.12</td><td>両方止まる</td></tr>
+      </table>
+      <div class="point">0.28＋0.18＝<span class="hl">0.46</span>（エ）。表の4つの合計は必ず1になる（検算に使う）。0.42 は「両方」、0.18・0.28 は片方の場合だけ。</div>
+    </div>
+    <div>
+      <div class="ex"><span class="lbl">例題2</span>稼働率0.9の装置3台のうち<b>2台以上</b>動けばよいシステム</div>
+      <ol class="steps" style="margin-top:6px">
+        <li>3台とも動く：0.9³＝0.729</li>
+        <li>ちょうど2台：止まる1台の選び方が3通り → 3×0.9²×0.1＝0.243</li>
+        <li>合計 0.729＋0.243＝<span class="hl">0.972</span></li>
+        <li>式にすると a³＋3a²(1−a)＝<b>3a² − 2a³</b></li>
+      </ol>
+      <div class="point">1台（0.9）より高く、3台並列（0.999）より低い。<b>多数決の装置</b>（3台で計算して2台以上の答えを採る）がこの形で、<a class="ref" href="https://e-words.jp/w/%E3%83%95%E3%82%A9%E3%83%BC%E3%83%AB%E3%83%88%E3%83%9E%E3%82%B9%E3%82%AD%E3%83%B3%E3%82%B0.html">フォールトマスキング</a>の例。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成21年度秋期 午前 問17・令和4年度春期 午前 問15。例題2はClaudeが作った（同じ形の問題はこの資料の問題演習にもある）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/">応用情報.com 用語集 4-2 システムの評価指標</a></div>
+</section>
+
+
+<section class="slide">
   <h1><img class="ico" src="img/sys/chart_increasing_flat.svg" alt="">稼働率のグラフは、直列が多いと下、並列が多いと上にふくらむ</h1>
   <svg width="856" height="200" viewBox="0 0 856 200">
 <rect x="30" y="24" width="150" height="150" fill="#fff" stroke="#1d1d1f" stroke-width="1"/><line x1="30" y1="174" x2="180" y2="24" stroke="#9aa7bd" stroke-width="1.2" stroke-dasharray="4 3"/><text x="105.0" y="16" font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700">R3春 問14：直列2台×2組を並列</text><text x="105.0" y="190" font-size="10.5" text-anchor="middle" fill="#6e6e73">装置単体の稼働率 x</text><polyline points="30.0,174.0 31.5,174.0 33.0,173.9 34.5,173.7 36.0,173.5 37.5,173.3 39.0,172.9 40.5,172.5 42.0,172.1 43.5,171.6 45.0,171.0 46.5,170.4 48.0,169.7 49.5,169.0 51.0,168.2 52.5,167.3 54.0,166.4 55.5,165.5 57.0,164.4 58.5,163.4 60.0,162.2 61.5,161.1 63.0,159.8 64.5,158.5 66.0,157.2 67.5,155.8 69.0,154.4 70.5,152.9 72.0,151.4 73.5,149.8 75.0,148.2 76.5,146.6 78.0,144.9 79.5,143.1 81.0,141.3 82.5,139.5 84.0,137.6 85.5,135.7 87.0,133.8 88.5,131.8 90.0,129.8 91.5,127.8 93.0,125.7 94.5,123.7 96.0,121.5 97.5,119.4 99.0,117.2 100.5,115.0 102.0,112.8 103.5,110.6 105.0,108.4 106.5,106.1 108.0,103.8 109.5,101.6 111.0,99.3 112.5,97.0 114.0,94.7 115.5,92.4 117.0,90.1 118.5,87.7 120.0,85.4 121.5,83.1 123.0,80.8 124.5,78.6 126.0,76.3 127.5,74.0 129.0,71.8 130.5,69.6 132.0,67.4 133.5,65.2 135.0,63.0 136.5,60.9 138.0,58.8 139.5,56.7 141.0,54.7 142.5,52.7 144.0,50.8 145.5,48.9 147.0,47.0 148.5,45.2 150.0,43.4 151.5,41.7 153.0,40.1 154.5,38.5 156.0,37.0 157.5,35.6 159.0,34.2 160.5,32.9 162.0,31.6 163.5,30.5 165.0,29.4 166.5,28.4 168.0,27.5 169.5,26.7 171.0,26.0 172.5,25.4 174.0,24.9 175.5,24.5 177.0,24.2 178.5,24.1 180.0,24.0" fill="none" stroke="#1f3a68" stroke-width="2.4"/>
@@ -973,6 +2105,39 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   </div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/">応用情報.com 用語集 4-2 システムの評価指標</a></div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/globe_with_meridians_flat.svg" alt="">複雑な構成は「並列の固まり」を1つの箱にまとめてから掛ける</h1>
+  <div class="cols" style="gap:24px">
+    <div>
+      <div class="ex"><span class="lbl">例題1</span>H24秋 問16：福岡―大阪―東京の回線と、大阪―名古屋―東京の回り道。どの区間も<a class="ref" href="https://e-words.jp/w/%E7%A8%BC%E5%83%8D%E7%8E%87.html">稼働率</a>0.9。福岡・東京間は？</div>
+      <svg viewBox="0 0 400 90" width="400" height="90" style="margin-top:6px">
+        <g font-size="12">
+        <text x="0" y="40" fill="#1f3a68" font-weight="700">福岡</text><line x1="34" y1="36" x2="130" y2="36" stroke="#1f3a68" stroke-width="2"/><text x="82" y="28" text-anchor="middle" fill="#6e6e73">0.9</text>
+        <text x="134" y="40" fill="#1f3a68" font-weight="700">大阪</text><line x1="168" y1="36" x2="320" y2="36" stroke="#1f3a68" stroke-width="2"/><text x="244" y="28" text-anchor="middle" fill="#6e6e73">0.9</text>
+        <text x="324" y="40" fill="#1f3a68" font-weight="700">東京</text>
+        <path d="M160,44 L230,76 L320,44" fill="none" stroke="#5b80bf" stroke-width="2"/><text x="230" y="88" text-anchor="middle" fill="#5b80bf">名古屋経由 0.9×0.9＝0.81</text>
+        </g>
+      </svg>
+      <ol class="steps">
+        <li>大阪―東京は「直通0.9」と「経由0.81」の並列：1 − 0.1×0.19＝<b>0.981</b></li>
+        <li>福岡―大阪0.9 と直列：0.9×0.981≒<span class="hl">0.88</span>（イ）</li>
+      </ol>
+    </div>
+    <div>
+      <div class="ex"><span class="lbl">例題2</span>H30春 問16：負荷分散装置の下に AP サーバ2台・DB サーバ2台が<b>たすき掛け</b>でつながる。サーバはどれも0.8、負荷分散装置とディスクは故障しない</div>
+      <ol class="steps" style="margin-top:6px">
+        <li>たすき掛けなので、AP は<b>どちらか1台</b>、DB も<b>どちらか1台</b>動けばよい</li>
+        <li>AP の固まり：1 − 0.2²＝0.96。DB の固まりも0.96</li>
+        <li>直列：0.96×0.96≒<span class="hl">0.92</span>（ウ）</li>
+      </ol>
+      <div class="point">もし AP1―DB1、AP2―DB2 の<b>組ごと</b>にしかつながっていなければ、組の稼働率 0.64 の並列で 1 − 0.36²≒0.87 に下がる。<b>線のつながり方</b>を必ず確かめる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成24年度秋期 午前 問16・平成30年度春期 午前 問16（図をClaudeが描き直した）。「組ごとにつながる場合」の計算はClaudeが足した</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/">応用情報.com 用語集 4-2 システムの評価指標</a></div>
+</section>
+
 
 <section class="slide">
   <h1><img class="ico" src="img/sys/balance_scale_flat.svg" alt="">構成どうしを比べるときは、引き算して符号を見るか、x＝0.9を入れる</h1>
@@ -998,6 +2163,34 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
     </div>
   </div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/balance_scale_flat.svg" alt="">構成の比べ方：引き算して因数分解すれば「常に」が言える</h1>
+  <div class="cols" style="gap:24px">
+    <div>
+      <div class="ex"><span class="lbl">例題1</span>H21春 問16：A＝(X と Y の並列)の後に Z。B＝(X→Z の直列)と Y の並列。どちらが高い？</div>
+      <ol class="steps" style="margin-top:6px">
+        <li>A ＝ (x＋y−xy)·z ＝ xz＋yz−xyz</li>
+        <li>B ＝ 1 −(1 − xz)(1 − y) ＝ xz＋y−xyz</li>
+        <li>B − A ＝ y − yz ＝ <b>y(1 − z) ＞ 0</b></li>
+        <li>0＜y, z＜1 なら必ず正 → <span class="hl">常に B が高い</span>（エ）</li>
+      </ol>
+      <div class="point">数字で確かめるなら x＝y＝z＝0.9：A＝0.891、B＝0.981。</div>
+    </div>
+    <div>
+      <div class="ex"><span class="lbl">例題2</span>H27春 問15：N1 と N2 の間にノード N を入れる。A案＝N を2つ使った2本の経路（各経路は区間2つ）、B案＝N1―N と N―N2 をそれぞれ2本ずつ。区間の<a class="ref" href="https://e-words.jp/w/%E7%A8%BC%E5%83%8D%E7%8E%87.html">稼働率</a>はどれも ρ</div>
+      <table class="mini" style="margin-top:6px">
+        <tr><th></th><th>式</th><th>ρ＝0.9</th></tr>
+        <tr><td>A案（直列を並列に）</td><td>1 −(1 − ρ²)²</td><td>0.964</td></tr>
+        <tr><td>B案（並列を直列に）</td><td>{1 −(1 − ρ)²}²</td><td><b>0.980</b></td></tr>
+      </table>
+      <div class="point"><b>常に B案が高い</b>（エ）。「小さい単位で二重化してから直列」のほうが強い。H25秋 問17 の「装置単体より高いのは？」も、<b>全部並列（A）と、1台＋2台直列の並列（C）</b>が上回り、直列が入る B は下回る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成21年度春期 午前 問16・平成27年度春期 午前 問15・平成25年度秋期 午前 問17（図を文章と式にClaudeが書き直した）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/">応用情報.com 用語集 4-2 システムの評価指標</a></div>
+</section>
+
 
 <section class="slide">
   <h1><img class="ico" src="img/sys/repeat_button_flat.svg" alt="">待機系があると止まるのは切替えの間だけ。MTTRは停止に入らない</h1>
@@ -1059,6 +2252,43 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/sys/bathtub_flat.svg" alt="">RASISは指標まで、バスタブ曲線は時期ごとの対策まで覚える</h1>
+  <div class="cols" style="gap:24px">
+    <div>
+      <table class="mini">
+        <tr><th style="width:30%"><a class="ref" href="https://e-words.jp/w/RASIS.html">RASIS</a></th><th>測り方の例</th><th style="width:30%">上げる手段</th></tr>
+        <tr><td><b>R</b>eliability 信頼性</td><td><b><a class="ref" href="https://e-words.jp/w/MTBF.html">MTBF</a></b>（長いほどよい）</td><td>良い部品・<a class="ref" href="https://e-words.jp/w/%E4%BA%88%E9%98%B2%E4%BF%9D%E5%AE%88.html">予防保守</a></td></tr>
+        <tr><td><b>A</b>vailability 可用性</td><td><b><a class="ref" href="https://e-words.jp/w/%E7%A8%BC%E5%83%8D%E7%8E%87.html">稼働率</a></b></td><td>冗長化・早い復旧</td></tr>
+        <tr><td><b>S</b>erviceability 保守性</td><td><b><a class="ref" href="https://e-words.jp/w/MTTR.html">MTTR</a></b>（短いほどよい）</td><td>エラーログ・<a class="ref" href="https://www.ap-siken.com/keyword/12/12-6/#8354e9a0038504b5f122020ac0f1b347b7809d56">遠隔保守</a>・ホットスワップ</td></tr>
+        <tr><td><b>I</b>ntegrity 完全性</td><td>データの誤り・矛盾の件数</td><td>排他制御・チェック</td></tr>
+        <tr><td><b>S</b>ecurity 安全性</td><td>不正アクセス・漏えいの件数</td><td>認証・暗号化・<a class="ref" href="https://e-words.jp/w/%E3%82%A2%E3%82%AF%E3%82%BB%E3%82%B9%E5%88%B6%E5%BE%A1.html">アクセス制御</a></td></tr>
+      </table>
+      <div class="ex" style="margin-top:8px"><span class="lbl">過去問</span>H22春 問14「I は何に関する特性か」→ <b>情報の一貫性を確保する能力</b>（ア）。イ「漏えい・紛失・不正使用を防ぐ」＝Security、ウ「機能を規定期間実行する」＝Reliability、エ「サービスを提供し続ける」＝Availability</div>
+    </div>
+    <div>
+      <svg viewBox="0 0 400 150" width="400" height="150">
+        <g font-size="11">
+        <line x1="30" y1="120" x2="390" y2="120" stroke="#1d1d1f"/><line x1="30" y1="120" x2="30" y2="10" stroke="#1d1d1f"/>
+        <text x="210" y="140" text-anchor="middle">使った時間</text><text x="12" y="65" transform="rotate(-90 12 65)" text-anchor="middle">故障率</text>
+        <path d="M32,18 C60,80 90,95 130,96 L290,96 C330,96 360,80 388,22" fill="none" stroke="#1f3a68" stroke-width="3"/>
+        <line x1="130" y1="12" x2="130" y2="120" stroke="#d2d2d7" stroke-dasharray="4 3"/><line x1="290" y1="12" x2="290" y2="120" stroke="#d2d2d7" stroke-dasharray="4 3"/>
+        <text x="80" y="20" text-anchor="middle" fill="#b25000" font-weight="700">初期故障期</text><text x="210" y="80" text-anchor="middle" fill="#1f3a68" font-weight="700">偶発故障期</text><text x="340" y="112" text-anchor="middle" fill="#b25000" font-weight="700">摩耗故障期</text>
+        </g>
+      </svg>
+      <table class="mini">
+        <tr><th>時期</th><th>原因</th><th>対策</th></tr>
+        <tr><td>初期</td><td>製造の不良・設計の誤り</td><td>出荷前の<b>エージング（バーンイン）</b>、デバッグ</td></tr>
+        <tr><td>偶発</td><td>偶然。予測できない</td><td>冗長化・予備品（λ一定でMTBFが使える）</td></tr>
+        <tr><td>摩耗</td><td>部品の劣化・寿命</td><td><b>予防保守</b>で寿命前に交換</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：IPA シラバス Ver.7.2 中分類4 2.（2）①②／IPA 平成22年度春期 午前 問14／<a href="https://en.wikipedia.org/wiki/Bathtub_curve">Wikipedia「Bathtub curve」</a>（early failures・random failures・wear-out failures の3つの時期）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/">応用情報.com 用語集 4-2 システムの評価指標</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/12/12-6/">応用情報.com 用語集 12-6 保守・廃棄</a></div>
+</section>
+
+
+<section class="slide">
   <h1><img class="ico" src="img/sys/money_bag_flat.svg" alt="">TCOは「持っている間の費用の総額」。見えにくい間接コストまで入れて比べる</h1>
   <div class="cols">
     <div>
@@ -1087,7 +2317,69 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
-  <h1><img class="ico" src="img/sys/clipboard_flat.svg" alt="">まとめ：この表の式と見分け方で、過去問37問の論点を押さえられる</h1>
+  <h1><img class="ico" src="img/sys/money_bag_flat.svg" alt="">TCOの例題：初期費用が安い方が、5年で見ると高いことがある</h1>
+  <div class="cols" style="grid-template-columns:1.05fr .95fr;gap:22px">
+    <div>
+      <div class="ex"><span class="lbl">例題</span>社内の業務システムを5年使う。単位は万円（Claudeの作例）</div>
+      <table class="mini" style="margin-top:6px">
+        <tr><th style="width:36%"></th><th>A案 自社サーバ</th><th>B案 クラウド</th></tr>
+        <tr><td>初期：機器・構築</td><td>600</td><td>150</td></tr>
+        <tr><td>毎年：保守・電気・場所</td><td>80</td><td>―</td></tr>
+        <tr><td>毎年：利用料</td><td>―</td><td>180</td></tr>
+        <tr><td>毎年：運用の人件費</td><td>120</td><td>40</td></tr>
+        <tr><td>毎年：止まったときの損失（間接）</td><td>30</td><td>10</td></tr>
+        <tr><td><b>5年の <a class="ref" href="https://e-words.jp/w/TCO.html">TCO</a></b></td><td>600＋230×5＝<b>1,750</b></td><td>150＋230×5＝<b>1,300</b></td></tr>
+      </table>
+      <div class="point">毎年の費用はどちらも230でも、初期費用の差で B案が安い。<b>8年</b>使うと A案 600＋230×8＝2,440、B案 150＋230×8＝1,990。期間を変えても差は<b>初期費用の450のまま</b>。毎年の費用が違えば、どこかで逆転する。</div>
+    </div>
+    <div>
+      <div class="ex"><span class="lbl">過去問</span>H22秋 問15「TCO の評価項目から<b>除外</b>されるもの」→ <b>システムに入力された売上データを分析する販売管理コスト</b>（イ）。これはシステムを使ってする<b>業務そのもの</b>の費用。</div>
+      <table class="mini" style="margin-top:8px">
+        <tr><th>選択肢</th><th>TCO に入るか</th></tr>
+        <tr><td>ア システム管理・セキュリティ管理の管理コスト</td><td>入る（運用）</td></tr>
+        <tr><td>イ 売上データを分析する販売管理コスト</td><td><b>入らない</b></td></tr>
+        <tr><td>ウ ハードウェア・ソフトウェアの導入コスト</td><td>入る（初期）</td></tr>
+        <tr><td>エ ヘルプデスク・利用者教育のサポートコスト</td><td>入る（運用・間接を含む）</td></tr>
+      </table>
+      <div class="point">シラバスでは TCO は「<a class="ref" href="https://e-words.jp/w/%E5%88%86%E6%95%A3%E5%87%A6%E7%90%86.html">分散処理</a>システム」の用語例にも入っている。分散すると機器は安くても、<b>拠点ごとの管理の手間</b>が増えて TCO が上がることがある。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成22年度秋期 応用情報技術者試験 午前 問15／IPA シラバス Ver.7.2 中分類4 1.（1）②・2.（3）。例題の金額はClaudeが作った</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
+</section>
+
+
+
+<section class="slide">
+  <h1>試験で狙われやすい比較10選（1/2）</h1>
+  <table class="vs">
+    <tr><th style="width:4%"></th><th style="width:32%">比較</th><th>見分ける一言</th></tr>
+    <tr><td>1</td><td>デュアル vs デュプレックス</td><td>2系統で<b>同じ処理をして照合</b>／片方は<b>待機して</b>切り替える</td></tr>
+    <tr><td>2</td><td><a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#8ebb607ff20f4ce890e21d4d94c95e7a02a4d388">フェールセーフ</a> vs <a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/#52c0d8057580db09ab5711e0b02020bf0b915270">フェールソフト</a></td><td>壊れたら<b>安全な側に止める</b>／<b>機能を落として続ける</b></td></tr>
+    <tr><td>3</td><td>フェールオーバ vs フェールバック</td><td>障害で<b>待機系へ移す</b>／復旧後に<b>元へ戻す</b></td></tr>
+    <tr><td>4</td><td>ホット vs ウォーム vs コールドスタンバイ</td><td>業務まで<b>起動済み</b>／<a class="ref" href="https://e-words.jp/w/OS.html">OS</a> だけ起動／<b>電源も入れず</b>待つ</td></tr>
+    <tr><td>5</td><td><a class="ref" href="https://e-words.jp/w/RPO.html">RPO</a> vs <a class="ref" href="https://e-words.jp/w/RTO.html">RTO</a></td><td>データを<b>どの時点まで</b>戻せるか／<b>いつまでに</b>再開するか</td></tr>
+  </table>
+  <div class="point">2・3 は、正解と誤りの選択肢として<b>同じ問題に並んだ</b>組合せ（H24春 問16、H27秋 問12、<a class="ref q" href="https://www.ap-siken.com/kakomon/01_aki/q16.html">R1秋 問16</a>）。</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/15/15-2/">応用情報.com 用語集 15-2 サービスマネジメントシステムの計画及び運用</a></div>
+</section>
+
+<section class="slide">
+  <h1>試験で狙われやすい比較10選（2/2）</h1>
+  <table class="vs">
+    <tr><th style="width:4%"></th><th style="width:32%">比較</th><th>見分ける一言</th></tr>
+    <tr><td>6</td><td><a class="ref" href="https://e-words.jp/w/%E3%82%B9%E3%82%B1%E3%83%BC%E3%83%AB%E3%82%A2%E3%82%A6%E3%83%88.html">スケールアウト</a> vs <a class="ref" href="https://e-words.jp/w/%E3%82%B9%E3%82%B1%E3%83%BC%E3%83%AB%E3%82%A2%E3%83%83%E3%83%97.html">スケールアップ</a></td><td><b>台数</b>を増やす／<b>1台の能力</b>を上げる</td></tr>
+    <tr><td>7</td><td><a class="ref" href="https://e-words.jp/w/%E5%AF%86%E7%B5%90%E5%90%88.html">密結合</a> vs <a class="ref" href="https://e-words.jp/w/%E7%96%8E%E7%B5%90%E5%90%88.html">疎結合</a></td><td>主記憶を<b>共有</b>（取り合いで伸び悩む）／主記憶も <a class="ref" href="https://e-words.jp/w/OS.html">OS</a> も<b>別々</b></td></tr>
+    <tr><td>8</td><td>ハイパーバイザー型 vs ホスト型 vs コンテナ型</td><td>ホスト OS <b>なし</b>／ホスト OS の<b>上</b>／ゲスト OS <b>なし</b>でカーネル共有</td></tr>
+    <tr><td>9</td><td><a class="ref" href="https://e-words.jp/w/NAS.html">NAS</a> vs <a class="ref" href="https://e-words.jp/w/SAN.html">SAN</a></td><td><a class="ref" href="https://e-words.jp/w/LAN.html">LAN</a> で<b>ファイル</b>（<a class="ref" href="https://e-words.jp/w/NFS.html">NFS</a>・SMB）／専用網で<b>ブロック</b>（FC・iSCSI）</td></tr>
+    <tr><td>10</td><td><a class="ref" href="https://e-words.jp/w/%E3%83%AC%E3%82%B9%E3%83%9D%E3%83%B3%E3%82%B9%E3%82%BF%E3%82%A4%E3%83%A0.html">レスポンスタイム</a> vs <a class="ref" href="https://e-words.jp/w/%E3%82%BF%E3%83%BC%E3%83%B3%E3%82%A2%E3%83%A9%E3%82%A6%E3%83%B3%E3%83%89%E3%82%BF%E3%82%A4%E3%83%A0.html">ターンアラウンドタイム</a> vs <a class="ref" href="https://e-words.jp/w/%E3%82%B9%E3%83%AB%E3%83%BC%E3%83%97%E3%83%83%E3%83%88.html">スループット</a></td><td>応答が<b>返り始める</b>まで／結果が<b>全部出る</b>まで／単位時間の<b>処理量</b></td></tr>
+  </table>
+  <div class="point"><b>おまけ：</b><a class="ref" href="https://e-words.jp/w/MTBF.html">MTBF</a> を延ばす（<a class="ref" href="https://e-words.jp/w/%E4%BA%88%E9%98%B2%E4%BF%9D%E5%AE%88.html">予防保守</a>・誤り訂正）と <a class="ref" href="https://e-words.jp/w/MTTR.html">MTTR</a> を縮める（エラーログ・<a class="ref" href="https://www.ap-siken.com/keyword/12/12-6/#8354e9a0038504b5f122020ac0f1b347b7809d56">遠隔保守</a>）、ライブ（止めずに移す）とコールド（止めて移す）<a class="ref" href="https://e-words.jp/w/%E3%83%9E%E3%82%A4%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3.html">マイグレーション</a>、シン（使った分だけ）と通常（先に全部確保）<a class="ref" href="https://e-words.jp/w/%E3%83%97%E3%83%AD%E3%83%93%E3%82%B8%E3%83%A7%E3%83%8B%E3%83%B3%E3%82%B0.html">プロビジョニング</a>。</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/">応用情報.com 用語集 4-2 システムの評価指標</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/sys/clipboard_flat.svg" alt="">まとめ：この表の式と見分け方で、過去問の論点を押さえられる</h1>
   <table>
     <tr><th style="width:24%">論点</th><th>覚えること</th><th style="width:22%">過去問</th></tr>
     <tr><td>信頼性設計の5つ</td><td>アボイダンス＝避ける、トレランス＝耐える、セーフ＝安全に止める、ソフト＝落として続ける、<a class="ref" href="https://e-words.jp/w/%E3%83%95%E3%83%BC%E3%83%AB%E3%83%97%E3%83%AB%E3%83%BC%E3%83%95.html">フールプルーフ</a>＝人の誤り</td><td><a class="ref q" href="https://www.ap-siken.com/kakomon/03_haru/q13.html">R3春13</a>・<a class="ref q" href="https://www.ap-siken.com/kakomon/05_haru/q15.html">R5春15</a>・<a class="ref q" href="https://www.ap-siken.com/kakomon/03_aki/q13.html">R3秋13</a></td></tr>
@@ -1102,3 +2394,25 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   <img class="illust" src="img/irasutoya/data_analysis.png" alt="" style="height:60px;bottom:36px">
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/4/4-1/">応用情報.com 用語集 4-1 システムの構成</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/4/4-2/">応用情報.com 用語集 4-2 システムの評価指標</a></div>
 </section>
+
+<section class="slide">
+  <h1>出典（1/2）：試験・標準・事業者の公開資料</h1>
+  <dl class="def" style="font-size:12px">
+    <dt>IPA（試験の公式資料）</dt><dd>応用情報技術者試験 午前 問題冊子・解答例 平成21年度春期〜令和7年度秋期の33回分（<a class="src" href="https://www.ipa.go.jp/shiken/mondai-kaiotu/index.html">IPA 過去問題</a>。許諾・使用料なしで利用できる）／応用情報技術者試験（レベル3）シラバス Ver.7.2 中分類4 システム構成要素。平成21年度〜令和2年度の問題文と正解は、応用情報技術者試験.com の過去問ページで読んだ（解説文は使っていない）</dd>
+    <dt>標準・研究機関</dt><dd><a class="src" href="https://csrc.nist.gov/pubs/sp/800/145/final">NIST SP 800-145（クラウドの定義）</a>／<a class="src" href="https://www.rfc-editor.org/rfc/rfc7143">RFC 7143（iSCSI）</a>／<a class="src" href="https://www.snia.org/education/online-dictionary">SNIA Dictionary（NAS・SAN・シンプロビジョニング）</a>／<a class="src" href="https://www.spec.org/cpu2017/">SPEC CPU 2017</a>／<a class="src" href="https://www.tpc.org/tpcc/">TPC-C</a>／<a class="src" href="https://www.top500.org/lists/top500/2025/11/">TOP500（2025年11月）</a>／<a class="src" href="https://www.r-ccs.riken.jp/fugaku/system/">理化学研究所「富岳」</a>／<a class="src" href="https://boinc.berkeley.edu/">BOINC</a>／<a class="src" href="https://www2.eecs.berkeley.edu/Pubs/TechRpts/1987/5853.html">Patterson ほか「A Case for RAID」（1987）</a></dd>
+    <dt>事業者・ソフトウェアの公式文書</dt><dd>AWS（<a class="src" href="https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html">災害対策ホワイトペーパー</a>・<a class="src" href="https://aws.amazon.com/compute/sla/">EC2 の SLA</a>・<a class="src" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/DataDurability.html">S3 の耐久性</a>・<a class="src" href="https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html">ALB</a>・<a class="src" href="https://aws.amazon.com/compliance/shared-responsibility-model/">責任共有モデル</a>・<a class="src" href="https://docs.aws.amazon.com/lambda/latest/dg/welcome.html">Lambda</a>・<a class="src" href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html">Auto Scaling</a>）／<a class="src" href="https://sre.google/sre-book/availability-table/">Google SRE（可用性の表）</a>／<a class="src" href="https://learn.microsoft.com/ja-jp/azure/well-architected/reliability/metrics">Microsoft Learn（複合 SLO）</a>／<a class="src" href="https://kubernetes.io/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale/">Kubernetes（HPA）</a>／<a class="src" href="https://developer.hashicorp.com/terraform/intro">HashiCorp Terraform</a>／<a class="src" href="https://clusterlabs.org/projects/pacemaker/doc/3.0/Clusters_from_Scratch/html/fencing.html">ClusterLabs Pacemaker</a>／<a class="src" href="https://www.postgresql.org/docs/current/sql-createprocedure.html">PostgreSQL</a>／<a class="src" href="https://grpc.io/docs/what-is-grpc/introduction/">gRPC</a></dd>
+  </dl>
+  <div class="cite">すべて2026年11月1日に開いて内容を確かめた。数値は各ページに書かれていたもの</div>
+</section>
+
+<section class="slide">
+  <h1>出典（2/2）：解説・辞典とこの資料の作り方</h1>
+  <dl class="def" style="font-size:12px">
+    <dt>Wikipedia（英語版。定義と数値の確認に使った項目）</dt><dd style="font-size:11px;line-height:1.5">Distributed computing（透過性）／Shard (database architecture)／Live migration（プレコピー方式）／Edge computing／Content delivery network／Standard RAID levels（リード・モディファイ・ライト、2台故障の確率）／Fail-safe（鉄道の空気ブレーキ・エレベータ）／Poka-yoke（電子レンジの扉）／Uninterruptible power supply（3つの方式）／Failure rate（MTBF＝1/λ）／Bathtub curve</dd>
+    <dt>参照リンク</dt><dd>各ページのリンク先は、<a class="src" href="https://e-words.jp/">IT用語辞典 e-Words</a>、<a class="src" href="https://www.ap-siken.com/keyword/">応用情報技術者試験.com（用語集・過去問解説）</a>。</dd>
+    <dt>イラスト</dt><dd>Microsoft Fluent Emoji（MIT License。全文は tools/slides/img/sys/LICENSE-fluentui-emoji.txt）／いらすとや（https://www.irasutoya.com/）</dd>
+    <dt>作成</dt><dd>上の資料を読んでClaudeがまとめた。解説・例題・図はClaudeが自分の言葉と計算で作ったもので、IPA の公式解説ではない。ほかのサイトの解説文は写していない。サイトの用語集（211語）と問題演習（104問）も同じ資料をもとにしている。</dd>
+    <dt>読めなかった資料</dt><dd>Cloudflare の CDN 解説ページはサイトに接続を断られたため、Wikipedia の該当項目で確かめた。RAID の原論文の PDF は取得できなかったため、カリフォルニア大学バークレー校の技術報告の書誌ページ（概要）で確かめた。IPA「非機能要求グレード」は PDF の表が大きく、今回は使っていない。</dd>
+  </dl>
+</section>
+
