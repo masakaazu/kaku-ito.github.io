@@ -7,8 +7,14 @@
   台本の形
     { title, field, fieldName, intro,
       chapters: [ { title, quiz: "問題ID", slides: [ { page, image, lines: [ { t: 字幕, say: 読み上げ（省略時は t）, box: [x, y, w, h]（%） } ] } ] } ] }
+    掛け合いにするときは、さらに
+      credit: 音声・イラストのクレジット,
+      cast: { z: { name, side: "left"|"right", faces: { normal: 画像, … } }, … },
+      各 line に who（cast のキー）、face、audio（前もって作った音声ファイル）、dur（秒）,
+      各 chapter に quizVoice: { q, ok, ng, ex }（それぞれ { who, face, audio, dur }）
 
-  - 読み上げは端末の日本語の声（Web Speech API）を使う。声がない端末では、字幕を時間で進める
+  - audio がある文は、その音声を流す（ずんだもん・四国めたんの声は VOICEVOX で前もって作る）
+  - audio がない文は、端末の日本語の声（Web Speech API）で読む。声がない端末では、字幕を時間で進める
   - 話している場所を枠で光らせ、少しズームする（ズームは切り替えられる）
   - 章の終わりに、用語集の問題演習から確認問題を1問出し、回答記録に送る
   - 見ていた場所は端末に保存し、次に開いたときに続きから再生できる
@@ -125,10 +131,87 @@
     synth.speak(u);
   };
 
+  // 前もって作った音声を流す。読み込めないときは端末の声に切り替える
+  const audio = typeof Audio === "function" ? new Audio() : null;
+  const warm = typeof Audio === "function" ? new Audio() : null;
+  if (audio) audio.preload = "auto";
+  if (warm) warm.preload = "auto";
+  const base = new URL(main.dataset.script, location.href);
+  const audioUrl = (file) => new URL(file, base).href;
+
+  const playFile = (file, text, done) => {
+    if (!audio || !file) return speak(text, done);
+    const token = state.token;
+    let ended = false;
+    const finish = () => {
+      if (ended || token !== state.token) return;
+      ended = true;
+      done();
+    };
+    audio.onended = finish;
+    audio.onerror = () => {
+      if (token === state.token && !ended) speak(text, done);
+    };
+    audio.src = audioUrl(file);
+    audio.playbackRate = prefs.rate;
+    audio.preservesPitch = true;
+    audio.webkitPreservesPitch = true;
+    const p = audio.play();
+    if (p && p.catch)
+      p.catch((e) => {
+        // 自動再生が止められたときは、一時停止の状態に戻して、もう一度押してもらう
+        if (token !== state.token) return;
+        if (e && e.name === "NotAllowedError") pause();
+        else if (!ended) speak(text, done);
+      });
+  };
+
+  const prefetch = (file) => {
+    if (warm && file) warm.src = audioUrl(file);
+  };
+
   const silence = () => {
     state.token += 1;
     clearTimeout(state.timer);
     if (synth) synth.cancel();
+    if (audio) {
+      audio.onended = null;
+      audio.onerror = null;
+      audio.pause();
+    }
+  };
+
+  /* ---------- 話している人 ---------- */
+
+  const castHtml = (k) => {
+    const c = script.cast[k];
+    return `<figure class="video-cast is-${c.side === "right" ? "right" : "left"}" data-cast="${escapeHtml(k)}">
+      <img src="${escapeHtml(audioUrl(c.faces.normal))}" alt="${escapeHtml(c.name)}">
+      <figcaption>${escapeHtml(c.name)}</figcaption>
+    </figure>`;
+  };
+
+  const setSpeaker = (who, face) => {
+    if (!script.cast) return;
+    main.querySelectorAll("[data-cast]").forEach((el) => {
+      const k = el.dataset.cast;
+      const on = k === who;
+      el.classList.toggle("is-speaking", on);
+      if (on) {
+        const faces = script.cast[k].faces;
+        const src = audioUrl(faces[face] || faces.normal);
+        const img = el.querySelector("img");
+        if (img.src !== src) img.src = src;
+        // 話しはじめに小さく跳ねる
+        el.classList.remove("is-hop");
+        void el.offsetWidth;
+        el.classList.add("is-hop");
+      }
+    });
+    const cap = main.querySelector("[data-caption]");
+    cap.dataset.who = who || "";
+    const c = who && script.cast[who];
+    cap.classList.toggle("is-right", Boolean(c && c.side === "right"));
   };
 
   /* ---------- 画面 ---------- */
@@ -149,7 +232,13 @@
           <button type="button" class="video-big-play" data-big-play aria-label="再生">▶</button>
           <div class="video-quiz" data-quiz hidden></div>
         </div>
-        <p class="video-caption" data-caption aria-live="polite"></p>
+        ${script.cast
+          ? `<div class="video-talk">
+              ${Object.keys(script.cast).filter((k) => script.cast[k].side !== "right").map(castHtml).join("")}
+              <div class="video-bubble"><p class="video-speaker" data-speaker></p><p class="video-caption" data-caption aria-live="polite"></p></div>
+              ${Object.keys(script.cast).filter((k) => script.cast[k].side === "right").map(castHtml).join("")}
+            </div>`
+          : `<p class="video-caption" data-caption aria-live="polite"></p>`}
         <div class="video-progress" data-progress role="slider" aria-label="再生位置" tabindex="0"><span data-progress-bar></span></div>
         <div class="video-controls">
           <button type="button" class="video-btn" data-prev aria-label="前の文へ">⏮</button>
@@ -160,7 +249,7 @@
           <label class="video-opt">速さ
             <select data-rate>${[0.8, 1.0, 1.1, 1.25, 1.5, 1.75].map((r) => `<option value="${r}" ${r === prefs.rate ? "selected" : ""}>${r}×</option>`).join("")}</select>
           </label>
-          <label class="video-opt">声 <select data-voice></select></label>
+          ${hasAudio() ? "" : `<label class="video-opt">声 <select data-voice></select></label>`}
           <label class="video-opt"><input type="checkbox" data-zoom-check ${prefs.zoom ? "checked" : ""}>ズーム</label>
           <button type="button" class="video-btn" data-full aria-label="全画面">⛶</button>
         </div>
@@ -170,7 +259,12 @@
         <ol data-chapters>${script.chapters
           .map((ch, ci) => `<li><button type="button" data-chapter="${ci}"><span>${escapeHtml(ch.title)}</span><small>${ch.slides.length}ページ${ch.quiz ? "・確認問題1問" : ""}</small></button></li>`)
           .join("")}</ol>
-        <p class="video-note">読み上げは、この端末に入っている日本語の声を使います。声が出ないときは、端末の消音を切るか、声を選び直してください。キーボードでは、スペースで再生と一時停止、左右の矢印で前後の文へ移れます。</p>
+        <p class="video-note">${
+          hasAudio()
+            ? "声が出ないときは、端末の消音（マナーモード）を切ってください。"
+            : "読み上げは、この端末に入っている日本語の声を使います。声が出ないときは、端末の消音を切るか、声を選び直してください。"
+        }キーボードでは、スペースで再生と一時停止、左右の矢印で前後の文へ移れます。</p>
+        ${script.credit ? `<p class="video-note video-credit">${escapeHtml(script.credit)}</p>` : ""}
         <p class="video-note"><a href="../terms/${String(script.field).padStart(2, "0")}.html">この分野の用語集（PDF・一覧・カード・クイズ）を開く</a></p>
       </section>`;
 
@@ -182,9 +276,12 @@
     $("[data-rate]").addEventListener("change", (e) => {
       prefs.rate = Number(e.target.value);
       save("video:prefs", prefs);
-      if (state.playing) jump(state.index);
+      // 音声ファイルは流したまま速さだけ変える
+      if (audio && !audio.paused) audio.playbackRate = prefs.rate;
+      else if (state.playing) jump(state.index);
+      show();
     });
-    $("[data-voice]").addEventListener("change", (e) => {
+    if ($("[data-voice]")) $("[data-voice]").addEventListener("change", (e) => {
       prefs.voice = e.target.value;
       save("video:prefs", prefs);
       if (state.playing) jump(state.index);
@@ -246,7 +343,12 @@
   };
 
   const chapterLength = () => steps.length;
-  const lineTimes = () => steps.map((s) => (s.kind === "line" ? (s.line.say || s.line.t).length / 7.5 : 20));
+  const hasAudio = () => script.chapters.some((ch) => ch.slides.some((sl) => sl.lines.some((l) => l.audio)));
+  const lineTimes = () =>
+    steps.map((s) => {
+      if (s.kind !== "line") return 20;
+      return s.line.dur ? s.line.dur + 0.3 : (s.line.say || s.line.t).length / 7.5;
+    });
   const clock = (sec) => `${Math.floor(sec / 60)}:${String(Math.round(sec % 60)).padStart(2, "0")}`;
 
   const show = () => {
@@ -270,10 +372,15 @@
       zoomTo(step.line.box);
       quiz.hidden = true;
       $("[data-caption]").textContent = step.line.t;
+      setSpeaker(step.line.who, step.line.face);
+      if ($("[data-speaker]")) $("[data-speaker]").textContent = step.line.who ? script.cast[step.line.who].name : "";
     } else {
       box.hidden = true;
       zoomTo(null);
       $("[data-caption]").textContent = `${script.chapters[step.ci].title}の確認問題`;
+      const qv = script.chapters[step.ci].quizVoice;
+      if (qv) setSpeaker(qv.q.who, qv.q.face);
+      if ($("[data-speaker]")) $("[data-speaker]").textContent = qv ? script.cast[qv.q.who].name : "";
     }
     const times = lineTimes();
     const done = times.slice(0, state.index).reduce((a, b) => a + b, 0) / prefs.rate;
@@ -303,7 +410,9 @@
     }
     show();
     if (step.kind === "quiz") return showQuiz(step);
-    speak(step.line.say || step.line.t, () => {
+    const next = steps[state.index + 1];
+    if (next && next.kind === "line") prefetch(next.line.audio);
+    playFile(step.line.audio, step.line.say || step.line.t, () => {
       state.index += 1;
       // ページが変わるときは少し間を置く
       const next = steps[state.index];
@@ -348,7 +457,16 @@
         <div class="video-quiz-choices">${q.choices.map((c, i) => `<button type="button" data-a="${i}">${KANA[i]}　${escapeHtml(c)}</button>`).join("")}</div>
         <div data-feedback></div>
       </div>`;
-    speak(`ここで確認問題です。${q.text}`, () => {});
+    const qv = script.chapters[step.ci].quizVoice;
+    const say = (v, text, done = () => {}) => {
+      if (v) {
+        setSpeaker(v.who, v.face);
+        const sp = main.querySelector("[data-speaker]");
+        if (sp) sp.textContent = script.cast[v.who].name;
+      }
+      playFile(v && v.audio, text, done);
+    };
+    say(qv && qv.q, `ここで確認問題です。${q.text}`);
     box.querySelectorAll("[data-a]").forEach((b) =>
       b.addEventListener("click", () => {
         if (box.querySelector(".is-correct")) return;
@@ -366,7 +484,13 @@
           <p class="video-quiz-explain">${escapeHtml(q.explain)}</p>
           ${q.source ? `<p class="video-quiz-source">出典：${escapeHtml(q.source)}</p>` : ""}
           <button type="button" class="video-quiz-next" data-continue>続きを再生 →</button>`;
-        speak(`${ok ? "正解です。" : `残念、正解は${KANA[q.answer]}です。`}${q.explain}`, () => {});
+        if (qv) {
+          main.querySelector("[data-caption]").textContent = ok ? "正解なのだ！" : `正解は${KANA[q.answer]}なのだ……`;
+          say(ok ? qv.ok : qv.ng, "", () => {
+            main.querySelector("[data-caption]").textContent = q.explain;
+            say(qv.ex, q.explain);
+          });
+        } else speak(`${ok ? "正解です。" : `残念、正解は${KANA[q.answer]}です。`}${q.explain}`, () => {});
         box.querySelector("[data-continue]").addEventListener("click", () => {
           box.hidden = true;
           state.index += 1;

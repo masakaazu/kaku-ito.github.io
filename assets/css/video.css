@@ -355,7 +355,107 @@ body {
   font-size: var(--theme-size-small);
 }
 
+/* ---------- 掛け合い（左右にキャラ、まん中に吹き出し） ---------- */
+
+.video-talk {
+  display: grid;
+  grid-template-columns: clamp(64px, 12vw, 120px) 1fr clamp(64px, 12vw, 120px);
+  align-items: end;
+  gap: clamp(6px, 1.5vw, 16px);
+  padding: 12px clamp(10px, 2.5vw, 24px) 6px;
+}
+
+.video-cast {
+  margin: 0;
+  text-align: center;
+  opacity: 0.42;
+  filter: saturate(0.5);
+  transform-origin: 50% 100%;
+  transition: opacity 0.3s, filter 0.3s;
+}
+
+.video-cast img {
+  display: block;
+  width: 100%;
+  height: clamp(96px, 17vw, 170px);
+  object-fit: contain;
+  object-position: 50% 100%;
+}
+
+.video-cast figcaption {
+  margin-top: 2px;
+  color: var(--theme-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.video-cast.is-speaking {
+  opacity: 1;
+  filter: none;
+}
+
+.video-cast.is-hop {
+  animation: video-hop 0.35s var(--theme-ease);
+}
+
+@keyframes video-hop {
+  40% {
+    transform: translateY(-6%);
+  }
+}
+
+.video-bubble {
+  position: relative;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 5.4em;
+  padding: 10px clamp(12px, 2vw, 20px);
+  border-radius: var(--theme-radius);
+  background: #fff;
+  box-shadow: inset 0 0 0 2px var(--who, var(--theme-line-soft));
+  transition: box-shadow 0.3s;
+}
+
+.video-bubble:has([data-who="z"]) {
+  --who: #5fb83a;
+}
+
+.video-bubble:has([data-who="m"]) {
+  --who: #d4589c;
+}
+
+.video-speaker {
+  margin: 0;
+  color: var(--who, var(--theme-muted));
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.video-bubble .video-caption {
+  min-height: 0;
+  padding: 2px 0 0;
+}
+
+.video-credit {
+  font-size: 0.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .video-cast.is-hop {
+    animation: none;
+  }
+}
+
 @media (max-width: 600px) {
+  .video-talk {
+    padding-top: 8px;
+  }
+  .video-bubble .video-caption {
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
   .video-quiz {
     position: static;
     padding: 16px;
