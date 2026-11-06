@@ -314,7 +314,7 @@
       label: label ?? site.types[m.type].label,
       title: m.title,
       desc: m.desc,
-      rateKey: m.type === "note" ? "" : m.path,
+      rateKey: m.type === "note" || m.type === "video" ? "" : m.path,
     });
 
   const examText = (info) =>
