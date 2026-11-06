@@ -1,0 +1,369 @@
+/*
+  解説動画プレーヤー（video.js と組み合わせて使う）。色・書体などの値は theme.css で決める。
+*/
+@import url("components.css");
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--theme-bg);
+  color: var(--theme-text);
+  font-family: var(--theme-font-body);
+  font-size: var(--theme-size-body);
+  line-height: var(--theme-line-height);
+}
+
+.video {
+  width: min(1040px, calc(100% - var(--theme-gutter) * 2));
+  margin: 0 auto;
+  padding: clamp(32px, 6vw, 72px) 0 80px;
+}
+
+.video a {
+  color: var(--theme-link);
+  text-decoration: none;
+}
+
+.video-kicker {
+  margin: 0;
+  color: var(--theme-muted);
+  font-size: var(--theme-size-small);
+  font-weight: 600;
+}
+
+.video-head h1 {
+  margin: 6px 0 0;
+  color: var(--theme-heading);
+  font-size: var(--theme-size-title);
+  line-height: 1.15;
+  letter-spacing: var(--theme-heading-tracking);
+}
+
+.video-lead {
+  margin: 12px 0 0;
+  color: var(--theme-muted);
+}
+
+/* ---------- プレーヤー ---------- */
+
+.video-player {
+  margin-top: 28px;
+  border-radius: var(--theme-radius-large);
+  background: var(--theme-bg-alt);
+  overflow: hidden;
+}
+
+.video-player:fullscreen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 0;
+}
+
+.video-stage {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #fff;
+}
+
+.video-zoom {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 50%;
+  transition: transform 0.9s var(--theme-ease);
+}
+
+.video-slide {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 0.5s var(--theme-ease);
+}
+
+.video-slide.is-in {
+  opacity: 1;
+}
+
+/* 話している場所：まわりを少し暗くして、枠で囲む */
+.video-box {
+  position: absolute;
+  border: 3px solid var(--theme-mark-orange);
+  border-radius: 10px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+  transition: left 0.6s var(--theme-ease), top 0.6s var(--theme-ease), width 0.6s var(--theme-ease), height 0.6s var(--theme-ease);
+}
+
+.video-big-play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 84px;
+  height: 84px;
+  margin: -42px 0 0 -42px;
+  border: 0;
+  border-radius: 50%;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.55);
+  font-size: 34px;
+  cursor: pointer;
+}
+
+.video-big-play[hidden] {
+  display: none;
+}
+
+.video-caption {
+  min-height: 3.6em;
+  margin: 0;
+  padding: 14px clamp(16px, 3vw, 28px) 10px;
+  color: var(--theme-heading);
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.video-progress {
+  height: 6px;
+  margin: 0 clamp(16px, 3vw, 28px);
+  border-radius: var(--theme-radius-pill);
+  background: var(--theme-line-soft);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.video-progress span {
+  display: block;
+  height: 100%;
+  background: var(--theme-accent);
+  transition: width 0.3s;
+}
+
+.video-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 12px clamp(12px, 3vw, 24px) 16px;
+}
+
+.video-btn {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  color: var(--theme-heading);
+  background: var(--theme-bg);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.video-btn.is-main {
+  width: 48px;
+  height: 48px;
+  color: var(--theme-on-accent);
+  background: var(--theme-accent);
+}
+
+.video-time {
+  color: var(--theme-muted);
+  font-size: var(--theme-size-small);
+  font-variant-numeric: tabular-nums;
+}
+
+.video-spacer {
+  flex: 1;
+}
+
+.video-opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--theme-muted);
+  font-size: var(--theme-size-small);
+}
+
+.video-opt select {
+  max-width: 150px;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: var(--theme-radius-small);
+  color: var(--theme-heading);
+  background: var(--theme-bg);
+  font: inherit;
+}
+
+.video-opt input {
+  accent-color: var(--theme-accent);
+}
+
+/* ---------- 確認問題（スライドの上に重ねる） ---------- */
+
+.video-quiz {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3%;
+  background: var(--theme-bg-alt);
+  overflow-y: auto;
+}
+
+.video-quiz[hidden] {
+  display: none;
+}
+
+.video-quiz-card {
+  width: min(760px, 100%);
+  max-height: 100%;
+}
+
+.video-quiz-kicker {
+  margin: 0;
+  color: var(--theme-accent);
+  font-size: var(--theme-size-small);
+  font-weight: 700;
+}
+
+.video-quiz-q {
+  margin: 6px 0 12px;
+  color: var(--theme-heading);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.video-quiz-choices {
+  display: grid;
+  gap: 8px;
+}
+
+.video-quiz-choices button {
+  padding: 10px 14px;
+  border: 0;
+  border-radius: var(--theme-radius-small);
+  color: var(--theme-heading);
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--theme-line-soft);
+  font: inherit;
+  font-size: var(--theme-size-small);
+  text-align: left;
+  cursor: pointer;
+}
+
+.video-quiz-choices button.is-correct {
+  color: var(--theme-good);
+  background: var(--theme-good-bg);
+  box-shadow: inset 0 0 0 2px var(--theme-good);
+}
+
+.video-quiz-choices button.is-wrong {
+  color: var(--theme-bad);
+  background: var(--theme-bad-bg);
+  box-shadow: inset 0 0 0 2px var(--theme-bad);
+}
+
+.video-quiz-verdict {
+  margin: 12px 0 0;
+  font-weight: 700;
+}
+
+.video-quiz-verdict.is-ok {
+  color: var(--theme-good);
+}
+
+.video-quiz-verdict.is-ng {
+  color: var(--theme-bad);
+}
+
+.video-quiz-explain,
+.video-quiz-source {
+  margin: 4px 0 0;
+  font-size: var(--theme-size-small);
+}
+
+.video-quiz-source {
+  color: var(--theme-muted);
+}
+
+.video-quiz-next {
+  margin-top: 10px;
+  padding: 8px 18px;
+  border: 0;
+  border-radius: var(--theme-radius-pill);
+  color: var(--theme-on-accent);
+  background: var(--theme-accent);
+  font: inherit;
+  cursor: pointer;
+}
+
+/* ---------- 章 ---------- */
+
+.video-chapters {
+  margin-top: 32px;
+}
+
+.video-chapters h2 {
+  margin: 0 0 12px;
+  color: var(--theme-heading);
+  font-size: 1.25rem;
+}
+
+.video-chapters ol {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.video-chapters button {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  width: 100%;
+  padding: 14px 18px;
+  border: 0;
+  border-radius: var(--theme-radius);
+  color: var(--theme-heading);
+  background: var(--theme-bg-alt);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.video-chapters button.is-here {
+  box-shadow: inset 0 0 0 2px var(--theme-accent);
+}
+
+.video-chapters small {
+  color: var(--theme-muted);
+  font-weight: 400;
+}
+
+.video-note {
+  margin: 12px 0 0;
+  color: var(--theme-muted);
+  font-size: var(--theme-size-small);
+}
+
+@media (max-width: 600px) {
+  .video-quiz {
+    position: static;
+    padding: 16px;
+  }
+  .video-stage:has(.video-quiz:not([hidden])) {
+    aspect-ratio: auto;
+  }
+  .video-stage:has(.video-quiz:not([hidden])) .video-zoom {
+    display: none;
+  }
+}
