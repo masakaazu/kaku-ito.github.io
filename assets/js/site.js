@@ -128,6 +128,7 @@
       add(`${topic}/index.html`, info.short, "index.html");
       site.fields.forEach((field) => add(fieldPath(topic, field.no), fieldLabel(field), `${topic}/index.html`));
       add(`${topic}/notes/index.html`, "ノート一覧", `${topic}/index.html`);
+      if (topic === "ap") add(`${topic}/exam.html`, "午前の模擬試験", `${topic}/index.html`);
 
       if (info.days) {
         add(`${topic}/review/index.html`, "日別復習", `${topic}/index.html`);
