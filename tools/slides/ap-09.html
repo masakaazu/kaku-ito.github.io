@@ -78,6 +78,18 @@ table.vs td { font-size: 13.5px; padding: 9px 8px; }
 .big { font-size: 15px; line-height: 1.7; }
 .chapter p { max-width: 500px; line-height: 1.7; }
 svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
 /* 参照元リンク（tools/slides/addrefs.py が付ける） */
 a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
 a.ref.q, a.src { color: var(--blue, #0071e3); }
@@ -91,7 +103,7 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 <section class="slide title">
   <div class="k">応用情報技術者試験　テクノロジ系　#9</div>
   <h1>データベース</h1>
-  <p>用語集まとめ ― 過去問10回分（令和3〜7年度）とシラバスの用語例から</p>
+  <p>用語集まとめ ― 過去問33回分（平成21〜令和7年度）を読み込んだ参考書版</p>
   <div class="icons"><img src="img/db/file_cabinet_flat.svg" alt=""><img src="img/db/card_index_dividers_flat.svg" alt=""><img src="img/db/old_key_flat.svg" alt=""><img src="img/db/magnifying_glass_tilted_left_flat.svg" alt=""><img src="img/db/locked_flat.svg" alt=""><img src="img/db/globe_with_meridians_flat.svg" alt=""></div>
   <div class="refs-legend">点線の下線の用語・青い過去問番号・各ページ下の「詳しく：」を押すと、参照元のサイト（e-Words／応用情報技術者試験.com）で詳しい解説が開く</div>
 </section>
@@ -140,6 +152,40 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   </div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-2/">応用情報.com 用語集 9-2 データベース設計</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/9/9-4/">応用情報.com 用語集 9-4 トランザクション処理</a></div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/ui/bar_chart_flat.svg" alt="">17年・159問で見ると、トランザクションと設計が二本柱</h1>
+  <div class="cols" style="grid-template-columns:1fr 1fr;gap:24px">
+    <div>
+      <svg width="420" height="160" viewBox="0 0 420 160">
+        <g font-size="12" fill="#1d1d1f" text-anchor="end">
+          <text x="150" y="20">4 トランザクション処理</text><text x="150" y="50">2 データベース設計</text><text x="150" y="80">3 データ操作（SQL）</text><text x="150" y="110">5 データベース応用</text><text x="150" y="140">1 データベース方式</text>
+        </g>
+        <g fill="#1f3a68"><rect x="158" y="8" width="200" height="18" rx="3"/><rect x="158" y="38" width="180" height="18" rx="3"/><rect x="158" y="68" width="160" height="18" rx="3"/></g>
+        <g fill="#5b80bf"><rect x="158" y="98" width="68" height="18" rx="3"/><rect x="158" y="128" width="28" height="18" rx="3"/></g>
+        <g font-size="11.5" fill="#1f3a68" font-weight="700"><text x="364" y="21">50問</text><text x="344" y="51">45問</text><text x="324" y="81">40問</text><text x="232" y="111">17問</text><text x="192" y="141">7問</text></g>
+      </svg>
+      <div style="font-size:11px;color:#6e6e73">平成21年度春期〜令和7年度秋期の33回、この分野の159問を章ごとに数えた（同じ問題も1問ずつ）。毎回4〜5問出る、午前で最も問題数の多い分野の1つ</div>
+      <div class="point">令和は「NoSQL・<a class="ref" href="https://e-words.jp/w/%E3%83%87%E3%83%BC%E3%82%BF%E3%83%AC%E3%82%A4%E3%82%AF.html">データレイク</a>」など新しい言葉も出るが、平成まで見ると<b>正規化・<a class="ref" href="https://e-words.jp/w/SQL.html">SQL</a>・ロック・障害回復</b>が毎回のように出ている。</div>
+    </div>
+    <div>
+      <div class="cap">何度も出た問題（平成21〜令和7年度）</div>
+      <table class="mini">
+        <tr><th style="width:56%">論点</th><th>出た回数</th></tr>
+        <tr><td>B+木<a class="ref" href="https://e-words.jp/w/%E3%82%A4%E3%83%B3%E3%83%87%E3%83%83%E3%82%AF%E3%82%B9.html">インデックス</a>で速くなる検索（範囲検索）</td><td><b>4回</b>（H23秋・H27春・H29春・H30秋）</td></tr>
+        <tr><td><a class="ref" href="https://www.ap-siken.com/keyword/9/9-1/#0e08943ff402505077f8cf76d1026b1cd4108d50">関係</a>RとSから関係Xを求める演算</td><td><b>3回</b>（H25秋・H30春・R3秋）</td></tr>
+        <tr><td>第1〜第3正規形と特徴の組合せ</td><td><b>3回</b>（H24春・H30秋・R4春）</td></tr>
+        <tr><td>GRANT文の説明</td><td><b>3回</b>（H23秋・H26秋・R2）</td></tr>
+        <tr><td>媒体障害の回復法</td><td><b>2回</b>（H24春・R1秋）ほか似た問題が多数</td></tr>
+        <tr><td>UNION ALL の結果・<a class="ref" href="https://www.ap-siken.com/keyword/9/9-3/#629369eadf6dbb7e5f1900a3d284a7d0ebdf8449">CASCADE</a>・受注明細の正規形</td><td>各<b>2回</b></td></tr>
+      </table>
+      <div class="point">同じ問題がそのまま出る率が高い。<b>表を1行ずつ追う問題</b>は、手で解いた経験がそのまま効く。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 応用情報技術者試験 午前 過去問題（平成21年度春期〜令和7年度秋期）をClaudeが分類して数えた</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-3/">応用情報.com 用語集 9-3 データ操作</a></div>
+</section>
+
 
 <section class="slide chapter">
   <div class="hero-icons ira"><img src="img/irasutoya/server.png" alt=""><img src="img/irasutoya/datacenter.png" alt=""><img src="img/irasutoya/bookshelf.png" alt=""><img src="img/irasutoya/tree.png" alt=""></div>
@@ -342,6 +388,40 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/ui/busts_in_silhouette_flat.svg" alt="">多重度は条件文の「必ず」「〜こともある」「まとめて」で決める</h1>
+  <div class="cols" style="grid-template-columns:1fr 1fr;gap:24px">
+    <div>
+      <div class="cap">H26秋 問27：受注 ─ a ─── b ─ 出荷</div>
+      <svg width="420" height="66" viewBox="0 0 420 66">
+        <g fill="#c9daf2" stroke="#1f3a68" stroke-width="1.5"><rect x="10" y="16" width="80" height="32" rx="4"/><rect x="330" y="16" width="80" height="32" rx="4"/></g>
+        <path d="M90,32H330" stroke="#1f3a68" stroke-width="1.5"/>
+        <g font-size="13" font-weight="700" text-anchor="middle"><text x="50" y="37" fill="#1f3a68">受注</text><text x="370" y="37" fill="#1f3a68">出荷</text><text x="112" y="26" fill="#b25000">1..*</text><text x="306" y="26" fill="#b25000">0..1</text></g>
+        <g font-size="10.5" fill="#6e6e73"><text x="100" y="60">出荷1件に受注は1つ以上</text><text x="250" y="60">受注1件の出荷は0か1</text></g>
+      </svg>
+      <div class="point" style="margin-top:4px">「顧客ごとに<b>まとめて</b>月末に出荷」→ 出荷1件に受注が複数。「出荷は<b>実績で</b>登録」→ まだ出荷していない受注がある（ウ）。</div>
+      <div class="cap" style="margin-top:8px">H27秋 問27・H30秋 問26：社員 ─ a ─── b ─ 年（入社年）</div>
+      <table class="mini">
+        <tr><td style="width:46%">「全ての社員は入社年を特定できる」</td><td>社員から見た年はちょうど1つ → b＝<b>1..1</b></td></tr>
+        <tr><td>「社員が入社しない年もある」</td><td>年から見た社員は0人以上 → a＝<b>0..*</b>（イ）</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">図から読む問題は「相手側の端の数字」を読む</div>
+      <table class="mini">
+        <tr><th style="width:40%">図</th><th>読み取り</th></tr>
+        <tr><td>部署 <b>1..*</b> ── <b>0..*</b> 従業員（H21春 問32）</td><td>従業員は1つ以上の部署に所属（複数も可）。従業員のいない部署もよい（ウ）</td></tr>
+        <tr><td>部門 <b>1</b> ── <b>*</b> 社員（H26春 問26）</td><td>社員は必ず1つの部門に所属。どこにも属さない社員は登録できない（ウ）</td></tr>
+        <tr><td>注文 * ── <b>1</b> 商品（H29春 問26）</td><td>注文1件の商品は1つだけ。2つの商品にリンクした注文は誤り（ア）</td></tr>
+      </table>
+      <div class="point">「1」は<b>ちょうど1つ</b>で、0も2も許さない。迷ったら「0になる場面はあるか」「2以上になる場面はあるか」を順に考える。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成26年度秋期 午前 問27・平成27年度秋期 午前 問27（平成30年度秋期 問26も同じ）・平成21年度春期 午前 問32・平成26年度春期 午前 問26・平成29年度春期 午前 問26（図を文字で書き直した）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-2/">応用情報.com 用語集 9-2 データベース設計</a></div>
+</section>
+
+
+<section class="slide">
   <h1><img class="ico" src="img/db/old_key_flat.svg" alt="">キーは包含関係で覚える。外部キーだけは「他の表を参照する」もの</h1>
   <div class="cols">
     <div><svg width="420" height="200" viewBox="0 0 420 200">
@@ -376,6 +456,43 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/ui/magnifying_glass_tilted_left_flat.svg" alt="">候補キーは「矢印をたどって全部の属性に届く最小の組」</h1>
+  <div class="cols" style="grid-template-columns:1fr 1fr;gap:24px">
+    <div>
+      <div class="cap">H27秋 問28：R(A,B,C,D,E,F) の候補キー</div>
+      <div class="formula" style="font-size:13.5px;text-align:left">関数従属：A→B，A→F，B→C，C→D，{B,C}→E，{C,F}→A</div>
+      <ol class="steps">
+        <li>選択肢の {B，F} から始める。手元＝{B，F}</li>
+        <li>B→C で C を足す。手元＝{B，C，F}</li>
+        <li>C→D、{B,C}→E で D・E を足す。手元＝{B，C，D，E，F}</li>
+        <li>{C,F}→A で A を足す。<b>A〜Fの全部に届いた</b> → 候補キー（ウ）</li>
+      </ol>
+      <div class="point">B だけ・{B，C}・{B，D，E} からは A と F に届かない。全部に届いても<b>余分な<a class="ref" href="https://www.ap-siken.com/keyword/9/9-1/#7d3c35c29be1de8ba8a6f6264e192a7af157dc29">属性</a>を含む組</b>（例：{A，C，E}）は候補キーではない（H26秋 問26）。</div>
+    </div>
+    <div>
+      <div class="cap">H24秋 問26：表から関数従属を読む</div>
+      <table class="mini" style="text-align:center">
+        <tr><th>A</th><th>B</th><th>C</th></tr>
+        <tr><td>300</td><td>阿部商店</td><td>3</td></tr>
+        <tr><td>400</td><td>鈴木商店</td><td>2</td></tr>
+        <tr><td>500</td><td>鈴木商店</td><td>1</td></tr>
+      </table>
+      <div style="font-size:11px;color:#6e6e73;margin:2px 0 6px">（実際は各行が2回ずつ、計6行）</div>
+      <table class="mini">
+        <tr><th style="width:30%">調べる向き</th><th>判定</th></tr>
+        <tr><td>A→B，A→C</td><td>Aが同じ行はB・Cも同じ → <b>成り立つ</b></td></tr>
+        <tr><td>C→A，C→B</td><td>Cが同じ行はA・Bも同じ → <b>成り立つ</b></td></tr>
+        <tr><td>B→A，B→C</td><td>鈴木商店でAが400と500 → <b>成り立たない</b></td></tr>
+      </table>
+      <div class="point">「Xが同じ行どうしで、Yが<b>1つでも違えば</b>不成立」。答えは A→B，A→C，C→A，C→B（ウ）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成27年度秋期 午前 問28・平成26年度秋期 午前 問26・平成24年度秋期 午前 問26（表を文字で書き直した）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-1/">応用情報.com 用語集 9-1 データベース方式</a></div>
+</section>
+
+
+<section class="slide">
   <h1><img class="ico" src="img/db/scissors_flat.svg" alt="">「親を消したら子も自動で消す」は ON DELETE CASCADE</h1>
   <div class="cols">
     <div><svg width="430" height="170" viewBox="0 0 430 170"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
@@ -405,6 +522,81 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/ui/check_mark_button_flat.svg" alt="">制約は5種類。UNIQUE はNULLどうしを重複とみなさない</h1>
+  <div class="cols" style="grid-template-columns:1.05fr .95fr;gap:24px">
+    <div>
+      <table class="mini">
+        <tr><th style="width:24%">制約</th><th style="width:30%"><a class="ref" href="https://e-words.jp/w/SQL.html">SQL</a>の書き方</th><th>何を守るか</th></tr>
+        <tr><td><b><a class="ref" href="https://e-words.jp/w/%E4%B8%BB%E3%82%AD%E3%83%BC.html">主キー</a>制約</b></td><td>PRIMARY KEY</td><td>重複なし＋<a class="ref" href="https://www.ap-siken.com/keyword/9/9-2/#eef19c54306daa69eda49c0272623bdb5e2b341f">NULL</a>なし</td></tr>
+        <tr><td><b><a class="ref" href="https://www.ap-siken.com/keyword/9/9-2/#be0fc6c6cabe24958a8c67b29e217e0457ba1b0a">一意性制約</a></b></td><td>UNIQUE</td><td>重複なし（NULLは可）（H24春 問29）</td></tr>
+        <tr><td><b><a class="ref" href="https://www.ap-siken.com/keyword/9/9-3/#382fddcb5b8807a2810f4a7b5ab7868e3c5dc51d">非NULL制約</a></b></td><td>NOT NULL</td><td>値が必ずある</td></tr>
+        <tr><td><b><a class="ref" href="https://www.ap-siken.com/keyword/9/9-3/#1f4876f4de1e9877cf290d25301b6cf4c260a9b5">検査制約</a></b></td><td>CHECK (条件)</td><td>値が条件を満たす（H27春 問28）</td></tr>
+        <tr><td><b><a class="ref" href="https://www.ap-siken.com/keyword/9/9-3/#2c4369301ee73107e426bf0781a2becd3f5d60dc">参照制約</a></b></td><td>FOREIGN KEY … REFERENCES</td><td>参照先に値がある（H26春 問25・H23特 問28）</td></tr>
+      </table>
+      <div class="point">DISTINCT はSELECTの結果から重複行を除く指定で、<b>制約ではない</b>。CREATE ASSERTION（表明）は複数の表にまたがる条件。</div>
+    </div>
+    <div>
+      <div class="cap">H24秋 問28：(A，B) に UNIQUE。違反するのは？</div>
+      <table class="mini" style="text-align:center">
+        <tr><th>A</th><th>B</th><th>C</th><th>D</th></tr>
+        <tr><td>AA01</td><td>BB01</td><td>CC01</td><td>DD01</td></tr>
+        <tr><td>AA01</td><td>BB02</td><td>CC02</td><td>NULL</td></tr>
+        <tr><td class="hl">AA02</td><td class="hl">BB01</td><td>NULL</td><td>DD03</td></tr>
+        <tr><td>AA02</td><td>BB03</td><td>NULL</td><td>NULL</td></tr>
+      </table>
+      <table class="mini" style="margin-top:6px">
+        <tr><th style="width:56%">SQL文</th><th>判定</th></tr>
+        <tr><td>(AA01, NULL, …) を追加</td><td>NULLは比べられない → OK</td></tr>
+        <tr><td>(NULL, NULL, …) を追加</td><td>同じく OK</td></tr>
+        <tr><td>A='AA01' を 'AA02' に更新</td><td>1行目が(AA02,BB01)になり<b>3行目と重複</b>（エ）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成24年度秋期 午前 問28・平成24年度春期 午前 問29・平成27年度春期 午前 問28・平成26年度春期 午前 問25・平成23年度特別 午前 問28（表を文字で書き直した）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-3/">応用情報.com 用語集 9-3 データ操作</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/9/9-2/">応用情報.com 用語集 9-2 データベース設計</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/ui/receipt_flat.svg" alt="">参照制約で止まるのは「親の削除」と「子の追加」</h1>
+  <div class="cols" style="grid-template-columns:.95fr 1.05fr;gap:24px">
+    <div>
+      <svg width="400" height="130" viewBox="0 0 400 130">
+        <g font-size="12" fill="#1d1d1f">
+          <rect x="10" y="20" width="150" height="70" rx="6" fill="#c9daf2" stroke="#1f3a68"/><text x="85" y="14" text-anchor="middle" font-weight="700" fill="#1f3a68">親：製品（参照される）</text>
+          <text x="22" y="44">P1 PC</text><text x="22" y="64">P2 テレビ</text><text x="22" y="84">P3 掃除機</text>
+          <rect x="240" y="20" width="150" height="70" rx="6" fill="#fde7cf" stroke="#b25000"/><text x="315" y="14" text-anchor="middle" font-weight="700" fill="#b25000">子：在庫（参照する）</text>
+          <text x="252" y="44">4/10 P2 120</text><text x="252" y="64">4/15 P1 100</text><text x="252" y="84">5/8 P3 70</text>
+        </g>
+        <path d="M240,58H166" stroke="#b25000" stroke-width="2" marker-end="url(#ah10)"/>
+        <defs><marker id="ah10" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" fill="#b25000"/></marker></defs>
+        <text x="200" y="112" font-size="11.5" fill="#6e6e73" text-anchor="middle">子の製品コード（外部キー）は、親に必ずある値</text>
+      </svg>
+      <table class="mini" style="text-align:center">
+        <tr><th></th><th>追加</th><th>削除</th></tr>
+        <tr><td>親（A表）</td><td>○</td><td><b>△</b>（参照されていると拒否）</td></tr>
+        <tr><td>子（B表）</td><td><b>△</b>（親にない値は拒否）</td><td>○</td></tr>
+      </table>
+      <div style="font-size:11.5px;color:#6e6e73;margin-top:2px">H30春 問28 の答え（ア）。H22秋 問32・H28春 問29 は「子への行追加」（ウ）</div>
+    </div>
+    <div>
+      <div class="cap">親を消すときの動きは、<a class="ref" href="https://e-words.jp/w/%E5%A4%96%E9%83%A8%E3%82%AD%E3%83%BC.html">外部キー</a>に指定する</div>
+      <table class="mini">
+        <tr><th style="width:30%">指定</th><th>親の行を消すと</th></tr>
+        <tr><td><b><a class="ref" href="https://www.ap-siken.com/keyword/9/9-3/#629369eadf6dbb7e5f1900a3d284a7d0ebdf8449">CASCADE</a></b></td><td>参照している子の行も一緒に消す（H25春 問30）</td></tr>
+        <tr><td>RESTRICT／NO ACTION</td><td>子から参照されていれば削除を拒否</td></tr>
+        <tr><td><a class="ref" href="https://www.ap-siken.com/keyword/21/21-3/#55c5d81017a30edf1e47ba1b78c377a5e5ebfd50">SET</a> <a class="ref" href="https://www.ap-siken.com/keyword/9/9-2/#eef19c54306daa69eda49c0272623bdb5e2b341f">NULL</a></td><td>子の外部キーをNULLにする</td></tr>
+      </table>
+      <div class="ex" style="margin-top:8px"><span class="lbl">H21春 問34</span>注文を消す → 注文明細も消す（<b>CASCADE</b>）。商品を消す → 明細が参照していれば<b>拒否</b>。マスタを消して過去の明細が消えるのは困る（イ）</div>
+      <div class="point"><a class="ref" href="https://www.ap-siken.com/keyword/9/9-3/#2c4369301ee73107e426bf0781a2becd3f5d60dc">参照制約</a>は「注文があれば、対応する商品は必ずある」ことを保証する（H21秋 問33 エ）。逆向き（商品があれば注文がある）は保証しない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成30年度春期 午前 問28・平成22年度秋期 午前 問32・平成25年度春期 午前 問30・平成21年度春期 午前 問34・平成21年度秋期 午前 問33（表を文字で書き直した）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-2/">応用情報.com 用語集 9-2 データベース設計</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/9/9-3/">応用情報.com 用語集 9-3 データ操作</a></div>
+</section>
+
+
+
+<section class="slide">
   <h1><img class="ico" src="img/db/puzzle_piece_flat.svg" alt="">正規化は「何で決まるか」を見て、決める側を主キーにした表へ分ける</h1>
   <div class="cols wide-r">
     <div><svg width="440" height="240" viewBox="0 0 440 240"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#5b80bf"/></marker></defs>
@@ -431,6 +623,36 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   </div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-2/">応用情報.com 用語集 9-2 データベース設計</a></div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/ui/ladder_flat.svg" alt="">正規形の判定は3段の質問。どこで「いいえ」になるかを見る</h1>
+  <div class="cols" style="grid-template-columns:.9fr 1.1fr;gap:24px">
+    <div>
+      <ol class="steps">
+        <li><b>繰返し項目はないか</b>（1マスに1つの値か）<br>いいえ → 非正規形</li>
+        <li><b><a class="ref" href="https://e-words.jp/w/%E4%B8%BB%E3%82%AD%E3%83%BC.html">主キー</a>の一部だけで決まる列はないか</b>（主キーが複数列のときだけ調べる）<br>いいえ → <a class="ref" href="https://e-words.jp/w/%E7%AC%AC1%E6%AD%A3%E8%A6%8F%E5%BD%A2.html">第1正規形</a>まで</li>
+        <li><b>主キー以外の列で決まる列はないか</b><br>いいえ → <a class="ref" href="https://e-words.jp/w/%E7%AC%AC2%E6%AD%A3%E8%A6%8F%E5%BD%A2.html">第2正規形</a>まで／はい → 第3正規形</li>
+      </ol>
+      <div class="ex" style="margin-top:8px"><span class="lbl">H26春 問27</span>（従業員番号，氏名，入社年，職位，職位手当）：主キーは1列なので2はOK。<b>職位→職位手当</b>があるので<b>第2正規形</b>（ア）</div>
+    </div>
+    <div>
+      <div class="ex"><span class="lbl">H22春 問32・H29春 問27</span>受注明細（<u>受注番号</u>，<u>明細番号</u>，商品コード，商品名，数量）→ 商品コード→商品名 があるので<b>第2正規形</b>（イ）</div>
+      <div class="cap" style="margin-top:8px">H28春 問27：a→b,c,d、b→c、{b,d}→e を第3正規形に</div>
+      <svg width="470" height="120" viewBox="0 0 470 120">
+        <g font-size="13" text-anchor="middle" font-weight="700">
+          <g fill="#c9daf2" stroke="#1f3a68" stroke-width="1.5"><rect x="10" y="10" width="150" height="30" rx="4"/><rect x="190" y="10" width="100" height="30" rx="4"/><rect x="320" y="10" width="140" height="30" rx="4"/></g>
+          <text x="85" y="30" fill="#1f3a68">a ｜ b ｜ d</text><text x="240" y="30" fill="#1f3a68">b ｜ c</text><text x="390" y="30" fill="#1f3a68">b ｜ d ｜ e</text>
+        </g>
+        <g font-size="11.5" fill="#1d1d1f"><text x="10" y="62">主キー a。c は b 経由で決まるので外す</text><text x="190" y="80">b→c を分けた表</text><text x="320" y="62">{b,d}→e を分けた表</text></g>
+        <g font-size="11.5" fill="#b25000" font-weight="700"><text x="10" y="108">答え（エ）。(a,b,c,d) を残すと b→c の推移的関数従属が残る</text></g>
+      </svg>
+      <div class="point">第3正規形の効果は「<b>冗長性がなくなり、整合性を保ちやすい</b>」（H29秋 問27 エ）。結合は増えるので処理効率が上がるわけではない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成26年度春期 午前 問27・平成22年度春期 午前 問32（平成29年度春期 問27も同じ）・平成28年度春期 午前 問27・平成29年度秋期 午前 問27（図や表を文字で書き直した）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-2/">応用情報.com 用語集 9-2 データベース設計</a></div>
+</section>
+
 
 <section class="slide">
   <h1><img class="ico" src="img/db/straight_ruler_flat.svg" alt="">表の設計を問う問題は「その情報を結び付ける列があるか」で解く</h1>
@@ -505,6 +727,34 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/ui/abacus_flat.svg" alt="">UNION は重複を1行に、UNION ALL は全部残す</h1>
+  <div class="cols" style="grid-template-columns:1.05fr .95fr;gap:24px">
+    <div>
+      <div class="cap">R2 問29・H26春 問28：東京在庫 UNION ALL 大阪在庫</div>
+      <div style="display:flex;gap:10px;align-items:flex-start;margin-top:6px">
+        <table class="mini" style="text-align:center;width:auto"><tr><th colspan="2">東京在庫</th></tr><tr><td>A001</td><td>50</td></tr><tr><td>B002</td><td>25</td></tr><tr><td class="hl">C003</td><td class="hl">35</td></tr></table>
+        <table class="mini" style="text-align:center;width:auto"><tr><th colspan="2">大阪在庫</th></tr><tr><td>B002</td><td>15</td></tr><tr><td class="hl">C003</td><td class="hl">35</td></tr><tr><td>D004</td><td>80</td></tr></table>
+        <table class="mini" style="width:auto"><tr><th>演算</th><th>行数</th></tr><tr><td>UNION ALL</td><td><b>6行</b>（エ）</td></tr><tr><td>UNION</td><td>5行（C003を1行に）</td></tr><tr><td>SUMで集計</td><td>4行（B002は40）</td></tr></table>
+      </div>
+      <div class="point">UNION は<b>行全体</b>が同じときだけ1行にまとめる。(B002,25) と (B002,15) は在庫数が違うので2行とも残る。</div>
+    </div>
+    <div>
+      <div class="cap">H25秋 問31：NOT IN を集合で読む</div>
+      <svg width="380" height="150" viewBox="0 0 380 150">
+        <g fill-opacity=".55" stroke="#1f3a68" stroke-width="1.5"><circle cx="190" cy="50" r="44" fill="#fff"/><circle cx="160" cy="98" r="44" fill="#5b80bf"/><circle cx="220" cy="98" r="44" fill="#5b80bf"/></g>
+        <circle cx="190" cy="50" r="44" fill="#fff" stroke="#1f3a68" stroke-width="1.5"/>
+        <g font-size="12" font-weight="700" text-anchor="middle" fill="#1f3a68"><text x="190" y="40">東京</text><text x="140" y="115">大阪</text><text x="240" y="115">名古屋</text></g>
+        <text x="10" y="20" font-size="11" fill="#6e6e73">塗った部分が結果</text>
+      </svg>
+      <div class="formula" style="font-size:13.5px">(大阪 − 東京) ∪ (名古屋 − 東京)<br>＝ (大阪 ∪ 名古屋) − 東京（イ）</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 令和2年度10月 午前 問29（平成26年度春期 問28も同じ）・平成25年度秋期 午前 問31（表を文字で書き直した。図はClaudeが描いた）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-3/">応用情報.com 用語集 9-3 データ操作</a></div>
+</section>
+
+
+<section class="slide">
   <h1><img class="ico" src="img/db/shuffle_tracks_button_flat.svg" alt="">横に並んだ列を縦に並べるには、SELECTを2つ作ってUNION</h1>
   <div class="cols">
     <div>
@@ -542,6 +792,73 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/ui/clipboard_flat.svg" alt="">SQLは書く順と動く順が違う。WHERE は行、HAVING はグループ</h1>
+  <div class="cols" style="grid-template-columns:.9fr 1.1fr;gap:24px">
+    <div>
+      <div class="cap">動く順（論理的な処理の順）</div>
+      <ol class="steps">
+        <li><b>FROM</b>：表を決める（結合もここ）</li>
+        <li><b>WHERE</b>：行を絞る（集計関数は使えない）</li>
+        <li><b>GROUP BY</b>：グループにまとめる</li>
+        <li><b>HAVING</b>：グループを絞る（AVG・SUMなどを使う）</li>
+        <li><b>SELECT</b>：列を選ぶ・計算する</li>
+        <li><b>ORDER BY</b>：並べ替える（先に書いた列が第1キー）</li>
+      </ol>
+      <div class="point">GROUP BY を使うとき、SELECT に書けるのは<b>GROUP BY の列と集計関数だけ</b>（H23特 問30、H22春 問33）。</div>
+    </div>
+    <div>
+      <div class="ex"><span class="lbl">H31春 問28</span>2018年度の平均点数が600点以上のクラス</div>
+      <pre style="margin:6px 0;background:#f5f5f7;border-radius:8px;padding:8px 12px;font-size:12px;line-height:1.55">SELECT クラス名, AVG(点数) FROM 試験結果
+  <b style="color:#1f3a68">WHERE</b> 受験年月日 BETWEEN '2018-04-01' AND '2019-03-31'
+  <b style="color:#1f3a68">GROUP BY</b> クラス名
+  <b style="color:#b25000">HAVING</b> AVG(点数) &gt;= 600            ← 答え（イ）</pre>
+      <table class="mini">
+        <tr><th style="width:44%">誤りの書き方</th><th>何がおかしいか</th></tr>
+        <tr><td>年度で絞らない</td><td>3年分の平均になる（ア）</td></tr>
+        <tr><td>HAVING 点数 &gt;= 600</td><td>グループの条件に1行の値は書けない（ウ）</td></tr>
+        <tr><td>WHERE 点数 &gt;= 600 で先に絞る</td><td>低い点の行が抜け、平均が高く出る（エ）</td></tr>
+      </table>
+      <div class="point">表Aを「部署コード順、同じ部署は社員コード順」にするのは <b>ORDER BY 部署コード, 社員コード</b>（H22春 問33 エ）。GROUP BY では並べ替えにならない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成31年度春期 午前 問28・平成23年度特別 午前 問30・平成22年度春期 午前 問33</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-3/">応用情報.com 用語集 9-3 データ操作</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/ui/input_numbers_flat.svg" alt="">副問合せが複数行を返すなら IN。「=」は1行だけ</h1>
+  <div class="cols" style="grid-template-columns:1fr 1fr;gap:24px">
+    <div>
+      <div class="ex"><span class="lbl">H27秋 問29</span>倉庫C003で在庫100以上の商品について、全倉庫の在庫合計を求める。WHERE の a は？</div>
+      <table class="mini" style="margin-top:6px">
+        <tr><th style="width:44%">a に入れる式</th><th>結果</th></tr>
+        <tr><td>商品コード = (<a class="ref" href="https://www.ap-siken.com/keyword/9/9-3/#082d845dca0fbe904a9e67fccd609938f222fb41">副問合せ</a>)</td><td>副問合せが複数行なので<b>エラー</b></td></tr>
+        <tr><td>商品コード = ALL (副問合せ)</td><td>全部の値と等しい行はない → <b>0件</b></td></tr>
+        <tr><td>商品コード <b>IN</b> (副問合せ)</td><td>一覧にある商品だけ → <b>正解</b>（ウ）</td></tr>
+        <tr><td>EXISTS (副問合せ)</td><td>外側と無<a class="ref" href="https://www.ap-siken.com/keyword/9/9-1/#0e08943ff402505077f8cf76d1026b1cd4108d50">関係</a>なので<b>常に真</b> → 全商品</td></tr>
+      </table>
+      <div class="point">EXISTS は、副問合せの中で<b>外側の表の列を使う</b>（<a class="ref" href="https://www.ap-siken.com/keyword/9/9-3/#ed5c6ec64679aa548bc0c03ce44715087a3c757c">相関副問合せ</a>）ときに意味を持つ。</div>
+    </div>
+    <div>
+      <div class="ex"><span class="lbl">H28秋 問29</span>審判は所属チームの対戦を担当できない。条件 a は？</div>
+      <pre style="margin:6px 0;background:#f5f5f7;border-radius:8px;padding:8px 12px;font-size:12px;line-height:1.55">FROM サッカーチーム A, サッカーチーム B, 審判 C
+WHERE A.チーム名 &lt; B.チーム名
+  AND <b style="color:#b25000">C.所属チーム名 NOT IN (A.チーム名, B.チーム名)</b></pre>
+      <table class="mini">
+        <tr><th style="width:44%">誤りの選択肢</th><th>何がおかしいか</th></tr>
+        <tr><td>A&lt;&gt;C … <b>OR</b> B&lt;&gt;C …</td><td>片方と違えば真。所属チームの審判が残る</td></tr>
+        <tr><td>EXISTS／NOT EXISTS（審判D）</td><td>Cと関係がない。全部残るか、全部消える</td></tr>
+      </table>
+      <div class="point">「AでもBでもない」は <b>NOT (C=A OR C=B)</b> ＝ <b>C&lt;&gt;A AND C&lt;&gt;B</b>（ド・モルガン）。OR にすると逆の意味になる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成27年度秋期 午前 問29・平成28年度秋期 午前 問29（表を文字で書き直した）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-3/">応用情報.com 用語集 9-3 データ操作</a></div>
+</section>
+
+
+
+<section class="slide">
   <h1><img class="ico" src="img/db/abacus_flat.svg" alt="">SQLの結果を数える問題は、副問合せの値を先に計算する</h1>
   <div class="cols">
     <div>
@@ -568,6 +885,41 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   </div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-3/">応用情報.com 用語集 9-3 データ操作</a></div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/ui/bullseye_flat.svg" alt="">NULLとの比較は「不明」。WHERE では真の行だけが残る</h1>
+  <div class="cols" style="grid-template-columns:.95fr 1.05fr;gap:24px">
+    <div>
+      <div class="cap">3値論理（真・偽・不明）</div>
+      <table class="mini" style="text-align:center">
+        <tr><th>式</th><th>結果</th></tr>
+        <tr><td><a class="ref" href="https://www.ap-siken.com/keyword/9/9-2/#eef19c54306daa69eda49c0272623bdb5e2b341f">NULL</a> = 1，NULL &lt; '2011-12-01'</td><td><b>不明</b></td></tr>
+        <tr><td>NULL LIKE '010%'</td><td><b>不明</b></td></tr>
+        <tr><td>NOT（不明）</td><td><b>不明</b>のまま</td></tr>
+        <tr><td>不明 AND 偽／不明 OR 真</td><td>偽／真</td></tr>
+        <tr><td>列 IS NULL</td><td>真か偽（NULLを調べる正しい書き方）</td></tr>
+      </table>
+      <div class="point">WHERE は<b>真</b>の行だけを残す。NULLの行は、条件を「NOT」で裏返しても選ばれない。</div>
+    </div>
+    <div>
+      <div class="ex"><span class="lbl">H23秋 問29</span>価格設定年月日 &lt; '2011-12-01' の行数</div>
+      <table class="mini" style="margin:4px 0 8px">
+        <tr><td>S001 2009-12-31 → 真</td><td>S002 2008-03-31 → 真</td></tr>
+        <tr><td>S003 NULL → <b>不明</b></td><td>S004 2011-12-01 → 偽（同じ日）</td></tr>
+      </table>
+      <div style="font-size:12.5px;margin-bottom:8px">→ <b>2行</b>（イ）</div>
+      <div class="ex"><span class="lbl">H27春 問26</span>電話番号 NOT LIKE '010%' の行数</div>
+      <table class="mini" style="margin-top:4px">
+        <tr><td>010-1234 → 偽</td><td>020-2345 → 真</td><td>NULL → <b>不明</b></td></tr>
+        <tr><td>030-3011 → 真</td><td>(010-4567) → 真（先頭は「(」）</td><td></td></tr>
+      </table>
+      <div style="font-size:12.5px;margin-top:6px">→ <b>3行</b>（ウ）。NULLの行を数えて4にしない</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成23年度秋期 午前 問29・平成27年度春期 午前 問26（表を文字で書き直した）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-2/">応用情報.com 用語集 9-2 データベース設計</a></div>
+</section>
+
 
 <section class="slide">
   <h1><img class="ico" src="img/db/link_flat.svg" alt="">在庫のない部品も残すなら外部結合。NULLはCOALESCEで0に</h1>
@@ -666,6 +1018,38 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-3/">応用情報.com 用語集 9-3 データ操作</a></div>
 </section>
 
+<section class="slide">
+  <h1><img class="ico" src="img/ui/memo_flat.svg" alt="">SQLの文は3種類。権限を与えるGRANTはDCL</h1>
+  <div class="cols" style="grid-template-columns:1fr 1fr;gap:24px">
+    <div>
+      <table class="mini">
+        <tr><th style="width:24%">種類</th><th style="width:36%">文</th><th>役目</th></tr>
+        <tr><td><b><a class="ref" href="https://e-words.jp/w/DDL.html">DDL</a></b>（定義）</td><td>CREATE・ALTER・DROP</td><td>表・ビュー・制約を作る</td></tr>
+        <tr><td><b><a class="ref" href="https://e-words.jp/w/DML.html">DML</a></b>（操作）</td><td>SELECT・INSERT・UPDATE・DELETE</td><td>データを読み書きする</td></tr>
+        <tr><td><b>DCL</b>（制御）</td><td>GRANT・REVOKE・COMMIT・ROLLBACK</td><td>権限と<a class="ref" href="https://e-words.jp/w/%E3%83%88%E3%83%A9%E3%83%B3%E3%82%B6%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3.html">トランザクション</a></td></tr>
+      </table>
+      <div class="ex" style="margin-top:8px"><span class="lbl">R2 問26・H26秋 問25・H23秋 問28</span>GRANT＝表の利用者に、<a class="ref" href="https://www.ap-siken.com/keyword/9/9-3/#3a34c044abe3e12eb8f2a6a6bb4663b0defb977d">問合せ</a>・更新・追加・削除などの<b>操作権限を与える</b>（エ）。H24春 問28・H31春 問27 も「特定の利用者だけに権限＝GRANT」</div>
+      <div class="point">誤りの選択肢：パスワードで接続を制限（認証）、ビューで行や列を制限（CREATE VIEW）、暗号化、CONNECT文、CREATE ASSERTION。</div>
+    </div>
+    <div>
+      <div class="cap">埋込み<a class="ref" href="https://e-words.jp/w/SQL.html">SQL</a>のカーソル（H25春 問29・H27春 問27）</div>
+      <pre style="margin:0;background:#f5f5f7;border-radius:0 0 8px 8px;padding:8px 12px;font-size:12px;line-height:1.55">DECLARE c1 <b style="color:#b25000">CURSOR</b> FOR SELECT …;  ← 結果の表を用意
+OPEN c1;
+FETCH c1 INTO :変数;   ← 1行ずつ親プログラムへ（繰り返す）
+CLOSE c1;</pre>
+      <table class="mini" style="margin-top:8px">
+        <tr><th style="width:30%">用語</th><th>中身</th></tr>
+        <tr><td><b>実表</b></td><td>実際にデータが格納されている表</td></tr>
+        <tr><td><b>導出表</b></td><td>実表への問合せ（選択・射影・結合など）で得られる表。1つの実表からも作れる（H23秋 問31・H28秋 問28）</td></tr>
+        <tr><td><b>ビュー</b></td><td>導出表に名前を付けて定義したもの</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 令和2年度10月 午前 問26・平成23年度秋期 午前 問28・平成24年度春期 午前 問28・平成25年度春期 午前 問29・平成23年度秋期 午前 問31・平成28年度秋期 午前 問28</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-3/">応用情報.com 用語集 9-3 データ操作</a></div>
+</section>
+
+
 <section class="slide chapter">
   <div class="hero-icons ira"><img src="img/irasutoya/padlock.png" alt=""><img src="img/irasutoya/queue.png" alt=""><img src="img/irasutoya/backup_hdd.png" alt=""><img src="img/irasutoya/blackout.png" alt=""></div>
   <div class="k">第4章</div>
@@ -738,6 +1122,41 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/ui/shuffle_tracks_button_flat.svg" alt="">デッドロックは待ちグラフの輪。輪を待つ人も永久に待つ</h1>
+  <div class="cols" style="grid-template-columns:1fr 1fr;gap:24px">
+    <div>
+      <div class="cap">H29秋 問29：永久待ちになる<a class="ref" href="https://e-words.jp/w/%E3%83%88%E3%83%A9%E3%83%B3%E3%82%B6%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3.html">トランザクション</a></div>
+      <svg width="420" height="150" viewBox="0 0 420 150">
+        <defs><marker id="ah11" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" fill="#1f3a68"/></marker></defs>
+        <g stroke="#1f3a68" stroke-width="1.6" marker-end="url(#ah11)">
+          <path d="M112,38L176,66"/><path d="M98,112L94,48"/><path d="M180,86L116,116"/><path d="M78,122L36,96"/><path d="M212,70L268,46"/><path d="M302,40L352,68"/><path d="M270,118L212,84"/><path d="M284,106L284,56"/>
+        </g>
+        <g font-size="14" font-weight="700" text-anchor="middle">
+          <g fill="#fde7cf" stroke="#b25000" stroke-width="1.5"><circle cx="100" cy="34" r="15"/><circle cx="94" cy="124" r="15"/><circle cx="196" cy="78" r="15"/><circle cx="284" cy="124" r="15"/></g>
+          <g fill="#fff" stroke="#86868b" stroke-width="1.5"><circle cx="24" cy="88" r="15"/><circle cx="284" cy="40" r="15"/><circle cx="368" cy="78" r="15"/></g>
+          <text x="100" y="39" fill="#b25000">B</text><text x="94" y="129" fill="#b25000">C</text><text x="196" y="83" fill="#b25000">D</text><text x="284" y="129" fill="#b25000">F</text><text x="24" y="93" fill="#6e6e73">A</text><text x="284" y="45" fill="#6e6e73">E</text><text x="368" y="83" fill="#6e6e73">G</text>
+        </g>
+      </svg>
+      <div class="point" style="margin-top:2px">B→D→C→B が<b>輪</b>。F は輪の中のDを待つので<b>Fも永久待ち</b>。E は G を待つが G は何も待っていない → いずれ進む。答え B，C，D，F（ウ）</div>
+    </div>
+    <div>
+      <div class="cap">H29春 問29：<a class="ref" href="https://e-words.jp/w/%E3%83%87%E3%83%83%E3%83%89%E3%83%AD%E3%83%83%E3%82%AF.html">デッドロック</a>になる時点</div>
+      <table class="mini">
+        <tr><th>順</th><th>トランザクションA</th><th>トランザクションB</th></tr>
+        <tr><td>③④</td><td>a を更新（a をロック）</td><td>b を更新（b をロック）</td></tr>
+        <tr><td>⑤</td><td>b を更新 → <b>Bの解除待ち</b></td><td></td></tr>
+        <tr><td>⑥</td><td></td><td>a を更新 → <b>Aの解除待ち</b> → <span class="hl">デッドロック</span>（エ）</td></tr>
+      </table>
+      <div class="point">H28春 問28 も同じ形：A1がS、B1がT、A2がT、B2がSを要求すると互いに待つ（イ）。<b>2つ目の要求が相手の持ち物</b>になる組を探す。</div>
+      <div class="point">ロックは表と行の<b>包含<a class="ref" href="https://www.ap-siken.com/keyword/9/9-1/#0e08943ff402505077f8cf76d1026b1cd4108d50">関係</a></b>も見る。行に<a class="ref" href="https://e-words.jp/w/%E5%85%B1%E6%9C%89%E3%83%AD%E3%83%83%E3%82%AF.html">共有ロック</a>がある表には、表全体の<a class="ref" href="https://www.ap-siken.com/keyword/9/9-4/#0adfcb3fdb9edd9e23e40006c73a50ee1ffe3dd2">専有ロック</a>は掛けられない（<a class="ref q" href="https://www.ap-siken.com/kakomon/01_aki/q28.html">R1秋 問28</a> イ）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成29年度秋期 午前 問29・平成29年度春期 午前 問29・平成28年度春期 午前 問28・令和元年度秋期 午前 問28（図や表を文字で書き直した）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-1/">応用情報.com 用語集 9-1 データベース方式</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/9/9-4/">応用情報.com 用語集 9-4 トランザクション処理</a></div>
+</section>
+
+
+<section class="slide">
   <h1><img class="ico" src="img/db/warning_flat.svg" alt="">隔離性水準を上げるほど、起きる現象が1つずつ消える</h1>
   <div class="cols">
     <div>
@@ -795,6 +1214,40 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   </div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-4/">応用情報.com 用語集 9-4 トランザクション処理</a></div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/ui/speaking_head_flat.svg" alt="">1人でも「否」ならロールバック。全員「可」のときだけコミット</h1>
+  <div class="cols" style="grid-template-columns:1fr 1fr;gap:24px">
+    <div>
+      <div class="cap">H21春 問33・H26春 問29：シーケンス a は？</div>
+      <svg width="420" height="190" viewBox="0 0 420 190">
+        <defs><marker id="ah12" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" fill="#1f3a68"/></marker><marker id="ah13" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" fill="#b25000"/></marker></defs>
+        <g font-size="12" font-weight="700" text-anchor="middle" fill="#1f3a68"><text x="70" y="16">調停者</text><text x="230" y="16">システム1</text><text x="360" y="16">システム2</text></g>
+        <g stroke="#86868b" stroke-dasharray="4 3"><path d="M70,22V185M230,22V185M360,22V185"/></g>
+        <g stroke="#1f3a68" stroke-width="1.5" marker-end="url(#ah12)"><path d="M70,40H226"/><path d="M70,58H356"/></g>
+        <g stroke="#1f3a68" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah12)"><path d="M230,90H74"/><path d="M360,112H74"/></g>
+        <g stroke="#b25000" stroke-width="2" marker-end="url(#ah13)"><path d="M70,152H226"/><path d="M70,172H356"/></g>
+        <g font-size="11" fill="#1d1d1f"><text x="80" y="36">COMMIT可否問合せ</text><text x="200" y="54">COMMIT可否問合せ</text><text x="150" y="86">可</text><text x="250" y="108">否</text></g>
+        <g font-size="11.5" fill="#b25000" font-weight="700"><text x="80" y="140">a ＝ ROLLBACK の実行要求（イ）</text></g>
+      </svg>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th style="width:52%">選択肢の記述</th><th>判定</th></tr>
+        <tr><td>準備完了を返したサイトだけコミット</td><td>×：結果が食い違う。全部<a class="ref" href="https://e-words.jp/w/%E3%83%AD%E3%83%BC%E3%83%AB%E3%83%90%E3%83%83%E3%82%AF.html">ロールバック</a></td></tr>
+        <tr><td>準備完了が揃わなければ再度問い合わせ</td><td>×：ロールバックを指示する</td></tr>
+        <tr><td>全サイトから準備完了 → 全サイトにコミット</td><td><b>○</b>（<a class="ref q" href="https://www.ap-siken.com/kakomon/01_aki/q30.html">R1秋 問30</a> ウ）</td></tr>
+        <tr><td>調停者の障害のタイミングで、参加者がコミットもロールバックもできない</td><td><b>○</b>（H21秋 問31 イ）。2相コミットの弱点</td></tr>
+        <tr><td>返答のない参加者がいても強制コミット</td><td>×：返答がなければロールバック</td></tr>
+        <tr><td>1つの<a class="ref" href="https://www.ap-siken.com/keyword/9/9-5/#809fd1f1bea48702c1c296eb6780e3e09ef19d10">分散トランザクション</a>に調停者が複数</td><td>×：調停者は1つ</td></tr>
+      </table>
+      <div class="point">「複数サイトに確定できるか問い合わせ、全部確定可能なら確定」と説明されたら <b>2相コミット</b>（H22秋 問30）。<a class="ref" href="https://e-words.jp/w/%E6%8E%92%E4%BB%96%E5%88%B6%E5%BE%A1.html">排他制御</a>・ロールバック・<a class="ref" href="https://e-words.jp/w/%E3%83%AD%E3%83%BC%E3%83%AB%E3%83%95%E3%82%A9%E3%83%AF%E3%83%BC%E3%83%89.html">ロールフォワード</a>と取り違えない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成21年度春期 午前 問33（平成26年度春期 問29も同じ）・令和元年度秋期 午前 問30・平成21年度秋期 午前 問31・平成22年度秋期 午前 問30（図を文字と線で書き直した）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-4/">応用情報.com 用語集 9-4 トランザクション処理</a></div>
+</section>
+
 
 <section class="slide">
   <h1><img class="ico" src="img/db/hourglass_not_done_flat.svg" alt="">チェックポイントの後にコミット→やり直す、未コミット→取り消す</h1>
@@ -894,6 +1347,38 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-2/">応用情報.com 用語集 9-2 データベース設計</a></div>
 </section>
 
+<section class="slide">
+  <h1><img class="ico" src="img/ui/ladder_flat.svg" alt="">B+木は高さがそろった木。葉が分かれたら親が両方を指す</h1>
+  <div class="cols" style="grid-template-columns:1.05fr .95fr;gap:24px">
+    <div>
+      <div class="cap">H30春 問26：葉Cが C1・C2 に分かれた後</div>
+      <svg width="440" height="150" viewBox="0 0 440 150">
+        <defs><marker id="ah14" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0L7,3.5L0,7z" fill="#1f3a68"/></marker></defs>
+        <g fill="#c9daf2" stroke="#1f3a68" stroke-width="1.5"><rect x="190" y="10" width="60" height="34" rx="4" fill="#1f3a68"/><rect x="20" y="96" width="70" height="34" rx="4"/><rect x="130" y="96" width="70" height="34" rx="4" fill="#fde7cf" stroke="#b25000"/><rect x="240" y="96" width="70" height="34" rx="4" fill="#fde7cf" stroke="#b25000"/><rect x="350" y="96" width="70" height="34" rx="4"/></g>
+        <g stroke="#1f3a68" stroke-width="1.5" marker-end="url(#ah14)"><path d="M205,44L60,94"/><path d="M215,44L168,94"/><path d="M225,44L272,94"/><path d="M235,44L382,94"/></g>
+        <g stroke="#1f3a68" stroke-width="1.3" marker-end="url(#ah14)"><path d="M90,108H128"/><path d="M130,120H92"/><path d="M200,108H238"/><path d="M240,120H202"/><path d="M310,108H348"/><path d="M350,120H312"/></g>
+        <g font-size="14" font-weight="700" text-anchor="middle"><text x="220" y="32" fill="#fff">A</text><text x="55" y="118" fill="#1f3a68">B</text><text x="165" y="118" fill="#b25000">C1</text><text x="275" y="118" fill="#b25000">C2</text><text x="385" y="118" fill="#1f3a68">D</text></g>
+        <text x="220" y="146" font-size="11" fill="#6e6e73" text-anchor="middle">親AはC1・C2の両方を指し、葉はキーの順に B↔C1↔C2↔D（イ）</text>
+      </svg>
+      <table class="mini" style="margin-top:4px">
+        <tr><th style="width:28%">誤りの形</th><th>何がおかしいか</th></tr>
+        <tr><td>AがC2を指さない</td><td>根からC2のキーにたどり着けない</td></tr>
+        <tr><td>葉が C1↔D↔C2</td><td>キーの順が崩れ、範囲検索で順にたどれない</td></tr>
+        <tr><td>C2がC1の下</td><td>葉の深さがそろわない（B+木は全部の葉が同じ深さ）</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="formula" style="font-size:14px">1件の検索でたどる節点の数 ≒ 木の高さ<br>＝ <b>log X</b> のオーダー（H28秋 問27 イ）</div>
+      <div class="point" style="margin-top:4px">1つの節点に100個のキーが入るなら、100万件でも高さは3程度（100×100×100）。√X や X より桁違いに少ない。</div>
+      <div class="ex" style="margin-top:8px"><span class="lbl">H23秋 問32 ほか3回</span>メーカーコードにB+木を作って速くなるのは「<b>4001以上4003以下</b>」（範囲）（ウ）。「1001以外」「<a class="ref" href="https://www.ap-siken.com/keyword/9/9-2/#eef19c54306daa69eda49c0272623bdb5e2b341f">NULL</a>以外」はほぼ全件なので効果がない</div>
+      <div class="point"><a class="ref" href="https://e-words.jp/w/%E3%82%A4%E3%83%B3%E3%83%87%E3%83%83%E3%82%AF%E3%82%B9.html">インデックス</a>は更新のたびに直す負担がある。件数の少ない表や、性別のような2値の列には、ふつうのB+木は付けない（H22秋 問31 ア）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成30年度春期 午前 問26・平成28年度秋期 午前 問27・平成23年度秋期 午前 問32（平成27年度春期 問29・平成29年度春期 問28・平成30年度秋期 問29も同じ）・平成22年度秋期 午前 問31（図を描き直した）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-2/">応用情報.com 用語集 9-2 データベース設計</a></div>
+</section>
+
+
 <section class="slide chapter">
   <div class="hero-icons ira"><img src="img/irasutoya/graph.png" alt=""><img src="img/irasutoya/cloud.png" alt=""><img src="img/irasutoya/online_storage.png" alt=""><img src="img/irasutoya/mesh_network.png" alt=""></div>
   <div class="k">第5章</div>
@@ -932,6 +1417,44 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   </div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-5/">応用情報.com 用語集 9-5 データベース応用</a></div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/ui/compass_flat.svg" alt="">OLAPの操作は、立方体を「掘る・まとめる・切る・回す」</h1>
+  <div class="cols" style="grid-template-columns:.95fr 1.05fr;gap:24px">
+    <div>
+      <svg width="400" height="160" viewBox="0 0 400 160">
+        <g stroke="#1f3a68" stroke-width="1.5">
+          <polygon points="40,60 160,60 160,150 40,150" fill="#c9daf2"/><polygon points="40,60 80,30 200,30 160,60" fill="#e8eef8"/><polygon points="160,60 200,30 200,120 160,150" fill="#8fa9d4"/>
+        </g>
+        <g stroke="#1f3a68" stroke-width=".7" opacity=".6"><path d="M80,60V150M120,60V150M40,90H160M40,120H160"/></g>
+        <rect x="80" y="60" width="40" height="90" fill="#b25000" opacity=".35"/>
+        <g font-size="11" fill="#1d1d1f"><text x="60" y="158" font-size="10">東京 名古屋 大阪</text><text x="2" y="80">商品</text><text x="160" y="24">期間</text></g>
+        <g font-size="11.5" fill="#1d1d1f"><text x="220" y="56">軸＝地域・商品・期間</text><text x="220" y="76">中の値＝売上（ファクト）</text><text x="220" y="104" fill="#b25000" font-weight="700">オレンジ＝名古屋で切った</text><text x="220" y="120" fill="#b25000" font-weight="700">断面（スライス）</text></g>
+      </svg>
+      <table class="mini" style="margin-top:4px">
+        <tr><th style="width:28%">操作</th><th>何をするか</th></tr>
+        <tr><td><b>ドリルダウン</b></td><td>細かい単位へ（年→月→日）</td></tr>
+        <tr><td><b>ロールアップ</b></td><td>大まかな単位へ（日→月→年）</td></tr>
+        <tr><td><b>スライス</b></td><td>1つの軸の値を固定して断面を見る</td></tr>
+        <tr><td><b>ダイス</b></td><td>軸を入れ替えて別の切り口から見る</td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th style="width:30%">用語</th><th>中身（過去問の言い方）</th></tr>
+        <tr><td><b><a class="ref" href="https://e-words.jp/w/%E3%83%87%E3%83%BC%E3%82%BF%E3%82%AF%E3%83%AC%E3%83%B3%E3%82%B8%E3%83%B3%E3%82%B0.html">データクレンジング</a></b></td><td>業務システムごとに違うコード体系・表記をそろえ、誤りを直す（H22秋 問28）</td></tr>
+        <tr><td><b><a class="ref" href="https://e-words.jp/w/ETL.html">ETL</a>ツール</b></td><td>データを抽出・加工してDWHに書き出す（H24秋 問29）</td></tr>
+        <tr><td><b><a class="ref" href="https://e-words.jp/w/%E3%83%87%E3%83%BC%E3%82%BF%E3%83%9E%E3%83%BC%E3%83%88.html">データマート</a></b></td><td>目的別に切り出した、部門用の小さなDWH</td></tr>
+        <tr><td><b>OLAP</b></td><td>スライシング・ダイシング・ドリルダウンで多次元分析</td></tr>
+        <tr><td><b><a class="ref" href="https://e-words.jp/w/%E3%83%87%E3%83%BC%E3%82%BF%E3%83%9E%E3%82%A4%E3%83%8B%E3%83%B3%E3%82%B0.html">データマイニング</a></b></td><td>統計・推論・ニューラルネットワークで、隠れたパターンを見つける（H26秋 問29・H29秋 問30）</td></tr>
+      </table>
+      <div class="ex" style="margin-top:8px"><span class="lbl">H28春 問31</span>スタースキーマのファクトは「<b>注文</b>（販売店コード，顧客コード，商品コード，注文年月日，数量）」（ウ）。顧客・商品・販売店はディメンション</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成22年度秋期 午前 問28・平成24年度秋期 午前 問29・平成26年度秋期 午前 問29・平成29年度秋期 午前 問30・平成28年度春期 午前 問31。図はClaudeが描いた</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-5/">応用情報.com 用語集 9-5 データベース応用</a></div>
+</section>
+
 
 <section class="slide">
   <h1><img class="ico" src="img/db/star_flat.svg" alt="">スタースキーマの中心は取引データのファクト。周りが切り口</h1>
@@ -1026,6 +1549,35 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   </div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-5/">応用情報.com 用語集 9-5 データベース応用</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/9/9-3/">応用情報.com 用語集 9-3 データ操作</a></div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/ui/globe_with_meridians_flat.svg" alt="">複製は「同時に書く」ミラーリングと「後で写す」レプリケーション</h1>
+  <div class="cols" style="grid-template-columns:1fr 1fr;gap:24px">
+    <div>
+      <table class="mini">
+        <tr><th style="width:30%">手法</th><th>しくみ</th><th style="width:24%">向き</th></tr>
+        <tr><td><b>ミラーリング</b></td><td>2台以上のディスクに<b>同時に（同期して）</b>書く</td><td>ディスク故障への備え</td></tr>
+        <tr><td><b><a class="ref" href="https://e-words.jp/w/%E3%83%AC%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3.html">レプリケーション</a></b></td><td>複製DBを用意し、更新を<b>非同期に</b>反映（H23秋 問33 エ）</td><td>負荷分散・遠隔地の備え</td></tr>
+        <tr><td>2相コミット</td><td>複数サイトの更新を全部確定か全部取消しにそろえる</td><td><a class="ref" href="https://www.ap-siken.com/keyword/9/9-5/#809fd1f1bea48702c1c296eb6780e3e09ef19d10">分散トランザクション</a></td></tr>
+        <tr><td>クラスタリング</td><td>複数のサーバを1台のように動かす</td><td>可用性・性能</td></tr>
+      </table>
+      <div class="point">非同期のレプリケーションは、反映までの間に<b>複製が少し古い</b>ことがある。<a class="ref" href="https://www.ap-siken.com/keyword/9/9-5/#24412cdd5cdaf2b335bbf233c415afb063781e28">結果整合性</a>（<a class="ref" href="https://www.ap-siken.com/keyword/21/21-2/#e477f54c3e8f747a211f3f9a8d818d6619991218">CAP</a>のAP）と同じ考え方。</div>
+    </div>
+    <div>
+      <div class="cap">データディクショナリ（スキーマの定義情報）の置き方</div>
+      <table class="mini">
+        <tr><th style="width:34%">方式</th><th>特徴（H26秋 問28）</th></tr>
+        <tr><td><b>集中管理</b></td><td>1サイトに集める。負荷が集中し、そのサイトの障害が<b>全体の重大な障害</b>になる（イ）</td></tr>
+        <tr><td>分散・重複して持つ</td><td>どのサイトでも引けるが、定義が変わると<b>全サイトを更新</b></td></tr>
+        <tr><td>分散・重複せずに持つ</td><td>変更は持っているサイトだけ。<a class="ref" href="https://www.ap-siken.com/keyword/9/9-3/#3a34c044abe3e12eb8f2a6a6bb4663b0defb977d">問合せ</a>で<b>他サイトを調べる</b>ことがある</td></tr>
+      </table>
+      <div class="point">RDBMSのデータディクショナリに入るのは、表・列・制約・<a class="ref" href="https://e-words.jp/w/%E3%82%A4%E3%83%B3%E3%83%87%E3%83%83%E3%82%AF%E3%82%B9.html">インデックス</a>などの<b>スキーマの定義情報</b>（H30春 問29 イ）。データそのものやインデックスの中身は入らない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成23年度秋期 午前 問33・平成26年度秋期 午前 問28・平成30年度春期 午前 問29</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/9/9-5/">応用情報.com 用語集 9-5 データベース応用</a></div>
+</section>
+
 
 <section class="slide">
   <h1><img class="ico" src="img/db/chains_flat.svg" alt="">ブロックチェーンは、前のハッシュ値でつないだ記録を皆でもつ</h1>
