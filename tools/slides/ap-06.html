@@ -78,6 +78,17 @@ table.vs td { font-size: 13.5px; padding: 9px 8px; }
 .big { font-size: 15px; line-height: 1.7; }
 .chapter p { max-width: 500px; line-height: 1.7; }
 svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
 /* 参照元リンク（tools/slides/addrefs.py が付ける） */
 a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
 a.ref.q, a.src { color: var(--blue, #0071e3); }
@@ -91,7 +102,7 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 <section class="slide title">
   <div class="k">応用情報技術者試験　テクノロジ系　#6</div>
   <h1>ハードウェア</h1>
-  <p>用語集まとめ ― 過去問10回分（令和3〜7年度）で出たところを中心に</p>
+  <p>用語集まとめ ― 過去問33回分（平成21〜令和7年度）を読み込んだ参考書版</p>
   <div class="icons"><img src="img/hw/high_voltage_flat.svg" alt=""><img src="img/hw/gear_flat.svg" alt=""><img src="img/hw/control_knobs_flat.svg" alt=""><img src="img/hw/robot_flat.svg" alt=""><img src="img/hw/battery_flat.svg" alt=""><img src="img/hw/seedling_flat.svg" alt=""></div>
   <div class="refs-legend">点線の下線の用語・青い過去問番号・各ページ下の「詳しく：」を押すと、参照元のサイト（e-Words／応用情報技術者試験.com）で詳しい解説が開く</div>
 </section>
@@ -140,6 +151,56 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   </div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/bar_chart_flat.svg" alt="">17年・113問で見ても、論理回路と組込みの計算で半分を超える</h1>
+  <div class="cols" style="grid-template-columns:1.05fr .95fr;gap:24px">
+    <div>
+      <svg width="440" height="210" viewBox="0 0 440 210">
+        <g font-size="12" fill="#1d1d1f" text-anchor="end">
+          <text x="196" y="20">論理回路・タイミングチャート</text><text x="196" y="48">組込みの部品（クロック・D/A・番地）</text><text x="196" y="76">センサー・アクチュエーター・制御</text><text x="196" y="104">FPGA・SoC・DSP</text><text x="196" y="132">メモリ・RFID・耐タンパ性</text><text x="196" y="160">消費電力</text><text x="196" y="188">半導体素子・その他</text>
+        </g>
+        <g fill="#1f3a68"><rect x="204" y="8" width="192" height="17" rx="3"/><rect x="204" y="36" width="168" height="17" rx="3"/></g>
+        <g fill="#5b80bf"><rect x="204" y="64" width="78" height="17" rx="3"/><rect x="204" y="92" width="78" height="17" rx="3"/><rect x="204" y="120" width="72" height="17" rx="3"/><rect x="204" y="148" width="48" height="17" rx="3"/><rect x="204" y="176" width="42" height="17" rx="3"/></g>
+        <g font-size="11.5" fill="#1f3a68" font-weight="700"><text x="402" y="21">32問</text><text x="378" y="49">28問</text><text x="288" y="77">13問</text><text x="288" y="105">13問</text><text x="282" y="133">12問</text><text x="258" y="161">8問</text><text x="252" y="189">7問</text></g>
+      </svg>
+      <div style="font-size:11px;color:#6e6e73">平成21年度春期〜令和7年度秋期の33回、この分野の113問を論点ごとに数えた（同じ問題も1問ずつ）</div>
+      <div class="point"><b>読み方：</b>上の2つで60問（53％）。どちらも「0と1を入れて表にする」「単位をそろえて掛け算する」という<b>手を動かす問題</b>で、用語を覚えるだけでは取れない。</div>
+    </div>
+    <div>
+      <div class="cap">何度も出た問題（平成21〜令和7年度）</div>
+      <table class="mini">
+        <tr><th style="width:50%">論点</th><th>出た回数</th></tr>
+        <tr><td>ウォッチドッグタイマーの機能</td><td><b>5回</b>（H21春・H25春・H26秋・H29秋・R1秋）＋令和</td></tr>
+        <tr><td>PLLと分周器でSIOのクロックを作る</td><td><b>5回</b>（H22春・H24春・H26春・H27秋・H30春）</td></tr>
+        <tr><td>SRラッチ（S＝R＝1から操作）</td><td><b>5回</b>（H21秋・H23秋・H26秋・R3春・R5秋）</td></tr>
+        <tr><td>8ビットD/A変換器で10mVずつ</td><td><b>4回</b>（H22春・H24秋・H26秋・R2秋）＋令和</td></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/PWM.html">PWM</a>の駆動波形を選ぶ</td><td><b>4回</b>（H26春・H27秋・H29秋・R2秋）</td></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/SoC.html">SoC</a>の説明</td><td><b>4回</b>（H21春・H27春・H28春・H30秋）＋令和</td></tr>
+        <tr><td>リトルエンディアンの並び</td><td><b>3回</b>（H21秋・H27春・H29春）</td></tr>
+      </table>
+      <div class="point">同じ図・同じ数字のまま再び出ることが多い。この資料の例題は平成の過去問も使い、<b>同じ型を2回以上</b>解けるようにした。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 応用情報技術者試験 午前 過去問題（平成21年度春期〜令和7年度秋期）をClaudeが分類して数えた</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/1/1-4/">応用情報.com 用語集 1-4 通信に関する理論</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/clipboard_flat.svg" alt="">問われ方は4つの型。どれも「表に書いて1つずつ確かめる」で解ける</h1>
+  <table>
+    <tr><th style="width:20%">型</th><th style="width:30%">例（過去問）</th><th>解き方</th></tr>
+    <tr><td><b>① 式・回路の読み替え</b></td><td>H21春 問24（式→回路）・H29春 問23（回路→式）・H22秋 問24（等価な回路）</td><td>入力が2つなら4通り、3つなら8通りを<b>全部</b>入れて<a class="ref" href="https://e-words.jp/w/%E7%9C%9F%E7%90%86%E5%80%A4%E8%A1%A8.html">真理値表</a>を作り、選択肢の表と比べる。式を変形するより確実</td></tr>
+    <tr><td><b>② 状態が残る回路</b></td><td>H25秋 問24（NORラッチ）・H26春 問22（シフト<a class="ref" href="https://e-words.jp/w/%E3%83%AC%E3%82%B8%E3%82%B9%E3%82%BF.html">レジスタ</a>）</td><td>操作の前と後を<b>1行ずつ</b>表に書く。出力が入力に戻る線は「前の行の値」を使う</td></tr>
+    <tr><td><b>③ 組込みの計算</b></td><td>H22春 問25（PLL・分周）・H26秋 問21（番地の範囲）・<a class="ref q" href="https://www.ap-siken.com/kakomon/01_aki/q20.html">R1秋 問20</a>（D/A）</td><td>周波数はHzに、番地は<b>2進数</b>に直してから考える。2のべき乗（2<sup>10</sup>≒1000）を使う</td></tr>
+    <tr><td><b>④ 用語の説明</b></td><td>H21春 問22（<a class="ref" href="https://e-words.jp/w/SoC.html">SoC</a>）・H27秋 問20（<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/#d3d45f1a18f150a3e4db24f488f34cbf25a9c8a7">DSP</a>）・H23特 問25（電力線通信）</td><td>誤りの選択肢も別の用語の説明になっていることが多い。「<b>何を・どこに</b>集めたか」「<b>何の演算</b>が得意か」で見分ける</td></tr>
+  </table>
+  <div class="point">①は<b>迷ったら全部の入力を試す</b>のが最短。A＝B＝0、A＝1・B＝0…と4行書くだけで、4つの選択肢のうち3つはたいてい外れる。</div>
+  <div class="cite">出典：IPA 応用情報技術者試験 午前 過去問題（各問の番号は表のとおり）／IPA シラバス Ver.7.2 中分類6 1.（1）〜（5）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
+</section>
+
+
 
 <section class="slide chapter">
   <div class="hero-icons ira"><img src="img/irasutoya/motherboard.png" alt=""><img src="img/irasutoya/cpu.png" alt=""><img src="img/irasutoya/calculator.png" alt=""><img src="img/irasutoya/binary.png" alt=""></div>
@@ -204,6 +265,36 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/hw/electric_plug_flat.svg" alt="">正論理はHが1、負論理はLが1。同じ回路でもANDとORが入れ替わる</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">電圧の表（回路は1つ）</div>
+      <table class="mini" style="text-align:center">
+        <tr><th>入力A</th><th>入力B</th><th>出力</th><th>正論理で読む<br>（H＝1）</th><th>負論理で読む<br>（L＝1）</th></tr>
+        <tr><td>L</td><td>L</td><td>L</td><td>0,0→0</td><td>1,1→<b>1</b></td></tr>
+        <tr><td>L</td><td>H</td><td>L</td><td>0,1→0</td><td>1,0→<b>1</b></td></tr>
+        <tr><td>H</td><td>L</td><td>L</td><td>1,0→0</td><td>0,1→<b>1</b></td></tr>
+        <tr><td>H</td><td>H</td><td>H</td><td>1,1→<b>1</b></td><td>0,0→0</td></tr>
+        <tr><td colspan="3">この回路は</td><td><b>AND</b></td><td><b>OR</b></td></tr>
+      </table>
+      <div class="point">どちらの読み方でも電気の動きは同じ。<b><a class="ref" href="https://e-words.jp/w/%E3%83%89%E3%83%BB%E3%83%A2%E3%83%AB%E3%82%AC%E3%83%B3%E3%81%AE%E6%B3%95%E5%89%87.html">ド・モルガンの法則</a></b>を電圧の言葉で言い直したもの。</div>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:34%">言葉</th><th>意味</th></tr>
+        <tr><td><b>正論理</b></td><td>高い電圧（H）を1、低い電圧（L）を0とみなす。ふつうはこちら</td></tr>
+        <tr><td><b>負論理</b></td><td>Lを1とみなす。「押すとLになるボタン」「Lで選ぶチップセレクト」など、<b>Lのときに働く信号</b>（アクティブロー）を扱いやすい</td></tr>
+        <tr><td>アクティブロー</td><td>名前に上線や「#」「_N」を付けて表す（<span style="text-decoration:overline">CS</span>、RESET#）</td></tr>
+      </table>
+      <div class="point warn">正論理のANDは負論理ではOR、正論理のNANDは負論理では<b>NOR</b>。図記号の丸（バブル）は「この端子はLで働く」という意味にも使う。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA シラバス Ver.7.2 中分類6 1.（1）の用語例（正論理・負論理）／<a href="https://en.wikipedia.org/wiki/Logic_level">Wikipedia「Logic level」</a>（Active-low）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/1/1-1/">応用情報.com 用語集 1-1 離散数学</a></div>
+</section>
+
+
+<section class="slide">
   <h1><img class="ico" src="img/hw/repeat_button_flat.svg" alt="">否定を外すと「・」と「＋」が入れ替わる。入力を反転したNANDはOR</h1>
   <div class="cols">
     <div>
@@ -232,6 +323,122 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   </div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/abacus_flat.svg" alt="">式を短くする道具は6つ。くくり出して A＋Ā＝1 を作るのが基本</h1>
+  <div class="cols">
+    <div>
+      <table class="mini">
+        <tr><th style="width:30%">法則</th><th>論理積の形</th><th>論理和の形</th></tr>
+        <tr><td>恒等</td><td>A・1＝A、A・0＝0</td><td>A＋0＝A、A＋1＝1</td></tr>
+        <tr><td>べき等</td><td>A・A＝A</td><td>A＋A＝A</td></tr>
+        <tr><td>補元</td><td>A・Ā＝0</td><td><b>A＋Ā＝1</b></td></tr>
+        <tr><td>分配</td><td>A・(B＋C)＝A・B＋A・C</td><td>A＋B・C＝(A＋B)・(A＋C)</td></tr>
+        <tr><td>吸収</td><td>A・(A＋B)＝A</td><td>A＋A・B＝A</td></tr>
+        <tr><td>ド・モルガン</td><td>¬(A・B)＝Ā＋B̄</td><td>¬(A＋B)＝Ā・B̄</td></tr>
+      </table>
+      <div class="point">「＋」の分配（A＋B・C＝(A＋B)・(A＋C)）は、ふつうの数の計算にはない形。8通りを入れれば確かめられる。</div>
+    </div>
+    <div>
+      <div class="cap">H29春 問23：図の回路の<a class="ref" href="https://e-words.jp/w/%E8%AB%96%E7%90%86%E5%BC%8F.html">論理式</a></div>
+      <svg width="400" height="120" viewBox="0 0 400 120">
+        <g stroke="#1f3a68" stroke-width="2" fill="none">
+          <path d="M10,20H60M30,20V85H200M10,105H200M110,105V55H130"/>
+          <path d="M60,8L84,20L60,32Z" fill="#fff"/><circle cx="88" cy="20" r="4" fill="#fff"/>
+          <path d="M92,20H110V35H130"/>
+          <path d="M130,25h22a20,20 0 0 1 0,40h-22z" fill="#fff"/>
+          <path d="M200,75h22a20,20 0 0 1 0,40h-22z" fill="#fff"/>
+          <path d="M172,45H260M242,95H250V65H262"/>
+          <path d="M258,35q14,20 0,40q30,0 46,-20q-16,-20 -46,-20z" fill="#fff"/>
+          <path d="M304,55H340"/>
+        </g>
+        <g font-size="13" fill="#1d1d1f"><text x="0" y="16">A</text><text x="0" y="101">B</text><text x="345" y="60">F</text></g>
+        <g font-size="11.5" fill="#b25000" font-weight="700"><text x="96" y="14">Ā</text><text x="196" y="40">Ā・B</text><text x="244" y="112">A・B</text></g>
+      </svg>
+      <div class="formula" style="font-size:15px">F ＝ Ā・B ＋ A・B ＝ B・(Ā＋A) ＝ B・1 ＝ <b>B</b>（イ）</div>
+      <div class="point">Bでくくると補元 Ā＋A＝1 が現れる。Aは答えに関係しない。ア F＝A、ウ A・B、エ A＋B は、B＝1・A＝0 を入れるとどれもFと合わない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成29年度春期 午前 問23（図を書き直した）／<a href="https://ja.wikipedia.org/wiki/%E3%83%96%E3%83%BC%E3%83%AB%E4%BB%A3%E6%95%B0">Wikipedia「ブール代数」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/puzzle_piece_flat.svg" alt="">「0になるのは1行だけ」と気づけば、3つの項の式もゲート1つになる</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">H21春 問24：X＝Ā・B＋A・B̄＋Ā・B̄ と同じ回路</div>
+      <table class="mini" style="text-align:center">
+        <tr><th>A</th><th>B</th><th>Ā・B</th><th>A・B̄</th><th>Ā・B̄</th><th>X</th></tr>
+        <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td><b>1</b></td></tr>
+        <tr><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td><b>1</b></td></tr>
+        <tr><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td><b>1</b></td></tr>
+        <tr><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td><b class="hl">0</b></td></tr>
+      </table>
+      <div class="formula" style="font-size:15px">「両方1のときだけ0」＝ ¬(A・B) ＝ <b>NAND</b>（イ）</div>
+    </div>
+    <div>
+      <svg width="400" height="150" viewBox="0 0 400 150">
+        <g fill="#fff" stroke="#1f3a68" stroke-width="2">
+          <rect x="20" y="10" width="250" height="130" fill="#c9daf2"/>
+          <circle cx="110" cy="75" r="55" fill="none"/><circle cx="180" cy="75" r="55" fill="none"/>
+        </g>
+        <path d="M145,33a55,55 0 0 1 0,84a55,55 0 0 1 0,-84z" fill="#fff" stroke="#b25000" stroke-width="2"/>
+        <g font-size="13" fill="#1d1d1f"><text x="80" y="80">A</text><text x="200" y="80">B</text><text x="137" y="80" fill="#b25000" font-weight="700">A・B</text></g>
+        <g font-size="12" fill="#1d1d1f"><text x="282" y="40">色の部分＝X</text><text x="282" y="60">白い部分だけが0</text><text x="282" y="90">円の外（Ā・B̄）も</text><text x="282" y="108">1になる</text></g>
+      </svg>
+      <table class="mini">
+        <tr><th>選択肢</th><th>X＝0になる入力</th></tr>
+        <tr><td>ア AND</td><td>A・B以外の3通り（逆）</td></tr>
+        <tr><td><b>イ NAND</b></td><td><b>A＝B＝1 だけ</b></td></tr>
+        <tr><td>ウ OR</td><td>A＝B＝0 だけ</td></tr>
+        <tr><td>エ NOR</td><td>A＝B＝0 以外の3通り</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="point">式で解くなら、Ā・B̄ を2回使って（A＋A＝A）Ā・(B＋B̄)＋B̄・(A＋Ā)＝Ā＋B̄＝¬(A・B)。表なら4行で済む。</div>
+  <div class="cite">出典：IPA 平成21年度春期 午前 問24（図記号を書き直した）。ベン図と変形はClaudeが作った</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/link_flat.svg" alt="">NANDを4つ組むとXOR。途中の線に値を書き込めば迷わない</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">H22秋 問24：図の論理回路と等価な回路</div>
+      <svg width="410" height="170" viewBox="0 0 410 170">
+        <g stroke="#1f3a68" stroke-width="2" fill="none">
+          <path d="M10,60H70M10,100H70M40,60V30H170M50,100V140H170"/>
+          <path d="M70,55h22a20,20 0 0 1 0,40h-22z" fill="#fff"/><circle cx="116" cy="75" r="4" fill="#fff"/>
+          <path d="M120,75H140V50H170M140,75V120H170"/>
+          <path d="M170,20h22a20,20 0 0 1 0,40h-22z" fill="#fff"/><circle cx="216" cy="40" r="4" fill="#fff"/>
+          <path d="M170,110h22a20,20 0 0 1 0,40h-22z" fill="#fff"/><circle cx="216" cy="130" r="4" fill="#fff"/>
+          <path d="M220,40H260V75H290M220,130H260V95H290"/>
+          <path d="M290,65h22a20,20 0 0 1 0,40h-22z" fill="#fff"/><circle cx="336" cy="85" r="4" fill="#fff"/>
+          <path d="M340,85H370"/>
+        </g>
+        <g font-size="13" fill="#1d1d1f"><text x="0" y="56">A</text><text x="0" y="96">B</text><text x="376" y="90">Y</text></g>
+        <g font-size="12" fill="#b25000" font-weight="700"><text x="122" y="70">P</text><text x="226" y="34">Q</text><text x="226" y="148">R</text></g>
+      </svg>
+    </div>
+    <div>
+      <table class="mini" style="text-align:center">
+        <tr><th>A</th><th>B</th><th>P＝¬(A・B)</th><th>Q＝¬(A・P)</th><th>R＝¬(B・P)</th><th>Y＝¬(Q・R)</th></tr>
+        <tr><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td><b>0</b></td></tr>
+        <tr><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td><b>1</b></td></tr>
+        <tr><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td><b>1</b></td></tr>
+        <tr><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td><td><b>0</b></td></tr>
+      </table>
+      <div class="point">Yは「AとBが違うときだけ1」＝<b>排他的論理和（XOR）</b>で、ウが正解。ア OR は1,1で1、イ AND は0,1で0、エ NOR は0,0で1になるので合わない。</div>
+      <div class="point">NANDは<b>万能ゲート</b>。NOT・AND・OR・XORを全部NANDだけで作れるので、1種類の部品で回路を組める。平成30年度春期 問21にも同じ回路が出た。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成22年度秋期 午前 問24・平成30年度春期 午前 問21（図を書き直した）／<a href="https://en.wikipedia.org/wiki/NAND_logic">Wikipedia「NAND logic」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
+</section>
+
+
+
 
 <section class="slide">
   <h1><img class="ico" src="img/hw/abacus_flat.svg" alt="">足し算の桁上がりはAND、和はXOR。多数決は「2つずつのAND」をOR</h1>
@@ -263,6 +470,184 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
     </div>
   </div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/abacus_flat.svg" alt="">全加算器は半加算器2つとOR。下の桁からの桁上がりも足せる</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="170" viewBox="0 0 420 170">
+        <g stroke="#1f3a68" stroke-width="2" fill="none">
+          <path d="M10,35H60M10,75H60M150,35H175V55H200M10,150H180V95H200M150,75H165V130H330M290,95H310V110H330M290,55H390"/>
+          <path d="M326,100q14,20 0,40q30,0 46,-20q-16,-20 -46,-20z" fill="#fff"/>
+          <path d="M372,120H395"/>
+        </g>
+        <g stroke="#1f3a68" stroke-width="2" fill="#fff"><rect x="60" y="20" width="90" height="70" rx="6"/><rect x="200" y="40" width="90" height="70" rx="6"/></g>
+        <g font-size="13" fill="#1f3a68" font-weight="700" text-anchor="middle"><text x="105" y="60">半加算器</text><text x="245" y="80">半加算器</text></g>
+        <g font-size="12" fill="#1d1d1f"><text x="0" y="30">A</text><text x="0" y="70">B</text><text x="0" y="145">Cin</text><text x="154" y="28">和</text><text x="152" y="90">桁上がり</text><text x="300" y="48">S（和）</text><text x="376" y="140">Cout</text></g>
+      </svg>
+      <div class="formula" style="font-size:14.5px">S＝A⊕B⊕Cin　Cout＝A・B＋(A⊕B)・Cin</div>
+      <div class="point">nビットの足し算は全加算器をn個つなぐ（桁上がりが順に伝わる<b>リプルキャリー</b>）。</div>
+    </div>
+    <div>
+      <div class="cap">H25春 問24：XORとANDに同じ2入力を入れた回路</div>
+      <table class="mini" style="text-align:center">
+        <tr><th>入力1</th><th>入力2</th><th>出力1（XOR）</th><th>出力2（AND）</th></tr>
+        <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+        <tr><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+        <tr><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+        <tr><td>1</td><td>1</td><td>0</td><td><b>1</b></td></tr>
+      </table>
+      <div class="point">1＋1＝10（2進数）の「0」が出力1、「1」が出力2。<b>半加算</b>（エ）。全加算なら入力が3本いる。減算は「借り」を出す回路で、AND ではなく Ā・B が要る。乗算の1ビット分はANDだけ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成25年度春期 午前 問24（図を書き直した）／<a href="https://ja.wikipedia.org/wiki/%E5%8A%A0%E7%AE%97%E5%99%A8">Wikipedia「加算器」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/shield_flat.svg" alt="">偶数パリティはXORを並べるだけ。1の数が奇数なら1を足して偶数に</h1>
+  <div class="cols">
+    <div>
+      <div class="cap"><a class="ref q" href="https://www.ap-siken.com/kakomon/01_aki/q23.html">R1秋 問23</a>：x1・x2・x3 に偶数パリティ c を付ける回路</div>
+      <svg width="400" height="120" viewBox="0 0 400 120">
+        <g stroke="#1f3a68" stroke-width="2" fill="none">
+          <path d="M10,20H110M10,50H110M10,95H210M60,20V20"/>
+          <path d="M104,10q14,20 0,40q30,0 46,-20q-16,-20 -46,-20z" fill="#fff"/><path d="M98,10q14,20 0,40"/>
+          <path d="M150,30H185V65H210"/>
+          <path d="M204,55q14,20 0,40q30,0 46,-20q-16,-20 -46,-20z" transform="translate(0,-5)" fill="#fff"/><path d="M198,50q14,20 0,40"/>
+          <path d="M250,70H290"/>
+        </g>
+        <g font-size="13" fill="#1d1d1f"><text x="0" y="16">x1</text><text x="0" y="46">x2</text><text x="0" y="91">x3</text><text x="296" y="75">c</text></g>
+      </svg>
+      <table class="mini" style="text-align:center">
+        <tr><th>x1 x2 x3</th><th>1の数</th><th>c</th><th>送るもの</th></tr>
+        <tr><td>0 0 0</td><td>0</td><td>0</td><td>0000</td></tr>
+        <tr><td>1 0 0</td><td>1</td><td><b>1</b></td><td>1001（1が2つ）</td></tr>
+        <tr><td>1 1 0</td><td>2</td><td>0</td><td>1100</td></tr>
+        <tr><td>1 1 1</td><td>3</td><td><b>1</b></td><td>1111（1が4つ）</td></tr>
+      </table>
+    </div>
+    <div>
+      <table>
+        <tr><th style="width:24%">選択肢</th><th>回路</th><th>働き</th></tr>
+        <tr><td>ア</td><td>AND→OR</td><td>パリティではない（1,1,0で1）</td></tr>
+        <tr><td>イ</td><td>AND→OR→NOT</td><td>アの反転</td></tr>
+        <tr><td><b>ウ</b></td><td><b>XOR→XOR</b></td><td><b>偶数パリティ</b></td></tr>
+        <tr><td>エ</td><td>XOR→XOR→NOT</td><td><b>奇数パリティ</b>（1の数を奇数に）</td></tr>
+      </table>
+      <div class="point">XORは「1の数が奇数なら1」。何個並べても同じなので、データが何ビットでもXORを木の形につなげばよい。</div>
+      <div class="point warn">パリティは<b>1ビットの誤りを見つける</b>だけで、どこが誤ったかは分からず直せない。2ビット同時の誤りは見逃す。直すには<b>ハミング符号</b>（ECC）を使う。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 令和元年度秋期 午前 問23（図を書き直した）／<a href="https://e-words.jp/w/%E3%83%91%E3%83%AA%E3%83%86%E3%82%A3%E3%83%93%E3%83%83%E3%83%88.html">e-Words「パリティビット」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/light_bulb_flat.svg" alt="">XORは「制御付きの反転」。片方が0なら素通し、1なら反転する</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">H29秋 問23：G＝0でそのまま、G＝1で反転して出す</div>
+      <table class="mini" style="text-align:center">
+        <tr><th>G</th><th>A</th><th>X＝A⊕G</th><th>読み方</th></tr>
+        <tr><td>0</td><td>0</td><td>0</td><td rowspan="2">Aをそのまま</td></tr>
+        <tr><td>0</td><td>1</td><td>1</td></tr>
+        <tr><td>1</td><td>0</td><td>1</td><td rowspan="2">Aを反転</td></tr>
+        <tr><td>1</td><td>1</td><td>0</td></tr>
+      </table>
+      <table class="mini" style="margin-top:8px">
+        <tr><th style="width:34%">選択肢</th><th>どこで外れるか</th></tr>
+        <tr><td>ア（AND・NAND）</td><td>G＝0 でXが常に0</td></tr>
+        <tr><td>イ（OR）</td><td>G＝1 でX・Yが常に1</td></tr>
+        <tr><td><b>ウ（XOR）</b></td><td><b>両方の条件を満たす</b></td></tr>
+        <tr><td>エ（AND・NOT）</td><td>G＝0 でXが常に0</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">H28秋 問23：階段の上と下のスイッチで1つの照明</div>
+      <svg width="400" height="120" viewBox="0 0 400 120">
+        <g stroke="#1f3a68" stroke-width="2" fill="none"><rect x="5" y="15" width="110" height="34" rx="5" fill="#e8eef8"/><rect x="5" y="70" width="110" height="34" rx="5" fill="#e8eef8"/>
+          <path d="M115,32H160V50H180M115,87H160V70H180"/>
+          <path d="M180,40q14,20 0,40q30,0 46,-20q-16,-20 -46,-20z" fill="#fff"/><path d="M174,40q14,20 0,40"/>
+          <path d="M226,60H290"/><circle cx="310" cy="60" r="18" fill="#fde7cf"/></g>
+        <g font-size="12" fill="#1d1d1f" text-anchor="middle"><text x="60" y="36">下のスイッチA</text><text x="60" y="91">上のスイッチB</text><text x="310" y="64">照明</text></g>
+      </svg>
+      <div class="point">どちらか一方を切り替えると、XORの出力は<b>必ず反転</b>する（相手が0でも1でも）。だから両端のどちらでも点けたり消したりできる。正解は<b>XOR</b>（エ）。ANDは両方オン、ORはどちらかオンで点くだけで、もう一方を切り替えても消えないことがある。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成29年度秋期 午前 問23・平成28年度秋期 午前 問23（図を書き直した）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/card_index_dividers_flat.svg" alt="">LUTは真理値表をそのままメモリに入れた回路。FPGAの部品になる</h1>
+  <div class="cols">
+    <div>
+      <div class="cap"><a class="ref q" href="https://www.ap-siken.com/kakomon/02_aki/q23.html">R2秋 問23</a>：LUTの値と等価な回路（A2＝a、A1＝b、A0＝c）</div>
+      <table class="mini" style="text-align:center">
+        <tr><th>番地</th><th>a</th><th>b</th><th>c</th><th>値</th><th>a・b</th><th>(a・b)⊕c</th></tr>
+        <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+        <tr><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+        <tr><td>2</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+        <tr><td>3</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+        <tr><td>4</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+        <tr><td>5</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+        <tr><td>6</td><td>1</td><td>1</td><td>0</td><td><b>1</b></td><td>1</td><td><b>1</b></td></tr>
+        <tr><td>7</td><td>1</td><td>1</td><td>1</td><td><b>0</b></td><td>1</td><td><b>0</b></td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="point" style="margin-top:0">番地0〜5は<b>値＝c</b>。a＝b＝1（番地6・7）のときだけcが反転している。「a・bが1ならcを反転」＝ <b>(a・b)⊕c</b>（イ：ANDの後にXOR）。</div>
+      <table class="mini">
+        <tr><th style="width:30%">選択肢</th><th>番地7（1,1,1）の出力</th></tr>
+        <tr><td>ア AND→OR</td><td>1（表は0）</td></tr>
+        <tr><td><b>イ AND→XOR</b></td><td><b>0（一致）</b></td></tr>
+        <tr><td>ウ OR→AND</td><td>1（表は0）。番地1でも0になる</td></tr>
+        <tr><td>エ XOR→XOR</td><td>1（表は0）。番地2〜5も合わない</td></tr>
+      </table>
+      <div class="point"><b>LUT（Lookup Table）</b>は、入力を番地として読み、記憶した値を出力する。中身を書き換えれば<b>どんな論理でも</b>作れるので、<a class="ref" href="https://e-words.jp/w/FPGA.html">FPGA</a>は小さなLUTと<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/#ebfbefd7846e6b00afe53c15d7562587575d2df0">フリップフロップ</a>を大量に並べて回路を作る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 令和2年度10月 午前 問23（表と図を書き直した）／<a href="https://e-words.jp/w/%E3%83%AB%E3%83%83%E3%82%AF%E3%82%A2%E3%83%83%E3%83%97%E3%83%86%E3%83%BC%E3%83%96%E3%83%AB.html">e-Words「ルックアップテーブル」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/microscope_flat.svg" alt="">2つの回路を比べる問題は、選択肢を両方の回路に入れて表にする</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">H31春 問23：左＝全部AND、右＝全部OR（同じ配線）</div>
+      <svg width="400" height="120" viewBox="0 0 400 120">
+        <g stroke="#1f3a68" stroke-width="2" fill="none">
+          <path d="M10,25H120M10,60H40M10,80H40M82,70H100V40H120M100,70V95H120M10,110H120"/>
+          <path d="M40,50h22a20,20 0 0 1 0,40h-22z" fill="#fff"/>
+          <path d="M120,15h22a20,20 0 0 1 0,40h-22z" fill="#fff"/>
+          <path d="M120,80h22a20,20 0 0 1 0,40h-22z" transform="translate(0,-5)" fill="#fff"/>
+          <path d="M162,35H185M162,95H185"/>
+        </g>
+        <g font-size="12" fill="#1d1d1f"><text x="0" y="21">A</text><text x="0" y="56">B</text><text x="0" y="78">C</text><text x="0" y="106">D</text><text x="190" y="40">E</text><text x="190" y="100">F</text></g>
+        <g font-size="12" fill="#1f3a68"><text x="215" y="30">左：E＝A・(B・C)</text><text x="215" y="48">　　F＝(B・C)・D</text><text x="215" y="80">右：E＝A＋(B＋C)</text><text x="215" y="98">　　F＝(B＋C)＋D</text></g>
+      </svg>
+    </div>
+    <div>
+      <table class="mini" style="text-align:center">
+        <tr><th>選択肢</th><th>A B C D</th><th>E F</th><th>左（AND）</th><th>右（OR）</th></tr>
+        <tr><td>ア</td><td>0 0 0 0</td><td>0 0</td><td>成立</td><td>成立</td></tr>
+        <tr><td>イ</td><td>0 0 1 1</td><td>1 1</td><td>E＝0で不成立</td><td>成立</td></tr>
+        <tr><td><b>ウ</b></td><td>1 1 0 1</td><td>0 0</td><td><b>成立</b></td><td>E＝1で不成立</td></tr>
+        <tr><td>エ</td><td>1 1 1 1</td><td>1 1</td><td>成立</td><td>成立</td></tr>
+      </table>
+      <div class="point">「左側の回路<b>でだけ</b>成立」なので、左で成立かつ右で不成立のものを選ぶ。<b>ウ</b>が正解。全部0・全部1はANDとORで同じ結果になる（ア・エ）ので、真っ先に外せる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成31年度春期 午前 問23（図と表を書き直した）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
+</section>
+
+
+
+
+
 
 <section class="slide">
   <h1><img class="ico" src="img/hw/link_flat.svg" alt="">一致回路は XY＋X̄Ȳ。4通りの入力を全部入れて確かめる</h1>
@@ -343,6 +728,86 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   </div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/repeat_button_flat.svg" alt="">NORのラッチは1で働く。セットしたい側の「反対の入力」を1にする</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">H25秋 問24：x＝0, y＝1 から x＝1, y＝0 にする a, b</div>
+      <svg width="400" height="140" viewBox="0 0 400 140">
+        <g stroke="#1f3a68" stroke-width="2" fill="none">
+          <path d="M10,25H110M10,115H110M60,45H110M60,95H110M60,45L240,95M60,95L240,45"/>
+          <path d="M104,15q14,20 0,40q30,0 46,-20q-16,-20 -46,-20z" fill="#fff"/><circle cx="154" cy="35" r="4" fill="#fff"/>
+          <path d="M104,85q14,20 0,40q30,0 46,-20q-16,-20 -46,-20z" fill="#fff"/><circle cx="154" cy="105" r="4" fill="#fff"/>
+          <path d="M158,35H290M158,105H290M240,35V45M240,105V95"/>
+        </g>
+        <g font-size="13" fill="#1d1d1f"><text x="0" y="20">a</text><text x="0" y="132">b</text><text x="296" y="40">x</text><text x="296" y="110">y</text></g>
+        <g font-size="11.5" fill="#1f3a68"><text x="300" y="70">x＝¬(a＋y)</text><text x="300" y="88">y＝¬(b＋x)</text></g>
+      </svg>
+      <table class="mini" style="text-align:center">
+        <tr><th>手順</th><th>a</th><th>b</th><th>y＝¬(b＋x)</th><th>x＝¬(a＋y)</th></tr>
+        <tr><td>はじめ</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+        <tr><td>bを1に</td><td>0</td><td><b>1</b></td><td>¬(1＋0)＝<b>0</b></td><td>¬(0＋0)＝<b>1</b></td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th style="width:24%">a, b</th><th>結果</th></tr>
+        <tr><td>ア 0, 0</td><td>保持。x＝0, y＝1 のまま</td></tr>
+        <tr><td><b>イ 0, 1</b></td><td><b>y が0になり、x が1に変わる</b></td></tr>
+        <tr><td>ウ 1, 0</td><td>x＝0 に固定（いまと同じ）</td></tr>
+        <tr><td>エ 1, 1</td><td>x＝y＝0。禁止の入力</td></tr>
+      </table>
+      <table class="mini" style="margin-top:8px">
+        <tr><th style="width:24%"></th><th>NANDのラッチ</th><th>NORのラッチ</th></tr>
+        <tr><td>保持</td><td>入力が両方<b>1</b></td><td>入力が両方<b>0</b></td></tr>
+        <tr><td>働く入力</td><td><b>0</b>にした側</td><td><b>1</b>にした側</td></tr>
+        <tr><td>禁止</td><td>両方0</td><td>両方1</td></tr>
+      </table>
+      <div class="point">NANDは「0が来ると必ず1」、NORは「1が来ると必ず0」。<b>出力を決めてしまう値</b>が入った側から順に計算する。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成25年度秋期 午前 問24（図を書き直した）／<a href="https://e-words.jp/w/%E3%83%95%E3%83%AA%E3%83%83%E3%83%97%E3%83%95%E3%83%AD%E3%83%83%E3%83%97%E5%9B%9E%E8%B7%AF.html">e-Words「フリップフロップ回路」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/stopwatch_flat.svg" alt="">シフトレジスタは1クロックで1ビットずつ送る。最初に入れたビットが一番上へ</h1>
+  <div class="cols" style="grid-template-columns:1.1fr .9fr">
+    <div>
+      <div class="cap">H26春 問22：立上りでデータを取り込み、上位へシフト（8ビット）</div>
+      <svg width="440" height="130" viewBox="0 0 440 130">
+        <g stroke="#1f3a68" stroke-width="2" fill="none">
+          <path d="M40,95h12v-20h12v20h16v-20h12v20h16v-20h12v20h16v-20h12v20h16v-20h12v20h16v-20h12v20h16v-20h12v20h16v-20h12v20h30"/>
+          <path d="M40,25h26v20h84v-20h56v20h28v-20h30"/>
+        </g>
+        <g stroke="#b25000" stroke-dasharray="3 3" stroke-width="1.2"><path d="M52,15V110M80,15V110M108,15V110M136,15V110M164,15V110M192,15V110M220,15V110M248,15V110"/></g>
+        <g font-size="12" fill="#b25000" font-weight="700" text-anchor="middle"><text x="52" y="124">1</text><text x="80" y="124">0</text><text x="108" y="124">0</text><text x="136" y="124">0</text><text x="164" y="124">1</text><text x="192" y="124">1</text><text x="220" y="124">0</text><text x="248" y="124">1</text></g>
+        <g font-size="11" fill="#1d1d1f"><text x="0" y="40">データ</text><text x="0" y="90">クロック</text><text x="262" y="124">← 立上りで読んだ値</text></g>
+      </svg>
+      <div style="font-size:11px;color:#6e6e73">図は考え方を示すためにClaudeが描いた（実際の問題の波形は前後にも続く。ストローブ直前の8回分を読む）</div>
+    </div>
+    <div>
+      <table class="mini" style="text-align:center">
+        <tr><th>読んだ順</th><th>1回目</th><th>…</th><th>8回目</th></tr>
+        <tr><td>値</td><td>1</td><td>0 0 0 1 1 0</td><td>1</td></tr>
+        <tr><td>最後の位置</td><td><b>最上位</b>（b7）</td><td>…</td><td><b>最下位</b>（b0）</td></tr>
+      </table>
+      <div class="formula" style="font-size:16px">1000 1101<sub>(2)</sub> ＝ <b>8D</b><sub>(16)</sub>（イ）</div>
+      <table class="mini">
+        <tr><th>誤りの選択肢</th><th>どう間違えたか</th></tr>
+        <tr><td>B1（1011 0001）</td><td>1回目を最下位にした（逆順）</td></tr>
+        <tr><td>C6（1100 0110）</td><td>ストローブより1つ前から読んだ</td></tr>
+        <tr><td>63（0110 0011）</td><td>C6をさらに逆順にした</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="point">最下位に入ったビットは、後から7回シフトされて<b>最上位</b>まで押し上げられる。シリアル（1本の線）で届いたデータをパラレル（8本）に直す部品で、SPIなどの通信に使う。</div>
+  <div class="cite">出典：IPA 平成26年度春期 午前 問22・平成30年度春期 午前 問22（波形を書き直した）／<a href="https://e-words.jp/w/%E3%82%B7%E3%83%95%E3%83%88%E3%83%AC%E3%82%B8%E3%82%B9%E3%82%BF.html">e-Words「シフトレジスタ」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
+</section>
+
+
 
 <section class="slide">
   <h1><img class="ico" src="img/hw/bell_flat.svg" alt="">押された瞬間は「今回1かつ前回0」。a・b̄ で立上りを見つける</h1>
@@ -428,6 +893,107 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   </div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/1/1-5/">応用情報.com 用語集 1-5 計測・制御に関する理論</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/level_slider_flat.svg" alt="">PWMの波形は「高さが一定で幅だけが変わる」。高さが変わるのは別の方式</h1>
+  <div class="cols">
+    <div>
+      <div class="cap"><a class="ref q" href="https://www.ap-siken.com/kakomon/02_aki/q22.html">R2秋 問22</a>ほか：<a class="ref" href="https://e-words.jp/w/PWM.html">PWM</a>の駆動波形はどれか</div>
+      <svg width="420" height="250" viewBox="0 0 420 250">
+        <g stroke="#1f3a68" stroke-width="2" fill="none">
+          <path d="M40,50h10v-20h10v20h20v-30h10v30h20v-40h10v40h20v-15h10v15h20v-35h10v35h20v-10h10v10h30"/>
+          <path d="M40,110h10v-35h6v35h20v-35h18v35h20v-35h30v35h12v-35h22v35h10v-35h8v35h40"/>
+          <path d="M40,170h8v-10h20v-8h25v-5h30v5h22v8h18v6h20v-6h22v-8h20v10h12v8h40"/>
+          <path d="M40,235h12v-15h10v-15h12v15h10v15h20v-15h10v-15h12v15h10v15h20v-15h10v-15h12v15h10v15h40"/>
+        </g>
+        <g font-size="13" font-weight="700" fill="#1f3a68"><text x="0" y="40">ア</text><text x="0" y="100">イ</text><text x="0" y="162">ウ</text><text x="0" y="225">エ</text></g>
+        <g font-size="11.5" fill="#1d1d1f"><text x="270" y="38">高さが変わる（PAM）</text><text x="270" y="98" fill="#b25000" font-weight="700">幅が変わる（PWM）</text><text x="270" y="160">階段状の電圧（D/Aの出力）</text><text x="270" y="222">同じ形の繰返し（変調なし）</text></g>
+      </svg>
+      <div style="font-size:11px;color:#6e6e73">選択肢の波形の特徴をClaudeが描き直した（形は原題と同じではない）</div>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th style="width:36%">方式</th><th>パルスの何で表すか</th></tr>
+        <tr><td><b>PWM</b>（パルス幅変調）</td><td><b>幅</b>（オンの時間）。高さと周期は一定</td></tr>
+        <tr><td>PAM（パルス振幅変調）</td><td><b>高さ</b>（振幅）</td></tr>
+        <tr><td>PFM（パルス周波数変調）</td><td>パルスの<b>間隔</b>（周波数）</td></tr>
+      </table>
+      <div class="ex" style="margin-top:8px"><span class="lbl">例</span>5Vで周期1ms、オンが0.3msなら、デューティ比30％で平均は <b>5×0.3＝1.5V</b>。モーターは重さ（慣性）があるので、速い切替えを平均として感じる。</div>
+      <div class="point">マイコンのポートは<b>0か1しか出せない</b>。PWMなら高価なD/A変換器がなくても、オンの割合を変えるだけで強さを調整できる。問題文の「低域通過フィルターを通していない」は、平均をとる前の<b>ギザギザのまま</b>の波形という意味。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 令和2年度10月 午前 問22（平成26年度春期 問21・平成27年度秋期 問21・平成29年度秋期 問21も同じ問題）／<a href="https://ja.wikipedia.org/wiki/%E3%83%91%E3%83%AB%E3%82%B9%E5%B9%85%E5%A4%89%E8%AA%BF">Wikipedia「パルス幅変調」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/1/1-4/">応用情報.com 用語集 1-4 通信に関する理論</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/repeat_button_flat.svg" alt="">フィードバック制御は輪になる。目標値と測った値の差（偏差）が出発点</h1>
+  <div class="cols" style="grid-template-columns:1.15fr .85fr">
+    <div>
+      <svg width="460" height="200" viewBox="0 0 460 200">
+        <g stroke="#1f3a68" stroke-width="2" fill="#fff">
+          <circle cx="80" cy="60" r="14"/>
+          <rect x="120" y="38" width="90" height="44" rx="6" fill="#1f3a68"/>
+          <rect x="250" y="38" width="90" height="44" rx="6" fill="#2f5596"/>
+          <rect x="250" y="130" width="90" height="44" rx="6" fill="#c9daf2"/>
+        </g>
+        <g stroke="#1f3a68" stroke-width="2" fill="none">
+          <path d="M10,60H66M94,60H120M210,60H250M340,60H440M400,60V152H340M250,152H80V74"/>
+          <path d="M295,10V38" stroke="#b25000" stroke-dasharray="4 3"/>
+        </g>
+        <g fill="#1f3a68"><path d="M66,60l-8,-4v8z"/><path d="M120,60l-8,-4v8z"/><path d="M250,60l-8,-4v8z"/><path d="M440,60l-8,-4v8z"/><path d="M80,74l-4,8h8z"/><path d="M295,38l-4,-8h8z" fill="#b25000"/></g>
+        <g font-size="12" fill="#fff" text-anchor="middle" font-weight="700"><text x="165" y="65">調節部</text><text x="295" y="65">操作部・対象</text></g>
+        <g font-size="12" fill="#1f3a68" text-anchor="middle" font-weight="700"><text x="295" y="157">検出部</text></g>
+        <g font-size="11.5" fill="#1d1d1f"><text x="8" y="50">目標値</text><text x="98" y="52">偏差</text><text x="213" y="52">操作量</text><text x="372" y="52">制御量</text><text x="300" y="20" fill="#b25000">外乱</text><text x="110" y="194">測った制御量を戻す（フィードバック）</text><text x="70" y="100">－</text></g>
+      </svg>
+      <div class="point">偏差＝目標値－制御量。エアコンなら「設定温度」が目標値、「室温」が制御量、「冷媒の流れ（コンプレッサーの回転数）」が操作量、「日差し・人の出入り」が外乱。</div>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th style="width:36%">制御</th><th>身近な例</th></tr>
+        <tr><td><b>フィードバック</b></td><td>エアコンの温度、車の速度を一定に保つ装置</td></tr>
+        <tr><td><b>シーケンス</b></td><td>全自動洗濯機（給水→洗い→すすぎ→脱水）、信号機、エレベーター</td></tr>
+        <tr><td><a class="ref" href="https://www.ap-siken.com/keyword/1/1-5/#171de45ced5584651f956be5217ec212211eff36">オープンループ</a></td><td>タイマー式のトースター（焼け具合は測らない）</td></tr>
+        <tr><td>フィードフォワード</td><td>外気温を先に測ってボイラーの火力を上げる</td></tr>
+      </table>
+      <div class="point warn">シーケンス制御は<b>順序と条件</b>で次の段階に進む。「水位が設定に達したら給水を止める」のように測る場面はあるが、偏差を小さくし続けるわけではない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA シラバス Ver.7.2 中分類6 1.（2）の用語例／<a href="https://ja.wikipedia.org/wiki/%E3%83%95%E3%82%A3%E3%83%BC%E3%83%89%E3%83%90%E3%83%83%E3%82%AF%E5%88%B6%E5%BE%A1">Wikipedia「フィードバック制御」</a>／<a href="https://ja.wikipedia.org/wiki/%E3%82%B7%E3%83%BC%E3%82%B1%E3%83%B3%E3%82%B9%E5%88%B6%E5%BE%A1">Wikipedia「シーケンス制御」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/1/1-5/">応用情報.com 用語集 1-5 計測・制御に関する理論</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/control_knobs_flat.svg" alt="">PID制御は「今の差」「たまった差」「差の変わり方」の3つを足して操作する</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="190" viewBox="0 0 420 190">
+        <g stroke="#d2d2d7" fill="none"><path d="M40,20V170H410"/></g>
+        <path d="M40,60H410" stroke="#b25000" stroke-dasharray="5 4" stroke-width="1.5"/>
+        <path d="M40,170C90,170 100,40 150,45C190,50 200,75 240,70C280,66 300,62 410,62" stroke="#5b80bf" stroke-width="2.5" fill="none"/>
+        <path d="M40,170C100,170 120,58 180,60C240,61 300,60 410,60" stroke="#1f3a68" stroke-width="2.5" fill="none"/>
+        <path d="M40,170C90,170 120,85 180,82C250,80 300,80 410,80" stroke="#6e6e73" stroke-width="2" fill="none" stroke-dasharray="2 3"/>
+        <g font-size="11.5"><text x="330" y="54" fill="#b25000">目標値</text><text x="140" y="34" fill="#5b80bf">PI：行き過ぎて揺れる</text><text x="250" y="98" fill="#6e6e73">Pだけ：差が残る（定常偏差）</text><text x="200" y="128" fill="#1f3a68" font-weight="700">PID：速く、行き過ぎも小さい</text><text x="360" y="186" fill="#6e6e73">時間</text></g>
+      </svg>
+      <div style="font-size:11px;color:#6e6e73">応答の形の違いを示すためにClaudeが描いた模式図</div>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th style="width:24%">動作</th><th>見るもの</th><th>効き目</th></tr>
+        <tr><td><b>P</b>（比例）</td><td>いまの偏差</td><td>差が大きいほど強く操作。これだけでは<b>差が少し残る</b></td></tr>
+        <tr><td><b>I</b>（積分）</td><td>偏差の合計</td><td>残った差を時間をかけて<b>ゼロに</b>する</td></tr>
+        <tr><td><b>D</b>（微分）</td><td>偏差の変化の速さ</td><td>急に近づくとブレーキをかけ、<b>行き過ぎ（オーバーシュート）</b>を抑える</td></tr>
+      </table>
+      <div class="formula" style="font-size:14px">操作量 ＝ Kp×e ＋ Ki×∫e dt ＋ Kd×de/dt</div>
+      <div class="point">H21秋 問22（<a class="ref" href="https://e-words.jp/w/PLC.html">PLC</a>の説明）では「偏差の比例、積分及び微分の3要素で制御する」が<b>誤りの選択肢</b>として出た。これはPLCではなく<b>PID制御</b>の説明。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a href="https://ja.wikipedia.org/wiki/PID%E5%88%B6%E5%BE%A1">Wikipedia「PID制御」</a>／IPA 平成21年度秋期 午前 問22（選択肢ア）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/21/21-5/">応用情報.com 用語集 21-5 産業機器</a></div>
+</section>
+
+
+
 
 <section class="slide">
   <h1><img class="ico" src="img/hw/automobile_flat.svg" alt="">Hブリッジは対角の2つを入れて電流の向きを決める。逆転はS3とS2</h1>
@@ -523,6 +1089,74 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   </div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/21/21-5/">応用情報.com 用語集 21-5 産業機器</a></div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/factory_flat.svg" alt="">ラダー図は左右の線の間に「接点」と「コイル」を並べる。自己保持が基本形</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">自己保持回路（押しボタンでモーターを回し続ける）</div>
+      <svg width="420" height="170" viewBox="0 0 420 170">
+        <g stroke="#1f3a68" stroke-width="2.5" fill="none"><path d="M20,15V160M400,15V160"/></g>
+        <g stroke="#1f3a68" stroke-width="2" fill="none">
+          <path d="M20,50H80M100,50H160M180,50H300M340,50H400"/>
+          <path d="M80,35V65M100,35V65M160,35V65M180,35V65"/><path d="M160,65L180,35"/>
+          <circle cx="320" cy="50" r="20"/>
+          <path d="M60,50V110H80M100,110H130V50M80,95V125M100,95V125"/>
+        </g>
+        <g font-size="11.5" fill="#1d1d1f" text-anchor="middle"><text x="90" y="28">開始</text><text x="90" y="82">a接点</text><text x="170" y="28">停止</text><text x="170" y="82">b接点</text><text x="320" y="55" font-weight="700" fill="#1f3a68">M</text><text x="320" y="88">モーター</text><text x="90" y="145">Mの接点</text></g>
+      </svg>
+      <div class="point">開始を押すとMが入り、Mの接点が開始ボタンの<b>代わりに</b>電気を通す。指を離しても回り続け、停止（b接点）を押すと切れる。</div>
+    </div>
+    <div>
+      <div class="cap">H21秋 問22：<a class="ref" href="https://e-words.jp/w/PLC.html">PLC</a>の記述として適切なもの</div>
+      <table class="mini">
+        <tr><th style="width:44%">選択肢</th><th>正体</th></tr>
+        <tr><td>ア 偏差の比例・積分・微分で制御</td><td>PID制御</td></tr>
+        <tr><td><b>イ 主としてラダー図を使ったシーケンスプログラム</b></td><td><b>PLC（正解）</b></td></tr>
+        <tr><td>ウ <a class="ref" href="https://e-words.jp/w/%E3%82%A2%E3%83%8A%E3%83%AD%E3%82%B0.html">アナログ</a>信号をデジタル信号に変換</td><td>A/D変換器</td></tr>
+        <tr><td>エ リレーシーケンス回路のハードウェアで制御</td><td>PLCが置き換える前の<b>リレー盤</b></td></tr>
+      </table>
+      <table class="mini" style="margin-top:8px">
+        <tr><th style="width:34%">記号</th><th>意味</th></tr>
+        <tr><td>a接点 ─┤ ├─</td><td>ふだんは開き、働くと閉じる</td></tr>
+        <tr><td>b接点 ─┤/├─</td><td>ふだんは閉じ、働くと開く</td></tr>
+        <tr><td><a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/#8424715f1fa4ba195497042ac2fc227827f64b87">コイル</a> ─( )─</td><td>電気が来ると出力（モーター・ランプ）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成21年度秋期 午前 問22／<a href="https://e-words.jp/w/%E3%83%A9%E3%83%80%E3%83%BC%E5%9B%B3.html">e-Words「ラダー図」</a>／<a href="https://ja.wikipedia.org/wiki/%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9E%E3%83%96%E3%83%AB%E3%83%AD%E3%82%B8%E3%83%83%E3%82%AF%E3%82%B3%E3%83%B3%E3%83%88%E3%83%AD%E3%83%BC%E3%83%A9">Wikipedia「プログラマブルロジックコントローラ」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/21/21-5/">応用情報.com 用語集 21-5 産業機器</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/electric_plug_flat.svg" alt="">同じ「PLC」でも、電力線通信は家の電灯線にデータを乗せる技術</h1>
+  <div class="cols">
+    <div>
+      <table class="vs">
+        <tr><th style="width:24%"></th><th>Programmable Logic Controller</th><th>Power Line Communications</th></tr>
+        <tr><td>分野</td><td>工場の機械制御</td><td>通信（ネットワーク）</td></tr>
+        <tr><td>中身</td><td>ラダー図で動くシーケンス制御装置</td><td><b>電力線に高い周波数の信号を重ねて</b>データを送る</td></tr>
+        <tr><td>例</td><td>製造ラインのコンベヤー</td><td>コンセントに挿すアダプターで家庭内LAN、スマートメーター</td></tr>
+      </table>
+      <div class="point">電気（50/60Hz）と、数MHz〜数十MHzの信号は周波数が大きく違うので、フィルターで分けて取り出せる。新しく線を引かずに済むのが利点。</div>
+    </div>
+    <div>
+      <div class="cap">H23特 問25：<a class="ref" href="https://e-words.jp/w/PLC.html">PLC</a>（Power Line Communications）の特徴</div>
+      <table class="mini">
+        <tr><th style="width:52%">選択肢</th><th>正体</th></tr>
+        <tr><td>ア データ線と電力線を分けた2線の通信</td><td>ふつうの配線。PLCは<b>1本で兼ねる</b></td></tr>
+        <tr><td><b>イ 電力線に情報信号を乗せて通信</b></td><td><b>PLC（正解）</b></td></tr>
+        <tr><td>ウ 電力線をアンテナにした無線通信</td><td>電力線通信ではない（線の中を伝わる有線通信）</td></tr>
+        <tr><td>エ 電話線で上りと下りが非対称な速度</td><td><b>ADSL</b></td></tr>
+      </table>
+      <div class="point warn">略語だけで判断しない。問題文の英語の正式名称を必ず読む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成23年度特別 午前 問25／<a href="https://e-words.jp/w/%E9%9B%BB%E5%8A%9B%E7%B7%9A%E9%80%9A%E4%BF%A1.html">e-Words「電力線通信」</a>／<a href="https://ja.wikipedia.org/wiki/%E9%9B%BB%E5%8A%9B%E7%B7%9A%E6%90%AC%E9%80%81%E9%80%9A%E4%BF%A1">Wikipedia「電力線搬送通信」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/21/21-5/">応用情報.com 用語集 21-5 産業機器</a></div>
+</section>
+
+
 
 <section class="slide chapter">
   <div class="hero-icons ira"><img src="img/irasutoya/motherboard.png" alt=""><img src="img/irasutoya/battery.png" alt=""><img src="img/irasutoya/ic_card.png" alt=""><img src="img/irasutoya/usb_memory.png" alt=""></div>
@@ -730,6 +1364,87 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/hw/puzzle_piece_flat.svg" alt="">システムLSIの選択肢は「何を、どこに集めたか」で見分ける</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">H22秋 問25：システム<a class="ref" href="https://e-words.jp/w/LSI.html">LSI</a>の記述</div>
+      <table class="mini">
+        <tr><th style="width:56%">選択肢</th><th>正体</th></tr>
+        <tr><td>ア 動作を管理するために複数のマイコンを集約したLSI</td><td>「管理用」に限らない。<a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a>以外も載せる</td></tr>
+        <tr><td>イ 同一機能の複数のLSIを1つの<b>基板</b>上に集約</td><td>ボード（モジュール）。チップは別々のまま</td></tr>
+        <tr><td>ウ 利用者が回路機能を変更できるLSI</td><td><a class="ref" href="https://e-words.jp/w/FPGA.html">FPGA</a>・PLD</td></tr>
+        <tr><td><b>エ 複数のLSIで実現していた機能を1チップに集約</b></td><td><b>システムLSI（正解）</b></td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">H21春 問22：<a class="ref" href="https://e-words.jp/w/SoC.html">SoC</a>の説明</div>
+      <table class="mini">
+        <tr><th style="width:56%">選択肢</th><th>正体</th></tr>
+        <tr><td>ア システムLSIと同義で、CPUは別チップ</td><td>SoCは<b>CPUも同じチップ</b>に載せる</td></tr>
+        <tr><td>イ システムLSIに内蔵したソフトウェア</td><td>ファームウェア</td></tr>
+        <tr><td><b>ウ ボード上で実現していたシステムを1チップで実現</b></td><td><b>SoC（正解）</b></td></tr>
+        <tr><td>エ 複数のLSIを単一のパッケージに封入</td><td>SiP（MCP）</td></tr>
+      </table>
+      <div class="point">「1つの<b>チップ</b>」＝SoC・システムLSI、「1つの<b>パッケージ</b>（包み）」＝SiP、「1つの<b>基板</b>」＝ボード。容れ物の大きさの順に並べると覚えやすい。</div>
+    </div>
+  </div>
+  <div class="point">スマートフォンのSoCには、CPU・GPU・メモリ制御・通信・画像処理などが1チップに入っている。部品が減るので<b>小さく・速く・安く・省電力</b>になる（シラバスの「メリット」）。</div>
+  <div class="cite">出典：IPA 平成22年度秋期 午前 問25・平成21年度春期 午前 問22／IPA シラバス Ver.7.2 中分類6 1.（3）③／<a href="https://e-words.jp/w/%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0LSI.html">e-Words「システムLSI」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/satellite_antenna_flat.svg" alt="">DSPは積和演算を1命令でこなす。デジタルフィルターの計算そのもの</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">FIRフィルター：直近の値に係数を掛けて足す</div>
+      <svg width="420" height="150" viewBox="0 0 420 150">
+        <g stroke="#1f3a68" stroke-width="2" fill="#fff">
+          <rect x="70" y="20" width="44" height="30" rx="4"/><rect x="170" y="20" width="44" height="30" rx="4"/><rect x="270" y="20" width="44" height="30" rx="4"/>
+          <circle cx="40" cy="85" r="16"/><circle cx="140" cy="85" r="16"/><circle cx="240" cy="85" r="16"/><circle cx="340" cy="85" r="16"/>
+          <circle cx="190" cy="130" r="13" fill="#c9daf2"/>
+        </g>
+        <g stroke="#1f3a68" stroke-width="1.6" fill="none"><path d="M5,35H70M114,35H170M214,35H270M314,35H340V69M40,35V69M140,35V69M240,35V69M40,101L180,124M140,101L184,119M240,101L196,119M340,101L202,124M203,130H260"/></g>
+        <g font-size="12" fill="#1f3a68" text-anchor="middle" font-weight="700"><text x="92" y="40">遅延</text><text x="192" y="40">遅延</text><text x="292" y="40">遅延</text><text x="40" y="89" font-size="10.5">×a0</text><text x="140" y="89" font-size="10.5">×a1</text><text x="240" y="89" font-size="10.5">×a2</text><text x="340" y="89" font-size="10.5">×a3</text><text x="190" y="135">＋</text></g>
+        <g font-size="11.5" fill="#1d1d1f"><text x="0" y="28">x[n]</text><text x="266" y="134">y[n]</text></g>
+      </svg>
+      <div class="formula" style="font-size:14px">y[n] ＝ a0・x[n] ＋ a1・x[n−1] ＋ a2・x[n−2] ＋ a3・x[n−3]</div>
+      <div class="point">「掛けて足す」を何十回も繰り返すので、<b>積和演算器（MAC）</b>を持ち1クロックで1回こなす<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/#d3d45f1a18f150a3e4db24f488f34cbf25a9c8a7">DSP</a>が向いている。音声・通信・モーター制御の信号処理に使う。</div>
+    </div>
+    <div>
+      <div class="cap">H27秋 問20：DSPの特徴</div>
+      <table class="mini">
+        <tr><th style="width:52%">選択肢（要約）</th><th>正体</th></tr>
+        <tr><td>ア シリアルポートに誤り訂正を内蔵し通信制御向き</td><td>通信制御用のコントローラー</td></tr>
+        <tr><td><b>イ 積和演算を内蔵しデジタルフィルター向き</b></td><td><b>DSP（正解）</b></td></tr>
+        <tr><td>ウ 多チャンネルA/Dと大容量メモリで温度記録</td><td>データロガー用のマイコン</td></tr>
+        <tr><td>エ ベクトル演算で大規模な科学技術計算</td><td>ベクトルプロセッサ（スーパーコンピュータ）</td></tr>
+      </table>
+      <div class="point">H22秋 問23「DSPの特徴的な演算機能」も答えは<b>積和演算</b>。複素数・浮動小数点・論理演算はふつうの<a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a>でもできるので「特徴」にならない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成27年度秋期 午前 問20・平成22年度秋期 午前 問23／<a href="https://ja.wikipedia.org/wiki/%E3%83%87%E3%82%B8%E3%82%BF%E3%83%AB%E3%82%B7%E3%82%B0%E3%83%8A%E3%83%AB%E3%83%97%E3%83%AD%E3%82%BB%E3%83%83%E3%82%B5">Wikipedia「デジタルシグナルプロセッサ」</a>／<a href="https://e-words.jp/w/%E7%A9%8D%E5%92%8C%E6%BC%94%E7%AE%97.html">e-Words「積和演算」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/toolbox_flat.svg" alt="">カスタムICの周辺用語。CORDICはシフトと足し算で三角関数を求める</h1>
+  <table>
+    <tr><th style="width:20%">用語</th><th>意味</th><th style="width:30%">試験での見分け方</th></tr>
+    <tr><td><b><a class="ref" href="https://e-words.jp/w/ASIC.html">ASIC</a></b></td><td>特定の用途・顧客向けに作る専用IC。量産すれば安く速いが、作った後は変えられない</td><td><a class="ref" href="https://e-words.jp/w/FPGA.html">FPGA</a>は<b>後から書換え可</b>、ASICは<b>不可</b></td></tr>
+    <tr><td><b><a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/#ff10f01ee1b29eb479aa6acf4bbdaf9cb8286fe3">CORDIC</a></b></td><td>角度を小さな決まった角度（arctan 2<sup>−i</sup>）の足し引きに分け、<b>シフトと加算だけ</b>で回転を繰り返して sin・cos などを求める方法。掛け算器のない小さな回路で使う</td><td>「乗算器を使わずに<a class="ref" href="https://www.ap-siken.com/keyword/1/1-2/#9467fd16f8eebd92a1d0d68dec5fea6018c8cc5c">三角関数</a>」</td></tr>
+    <tr><td><b><a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/#501743d96d44d3fb866dbc43125b6b6614dc7d8e">HDL</a></b></td><td>回路の動きを文章で書く言語（Verilog・VHDL）。<b>論理合成</b>ツールがゲートの回路に直す</td><td>「FPGAに実装する回路を記述して論理合成」</td></tr>
+    <tr><td><b><a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/#e4bcbd251b798acd017986ad6bee9302fcb3b3f0">コデザイン</a></b></td><td>どの機能をハードウェアに、どれをソフトウェアにするかを<b>同時に</b>設計・検証すること</td><td>「HWとSWの協調設計」</td></tr>
+    <tr><td><b><a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/#471bce3b9fa549f903e918c8d2e4fd35f0e363d7">オープンソースハードウェア</a></b></td><td>回路図・設計データを公開し、誰でも作ったり改良したりできるハードウェア（Arduinoのボードなど）。命令セットを自由に使えるRISC-Vも同じ考え方</td><td>「設計情報を公開」</td></tr>
+  </table>
+  <div class="cite">出典：IPA シラバス Ver.7.2 中分類6 1.（3）②③の用語例／<a href="https://en.wikipedia.org/wiki/CORDIC">Wikipedia「CORDIC」</a>／<a href="https://www.oshwa.org/definition/">OSHWA「Open Source Hardware Definition」</a>／<a href="https://riscv.org/about/">RISC-V International「About RISC-V」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
+</section>
+
+
+
+
+<section class="slide">
   <h1><img class="ico" src="img/hw/desktop_computer_flat.svg" alt="">マイコンは1チップにCPUと周辺回路。D/Aの出力は「1ビットの電圧×値」</h1>
   <div class="cols">
     <div>
@@ -759,6 +1474,99 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/hw/level_slider_flat.svg" alt="">D/Aの1ビット分は「出力電圧÷その値」。128で2.5Vなら 2.5／128 V</h1>
+  <div class="cols">
+    <div>
+      <div class="cap"><a class="ref q" href="https://www.ap-siken.com/kakomon/01_aki/q20.html">R1秋 問20</a>：8ビットD/A、0で0V、128で2.5V</div>
+      <svg width="420" height="190" viewBox="0 0 420 190">
+        <g stroke="#d2d2d7" fill="none"><path d="M50,15V160H410"/></g>
+        <path d="M50,160h20v-9h20v-9h20v-9h20v-9h20v-9h20v-9h20v-9h20v-9" stroke="#1f3a68" stroke-width="2" fill="none"/>
+        <path d="M50,160L370,40" stroke="#5b80bf" stroke-dasharray="4 3"/>
+        <path d="M210,88V97" stroke="#b25000" stroke-width="3"/>
+        <g font-size="11.5" fill="#1d1d1f"><text x="0" y="164">0V</text><text x="0" y="44">2.5V</text><text x="372" y="44">値128</text><text x="220" y="100" fill="#b25000" font-weight="700">1段＝1LSB</text><text x="350" y="178">デジタル値</text></g>
+        <path d="M45,40H370" stroke="#d2d2d7" stroke-dasharray="2 3"/>
+      </svg>
+    </div>
+    <div>
+      <div class="formula" style="font-size:16px">1LSB ＝ 2.5V ÷ 128 ＝ <b>2.5／128 V</b>（ア）<br>≒ 19.5mV</div>
+      <table class="mini">
+        <tr><th style="width:30%">選択肢</th><th>どこを取り違えたか</th></tr>
+        <tr><td>イ 2.5／255</td><td>8ビットの最大値255を使った。2.5Vは255ではなく<b>128のとき</b>の電圧</td></tr>
+        <tr><td>ウ 2.5／256</td><td>段の数（2<sup>8</sup>）で割った。問題の基準は値128</td></tr>
+        <tr><td>エ 2.5／512</td><td>半分にしすぎ（2<sup>9</sup>）</td></tr>
+      </table>
+      <div class="point"><b>分解能</b>はビット数で決まり、8ビットなら256段。出力は「1LSBの電圧×入力値」なので、最大の255を入れると 2.5×255／128 ≒ <b>4.98V</b> になる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 令和元年度秋期 午前 問20（グラフはClaudeが描いた）／IPA シラバス Ver.7.2 中分類6 1.（3）④の用語例（D/Aコンバータ）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/microscope_flat.svg" alt="">A/D変換は標本化・量子化・符号化の3段。標本化は最高周波数の2倍より速く</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="170" viewBox="0 0 420 170">
+        <g stroke="#d2d2d7" fill="none"><path d="M30,10V150H410"/><path d="M30,30H410M30,60H410M30,90H410M30,120H410" stroke-dasharray="2 4"/></g>
+        <path d="M30,90C70,20 110,20 150,70C190,120 230,140 270,100C310,60 350,40 400,70" stroke="#5b80bf" stroke-width="2" fill="none"/>
+        <g fill="#1f3a68"><circle cx="30" cy="90" r="4"/><circle cx="80" cy="38" r="4"/><circle cx="130" cy="50" r="4"/><circle cx="180" cy="100" r="4"/><circle cx="230" cy="123" r="4"/><circle cx="280" cy="90" r="4"/><circle cx="330" cy="52" r="4"/><circle cx="380" cy="57" r="4"/></g>
+        <g font-size="11" fill="#b25000" font-weight="700" text-anchor="middle"><text x="80" y="165">3</text><text x="130" y="165">2</text><text x="180" y="165">1</text><text x="230" y="165">0</text><text x="280" y="165">1</text><text x="330" y="165">2</text><text x="380" y="165">2</text></g>
+        <g font-size="10.5" fill="#6e6e73"><text x="0" y="34">3</text><text x="0" y="64">2</text><text x="0" y="94">1</text><text x="0" y="124">0</text></g>
+      </svg>
+      <div style="font-size:11px;color:#6e6e73">点＝決まった間隔で値を取る（標本化）、点線＝近い段に丸める（量子化）。橙の数字は丸めた段の番号</div>
+    </div>
+    <div>
+      <div class="flow"><div class="box b1">標本化<span>時間を区切る</span></div><div class="to">▶</div><div class="box b2">量子化<span>値を段に丸める</span></div><div class="to">▶</div><div class="box b3">符号化<span>2進数にする</span></div></div>
+      <table class="mini" style="margin-top:10px">
+        <tr><th style="width:34%">決めるもの</th><th>効き目</th></tr>
+        <tr><td>標本化周波数</td><td><b>標本化定理</b>：元の信号の最高周波数の<b>2倍より高く</b>しないと、元の波形に戻せない</td></tr>
+        <tr><td>量子化ビット数</td><td>多いほど段が細かく、丸めの誤差（量子化雑音）が小さい</td></tr>
+      </table>
+      <div class="ex" style="margin-top:8px"><span class="lbl">例</span>電話の音声は約4kHzまでなので8kHzで標本化し、8ビットで量子化すると <b>8,000×8＝64kビット／秒</b>。音楽<a class="ref" href="https://e-words.jp/w/CD.html">CD</a>は44.1kHz・16ビット・2チャンネル。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA シラバス Ver.7.2 中分類6 1.（3）④の用語例（A/Dコンバータ）／<a href="https://ja.wikipedia.org/wiki/%E6%A8%99%E6%9C%AC%E5%8C%96%E5%AE%9A%E7%90%86">Wikipedia「標本化定理」</a>／<a href="https://ja.wikipedia.org/wiki/%E3%83%91%E3%83%AB%E3%82%B9%E7%AC%A6%E5%8F%B7%E5%A4%89%E8%AA%BF">Wikipedia「パルス符号変調」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-2/">応用情報.com 用語集 3-2 メモリ</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/stopwatch_flat.svg" alt="">PLLは周波数を掛け算、分周器は割り算。許される誤差の範囲に入る値を選ぶ</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">H22春 問25ほか：15MHzから<a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a> 240MHz と SIO 115kHz</div>
+      <svg width="420" height="150" viewBox="0 0 420 150">
+        <g stroke="#1f3a68" stroke-width="2" fill="#fff"><rect x="5" y="20" width="60" height="40" rx="5"/><rect x="95" y="20" width="70" height="40" rx="5"/><rect x="200" y="20" width="70" height="40" rx="5"/><rect x="200" y="95" width="70" height="40" rx="5" fill="#fde7cf"/><rect x="330" y="20" width="70" height="40" rx="5" fill="#c9daf2"/><rect x="330" y="95" width="70" height="40" rx="5" fill="#c9daf2"/></g>
+        <g stroke="#1f3a68" stroke-width="2" fill="none"><path d="M65,40H95M165,40H200M180,40V115H200M270,40H330M270,115H330"/></g>
+        <g font-size="12" fill="#1f3a68" text-anchor="middle" font-weight="700"><text x="35" y="45">発振器</text><text x="130" y="38">PLL1</text><text x="130" y="53" font-size="11">8逓倍</text><text x="235" y="38">PLL2</text><text x="235" y="53" font-size="11">2逓倍</text><text x="235" y="120">分周器</text><text x="365" y="45">CPU</text><text x="365" y="120">SIO</text></g>
+        <g font-size="11" fill="#1d1d1f" text-anchor="middle"><text x="80" y="76">15MHz</text><text x="185" y="15" fill="#b25000" font-weight="700">120MHz</text><text x="300" y="34">240MHz</text><text x="300" y="109">115kHz±5%</text></g>
+      </svg>
+      <ol class="steps">
+        <li>分周器に入るのは PLL1 の出力：15MHz×8＝<b>120MHz</b></li>
+        <li>必要な割る数：120,000kHz ÷ 115kHz ≒ <b>1,043</b></li>
+        <li>近い2のべき乗は 2<sup>10</sup>＝1,024 → 120MHz÷1,024 ≒ <b>117.2kHz</b></li>
+        <li>許容範囲 109.25〜120.75kHz に入るので <b>1／2<sup>10</sup></b>（エ）</li>
+      </ol>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th style="width:32%">選択肢</th><th>SIOのクロック</th><th>判定</th></tr>
+        <tr><td>ア 1／2<sup>4</sup></td><td>7.5MHz</td><td>速すぎ</td></tr>
+        <tr><td>イ 1／2<sup>6</sup></td><td>1.875MHz</td><td>速すぎ</td></tr>
+        <tr><td>ウ 1／2<sup>8</sup></td><td>468.75kHz</td><td>約4倍</td></tr>
+        <tr><td><b>エ 1／2<sup>10</sup></b></td><td><b>117.2kHz</b></td><td><b>＋1.9％で範囲内</b></td></tr>
+      </table>
+      <div class="point warn">CPUへの240MHz（PLL2の後）から割ると 240MHz÷2<sup>10</sup>≒234kHz で外れる。<b>分岐している位置</b>を図で必ず確かめる。</div>
+      <div class="point"><b>PLL</b>（位相同期回路）は、出力を分周して基準の発振と位相を比べ、ずれをなくすように発振器を調整する。安定した低い周波数から高い周波数を作れる。<b>逓倍</b>＝何倍にするか。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成22年度春期 午前 問25（平成24年度春期 問24・平成26年度春期 問23・平成27年度秋期 問23・平成30年度春期 問23も同じ問題。図を書き直した）／<a href="https://e-words.jp/w/PLL.html">e-Words「PLL」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/">応用情報.com 用語集 3-1 プロセッサ</a></div>
+</section>
+
+
+
+
+<section class="slide">
   <h1><img class="ico" src="img/hw/key_flat.svg" alt="">1ビットだけ1にするならOR、0にするならAND。他のビットは元のまま残る</h1>
   <div class="cols">
     <div>
@@ -784,6 +1592,74 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   </div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/5/5-1/">応用情報.com 用語集 5-1 オペレーティングシステム</a></div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/key_flat.svg" alt="">チップセレクトの番地は、ゲートが働く入力を2進数で並べて16進数に直す</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">H26秋 問21：A15〜A8 をNANDに入れて <span style="text-decoration:overline">CS</span> を作る</div>
+      <table class="mini" style="text-align:center">
+        <tr><th>線</th><th>A15</th><th>A14</th><th>A13</th><th>A12</th><th>A11</th><th>A10</th><th>A9</th><th>A8</th></tr>
+        <tr><td>反転（○）</td><td>－</td><td>－</td><td>○</td><td>○</td><td>○</td><td>－</td><td>○</td><td>○</td></tr>
+        <tr><td>NANDの入力を全部1にする値</td><td><b>1</b></td><td><b>1</b></td><td><b>0</b></td><td><b>0</b></td><td><b>0</b></td><td><b>1</b></td><td><b>0</b></td><td><b>0</b></td></tr>
+      </table>
+      <ol class="steps">
+        <li><span style="text-decoration:overline">CS</span> がL＝NANDの出力が0＝<b>入力が全部1</b></li>
+        <li>○の付いた線は反転されるので、元の番地は<b>0</b>のときに1が届く</li>
+        <li>A15〜A12＝1100＝<b>C</b>、A11〜A8＝0100＝<b>4</b></li>
+        <li>A7〜A0 はつながっていないので 00〜FF の全部 → <b>C400〜C4FF</b>（エ）</li>
+      </ol>
+    </div>
+    <div>
+      <svg width="400" height="190" viewBox="0 0 400 190">
+        <g stroke="#1f3a68" stroke-width="2" fill="#e8eef8"><rect x="120" y="10" width="160" height="170"/></g>
+        <rect x="120" y="58" width="160" height="16" fill="#1f3a68"/>
+        <g font-size="11" fill="#1d1d1f" text-anchor="end"><text x="112" y="20">0000</text><text x="112" y="70">C400〜C4FF</text><text x="112" y="180">FFFF</text></g>
+        <g font-size="11.5" fill="#fff" text-anchor="middle" font-weight="700"><text x="200" y="70">このチップ（256バイト）</text></g>
+        <g font-size="11" fill="#1f3a68"><text x="290" y="40">64Kバイトの</text><text x="290" y="56">番地空間</text><text x="290" y="110">A15〜A8 の8本で</text><text x="290" y="126">256区画のうち</text><text x="290" y="142">1区画を選ぶ</text></g>
+      </svg>
+      <table class="mini">
+        <tr><th style="width:34%">誤りの選択肢</th><th>なぜ違う</th></tr>
+        <tr><td>ア 3B00〜3BFF</td><td>0と1を逆に読んだ（C4 の各ビット反転は 3B）</td></tr>
+        <tr><td>イ 8300〜9BFF</td><td>範囲が広すぎ。8本を全部決めると256番地分だけ</td></tr>
+        <tr><td>ウ A400〜A4FF</td><td>A13 の○を見落とした</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成26年度秋期 午前 問21（図を表に書き直した）／<a href="https://e-words.jp/w/%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9%E3%83%90%E3%82%B9.html">e-Words「アドレスバス」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/desktop_computer_flat.svg" alt="">リトルエンディアンは下の桁のバイトから小さい番地に置く。ビッグはその逆</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">H21秋 問24ほか：16進数 ABCD1234 を4バイトのメモリに</div>
+      <svg width="420" height="170" viewBox="0 0 420 170">
+        <g font-size="11.5" fill="#6e6e73" text-anchor="middle"><text x="155" y="18">＋0</text><text x="225" y="18">＋1</text><text x="295" y="18">＋2</text><text x="365" y="18">＋3</text></g>
+        <g stroke="#1f3a68" stroke-width="2"><rect x="120" y="28" width="280" height="40" fill="#c9daf2"/><rect x="120" y="100" width="280" height="40" fill="#fff"/><path d="M190,28V68M260,28V68M330,28V68M190,100V140M260,100V140M330,100V140"/></g>
+        <g font-size="16" font-weight="700" text-anchor="middle" fill="#1f3a68"><text x="155" y="54">34</text><text x="225" y="54">12</text><text x="295" y="54">CD</text><text x="365" y="54">AB</text><text x="155" y="126">AB</text><text x="225" y="126">CD</text><text x="295" y="126">12</text><text x="365" y="126">34</text></g>
+        <g font-size="12" fill="#1d1d1f"><text x="0" y="45" font-weight="700">リトル</text><text x="0" y="61">（イ）</text><text x="0" y="118" font-weight="700">ビッグ</text><text x="0" y="134">（エ）</text></g>
+        <text x="120" y="162" font-size="11" fill="#6e6e73">番地が増える向き →</text>
+      </svg>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th style="width:14%">選択肢</th><th style="width:32%">並び</th><th>正体</th></tr>
+        <tr><td>ア</td><td>12 34 AB <a class="ref" href="https://e-words.jp/w/CD.html">CD</a></td><td>2バイトずつ入れ替えただけ</td></tr>
+        <tr><td><b>イ</b></td><td><b>34 12 CD AB</b></td><td><b>リトルエンディアン</b></td></tr>
+        <tr><td>ウ</td><td>43 21 DC BA</td><td>16進数の<b>1桁ずつ</b>逆にした（バイト単位ではない）</td></tr>
+        <tr><td>エ</td><td>AB CD 12 34</td><td>ビッグエンディアン</td></tr>
+      </table>
+      <div class="point">入れ替えるのは<b>バイト（16進数2桁）</b>の単位。AB の中の A と B は入れ替えない。</div>
+      <div class="point">x86 の<a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a>はリトル、ネットワークで送る順（ネットワークバイトオーダー）はビッグ。違う機械どうしでデータを渡すときは並べ替えが要る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成21年度秋期 午前 問24（平成27年度春期 問21・平成29年度春期 問21も同じ問題）／<a href="https://e-words.jp/w/%E3%83%AA%E3%83%88%E3%83%AB%E3%82%A8%E3%83%B3%E3%83%87%E3%82%A3%E3%82%A2%E3%83%B3.html">e-Words「リトルエンディアン」</a>／<a href="https://ja.wikipedia.org/wiki/%E3%82%A8%E3%83%B3%E3%83%87%E3%82%A3%E3%82%A2%E3%83%B3">Wikipedia「エンディアン」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-2/">応用情報.com 用語集 3-2 メモリ</a></div>
+</section>
+
+
 
 <section class="slide">
   <h1><img class="ico" src="img/hw/dog_flat.svg" alt="">タイマは「1カウントの時間×回数」。番犬タイマはクリアされないとリセット</h1>
@@ -865,6 +1741,97 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/hw/battery_flat.svg" alt="">DRAMはコンデンサの電荷で覚えるので、漏れる前に読み直して書き戻す</h1>
+  <div class="cols">
+    <div>
+      <svg width="440" height="195" viewBox="0 0 440 195">
+        <g stroke="#1f3a68" stroke-width="2" fill="none">
+          <path d="M20,30H200M60,15V165M110,30V70M60,85H90M130,85H160V108M160,118V140M148,140H172M152,145H168M156,150H164"/>
+          <rect x="90" y="70" width="40" height="30" fill="#fff"/>
+          <path d="M145,108H175M145,118H175" stroke-width="3" stroke="#b25000"/>
+        </g>
+        <g font-size="11.5" fill="#1d1d1f"><text x="140" y="24">ワード線</text><text x="66" y="160">ビット線</text><text x="102" y="90" font-weight="700" fill="#1f3a68">Tr</text><text x="180" y="117" fill="#b25000" font-weight="700">コンデンサ</text></g>
+        <g transform="translate(20,0)">        <g stroke="#1f3a68" stroke-width="2" fill="#fff"><rect x="230" y="20" width="170" height="110" rx="6"/></g>
+        <g stroke="#1f3a68" stroke-width="2" fill="none"><path d="M265,60L295,75L265,90Z"/><circle cx="299" cy="75" r="4"/><path d="M365,90L335,75L365,60Z"/><circle cx="331" cy="75" r="4"/><path d="M303,75H327" stroke-dasharray="3 3"/></g>
+        <g font-size="11.5" fill="#1d1d1f" text-anchor="middle"><text x="315" y="40">NOTを2つ輪にした</text><text x="315" y="115">フリップフロップ（6個）</text><text x="315" y="150" font-weight="700" fill="#1f3a68">SRAM</text></g></g>
+        <text x="110" y="186" font-size="11.5" text-anchor="middle" font-weight="700" fill="#1f3a68">DRAM（1トランジスタ＋1コンデンサ）</text>
+      </svg>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th style="width:24%"></th><th><a class="ref" href="https://e-words.jp/w/DRAM.html">DRAM</a></th><th><a class="ref" href="https://e-words.jp/w/SRAM.html">SRAM</a></th></tr>
+        <tr><td>覚える部品</td><td><b><a class="ref" href="https://e-words.jp/w/%E3%82%B3%E3%83%B3%E3%83%87%E3%83%B3%E3%82%B5.html">コンデンサ</a></b>の電荷</td><td><b><a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/#ebfbefd7846e6b00afe53c15d7562587575d2df0">フリップフロップ</a></b></td></tr>
+        <tr><td><a class="ref" href="https://e-words.jp/w/%E3%83%AA%E3%83%95%E3%83%AC%E3%83%83%E3%82%B7%E3%83%A5.html">リフレッシュ</a></td><td><b>要る</b>（数十ミリ秒ごと）</td><td>要らない</td></tr>
+        <tr><td>速さ・価格</td><td>遅め・安い・大容量</td><td>速い・高い・小容量</td></tr>
+        <tr><td>使い道</td><td>主記憶</td><td>キャッシュメモリ</td></tr>
+      </table>
+      <div class="ex" style="margin-top:8px"><span class="lbl">過去問</span>H31春 問20「DRAMのメモリセルで情報を記憶するために利用されているもの」は<b>コンデンサ</b>（イ）。フリップフロップ（エ）はSRAM、<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/#8424715f1fa4ba195497042ac2fc227827f64b87">コイル</a>（ア）・<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/#3fbeb5de765c017186eb958a1b9e76f49df8cf85">抵抗</a>（ウ）は電荷をためられない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成31年度春期 午前 問20（図はClaudeが描いた模式図）／<a href="https://e-words.jp/w/DRAM.html">e-Words「DRAM」</a>／<a href="https://e-words.jp/w/SRAM.html">e-Words「SRAM」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a> ／ <a class="ref" href="https://www.ap-siken.com/keyword/3/3-2/">応用情報.com 用語集 3-2 メモリ</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/shield_flat.svg" alt="">ECCメモリは1ビットの誤りを自動で直す。止まると困るサーバで使う</h1>
+  <div class="cols">
+    <div>
+      <table class="mini">
+        <tr><th style="width:26%">方式</th><th>見つける</th><th>直す</th><th>主な場所</th></tr>
+        <tr><td>パリティ</td><td>1ビット</td><td>できない</td><td>通信・古いメモリ</td></tr>
+        <tr><td><b>ハミング符号</b>（ECC）</td><td>2ビット</td><td><b>1ビット</b></td><td><b>ECCメモリ</b></td></tr>
+        <tr><td>CRC</td><td>連続した誤り（バースト）に強い</td><td>できない（再送で直す）</td><td>通信・ディスク</td></tr>
+        <tr><td>リード・ソロモン符号</td><td>まとまった誤り</td><td>できる</td><td>QRコード・<a class="ref" href="https://e-words.jp/w/CD.html">CD</a>・デジタル放送</td></tr>
+      </table>
+      <div class="point">サーバ用のECCメモリは、64ビットのデータに<b>8ビットの検査用ビット</b>を足した72ビット幅で読み書きする。1ビットの化けはその場で直し、2ビットは「直せない誤り」として知らせる。</div>
+    </div>
+    <div>
+      <div class="cap">H24春 問23：ECCメモリの使用例</div>
+      <table class="mini">
+        <tr><th style="width:56%">選択肢</th><th>正体</th></tr>
+        <tr><td>ア RAID3において誤り検出に使う</td><td>RAID3は<b>パリティ</b>のディスク（メモリではない）</td></tr>
+        <tr><td>イ 携帯電話の通信で転送量を最大化</td><td>通信の話。ECCメモリとは関係ない</td></tr>
+        <tr><td><b>ウ 障害の影響が大きいサーバで誤り訂正</b></td><td><b>ECCメモリ（正解）</b></td></tr>
+        <tr><td>エ 地上デジタル放送で誤り訂正</td><td>誤り訂正符号は使うが<b>メモリ</b>の話ではない</td></tr>
+      </table>
+      <div class="point warn">「誤り訂正」という言葉だけでエを選ばない。問われているのは<b>メモリの部品</b>の使い道。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成24年度春期 午前 問23／<a href="https://e-words.jp/w/ECC%E3%83%A1%E3%83%A2%E3%83%AA.html">e-Words「ECCメモリ」</a>／<a href="https://e-words.jp/w/%E3%83%8F%E3%83%9F%E3%83%B3%E3%82%B0%E7%AC%A6%E5%8F%B7.html">e-Words「ハミング符号」</a>／<a href="https://en.wikipedia.org/wiki/ECC_memory">Wikipedia「ECC memory」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-2/">応用情報.com 用語集 3-2 メモリ</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/low_battery_flat.svg" alt="">組込み機器を支える部品。電源回路・電池・MEMS・監視のしくみ</h1>
+  <div class="cols">
+    <div>
+      <table class="mini">
+        <tr><th style="width:30%">部品</th><th>働きと見分け方</th></tr>
+        <tr><td><b>リニアレギュレータ</b></td><td>余った電圧を<b>熱</b>にして捨て、一定の電圧を作る。簡単で雑音が少ないが効率が低い</td></tr>
+        <tr><td><b>スイッチングレギュレータ</b></td><td>高速にオンオフして電圧を変える（DC-DCコンバータ）。<b>効率が高い</b>が雑音が出る</td></tr>
+        <tr><td>一次電池</td><td>使い切り（アルカリ乾電池・リチウム一次電池）</td></tr>
+        <tr><td>二次電池</td><td>充電して繰り返し使う（リチウムイオン・ニッケル水素）</td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th style="width:30%">部品</th><th>働きと見分け方</th></tr>
+        <tr><td><b><a class="ref" href="https://e-words.jp/w/MEMS.html">MEMS</a></b></td><td>半導体の加工技術で作る微小な機械。スマートフォンの<b>加速度・<a class="ref" href="https://www.ap-siken.com/keyword/1/1-5/#04b61d79e52314ac40045c30a0670174724e8bc1">ジャイロセンサー</a></b>、マイク、インクジェットのヘッド</td></tr>
+        <tr><td><b>ウォッチドッグタイマー</b></td><td>決まった時間内にソフトがクリアしないと、暴走とみなしてリセットする<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/#864617dc708023e86450270c75dd51447073ca80">監視回路</a></td></tr>
+        <tr><td>電圧監視（リセットIC）</td><td>電源電圧が下がったら<a class="ref" href="https://e-words.jp/w/CPU.html">CPU</a>を止め、誤動作を防ぐ</td></tr>
+        <tr><td><b><a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/#a367ce000dc42120ea1b26125185eea279ff2628">診断プログラム</a></b></td><td>起動時などにメモリや周辺回路を自分で検査する（自己診断）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="point">シラバスの用語例は、組込みシステムの部品を「動かす・測る・見張る・電気を送る」の役目でまとめている。過去問では<b>ウォッチドッグタイマー</b>が5回以上出た（H21春・H25春・H26秋・H29秋・R1秋）。</div>
+  <div class="cite">出典：IPA シラバス Ver.7.2 中分類6 1.（3）④の用語例／<a href="https://e-words.jp/w/MEMS.html">e-Words「MEMS」</a>／<a href="https://en.wikipedia.org/wiki/Voltage_regulator">Wikipedia「Voltage regulator」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
+</section>
+
+
+
+
+<section class="slide">
   <h1><img class="ico" src="img/hw/credit_card_flat.svg" alt="">RFIDは電波で無線タグを読む。パッシブは受けた電波を電力にする</h1>
   <div class="cols">
     <div>
@@ -941,6 +1908,68 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
+  <h1><img class="ico" src="img/hw/puzzle_piece_flat.svg" alt="">カルノー図は隣どうしが1ビットだけ違う並び。囲んだ中で変わる変数が消える</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">3入力の多数決（2つ以上が1なら1）</div>
+      <table class="kmap" style="width:100%">
+        <tr><th>A ＼ BC</th><th>00</th><th>01</th><th>11</th><th>10</th></tr>
+        <tr><th>0</th><td>0</td><td>0</td><td class="on">1</td><td>0</td></tr>
+        <tr><th>1</th><td>0</td><td class="on2">1</td><td class="on">1</td><td class="on2">1</td></tr>
+      </table>
+      <ol class="steps" style="margin-top:8px">
+        <li>列の並びは <b>00→01→11→10</b>（グレイコード）。隣は1ビットだけ違う</li>
+        <li>BC＝11 の縦の2つ：Aが変わる → <b>B・C</b></li>
+        <li>A＝1 の 01・11：Bが変わる → <b>A・C</b>。A＝1 の 11・10：Cが変わる → <b>A・B</b></li>
+        <li>全部をORでつなぐ：<b>A・B＋B・C＋C・A</b></li>
+      </ol>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th style="width:34%">囲む数</th><th>消える変数</th><th>残る項</th></tr>
+        <tr><td>1個</td><td>0個</td><td>3変数の積（A・B・C）</td></tr>
+        <tr><td>2個</td><td>1個</td><td>2変数の積</td></tr>
+        <tr><td>4個</td><td>2個</td><td>1変数だけ</td></tr>
+      </table>
+      <div class="point">囲みは<b>1・2・4・8個</b>の長方形だけ。重なってもよい（同じ1を何度使ってもA＋A＝Aで変わらない）。できるだけ大きく、できるだけ少なく囲むと式が一番短くなる。</div>
+      <div class="point warn">表の右端と左端もつながっている（10の隣は00）。端どうしを囲み忘れると式が長くなる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA シラバス Ver.7.2 中分類6 1.（4）の用語例（加法標準形・論理圧縮）／<a href="https://e-words.jp/w/%E3%82%AB%E3%83%AB%E3%83%8E%E3%83%BC%E5%9B%B3.html">e-Words「カルノー図」</a>／<a href="https://en.wikipedia.org/wiki/Karnaugh_map">Wikipedia「Karnaugh map」</a>。例はClaudeが作った</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/card_index_dividers_flat.svg" alt="">4変数のカルノー図は上下左右がつながる。4つの角も1つの囲みになる</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">例：BとDが等しいとき1になる関数</div>
+      <table class="kmap" style="width:100%">
+        <tr><th>AB ＼ <a class="ref" href="https://e-words.jp/w/CD.html">CD</a></th><th>00</th><th>01</th><th>11</th><th>10</th></tr>
+        <tr><th>00</th><td class="on2">1</td><td>0</td><td>0</td><td class="on2">1</td></tr>
+        <tr><th>01</th><td>0</td><td class="on">1</td><td class="on">1</td><td>0</td></tr>
+        <tr><th>11</th><td>0</td><td class="on">1</td><td class="on">1</td><td>0</td></tr>
+        <tr><th>10</th><td class="on2">1</td><td>0</td><td>0</td><td class="on2">1</td></tr>
+      </table>
+      <div class="formula" style="font-size:15px;margin-top:8px">F ＝ <span style="color:#1f3a68">B・D</span> ＋ <span style="color:#b25000">B̄・D̄</span>　（＝B と D の一致）</div>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>真ん中の4つ（青）：AとCが変わり、B＝1・D＝1 は共通 → <b>B・D</b></li>
+        <li>4つの角（橙）：上の行と下の行、左の列と右の列は<b>隣どうし</b>。B＝0・D＝0 が共通 → <b>B̄・D̄</b></li>
+        <li>8個の1を、4個の囲み2つで全部覆った。1つずつ書くと8項の式になる</li>
+      </ol>
+      <div class="point"><a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/#48705047df7d80fb5466aa329c49815d005e663d">加法標準形</a>（1の行ごとの積をORでつなぐ形）のままだと、4変数のANDが8個とORが1つ要る。カルノー図でまとめると<b>2変数のAND 2つとOR</b>で済み、さらに一致回路（XNOR）1個にもできる。</div>
+      <div class="point">試験ではカルノー図そのものより、「式を簡単にしたもの」を選ぶ問題が多い。選んだ答えが正しいかを<b>確かめる道具</b>として使う。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a href="https://en.wikipedia.org/wiki/Karnaugh_map">Wikipedia「Karnaugh map」</a>（4変数の図・端のつながり）。例はClaudeが作った</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/3/3-2/">応用情報.com 用語集 3-2 メモリ</a></div>
+</section>
+
+
+
+<section class="slide">
   <h1><img class="ico" src="img/hw/stopwatch_flat.svg" alt="">フリップフロップはエッジの前後で入力を止めておかないと値を取りこぼす</h1>
   <div class="cols">
     <div>
@@ -997,6 +2026,35 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
 </section>
 
+<section class="slide">
+  <h1><img class="ico" src="img/hw/stopwatch_flat.svg" alt="">クロックの速さの上限は、一番遅い経路（クリティカルパス）で決まる</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="160" viewBox="0 0 420 160">
+        <g stroke="#1f3a68" stroke-width="2" fill="#c9daf2"><rect x="10" y="40" width="50" height="70" rx="4"/><rect x="360" y="40" width="50" height="70" rx="4"/></g>
+        <g stroke="#1f3a68" stroke-width="2" fill="#fff"><rect x="110" y="20" width="200" height="40" rx="5" fill="#fde7cf"/><rect x="140" y="95" width="140" height="40" rx="5"/></g>
+        <g stroke="#1f3a68" stroke-width="2" fill="none"><path d="M60,60H85V40H110M60,90H85V115H140M310,40H335V60H360M280,115H335V90H360"/></g>
+        <g font-size="12" text-anchor="middle" fill="#1f3a68" font-weight="700"><text x="35" y="80">FF1</text><text x="385" y="80">FF2</text><text x="210" y="38">組合せ回路 経路1</text><text x="210" y="54" font-size="11" fill="#b25000">6ns</text><text x="210" y="113">組合せ回路 経路2</text><text x="210" y="129" font-size="11">3ns</text></g>
+        <text x="10" y="150" font-size="11" fill="#6e6e73">FF1の出力が変わってから、FF2が次のクロックで取り込むまでに間に合う必要がある</text>
+      </svg>
+    </div>
+    <div>
+      <div class="cap">例：FFの出力遅延1ns、セットアップ時間1ns</div>
+      <table class="mini" style="text-align:center">
+        <tr><th>経路</th><th>出力遅延</th><th><a class="ref" href="https://www.ap-siken.com/keyword/3/3-1/#13f5df7d8371a3c47a39d0b49adf9bd9c2990650">組合せ回路</a></th><th>セットアップ</th><th>合計</th></tr>
+        <tr><td><b>経路1</b></td><td>1ns</td><td>6ns</td><td>1ns</td><td><b class="hl">8ns</b></td></tr>
+        <tr><td>経路2</td><td>1ns</td><td>3ns</td><td>1ns</td><td>5ns</td></tr>
+      </table>
+      <div class="formula" style="font-size:15px">最大周波数 ＝ 1 ÷ 8ns ＝ <b>125MHz</b></div>
+      <div class="point">周期は<b>一番長い経路</b>に合わせる。経路2だけなら200MHzで動くが、経路1が間に合わなくなる。速くしたいなら経路1を短くする（間にFFを入れて段を分ける＝パイプライン化）。</div>
+      <div class="point">これが<b><a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/#c62bf0ccb74a6d8950bb7aa4efc54b1b70cf6961">タイミング設計</a></b>。同期式の回路は、全部の経路がこの条件を満たすかを道具で確かめてから作る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA シラバス Ver.7.2 中分類6 1.（4）の用語例（タイミング設計・同期式設計）／<a href="https://en.wikipedia.org/wiki/Static_timing_analysis">Wikipedia「Static timing analysis」</a>。数値の例はClaudeが作った</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
+</section>
+
+
 <section class="slide chapter">
   <div class="hero-icons ira"><img src="img/irasutoya/battery.png" alt=""><img src="img/irasutoya/power_unit.png" alt=""><img src="img/irasutoya/datacenter.png" alt=""><img src="img/irasutoya/thermometer.png" alt=""></div>
   <div class="k">第5章</div>
@@ -1032,6 +2090,71 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
   </div>
   <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
 </section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/high_voltage_flat.svg" alt="">CMOSは切り替わるときだけ電気を使う。周波数と電圧を下げると省電力</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="190" viewBox="0 0 400 190">
+        <g stroke="#1f3a68" stroke-width="2" fill="none">
+          <path d="M60,10H160M110,10V40M110,80V110M110,150V180M60,180H160"/>
+          <rect x="95" y="40" width="30" height="40" fill="#c9daf2"/><rect x="95" y="110" width="30" height="40" fill="#fde7cf"/>
+          <path d="M20,95H70M70,60V130M70,60H95M70,130H95"/>
+          <path d="M110,95H200"/><path d="M200,95V130M190,130H210M190,136H210M200,136V160"/>
+        </g>
+        <g font-size="11.5" fill="#1d1d1f"><text x="165" y="14">電源 V</text><text x="165" y="184">0V</text><text x="0" y="90">入力</text><text x="206" y="90">出力</text><text x="130" y="64" fill="#1f3a68" font-weight="700">pMOS</text><text x="130" y="134" fill="#b25000" font-weight="700">nMOS</text><text x="214" y="150">容量C</text></g>
+        <g font-size="11" fill="#1f3a68" transform="translate(60,0)"><text x="250" y="40">入力0：上がオン</text><text x="250" y="56">　→ 出力1</text><text x="250" y="86">入力1：下がオン</text><text x="250" y="102">　→ 出力0</text><text x="250" y="132">どちらか片方が</text><text x="250" y="148">必ずオフなので、</text><text x="250" y="164">止まっていれば</text><text x="250" y="180">ほぼ流れない</text></g>
+      </svg>
+      <div class="formula" style="font-size:15px">動的電力 ＝ α × C × V² × f</div>
+      <div style="font-size:11px;color:#6e6e73">α：切り替わる割合、C：容量、V：電圧、f：周波数</div>
+    </div>
+    <div>
+      <div class="cap">H23秋 問25：<a class="ref" href="https://e-words.jp/w/%E3%83%9E%E3%82%A4%E3%82%AF%E3%83%AD%E3%83%97%E3%83%AD%E3%82%BB%E3%83%83%E3%82%B5.html">マイクロプロセッサ</a>の省電力対策</div>
+      <table class="mini">
+        <tr><th style="width:56%">選択肢（要約）</th><th>判定</th></tr>
+        <tr><td>ア <a class="ref" href="https://e-words.jp/w/CMOS.html">CMOS</a>より<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/#9341410ae99e423914359c1bf9427fdcba480e90">バイポーラ</a>の方が消費電力が少ない</td><td>逆。バイポーラは止まっていても電流が流れる</td></tr>
+        <tr><td><b>イ CMOSで動作周波数を下げると論理反転時の電流が減る</b></td><td><b>正解</b>（式の f が小さくなる）</td></tr>
+        <tr><td>ウ <a class="ref" href="https://e-words.jp/w/%E3%82%AF%E3%83%AD%E3%83%83%E3%82%AF%E3%82%B2%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0.html">クロックゲーティング</a>でスタンバイ時の電圧供給を停止</td><td>止めるのは<b>クロック</b>。電源を切るのは<a class="ref" href="https://e-words.jp/w/%E3%83%91%E3%83%AF%E3%83%BC%E3%82%B2%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0.html">パワーゲーティング</a></td></tr>
+        <tr><td>エ 動作電圧を高くすると消費電力が減る</td><td>逆。電力は<b>電圧の2乗</b>で増える</td></tr>
+      </table>
+      <div class="point"><b><a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/#fd5fe656c15e23c7cbb7f764d4d2b8712e00f137">BiCMOS</a></b>はバイポーラ（電流を多く流せて速い）とCMOS（省電力）を1チップに組み合わせたもの。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成23年度秋期 午前 問25／IPA シラバス Ver.7.2 中分類6 1.（3）①の用語例（CMOS・バイポーラ・BiCMOS）／<a href="https://en.wikipedia.org/wiki/CMOS">Wikipedia「CMOS」</a>（静的電力が小さい理由）</div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
+</section>
+
+<section class="slide">
+  <h1><img class="ico" src="img/hw/low_battery_flat.svg" alt="">リーク電流はクロックを止めても流れる。減らすには電源ごと切る</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="170" viewBox="0 0 420 170">
+        <g stroke="#d2d2d7" fill="none"><path d="M40,15V140H410"/></g>
+        <g fill="#5b80bf"><rect x="70" y="50" width="50" height="75"/><rect x="170" y="70" width="50" height="40"/><rect x="270" y="75" width="50" height="25"/></g>
+        <g fill="#b25000"><rect x="70" y="125" width="50" height="5"/><rect x="170" y="110" width="50" height="20"/><rect x="270" y="100" width="50" height="30"/></g>
+        <g font-size="11" fill="#1d1d1f" text-anchor="middle"><text x="95" y="156">古い工程</text><text x="195" y="156">微細化</text><text x="295" y="156">さらに微細化</text></g>
+        <g font-size="11"><text x="330" y="60" fill="#5b80bf">■ 動的電力</text><text x="330" y="78" fill="#b25000">■ リーク（静的）</text></g>
+      </svg>
+      <div style="font-size:11px;color:#6e6e73">割合の変化を示すためにClaudeが描いた模式図（数値ではない）</div>
+      <div class="point"><a class="ref" href="https://e-words.jp/w/%E3%83%88%E3%83%A9%E3%83%B3%E3%82%B8%E3%82%B9%E3%82%BF.html">トランジスタ</a>を小さくすると、絶縁の膜が薄くなり、オフでも漏れる電流（<b><a class="ref" href="https://e-words.jp/w/%E3%83%AA%E3%83%BC%E3%82%AF%E9%9B%BB%E6%B5%81.html">リーク電流</a></b>）が増える。全体の電力に占める割合が大きくなった。</div>
+    </div>
+    <div>
+      <div class="cap">H27春 問23：リーク電流の低減手段</div>
+      <table class="mini">
+        <tr><th style="width:52%">選択肢</th><th>主に減るもの</th></tr>
+        <tr><td>ア クロックの周波数制御</td><td>動的電力（f）</td></tr>
+        <tr><td>イ 使わないブロックへのクロック供給停止</td><td>動的電力（<a class="ref" href="https://e-words.jp/w/%E3%82%AF%E3%83%AD%E3%83%83%E3%82%AF%E3%82%B2%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0.html">クロックゲーティング</a>）</td></tr>
+        <tr><td><b>ウ 使わないブロックへの電源供給停止</b></td><td><b>リーク電流（<a class="ref" href="https://e-words.jp/w/%E3%83%91%E3%83%AF%E3%83%BC%E3%82%B2%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0.html">パワーゲーティング</a>）</b></td></tr>
+        <tr><td>エ 電源・電圧の調整</td><td>主に動的電力（<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/#53819aab7bef89fefed694c3aa03512db13fbfce">DVFS</a>）</td></tr>
+      </table>
+      <div class="point warn">クロックを止めても電源がつながっていればリークは流れ続ける。リークを止めるには<b>電源ごと切る</b>しかない。そのかわり中の値が消え、戻すのに時間がかかる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 平成27年度春期 午前 問23／<a href="https://e-words.jp/w/%E3%83%AA%E3%83%BC%E3%82%AF%E9%9B%BB%E6%B5%81.html">e-Words「リーク電流」</a>／<a href="https://en.wikipedia.org/wiki/Power_gating">Wikipedia「Power gating」</a>／<a href="https://en.wikipedia.org/wiki/Clock_gating">Wikipedia「Clock gating」</a></div>
+  <div class="refs">詳しく：<a class="ref" href="https://www.ap-siken.com/keyword/6/6-1/">応用情報.com 用語集 6-1 ハードウェア</a></div>
+</section>
+
+
 
 <section class="slide">
   <h1><img class="ico" src="img/hw/low_battery_flat.svg" alt="">間欠動作の平均電流は「電流×時間の合計 ÷ 周期」で計算する</h1>
@@ -1090,7 +2213,7 @@ a.ref.q, a.src { color: var(--blue, #0071e3); }
 </section>
 
 <section class="slide">
-  <h1><img class="ico" src="img/hw/clipboard_flat.svg" alt="">まとめ：ゲートは表で、計算は単位をそろえて。41問の論点はこの9つ</h1>
+  <h1><img class="ico" src="img/hw/clipboard_flat.svg" alt="">まとめ：ゲートは表で、計算は単位をそろえて。113問の論点はこの9つ</h1>
   <table>
     <tr><th style="width:20%">論点</th><th>覚えること</th><th style="width:26%">過去問</th></tr>
     <tr><td>論理回路</td><td>4通りの入力を表にして確かめる。NANDだけで何でも作れる（ド・モルガン）</td><td><a class="ref q" href="https://www.ap-siken.com/kakomon/05_haru/q21.html">R5春21</a>・<a class="ref q" href="https://www.ap-siken.com/kakomon/03_aki/q22.html">R3秋22</a>・<a class="ref q" href="https://www.ap-siken.com/kakomon/04_aki/q23.html">R4秋23</a>・<a class="ref q" href="https://www.ap-siken.com/kakomon/05_aki/q23.html">R5秋23</a></td></tr>
