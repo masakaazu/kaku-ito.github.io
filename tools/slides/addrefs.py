@@ -105,8 +105,15 @@ def process_section(sec, no):
     keys = sorted((k for k, v in terms.items() if v), key=len, reverse=True)
     pat = re.compile("|".join(re.escape(t) for t in keys))
     used, hits = set(), []
-    tokens = re.split(r"(<svg.*?</svg>|<h1.*?</h1>|<[^>]+>)", sec, flags=re.S)
-    sec = "".join(t if t.startswith("<") else link_text(t, pat, terms, used, hits) for t in tokens)
+    # 図・見出し・出典の行・ほかのリンクの中には付けない（リンクの入れ子を防ぐ）
+    tokens = re.split(r'(<svg.*?</svg>|<h1.*?</h1>|<div class="cite">.*?</div>|<a\s.*?</a>|<[^>]+>)', sec, flags=re.S)
+    def one(t):
+        if t.startswith('<div class="cite">'):
+            # 出典の行にはリンクを付けないが、「詳しく：」の選び方は前と同じにするため用語は数える
+            link_text(re.sub(r"<[^>]+>", "", t), pat, terms, used, hits)
+            return t
+        return t if t.startswith("<") else link_text(t, pat, terms, used, hits)
+    sec = "".join(one(t) for t in tokens)
     foot = refs.get("foot", {}).get(str(no))
     if foot is None and "secs" in refs:
         foot = auto_foot(hits)
