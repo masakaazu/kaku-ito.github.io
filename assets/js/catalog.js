@@ -130,9 +130,45 @@ window.SITE_CATALOG = {
         { no: 25, group: "automation", major: "6.5〜6.7", name: "REST API・構成管理・JSON" },
       ],
     },
+    java: {
+      name: "Java Silver（SE 17）",
+      short: "Java Silver",
+      icon: "JAVA",
+      status: "次の資格",
+      active: false,
+      desc: "Oracle の試験内容チェックリスト（1Z0-825-JPN）の6項目を、13の小分野に分けて積み上げる。",
+      exams: [],
+      // Java SE 17 Programmer I（1Z0-825-JPN）の「試験内容チェックリスト」。no は小分野の番号
+      groups: [
+        { id: "basics", name: "1 Java の概要と簡単なプログラム", en: "Java Basics" },
+        { id: "data", name: "2 基本データ型と文字列", en: "Data Types and Strings" },
+        { id: "control", name: "3 演算子と制御構造", en: "Operators and Control Flow" },
+        { id: "class", name: "4 クラスの定義とインスタンス", en: "Classes and Objects" },
+        { id: "inherit", name: "5 継承とインタフェース", en: "Inheritance and Interfaces" },
+        { id: "exception", name: "6 例外処理", en: "Exceptions" },
+      ],
+      fields: [
+        { no: 1, group: "basics", major: "main・コンパイルと実行・パッケージ", name: "プログラムの実行とパッケージ" },
+        { no: 2, group: "data", major: "基本データ型・変数・スコープ・var", name: "変数とデータ型" },
+        { no: 3, group: "data", major: "String・StringBuilder・テキストブロック", name: "文字列" },
+        { no: 4, group: "data", major: "配列・ArrayList", name: "配列とArrayList" },
+        { no: 5, group: "control", major: "演算子", name: "演算子" },
+        { no: 6, group: "control", major: "if・switch文・switch式", name: "分岐とswitch" },
+        { no: 7, group: "control", major: "while・do・for・拡張for・break・continue", name: "繰り返し" },
+        { no: 8, group: "class", major: "クラス・コンストラクタ・ライフサイクル・オーバーロード", name: "クラスとオブジェクト" },
+        { no: 9, group: "class", major: "static・アクセス修飾子", name: "staticとアクセス修飾子" },
+        { no: 10, group: "class", major: "instanceofのパターン・レコード", name: "パターンマッチングとレコード" },
+        { no: 11, group: "inherit", major: "継承・抽象クラス・オーバーライド・キャスト・final", name: "継承とポリモーフィズム" },
+        { no: 12, group: "inherit", major: "インタフェース・default/private・シール", name: "インタフェースとシール・クラス" },
+        { no: 13, group: "exception", major: "チェック例外・try-catch・try-with-resources", name: "例外処理" },
+      ],
+    },
   },
 
   materials: {
+    java: [
+      { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },
+    ],
     ccna: [
       { type: "terms", file: "terms/01.html", title: "ネットワーク機器と構成 用語集", desc: "ルーター・レイヤ2／レイヤ3スイッチ（SVI・ルーテッドポート）・ファイアウォールとNGFW・IPSとIDS、アクセスポイント・WLC・コントローラー・エンドポイント・サーバー・PoE（PSEとPD・802.3af/at/bt・クラス）、アクセス・ディストリビューション・コア層と2層（コラプストコア）・3層・SOHO、スパイン・リーフ・WAN・ハブアンドスポーク・SD-WAN・オンプレミスとクラウド（IaaS・PaaS・SaaS）、仮想化・ハイパーバイザー（Type 1・Type 2）・仮想マシン・コンテナ・VRFの用語と、オリジナル問題30問（出題範囲 1.1・1.2・1.12）", fields: [1], pdf: "terms/01.pdf" },
       { type: "terms", file: "terms/02.html", title: "ケーブルとインタフェース 用語集", desc: "UTP・RJ-45・カテゴリ・ストレートとクロス・Auto-MDIX、シングルモードとマルチモード・OM3/OM4・1000BASE-SX/LX・10GBASE-SR/LR・SFP/SFP+・Twinax、共有メディア・ハブ・CSMA/CD・コリジョンドメイン・半二重と全二重、オートネゴシエーション・二重モードと速度の不一致、up/up・notconnect・err-disabled・CRC・ラント・ジャイアント・レイトコリジョン・出力ドロップの用語と、オリジナル問題30問（出題範囲 1.3・1.4）", fields: [2], pdf: "terms/02.pdf" },
