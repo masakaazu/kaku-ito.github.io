@@ -213,6 +213,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/02.html", title: "マルチアカウントとフェデレーション 用語集", desc: "Organizations の管理アカウント・メンバーアカウント・OU・ルート・すべての機能と一括請求・委任管理者・タグポリシー・AWS RAM、SCP（FullAWSAccess・評価のしかた）と RCP、Control Tower のランディングゾーン・コントロール（予防・検出・プロアクティブ）・Account Factory、責任共有モデル、ID フェデレーション・SAML 2.0・OIDC・IAM Identity Center と権限セット・ID ソース、AWS Managed Microsoft AD・AD Connector・Simple AD、Cognito のユーザープールと ID プール。30語と問題30問（タスク 1.1）", fields: [2], pdf: "terms/02.pdf" },
       { type: "terms", file: "terms/03.html", title: "ネットワークのセキュリティ 用語集", desc: "セキュリティグループ・ネットワーク ACL・サブネット・Session Manager・WAF・Shield・Firewall Manager・Network Firewall", fields: [3], pdf: "terms/03.pdf" },
       { type: "terms", file: "terms/04.html", title: "暗号化と秘密情報 用語集", desc: "KMS のキーの種類・キーポリシー・グラント・エンベロープ暗号化・ローテーション・削除・マルチリージョンキー、CloudHSM・ACM・Secrets Manager・Parameter Store、S3（SSE-S3・SSE-KMS・DSSE-KMS・SSE-C）・EBS・RDS の暗号化と HTTPS の強制", fields: [4], pdf: "terms/04.pdf" },
+      { type: "terms", file: "terms/05.html", title: "ログ・監査と脅威の検出 用語集", desc: "CloudTrail（イベント履歴・証跡・管理／データイベント・組織の証跡・整合性の検証・Lake・Insights）、Config（ルール・修復・コンフォーマンスパック・アグリゲータ）、VPC フローログ・CloudWatch Logs、GuardDuty・Macie・Inspector・Security Hub CSPM・Detective・Artifact", fields: [5], pdf: "terms/05.pdf" },
     ],
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },
