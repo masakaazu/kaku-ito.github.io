@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Silver #11 継承とポリモーフィズム 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">Java Silver（SE 17・1Z0-825-JPN）　5 継承とポリモーフィズム　#11</div>
+  <h1>継承とポリモーフィズム</h1>
+  <p>メソッドは「中身」で、フィールドと static は「変数の型」で決まる</p>
+  <div class="refs-legend">各ページの下に、根拠にした Oracle の資料（JLS 5.1・8.1・8.2・8.4.8・8.8・12.5・15.11・15.12・15.16）を書いた（青い文字を押すと開く）。コードは Claude が作り、JDK 17 で動かして確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>試験内容チェックリスト 5（継承とポリモーフィズム）</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 継承とコンストラクタ<span>extends は 1 つだけ。子のコンストラクタの先頭に super(); が入る</span></div>
+      <div class="box b2">2 オーバーライドと隠蔽<span>同じシグネチャで書き直す。アクセス・戻り値・throws の決まり</span></div>
+      <div class="box b3">3 ポリモーフィズムとキャスト<span>呼べるかは変数の型、動くのは中身。ダウンキャストは実行時に検査</span></div>
+      <div class="box b4">4 abstract と final<span>抽象クラスは new できない。final は「これ以上変えさせない」</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:46%">何で決まる？</th><th>決まる時期</th></tr>
+        <tr><td class="l">インスタンスメソッドの<b>中身</b></td><td class="t">実行時（オブジェクトのクラス）</td></tr>
+        <tr><td class="l">呼べるメソッド・使えるフィールド</td><td class="t">コンパイル時（変数の型）</td></tr>
+        <tr><td class="l">フィールドの値（同じ名前があるとき）</td><td class="t">コンパイル時（変数の型）</td></tr>
+        <tr><td class="l">static メソッド</td><td class="t">コンパイル時（変数の型）</td></tr>
+        <tr><td class="l">オーバーロードの選択</td><td class="t">コンパイル時（引数の型）</td></tr>
+      </table>
+      <div class="point"><b>この表がこの分野の芯。</b>「実行時に中身で決まる」のはオーバーライドされたインスタンスメソッドだけ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.oracle.com/jp/education/certification/javase-17-programmer-1/">Oracle「Java SE 17 Programmer I（1Z0-825-JPN）」試験内容チェックリスト</a>／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.11.1・15.12.4.4</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>継承とコンストラクタ</h1>
+  <p>親のメンバを引き継ぎ、親のコンストラクタから順に動く。</p>
+  <div class="foot"><span>Java Silver #11 継承とポリモーフィズム</span><span>試験内容 5</span></div>
+</section>
+
+<section class="slide">
+  <h1>継承の形と、引き継がれるもの</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="200" viewBox="0 0 420 200">
+        <defs><marker id="a11" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5b80bf"/></marker></defs>
+        <g font-size="12" text-anchor="middle">
+          <rect x="150" y="6" width="120" height="32" rx="6" fill="#1f3a68"/><text x="210" y="27" fill="#fff">Object</text>
+          <rect x="150" y="76" width="120" height="32" rx="6" fill="#5b80bf"/><text x="210" y="97" fill="#fff">Animal</text>
+          <rect x="40" y="150" width="120" height="32" rx="6" fill="#c9daf2"/><text x="100" y="171" fill="#1f3a68">Dog</text>
+          <rect x="260" y="150" width="120" height="32" rx="6" fill="#c9daf2"/><text x="320" y="171" fill="#1f3a68">Cat</text>
+          <line x1="210" y1="74" x2="210" y2="42" stroke="#5b80bf" stroke-width="2" marker-end="url(#a11)"/>
+          <line x1="110" y1="148" x2="196" y2="112" stroke="#5b80bf" stroke-width="2" marker-end="url(#a11)"/>
+          <line x1="310" y1="148" x2="224" y2="112" stroke="#5b80bf" stroke-width="2" marker-end="url(#a11)"/>
+          <text x="300" y="60" fill="#b25000" font-size="11">extends を書かないと Object</text>
+          <text x="210" y="140" fill="#1f3a68" font-size="11">extends Animal</text>
+        </g>
+      </svg>
+<pre class="code small"><span class="k">class</span> Dog <span class="k">extends</span> Animal { }        <span class="c">// OK</span>
+<span class="k">class</span> B <span class="k">extends</span> A<span class="ng">, Object</span> { }     <span class="c">// '{' expected</span></pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">親のもの</th><th>子に引き継がれるか</th></tr>
+        <tr><td class="l">public・protected のメンバ</td><td class="t">引き継がれる</td></tr>
+        <tr><td class="l">修飾子なしのメンバ</td><td class="t">同じパッケージの子だけ</td></tr>
+        <tr><td class="l">private のメンバ</td><td class="x">引き継がれない（n has private access in A）</td></tr>
+        <tr><td class="l">コンストラクタ・初期化子</td><td class="x">メンバではないので引き継がれない</td></tr>
+      </table>
+      <div class="point"><b>単一継承：</b>extends に書けるのは 1 クラスだけ。A → B → C と何段も重ねるのは OK。インタフェースは複数 implements できる（#12）。</div>
+      <div class="mini">private のフィールドも子のオブジェクトの中には存在する。名前で直接使えないだけで、親の public メソッドを通せば読める。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.1.4</a>（The class Object has no direct superclass type. For a class other than Object with a normal class declaration, the direct superclass type is Object）・8.2（Members of a class that are declared private are not inherited by subclasses of that class）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>コンストラクタは親から順に動く</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">3 段の継承（Claude が作成）</div>
+<pre class="code small"><span class="k">class</span> A { A() { System.out.print(<span class="s">"A "</span>); } }
+<span class="k">class</span> B <span class="k">extends</span> A { B() { System.out.print(<span class="s">"B "</span>); } }
+<span class="k">class</span> C <span class="k">extends</span> B { C() { System.out.print(<span class="s">"C "</span>); } }
+<span class="c">// main：new C();</span></pre>
+<pre class="sh" style="margin-top:4px"><span class="o">A B C</span></pre>
+      <svg width="420" height="96" viewBox="0 0 420 96">
+        <g font-size="11" text-anchor="middle">
+          <rect x="0" y="8" width="130" height="34" rx="5" fill="#c9daf2"/><text x="65" y="23" fill="#1f3a68">C()</text><text x="65" y="37" fill="#1f3a68">super(); ← 自動</text>
+          <rect x="145" y="8" width="130" height="34" rx="5" fill="#5b80bf"/><text x="210" y="23" fill="#fff">B()</text><text x="210" y="37" fill="#fff">super(); ← 自動</text>
+          <rect x="290" y="8" width="130" height="34" rx="5" fill="#1f3a68"/><text x="355" y="23" fill="#fff">A()</text><text x="355" y="37" fill="#fff">super(); → Object</text>
+          <text x="210" y="62" fill="#1f3a68">呼び出しは C → B → A と上へ</text>
+          <text x="210" y="84" fill="#b25000">本体の実行は A → B → C と下へ戻りながら</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">子のコンストラクタの先頭</th><th>コンパイラの扱い</th></tr>
+        <tr><td class="l"><code>super(…);</code> を書いた</td><td class="t">そのまま</td></tr>
+        <tr><td class="l"><code>this(…);</code> を書いた</td><td class="t">そのまま（呼んだ先が super を呼ぶ）</td></tr>
+        <tr><td class="l">どちらも書いていない</td><td class="t"><code>super();</code> を自動で入れる</td></tr>
+        <tr><td class="l">コンストラクタを 1 つも書いていない</td><td class="t">デフォルトコンストラクタ <code>B() { super(); }</code> を作る</td></tr>
+      </table>
+      <div class="point"><b>抽象クラスのコンストラクタも動く。</b>new できないだけで、サブクラスを new すると super(); から呼ばれる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.8.7</a>（the constructor body implicitly begins with a superclass constructor invocation "super();", an invocation of the constructor of its direct superclass that takes no arguments）・8.8.9（If a class contains no constructor declarations, then a default constructor is implicitly declared）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>super(…) と this(…) の決まり</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">this(…) を通る流れ（Claude が作成）</div>
+<pre class="code small"><span class="k">class</span> A { A(<span class="k">int</span> x) { System.out.print(<span class="s">"A"</span> + x + <span class="s">" "</span>); } }
+<span class="k">class</span> B <span class="k">extends</span> A {
+  B() { <span class="k">super</span>(<span class="s">5</span>); System.out.print(<span class="s">"B "</span>); }
+  B(<span class="k">int</span> y) { <span class="k">this</span>(); System.out.print(<span class="s">"B"</span> + y + <span class="s">" "</span>); }
+}
+<span class="c">// main：new B(9);</span></pre>
+<pre class="sh" style="margin-top:4px"><span class="o">A5 B B9</span></pre>
+      <div class="mini">B(9) → this() で B() → super(5) で A(5)。本体は A(5) → B() の残り → B(int) の残り、の順。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">書き方（A には A(int) だけ）</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>B() { print("B "); }</code></td><td class="x">constructor A in class A cannot be applied to given types;</td></tr>
+        <tr><td class="l"><code>class B extends A { }</code></td><td class="x">同じエラー（class B の行）</td></tr>
+        <tr><td class="l"><code>B() { print("B "); super(1); }</code></td><td class="x">call to super must be first statement in constructor</td></tr>
+        <tr><td class="l"><code>B() { super(1); print("B "); }</code></td><td class="t">OK</td></tr>
+      </table>
+      <div class="point"><b>親に引数なしのコンストラクタがないとき</b>は、子のどのコンストラクタも super(値) か this(…) で始める必要がある。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.8.7</a>（The first statement of a constructor body may be an explicit invocation of another constructor of the same class or of the direct superclass）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>オーバーライドと隠蔽</h1>
+  <p>同じシグネチャで書き直す。インスタンスならオーバーライド、static なら隠蔽。</p>
+  <div class="foot"><span>Java Silver #11 継承とポリモーフィズム</span><span>試験内容 5</span></div>
+</section>
+
+<section class="slide">
+  <h1>オーバーライドのチェックリスト</h1>
+  <table class="mx">
+    <tr><th style="width:18%">項目</th><th style="width:30%">決まり</th><th style="width:26%">OK の例（親 → 子）</th><th>NG の例と JDK 17 のメッセージ</th></tr>
+    <tr><td class="t">シグネチャ</td><td class="l">名前と引数の型の並びが同じ</td><td class="l"><code>m(int)</code> → <code>m(int)</code></td><td class="l"><code>m(long)</code> はオーバーロード。@Override を付けると method does not override or implement a method from a supertype</td></tr>
+    <tr><td class="t">戻り値</td><td class="l">同じ型。参照型ならサブクラス型も可（共変戻り値）</td><td class="l"><code>A get()</code> → <code>B get()</code></td><td class="x"><code>int</code> → <code>long</code>：return type long is not compatible with int</td></tr>
+    <tr><td class="t">アクセス</td><td class="l">同じか広く</td><td class="l">なし → <code>public</code></td><td class="x"><code>public</code> → なし：attempting to assign weaker access privileges; was public</td></tr>
+    <tr><td class="t">検査例外</td><td class="l">増やせない（減らす・なくすは可）</td><td class="l"><code>throws Exception</code> → なし</td><td class="x">なし → <code>throws Exception</code>：cannot override</td></tr>
+    <tr><td class="t">static</td><td class="l">インスタンスと static は混ぜられない</td><td class="l">static → static（隠蔽）</td><td class="x">overriding method is static ／ overridden method is static</td></tr>
+    <tr><td class="t">final</td><td class="l">final メソッドは書き直せない</td><td class="l">—</td><td class="x">overridden method is final</td></tr>
+  </table>
+  <div class="point"><b>NG の多くは 1 行目が同じ「m() in B cannot override m() in A」。</b>理由は 2 行目に出る。試験では理由ごとに見分ける。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.4.8.3</a>（The access modifier of an overriding or hiding method must provide at least as much access as the overridden or hidden method／may not be declared to throw more checked exceptions than the overridden or hidden method）・8.4.8.1（It is a compile-time error if the overridden method, mA, is a static method）・8.4.3.3／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>オーバーライドとオーバーロードを見分ける</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">引数の型がちがうと別のメソッド（Claude が作成）</div>
+<pre class="code small"><span class="k">class</span> A { <span class="k">void</span> m(<span class="k">int</span> x)  { print(<span class="s">"A.int "</span>); } }
+<span class="k">class</span> B <span class="k">extends</span> A { <span class="k">void</span> m(<span class="k">long</span> x) { print(<span class="s">"B.long "</span>); } }
+
+A a = <span class="k">new</span> B(); a.m(<span class="s">1</span>);    <span class="c">// A.int（A 型には m(int) だけ）</span>
+B b = <span class="k">new</span> B(); b.m(<span class="s">1</span>);    <span class="c">// A.int（int にぴったり）</span>
+b.m(<span class="s">1L</span>);                 <span class="c">// B.long</span></pre>
+<pre class="sh" style="margin-top:4px"><span class="o">A.int A.int B.long</span></pre>
+      <div class="mini">print は System.out.print の略として書いた。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%"></th><th>オーバーライド</th><th>オーバーロード</th></tr>
+        <tr><td class="t">引数</td><td class="l">同じ</td><td class="l">型か数がちがう</td></tr>
+        <tr><td class="t">どこに書く</td><td class="l">サブクラス</td><td class="l">同じクラスでも子でも</td></tr>
+        <tr><td class="t">選ばれる時期</td><td class="l">実行時（中身のクラス）</td><td class="l">コンパイル時（引数の型）</td></tr>
+        <tr><td class="t">戻り値・アクセス</td><td class="l">決まりあり</td><td class="l">自由</td></tr>
+      </table>
+      <div class="point"><b>@Override は安全装置。</b>付けたメソッドがオーバーライドになっていなければコンパイルエラーにしてくれる。付けなくてもオーバーライドはできる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-9.html">JLS 9.6.4.4 @Override</a>（If a method declaration in class or interface Q is annotated with @Override, then one of the following three conditions must be true, or a compile-time error occurs）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.4.8.1</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>隠蔽：static メソッドとフィールドは「変数の型」</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">class</span> A {
+  <span class="k">static</span> String who() { <span class="k">return</span> <span class="s">"A"</span>; }
+  String me() { <span class="k">return</span> <span class="s">"A"</span>; }
+  <span class="k">int</span> v = <span class="s">1</span>;
+}
+<span class="k">class</span> B <span class="k">extends</span> A {
+  <span class="k">static</span> String who() { <span class="k">return</span> <span class="s">"B"</span>; }   <span class="c">// 隠蔽</span>
+  String me() { <span class="k">return</span> <span class="s">"B"</span>; }            <span class="c">// オーバーライド</span>
+  <span class="k">int</span> v = <span class="s">2</span>;                             <span class="c">// フィールドの隠蔽</span>
+  <span class="k">int</span> both() { <span class="k">return</span> v * <span class="s">10</span> + <span class="k">super</span>.v; }
+}
+A a = <span class="k">new</span> B();</pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:44%">式</th><th style="width:16%">結果</th><th>決め手</th></tr>
+        <tr><td class="l"><code>a.who()</code></td><td class="t">A</td><td class="l">static → 変数の型 A</td></tr>
+        <tr><td class="l"><code>a.me()</code></td><td class="t">B</td><td class="l">インスタンス → 中身 B</td></tr>
+        <tr><td class="l"><code>a.v</code></td><td class="t">1</td><td class="l">フィールド → 変数の型 A</td></tr>
+        <tr><td class="l"><code>((B) a).v</code></td><td class="t">2</td><td class="l">式の型が B</td></tr>
+        <tr><td class="l"><code>((B) a).both()</code></td><td class="t">21</td><td class="l">super.v は隠された A の v</td></tr>
+      </table>
+      <div class="point"><b>フィールドはポリモーフィズムにならない。</b>親のメソッドの中で name と書けば、親の name を指す（子に同名があっても）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.11.1</a>（Note that only the type of the Primary expression, not the class of the actual object referred to at run time, is used in determining which field to use）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.4.8.2</a>（If a class C declares or inherits a static method m, then m is said to hide any method m' …）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>super.メソッドと private メソッド</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">親の処理に足す（Claude が作成）</div>
+<pre class="code small"><span class="k">class</span> A { <span class="k">void</span> show() { print(<span class="s">"A "</span>); } }
+<span class="k">class</span> B <span class="k">extends</span> A {
+  <span class="k">void</span> show() { <span class="k">super</span>.show(); print(<span class="s">"B "</span>); }
+}
+<span class="c">// new B().show();</span></pre>
+<pre class="sh" style="margin-top:4px"><span class="o">A B</span></pre>
+      <div class="mini">super. を付けると、親のメソッドを直接呼ぶ（中身による切り替えをしない）。だから B の show() に戻って無限に呼び出すことはない。</div>
+    </div>
+    <div>
+      <div class="cap">private はオーバーライドされない（Claude が作成）</div>
+<pre class="code small"><span class="k">class</span> A {
+  <span class="k">private void</span> secret() { print(<span class="s">"A "</span>); }
+  <span class="k">void</span> call() { secret(); }
+}
+<span class="k">class</span> B <span class="k">extends</span> A {
+  <span class="k">void</span> secret() { print(<span class="s">"B "</span>); }  <span class="c">// 別のメソッド</span>
+}
+<span class="c">// new B().call(); new B().secret();</span></pre>
+<pre class="sh" style="margin-top:4px"><span class="o">A B</span></pre>
+      <div class="point"><b>A の call() の中の secret() は A の private メソッドに決まっている。</b>中身が B でも切り替わらない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.12.4.4</a>（If the invocation mode is super, overriding is not allowed. Method m of class or interface C is the one to be invoked）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.4.3.3</a>（A private method and all methods declared immediately within a final class (§8.1.1.2) behave as if they are final）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>ポリモーフィズムとキャスト</h1>
+  <p>同じ呼び出しで、中身ごとにちがう処理。型を戻すときは検査がいる。</p>
+  <div class="foot"><span>Java Silver #11 継承とポリモーフィズム</span><span>試験内容 5</span></div>
+</section>
+
+<section class="slide">
+  <h1>メソッド呼び出しは 2 段階で決まる</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="190" viewBox="0 0 420 190">
+        <defs><marker id="b11" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5b80bf"/></marker></defs>
+        <g font-size="12" text-anchor="middle">
+          <rect x="0" y="10" width="150" height="40" rx="6" fill="#f5f5f7" stroke="#d0d7e2"/><text x="75" y="28" fill="#1f3a68">変数 a</text><text x="75" y="43" fill="#1f3a68" font-size="11">型は Animal</text>
+          <rect x="250" y="10" width="170" height="40" rx="6" fill="#c9daf2"/><text x="335" y="28" fill="#1f3a68">オブジェクト</text><text x="335" y="43" fill="#1f3a68" font-size="11">クラスは Dog</text>
+          <line x1="152" y1="30" x2="246" y2="30" stroke="#5b80bf" stroke-width="2" marker-end="url(#b11)"/>
+          <rect x="0" y="80" width="200" height="46" rx="6" fill="#1f3a68"/><text x="100" y="99" fill="#fff">① コンパイル時</text><text x="100" y="116" fill="#fff" font-size="11">Animal に sound() はあるか</text>
+          <rect x="220" y="80" width="200" height="46" rx="6" fill="#5b80bf"/><text x="320" y="99" fill="#fff">② 実行時</text><text x="320" y="116" fill="#fff" font-size="11">Dog から上へ sound() を探す</text>
+          <text x="100" y="150" fill="#b25000" font-size="11">なければ cannot find symbol</text>
+          <text x="320" y="150" fill="#1f3a68" font-size="11">Dog の sound() が動く</text>
+          <text x="210" y="178" fill="#1f3a68" font-size="12">Animal a = new Dog();  a.sound();  → "wan"</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="cap">中からの呼び出しも切り替わる（Claude が作成）</div>
+<pre class="code small"><span class="k">class</span> A {
+  <span class="k">void</span> m() { print(<span class="s">"A.m "</span>); n(); }  <span class="c">// this.n()</span>
+  <span class="k">void</span> n() { print(<span class="s">"A.n "</span>); }
+}
+<span class="k">class</span> B <span class="k">extends</span> A { <span class="k">void</span> n() { print(<span class="s">"B.n "</span>); } }
+<span class="c">// A a = new B(); a.m();</span></pre>
+<pre class="sh" style="margin-top:4px"><span class="o">A.m B.n</span></pre>
+      <table class="mx" style="margin-top:6px">
+        <tr><th style="width:56%">Animal a = new Dog(); のあと</th><th>結果</th></tr>
+        <tr><td class="l"><code>a.sound()</code>（Dog がオーバーライド）</td><td class="t">Dog の sound()</td></tr>
+        <tr><td class="l"><code>a.bark()</code>（Dog だけにある）</td><td class="x">cannot find symbol</td></tr>
+        <tr><td class="l"><code>((Dog) a).bark()</code></td><td class="t">OK</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.12.1</a>（the type to search is the declared type T of the variable denoted by ExpressionName）・15.12.4.4（The lookup procedure starts from class R, the actual run-time class of the target object）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>キャストの 3 つの場合</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:44%">コード</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>Animal a = new Dog();</code></td><td class="t">OK（アップキャスト、キャスト不要）</td></tr>
+        <tr><td class="l"><code>Dog d = a;</code></td><td class="x">incompatible types: Animal cannot be converted to Dog</td></tr>
+        <tr><td class="l"><code>Dog d = (Dog) a;</code></td><td class="t">OK（中身が Dog）</td></tr>
+        <tr><td class="l"><code>Cat c = (Cat) a;</code></td><td class="x">実行時 ClassCastException（class Dog cannot be cast to class Cat）</td></tr>
+        <tr><td class="l"><code>Cat c = (Cat) dog;</code>（dog は Dog 型）</td><td class="x">incompatible types: Dog cannot be converted to Cat</td></tr>
+      </table>
+      <div class="point"><b>コンパイラは変数の型だけを見る。</b>「中身が合うかもしれない」なら通し、実行時に検査する。「ありえない」なら止める。</div>
+    </div>
+    <div>
+      <svg width="420" height="170" viewBox="0 0 420 170">
+        <g font-size="11" text-anchor="middle">
+          <rect x="0" y="6" width="420" height="44" rx="6" fill="#1f3a68"/><text x="210" y="24" fill="#fff">アップキャスト（子 → 親）</text><text x="210" y="40" fill="#fff">いつも安全。書かなくてよい。例外なし</text>
+          <rect x="0" y="60" width="420" height="44" rx="6" fill="#5b80bf"/><text x="210" y="78" fill="#fff">ダウンキャスト（親 → 子）</text><text x="210" y="94" fill="#fff">(Dog) が必要。中身が合わなければ ClassCastException</text>
+          <rect x="0" y="114" width="420" height="44" rx="6" fill="#fde8e8" stroke="#e2a3a3"/><text x="210" y="132" fill="#9b1c1c">継承関係のないクラスどうし</text><text x="210" y="148" fill="#9b1c1c">(Cat) を書いてもコンパイルエラー</text>
+        </g>
+      </svg>
+      <div class="mini">安全にするには、先に instanceof で調べる。Java 16 からは <code>if (a instanceof Dog d)</code> で調べるとキャストを一度に書ける（#10）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-5.html">JLS 5.1.5</a>（Widening reference conversions never require a special action at run time and therefore never throw an exception at run time）・5.1.6.3（If T is a class type, then R must be either the same class as T (§4.3.4) or a subclass of T, or a ClassCastException is thrown）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.16</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>落とし穴：親のコンストラクタから子のメソッド</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">class</span> A {
+  A() { show(); }
+  <span class="k">void</span> show() { System.out.println(<span class="s">"A.show"</span>); }
+}
+<span class="k">class</span> B <span class="k">extends</span> A {
+  <span class="k">int</span> x = <span class="s">5</span>;
+  <span class="k">void</span> show() { System.out.println(<span class="s">"B.show "</span> + x); }
+}
+<span class="c">// main：new B();</span></pre>
+<pre class="sh" style="margin-top:4px"><span class="o">B.show 0</span></pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:12%">順</th><th>new B() の中で起きること</th><th style="width:16%">x</th></tr>
+        <tr><td class="t">1</td><td class="l">B のフィールドを既定値にする</td><td>0</td></tr>
+        <tr><td class="t">2</td><td class="l">B() の先頭の super(); で A() へ</td><td>0</td></tr>
+        <tr><td class="t">3</td><td class="l">A() の show() → 中身は B なので B の show()</td><td class="x">0 を表示</td></tr>
+        <tr><td class="t">4</td><td class="l">A() が終わり、B のフィールド初期化 x = 5</td><td>5</td></tr>
+        <tr><td class="t">5</td><td class="l">B() の残りの本体</td><td>5</td></tr>
+      </table>
+      <div class="point"><b>作っている途中でもオーバーライドは効く。</b>子のフィールドはまだ初期化前なので、int は 0、参照は null が見える。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-12.html">JLS 12.5</a>（If methods are invoked that are overridden in subclasses in the object being initialized, then these overriding methods are used, even before the new object is completely initialized）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>abstract と final</h1>
+  <p>abstract は「子に書かせる」、final は「これ以上変えさせない」。</p>
+  <div class="foot"><span>Java Silver #11 継承とポリモーフィズム</span><span>試験内容 5</span></div>
+</section>
+
+<section class="slide">
+  <h1>抽象クラスと抽象メソッド</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">abstract class</span> Shape {
+  <span class="k">abstract double</span> area();               <span class="c">// 中身なし</span>
+  String describe() { <span class="k">return</span> <span class="s">"area="</span> + area(); }
+}
+<span class="k">class</span> Sq <span class="k">extends</span> Shape {
+  <span class="k">double</span> s;
+  Sq(<span class="k">double</span> s) { <span class="k">this</span>.s = s; }
+  <span class="k">double</span> area() { <span class="k">return</span> s * s; }   <span class="c">// 実装</span>
+}
+Shape sh = <span class="k">new</span> Sq(<span class="s">3</span>);                  <span class="c">// 変数の型には使える</span>
+System.out.println(sh.describe());</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">area=9.0</span></pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:50%">書き方</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>new Shape()</code></td><td class="x">Shape is abstract; cannot be instantiated</td></tr>
+        <tr><td class="l"><code>class Sq extends Shape { }</code></td><td class="x">Sq is not abstract and does not override abstract method area() in Shape</td></tr>
+        <tr><td class="l"><code>abstract class Sq2 extends Shape { }</code></td><td class="t">OK（実装を先送り）</td></tr>
+        <tr><td class="l">abstract のないクラスに抽象メソッド</td><td class="x">Shape is not abstract and does not override …</td></tr>
+        <tr><td class="l"><code>abstract double area() { return 0; }</code></td><td class="x">abstract methods cannot have a body</td></tr>
+      </table>
+      <div class="mini">抽象クラスはコンストラクタ・フィールド・中身のあるメソッドも持てる。抽象メソッドが 0 個でも abstract にできる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.1.1.1</a>（It is a compile-time error if an attempt is made to create an instance of an abstract class using a class instance creation expression）・8.4.3.1（Every subclass of A that is not abstract (§8.1.1.1) must provide an implementation for m, or a compile-time error occurs）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>final の 3 つの使い方</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:24%">付ける所</th><th style="width:34%">意味</th><th>破ったときの JDK 17 のメッセージ</th></tr>
+        <tr><td class="t">クラス</td><td class="l">継承できない</td><td class="x">cannot inherit from final A</td></tr>
+        <tr><td class="t">メソッド</td><td class="l">オーバーライド・隠蔽できない</td><td class="x">m() in B cannot override m() in A ／ overridden method is final</td></tr>
+        <tr><td class="t">変数</td><td class="l">値を 1 回しか入れられない（#03）</td><td class="x">cannot assign a value to final variable</td></tr>
+      </table>
+      <div class="point"><b>final メソッドを持つクラスは継承できる。</b>継承を止めるのは final クラスだけ。String は final クラス。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:54%">組み合わせ</th><th>JDK 17</th></tr>
+        <tr><td class="l"><code>final abstract class A</code></td><td class="x">illegal combination of modifiers: abstract and final</td></tr>
+        <tr><td class="l"><code>private abstract void m();</code></td><td class="x">illegal combination of modifiers: abstract and private</td></tr>
+        <tr><td class="l"><code>static abstract void m();</code></td><td class="x">illegal combination of modifiers: abstract and static</td></tr>
+        <tr><td class="l">final クラスの中のメソッド</td><td class="t">自動で final と同じ扱い</td></tr>
+      </table>
+      <div class="mini">abstract は「子で完成させる」、final は「完成していて変えさせない」。逆の意味なので一緒に付けられない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.1.1.2</a>（It is a compile-time error if a class is declared both final and abstract, because the implementation of such a class could never be completed）・8.1.4（It is a compile-time error if the ClassType names a class that is final）・8.4.3.3（A method can be declared final to prevent subclasses from overriding or hiding it）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>問われ方とまちがえやすい点</h1>
+  <table class="mx">
+    <tr><th style="width:32%">こう聞かれたら</th><th>答えの考え方</th></tr>
+    <tr><td class="t">コンストラクタの表示順</td><td class="l">親から順。this(…) を通るときは呼ばれた側の本体が先</td></tr>
+    <tr><td class="t">子のコンストラクタがコンパイルできるか</td><td class="l">親に引数なしのコンストラクタがあるか。super(…) は先頭か</td></tr>
+    <tr><td class="t">オーバーライドがコンパイルできるか</td><td class="l">アクセスを狭めていないか・戻り値・検査例外・static と final</td></tr>
+    <tr><td class="t">親の型の変数での表示</td><td class="l">インスタンスメソッドは中身、フィールドと static は変数の型</td></tr>
+    <tr><td class="t">キャストの結果</td><td class="l">キャストなしの代入はエラー。継承関係なしはエラー。中身が合わなければ ClassCastException</td></tr>
+    <tr><td class="t">親のコンストラクタから呼ぶメソッド</td><td class="l">子のメソッドが動き、子のフィールドはまだ 0 や null</td></tr>
+    <tr><td class="t">abstract・final の組み合わせ</td><td class="l">抽象クラスは new 不可、変数の型は OK。final と abstract は一緒に付けない</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">継承とコンストラクタ<span>extends は 1 つ。super(); が自動で先頭に。親から順に動く</span></div>
+      <div class="box b2">オーバーライド<span>同じシグネチャ・アクセスは同じか広く・共変戻り値・例外は増やさない</span></div>
+      <div class="box b3">ポリモーフィズム<span>呼べるかは変数の型、動くのは中身。フィールド・static は変数の型</span></div>
+      <div class="box b4">abstract と final<span>抽象クラスは new 不可。final はクラス・メソッド・変数</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:58%">こんなとき</th><th>結果</th></tr>
+        <tr><td class="l">public を修飾子なしでオーバーライド</td><td class="x">コンパイルエラー</td></tr>
+        <tr><td class="l">int を返すメソッドを long でオーバーライド</td><td class="x">コンパイルエラー</td></tr>
+        <tr><td class="l">親の型の変数で static メソッド</td><td class="t">親のメソッド</td></tr>
+        <tr><td class="l">中身が Dog の Animal を (Cat)</td><td class="x">ClassCastException</td></tr>
+        <tr><td class="l"><code>new</code> 抽象クラス</td><td class="x">コンパイルエラー</td></tr>
+      </table>
+      <div class="point"><b>次は #12 インタフェースとシール・クラス。</b>implements・default メソッド・sealed と permits へ進む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
