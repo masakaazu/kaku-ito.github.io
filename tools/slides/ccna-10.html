@@ -1,0 +1,885 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CCNA #10 無線LAN 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* WLC の画面を文字で再現する */
+.gui { border: 1px solid #c7c7cc; border-radius: 8px; overflow: hidden; font-size: 12px; background: #fff; }
+.gui .bar { background: #1f3a68; color: #fff; padding: 5px 10px; font-weight: 700; font-size: 12px; }
+.gui .tabs { display: flex; gap: 2px; background: #e5e5ea; padding: 4px 6px 0; }
+.gui .tabs span { padding: 4px 10px; border-radius: 6px 6px 0 0; color: #3a3a3c; font-size: 11.5px; }
+.gui .tabs span.on { background: #fff; color: #1f3a68; font-weight: 700; }
+.gui .body { padding: 6px 10px; }
+.gui .row { display: grid; grid-template-columns: 44% 56%; padding: 3px 0; border-bottom: 1px dashed #e5e5ea; }
+.gui .row:last-child { border-bottom: 0; }
+.gui .row .k { color: #6e6e73; }
+.gui .row .v { color: #1d1d1f; font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11px; }
+.gui .row.on .v { color: #b25000; font-weight: 700; }
+.chk { display: inline-block; width: 11px; height: 11px; border: 1.5px solid #1f3a68; border-radius: 2px; vertical-align: -1px; margin-right: 3px; }
+.chk.y { background: #1f3a68; }
+.num { display: inline-block; width: 18px; height: 18px; border-radius: 50%; background: #b25000; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 18px; margin-right: 4px; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">CCNA（200-301 v1.1）　1.0 ネットワークの基礎・2.0 ネットワークアクセス　#10</div>
+  <h1>無線LAN</h1>
+  <p>出題範囲 1.11・2.6・2.7・2.9 ― 電波の基礎から、WLCの画面を読むところまで</p>
+  <div class="refs-legend">各ページの下に、根拠にしたCiscoの資料を書いた（青い文字を押すと開く）</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>出題範囲の4項目を、5章で読む</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 電波とチャネル・SSID<span>1.11 Describe wireless principles（a 重ならないチャネル／b SSID／c RF）</span></div>
+      <div class="box b2">2 暗号化と認証<span>1.11.d Encryption</span></div>
+      <div class="box b3">3 アーキテクチャとAPのモード<span>2.6 Describe Cisco Wireless Architectures and AP modes</span></div>
+      <div class="box b4">4 APとWLCのつなぎ方<span>2.7 Describe physical infrastructure connections（AP・WLC・access/trunk・LAG）</span></div>
+      <div class="box b5">5 WLCのGUI設定<span>2.9 Interpret the wireless LAN GUI configuration（WLAN・セキュリティ・QoS・Advanced）</span></div>
+    </div>
+    <div>
+      <div class="cap">CCNAでの問われ方</div>
+      <table>
+        <tr><td style="width:26%">1.11・2.6・2.7</td><td><b>Describe</b>（説明できる）。チャネル・方式・モード・ポートの「どれがどれか」を区別する</td></tr>
+        <tr><td>2.9</td><td><b>Interpret</b>（読み取る）。WLCの画面を見て「この設定で何が起きるか」を答える</td></tr>
+        <tr><td>画面</td><td>多くの問題は古い <b>AireOS</b> のWLC（WLANs &gt; Edit のタブ）。今の機種は <b>Catalyst 9800</b>（タグとプロファイル）</td></tr>
+      </table>
+      <div class="point"><b>覚え方の芯：</b>軽量APは<b>WLCにCAPWAPでつながる</b>。データをどこで有線に出すか（WLCか、APか）で、モードとスイッチのポートの設定が決まる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco CCNA Exam v1.1 (200-301) Exam Topics</a>（1.11・2.6・2.7・2.9）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>電波とチャネル・SSID</h1>
+  <p>同じ周波数を、となりのAPと取り合わないように配る。名前（SSID）とAP（BSSID）を区別する。</p>
+  <div class="foot"><span>CCNA #10 無線LAN</span><span>1.11.a〜c</span></div>
+</section>
+
+<section class="slide">
+  <h1>2.4GHz：チャネルは5MHzおき、幅は約22MHz → 重ならないのは 1・6・11</h1>
+  <svg width="856" height="210" viewBox="0 0 856 210">
+    <g font-size="11" text-anchor="middle">
+      <line x1="30" y1="170" x2="600" y2="170" stroke="#6e6e73"/>
+      <!-- ch2-5, 7-10: thin -->
+      <path d="M82 170 Q159 40 236 170" fill="none" stroke="#c7c7cc" stroke-width="1.5"/>
+      <path d="M117 170 Q194 40 271 170" fill="none" stroke="#c7c7cc" stroke-width="1.5"/>
+      <path d="M152 170 Q229 40 306 170" fill="none" stroke="#c7c7cc" stroke-width="1.5"/>
+      <path d="M187 170 Q264 40 341 170" fill="none" stroke="#c7c7cc" stroke-width="1.5"/>
+      <path d="M257 170 Q334 40 411 170" fill="none" stroke="#c7c7cc" stroke-width="1.5"/>
+      <path d="M292 170 Q369 40 446 170" fill="none" stroke="#c7c7cc" stroke-width="1.5"/>
+      <path d="M327 170 Q404 40 481 170" fill="none" stroke="#c7c7cc" stroke-width="1.5"/>
+      <path d="M362 170 Q439 40 516 170" fill="none" stroke="#c7c7cc" stroke-width="1.5"/>
+      <!-- 1, 6, 11 -->
+      <path d="M47 170 Q124 30 201 170" fill="#1f3a68" fill-opacity=".14" stroke="#1f3a68" stroke-width="3"/>
+      <path d="M222 170 Q299 30 376 170" fill="#e08a2c" fill-opacity=".16" stroke="#b25000" stroke-width="3"/>
+      <path d="M397 170 Q474 30 551 170" fill="#3a7d44" fill-opacity=".14" stroke="#3a7d44" stroke-width="3"/>
+      <text x="124" y="92" font-size="16" font-weight="700" fill="#1f3a68">ch1</text>
+      <text x="299" y="92" font-size="16" font-weight="700" fill="#b25000">ch6</text>
+      <text x="474" y="92" font-size="16" font-weight="700" fill="#3a7d44">ch11</text>
+      <text x="124" y="186">2412</text><text x="299" y="186">2437</text><text x="474" y="186">2462</text>
+      <text x="320" y="204" fill="#6e6e73">中心の周波数（MHz）。1と6、6と11 はそれぞれ25MHz離れている</text>
+      <text x="211" y="58" fill="#6e6e73">ch2〜5 は</text><text x="211" y="72" fill="#6e6e73">1とも6とも重なる</text>
+    </g>
+    <g font-size="12">
+      <rect x="620" y="20" width="236" height="150" rx="8" fill="#eef2f8"/>
+      <text x="636" y="44" font-weight="700" fill="#1f3a68">数字で確かめる</text>
+      <text x="636" y="68" fill="#1d1d1f">ch n の中心 ＝ 2407 ＋ 5n MHz</text>
+      <text x="636" y="90" fill="#1d1d1f">1つのチャネル ≒ 22MHz の幅</text>
+      <text x="636" y="112" fill="#1d1d1f">ch1：2401〜2423</text>
+      <text x="636" y="132" fill="#1d1d1f">ch6：2426〜2448 → 重ならない</text>
+      <text x="636" y="152" fill="#b25000">ch5：2421〜2443 → ch1と重なる</text>
+    </g>
+  </svg>
+  <table class="mini" style="margin-top:4px">
+    <tr><th style="width:12%">帯</th><th style="width:28%">重ならないチャネル</th><th>特徴</th></tr>
+    <tr><td><b>2.4GHz</b></td><td><b>1・6・11 の3つだけ</b></td><td>遠くまで届くが混む。電子レンジ・Bluetooth・コードレス電話も同じ帯。802.11b/g/n/ax</td></tr>
+    <tr><td><b>5GHz</b></td><td>20以上（36〜165。52〜144 は DFS）</td><td>20MHz どうしは重ならない。40/80/160MHz に束ねられる。802.11a/n/ac/ax</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_rrm_c9800.html">Catalyst 9800 Configuration Guide 17.9「Radio Resource Management」</a>（Use only nonoverlapping channels (1, 6, 11…)）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-5/Enterprise-Mobility-8-5-Design-Guide/Enterprise_Mobility_8-5_Deployment_Guide.html">Enterprise Mobility 8.5 Design Guide</a>（22 MHz・5 GHz Band Channels・2412/2462 MHz）。図はClaudeが作図</div>
+</section>
+
+<section class="slide">
+  <h1>チャネルの配り方：となりは違うチャネル、同じチャネルは遠くで再利用</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="400" height="300" viewBox="0 0 400 300">
+        <g font-size="15" font-weight="700" text-anchor="middle">
+          <circle cx="90" cy="80" r="62" fill="#1f3a68" fill-opacity=".15" stroke="#1f3a68" stroke-width="2"/><text x="90" y="86" fill="#1f3a68">1</text>
+          <circle cx="200" cy="80" r="62" fill="#e08a2c" fill-opacity=".18" stroke="#b25000" stroke-width="2"/><text x="200" y="86" fill="#b25000">6</text>
+          <circle cx="310" cy="80" r="62" fill="#3a7d44" fill-opacity=".15" stroke="#3a7d44" stroke-width="2"/><text x="310" y="86" fill="#3a7d44">11</text>
+          <circle cx="145" cy="175" r="62" fill="#3a7d44" fill-opacity=".15" stroke="#3a7d44" stroke-width="2"/><text x="145" y="181" fill="#3a7d44">11</text>
+          <circle cx="255" cy="175" r="62" fill="#1f3a68" fill-opacity=".15" stroke="#1f3a68" stroke-width="2"/><text x="255" y="181" fill="#1f3a68">1</text>
+        </g>
+        <text x="200" y="262" font-size="12" text-anchor="middle" fill="#1d1d1f">となりあうセルは必ず違うチャネル。</text>
+        <text x="200" y="280" font-size="12" text-anchor="middle" fill="#1d1d1f">セルは 10〜15％ 重ねてローミングできるようにする</text>
+      </svg>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th style="width:32%">干渉</th><th>何が起きるか</th></tr>
+        <tr><td><b>同一チャネル干渉</b>（CCI）</td><td>近くのAPと<b>同じ</b>チャネル。電波を出す順番を待ち合って遅くなる</td></tr>
+        <tr><td><b>隣接チャネル干渉</b></td><td>1と2のように<b>少しずれて重なる</b>チャネル。相手の電波が雑音になる</td></tr>
+        <tr><td>Wi-Fi 以外</td><td>電子レンジ・Bluetooth など（2.4GHz）</td></tr>
+      </table>
+      <dl class="def" style="margin-top:8px">
+        <dt>チャネルボンディング</dt><dd>20MHz を束ねて 40/80/160MHz にし、速くする（802.11n 以降）。束ねるほどチャネルの数は減る。<b>Cisco は2.4GHz では束ねない</b>（3つしかないので）。</dd>
+        <dt>RRM（自動の調整）</dt><dd>WLCが、チャネル（DCA）と出力（TPC）を自動で決める。DCA は重ならないチャネルだけを使う。</dd>
+      </dl>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_rrm_c9800.html">Catalyst 9800 Configuration Guide 17.9「RRM」</a>（Channel reuse・Adjacent channel separation・DCA supports only 20-MHz channels in the 2.4-GHz band）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-5/Enterprise-Mobility-8-5-Design-Guide/Enterprise_Mobility_8-5_Deployment_Guide.html">Enterprise Mobility 8.5 Design Guide</a>（802.11n：We do not support bonding of channels in 2.4 GHz・Overlap should be 10-15%）</div>
+</section>
+
+<section class="slide">
+  <h1>SSID は名前、BSSID はAPの番号。同じSSIDのAPの集まりが ESS</h1>
+  <svg width="856" height="210" viewBox="0 0 856 210">
+    <g font-size="12" text-anchor="middle">
+      <rect x="0" y="6" width="560" height="150" rx="12" fill="#eef2f8" stroke="#5b80bf" stroke-dasharray="6 4"/>
+      <text x="280" y="26" font-weight="700" fill="#1f3a68">ESS（同じSSID「CORP」を出すAPの集まり）</text>
+      <rect x="20" y="130" width="520" height="16" rx="4" fill="#1f3a68"/><text x="280" y="142" fill="#fff" font-size="11">有線のネットワーク（ディストリビューションシステム）</text>
+      <ellipse cx="140" cy="80" rx="115" ry="44" fill="#fff" stroke="#1f3a68"/>
+      <ellipse cx="420" cy="80" rx="115" ry="44" fill="#fff" stroke="#1f3a68"/>
+      <rect x="118" y="96" width="44" height="22" rx="4" fill="#1f3a68"/><text x="140" y="111" fill="#fff">AP1</text>
+      <rect x="398" y="96" width="44" height="22" rx="4" fill="#1f3a68"/><text x="420" y="111" fill="#fff">AP2</text>
+      <text x="140" y="56" font-weight="700" fill="#1f3a68">BSS 1</text><text x="140" y="74" font-size="10.5">SSID CORP／BSSID …:12:34:50</text>
+      <text x="420" y="56" font-weight="700" fill="#1f3a68">BSS 2</text><text x="420" y="74" font-size="10.5">SSID CORP／BSSID …:56:78:90</text>
+      <circle cx="232" cy="92" r="9" fill="#e08a2c"/><text x="280" y="96" font-size="11" fill="#b25000">→ ローミング →</text><circle cx="330" cy="92" r="9" fill="#e08a2c" fill-opacity=".45"/>
+      <rect x="590" y="6" width="266" height="150" rx="12" fill="#fff" stroke="#c7c7cc"/>
+      <text x="723" y="26" font-weight="700" fill="#1d1d1f">IBSS（アドホック）</text>
+      <rect x="640" y="70" width="50" height="30" rx="5" fill="#5b80bf"/><text x="665" y="90" fill="#fff">PC</text>
+      <rect x="760" y="70" width="50" height="30" rx="5" fill="#5b80bf"/><text x="785" y="90" fill="#fff">PC</text>
+      <line x1="690" y1="85" x2="760" y2="85" stroke="#5b80bf" stroke-dasharray="4 3" stroke-width="2"/>
+      <text x="723" y="130" font-size="11" fill="#6e6e73">APなしで端末どうしが直接</text>
+    </g>
+    <text x="428" y="186" font-size="12" text-anchor="middle" fill="#1d1d1f">SSID は同じでも、BSSID（APの無線のMACアドレス）はAPごとに違う。移ると変わるのは BSSID</text>
+  </svg>
+  <table class="mini">
+    <tr><th style="width:14%">用語</th><th>意味</th><th style="width:38%">注意</th></tr>
+    <tr><td><b>SSID</b></td><td>ネットワークの名前（最大32文字）。ビーコンで知らせる</td><td>隠しても（Broadcast SSID を切っても）安全にはならない</td></tr>
+    <tr><td><b>BSS／BSSID</b></td><td>AP1台（の無線）とその端末／それを見分けるMACアドレス</td><td>1台のAPで複数SSIDなら、SSIDごとにBSSIDも別</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-5/Enterprise-Mobility-8-5-Design-Guide/Enterprise_Mobility_8-5_Deployment_Guide.html">Enterprise Mobility 8.5 Design Guide「Split MAC Architecture」</a>（BSSID・ESS・ESSID commonly referred to as an SSID）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/wlans.html">Wireless Controller Configuration Guide 8.10「WLANs」</a>（SSID up to 32 characters）</div>
+</section>
+
+<section class="slide">
+  <h1>電波の強さ：RSSI は「0に近いほど強い」、SNR は「信号－雑音」</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="150" viewBox="0 0 400 150">
+        <defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#3a7d44"/><stop offset=".55" stop-color="#e0b52c"/><stop offset="1" stop-color="#b23a2c"/></linearGradient></defs>
+        <rect x="10" y="30" width="380" height="22" rx="5" fill="url(#g1)"/>
+        <g font-size="11" text-anchor="middle">
+          <text x="10" y="70">-30</text><text x="105" y="70">-50</text><text x="200" y="70" font-weight="700" fill="#1f3a68">-67</text><text x="295" y="70">-80</text><text x="384" y="70">-90</text>
+          <line x1="200" y1="24" x2="200" y2="58" stroke="#1f3a68" stroke-width="3"/>
+          <text x="60" y="20" fill="#3a7d44">強い</text><text x="350" y="20" fill="#b23a2c">弱い</text>
+          <text x="200" y="92" fill="#1f3a68">音声の無線LANで、エリアの端に欲しい強さ（Cisco の目安）</text>
+        </g>
+        <g font-size="12">
+          <rect x="10" y="104" width="380" height="42" rx="6" fill="#fdf3ea"/>
+          <text x="200" y="122" text-anchor="middle" fill="#b25000" font-weight="700">SNR ＝ 信号 －（雑音）＝ -67 －（-92）＝ 25 dB</text>
+          <text x="200" y="139" text-anchor="middle" fill="#b25000">dBm どうしの差なので単位は dB。大きいほど良い</text>
+        </g>
+      </svg>
+      <div class="point" style="margin-top:6px"><b>まちがえやすい：</b>-67dBm は -80dBm より<b>強い</b>（マイナスの小さいほうが強い）。電波が強くても、雑音も強ければ SNR は小さく、速度は出ない。</div>
+    </div>
+    <div>
+      <div class="cap">IEEE 802.11 の規格</div>
+      <table class="mini">
+        <tr><th>規格</th><th>名前</th><th>帯</th><th>メモ</th></tr>
+        <tr><td>802.11b</td><td>―</td><td>2.4</td><td>11Mbps。いちばん古い</td></tr>
+        <tr><td>802.11a</td><td>―</td><td>5</td><td>54Mbps。OFDM</td></tr>
+        <tr><td>802.11g</td><td>―</td><td>2.4</td><td>54Mbps。b と共存</td></tr>
+        <tr><td>802.11n</td><td>Wi-Fi 4</td><td>2.4・5</td><td>MIMO・40MHz</td></tr>
+        <tr><td>802.11ac</td><td>Wi-Fi 5</td><td>5</td><td>80/160MHz</td></tr>
+        <tr><td>802.11ax</td><td>Wi-Fi 6/6E</td><td>2.4・5・6</td><td>6E で 6GHz</td></tr>
+      </table>
+      <div style="font-size:11px;color:#6e6e73;margin-top:4px">a と ac は5GHz だけ、b と g は2.4GHz だけ</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-5/Enterprise-Mobility-8-5-Design-Guide/Enterprise_Mobility_8-5_Deployment_Guide.html">Enterprise Mobility 8.5 Design Guide</a>（VoWLAN：-67 dBm…requires an SNR value of 25 dB or greater・802.11b/g/n/a/ac の各節・Planning for RF Deployment）。数値の例はClaudeが書いた</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>暗号化と認証</h1>
+  <p>暗号化の方式（WEP→WPA→WPA2→WPA3）と、だれを入れるか（全員同じ鍵か、1人ずつか）を分けて考える。</p>
+  <div class="foot"><span>CCNA #10 無線LAN</span><span>1.11.d</span></div>
+</section>
+
+<section class="slide">
+  <h1>方式は4世代。WPA2＝AES、WPA3＝SAEとPMF</h1>
+  <table class="mx">
+    <tr><th style="width:12%">方式</th><th style="width:20%">暗号化</th><th style="width:22%">パーソナル（家庭・小規模）</th><th style="width:22%">エンタープライズ（会社）</th><th>今の扱い</th></tr>
+    <tr><td class="t">WEP</td><td class="x">RC4・固定の鍵</td><td>全員同じ固定の鍵</td><td>―</td><td class="x">破られている。使わない</td></tr>
+    <tr><td class="t">WPA</td><td class="a">TKIP（RC4）</td><td>PSK</td><td>802.1X</td><td class="a">WEPからのつなぎ。使わない</td></tr>
+    <tr><td class="t">WPA2</td><td><b>AES-CCMP</b></td><td><b>PSK</b></td><td><b>802.1X</b></td><td>今も多い（9800 の既定）</td></tr>
+    <tr><td class="t">WPA3</td><td><b>AES</b>（CCMP/GCMP）</td><td><b>SAE</b></td><td>802.1X（192ビットモード）</td><td>PMF が必須。新しい標準</td></tr>
+  </table>
+  <div class="cols" style="margin-top:12px">
+    <div class="point" style="margin-top:0"><b>PSK のパスフレーズ：</b>ASCII <b>8〜63文字</b>か、16進数<b>64文字</b>。全員同じ鍵なので、1人が辞めたら全員の鍵を変える。</div>
+    <div class="point" style="margin-top:0"><b>ひっかけ：</b>「WPA2 の暗号化は？」→ AES（TKIP ではない）。「SAE は暗号化の方式？」→ いいえ、鍵を作る<b>認証の手順</b>。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_wlan_security_9800.html">Catalyst 9800 Configuration Guide 17.9「WLAN Security」</a>（WPA1 using TKIP and WPA2 using AES-CCMP・802.1X is default AKM）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/wlan_security.html">Wireless Controller Configuration Guide 8.10「WLAN Security」</a>（8 to 63 ASCII text characters or 64 hexadecimal characters・Static WEP not supported on Wave 2 APs）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_wpa3.html">「Wi-Fi Protected Access 3」</a></div>
+</section>
+
+<section class="slide">
+  <h1>PSK と 802.1X：鍵が「全員共通」か「1人ずつ」か</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">PSK（WPA2-Personal）</div>
+      <svg width="400" height="120" viewBox="0 0 400 120">
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="40" width="80" height="40" rx="6" fill="#5b80bf"/><text x="50" y="65" fill="#fff">端末</text>
+          <rect x="160" y="40" width="80" height="40" rx="6" fill="#1f3a68"/><text x="200" y="65" fill="#fff">AP / WLC</text>
+          <line x1="90" y1="60" x2="160" y2="60" stroke="#1f3a68" stroke-width="2"/>
+          <text x="50" y="100" fill="#b25000">鍵「Sakura2026!」</text><text x="200" y="100" fill="#b25000">鍵「Sakura2026!」</text>
+          <text x="320" y="56" fill="#1d1d1f">同じ鍵を知って</text><text x="320" y="72" fill="#1d1d1f">いれば OK</text>
+          <text x="320" y="96" fill="#6e6e73">サーバー不要</text>
+        </g>
+      </svg>
+      <div class="cap" style="margin-top:6px">802.1X（WPA2-Enterprise）</div>
+      <svg width="400" height="130" viewBox="0 0 400 130">
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="0" y="34" width="90" height="44" rx="6" fill="#5b80bf"/><text x="45" y="54" fill="#fff">端末</text><text x="45" y="70" fill="#fff" font-size="10">サプリカント</text>
+          <rect x="150" y="34" width="100" height="44" rx="6" fill="#1f3a68"/><text x="200" y="54" fill="#fff">AP / WLC</text><text x="200" y="70" fill="#fff" font-size="10">オーセンティケータ</text>
+          <rect x="310" y="34" width="90" height="44" rx="6" fill="#b25000"/><text x="355" y="54" fill="#fff">RADIUS</text><text x="355" y="70" fill="#fff" font-size="10">認証サーバー（ISE）</text>
+          <line x1="90" y1="56" x2="150" y2="56" stroke="#1f3a68" stroke-width="2"/><line x1="250" y1="56" x2="310" y2="56" stroke="#b25000" stroke-width="2"/>
+          <text x="120" y="26" fill="#1f3a68">EAP</text><text x="280" y="26" fill="#b25000">RADIUS</text>
+          <text x="200" y="104" fill="#1d1d1f">ユーザー名・パスワードや証明書を1人ずつ確かめる</text>
+          <text x="200" y="122" fill="#6e6e73">→ 鍵もユーザーごとにできる</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th style="width:26%"></th><th>PSK</th><th>802.1X</th></tr>
+        <tr><td>認証に使うもの</td><td>全員共通のパスフレーズ</td><td>1人ずつのアカウント・証明書</td></tr>
+        <tr><td>サーバー</td><td>いらない</td><td>RADIUS（WLCがそのクライアント）</td></tr>
+        <tr><td>辞めた人</td><td>全員の鍵を変える</td><td>その人のアカウントを止める</td></tr>
+        <tr><td>画面の選び方</td><td>AKM の <b>PSK</b> にチェック・PSK Format</td><td>AKM の <b>802.1X</b> にチェック・AAA Servers で RADIUS</td></tr>
+      </table>
+      <div class="point"><b>Web認証（Layer 3）との違い：</b>来客用のログインページは「つないだ後」の認証で、<b>無線の通信は暗号化しない</b>。暗号化は Layer 2 の WPA2/WPA3 がする。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/wlan_security.html">Wireless Controller Configuration Guide 8.10「WLAN Security」</a>（Layer 2 Security・Authentication Key Management・Layer 3 Security／Web Authentication）。パスフレーズの例はClaudeが書いた</div>
+</section>
+
+<section class="slide">
+  <h1>WPA3 の3つの道具：SAE・OWE・PMF</h1>
+  <div class="cols3">
+    <div class="ex"><div class="cap">SAE（WPA3-Personal）</div>
+      <p style="margin:4px 0">PSK のかわり。パスワードそのものを流さず、<b>同じパスワードを知っていることを確かめ合って</b>強い鍵を作る。</p>
+      <ul class="anno"><li>盗み見たデータで家からパスワードを試す<b>オフラインの辞書攻撃</b>に強い</li><li>1つの鍵が破られても、ほかの通信は安全（前方秘匿性）</li></ul>
+    </div>
+    <div class="ex"><div class="cap">OWE（Enhanced Open）</div>
+      <p style="margin:4px 0">パスワードの<b>ないオープンなWLAN</b>でも、端末ごとに鍵を作って<b>暗号化だけ</b>する。</p>
+      <ul class="anno"><li>認証はしない（だれでもつながる）</li><li>カフェ・来客用で、盗み見を防ぐ</li><li>Diffie-Hellman で鍵を作る</li></ul>
+    </div>
+    <div class="ex"><div class="cap">PMF（802.11w）</div>
+      <p style="margin:4px 0">切断などの<b>管理フレーム</b>にも保護をかける。</p>
+      <ul class="anno"><li>にせの切断フレームで端末を追い出す攻撃を防ぐ</li><li>WPA3 では<b>必須</b>（切れない）</li><li>オープン・WEP・TKIP のWLANでは使えない</li></ul>
+    </div>
+  </div>
+  <table class="mini" style="margin-top:12px">
+    <tr><th style="width:26%">やりたいこと</th><th>選ぶもの</th></tr>
+    <tr><td>家庭の WPA2-PSK を強くしたい</td><td><b>WPA3-Personal（SAE）</b>。古い端末があるうちは WPA2+WPA3 の移行モード</td></tr>
+    <tr><td>来客にパスワードなしで、でも暗号化して</td><td><b>OWE</b>（Web認証は暗号化しない）</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_wpa3.html">Catalyst 9800 Configuration Guide 17.9「Wi-Fi Protected Access 3」</a>（Simultaneous Authentication of Equals・Opportunistic Wireless Encryption・you cannot disable PMF）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/wlan_security.html">Configuration Guide 8.10「WLAN Security」</a>（802.11w cannot be applied on an open WLAN, WEP-encrypted WLAN, or a TKIP-encrypted WLAN）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>アーキテクチャとAPのモード</h1>
+  <p>APを1台ずつ管理するか、WLCやクラウドでまとめて管理するか。端末のデータをどこで有線に出すか。</p>
+  <div class="foot"><span>CCNA #10 無線LAN</span><span>2.6</span></div>
+</section>
+
+<section class="slide">
+  <h1>4つのアーキテクチャ：違いは「管理する場所」と「データの出口」</h1>
+  <svg width="856" height="250" viewBox="0 0 856 250">
+    <g font-size="11.5" text-anchor="middle">
+      <!-- autonomous -->
+      <rect x="0" y="0" width="204" height="250" rx="10" fill="#f5f5f7"/>
+      <text x="102" y="22" font-weight="700" fill="#1f3a68" font-size="13">自律型（Autonomous）</text>
+      <rect x="62" y="70" width="80" height="26" rx="5" fill="#1f3a68"/><text x="102" y="88" fill="#fff">スイッチ</text>
+      <rect x="20" y="150" width="60" height="26" rx="5" fill="#5b80bf"/><text x="50" y="168" fill="#fff">AP</text>
+      <rect x="124" y="150" width="60" height="26" rx="5" fill="#5b80bf"/><text x="154" y="168" fill="#fff">AP</text>
+      <line x1="50" y1="150" x2="90" y2="96" stroke="#b25000" stroke-width="2.5"/><line x1="154" y1="150" x2="114" y2="96" stroke="#b25000" stroke-width="2.5"/>
+      <text x="102" y="200" fill="#1d1d1f">1台ずつ設定</text><text x="102" y="218" fill="#b25000">データはAPから直接</text>
+      <!-- centralized -->
+      <rect x="217" y="0" width="204" height="250" rx="10" fill="#f5f5f7"/>
+      <text x="319" y="22" font-weight="700" fill="#1f3a68" font-size="13">集中型（WLC）</text>
+      <rect x="279" y="40" width="80" height="26" rx="5" fill="#b25000"/><text x="319" y="58" fill="#fff">WLC</text>
+      <rect x="279" y="96" width="80" height="26" rx="5" fill="#1f3a68"/><text x="319" y="114" fill="#fff">スイッチ</text>
+      <rect x="237" y="160" width="60" height="26" rx="5" fill="#5b80bf"/><text x="267" y="178" fill="#fff">AP</text>
+      <rect x="341" y="160" width="60" height="26" rx="5" fill="#5b80bf"/><text x="371" y="178" fill="#fff">AP</text>
+      <path d="M267 160 L300 66" stroke="#b25000" stroke-width="5" stroke-opacity=".35" fill="none"/><path d="M371 160 L338 66" stroke="#b25000" stroke-width="5" stroke-opacity=".35" fill="none"/>
+      <text x="319" y="210" fill="#1d1d1f">CAPWAP のトンネル</text><text x="319" y="228" fill="#b25000">データはWLCから出る</text>
+      <!-- flexconnect -->
+      <rect x="434" y="0" width="204" height="250" rx="10" fill="#f5f5f7"/>
+      <text x="536" y="22" font-weight="700" fill="#1f3a68" font-size="13">FlexConnect</text>
+      <rect x="496" y="40" width="80" height="26" rx="5" fill="#b25000"/><text x="536" y="58" fill="#fff">本社のWLC</text>
+      <text x="536" y="92" fill="#6e6e73">― WAN ―</text>
+      <rect x="496" y="110" width="80" height="26" rx="5" fill="#1f3a68"/><text x="536" y="128" fill="#fff">支店のSW</text>
+      <rect x="506" y="166" width="60" height="26" rx="5" fill="#5b80bf"/><text x="536" y="184" fill="#fff">AP</text>
+      <line x1="536" y1="166" x2="536" y2="136" stroke="#b25000" stroke-width="2.5"/>
+      <path d="M570 170 Q620 110 576 60" stroke="#b25000" stroke-dasharray="4 3" fill="none"/>
+      <text x="536" y="214" fill="#1d1d1f">管理だけ本社へ</text><text x="536" y="232" fill="#b25000">データは支店で出せる</text>
+      <!-- cloud -->
+      <rect x="652" y="0" width="204" height="250" rx="10" fill="#f5f5f7"/>
+      <text x="754" y="22" font-weight="700" fill="#1f3a68" font-size="13">クラウド（Meraki）</text>
+      <ellipse cx="754" cy="56" rx="56" ry="20" fill="#fff" stroke="#5b80bf"/><text x="754" y="60" fill="#1f3a68">ダッシュボード</text>
+      <rect x="714" y="110" width="80" height="26" rx="5" fill="#1f3a68"/><text x="754" y="128" fill="#fff">スイッチ</text>
+      <rect x="724" y="166" width="60" height="26" rx="5" fill="#5b80bf"/><text x="754" y="184" fill="#fff">AP</text>
+      <line x1="754" y1="166" x2="754" y2="136" stroke="#b25000" stroke-width="2.5"/>
+      <path d="M790 172 Q830 110 790 72" stroke="#5b80bf" stroke-dasharray="4 3" fill="none"/>
+      <text x="754" y="214" fill="#1d1d1f">管理のデータだけクラウドへ</text><text x="754" y="232" fill="#b25000">端末のデータは通らない</text>
+    </g>
+  </svg>
+  <div class="point" style="margin-top:6px"><b>もう1つ：組み込み型（EWC／Mobility Express）</b>＝1台のAPの中でコントローラを動かし、ほかのAPを管理する。小さな拠点で、WLCの機械を買わずに済む。</div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-5/Enterprise-Mobility-8-5-Design-Guide/Enterprise_Mobility_8-5_Deployment_Guide.html">Enterprise Mobility 8.5 Design Guide</a>（CAPWAP・autonomous AP）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/flexconnect.html">Configuration Guide 8.10「FlexConnect」</a>／ <a class="src" href="https://documentation.meraki.com/Architectures_and_Best_Practices/Cisco_Meraki_Best_Practice_Design/Meraki_Cloud_Architecture">Cisco Meraki「Meraki Cloud Architecture」</a>（User data does not flow through the Meraki cloud）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/cisco_wireless_solution_overview.html">8.10「Cisco Wireless Solution Overview」</a>（Mobility Express）</div>
+</section>
+
+<section class="slide">
+  <h1>スプリットMAC：急ぐ仕事はAP、考える仕事はWLC。間は CAPWAP</h1>
+  <div class="cols">
+    <div>
+      <table class="mini">
+        <tr><th style="width:50%">AP（時間にきびしい）</th><th>WLC（時間にゆるい）</th></tr>
+        <tr><td>ビーコンを出す</td><td>802.11 の<b>認証</b></td></tr>
+        <tr><td>プローブ要求に応える</td><td><b>アソシエーション</b>・再アソシエーション（ローミング）</td></tr>
+        <tr><td>フレームの<b>暗号化・復号</b></td><td>802.1X／EAP／RADIUS の処理</td></tr>
+        <tr><td>省電力の端末のためにためておく</td><td>802.11 のフレームを有線の形に変えて<b>ブリッジ</b></td></tr>
+        <tr><td>チャネルの雑音・干渉・ほかのAPの監視</td><td>RRM（チャネルと出力を決める）</td></tr>
+      </table>
+      <div class="point"><b>ひっかけ：</b>「暗号化するのは？」→ <b>AP</b>。「認証・アソシエーションは？」→ <b>WLC</b>。</div>
+    </div>
+    <div>
+      <svg width="400" height="170" viewBox="0 0 400 170">
+        <g font-size="12" text-anchor="middle">
+          <rect x="0" y="60" width="70" height="40" rx="6" fill="#5b80bf"/><text x="35" y="85" fill="#fff">AP</text>
+          <rect x="330" y="60" width="70" height="40" rx="6" fill="#b25000"/><text x="365" y="85" fill="#fff">WLC</text>
+          <rect x="70" y="58" width="260" height="44" rx="22" fill="#eef2f8" stroke="#1f3a68"/>
+          <text x="200" y="76" fill="#1f3a68" font-weight="700">制御 UDP 5246（DTLS で必ず暗号化）</text>
+          <text x="200" y="94" fill="#1f3a68">データ UDP 5247（暗号化は選べる）</text>
+          <text x="200" y="30" fill="#1d1d1f">CAPWAP（IETF 標準・LWAPP が元）</text>
+          <text x="200" y="130" fill="#6e6e73">IP の上で動く → AP と WLC は別のサブネットでよい</text>
+          <text x="200" y="150" fill="#6e6e73">間のファイアウォールは UDP 5246・5247 を通す</text>
+        </g>
+      </svg>
+      <div class="point warn"><b>数字の注意：</b>LWAPP（古い）は UDP 12222／12223。RADIUS は UDP 1812／1813。CAPWAP は <b>5246／5247</b>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-5/Enterprise-Mobility-8-5-Design-Guide/Enterprise_Mobility_8-5_Deployment_Guide.html">Enterprise Mobility 8.5 Design Guide「Split MAC Architecture」</a>（For example, the CAPWAP AP handles…／MAC layer functions provided by the WLC include…）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/ap_connectivity_to_cisco_wlc.html">Configuration Guide 8.10「AP Connectivity to Controller」</a>（5246 (control) and 5247 (data)・LWAPP UDP ports 12222 and 12223）</div>
+</section>
+
+<section class="slide">
+  <h1>軽量APがWLCに参加するまで</h1>
+  <div class="flow" style="margin-bottom:10px">
+    <div class="box b1">① 電源・IP<span>PoE で起動し、DHCP でIPをもらう</span></div><div class="arrow">→</div>
+    <div class="box b2">② WLCを探す<span>CAPWAP ディスカバリ</span></div><div class="arrow">→</div>
+    <div class="box b3">③ 参加<span>Join 要求・応答（DTLS）</span></div><div class="arrow">→</div>
+    <div class="box b4">④ 設定とソフト<span>WLCからダウンロード</span></div><div class="arrow">→</div>
+    <div class="box b5">⑤ 電波を出す<span>WLANのSSIDを出す</span></div>
+  </div>
+  <div class="cols">
+    <div>
+      <div class="cap">② WLCの見つけ方</div>
+      <table class="mini">
+        <tr><td style="width:36%"><b>DHCP オプション43</b></td><td>DHCP の応答に WLC の IPv4 アドレス（最大3つ）を入れる。IPv6 はオプション52</td></tr>
+        <tr><td><b>DNS</b></td><td><code>CISCO-CAPWAP-CONTROLLER.</code>（ドメイン名）を引く</td></tr>
+        <tr><td>覚えているアドレス</td><td>前に参加したWLC（プライマリ・セカンダリ・ターシャリ）。プライミング</td></tr>
+        <tr><td>同じサブネット</td><td>ディスカバリをブロードキャスト（IPv6 はマルチキャスト）</td></tr>
+      </table>
+    </div>
+    <div>
+<pre class="cli small">! スイッチでAP用のDHCPプールを作る例
+ip dhcp pool AP-VLAN100
+ network 10.1.100.0 255.255.255.0
+ default-router 10.1.100.1
+ <span class="hl">option 43 hex f104.0a01.6305</span>
+!  f1 = 種類（Cisco のAP）
+!  04 = 長さ（IPv4 1つ＝4バイト）
+!  0a016305 = 10.1.99.5（WLC）</pre>
+      <div class="point"><b>オプション3</b>はデフォルトゲートウェイ（default-router）。WLC を教えるのは<b>43</b>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/ap_connectivity_to_cisco_wlc.html">Configuration Guide 8.10「AP Connectivity to Controller」</a>（Controller Discovery Process・Using DHCP Option 43・DNS discovery CISCO-CAPWAP-CONTROLLER.localdomain・up to three IP addresses）。設定の例はClaudeが書いた</div>
+</section>
+
+<section class="slide">
+  <h1>FlexConnect：WLANごとに「WLCへ運ぶ」か「APで出す」か</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="400" height="290" viewBox="0 0 400 290">
+        <g font-size="12" text-anchor="middle">
+          <rect x="140" y="6" width="120" height="34" rx="6" fill="#b25000"/><text x="200" y="28" fill="#fff">本社のWLC</text>
+          <line x1="200" y1="40" x2="200" y2="96" stroke="#6e6e73" stroke-width="2" stroke-dasharray="5 4"/><text x="236" y="72" fill="#6e6e73">WAN</text>
+          <rect x="140" y="96" width="120" height="34" rx="6" fill="#1f3a68"/><text x="200" y="118" fill="#fff">支店のスイッチ</text>
+          <rect x="300" y="96" width="90" height="34" rx="6" fill="#3a7d44"/><text x="345" y="118" fill="#fff">支店のサーバー</text>
+          <line x1="260" y1="113" x2="300" y2="113" stroke="#3a7d44" stroke-width="2"/>
+          <rect x="160" y="184" width="80" height="34" rx="6" fill="#5b80bf"/><text x="200" y="206" fill="#fff">Flex AP</text>
+          <line x1="200" y1="130" x2="200" y2="184" stroke="#1f3a68" stroke-width="3"/><text x="150" y="160" fill="#1f3a68" font-size="11">トランク</text>
+          <path d="M240 190 Q330 160 300 128" stroke="#3a7d44" stroke-width="2.5" fill="none"/><text x="330" y="176" fill="#3a7d44" font-size="11">ローカル</text>
+          <path d="M162 190 Q60 120 140 30" stroke="#b25000" stroke-width="2.5" fill="none" stroke-dasharray="6 3"/><text x="70" y="110" fill="#b25000" font-size="11">セントラル</text>
+          <circle cx="130" cy="256" r="12" fill="#e08a2c"/><text x="130" y="282" font-size="11">社員</text>
+          <circle cx="270" cy="256" r="12" fill="#e08a2c"/><text x="270" y="282" font-size="11">来客</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th style="width:30%"></th><th>セントラルスイッチング</th><th>ローカルスイッチング</th></tr>
+        <tr><td>データの出口</td><td>CAPWAP で WLC へ</td><td>APの LAN ポート（VLANタグを付けられる）</td></tr>
+        <tr><td>WANが切れたら</td><td><b>止まる</b></td><td><b>使い続けられる</b></td></tr>
+        <tr><td>向くもの</td><td>本社のサーバーを使う通信</td><td>支店の中・支店からインターネット</td></tr>
+      </table>
+      <dl class="def" style="margin-top:8px">
+        <dt>スタンドアロンモード</dt><dd>FlexConnect のAPがWLCとの CAPWAP を失った状態。ローカルスイッチングのWLANだけが動き続ける。</dd>
+        <dt>ローカルモードとの違い</dt><dd>ローカルモードは<b>全部</b>WLCへ運び、WLCとつながっている間しか電波を出さない。</dd>
+      </dl>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/flexconnect.html">Wireless Controller Configuration Guide 8.10「FlexConnect」</a>（Central Switching／Local Switching・In Standalone mode, any Centrally Switched WLANs are down, but Locally Switched WLANs remain operational）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/managing_aps.html">「Managing APs」</a>（Local mode）</div>
+</section>
+
+<section class="slide">
+  <h1>APのモード：端末をつなぐモードと、見張るだけのモード</h1>
+  <table class="mx">
+    <tr><th style="width:14%">分類</th><th style="width:18%">モード</th><th>すること</th><th style="width:26%">ここで区別</th></tr>
+    <tr><td class="t" rowspan="3">端末を<br>つなぐ</td><td><b>ローカル</b>（既定）</td><td style="text-align:left">全部のWLANのデータを CAPWAP で WLC へ運ぶ。WLCとつながっている間だけ電波を出す</td><td style="text-align:left">スイッチは<b>アクセス</b>ポートでよい</td></tr>
+    <tr><td><b>FlexConnect</b></td><td style="text-align:left">WLANごとに、WLCへ運ぶか APから出すかを選ぶ。支店向け</td><td style="text-align:left">VLANを分けるなら<b>トランク</b></td></tr>
+    <tr><td>ブリッジ／Flex+Bridge</td><td style="text-align:left">メッシュ。APどうしを無線でつなぐ（バックホールが無線）</td><td style="text-align:left">ケーブルを引けない屋外</td></tr>
+    <tr><td class="a" rowspan="4">見張る<br>だけ</td><td><b>モニター</b></td><td style="text-align:left">端末はつながず、RRM の測定と不正APの検知をする</td><td style="text-align:left">自動で監視・検知</td></tr>
+    <tr><td><b>スニファー</b></td><td style="text-align:left">1つのチャネルの全フレームを取り、Wireshark などのPCへ送る</td><td style="text-align:left">パケットを取って送る</td></tr>
+    <tr><td>ローグディテクター</td><td style="text-align:left">無線を止め、有線側の不正APを見つける（新しいAPは非対応）</td><td style="text-align:left">見るのは<b>有線</b></td></tr>
+    <tr><td>SE-Connect</td><td style="text-align:left">スペクトラム解析ソフトに電波の情報を渡す（CleanAir 機種）</td><td style="text-align:left">電子レンジなど Wi-Fi 以外も見る</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/managing_aps.html">Wireless Controller Configuration Guide 8.10「Managing APs」</a>（Access Point Modes：Client-Serving AP Modes／Network Management AP Modes）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_monitor_mode_ewlc.html">Catalyst 9800 Configuration Guide 17.9「Monitor Mode」</a></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>APとWLCのつなぎ方</h1>
+  <p>どの機器を、スイッチのアクセスポート・トランク・LAGのどれにつなぐか。理由は「そのポートに何VLAN流れるか」。</p>
+  <div class="foot"><span>CCNA #10 無線LAN</span><span>2.7</span></div>
+</section>
+
+<section class="slide">
+  <h1>ポートの選び方：VLANが1つならアクセス、いくつも流れるならトランク</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="400" height="300" viewBox="0 0 400 300">
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="100" y="120" width="200" height="44" rx="8" fill="#1f3a68"/><text x="200" y="147" fill="#fff" font-size="13">アクセス層のスイッチ</text>
+          <rect x="130" y="6" width="140" height="40" rx="6" fill="#b25000"/><text x="200" y="30" fill="#fff">WLC</text>
+          <line x1="180" y1="46" x2="180" y2="120" stroke="#b25000" stroke-width="3"/><line x1="220" y1="46" x2="220" y2="120" stroke="#b25000" stroke-width="3"/>
+          <ellipse cx="200" cy="84" rx="32" ry="10" fill="none" stroke="#b25000" stroke-width="1.5"/>
+          <text x="96" y="76" fill="#b25000">トランク×2 を</text><text x="96" y="92" fill="#b25000">LAG（mode on）</text>
+          <rect x="6" y="236" width="104" height="40" rx="6" fill="#5b80bf"/><text x="58" y="254" fill="#fff">ローカルの AP</text><text x="58" y="268" fill="#fff" font-size="10">管理VLAN 100</text>
+          <line x1="80" y1="236" x2="140" y2="164" stroke="#1f3a68" stroke-width="2.5"/><text x="70" y="206" fill="#1f3a68">アクセス</text>
+          <rect x="148" y="236" width="104" height="40" rx="6" fill="#5b80bf"/><text x="200" y="254" fill="#fff">Flex の AP</text><text x="200" y="268" fill="#fff" font-size="10">10＋20・30</text>
+          <line x1="200" y1="236" x2="200" y2="164" stroke="#1f3a68" stroke-width="5"/><text x="226" y="206" fill="#1f3a68">トランク</text>
+          <rect x="290" y="236" width="104" height="40" rx="6" fill="#6e6e73"/><text x="342" y="254" fill="#fff">管理用PC</text><text x="342" y="268" fill="#fff" font-size="10">VLAN 999</text>
+          <path d="M270 46 Q370 70 342 236" stroke="#6e6e73" stroke-dasharray="4 3" fill="none" stroke-width="2"/><text x="374" y="160" fill="#6e6e73">サービス</text><text x="374" y="174" fill="#6e6e73">ポート</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+<pre class="cli small">! ローカルモードのAP
+interface Gi1/0/1
+ switchport mode <span class="hl">access</span>
+ switchport access vlan 100
+ spanning-tree portfast
+! FlexConnect のAP（管理＝ネイティブ）
+interface Gi1/0/37
+ switchport mode <span class="hl">trunk</span>
+ switchport trunk native vlan 10
+ switchport trunk allowed vlan 10,20,30
+! WLC（ディストリビューションシステムポート）
+interface range Gi1/0/47 - 48
+ switchport mode <span class="hl">trunk</span>
+ channel-group 1 mode <span class="hl">on</span></pre>
+      <ul class="anno">
+        <li>ローカルの AP：端末のデータは CAPWAP の中 → VLAN は管理の1つだけ</li>
+        <li>WLC：WLANごとのVLANを運ぶので<b>トランク</b>（アクセスモードは非対応）</li>
+        <li>サービスポート：タグを扱えない → <b>アクセス</b>ポート</li>
+      </ul>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-5/Enterprise-Mobility-8-5-Design-Guide/Enterprise_Mobility_8-5_Deployment_Guide.html">Enterprise Mobility 8.5 Design Guide</a>（AP Switch Configuration・Configuring switch ports）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/ports_and_interfaces.html">Configuration Guide 8.10「Ports and Interfaces」</a>（Controller configuration in access mode is not supported・Service Port）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/flexconnect.html">「FlexConnect」</a>（FlexConnect VLANs and ACLs）</div>
+</section>
+
+<section class="slide">
+  <h1>WLCのLAG：AireOS は交渉しない（mode on）、グループは1つ</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:28%"></th><th>AireOS のWLC</th><th>Catalyst 9800</th></tr>
+        <tr><td class="t">束ね方</td><td class="x">mode on だけ</td><td>on・LACP・PAgP</td></tr>
+        <tr><td class="t">LACP／PAgP</td><td>話さない</td><td>対応（16.12 から LACP）</td></tr>
+        <tr><td class="t">グループの数</td><td><b>1つ</b>（全ポート）</td><td>複数のポートチャネル</td></tr>
+        <tr><td class="t">変えたあと</td><td><b>すぐ再起動</b></td><td>―</td></tr>
+      </table>
+      <div class="point"><b>LAGの良いところ：</b>ポートごとに主・予備を設定しなくてよい。1本が切れても残りに移り、APも端末も切れない。</div>
+    </div>
+    <div>
+      <div class="cap">スイッチ側の mode とLAGができるか（相手は AireOS）</div>
+      <table class="mx">
+        <tr><th>スイッチの設定</th><th>結果</th><th style="width:44%">理由</th></tr>
+        <tr><td><code>mode on</code></td><td class="t">できる</td><td style="text-align:left">どちらも交渉しないで束ねる</td></tr>
+        <tr><td><code>mode active</code></td><td class="x">できない</td><td style="text-align:left">LACP で話しかけても WLC が応えない</td></tr>
+        <tr><td><code>mode passive</code></td><td class="x">できない</td><td style="text-align:left">どちらも話しかけない</td></tr>
+        <tr><td><code>mode desirable</code></td><td class="x">できない</td><td style="text-align:left">PAgP で話しかけても応えない</td></tr>
+      </table>
+      <div class="point warn"><b>注意：</b>LAGの全ポートで、スイッチ側の設定（許可するVLANなど）をそろえる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/ports_and_interfaces.html">Configuration Guide 8.10「Ports and Interfaces」</a>（Link Aggregation・Restrictions on Link Aggregation：LAG requires the EtherChannel to be configured for 'mode on'…Only one LAG group is supported per controller…immediately reboot）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_lacp_pagp.html">Catalyst 9800 Configuration Guide 17.9「Link Aggregation Group」</a></div>
+</section>
+
+<section class="slide">
+  <h1>WLCのインタフェース：WLAN → ダイナミックインタフェース → VLAN</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="400" height="270" viewBox="0 0 400 270">
+        <g font-size="12" text-anchor="middle">
+          <rect x="0" y="0" width="400" height="270" rx="10" fill="#f5f5f7"/>
+          <text x="200" y="22" font-weight="700" fill="#b25000">WLC（AireOS）の中</text>
+          <rect x="16" y="42" width="110" height="34" rx="6" fill="#5b80bf"/><text x="71" y="64" fill="#fff">WLAN「CORP」</text>
+          <rect x="16" y="92" width="110" height="34" rx="6" fill="#5b80bf"/><text x="71" y="114" fill="#fff">WLAN「GUEST」</text>
+          <rect x="160" y="42" width="120" height="34" rx="6" fill="#1f3a68"/><text x="220" y="58" fill="#fff" font-size="11">ダイナミック</text><text x="220" y="71" fill="#fff" font-size="11">corp（VLAN 20）</text>
+          <rect x="160" y="92" width="120" height="34" rx="6" fill="#1f3a68"/><text x="220" y="108" fill="#fff" font-size="11">ダイナミック</text><text x="220" y="121" fill="#fff" font-size="11">guest（VLAN 30）</text>
+          <line x1="126" y1="59" x2="160" y2="59" stroke="#1f3a68" stroke-width="2"/><line x1="126" y1="109" x2="160" y2="109" stroke="#1f3a68" stroke-width="2"/>
+          <rect x="160" y="146" width="120" height="34" rx="6" fill="#b25000"/><text x="220" y="162" fill="#fff" font-size="11">管理</text><text x="220" y="175" fill="#fff" font-size="11">（VLAN 99）</text>
+          <rect x="160" y="196" width="120" height="30" rx="6" fill="#c7c7cc"/><text x="220" y="216" fill="#1d1d1f" font-size="11">仮想 192.0.2.1</text>
+          <rect x="300" y="42" width="84" height="138" rx="6" fill="#fff" stroke="#1f3a68"/><text x="342" y="100" fill="#1f3a68" font-size="11">ディストリ</text><text x="342" y="114" fill="#1f3a68" font-size="11">ビューション</text><text x="342" y="128" fill="#1f3a68" font-size="11">ポート（LAG）</text>
+          <line x1="280" y1="59" x2="300" y2="59" stroke="#1f3a68"/><line x1="280" y1="109" x2="300" y2="109" stroke="#1f3a68"/><line x1="280" y1="163" x2="300" y2="163" stroke="#1f3a68"/>
+          <rect x="300" y="196" width="84" height="30" rx="6" fill="#6e6e73"/><text x="342" y="216" fill="#fff" font-size="11">サービスポート</text>
+          <text x="200" y="254" fill="#6e6e73" font-size="11">→ トランクで VLAN 20・30・99 をスイッチへ</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th style="width:30%">インタフェース</th><th>役目</th></tr>
+        <tr><td><b>管理</b>（必須）</td><td>GUI へのアクセス・RADIUS との通信・AP との CAPWAP。来客用WLANを割り当てない</td></tr>
+        <tr><td><b>ダイナミック</b></td><td>管理者が作る。<b>WLAN を VLAN とサブネットに結びつける</b>（スイッチの SVI に近いがルーティングはしない）。最大512</td></tr>
+        <tr><td><b>仮想</b>（必須）</td><td>DHCP リレー・Web認証のページ・モビリティ。届かなくてよいアドレス</td></tr>
+        <tr><td><b>サービスポート</b></td><td>アウトオブバンドの管理専用。タグなし</td></tr>
+      </table>
+      <div class="point"><b>画面との対応：</b>WLAN の <b>General</b> タブの <b>Interface/Interface Group</b> で、どのダイナミックインタフェース（＝VLAN）に入れるかを選ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/ports_and_interfaces.html">Wireless Controller Configuration Guide 8.10「Ports and Interfaces」</a>（Management Interface・Virtual Interface・Dynamic Interface：to map a WLAN to a particular VLAN and subnet・Service-Port Interfaces）。アドレスの例はClaudeが書いた</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第5章</div>
+  <h1>WLCのGUI設定</h1>
+  <p>WLAN を作り、General・Security・QoS・Advanced の4つのタブを読む。最後に 9800 のタグとプロファイル。</p>
+  <div class="foot"><span>CCNA #10 無線LAN</span><span>2.9</span></div>
+</section>
+
+<section class="slide">
+  <h1>WLAN を作る：New で名前を付け、Edit で4つのタブを埋めて、最後に有効にする</h1>
+  <div class="cols">
+    <div>
+      <div class="gui">
+        <div class="bar">WLANs &gt; New</div>
+        <div class="body">
+          <div class="row"><span class="k">Type</span><span class="v">WLAN</span></div>
+          <div class="row on"><span class="k">Profile Name</span><span class="v">corp-5g</span></div>
+          <div class="row on"><span class="k">SSID</span><span class="v">CORP</span></div>
+          <div class="row"><span class="k">ID</span><span class="v">2</span></div>
+        </div>
+      </div>
+      <div class="arrow" style="margin:6px 0">↓ Apply</div>
+      <div class="gui">
+        <div class="bar">WLANs &gt; Edit 'corp-5g'</div>
+        <div class="tabs"><span class="on">General</span><span>Security</span><span>QoS</span><span>Policy-Mapping</span><span>Advanced</span></div>
+        <div class="body">
+          <div class="row"><span class="k">Profile Name / SSID</span><span class="v">corp-5g / CORP</span></div>
+          <div class="row on"><span class="k">Status</span><span class="v"><i class="chk"></i>Enabled</span></div>
+          <div class="row"><span class="k">Radio Policy</span><span class="v">802.11a only</span></div>
+          <div class="row"><span class="k">Interface/Interface Group(G)</span><span class="v">corp（VLAN 20）</span></div>
+          <div class="row"><span class="k">Broadcast SSID</span><span class="v"><i class="chk y"></i>Enabled</span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <ol class="steps">
+        <li><b>WLANs</b> → Create New → Go。<b>Profile Name</b>（WLCの中の名前・重ならない）と <b>SSID</b>（端末に見える名前）を入れる</li>
+        <li>Edit の <b>Security・QoS・Advanced</b> を設定する</li>
+        <li>最後に <b>General の Status</b> にチェック → Apply → Save Configuration。<b>作っただけでは無効</b></li>
+      </ol>
+      <table class="mini" style="margin-top:8px">
+        <tr><th style="width:38%">General の項目</th><th>意味</th></tr>
+        <tr><td>Radio Policy</td><td>出す帯（2.4／5GHz）。5GHz だけにすると混雑を避けられる</td></tr>
+        <tr><td>Interface</td><td>端末を入れる VLAN（ダイナミックインタフェース）</td></tr>
+        <tr><td>Broadcast SSID</td><td>ビーコンにSSIDを入れるか。切っても安全にはならない</td></tr>
+      </table>
+      <div style="font-size:11px;color:#6e6e73;margin-top:4px">1台のAPが出せるWLANは16個まで</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/wlans.html">Wireless Controller Configuration Guide 8.10「WLANs」</a>（Creating and Removing WLANs (GUI) Step 1〜11・All access points can advertise up to 16 WLANs）。画面はガイドの項目に沿ってClaudeが文字で再現した</div>
+</section>
+
+<section class="slide">
+  <h1>Security タブ：Layer 2 で暗号化と認証、Layer 3 で Web認証</h1>
+  <div class="cols">
+    <div>
+      <div class="gui">
+        <div class="bar">WLANs &gt; Edit 'corp-psk' &gt; Security</div>
+        <div class="tabs"><span class="on">Layer 2</span><span>Layer 3</span><span>AAA Servers</span></div>
+        <div class="body">
+          <div class="row on"><span class="k"><span class="num">1</span>Layer 2 Security</span><span class="v">WPA+WPA2</span></div>
+          <div class="row"><span class="k">PMF</span><span class="v">Optional</span></div>
+          <div class="row"><span class="k">WPA Policy</span><span class="v"><i class="chk"></i></span></div>
+          <div class="row on"><span class="k"><span class="num">2</span>WPA2 Policy</span><span class="v"><i class="chk y"></i>AES <i class="chk"></i>TKIP</span></div>
+          <div class="row"><span class="k">Authentication Key Mgmt</span><span class="v"></span></div>
+          <div class="row"><span class="k">　802.1X</span><span class="v"><i class="chk"></i>Enable</span></div>
+          <div class="row on"><span class="k"><span class="num">3</span>　PSK</span><span class="v"><i class="chk y"></i>Enable</span></div>
+          <div class="row"><span class="k">　PSK Format</span><span class="v">ASCII ●●●●●●●●</span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <ul class="anno" style="font-size:12.5px">
+        <li><span class="num">1</span><b>Layer 2 Security</b>：None（オープン）・WPA+WPA2・WPA2+WPA3 など</li>
+        <li><span class="num">2</span><b>WPA2 + AES</b>：WPA（TKIP）は外す</li>
+        <li><span class="num">3</span><b>AKM が PSK</b> → WPA2-Personal。端末は共通のパスフレーズ（ASCII 8〜63文字）を入れる。<b>802.1X</b> にすると Enterprise になり、<b>AAA Servers</b> タブで RADIUS を選ぶ</li>
+      </ul>
+      <table class="mini" style="margin-top:8px">
+        <tr><th style="width:36%">画面がこうなら</th><th>端末に必要なもの</th></tr>
+        <tr><td>Layer 2＝None</td><td>なし（オープン）</td></tr>
+        <tr><td>AKM＝PSK</td><td>全員共通のパスフレーズ</td></tr>
+        <tr><td>AKM＝802.1X</td><td>1人ずつのアカウントか証明書</td></tr>
+        <tr><td>Layer 3＝Web Policy</td><td>ブラウザでログイン（暗号化はしない）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/wlan_security.html">Wireless Controller Configuration Guide 8.10「WLAN Security」</a>（Layer 2 Security の一覧・Configuring WPA1+WPA2 (GUI)：WPA2 is mandatory and encryption type must be AES・PSK Format・Layer 3 Security）。画面はClaudeが文字で再現した</div>
+</section>
+
+<section class="slide">
+  <h1>QoS タブ：4つの貴金属。音声は Platinum、既定は Silver</h1>
+  <div class="cols">
+    <div>
+      <div class="gui">
+        <div class="bar">WLANs &gt; Edit 'voice' &gt; QoS</div>
+        <div class="body">
+          <div class="row on"><span class="k">Quality of Service (QoS)</span><span class="v">Platinum (voice)</span></div>
+          <div class="row"><span class="k">　選べる値</span><span class="v">Platinum (voice)<br>Gold (video)<br>Silver (best effort)<br>Bronze (background)</span></div>
+          <div class="row"><span class="k">WMM Policy</span><span class="v">Allowed</span></div>
+        </div>
+      </div>
+      <div class="point"><b>WLAN の QoS は「上限」</b>：そのWLANの通信は、選んだプロファイルより高い優先度にはならない。音声の端末のWLANは Platinum にする（Cisco の指示）。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>プロファイル</th><th>用途</th><th>例のDSCP</th></tr>
+        <tr><td class="t">Platinum</td><td>音声（VoIP）</td><td>EF（46）</td></tr>
+        <tr><td class="t">Gold</td><td>ビデオ</td><td>AF41（34）</td></tr>
+        <tr><td class="t">Silver（既定）</td><td>ふつうのデータ</td><td>BE（0）</td></tr>
+        <tr><td class="t">Bronze</td><td>来客・バックグラウンド</td><td>AF11（10）</td></tr>
+      </table>
+      <div style="font-size:11px;color:#6e6e73;margin-top:4px">DSCP の列は、AP が有線に出すときの対応表（AVVID）の代表の値</div>
+      <div class="point">Catalyst 9800 では「<b>precious metal（貴金属）ポリシー</b>」と呼び、<b>ポリシープロファイル</b>で選ぶ。中身は変えられず、消せない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/quality_of_service.html">Wireless Controller Configuration Guide 8.10「Quality of Service」</a>（four QoS levels・Silver/Best Effort (default)・VoIP clients should be set to Platinum・Access Point QoS Translation Values）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_wireless_qos_cg_vewlc1_from_17_3_1_onwards.html">Catalyst 9800 Configuration Guide 17.9「Wireless QoS」</a>（Precious metal policies）</div>
+</section>
+
+<section class="slide">
+  <h1>Advanced タブ：細かい動きの設定。問題は「やりたいこと→項目」で出る</h1>
+  <table class="mini">
+    <tr><th style="width:26%">項目</th><th>何をするか</th><th style="width:30%">こんなときに</th></tr>
+    <tr><td><b>Allow AAA Override</b></td><td>RADIUS が返した VLAN・QoS・ACL で WLAN の設定を上書きする</td><td>同じSSIDで、ユーザーごとに別のVLANへ</td></tr>
+    <tr><td><b>Session Timeout</b></td><td>再認証させるまでの時間。<b>802.1X の既定は1800秒</b>、それ以外は0（なし）</td><td>定期的に認証し直させたい</td></tr>
+    <tr><td><b>Client Exclusion</b></td><td>認証に何度も失敗した端末を、決めた時間だけ入れない</td><td>パスワードの総当たりを遅らせる</td></tr>
+    <tr><td><b>P2P Blocking</b></td><td>同じWLANの端末どうしの通信を止める（マルチキャストには効かない）</td><td>来客用で、ほかの客のPCを守る</td></tr>
+    <tr><td>Coverage Hole Detection</td><td>電波が弱い場所（カバレッジホール）を見つける</td><td>RRM に出力を上げさせる</td></tr>
+    <tr><td>Maximum Allowed Clients</td><td>WLAN（AP・無線）ごとの端末数の上限</td><td>1台のAPへの集中を防ぐ</td></tr>
+    <tr><td>FlexConnect Local Switching</td><td>FlexConnect の AP で、このWLANをローカルスイッチングにする</td><td>支店で直接出したいWLAN</td></tr>
+  </table>
+  <div class="point warn"><b>まちがえやすい組：</b>Client Exclusion（失敗した端末を締め出す）／P2P Blocking（端末どうしを分ける）／AAA Override（RADIUS の指示で上書き）。</div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/wlan_timeouts.html">Configuration Guide 8.10「WLAN Timeouts」</a>（The default value for WLANs that use 802.1X (EAP) security is 1800 seconds）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/wlan_security.html">「WLAN Security」</a>（Client Exclusion Policies）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_wlan_9800.html">Catalyst 9800 17.9「WLANs」</a>（Configure advanced WLAN properties・Peer-to-peer blocking）</div>
+</section>
+
+<section class="slide">
+  <h1>Catalyst 9800：プロファイルを作り、タグでまとめて、APに付ける</h1>
+  <svg width="856" height="220" viewBox="0 0 856 220">
+    <g font-size="12" text-anchor="middle">
+      <rect x="0" y="10" width="170" height="40" rx="6" fill="#5b80bf"/><text x="85" y="28" fill="#fff">WLAN プロファイル</text><text x="85" y="43" fill="#fff" font-size="10.5">SSID・セキュリティ</text>
+      <rect x="0" y="60" width="170" height="40" rx="6" fill="#5b80bf"/><text x="85" y="78" fill="#fff">ポリシープロファイル</text><text x="85" y="93" fill="#fff" font-size="10.5">VLAN・QoS・ACL</text>
+      <rect x="0" y="116" width="170" height="40" rx="6" fill="#8aa6d4"/><text x="85" y="134" fill="#fff">AP Join／Flex</text><text x="85" y="149" fill="#fff" font-size="10.5">参加のしかた・支店</text>
+      <rect x="0" y="170" width="170" height="40" rx="6" fill="#8aa6d4"/><text x="85" y="188" fill="#fff">RF プロファイル</text><text x="85" y="203" fill="#fff" font-size="10.5">2.4／5／6GHz の電波</text>
+      <rect x="290" y="30" width="170" height="50" rx="8" fill="#1f3a68"/><text x="375" y="52" fill="#fff" font-weight="700">ポリシータグ</text><text x="375" y="69" fill="#fff" font-size="10.5">WLAN ＋ ポリシー</text>
+      <rect x="290" y="111" width="170" height="50" rx="8" fill="#1f3a68"/><text x="375" y="133" fill="#fff" font-weight="700">サイトタグ</text><text x="375" y="150" fill="#fff" font-size="10.5">AP Join ＋ Flex</text>
+      <rect x="290" y="168" width="170" height="44" rx="8" fill="#1f3a68"/><text x="375" y="188" fill="#fff" font-weight="700">RFタグ</text><text x="375" y="203" fill="#fff" font-size="10.5">RF プロファイル</text>
+      <line x1="170" y1="30" x2="290" y2="50" stroke="#1f3a68" stroke-width="2"/><line x1="170" y1="80" x2="290" y2="60" stroke="#1f3a68" stroke-width="2"/>
+      <line x1="170" y1="136" x2="290" y2="136" stroke="#1f3a68" stroke-width="2"/><line x1="170" y1="190" x2="290" y2="190" stroke="#1f3a68" stroke-width="2"/>
+      <rect x="590" y="80" width="120" height="60" rx="8" fill="#b25000"/><text x="650" y="108" fill="#fff" font-weight="700">AP</text><text x="650" y="126" fill="#fff" font-size="10.5">タグを1つずつ付ける</text>
+      <line x1="460" y1="55" x2="590" y2="98" stroke="#b25000" stroke-width="2"/><line x1="460" y1="136" x2="590" y2="112" stroke="#b25000" stroke-width="2"/><line x1="460" y1="190" x2="590" y2="126" stroke="#b25000" stroke-width="2"/>
+      <text x="780" y="104" fill="#1d1d1f" font-size="11.5">タグを付けない</text><text x="780" y="120" fill="#1d1d1f" font-size="11.5">APには既定のタグ</text>
+    </g>
+  </svg>
+  <div class="cols" style="margin-top:4px">
+    <div class="point" style="margin-top:0"><b>AireOS との違い：</b>AireOS は1つのWLANの画面に SSID も VLAN も QoS も全部あった。9800 は <b>WLAN プロファイル</b>（SSID・セキュリティ）と<b>ポリシープロファイル</b>（VLAN・QoS）に分け、<b>ポリシータグ</b>で結ぶ。</div>
+    <div class="point" style="margin-top:0"><b>画面の場所：</b>Configuration &gt; Tags &amp; Profiles &gt; WLANs／Policy／Tags。CLI で作った WLAN は既定で無効（<code>no shutdown</code> で有効）。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_config_model.html">Catalyst 9800 Configuration Guide 17.9「New Configuration Model」</a>（Tags and their associated profiles・Every tag has a default）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_wlan_9800.html">「WLANs」</a>（Create WLANs (GUI)・By default, the WLAN is disabled）</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ：まちがえやすい組</h1>
+  <table class="mini">
+    <tr><th style="width:4%">#</th><th style="width:32%">比べるもの</th><th>見分け方</th></tr>
+    <tr><td>1</td><td>2.4GHz／5GHz</td><td>重ならないのは 1・6・11 の3つ／20以上（DFS あり）</td></tr>
+    <tr><td>2</td><td>SSID／BSSID／ESS</td><td>名前／APの無線のMAC／同じSSIDのAPの集まり</td></tr>
+    <tr><td>3</td><td>同一チャネル干渉／隣接チャネル干渉</td><td>同じチャネルで順番待ち／少しずれて重なり雑音に</td></tr>
+    <tr><td>4</td><td>WPA／WPA2／WPA3</td><td>TKIP／AES-CCMP／SAE と PMF 必須</td></tr>
+    <tr><td>5</td><td>PSK／802.1X／OWE</td><td>全員同じ鍵／1人ずつ（RADIUS）／認証なしで暗号化だけ</td></tr>
+    <tr><td>6</td><td>AP の仕事／WLC の仕事</td><td>ビーコン・暗号化／認証・アソシエーション・ローミング</td></tr>
+    <tr><td>7</td><td>CAPWAP の5246／5247</td><td>制御（DTLS 必須）／データ</td></tr>
+    <tr><td>8</td><td>ローカル／FlexConnect</td><td>全部WLCへ・アクセスポート／WLANごとに選ぶ・トランク</td></tr>
+    <tr><td>9</td><td>モニター／スニファー</td><td>自動で監視・検知／フレームを取って解析用PCへ</td></tr>
+    <tr><td>10</td><td>AireOS の LAG</td><td>mode on・グループ1つ・変えたら再起動</td></tr>
+    <tr><td>11</td><td>Platinum／Gold／Silver／Bronze</td><td>音声／ビデオ／ふつう（既定）／来客・背景</td></tr>
+  </table>
+  <div class="cite">出典：この資料の各ページ（Cisco Wireless Controller Configuration Guide 8.10、Catalyst 9800 Configuration Guide 17.9、Enterprise Mobility 8.5 Design Guide、Meraki Cloud Architecture）</div>
+</section>
+
+<section class="slide">
+  <h1>出典</h1>
+  <div class="anno" style="font-size:12px; line-height:1.75">
+    <div>・<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco「CCNA Exam v1.1 (200-301) Exam Topics」</a>（1.11・2.6・2.7・2.9）</div>
+    <div>・<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-5/Enterprise-Mobility-8-5-Design-Guide/Enterprise_Mobility_8-5_Deployment_Guide.html">Cisco「Enterprise Mobility 8.5 Design Guide」</a>（CAPWAP・Split MAC・802.11 の規格・チャネル・VoWLAN・スイッチの設定例）</div>
+    <div>・Cisco「Wireless Controller Configuration Guide, Release 8.10」：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/managing_aps.html">Managing APs</a>／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/ap_connectivity_to_cisco_wlc.html">AP Connectivity to Controller</a>／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/ports_and_interfaces.html">Ports and Interfaces</a>／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/flexconnect.html">FlexConnect</a>／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/wlans.html">WLANs</a>／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/wlan_security.html">WLAN Security</a>／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/quality_of_service.html">Quality of Service</a>／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/8-10/config-guide/b_cg810/wlan_timeouts.html">WLAN Timeouts</a></div>
+    <div>・Cisco「Catalyst 9800 Series Wireless Controller Software Configuration Guide, IOS XE 17.9」：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_config_model.html">New Configuration Model</a>／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_wlan_9800.html">WLANs</a>／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_wlan_security_9800.html">WLAN Security</a>／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_wpa3.html">WPA3</a>／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_rrm_c9800.html">RRM</a>／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_wireless_qos_cg_vewlc1_from_17_3_1_onwards.html">Wireless QoS</a>／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_lacp_pagp.html">Link Aggregation Group</a></div>
+    <div>・<a class="src" href="https://documentation.meraki.com/Architectures_and_Best_Practices/Cisco_Meraki_Best_Practice_Design/Meraki_Cloud_Architecture">Cisco Meraki「Meraki Cloud Architecture」</a></div>
+  </div>
+  <div class="point">Ciscoは本番の問題を公開していない。この資料の例と、用語集の問題演習30問はすべてClaudeのオリジナル。WLCの画面はガイドの項目に沿ってClaudeが文字で再現した（2026-11-07）。</div>
+</section>
+
+</body>
+</html>
