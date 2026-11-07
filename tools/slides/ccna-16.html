@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CCNA #16 NAT と NTP 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">CCNA（200-301 v1.1）　4.0 IPサービス　#16</div>
+  <h1>NAT と NTP</h1>
+  <p>出題範囲 4.1・4.2 ― 内側の送信元アドレスを変換する NAT（スタティック・プール・PAT）と、時刻をそろえる NTP のクライアントとサーバー</p>
+  <div class="refs-legend">各ページの下に、根拠にしたCiscoの資料・RFCを書いた（青い文字を押すと開く）</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>4.1 Configure and verify inside source NAT using static and pools／4.2 Configure and verify NTP operating in a client and server mode</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 NAT の4つのアドレス<span>inside local・inside global・outside local・outside global と、ip nat inside／outside</span></div>
+      <div class="box b2">2 NAT の種類と設定<span>スタティック・ダイナミック（プール＋ACL）・PAT（overload）と show ip nat</span></div>
+      <div class="box b3">3 NTP<span>ストラタム・クライアント（ntp server）とサーバー（ntp master）・show ntp・show clock</span></div>
+    </div>
+    <div>
+      <div class="cap">CCNAでの問われ方</div>
+      <table>
+        <tr><td style="width:26%">Configure and verify</td><td><b>設定コマンドの形</b>と <b>show の読み方</b>が問われる。「この変換表で inside global はどれか」「PAT にするにはどのキーワードか」「ntp server を入れた機器はどちらの役か」</td></tr>
+      </table>
+      <div class="point"><b>覚え方の芯：</b>NAT は「<b>inside／outside＝だれのアドレスか</b>」「<b>local／global＝どこから見た形か</b>」の2語の組み合わせ。NTP は「<b>ntp server を書いた側がクライアント</b>」。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco CCNA Exam v1.1 (200-301) Exam Topics</a>（4.1・4.2）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>NAT の4つのアドレス</h1>
+  <p>同じパケットのアドレスが、ルーターの内側と外側で違う名前になる。</p>
+  <div class="foot"><span>CCNA #16 NAT と NTP</span><span>4.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>なぜ NAT：プライベートアドレスはインターネットで使えない</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="250" viewBox="0 0 410 250">
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="40" width="150" height="180" rx="12" fill="#eef2f8" stroke="#5b80bf"/>
+          <text x="85" y="62" fill="#1f3a68" font-weight="700">社内（inside）</text>
+          <rect x="30" y="80" width="110" height="34" rx="6" fill="#5b80bf"/><text x="85" y="102" fill="#fff" font-size="11">PC 192.168.1.10</text>
+          <rect x="30" y="124" width="110" height="34" rx="6" fill="#5b80bf"/><text x="85" y="146" fill="#fff" font-size="11">PC 192.168.1.11</text>
+          <rect x="30" y="168" width="110" height="34" rx="6" fill="#5b80bf"/><text x="85" y="190" fill="#fff" font-size="11">PC 192.168.1.12</text>
+          <rect x="175" y="105" width="70" height="50" rx="8" fill="#1f3a68"/><text x="210" y="127" fill="#fff" font-weight="700">R1</text><text x="210" y="143" fill="#fff" font-size="10">NAT</text>
+          <line x1="160" y1="130" x2="175" y2="130" stroke="#1d1d1f" stroke-width="2"/>
+          <line x1="245" y1="130" x2="275" y2="130" stroke="#1d1d1f" stroke-width="2"/>
+          <ellipse cx="335" cy="130" rx="65" ry="45" fill="#fff4e8" stroke="#b25000"/>
+          <text x="335" y="126" fill="#b25000" font-weight="700">インターネット</text><text x="335" y="144" fill="#b25000" font-size="11">（outside）</text>
+          <text x="210" y="90" fill="#b25000" font-size="11">203.0.113.5</text><text x="210" y="76" fill="#6e6e73" font-size="10">正規アドレス 1つ</text>
+          <text x="210" y="238" fill="#6e6e73" font-size="11">送信元 192.168.1.x → 203.0.113.5 に書き換える</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="cap">RFC 1918 のプライベートアドレス</div>
+      <table class="mx">
+        <tr><th style="width:36%">範囲</th><th>書き方</th></tr>
+        <tr><td class="t">10.0.0.0〜10.255.255.255</td><td>10.0.0.0/8</td></tr>
+        <tr><td class="t">172.16.0.0〜172.31.255.255</td><td>172.16.0.0/12（<b>172.32 は外</b>）</td></tr>
+        <tr><td class="t">192.168.0.0〜192.168.255.255</td><td>192.168.0.0/16</td></tr>
+      </table>
+      <ol class="steps" style="margin-top:8px">
+        <li>組織の中ではプライベートアドレスを自由に使う</li>
+        <li>インターネットではプライベートアドレスの経路が流れない</li>
+        <li>出口のルーターが、送信元を<b>正規アドレスに書き換える</b>＝NAT</li>
+      </ol>
+      <div class="ex"><span class="lbl">語</span>NAT＝Network Address Translation（ネットワークのアドレス変換）</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc1918">RFC 1918</a>（3. Private Address Space）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_nat/configuration/xe-16/nat-xe-16-book/iadnat-addr-consv.html">IOS XE「Configuring NAT for IP Address Conservation」</a>（NAT enables private IP internetworks that use nonregistered IP addresses to connect to the Internet）。図はClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>4つのアドレス：行きのパケットで見る</h1>
+  <svg width="856" height="190" viewBox="0 0 856 190">
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="70" width="120" height="50" rx="8" fill="#5b80bf"/><text x="70" y="92" fill="#fff" font-weight="700">PC</text><text x="70" y="108" fill="#fff" font-size="11">192.168.1.10</text>
+      <rect x="360" y="62" width="130" height="66" rx="8" fill="#1f3a68"/><text x="425" y="84" fill="#fff" font-weight="700">R1（NAT）</text><text x="425" y="101" fill="#fff" font-size="10.5">左 G0/0＝inside</text><text x="425" y="116" fill="#fff" font-size="10.5">右 G0/1＝outside</text>
+      <rect x="726" y="70" width="120" height="50" rx="8" fill="#b25000"/><text x="786" y="92" fill="#fff" font-weight="700">Web サーバー</text><text x="786" y="108" fill="#fff" font-size="11">198.51.100.7</text>
+      <line x1="130" y1="95" x2="360" y2="95" stroke="#1d1d1f" stroke-width="2"/><line x1="490" y1="95" x2="726" y2="95" stroke="#1d1d1f" stroke-width="2"/>
+      <rect x="150" y="18" width="200" height="44" rx="6" fill="#fff" stroke="#5b80bf"/>
+      <text x="250" y="36" fill="#1f3a68" font-size="11">送信元 192.168.1.10 ＝ <tspan font-weight="700">inside local</tspan></text>
+      <text x="250" y="53" fill="#1f3a68" font-size="11">宛先 198.51.100.7 ＝ <tspan font-weight="700">outside local</tspan></text>
+      <rect x="500" y="18" width="210" height="44" rx="6" fill="#fff" stroke="#b25000"/>
+      <text x="605" y="36" fill="#b25000" font-size="11">送信元 203.0.113.5 ＝ <tspan font-weight="700">inside global</tspan></text>
+      <text x="605" y="53" fill="#b25000" font-size="11">宛先 198.51.100.7 ＝ <tspan font-weight="700">outside global</tspan></text>
+      <text x="250" y="150" fill="#5b80bf" font-weight="700">内側（inside のネットワーク）で見える形＝local</text>
+      <text x="605" y="150" fill="#b25000" font-weight="700">外側（outside のネットワーク）で見える形＝global</text>
+      <text x="425" y="180" fill="#6e6e73" font-size="11">R1 は送信元だけを書き換える（inside source NAT）。宛先はそのまま</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:18%"></th><th>local（内側で見える形）</th><th>global（外側で見える形）</th></tr>
+    <tr><td class="t">inside（内側のホストのアドレス）</td><td><b>inside local</b>：PC に設定した 192.168.1.10</td><td><b>inside global</b>：外に見せる 203.0.113.5</td></tr>
+    <tr><td class="t">outside（外側のホストのアドレス）</td><td><b>outside local</b>：内側から見たサーバー 198.51.100.7</td><td><b>outside global</b>：サーバーの本物 198.51.100.7</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/network-address-translation-nat/4606-8.html">Cisco「NAT: Local and Global Definitions」</a>（Packets sourced on the inside portion of the network have an inside local address as the source address and an outside local address as the destination address … When that same packet gets switched to the outside network, the source … inside global … destination … outside global）。図はClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>帰りのパケット：宛先を inside global から inside local に戻す</h1>
+  <div class="cols">
+    <div>
+      <ol class="steps">
+        <li>PC が送る：送信元 <b>192.168.1.10</b>（inside local）</li>
+        <li>R1 が G0/0（inside）から G0/1（outside）へ送るとき、送信元を <b>203.0.113.5</b>（inside global）に書き換え、<b>変換表に1行</b>残す</li>
+        <li>サーバーは PC を 203.0.113.5 だと思い、<b>宛先 203.0.113.5</b> で返事を送る</li>
+        <li>R1 は変換表を引き、宛先を <b>192.168.1.10</b> に戻して PC に届ける</li>
+      </ol>
+      <div class="point warn"><b>outside local と outside global：</b>inside source NAT では外側のアドレスを変えないので<b>同じ値</b>。違う値になるのは ip nat outside source で外側のアドレスも変換するときだけ。</div>
+    </div>
+    <div>
+      <div class="cap">インタフェースに「内」と「外」を付ける</div>
+<pre class="cli small">interface GigabitEthernet0/0
+ ip address 192.168.1.1 255.255.255.0
+ <span class="hl">ip nat inside</span>
+interface GigabitEthernet0/1
+ ip address 203.0.113.5 255.255.255.0
+ <span class="hl">ip nat outside</span></pre>
+      <ul class="anno">
+        <li>NAT は <b>inside と outside の間を通るパケット</b>だけを変換する</li>
+        <li>片方でも付け忘れると<b>変換されない</b>。向きを逆にしてもねらいどおりにならない</li>
+        <li>inside＝<b>変換したい組織のネットワーク側</b>。アドレスの種類ではなく、側を表す</li>
+      </ul>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/network-address-translation-nat/4606-8.html">Cisco「NAT: Local and Global Definitions」</a>（The destination of the packet is known as the inside global address. When the same packet gets switched to the inside network … the destination … inside local）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/network-address-translation-nat/13772-12.html">Cisco「Configure Network Address Translation」</a>（The first step to deploy NAT is to define NAT inside and outside interfaces）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>NAT の種類と設定</h1>
+  <p>1対1で固定するスタティック、プールから貸すダイナミック、ポート番号で多数をまとめる PAT。</p>
+  <div class="foot"><span>CCNA #16 NAT と NTP</span><span>4.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>3つの種類を比べる</h1>
+  <div class="cols3">
+    <div>
+      <div class="box b1">スタティック NAT<span>1対1・固定</span></div>
+      <svg width="270" height="96" viewBox="0 0 270 96"><g font-size="11" text-anchor="middle">
+        <rect x="5" y="30" width="105" height="30" rx="5" fill="#5b80bf"/><text x="57" y="50" fill="#fff">192.168.1.20</text>
+        <rect x="160" y="30" width="105" height="30" rx="5" fill="#b25000"/><text x="212" y="50" fill="#fff">203.0.113.20</text>
+        <line x1="110" y1="45" x2="160" y2="45" stroke="#1d1d1f" stroke-width="2"/><text x="135" y="80" fill="#6e6e73">いつも同じ</text>
+      </g></svg>
+      <ul class="anno"><li>設定した時点から<b>変換表に常に載る</b></li><li>外から通信を<b>始められる</b>＝サーバーの公開</li><li>1台ごとに1行</li></ul>
+    </div>
+    <div>
+      <div class="box b2">ダイナミック NAT<span>1対1・プールから貸す</span></div>
+      <svg width="270" height="96" viewBox="0 0 270 96"><g font-size="11" text-anchor="middle">
+        <rect x="5" y="10" width="105" height="24" rx="5" fill="#5b80bf"/><text x="57" y="27" fill="#fff">192.168.1.10</text>
+        <rect x="5" y="56" width="105" height="24" rx="5" fill="#5b80bf"/><text x="57" y="73" fill="#fff">192.168.1.11</text>
+        <rect x="160" y="10" width="105" height="24" rx="5" fill="#b25000"/><text x="212" y="27" fill="#fff">203.0.113.10</text>
+        <rect x="160" y="56" width="105" height="24" rx="5" fill="#b25000"/><text x="212" y="73" fill="#fff">203.0.113.11</text>
+        <line x1="110" y1="22" x2="160" y2="22" stroke="#1d1d1f" stroke-width="2"/><line x1="110" y1="68" x2="160" y2="68" stroke="#1d1d1f" stroke-width="2"/>
+        <text x="135" y="50" fill="#6e6e73">空きを貸す</text>
+      </g></svg>
+      <ul class="anno"><li>内側が<b>通信を始めたとき</b>に変換表へ</li><li>同時に変換できるのは<b>プールの数まで</b></li><li>しばらく使わないと消える</li></ul>
+    </div>
+    <div>
+      <div class="box b3">PAT（overload）<span>多対1・ポート番号で区別</span></div>
+      <svg width="270" height="96" viewBox="0 0 270 96"><g font-size="11" text-anchor="middle">
+        <rect x="5" y="4" width="105" height="22" rx="5" fill="#5b80bf"/><text x="57" y="20" fill="#fff">.10:51000</text>
+        <rect x="5" y="34" width="105" height="22" rx="5" fill="#5b80bf"/><text x="57" y="50" fill="#fff">.11:51000</text>
+        <rect x="5" y="64" width="105" height="22" rx="5" fill="#5b80bf"/><text x="57" y="80" fill="#fff">.12:49152</text>
+        <rect x="160" y="30" width="105" height="30" rx="5" fill="#b25000"/><text x="212" y="50" fill="#fff">203.0.113.5</text>
+        <line x1="110" y1="15" x2="160" y2="40" stroke="#1d1d1f"/><line x1="110" y1="45" x2="160" y2="45" stroke="#1d1d1f"/><line x1="110" y1="75" x2="160" y2="50" stroke="#1d1d1f"/>
+      </g></svg>
+      <ul class="anno"><li><b>1つの正規アドレス</b>を多数で共有</li><li>TCP・UDP の<b>ポート番号</b>で見分ける</li><li>RFC 3022 では NAPT と呼ぶ</li></ul>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_nat/configuration/xe-16/nat-xe-16-book/iadnat-addr-consv.html">IOS XE「Configuring NAT for IP Address Conservation」</a>Types of NAT（Static … one-to-one … Dynamic … from a pool … Overloading … many to one … by using different ports）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc3022">RFC 3022</a>（Basic NAT と NAPT）。図はClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>スタティック NAT：「内側の実アドレス → 外に見せるアドレス」の順に書く</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">R1(config)#<b>ip nat inside source static 192.168.1.20 203.0.113.20</b>
+R1(config)#interface g0/0
+R1(config-if)#ip nat inside
+R1(config-if)#interface g0/1
+R1(config-if)#ip nat outside
+
+R1#<b>show ip nat translations</b>
+Pro Inside global      Inside local       Outside local      Outside global
+<span class="hl">---</span> 203.0.113.20       192.168.1.20       ---                ---</pre>
+      <div class="formula">ip nat inside source static <b>inside local</b> <b>inside global</b></div>
+    </div>
+    <div>
+      <ul class="anno">
+        <li><b>Pro が「---」</b>の行がスタティック。通信がなくても<b>いつも出る</b></li>
+        <li>外のホストは 203.0.113.20 宛てに送れば、R1 が宛先を 192.168.1.20 に戻す＝<b>外から始められる</b></li>
+        <li>ダイナミックや PAT は、内側が通信を始めるまで行がないので、外からは始められない</li>
+      </ul>
+      <div class="point warn"><b>順番のひっかけ：</b><code>static 203.0.113.20 192.168.1.20</code> と逆に書くと、203.0.113.20 を内側のホストとして扱ってしまう。</div>
+      <div class="ex"><span class="lbl">例</span>メールサーバー・Web サーバーを外に公開するときに使う</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_nat/configuration/xe-16/nat-xe-16-book/iadnat-addr-consv.html">IOS XE「Configuring NAT for IP Address Conservation」</a>Configuring Static Translation of Inside Source Addresses（ip nat inside source static local-ip global-ip … useful when a host on the inside must be accessible by a fixed address from the outside）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/network-address-translation-nat/13772-12.html">Doc 13772</a>（permanent entry … enables both inside and outside hosts to initiate a connection）</div>
+</section>
+
+<section class="slide">
+  <h1>ダイナミック NAT：プール＋ACL＋list … pool の3行</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small"><i>! 1. 貸し出す正規アドレスの範囲</i>
+R1(config)#<b>ip nat pool POOL1 203.0.113.10 203.0.113.14 netmask 255.255.255.0</b>
+<i>! 2. 変換する送信元を選ぶ</i>
+R1(config)#<b>access-list 1 permit 192.168.1.0 0.0.0.255</b>
+<i>! 3. 1 と 2 を結ぶ</i>
+R1(config)#<b>ip nat inside source list 1 pool POOL1</b></pre>
+      <table class="mini">
+        <tr><td style="width:30%">ip nat pool</td><td>名前・<b>最初 最後</b>・netmask か prefix-length（どちらか）</td></tr>
+        <tr><td>access-list</td><td>パケットを止めるためでなく<b>変換する相手を選ぶ</b>。最後に暗黙の deny</td></tr>
+        <tr><td>list N pool 名</td><td>「ACL N に合った送信元を、プールのアドレスに変える」</td></tr>
+      </table>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>変換表は最初は<b>空</b></li>
+        <li>192.168.1.10 が外へ送る → ACL 1 に合う → プールから空きの 203.0.113.10 を<b>1対1</b>で割り当て</li>
+        <li>プールは 5 個（.10〜.14）→ 同時に変換できるのは <b>5 台まで</b></li>
+        <li>使われなくなった行はタイムアウトで消え、アドレスはプールに戻る</li>
+      </ol>
+      <div class="point warn"><b>ACL のひっかけ：</b>permit に入らない送信元は変換されない。Cisco は広すぎる ACL（permit any など）を NAT に使わないよう注意している。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_nat/configuration/xe-16/nat-xe-16-book/iadnat-addr-consv.html">IOS XE「Configuring NAT for IP Address Conservation」</a>Configuring Dynamic Translation of Inside Source Addresses（ip nat pool name start-ip end-ip { netmask | prefix-length }／The access list must permit only those addresses that are to be translated … implicit "deny all"）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/network-address-translation-nat/13772-12.html">Doc 13772</a>（translation table … initially empty）</div>
+</section>
+
+<section class="slide">
+  <h1>PAT：overload を付けると、1つのアドレスを多数で共有する</h1>
+  <div class="cols wide-r">
+    <div>
+      <div class="cap">変換表（Claudeが作った例）</div>
+      <table class="mx">
+        <tr><th>Inside local</th><th>Inside global</th></tr>
+        <tr><td class="t">192.168.1.10:51000</td><td>203.0.113.5:<b>1024</b></td></tr>
+        <tr><td class="t">192.168.1.11:51000</td><td>203.0.113.5:<b>1025</b></td></tr>
+        <tr><td class="t">192.168.1.12:49152</td><td>203.0.113.5:<b>1026</b></td></tr>
+      </table>
+      <div class="ex" style="margin-top:8px"><span class="lbl">要</span>返事の宛先ポート（1024 など）で、どの PC に戻すかを決める</div>
+    </div>
+    <div>
+      <div class="cap">書き方は2つ</div>
+<pre class="cli small"><i>! A. outside のインタフェースのアドレスを使う</i>
+ip nat inside source list 1 <span class="hl">interface g0/1 overload</span>
+
+<i>! B. プールのアドレスを使う（1個でもよい）</i>
+ip nat pool ONE 203.0.113.5 203.0.113.5 netmask 255.255.255.0
+ip nat inside source list 1 <span class="hl">pool ONE overload</span></pre>
+      <ul class="anno">
+        <li>overload がなければ1対1のダイナミック NAT</li>
+        <li>多数のホストを外へ出す設定＝PAT。変換表の行は<b>アドレス:ポート</b>の形になる（extended エントリー）</li>
+        <li>list の後ろが「interface 名」か「pool 名」かの違い</li>
+      </ul>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_nat/configuration/xe-16/nat-xe-16-book/iadnat-addr-consv.html">IOS XE「Configuring NAT for IP Address Conservation」</a>Overloading of Inside Global Addresses（the TCP or UDP port numbers of each inside host distinguish between local addresses … extended entry）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/network-address-translation-nat/13772-12.html">Doc 13772</a>（ip nat inside source list 7 interface serial 0 overload／the NAT pool ovrld only has a range of one address）</div>
+</section>
+
+<section class="slide">
+  <h1>確かめる：show ip nat translations と show ip nat statistics</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">R1#<b>show ip nat translations</b>
+Pro Inside global      Inside local       Outside local      Outside global
+tcp <span class="hl">203.0.113.5:1024</span>   <span class="hl">192.168.1.10:51000</span> 198.51.100.7:443   198.51.100.7:443
+--- 203.0.113.20       192.168.1.20       ---                ---
+
+R1#<b>show ip nat statistics</b>
+Total active translations: 2 (1 static, 1 dynamic; 1 extended)
+Outside interfaces:
+  GigabitEthernet0/1
+Inside interfaces:
+  GigabitEthernet0/0
+Hits: 120  Misses: 0
+Dynamic mappings:
+-- Inside Source
+[Id: 1] access-list 1 interface GigabitEthernet0/1 refcount 1</pre>
+    </div>
+    <div>
+      <ul class="anno">
+        <li><b>列の順番</b>：Inside global が<b>先</b>、Inside local が次。左から「外に見せる形 → 内側の実アドレス」</li>
+        <li>1行目：192.168.1.10 が 203.0.113.5 になり、198.51.100.7 の <b>443（HTTPS）</b>と通信中</li>
+        <li>2行目：Pro が --- ＝スタティック</li>
+        <li>statistics：<b>inside と outside のインタフェース</b>、変換の数（extended＝PAT）、使っている規則（list と interface／pool）が一目でわかる</li>
+      </ul>
+      <div class="point"><b>使い分け：</b>「だれがどう変換されたか」は translations、「設定の向きと数」は statistics。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/network-address-translation-nat/4606-8.html">Cisco「NAT: Local and Global Definitions」</a>（show ip nat translations の列）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/switches/catalyst-9300-series-switches/217419-configure-and-verify-nat-on-catalyst-900.html">Cisco「Configure and Verify NAT on Catalyst 9000 Switches」</a>（show ip nat statistics の出力）。出力はその形式にそろえてClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>変換されないときの確かめ方と、変換が消えるまでの時間</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">上から順に確かめる</div>
+      <table class="mx">
+        <tr><th style="width:8%">#</th><th>見るところ</th><th style="width:38%">コマンド</th></tr>
+        <tr><td class="t">1</td><td style="text-align:left">inside と outside が<b>両方</b>、正しい向きで付いているか</td><td>show ip nat statistics</td></tr>
+        <tr><td class="t">2</td><td style="text-align:left">ACL が変換したい送信元を <b>permit</b> しているか</td><td>show access-lists</td></tr>
+        <tr><td class="t">3</td><td style="text-align:left">list の番号・pool の名前が、作ったものと合っているか</td><td>show running-config</td></tr>
+        <tr><td class="t">4</td><td style="text-align:left">overload なしで、プールが足りていないか</td><td>show ip nat translations</td></tr>
+        <tr><td class="t">5</td><td style="text-align:left">外へ出る経路（デフォルトルート）があるか</td><td>show ip route</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">タイムアウトの初期値</div>
+      <table class="mini">
+        <tr><td style="width:48%">ip nat translation timeout</td><td><b>24 時間</b>（86400 秒）</td></tr>
+        <tr><td>ip nat translation udp-timeout</td><td>300 秒</td></tr>
+        <tr><td>スタティックの行</td><td>タイムアウトで<b>消えない</b>（設定がある間ずっと）</td></tr>
+      </table>
+      <div class="point" style="margin-top:8px"><b>なぜ大事か：</b>ダイナミック NAT（1対1）では、使い終わった行が残っている間、そのアドレスはプールに戻らない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_nat/configuration/xe-16/nat-xe-16-book/iadnat-addr-consv.html">IOS XE「Configuring NAT for IP Address Conservation」</a>Configuring Address Translation Timeouts（The default timeout is 24 hours … udp-timeout … The default is 300 seconds）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/network-address-translation-nat/13772-12.html">Doc 13772</a>（static … permanent entry in the NAT table as long as the configuration is present）。確かめる順番はClaudeがまとめた</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>NTP</h1>
+  <p>正確な時計から段々に時刻を受け渡し、ネットワークの全機器の時計をそろえる。</p>
+  <div class="foot"><span>CCNA #16 NAT と NTP</span><span>4.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>NTP とストラタム：時刻源から何段目か</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="270" viewBox="0 0 410 270">
+        <g font-size="12" text-anchor="middle">
+          <rect x="140" y="6" width="130" height="34" rx="6" fill="#6e6e73"/><text x="205" y="28" fill="#fff">原子時計・GPS</text>
+          <rect x="140" y="62" width="130" height="38" rx="8" fill="#1f3a68"/><text x="205" y="80" fill="#fff" font-weight="700">サーバー A</text><text x="205" y="94" fill="#fff" font-size="10.5">ストラタム 1</text>
+          <rect x="140" y="124" width="130" height="38" rx="8" fill="#3d5f99"/><text x="205" y="142" fill="#fff" font-weight="700">10.0.0.1</text><text x="205" y="156" fill="#fff" font-size="10.5">ストラタム 2</text>
+          <rect x="140" y="186" width="130" height="38" rx="8" fill="#5b80bf"/><text x="205" y="204" fill="#fff" font-weight="700">R1</text><text x="205" y="218" fill="#fff" font-size="10.5">ストラタム 3</text>
+          <rect x="30" y="234" width="120" height="32" rx="6" fill="#9db3dc"/><text x="90" y="254" fill="#1f3a68" font-size="11">SW1 ストラタム 4</text>
+          <rect x="260" y="234" width="120" height="32" rx="6" fill="#9db3dc"/><text x="320" y="254" fill="#1f3a68" font-size="11">SW2 ストラタム 4</text>
+          <line x1="205" y1="40" x2="205" y2="62" stroke="#1d1d1f" stroke-width="2"/><line x1="205" y1="100" x2="205" y2="124" stroke="#1d1d1f" stroke-width="2"/><line x1="205" y1="162" x2="205" y2="186" stroke="#1d1d1f" stroke-width="2"/>
+          <line x1="180" y1="224" x2="110" y2="234" stroke="#1d1d1f" stroke-width="2"/><line x1="230" y1="224" x2="300" y2="234" stroke="#1d1d1f" stroke-width="2"/>
+          <text x="340" y="145" fill="#b25000" font-size="11">直結＝1</text><text x="340" y="161" fill="#b25000" font-size="11">同期すると＋1</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:32%">項目</th><th>内容</th></tr>
+        <tr><td class="t">運ぶもの</td><td><b>UDP 123</b>（今の版は NTPv4、RFC 5905）</td></tr>
+        <tr><td class="t">ストラタム 1</td><td>原子時計・GPS などに直結したサーバー</td></tr>
+        <tr><td class="t">ストラタム 2〜15</td><td>NTP で上から受け取った機器（相手＋1）</td></tr>
+        <tr><td class="t">ストラタム 16</td><td><b>同期していない</b></td></tr>
+        <tr><td class="t">選び方</td><td>通信できる中で<b>いちばん小さい</b>ストラタム</td></tr>
+      </table>
+      <div class="point"><b>目的：</b>時刻がずれていると、機器ごとのログを並べても順番がわからない。同期していない機器には、だれも同期しない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sys_mgmt/b_179_sys_mgmt_9300_cg/administering_the_device.html">System Management CG IOS XE 17.9（Catalyst 9300）「Administering the Device」</a>NTP Stratum（A stratum 1 time server has a radio or atomic clock directly attached … chooses … the lowest stratum number … never synchronizing to a device that is not synchronized）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc5905">RFC 5905</a>（PORT 123／Figure 11：16 unsynchronized）。図はClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>クライアントとサーバー：ntp server を書いた側がクライアント</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:28%">コマンド</th><th>入れた機器の役</th><th style="width:30%">関係</th></tr>
+        <tr><td class="t">ntp server アドレス</td><td><b>クライアント</b>：そのサーバーから時刻をもらう</td><td>もらうだけ（client mode）</td></tr>
+        <tr><td class="t">ntp master [1〜15]</td><td>外の時刻源なしで時刻を配る<b>権威のあるサーバー</b>。省略時ストラタム <b>8</b></td><td>配る側</td></tr>
+        <tr><td class="t">ntp peer アドレス</td><td>対等に合わせ合う</td><td>おたがい（symmetric active）</td></tr>
+      </table>
+      <div class="point warn"><b>ntp master の注意：</b>小さいストラタムを付けると正しい時刻源より優先されてしまう。何台にも入れると時刻が乱れる。Cisco の機器は原子時計を直結できないので、本当のストラタム1にはならない。</div>
+    </div>
+    <div>
+      <div class="cap">組み合わせの例（Claudeが作った例）</div>
+<pre class="cli small"><i>! R1：上流 10.0.0.1 のクライアント</i>
+R1(config)#<b>ntp server 10.0.0.1 prefer</b>
+R1(config)#<b>ntp server 10.0.0.2</b>
+R1(config)#<b>ntp source Loopback0</b>
+
+<i>! SW1：R1（Loopback0＝1.1.1.1）のクライアント</i>
+SW1(config)#<b>ntp server 1.1.1.1</b></pre>
+      <ul class="anno">
+        <li>R1 は上流には<b>クライアント</b>、SW1 には<b>サーバー</b>。同期できた機器は、指定してきた相手に時刻を返す</li>
+        <li><b>prefer</b>：優先するサーバー。切り替えを減らす</li>
+        <li><b>ntp source</b>：送信元を Loopback0 に固定（初期値は出ていくインタフェース）</li>
+      </ul>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sys_mgmt/b_179_sys_mgmt_9300_cg/administering_the_device.html">IOS XE 17.9「Administering the Device」</a>Poll-Based NTP Associations・Authoritative NTP Server（ntp server … client mode／ntp peer … symmetric active mode／ntp master … Use … with caution）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/bsm/command/bsm-cr-book/bsm-cr-n1.html">Basic System Management CR</a>（ntp master：stratum 1 to 15, default 8／ntp server：prefer／ntp source：Source address is determined by the outgoing interface）</div>
+</section>
+
+<section class="slide">
+  <h1>確かめる：show ntp associations・show ntp status・show clock</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">R1#<b>show ntp associations</b>
+  address         ref clock       st   when   poll reach  delay  offset   disp
+<span class="hl">*</span>~10.0.0.1        192.0.2.1        <span class="hl">2</span>     29     64   377    1.2   0.35    1.6
++~10.0.0.2        192.0.2.1        2     40     64   377    2.1   0.80    1.9
+ * master (synced), # master (unsynced), + selected, - candidate, ~ configured
+
+R1#<b>show ntp status</b>
+Clock is <span class="hl">synchronized</span>, stratum <span class="hl">3</span>, reference is 10.0.0.1
+
+R1#<b>show clock</b>
+10:15:03.158 JST Sat Nov 7 2026</pre>
+      <div class="cap">show clock の先頭の記号</div>
+      <table class="mini">
+        <tr><td style="width:18%"><b>*</b></td><td>正しくない（同期していない・一度も設定していない）</td></tr>
+        <tr><td>（なし）</td><td>正しい</td></tr>
+        <tr><td><b>.</b></td><td>正しかったが、NTP の相手と連絡が取れなくなった</td></tr>
+      </table>
+    </div>
+    <div>
+      <ul class="anno">
+        <li>associations の <b>*</b>＝今同期している相手。<b>+</b>＝選ばれた候補、<b>-</b>＝候補、<b>~</b>＝設定した相手</li>
+        <li><b>st</b>＝<b>相手</b>のストラタム（2）</li>
+        <li>status の stratum＝<b>自分</b>のストラタム（3＝相手＋1）。reference＝同期先</li>
+        <li>同期していなければ <b>unsynchronized</b>、相手の st は 16</li>
+        <li>NTPv4 では同期までに 15〜20 分かかることがある</li>
+      </ul>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/bsm/command/bsm-cr-book/bsm-cr-n1.html">Basic System Management CR</a>（show ntp associations：* master (synced) … ~ configured／show ntp status：synchronized・stratum・reference／show clock：* not authoritative, (blank) authoritative, . authoritative but NTP is not synchronized／NTPv4 … 15 to 20 minutes）。出力はその形式にそろえてClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>時計の設定：中の時刻は UTC、タイムゾーンは表示だけ</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">R1(config)#<b>clock timezone JST 9</b>
+R1(config)#<b>ntp server 10.0.0.1</b>
+R1(config)#<b>ntp update-calendar</b>
+
+R1#<b>show clock detail</b>
+10:15:03.158 JST Sat Nov 7 2026
+Time source is NTP</pre>
+      <table class="mini">
+        <tr><td style="width:36%">clock timezone</td><td>名前と UTC からの時差。中の時刻は<b>いつも UTC</b>なので、<b>表示</b>（と手で合わせるとき）にだけ効く</td></tr>
+        <tr><td>ntp update-calendar</td><td>NTP の時刻でハードウェアの時計（calendar）を定期的に更新。初期値は<b>しない</b></td></tr>
+        <tr><td>show clock detail</td><td>時刻源（NTP など）も表示する</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">2つの時計</div>
+      <table class="mx">
+        <tr><th style="width:30%"></th><th>ソフトウェアの時計</th><th>ハードウェアの時計</th></tr>
+        <tr><td class="t">見るコマンド</td><td>show clock</td><td>show calendar</td></tr>
+        <tr><td class="t">合わせ方</td><td>NTP・手で設定</td><td>ntp update-calendar など</td></tr>
+        <tr><td class="t">電源を切ると</td><td>止まる</td><td>電池で動き続ける</td></tr>
+      </table>
+      <div class="point"><b>ポイント：</b>NTP が運ぶのは UTC。タイムゾーンは NTP では配られないので、各機器で clock timezone を設定する。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sys_mgmt/b_179_sys_mgmt_9300_cg/administering_the_device.html">IOS XE 17.9「Administering the Device」</a>（clock timezone … Internal time is kept in Coordinated Universal Time (UTC), so this command is used only for display purposes and when the time is manually set）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/bsm/command/bsm-cr-book/bsm-cr-n1.html">Basic System Management CR</a>（ntp update-calendar：The hardware clock (calendar) is not updated … runs continuously, even if the router is powered off／show clock detail）</div>
+</section>
+
+<section class="slide">
+  <h1>よくあるひっかけ</h1>
+  <table class="mx">
+    <tr><th style="width:42%">よくある思い込み</th><th>正しくは</th></tr>
+    <tr><td class="t">inside global は内側の PC に設定したアドレス</td><td style="text-align:left">PC に設定したのは <b>inside local</b>。inside global は外に見せる変換後のアドレス</td></tr>
+    <tr><td class="t">show ip nat translations の左の列は Inside local</td><td style="text-align:left">左が <b>Inside global</b>、その右が Inside local</td></tr>
+    <tr><td class="t">static は「外 内」の順に書く</td><td style="text-align:left"><b>static inside local inside global</b>（内 → 外）</td></tr>
+    <tr><td class="t">ダイナミック NAT で外から通信を始められる</td><td style="text-align:left">行は内側が始めたときにできる。外から始めるなら<b>スタティック</b></td></tr>
+    <tr><td class="t">プールが1個なら1台しか出られない</td><td style="text-align:left"><b>overload</b> を付ければ PAT で多数が共有できる</td></tr>
+    <tr><td class="t">NAT の ACL はパケットを止める</td><td style="text-align:left">変換する<b>送信元を選ぶ</b>だけ。permit にないものは変換されない</td></tr>
+    <tr><td class="t">ntp server を入れた機器が NTP サーバーになる</td><td style="text-align:left">入れた機器は<b>クライアント</b>。サーバーは後ろに書いた相手</td></tr>
+    <tr><td class="t">ストラタムは大きいほど正確、0 は未同期</td><td style="text-align:left"><b>小さい</b>ほど時刻源に近い。未同期は <b>16</b></td></tr>
+    <tr><td class="t">NTP は TCP 123</td><td style="text-align:left"><b>UDP</b> 123（SNMP は UDP 161、Syslog は UDP 514）</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">4つのアドレス<span>inside／outside＝だれの、local／global＝どこから見た形。ip nat inside・outside を両方付ける</span></div>
+      <div class="box b2">NAT の3種類<span>static（1対1固定・外から始められる）／pool（1対1・空きを貸す）／overload（多対1・ポート）</span></div>
+      <div class="box b3">NTP<span>UDP 123・ストラタム小さいほど近い・16 は未同期・ntp server でクライアント・ntp master で配る</span></div>
+    </div>
+    <div>
+      <div class="cap">PAT と NTP の設定</div>
+<pre class="cli small">access-list 1 permit 192.168.1.0 0.0.0.255
+ip nat inside source list 1 interface g0/1 overload
+interface g0/0
+ ip nat inside
+interface g0/1
+ ip nat outside
+ntp server 10.0.0.1 prefer
+clock timezone JST 9</pre>
+      <div class="point"><b>確かめる：</b><code>show ip nat translations</code>／<code>show ip nat statistics</code>／<code>show ntp associations</code>／<code>show ntp status</code>／<code>show clock</code></div>
+      <div class="point"><b>次の分野：</b>#17 DHCP と DNS で、アドレスの配布と名前解決を読む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

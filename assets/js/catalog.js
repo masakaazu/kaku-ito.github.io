@@ -143,6 +143,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/13.html", title: "スタティックルート 用語集", desc: "ip route と ipv6 route の書き方（デフォルト・ネットワーク・ホストルート）、ネクストホップ・出口・完全指定の違い、リンクローカルのネクストホップ、フローティングスタティックとAD 255、再帰で予備に切り替わらないトラブルの用語と、オリジナル問題30問（出題範囲 3.3）", fields: [13], pdf: "terms/13.pdf" },
       { type: "terms", file: "terms/14.html", title: "OSPF 用語集", desc: "リンクステート・LSA・LSDB・SPF、network area とワイルドカード・ip ospf area・passive-interface・default-information originate、Hello/Dead とネイバーの状態（Init〜Full）・MTU、broadcast と point-to-point・DR/BDR の選び方・優先度、ルーター IDの決まり方の用語と、オリジナル問題30問（出題範囲 3.4）", fields: [14], pdf: "terms/14.pdf" },
       { type: "terms", file: "terms/15.html", title: "FHRP 用語集", desc: "デフォルトゲートウェイの冗長化と仮想IP・仮想MAC、HSRPのアクティブ/スタンバイ・優先度・プリエンプト・track・Hello/Hold・v1とv2、VRRPのマスター/バックアップ、GLBPのAVG・AVFと負荷分散、3つの比較の用語と、オリジナル問題30問（出題範囲 3.5）", fields: [15], pdf: "terms/15.pdf" },
+      { type: "terms", file: "terms/16.html", title: "NAT と NTP 用語集", desc: "inside local・inside global・outside local・outside global、ip nat inside/outside、スタティックNAT・ダイナミックNAT（プールとACL）・PAT（overload）、show ip nat translations/statistics、NTPのストラタム・クライアントとサーバー（ntp server・ntp master・ntp peer）・show ntp associations/status・show clockの用語と、オリジナル問題30問（出題範囲 4.1・4.2）", fields: [16], pdf: "terms/16.pdf" },
     ],
     ap: [
       { type: "note", file: "notes/apno1.html", title: "TCP/IPとHTTP", desc: "アプリケーション層とHTTPプロトコル", fields: [10] },
