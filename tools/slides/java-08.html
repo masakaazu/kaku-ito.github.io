@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Silver #08 クラスとオブジェクト 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">Java Silver（SE 17・1Z0-825-JPN）　4 クラスの定義とインスタンス　#08</div>
+  <h1>クラスとオブジェクト</h1>
+  <p>変数に入っているのは参照。new で作り、コンストラクタで整え、参照がなくなれば片づけられる</p>
+  <div class="refs-legend">各ページの下に、根拠にした Oracle の資料（JLS 4・6・8・12・15 章、Java Tutorials、Java SE 17 API）を書いた（青い文字を押すと開く）。コードは Claude が作り、JDK 17 で動かして確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>試験内容チェックリスト 4（クラスの宣言とインスタンス化、ライフサイクル、メソッド、オーバーロード、コンストラクタ）</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 クラスとインスタンス<span>フィールドの既定値、参照のコピー、null</span></div>
+      <div class="box b2">2 メソッド<span>戻り値と return、値渡し、可変長引数</span></div>
+      <div class="box b3">3 オーバーロード<span>シグネチャのちがい、3 段階の解決、あいまいな呼び出し</span></div>
+      <div class="box b4">4 コンストラクタと初期化<span>デフォルトコンストラクタ、this(…)、this、初期化の順番</span></div>
+      <div class="box b1">5 ライフサイクル<span>参照がなくなると GC の対象。System.gc() はすすめるだけ</span></div>
+    </div>
+    <div>
+      <div class="cap">1 つのクラスの中身（Claude が作成）</div>
+<pre class="code small"><span class="k">class</span> Counter {
+  <span class="k">int</span> count;                  <span class="c">// フィールド（既定値 0）</span>
+  { System.out.print(<span class="s">"init "</span>); }  <span class="c">// インスタンス初期化子</span>
+  Counter() { }                 <span class="c">// コンストラクタ（戻り値の型なし）</span>
+  Counter(<span class="k">int</span> count) {           <span class="c">// オーバーロード</span>
+    <span class="k">this</span>.count = count;        <span class="c">// this でフィールドを指す</span>
+  }
+  <span class="k">void</span> inc() { count++; }      <span class="c">// メソッド</span>
+  <span class="k">int</span> get() { <span class="k">return</span> count; }
+}</pre>
+      <div class="point"><b>static は #09、継承と super(…) は #11。</b>この PDF はインスタンス（static のないもの）を扱う。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.oracle.com/jp/education/certification/javase-17-programmer-1/">Oracle「Java SE 17 Programmer I（1Z0-825-JPN）」試験内容チェックリスト</a>／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8 Classes</a></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>クラスとインスタンス</h1>
+  <p>クラスは設計図。変数に入るのはオブジェクトへの参照。</p>
+  <div class="foot"><span>Java Silver #08 クラスとオブジェクト</span><span>試験内容 4</span></div>
+</section>
+
+<section class="slide">
+  <h1>変数とオブジェクトの関係</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">A b = a; のあと（Claude が作成）</div>
+      <svg width="420" height="230" viewBox="0 0 420 230">
+        <defs><marker id="a8" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="12">
+          <text x="20" y="18" fill="#4a5a78">変数（参照が入る）</text>
+          <text x="250" y="18" fill="#4a5a78">オブジェクト</text>
+          <rect x="20" y="34" width="90" height="34" rx="4" fill="#c9daf2" stroke="#1f3a68"/><text x="32" y="56" fill="#1f3a68" font-family="DejaVu Sans Mono, monospace">a</text>
+          <rect x="20" y="94" width="90" height="34" rx="4" fill="#c9daf2" stroke="#1f3a68"/><text x="32" y="116" fill="#1f3a68" font-family="DejaVu Sans Mono, monospace">b</text>
+          <rect x="20" y="164" width="90" height="34" rx="4" fill="#fff" stroke="#b25000" stroke-dasharray="5 3"/><text x="32" y="186" fill="#b25000" font-family="DejaVu Sans Mono, monospace">c = null</text>
+          <rect x="250" y="56" width="150" height="70" rx="8" fill="#1f3a68"/><text x="262" y="80" fill="#fff">A のオブジェクト</text><text x="262" y="106" fill="#fff" font-family="DejaVu Sans Mono, monospace">n = 2</text>
+          <line x1="110" y1="51" x2="246" y2="80" stroke="#1f3a68" stroke-width="2" marker-end="url(#a8)"/>
+          <line x1="110" y1="111" x2="246" y2="100" stroke="#1f3a68" stroke-width="2" marker-end="url(#a8)"/>
+          <text x="140" y="190" fill="#b25000">どこも指さない → c.n は NullPointerException</text>
+        </g>
+      </svg>
+<pre class="code small"><span class="k">A</span> a = <span class="k">new</span> A();  a.n = <span class="s">1</span>;
+<span class="k">A</span> b = a;             <span class="c">// 参照のコピー</span>
+b.n = <span class="s">2</span>;
+System.out.println(a.n + <span class="s">" "</span> + (a == b));   <span class="c">// 2 true</span></pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">コード</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>A b = a;</code> のあと <code>b.n = 2</code></td><td class="t">a.n も 2</td></tr>
+        <tr><td class="l"><code>new A(1) == new A(1)</code></td><td class="t">false（別のオブジェクト）</td></tr>
+        <tr><td class="l"><code>a.equals(b)</code>（A は equals を書いていない）</td><td class="t">== と同じ</td></tr>
+        <tr><td class="l">C の a・b で a.inc() 2 回、b.inc() 1 回</td><td class="t">a.count 2、b.count 1</td></tr>
+        <tr><td class="l"><code>A a = null; a.n</code></td><td class="x">NullPointerException（実行時）</td></tr>
+      </table>
+      <div class="point"><b>インスタンス変数はオブジェクトごと。</b>new するたびに、そのオブジェクト用のフィールドが新しくできる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-4.html">JLS 4.3.1 Objects</a>（The reference values (often just references) are pointers to these objects, and a special null reference, which refers to no object）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.3.1.1</a>（a new variable associated with that instance is created for every instance variable）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">API Object.equals</a>（x and y refer to the same object (x == y has the value true)）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>既定値があるのはフィールドだけ</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:50%">フィールドの型</th><th>既定値</th></tr>
+        <tr><td class="t">byte・short・int・long</td><td>0</td></tr>
+        <tr><td class="t">float・double</td><td>0.0</td></tr>
+        <tr><td class="t">char</td><td>'<span class="bs">\u0000</span>'（int にすると 0）</td></tr>
+        <tr><td class="t">boolean</td><td>false</td></tr>
+        <tr><td class="t">参照型（String・配列・クラス）</td><td>null</td></tr>
+      </table>
+<pre class="code small" style="margin-top:8px"><span class="k">class</span> A { <span class="k">int</span> i; <span class="k">double</span> d; <span class="k">boolean</span> b; String s; <span class="k">char</span> c; <span class="k">long</span>[] arr; }
+<span class="c">// a.i a.d a.b a.s (int)a.c a.arr を表示</span></pre>
+<pre class="sh" style="margin-top:4px"><span class="o">0 0.0 false null 0 null</span></pre>
+    </div>
+    <div>
+      <div class="cap">ローカル変数には既定値がない（Claude が作成）</div>
+<pre class="code small"><span class="k">int</span> x;
+System.out.println(<span class="ng">x</span>);</pre>
+<pre class="sh" style="margin-top:4px"><span class="e">error: variable x might not have been initialized</span></pre>
+      <table class="mx" style="margin-top:8px">
+        <tr><th style="width:44%"></th><th>フィールド</th><th>ローカル変数</th></tr>
+        <tr><td class="t">書く場所</td><td>クラスの中・メソッドの外</td><td>メソッド・ブロックの中</td></tr>
+        <tr><td class="t">既定値</td><td>あり</td><td class="x">なし</td></tr>
+        <tr><td class="t">代入前に使う</td><td>既定値が読める</td><td class="x">コンパイルエラー</td></tr>
+        <tr><td class="t">配列の要素</td><td colspan="2">どこで作っても既定値が入る（#04）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-4.html">JLS 4.12.5 Initial Values of Variables</a>（Each class variable, instance variable, or array component is initialized with a default value when it is created／A local variable … must be explicitly given a value before it is used）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>メソッド</h1>
+  <p>引数はいつも値のコピー。参照型なら参照のコピー。</p>
+  <div class="foot"><span>Java Silver #08 クラスとオブジェクト</span><span>試験内容 4</span></div>
+</section>
+
+<section class="slide">
+  <h1>メソッドの形と return</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="90" viewBox="0 0 420 90">
+        <g font-size="13" font-family="DejaVu Sans Mono, monospace" text-anchor="middle">
+          <rect x="0" y="10" width="70" height="30" rx="4" fill="#e3ecf9"/><text x="35" y="30" fill="#1f3a68">public</text>
+          <rect x="76" y="10" width="50" height="30" rx="4" fill="#1f3a68"/><text x="101" y="30" fill="#fff">int</text>
+          <rect x="132" y="10" width="64" height="30" rx="4" fill="#c9daf2"/><text x="164" y="30" fill="#1f3a68">twice</text>
+          <rect x="202" y="10" width="86" height="30" rx="4" fill="#c9daf2"/><text x="245" y="30" fill="#1f3a68">(int x)</text>
+          <rect x="294" y="10" width="124" height="30" rx="4" fill="#f5f5f7" stroke="#d0d7e2"/><text x="356" y="30" fill="#1f3a68">{ return x*2; }</text>
+        </g>
+        <g font-size="11" text-anchor="middle" fill="#4a5a78">
+          <text x="35" y="58">修飾子</text><text x="101" y="58">戻り値の型</text><text x="164" y="58">名前</text><text x="245" y="58">引数の並び</text><text x="356" y="58">本体</text>
+          <text x="204" y="80" fill="#b25000">名前＋引数の型の並び ＝ シグネチャ（戻り値の型は含まない）</text>
+        </g>
+      </svg>
+      <table class="mx" style="margin-top:6px">
+        <tr><th style="width:56%">書き方</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>int f(int x) { if (x &gt; 0) return 1; }</code></td><td class="x">missing return statement</td></tr>
+        <tr><td class="l"><code>void f() { return 1; }</code></td><td class="x">incompatible types: unexpected return value</td></tr>
+        <tr><td class="l"><code>void f() { return; }</code></td><td class="t">OK（途中で終わる）</td></tr>
+        <tr><td class="l">戻り値を使わずに <code>twice(3);</code></td><td class="t">OK（値は捨てられる）</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">this を返すとつなげて呼べる（Claude が作成）</div>
+<pre class="code small"><span class="k">class</span> C {
+  <span class="k">int</span> v;
+  C add(<span class="k">int</span> x) { v += x; <span class="k">return this</span>; }
+}
+C c = <span class="k">new</span> C().add(<span class="s">1</span>).add(<span class="s">2</span>);
+System.out.println(c.v);    <span class="c">// 3</span></pre>
+      <div class="point"><b>戻り値の型があるメソッド</b>は、どの道を通っても <code>return 値;</code> で終わる。「最後まで来てしまう道」が 1 本でもあればコンパイルエラー。</div>
+      <div class="point"><b>void</b> は値を返さない。<code>return;</code>（値なし）は書ける。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.4.2 Method Signature</a>・8.4.7 Method Body（a compile-time error occurs if the body of the method can complete normally）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.17</a>（the return target of a return statement with value Expression is either a constructor, or a method that is declared void）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>引数は値渡し ― 参照型は参照のコピー</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">static void</span> m(<span class="k">int</span> x, A a) {
+  x = <span class="s">10</span>;          <span class="c">// ① コピーの x だけ変わる</span>
+  a.n = <span class="s">10</span>;        <span class="c">// ② 同じオブジェクトを変える</span>
+  a = <span class="k">new</span> A();     <span class="c">// ③ m の a が別を指すだけ</span>
+  a.n = <span class="s">20</span>;
+}
+<span class="c">// main：int x = 1; A a = new A(); m(x, a);</span>
+System.out.println(x + <span class="s">" "</span> + a.n);   <span class="c">// 1 10</span></pre>
+      <table class="mx" style="margin-top:8px">
+        <tr><th style="width:56%">メソッドの中で</th><th>呼び出し元から見ると</th></tr>
+        <tr><td class="l">基本型の引数に代入</td><td class="t">変わらない</td></tr>
+        <tr><td class="l">引数のオブジェクトのフィールドを変える</td><td class="t">変わる</td></tr>
+        <tr><td class="l">引数に別のオブジェクトを代入</td><td class="t">変わらない</td></tr>
+        <tr><td class="l">String の引数に <code>s = s + "x"</code></td><td class="t">変わらない</td></tr>
+        <tr><td class="l">StringBuilder の引数に <code>sb.append("x")</code></td><td class="t">変わる</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">③ の直後（Claude が作成）</div>
+      <svg width="400" height="210" viewBox="0 0 400 210">
+        <defs><marker id="b8" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker><marker id="c8" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker></defs>
+        <g font-size="12">
+          <rect x="4" y="10" width="130" height="80" rx="6" fill="#f5f5f7" stroke="#1f3a68"/><text x="14" y="28" fill="#1f3a68" font-weight="700">main</text>
+          <text x="14" y="52" fill="#1f3a68" font-family="DejaVu Sans Mono, monospace">x = 1</text><text x="14" y="76" fill="#1f3a68" font-family="DejaVu Sans Mono, monospace">a</text>
+          <rect x="4" y="110" width="130" height="80" rx="6" fill="#fff" stroke="#b25000"/><text x="14" y="128" fill="#b25000" font-weight="700">m（引数はコピー）</text>
+          <text x="14" y="152" fill="#b25000" font-family="DejaVu Sans Mono, monospace">x = 10</text><text x="14" y="176" fill="#b25000" font-family="DejaVu Sans Mono, monospace">a</text>
+          <rect x="250" y="30" width="140" height="50" rx="8" fill="#1f3a68"/><text x="262" y="52" fill="#fff">元のオブジェクト</text><text x="262" y="70" fill="#fff" font-family="DejaVu Sans Mono, monospace">n = 10</text>
+          <rect x="250" y="130" width="140" height="50" rx="8" fill="#c9daf2"/><text x="262" y="152" fill="#1f3a68">③ で作った</text><text x="262" y="170" fill="#1f3a68" font-family="DejaVu Sans Mono, monospace">n = 20</text>
+          <line x1="30" y1="72" x2="246" y2="55" stroke="#1f3a68" stroke-width="2" marker-end="url(#b8)"/>
+          <line x1="30" y1="172" x2="246" y2="155" stroke="#b25000" stroke-width="2" marker-end="url(#c8)"/>
+          <line x1="40" y1="172" x2="246" y2="72" stroke="#b25000" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <text x="150" y="122" fill="#b25000" font-size="11">② までは同じものを</text><text x="150" y="136" fill="#b25000" font-size="11">指していた（点線）</text>
+        </g>
+      </svg>
+      <div class="point"><b>Java に参照渡しはない。</b>参照型でも「参照という値」をコピーして渡している。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.4.1 Formal Parameters</a>（the values of the actual argument expressions initialize newly created parameter variables, each of the declared type, before execution of the body of the method or constructor）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">API String</a>（Strings are constant）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>可変長引数</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">static int</span> sum(<span class="k">int</span>... v) {   <span class="c">// 中では int[]</span>
+  <span class="k">int</span> s = <span class="s">0</span>;
+  <span class="k">for</span> (<span class="k">int</span> x : v) s += x;
+  <span class="k">return</span> s + v.length * <span class="s">100</span>;
+}
+sum()                    <span class="c">// 0   （長さ 0 の配列）</span>
+sum(<span class="s">1</span>, <span class="s">2</span>, <span class="s">3</span>)             <span class="c">// 306 （長さ 3）</span>
+sum(<span class="k">new int</span>[] {<span class="s">4</span>, <span class="s">5</span>})    <span class="c">// 209 （配列をそのまま）</span></pre>
+      <div class="point"><b>引数なしで呼んでも null ではない。</b>長さ 0 の配列が渡るので、v.length も拡張 for もそのまま使える。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">宣言</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>m(String s, int... a)</code></td><td class="t">OK</td></tr>
+        <tr><td class="l"><code>m(int... a, String s)</code></td><td class="x">varargs parameter must be the last parameter</td></tr>
+        <tr><td class="l"><code>m(int... a, int... b)</code></td><td class="x">同じエラー（1 つまで）</td></tr>
+        <tr><td class="l"><code>m(int a...)</code></td><td class="x">',', ')', or '[' expected</td></tr>
+        <tr><td class="l"><code>m(int[]... a)</code></td><td class="t">OK（中では int[][]）</td></tr>
+        <tr><td class="l"><code>m(String... a)</code> を <code>m()</code></td><td class="t">OK（a.length は 0）</td></tr>
+      </table>
+      <div class="mini">... は型のすぐあと（空白をはさむこともできるが、すすめられない）。main を <code>public static void main(String... args)</code> と書くこともできる（#01）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.4.1</a>（At most one variable arity parameter is permitted for a method or constructor. It is a compile-time error if a variable arity parameter appears anywhere in the list of parameter specifiers except the last position）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>オーバーロード</h1>
+  <p>同じ名前、ちがう引数。どれを呼ぶかはコンパイル時に 3 段階で決まる。</p>
+  <div class="foot"><span>Java Silver #08 クラスとオブジェクト</span><span>試験内容 4</span></div>
+</section>
+
+<section class="slide">
+  <h1>オーバーロードになるもの・ならないもの</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:58%">同じクラスに 2 つ書く</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>f(int)</code> と <code>f(String)</code></td><td class="t">OK（型がちがう）</td></tr>
+        <tr><td class="l"><code>f(int)</code> と <code>f(int, int)</code></td><td class="t">OK（数がちがう）</td></tr>
+        <tr><td class="l"><code>f(int, long)</code> と <code>f(long, int)</code></td><td class="t">OK（順番がちがう）</td></tr>
+        <tr><td class="l"><code>int f(int x)</code> と <code>long f(int y)</code></td><td class="x">method f(int) is already defined</td></tr>
+        <tr><td class="l"><code>A() { }</code> を 2 つ</td><td class="x">constructor A() is already defined</td></tr>
+      </table>
+      <div class="point"><b>シグネチャ＝名前＋引数の型の並び。</b>戻り値の型・引数の名前・修飾子・throws はちがっても区別にならない。</div>
+    </div>
+    <div>
+      <div class="cap">呼び出しのあいまいさ（JDK 17）</div>
+<pre class="code small"><span class="k">static void</span> m(<span class="k">int</span> a, <span class="k">long</span> b) { … }
+<span class="k">static void</span> m(<span class="k">long</span> a, <span class="k">int</span> b) { … }
+m(<span class="s">1</span>, <span class="s">2</span>);   <span class="c">// どちらにも拡大で合う</span></pre>
+<pre class="sh" style="margin-top:4px"><span class="e">error: reference to m is ambiguous</span></pre>
+      <div class="mini" style="margin-top:6px">宣言は OK でも、呼び出し方によってはコンパイルエラーになる。m(1, 2L) なら m(int, long) に決まる。</div>
+      <div class="point"><b>オーバーライドとはちがう。</b>オーバーロードは同じ名前で引数がちがうメソッドを並べること。オーバーライドは親クラスのメソッドを同じシグネチャで書き直すこと（#11）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.4.9 Overloading</a>（have the same name but signatures that are not override-equivalent, then the method name is said to be overloaded）・8.4.2（It is a compile-time error to declare two methods with override-equivalent signatures in a class）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>どれが呼ばれるか ― 3 段階</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">m(5) の探し方（Claude が作成）</div>
+      <svg width="420" height="230" viewBox="0 0 420 230">
+        <defs><marker id="d8" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5b80bf"/></marker></defs>
+        <g font-size="12">
+          <rect x="10" y="10" width="270" height="52" rx="6" fill="#1f3a68"/><text x="22" y="32" fill="#fff" font-weight="700">1 段階目：型の拡大だけ</text><text x="22" y="52" fill="#fff" font-size="11">int → long → float → double など</text>
+          <rect x="10" y="84" width="270" height="52" rx="6" fill="#5b80bf"/><text x="22" y="106" fill="#fff" font-weight="700">2 段階目：ボクシングも許す</text><text x="22" y="126" fill="#fff" font-size="11">int → Integer（→ Object など）</text>
+          <rect x="10" y="158" width="270" height="52" rx="6" fill="#c9daf2"/><text x="22" y="180" fill="#1f3a68" font-weight="700">3 段階目：可変長引数も許す</text><text x="22" y="200" fill="#1f3a68" font-size="11">int... など</text>
+          <line x1="145" y1="62" x2="145" y2="80" stroke="#5b80bf" stroke-width="2" marker-end="url(#d8)"/>
+          <line x1="145" y1="136" x2="145" y2="154" stroke="#5b80bf" stroke-width="2" marker-end="url(#d8)"/>
+          <text x="290" y="34" fill="#1f3a68" font-size="11">見つかれば</text><text x="290" y="50" fill="#1f3a68" font-size="11">ここで決まる</text>
+          <text x="290" y="112" fill="#1f3a68" font-size="11">1 で無ければ</text>
+          <text x="290" y="186" fill="#1f3a68" font-size="11">2 で無ければ</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">候補（呼び出しは m(5)）</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l">m(long)・m(Integer)・m(int...)</td><td class="t">long</td></tr>
+        <tr><td class="l">m(Integer)・m(int...)</td><td class="t">Integer</td></tr>
+        <tr><td class="l">m(Long)・m(int...)</td><td class="t">int...</td></tr>
+        <tr><td class="l">m(Long) だけ</td><td class="x">int cannot be converted to Long</td></tr>
+        <tr><td class="l">m(double)・m(Object) に m('a')</td><td class="t">double 97.0</td></tr>
+        <tr><td class="l">m(int, int)・m(int...) に m(1, 2)</td><td class="t">m(int, int)</td></tr>
+        <tr><td class="l">同じ 2 つに m(1, 2, 3)・m()</td><td class="t">m(int...)</td></tr>
+      </table>
+      <div class="point"><b>「拡大してからボクシング」はできない。</b>int は Integer にしかボクシングされないので、int → Long はどの段階でも合わない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.12.2 Compile-Time Step 2</a>（The first phase performs overload resolution without permitting boxing or unboxing conversion, or the use of variable arity method invocation／The second phase … allowing boxing and unboxing／The third phase allows overloading to be combined with variable arity methods）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-5.html">JLS 5.3 Invocation Contexts</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>最も具体的なメソッドと null</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">static void</span> m(Object o) { … <span class="s">"Object"</span> }
+<span class="k">static void</span> m(String s) { … <span class="s">"String"</span> }
+
+m(<span class="k">null</span>);          <span class="c">// String</span>
+m(<span class="s">"a"</span>);           <span class="c">// String</span>
+Object o = <span class="s">"b"</span>;
+m(o);             <span class="c">// Object（宣言の型で決まる）</span></pre>
+      <svg width="400" height="80" viewBox="0 0 400 80">
+        <g font-size="12" text-anchor="middle">
+          <rect x="20" y="10" width="110" height="28" rx="4" fill="#c9daf2"/><text x="75" y="29" fill="#1f3a68">Object</text>
+          <rect x="20" y="48" width="110" height="28" rx="4" fill="#1f3a68"/><text x="75" y="67" fill="#fff">String</text>
+          <text x="250" y="29" fill="#1f3a68">String は Object の一種</text>
+          <text x="250" y="67" fill="#b25000">→ m(String) の方が具体的</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">候補に m(null)</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l">m(Object)・m(String)</td><td class="t">String</td></tr>
+        <tr><td class="l">m(Integer)・m(String)</td><td class="x">reference to m is ambiguous</td></tr>
+        <tr><td class="l">m(Integer)・m(String) に <code>m((String) null)</code></td><td class="t">String（キャストで決まる）</td></tr>
+      </table>
+      <div class="point"><b>「より具体的」＝ 一方の引数の型が、もう一方の引数の型の一種。</b>Integer と String はどちらも相手の一種ではないので、どちらにも決められない。</div>
+      <div class="point"><b>どれを呼ぶかはコンパイル時。</b>実行時のオブジェクトの型ではなく、引数の式の型で選ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.12.2.5 Choosing the Most Specific Method</a>（the most specific method is chosen／It is possible that no method is the most specific, because there are two or more methods that are maximally specific／Otherwise, the method invocation is ambiguous, and a compile-time error occurs）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>コンストラクタと初期化</h1>
+  <p>戻り値の型を書かない。1 つでも書けば自動では入らない。</p>
+  <div class="foot"><span>Java Silver #08 クラスとオブジェクト</span><span>試験内容 4</span></div>
+</section>
+
+<section class="slide">
+  <h1>コンストラクタとデフォルトコンストラクタ</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">クラスの書き方</th><th><code>new A()</code> は</th></tr>
+        <tr><td class="l">コンストラクタを 1 つも書かない</td><td class="t">OK（デフォルトコンストラクタ）</td></tr>
+        <tr><td class="l"><code>A(int x)</code> だけ書く</td><td class="x">constructor A in class A cannot be applied to given types</td></tr>
+        <tr><td class="l"><code>A()</code> と <code>A(int x)</code> を書く</td><td class="t">OK</td></tr>
+        <tr><td class="l"><code>void A() { }</code> だけ書く</td><td class="t">OK（それはメソッド。デフォルトコンストラクタが入る）</td></tr>
+      </table>
+      <div class="cap" style="margin-top:8px">コンパイラが入れるもの（JLS の例を Claude が書き直した）</div>
+<pre class="code small"><span class="k">public class</span> Point { <span class="k">int</span> x, y; }
+<span class="c">// ↓ と同じ</span>
+<span class="k">public class</span> Point { <span class="k">int</span> x, y; <span class="k">public</span> Point() { <span class="k">super</span>(); } }</pre>
+    </div>
+    <div>
+      <div class="point"><b>デフォルトコンストラクタ：</b>引数なし。アクセス修飾子はクラスと同じ（クラスに修飾子がなければパッケージアクセス）。本体は親クラスの引数なしコンストラクタを呼ぶだけ（#11）。</div>
+      <div class="cap" style="margin-top:6px">戻り値の型を書くとメソッド（Claude が作成）</div>
+<pre class="code small"><span class="k">class</span> A {
+  <span class="k">void</span> A() { System.out.print(<span class="s">"method "</span>); }
+}
+A a = <span class="k">new</span> A();             <span class="c">// 何も表示しない</span>
+System.out.print(<span class="s">"created "</span>);
+a.A();                     <span class="c">// method</span></pre>
+<pre class="sh" style="margin-top:4px"><span class="o">created method</span></pre>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.8 Constructor Declarations</a>（In all other respects, a constructor declaration looks just like a method declaration that has no result／Constructor declarations are not members）・8.8.9 Default Constructor（If a class contains no constructor declarations, then a default constructor is implicitly declared／例 8.8.9-1）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>this(…) と this</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">class</span> A {
+  A() {
+    <span class="k">this</span>(<span class="s">5</span>);                  <span class="c">// 必ず最初の文</span>
+    System.out.print(<span class="s">"A() "</span>);
+  }
+  A(<span class="k">int</span> x) { System.out.print(<span class="s">"A("</span> + x + <span class="s">") "</span>); }
+}
+<span class="k">new</span> A();</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">A(5) A()</span></pre>
+      <table class="mx" style="margin-top:6px">
+        <tr><th style="width:56%">書き方</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l">print のあとに <code>this(1);</code></td><td class="x">call to this must be first statement in constructor</td></tr>
+        <tr><td class="l">A() → this(1)、A(int) → this()</td><td class="x">recursive constructor invocation</td></tr>
+      </table>
+    </div>
+    <div>
+<pre class="code small"><span class="k">class</span> A { <span class="k">int</span> n; A(<span class="k">int</span> n) { <span class="ng">n = n;</span> } }        <span class="c">// 0</span>
+<span class="k">class</span> B { <span class="k">int</span> n; B(<span class="k">int</span> n) { <span class="k">this</span>.n = n; } }   <span class="c">// 5</span>
+<span class="c">// new A(5).n と new B(5).n</span></pre>
+<pre class="sh" style="margin-top:4px"><span class="o">0 5</span></pre>
+      <div class="point"><b>シャドーイング：</b>引数 n がフィールド n を隠す。ただの n は引数。フィールドは this.n。</div>
+      <div class="point"><b>this ＝ 今のオブジェクトへの参照。</b>インスタンスメソッドとコンストラクタの中で使える。static メソッドの中では使えない（#09）。</div>
+      <div class="mini">メソッドの中でも、フィールド n と同じ名前のローカル変数 n を宣言できる。<code>n + " " + this.n</code> は "1 5" のようになる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.8.7 Constructor Body</a>（The first statement of a constructor body may be an explicit invocation of another constructor／It is a compile-time error for a constructor to directly or indirectly invoke itself）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-6.html">JLS 6.4.1 Shadowing</a>／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.8.3 this</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>初期化の順番と final フィールド</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">class</span> A {
+  <span class="k">int</span> x = p(<span class="s">"f1 "</span>);      <span class="c">// ①</span>
+  { p(<span class="s">"i1 "</span>); }           <span class="c">// ②</span>
+  A() { p(<span class="s">"c "</span>); }        <span class="c">// ⑤ 本体は最後</span>
+  { p(<span class="s">"i2 "</span>); }           <span class="c">// ③</span>
+  <span class="k">int</span> y = p(<span class="s">"f2 "</span>);      <span class="c">// ④</span>
+}
+<span class="k">new</span> A();  <span class="k">new</span> A();</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">f1 i1 i2 f2 c
+f1 i1 i2 f2 c</span></pre>
+      <div class="mini">new のたびに全部やり直す。<code>int x = 10;</code>・<code>{ x = 30; }</code>・<code>A() { x = 20; }</code> なら x は 20。</div>
+    </div>
+    <div>
+      <div class="cap">new A(…) のとき（Claude が作成）</div>
+      <div class="stack">
+        <div class="box b1">1 メモリを確保し、フィールドを既定値にする</div>
+        <div class="box b2">2 this(…) があれば、そのコンストラクタへ</div>
+        <div class="box b3">3 フィールドの初期化式と初期化子を、上から順に</div>
+        <div class="box b4">4 コンストラクタの本体の残り</div>
+      </div>
+      <table class="mx" style="margin-top:8px">
+        <tr><th style="width:56%">final フィールド</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>final int x;</code> だけ</td><td class="x">variable x not initialized in the default constructor</td></tr>
+        <tr><td class="l">A() で代入、A(int) で代入しない</td><td class="x">variable x might not have been initialized</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-12.html">JLS 12.5 Creation of New Class Instances</a>（Execute the instance initializers and instance variable initializers for this class … in the left-to-right order in which they appear textually／Execute the rest of the body of this constructor）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.6</a>・8.3.1.2（A blank final instance variable must be definitely assigned … at the end of every constructor）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第5章</div>
+  <h1>オブジェクトのライフサイクル</h1>
+  <p>new で生まれ、どこからもたどれなくなると片づけの対象になる。</p>
+  <div class="foot"><span>Java Silver #08 クラスとオブジェクト</span><span>試験内容 4</span></div>
+</section>
+
+<section class="slide">
+  <h1>ガベージコレクションの対象を数える</h1>
+  <div class="cols">
+    <div>
+<pre class="code small">A a = <span class="k">new</span> A();   <span class="c">// 1 個目</span>
+A b = <span class="k">new</span> A();   <span class="c">// 2 個目</span>
+A c = a;
+a = <span class="k">null</span>;
+b = c;
+<span class="c">// here</span></pre>
+      <svg width="420" height="150" viewBox="0 0 420 150">
+        <defs><marker id="e8" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="12">
+          <rect x="10" y="10" width="70" height="28" rx="4" fill="#fff" stroke="#b25000" stroke-dasharray="4 3"/><text x="20" y="29" fill="#b25000" font-family="DejaVu Sans Mono, monospace">a=null</text>
+          <rect x="10" y="56" width="70" height="28" rx="4" fill="#c9daf2" stroke="#1f3a68"/><text x="20" y="75" fill="#1f3a68" font-family="DejaVu Sans Mono, monospace">b</text>
+          <rect x="10" y="102" width="70" height="28" rx="4" fill="#c9daf2" stroke="#1f3a68"/><text x="20" y="121" fill="#1f3a68" font-family="DejaVu Sans Mono, monospace">c</text>
+          <rect x="220" y="40" width="130" height="40" rx="8" fill="#1f3a68"/><text x="232" y="65" fill="#fff">1 個目（残る）</text>
+          <rect x="220" y="96" width="130" height="40" rx="8" fill="#fff" stroke="#b25000" stroke-dasharray="5 3"/><text x="232" y="121" fill="#b25000">2 個目（GC の対象）</text>
+          <line x1="80" y1="70" x2="216" y2="58" stroke="#1f3a68" stroke-width="2" marker-end="url(#e8)"/>
+          <line x1="80" y1="116" x2="216" y2="68" stroke="#1f3a68" stroke-width="2" marker-end="url(#e8)"/>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">参照がなくなる場面</th><th>例</th></tr>
+        <tr><td class="t">null を代入</td><td class="l"><code>a = null;</code></td></tr>
+        <tr><td class="t">別のオブジェクトを代入</td><td class="l"><code>b = c;</code></td></tr>
+        <tr><td class="t">スコープを出る</td><td class="l">メソッドが終わってローカル変数が消える</td></tr>
+      </table>
+      <div class="point"><b>対象になる ≠ すぐ消える。</b>いつ実際に解放するかは JVM が決める。Java にはオブジェクトを消す命令（delete）がない。</div>
+      <div class="point"><b>System.gc()</b> は GC を<b>すすめる</b>（suggests）だけ。実行は保証されない。</div>
+      <div class="mini">上のコードは JDK 17 で WeakReference を使い、System.gc() 後に 2 個目だけが回収されたことを確かめた（回収のタイミングは環境で変わりうる）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/tutorial/java/javaOO/usingobject.html">The Java Tutorials「Using Objects」</a>（An object is eligible for garbage collection when there are no more references to that object）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/System.html#gc()">API System.gc</a>（Calling the gc method suggests that the Java Virtual Machine expend effort toward recycling unused objects）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-12.html">JLS 12.6</a>（A reachable object is any object that can be accessed in any potential continuing computation from any live thread）</div>
+</section>
+
+<section class="slide">
+  <h1>問われ方とまちがえやすい点</h1>
+  <table class="mx">
+    <tr><th style="width:32%">こう聞かれたら</th><th>答えの考え方</th></tr>
+    <tr><td class="t">フィールドの表示結果</td><td class="l">既定値（0・0.0・false・null）。ローカル変数なら未初期化でコンパイルエラー</td></tr>
+    <tr><td class="t">代入やメソッドのあとの値</td><td class="l">参照のコピーなら同じオブジェクト。引数への代入は呼び出し元に戻らない</td></tr>
+    <tr><td class="t">どのオーバーロードが呼ばれるか</td><td class="l">拡大 → ボクシング → 可変長の順。同じ段階なら具体的な方。決まらなければ ambiguous</td></tr>
+    <tr><td class="t">コンパイルできるか（メソッド）</td><td class="l">戻り値の型だけちがう、missing return、void の return 値、可変長は最後に 1 つ</td></tr>
+    <tr><td class="t">コンパイルできるか（コンストラクタ）</td><td class="l">1 つでも書けばデフォルトなし、this(…) は先頭、final フィールドは必ず代入</td></tr>
+    <tr><td class="t">表示の順番</td><td class="l">初期化式・初期化子は上から、コンストラクタ本体は最後。this(…) の先が先</td></tr>
+    <tr><td class="t">GC の対象はいくつ</td><td class="l">矢印の図を書き、どの変数からもたどれないオブジェクトを数える</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">クラスとインスタンス<span>フィールドは既定値あり。変数には参照が入る</span></div>
+      <div class="box b2">メソッド<span>値渡し。可変長引数は最後に 1 つ、中は配列</span></div>
+      <div class="box b3">オーバーロード<span>引数の型・数・順番。3 段階で解決</span></div>
+      <div class="box b4">コンストラクタ<span>戻り値の型なし。this(…) は先頭。本体は初期化子のあと</span></div>
+      <div class="box b1">ライフサイクル<span>参照がなくなると GC の対象</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">こんなとき</th><th>結果</th></tr>
+        <tr><td class="l">A(int) だけのクラスで new A()</td><td class="x">コンパイルエラー</td></tr>
+        <tr><td class="l">m(long)・m(Integer) に m(5)</td><td class="t">m(long)</td></tr>
+        <tr><td class="l">m(Integer)・m(String) に m(null)</td><td class="x">ambiguous</td></tr>
+        <tr><td class="l">コンストラクタで <code>n = n;</code></td><td class="t">フィールドは変わらない</td></tr>
+        <tr><td class="l">System.gc()</td><td class="t">すすめるだけ</td></tr>
+      </table>
+      <div class="point"><b>次は #09 static とアクセス修飾子。</b>クラス変数・クラスメソッド、static の初期化子、public・protected・private とカプセル化へ進む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
