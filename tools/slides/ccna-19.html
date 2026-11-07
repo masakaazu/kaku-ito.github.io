@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CCNA #19 QoS 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">CCNA（200-301 v1.1）　4.0 IPサービス　#19</div>
+  <h1>QoS</h1>
+  <p>出題範囲 4.7 ― 回線が混んだとき、どのパケットを先に送り、どれを待たせ、どれを捨てるか。1台ずつの扱い（PHB）を読む</p>
+  <div class="refs-legend">各ページの下に、根拠にしたCiscoの資料・RFCを書いた（青い文字を押すと開く）</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>4.7 Explain the forwarding per-hop behavior (PHB) for QoS, such as classification, marking, queuing, congestion, policing, and shaping</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 QoS の考え方<span>帯域・遅延・ジッター・損失、輻輳、PHB、音声の目安（片道 150 ms 未満）</span></div>
+      <div class="box b2">2 分類とマーキング<span>CoS（L2・3ビット）、IP Precedence（3ビット）、DSCP（6ビット）、EF 46・AFxy・CS、信頼境界</span></div>
+      <div class="box b3">3 キューイングと輻輳回避<span>LLQ（priority）と CBWFQ（bandwidth）、テールドロップ、TCP グローバル同期、WRED</span></div>
+      <div class="box b4">4 ポリシングとシェーピング<span>捨てるか、ためるか。CIR・Bc・Tc、トークンバケツ、MQC</span></div>
+    </div>
+    <div>
+      <div class="cap">CCNAでの問われ方</div>
+      <table>
+        <tr><td style="width:26%">Explain</td><td>設定の細部より<b>しくみと違い</b>。「EF の値は」「AF の落としやすさ」「ポリシングとシェーピングの違い」「WRED は何を防ぐ」「信頼境界はどこに置く」</td></tr>
+      </table>
+      <div class="point"><b>芯：</b>QoS は帯域を<b>増やさない</b>。混んだときに<b>見分けて（分類）、印を付け（マーキング）、並べ（キュー）、捨て方や速さを決める</b>。それを各機器が1台ずつ同じ方針でする（PHB）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco CCNA Exam v1.1 (200-301) Exam Topics</a>（4.7）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>QoS の考え方</h1>
+  <p>混むのは出口。待ち行列で起きる遅れ・ばらつき・捨てられを、通信の種類ごとに配り分ける。</p>
+  <div class="foot"><span>CCNA #19 QoS</span><span>4.7</span></div>
+</section>
+
+<section class="slide">
+  <h1>どこで混むか：速い所から遅い所への出口</h1>
+  <div class="cols">
+    <div>
+      <svg width="430" height="250" viewBox="0 0 430 250">
+        <defs><marker id="a1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="40" width="80" height="34" rx="6" fill="#5b80bf"/><text x="50" y="62" fill="#fff">PC（Web）</text>
+          <rect x="10" y="95" width="80" height="34" rx="6" fill="#5b80bf"/><text x="50" y="117" fill="#fff">IP 電話</text>
+          <rect x="10" y="150" width="80" height="34" rx="6" fill="#5b80bf"/><text x="50" y="172" fill="#fff">サーバー</text>
+          <line x1="90" y1="57" x2="148" y2="105" stroke="#1f3a68" stroke-width="2" marker-end="url(#a1)"/>
+          <line x1="90" y1="112" x2="148" y2="112" stroke="#1f3a68" stroke-width="2" marker-end="url(#a1)"/>
+          <line x1="90" y1="167" x2="148" y2="120" stroke="#1f3a68" stroke-width="2" marker-end="url(#a1)"/>
+          <text x="118" y="200" fill="#1f3a68" font-size="11">1 Gbps × 3</text>
+          <rect x="150" y="70" width="150" height="90" rx="10" fill="#eef2f8" stroke="#5b80bf"/>
+          <text x="225" y="90" fill="#1f3a68" font-weight="700">ルーター R1</text>
+          <g fill="#fff" stroke="#1f3a68">
+            <rect x="170" y="105" width="18" height="30"/><rect x="190" y="105" width="18" height="30"/><rect x="210" y="105" width="18" height="30"/><rect x="230" y="105" width="18" height="30"/><rect x="250" y="105" width="18" height="30"/>
+          </g>
+          <rect x="250" y="105" width="18" height="30" fill="#b25000"/><rect x="230" y="105" width="18" height="30" fill="#5b80bf"/><rect x="210" y="105" width="18" height="30" fill="#5b80bf"/><rect x="190" y="105" width="18" height="30" fill="#b25000"/><rect x="170" y="105" width="18" height="30" fill="#5b80bf"/>
+          <text x="219" y="152" fill="#1f3a68" font-size="10.5">出口のキュー（待ち行列）</text>
+          <line x1="300" y1="120" x2="400" y2="120" stroke="#1f3a68" stroke-width="4" marker-end="url(#a1)"/>
+          <text x="350" y="108" fill="#1f3a68">WAN</text><text x="350" y="148" fill="#b25000" font-weight="700">100 Mbps</text>
+          <text x="215" y="232" fill="#b25000" font-size="11.5">入りの合計 ＞ 出口の速さ → キューに待ちができる＝輻輳</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="cap">QoS が扱う4つの品質</div>
+      <table class="mx">
+        <tr><th style="width:26%">要素</th><th>意味</th></tr>
+        <tr><td class="t">帯域</td><td style="text-align:left">一定時間に運べる量（bps）。QoS は<b>配り分ける</b>だけ</td></tr>
+        <tr><td class="t">遅延</td><td style="text-align:left">届くまでの時間。伝搬（距離）＋<b>キューで待つ時間</b></td></tr>
+        <tr><td class="t">ジッター</td><td style="text-align:left">遅延の<b>ばらつき</b></td></tr>
+        <tr><td class="t">損失</td><td style="text-align:left">届かないこと。主に<b>キューがあふれて捨てられる</b></td></tr>
+      </table>
+      <div class="point"><b>QoS で減らせるのは</b>キューで待つ時間とそこで捨てられること。光の速さで決まる伝搬遅延は変えられない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc3246">RFC 3246</a> 1.（The dominant causes of delay … are fixed propagation delays … and queuing delays in switches and routers）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/qos/b_179_qos_9300_cg/configuring_qos.html">QoS CG IOS XE 17.9（Catalyst 9300）「Configuring QoS」</a>（Queuing is used to prevent traffic congestion）。図はClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>通信の種類で、守りたいものが違う</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:22%">種類</th><th>弱いもの</th><th style="width:34%">ふつうの扱い</th></tr>
+        <tr><td class="t">音声</td><td style="text-align:left">遅延・ジッター・損失すべて。UDP なので<b>送り直さない</b></td><td>優先キュー（EF）</td></tr>
+        <tr><td class="t">映像会議</td><td style="text-align:left">遅延・損失。量が多い</td><td>帯域を保証（AF4x）</td></tr>
+        <tr><td class="t">業務データ</td><td style="text-align:left">損失（TCP は送り直すが遅くなる）</td><td>帯域を保証（AF）</td></tr>
+        <tr><td class="t">その他</td><td style="text-align:left">あまり気にしない</td><td>残りを分け合う（Default）</td></tr>
+      </table>
+      <div class="ex" style="margin-top:8px"><span class="lbl">注意</span>右の列の対応は RFC 4594 の推奨の例。DSCP の決め方はネットワークごとに決めてよい</div>
+    </div>
+    <div>
+      <div class="cap">音声の目安（Cisco の VoIP の QoS の資料）</div>
+      <table class="mini">
+        <tr><td style="width:30%"><b>遅延</b></td><td>片道 <b>150 ms 未満</b>（ITU G.114 の勧め）</td></tr>
+        <tr><td><b>損失</b></td><td>G.729 の音声で <b>1% よりずっと小さく</b></td></tr>
+        <tr><td><b>ジッター</b></td><td>受け手のジッターバッファーで吸収するが、そのぶん遅延が増えるので<b>小さく</b></td></tr>
+      </table>
+      <div class="point"><b>PHB：</b>DiffServ では経路全体の予約はせず、各機器が印（DSCP）を見て<b>1台ずつ</b>同じ方針で扱う。この「1ホップごとの扱い」が PHB。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/en/US/docs/ios/solutions_docs/qos_solutions/QoSVoIP/QoSVoIP.html">Cisco「Quality of Service for Voice over IP」</a>（Loss should be far less than 1 percent／ITU G.114 … less than 150 ms one-way／Jitter must therefore be minimized）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc4594">RFC 4594</a>（Telephony → EF、Multimedia Conferencing → AF4x）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc2475">RFC 2475</a> 1.4.2（PHB ＝ externally observable forwarding behavior of a DS node）</div>
+</section>
+
+<section class="slide">
+  <h1>1台の中の流れ：見分ける → 印 → 制限 → 並べる → 送る</h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <defs><marker id="a3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12.5" text-anchor="middle">
+      <rect x="10" y="40" width="140" height="70" rx="10" fill="#1f3a68"/><text x="80" y="68" fill="#fff" font-weight="700">分類</text><text x="80" y="88" fill="#fff" font-size="11">ACL・DSCP・CoS で見分ける</text>
+      <rect x="185" y="40" width="140" height="70" rx="10" fill="#1f3a68"/><text x="255" y="68" fill="#fff" font-weight="700">マーキング</text><text x="255" y="88" fill="#fff" font-size="11">DSCP・CoS を書く</text>
+      <rect x="360" y="40" width="140" height="70" rx="10" fill="#5b80bf"/><text x="430" y="68" fill="#fff" font-weight="700">ポリシング</text><text x="430" y="88" fill="#fff" font-size="11">超えたら捨てる・印を下げる</text>
+      <rect x="535" y="40" width="140" height="70" rx="10" fill="#5b80bf"/><text x="605" y="62" fill="#fff" font-weight="700">キューイング</text><text x="605" y="80" fill="#fff" font-size="11">優先・帯域保証</text><text x="605" y="96" fill="#fff" font-size="11">WRED・シェーピング</text>
+      <rect x="710" y="40" width="136" height="70" rx="10" fill="#eef2f8" stroke="#5b80bf"/><text x="778" y="80" fill="#1f3a68" font-weight="700">出口へ送る</text>
+      <line x1="150" y1="75" x2="183" y2="75" stroke="#1f3a68" stroke-width="2" marker-end="url(#a3)"/>
+      <line x1="325" y1="75" x2="358" y2="75" stroke="#1f3a68" stroke-width="2" marker-end="url(#a3)"/>
+      <line x1="500" y1="75" x2="533" y2="75" stroke="#1f3a68" stroke-width="2" marker-end="url(#a3)"/>
+      <line x1="675" y1="75" x2="708" y2="75" stroke="#1f3a68" stroke-width="2" marker-end="url(#a3)"/>
+      <text x="255" y="140" fill="#1f3a68" font-size="11.5">入り口（ingress）でも出口でも</text>
+      <text x="430" y="140" fill="#1f3a68" font-size="11.5">入りでも出でも</text>
+      <text x="605" y="140" fill="#b25000" font-size="11.5" font-weight="700">出口（egress）だけ</text>
+      <text x="428" y="182" fill="#1f3a68" font-size="12">分類とマーキングは送り手の近くで1回。後ろの機器は印だけ見て扱いを決める</text>
+    </g>
+  </svg>
+  <div class="point"><b>どの部品がどちら向きか</b>が問われる。キューは送り出すための待ち行列なので出口のしくみ。だからキューを使うシェーピングも出口だけ。ポリシングはためないので入りにも使える。</div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/qos/b_179_qos_9300_cg/configuring_qos.html">QoS CG IOS XE 17.9「Configuring QoS」</a>QoS Components（Classification … Marking … Shaping and policing … Queuing）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/quality-of-service-qos/qos-policing/19645-policevsshape.html">Cisco「Compare Traffic Policing and Traffic Shaping」（Doc 19645）</a>（Queues are an outbound concept … Only policing can be applied to inbound traffic）。図はClaudeが作った例</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>分類とマーキング</h1>
+  <p>L2 の CoS、L3 の IP Precedence と DSCP。どこに何ビットあるかと、代表の値。</p>
+  <div class="foot"><span>CCNA #19 QoS</span><span>4.7</span></div>
+</section>
+
+<section class="slide">
+  <h1>印はどこにあるか：CoS と DSCP</h1>
+  <svg width="856" height="250" viewBox="0 0 856 250">
+    <g font-size="12" text-anchor="middle">
+      <text x="10" y="22" text-anchor="start" fill="#1f3a68" font-weight="700">レイヤー2：802.1Q タグ（4バイト）</text>
+      <rect x="10" y="32" width="150" height="34" fill="#eef2f8" stroke="#5b80bf"/><text x="85" y="54" fill="#1f3a68">TPID 0x8100（16）</text>
+      <rect x="160" y="32" width="90" height="34" fill="#b25000"/><text x="205" y="54" fill="#fff" font-weight="700">PCP（CoS）3</text>
+      <rect x="250" y="32" width="50" height="34" fill="#eef2f8" stroke="#5b80bf"/><text x="275" y="54" fill="#1f3a68">DEI 1</text>
+      <rect x="300" y="32" width="150" height="34" fill="#eef2f8" stroke="#5b80bf"/><text x="375" y="54" fill="#1f3a68">VLAN ID（12）</text>
+      <text x="640" y="54" fill="#1f3a68" font-size="11.5">0〜7。タグのある<tspan font-weight="700">トランク</tspan>でしか運べない</text>
+      <text x="10" y="112" text-anchor="start" fill="#1f3a68" font-weight="700">レイヤー3：IPv4 の ToS バイト（IPv6 は Traffic Class）＝8ビット</text>
+      <g>
+        <rect x="10" y="122" width="60" height="34" fill="#1f3a68"/><rect x="70" y="122" width="60" height="34" fill="#1f3a68"/><rect x="130" y="122" width="60" height="34" fill="#1f3a68"/>
+        <rect x="190" y="122" width="60" height="34" fill="#5b80bf"/><rect x="250" y="122" width="60" height="34" fill="#5b80bf"/><rect x="310" y="122" width="60" height="34" fill="#5b80bf"/>
+        <rect x="370" y="122" width="60" height="34" fill="#eef2f8" stroke="#5b80bf"/><rect x="430" y="122" width="60" height="34" fill="#eef2f8" stroke="#5b80bf"/>
+        <text x="40" y="144" fill="#fff">b7</text><text x="100" y="144" fill="#fff">b6</text><text x="160" y="144" fill="#fff">b5</text><text x="220" y="144" fill="#fff">b4</text><text x="280" y="144" fill="#fff">b3</text><text x="340" y="144" fill="#fff">b2</text><text x="400" y="144" fill="#1f3a68">b1</text><text x="460" y="144" fill="#1f3a68">b0</text>
+      </g>
+      <path d="M10 166 v8 h180 v-8" fill="none" stroke="#1f3a68" stroke-width="1.5"/><text x="100" y="190" fill="#1f3a68">IP Precedence（3ビット・0〜7）</text>
+      <path d="M10 200 v8 h360 v-8" fill="none" stroke="#b25000" stroke-width="2"/><text x="190" y="226" fill="#b25000" font-weight="700">DSCP（6ビット・0〜63）</text>
+      <path d="M370 166 v8 h120 v-8" fill="none" stroke="#5b80bf" stroke-width="1.5"/><text x="430" y="190" fill="#5b80bf">ECN（2）</text>
+      <text x="680" y="140" fill="#1f3a68" font-size="11.5">L3 の印なので<tspan font-weight="700">ルーターを越えても残る</tspan></text>
+      <text x="680" y="160" fill="#1f3a68" font-size="11.5">DSCP の上位3ビット＝IP Precedence の場所</text>
+    </g>
+  </svg>
+  <div class="point"><b>ひっかけ：</b>ルーターを通るとフレームは作り直されるので、CoS（L2）は次の区間に残らない。ルーターを越えて印を伝えるなら DSCP。</div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc2474">RFC 2474</a>（2. DS field ＝ IPv4 TOS octet／IPv6 Traffic Class octet、3. Six bits of the DS field are used as a codepoint）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc3168">RFC 3168</a>（残り2ビットは ECN）／QoS CG 17.9「Configuring QoS」（802.1Q … class of service (CoS) 3-bit field）／Cisco VoIP QoS（Precedence 5 — the three most significant bits of the IP ToS byte are set to 101）</div>
+</section>
+
+<section class="slide">
+  <h1>DSCP の代表の値</h1>
+  <div class="cols wide-r">
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">PHB</th><th>DSCP</th><th>使い道の例</th></tr>
+        <tr><td class="t">Default</td><td>0（000000）</td><td>ふつう（best effort）</td></tr>
+        <tr><td class="t">EF</td><td><b>46</b>（101110）</td><td>音声。低遅延・低損失・低ジッター</td></tr>
+        <tr><td class="t">CSx</td><td>8x（xxx000）</td><td>IP Precedence と互換。CS3＝24、CS5＝40、CS6＝48</td></tr>
+      </table>
+      <div class="formula" style="margin-top:10px">AFxy の DSCP ＝ 8 × x ＋ 2 × y</div>
+      <div class="ex"><span class="lbl">計算</span>AF41 ＝ 32 ＋ 2 ＝ <b>34</b>　／　AF31 ＝ 24 ＋ 2 ＝ 26　／　AF23 ＝ 16 ＋ 6 ＝ 22</div>
+      <div class="anno">式は RFC 2597 の表の値から Claude が書いたもの（ビットで見ると xxx yy0）</div>
+    </div>
+    <div>
+      <div class="cap">AF の表（x＝クラス、y＝落としやすさ）</div>
+      <table class="mx">
+        <tr><th></th><th>y＝1 低</th><th>y＝2 中</th><th>y＝3 高</th></tr>
+        <tr><td class="t">クラス1</td><td>AF11＝10</td><td>AF12＝12</td><td>AF13＝14</td></tr>
+        <tr><td class="t">クラス2</td><td>AF21＝18</td><td>AF22＝20</td><td>AF23＝22</td></tr>
+        <tr><td class="t">クラス3</td><td>AF31＝26</td><td>AF32＝28</td><td>AF33＝30</td></tr>
+        <tr><td class="t">クラス4</td><td>AF41＝34</td><td>AF42＝36</td><td>AF43＝38</td></tr>
+      </table>
+      <div class="point warn"><b>落としやすさ：</b>混んだら、同じクラスの中では <b>y が大きい方から</b>捨てる（AF23 は AF21 より先に捨てられる）。x の大小は「どちらが偉いか」を決めない（各クラスにどれだけ配るかは設定しだい）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc3246">RFC 3246</a> 5.（Codepoint 101110 is RECOMMENDED for the EF PHB）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc2597">RFC 2597</a> 2.（discarding packets with a higher drop precedence value）・6.（AF の表）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc2474">RFC 2474</a> 4.1（Default PHB 000000）・4.2.2.1（Class Selector xxx000）</div>
+</section>
+
+<section class="slide">
+  <h1>信頼境界：だれの付けた印を信じるか</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="260" viewBox="0 0 420 260">
+        <defs><marker id="a4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="40" width="80" height="40" rx="6" fill="#eef2f8" stroke="#5b80bf"/><text x="50" y="65" fill="#1f3a68">PC</text>
+          <rect x="130" y="40" width="90" height="40" rx="6" fill="#5b80bf"/><text x="175" y="65" fill="#fff">IP 電話</text>
+          <rect x="280" y="40" width="120" height="40" rx="6" fill="#1f3a68"/><text x="340" y="65" fill="#fff">アクセス SW</text>
+          <line x1="90" y1="60" x2="128" y2="60" stroke="#1f3a68" stroke-width="2"/>
+          <line x1="220" y1="60" x2="278" y2="60" stroke="#1f3a68" stroke-width="2"/>
+          <line x1="340" y1="80" x2="340" y2="150" stroke="#1f3a68" stroke-width="2" marker-end="url(#a4)"/>
+          <rect x="280" y="152" width="120" height="40" rx="6" fill="#1f3a68"/><text x="340" y="177" fill="#fff">ディストリ・コア</text>
+          <text x="175" y="104" fill="#b25000" font-size="11">音声 CoS 5</text><text x="175" y="120" fill="#1f3a68" font-size="11">データ CoS 0</text>
+          <line x1="250" y1="20" x2="250" y2="240" stroke="#b25000" stroke-width="2.5" stroke-dasharray="6 4"/>
+          <text x="250" y="254" fill="#b25000" font-weight="700">信頼境界</text>
+          <text x="125" y="170" fill="#1f3a68" font-size="11">ここから左の印は</text><text x="125" y="186" fill="#1f3a68" font-size="11">そのまま信じない</text>
+          <text x="340" y="220" fill="#1f3a68" font-size="11">ここから右は印を信じる</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:34%">決まり</th><th>内容</th></tr>
+        <tr><td class="t">なぜ要るか</td><td style="text-align:left">PC が自分で EF を付けると<b>優先キューを横取り</b>できてしまう</td></tr>
+        <tr><td class="t">どこに置くか</td><td style="text-align:left">できるだけ端末に近い所（アクセススイッチ）</td></tr>
+        <tr><td class="t">IP 電話</td><td style="text-align:left">Cisco の電話は音声を <b>CoS 5</b>、データを <b>CoS 0</b> にする</td></tr>
+        <tr><td class="t">trusted boundary</td><td style="text-align:left">スイッチが <b>CDP で電話を見つけたときだけ</b>印を信じ、PC を直接つないだら信じない</td></tr>
+      </table>
+      <div class="point"><b>9300 の初期の動き：</b>QoS ポリシーがなければ、パケットの DSCP をそのまま信じる（L2 だけのフレームは CoS）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/qos/b_179_qos_9300_cg/configuring_qos.html">QoS CG IOS XE 17.9「Configuring QoS」</a>Port Security on a Trusted Boundary for Cisco IP Phones（marking the CoS level of the voice packets as high priority (CoS = 5) and … data packets as low priority (CoS = 0)／trusted boundary feature … uses CDP to detect the presence of a Cisco IP Phone）・Trust Behavior for Wired Ports。図はClaudeが作った例</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>キューイングと輻輳回避</h1>
+  <p>どのキューから先に送るか。キューがいっぱいになりそうなとき、どう捨てるか。</p>
+  <div class="foot"><span>CCNA #19 QoS</span><span>4.7</span></div>
+</section>
+
+<section class="slide">
+  <h1>LLQ：優先キュー＋クラスごとの最低保証</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="250" viewBox="0 0 420 250">
+        <defs><marker id="a5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="10" y="100" width="70" height="44" rx="6" fill="#1f3a68"/><text x="45" y="120" fill="#fff">分類</text><text x="45" y="135" fill="#fff" font-size="10">class-map</text>
+          <line x1="80" y1="112" x2="118" y2="45" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#a5)"/>
+          <line x1="80" y1="118" x2="118" y2="100" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#a5)"/>
+          <line x1="80" y1="126" x2="118" y2="155" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#a5)"/>
+          <line x1="80" y1="132" x2="118" y2="210" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#a5)"/>
+          <rect x="120" y="28" width="150" height="34" rx="4" fill="#b25000"/><text x="195" y="44" fill="#fff" font-weight="700">VOICE 優先キュー</text><text x="195" y="57" fill="#fff" font-size="10">priority（混んだら上限で制限）</text>
+          <rect x="120" y="83" width="150" height="34" rx="4" fill="#5b80bf"/><text x="195" y="99" fill="#fff">VIDEO</text><text x="195" y="112" fill="#fff" font-size="10">bandwidth（最低保証）</text>
+          <rect x="120" y="138" width="150" height="34" rx="4" fill="#5b80bf"/><text x="195" y="154" fill="#fff">WEB</text><text x="195" y="167" fill="#fff" font-size="10">bandwidth（最低保証）</text>
+          <rect x="120" y="193" width="150" height="34" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="195" y="209" fill="#1f3a68">class-default</text><text x="195" y="222" fill="#1f3a68" font-size="10">残りを分け合う</text>
+          <rect x="300" y="90" width="70" height="70" rx="35" fill="#1f3a68"/><text x="335" y="122" fill="#fff">送り出し</text><text x="335" y="137" fill="#fff" font-size="10">の順番</text>
+          <line x1="270" y1="45" x2="305" y2="100" stroke="#b25000" stroke-width="3" marker-end="url(#a5)"/>
+          <line x1="270" y1="100" x2="298" y2="118" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#a5)"/>
+          <line x1="270" y1="155" x2="298" y2="138" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#a5)"/>
+          <line x1="270" y1="210" x2="305" y2="152" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#a5)"/>
+          <line x1="370" y1="125" x2="412" y2="125" stroke="#1f3a68" stroke-width="3" marker-end="url(#a5)"/>
+        </g>
+      </svg>
+    </div>
+    <div>
+<pre class="cli small">policy-map WAN-OUT
+ class VOICE
+  <b>priority 512</b>        <i>! いつも先に。混んだら 512 kbps まで</i>
+ class WEB
+  <b>bandwidth 2000</b>      <i>! 混んでも最低 2000 kbps</i>
+ class class-default
+  fair-queue
+interface g0/1
+ service-policy output WAN-OUT</pre>
+      <table class="mini">
+        <tr><td style="width:30%"><b>priority</b></td><td>厳密な優先（LLQ）。混んだときは決めた速さで<b>ポリシング</b>され、ほかを飢えさせない</td></tr>
+        <tr><td><b>bandwidth</b></td><td>最低保証（CBWFQ）。空いていれば<b>それ以上も送れる</b></td></tr>
+      </table>
+      <div class="point">Cisco は音声に LLQ を勧めている。音声は優先、データは帯域保証、という分担。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/en/US/docs/ios/solutions_docs/qos_solutions/QoSVoIP/QoSVoIP.html">Cisco「Quality of Service for Voice over IP」</a>Low Latency Queueing（priority to certain classes and guaranteed minimum bandwidth for other classes／During periods of congestion, the priority queue is policed at the configured rate／None of the reserved queues are restricted to the configured bandwidth if bandwidth is available／we recommend LLQ）。設定はCiscoの例の書式でClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>テールドロップと WRED</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">キューの長さと、捨てる確率</div>
+      <svg width="420" height="220" viewBox="0 0 420 220">
+        <g font-size="11.5" text-anchor="middle">
+          <line x1="50" y1="180" x2="400" y2="180" stroke="#1f3a68" stroke-width="1.5"/><line x1="50" y1="180" x2="50" y2="20" stroke="#1f3a68" stroke-width="1.5"/>
+          <text x="225" y="208" fill="#1f3a68">平均のキューの長さ →</text>
+          <text x="22" y="34" fill="#1f3a68">100%</text><text x="30" y="184" fill="#1f3a68">0</text>
+          <polyline points="50,180 330,180 330,30 400,30" fill="none" stroke="#5b80bf" stroke-width="2.5" stroke-dasharray="6 4"/>
+          <text x="355" y="22" fill="#5b80bf">テールドロップ</text>
+          <polyline points="50,180 150,180 280,130 280,30 400,30" fill="none" stroke="#b25000" stroke-width="3"/>
+          <text x="150" y="196" fill="#b25000" font-size="10.5">minth</text><text x="280" y="196" fill="#b25000" font-size="10.5">maxth</text>
+          <text x="198" y="138" fill="#b25000">少しずつ</text><text x="198" y="152" fill="#b25000">ランダムに</text>
+          <text x="330" y="196" fill="#5b80bf" font-size="10.5">満杯</text>
+        </g>
+      </svg>
+      <div class="anno">形は RFC 2309 の RED の説明から Claude が描いた。WRED は印ごとに minth・maxth を変え、印の低いものほど早く捨てる</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:24%"></th><th>テールドロップ</th><th>WRED</th></tr>
+        <tr><td class="t">いつ捨てる</td><td>キューが<b>満杯</b>になってから</td><td>満杯になる<b>前から</b>少しずつ</td></tr>
+        <tr><td class="t">何を捨てる</td><td>種類に関係なく全部</td><td>DSCP・CoS などで差をつける</td></tr>
+        <tr><td class="t">起きること</td><td>多くの TCP が<b>一斉に</b>減速 → <b>TCP グローバル同期</b></td><td>一部の TCP だけ減速 → 同期を防ぐ</td></tr>
+      </table>
+      <div class="point warn"><b>音声には効かない：</b>WRED は「捨てられた TCP が速度を落とす」ことを利用する。UDP の音声は速度を落とさず音が欠けるだけなので、優先キューで守る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/qos/b_179_qos_9300_cg/configuring_weighted_random_early_detection.html">QoS CG IOS XE 17.9「Configuring Weighted Random Early Detection」</a>（Tail drop treats all traffic equally／takes advantage of the congestion control mechanism of TCP／drops some packets early … minimizes the chances of TCP global synchronization）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc2309">RFC 2309</a> 2.（global synchronization）・3.（minth・maxth）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>ポリシングとシェーピング</h1>
+  <p>決めた速さを超えた分を、すぐ捨てるか（ポリシング）、ためて後で送るか（シェーピング）。</p>
+  <div class="foot"><span>CCNA #19 QoS</span><span>4.7</span></div>
+</section>
+
+<section class="slide">
+  <h1>捨てるか、ためるか</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="230" viewBox="0 0 420 230">
+        <g font-size="11.5" text-anchor="middle">
+          <text x="105" y="16" fill="#1f3a68" font-weight="700">ポリシング</text>
+          <line x1="10" y1="200" x2="200" y2="200" stroke="#1f3a68"/><line x1="10" y1="200" x2="10" y2="30" stroke="#1f3a68"/>
+          <polyline points="10,160 40,110 60,60 80,140 110,70 135,150 160,55 190,130" fill="none" stroke="#5b80bf" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <polyline points="10,160 30,110 53,110 70,110 80,140 100,110 120,110 135,150 150,110 172,110 190,130" fill="none" stroke="#b25000" stroke-width="2.5"/>
+          <line x1="10" y1="110" x2="200" y2="110" stroke="#1f3a68" stroke-dasharray="2 3"/><text x="180" y="104" fill="#1f3a68" font-size="10.5">CIR</text>
+          <text x="105" y="220" fill="#1f3a68" font-size="10.5">時間 →　超えた山を<tspan font-weight="700">切り捨て</tspan></text>
+          <text x="315" y="16" fill="#1f3a68" font-weight="700">シェーピング</text>
+          <line x1="220" y1="200" x2="410" y2="200" stroke="#1f3a68"/><line x1="220" y1="200" x2="220" y2="30" stroke="#1f3a68"/>
+          <polyline points="220,160 250,110 270,60 290,140 320,70 345,150 370,55 400,130" fill="none" stroke="#5b80bf" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <polyline points="220,160 240,112 405,112" fill="none" stroke="#b25000" stroke-width="2.5"/>
+          <line x1="220" y1="110" x2="410" y2="110" stroke="#1f3a68" stroke-dasharray="2 3"/><text x="390" y="104" fill="#1f3a68" font-size="10.5">CIR</text>
+          <text x="315" y="220" fill="#1f3a68" font-size="10.5">山をキューにためて<tspan font-weight="700">ならす</tspan></text>
+        </g>
+      </svg>
+      <div class="anno">点線＝来た量、太線＝出ていく量。Cisco の資料の「ポリシングはのこぎり形、シェーピングはなめらか」を Claude が描いた</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:24%"></th><th>ポリシング</th><th>シェーピング</th></tr>
+        <tr><td class="t">超えた分</td><td><b>捨てる</b>（または印を下げる）</td><td><b>キューにためる</b></td></tr>
+        <tr><td class="t">遅延</td><td>増えない</td><td><b>増える</b>（待つ）</td></tr>
+        <tr><td class="t">向き</td><td><b>入りでも出でも</b></td><td><b>出口だけ</b></td></tr>
+        <tr><td class="t">TCP への影響</td><td>捨てられて送り直し</td><td>捨てにくい</td></tr>
+        <tr><td class="t">よくある場所</td><td>ISP がお客さんの入りを制限</td><td>お客さんが契約の速さに合わせて出す</td></tr>
+      </table>
+      <div class="ex" style="margin-top:8px"><span class="lbl">例</span>口は 1 Gbps、契約は 100 Mbps → 自分の出口で <code>shape average 100000000</code>。ISP 側で何が捨てられるかを選べない状態を避ける</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/quality-of-service-qos/qos-policing/19645-policevsshape.html">Cisco Doc 19645</a>（policing … output rate that appears as a saw-tooth／shaping … a smoothed packet output rate／Buffer and queue excess packets・Drops (or remarks) excess packets／Only policing can be applied to inbound traffic）／QoS CG 17.9「Configuring QoS」（Shaping … downstream devices are not subjected to congestion）。例はClaudeが作った</div>
+</section>
+
+<section class="slide">
+  <h1>トークンバケツと Tc ＝ Bc ÷ CIR</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="240" viewBox="0 0 420 240">
+        <defs><marker id="a6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11.5" text-anchor="middle">
+          <text x="140" y="18" fill="#1f3a68">一定の速さ（CIR）でトークンが入る</text>
+          <circle cx="110" cy="40" r="7" fill="#b25000"/><circle cx="140" cy="52" r="7" fill="#b25000"/><circle cx="170" cy="38" r="7" fill="#b25000"/>
+          <path d="M80 70 L95 190 L185 190 L200 70" fill="#eef2f8" stroke="#1f3a68" stroke-width="2"/>
+          <g fill="#b25000"><circle cx="115" cy="175" r="7"/><circle cx="135" cy="175" r="7"/><circle cx="155" cy="175" r="7"/><circle cx="175" cy="175" r="7"/><circle cx="125" cy="158" r="7"/><circle cx="145" cy="158" r="7"/><circle cx="165" cy="158" r="7"/></g>
+          <text x="140" y="212" fill="#1f3a68">バケツの大きさ＝一度に送れる最大のバースト</text>
+          <rect x="250" y="75" width="150" height="48" rx="6" fill="#1f3a68"/><text x="325" y="96" fill="#fff">パケット</text><text x="325" y="114" fill="#fff" font-size="10.5">大きさ分のトークンが要る</text>
+          <line x1="200" y1="150" x2="250" y2="110" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#a6)"/>
+          <text x="325" y="150" fill="#1f3a68" font-weight="700">トークンが足りないと</text>
+          <text x="325" y="170" fill="#b25000">シェーパー：たまるまで待たせる</text>
+          <text x="325" y="190" fill="#b25000">ポリサー：捨てる・印を下げる</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><td style="width:18%"><b>CIR</b></td><td>守る平均の速さ（bps）</td></tr>
+        <tr><td><b>Bc</b></td><td>1つの区切りの時間に送ってよい量（ビット）</td></tr>
+        <tr><td><b>Tc</b></td><td>区切りの時間（秒）</td></tr>
+        <tr><td><b>Be</b></td><td>使わずに残した分を後でまとめて使える上乗せ</td></tr>
+      </table>
+      <div class="formula">Tc ＝ Bc ÷ CIR</div>
+      <div class="cap" style="margin-top:8px">例　CIR 8 Mbps、Bc 80,000 ビット</div>
+      <ol class="steps">
+        <li>Tc ＝ 80,000 ÷ 8,000,000 ＝ 0.01 秒 ＝ <b>10 ms</b></li>
+        <li>10 ms ごとに 80,000 ビットずつ送ると、1秒で 100 回 × 80,000 ＝ <b>8,000,000 ビット</b>（平均 8 Mbps）</li>
+        <li>同じ CIR で Bc を 2 倍にすると、Tc も 2 倍の 20 ms（式から）</li>
+      </ol>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/quality-of-service-qos/qos-policing/19645-policevsshape.html">Cisco Doc 19645</a> Token Bucket（the packet either waits until the bucket has enough tokens (in the case of a shaper), or the packet is discarded or marked down (in the case of a policer)／the largest burst … is roughly proportional to the size of the bucket／Tc = Bc/CIR (in seconds)／Be）。計算の例はClaudeが作った</div>
+</section>
+
+<section class="slide">
+  <h1>MQC で組み立てる：class-map → policy-map → service-policy</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small"><i>! 1 何を（分類）</i>
+class-map match-any VOICE
+ <b>match dscp ef</b>
+class-map match-any GUEST
+ match access-group name GUEST-NET
+<i>! 2 どうする（扱い）</i>
+policy-map EDGE-IN
+ class GUEST
+  <b>police cir 10000000</b>
+   conform-action transmit
+   exceed-action drop
+ class class-default
+  <b>set dscp default</b>
+<i>! 3 どこに・どちら向きに</i>
+interface g1/0/10
+ <b>service-policy input EDGE-IN</b></pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">部品</th><th>役目</th></tr>
+        <tr><td class="t">class-map</td><td style="text-align:left">match で<b>何を</b>見分けるか（DSCP・ACL など）</td></tr>
+        <tr><td class="t">policy-map</td><td style="text-align:left">クラスごとに<b>どうするか</b>（set・priority・bandwidth・police・shape）</td></tr>
+        <tr><td class="t">service-policy</td><td style="text-align:left">インタフェースに<b>input／output</b> を付けて当てる</td></tr>
+        <tr><td class="t">class-default</td><td style="text-align:left">どのクラスにも当たらなかったもの。どの policy-map にもある</td></tr>
+      </table>
+      <div class="point"><b>読み方：</b>左は「入ってくるゲストの通信を 10 Mbps で制限し、超えたら捨てる。それ以外は印を 0 に書き直す（信頼しない）」。入りなので police は使えるが shape は使えない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/qos/b_179_qos_9300_cg/configuring_qos.html">QoS CG IOS XE 17.9「Configuring QoS」</a>（Modular QoS CLI／class-map・policy-map・service-policy／Every policy map has a default class／police … conform-action・exceed-action）／Cisco Doc 19645（Only policing can be applied to inbound traffic）。設定はClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>よくあるひっかけ</h1>
+  <table class="mx">
+    <tr><th style="width:42%">よくある思い込み</th><th>正しくは</th></tr>
+    <tr><td class="t">QoS で回線が速くなる</td><td style="text-align:left">帯域は増えない。混んだときの<b>配り分け</b></td></tr>
+    <tr><td class="t">CoS はルーターを越えても残る</td><td style="text-align:left">CoS は 802.1Q タグ（L2）。越えて残るのは <b>DSCP</b></td></tr>
+    <tr><td class="t">EF の DSCP は 5</td><td style="text-align:left">EF は <b>46</b>。5 は IP Precedence（または CoS）の音声の値</td></tr>
+    <tr><td class="t">AF41 の DSCP は 41</td><td style="text-align:left">8×4＋2×1＝<b>34</b></td></tr>
+    <tr><td class="t">AF13 は AF11 より守られる</td><td style="text-align:left">y が大きいほど<b>先に捨てられる</b></td></tr>
+    <tr><td class="t">bandwidth は上限</td><td style="text-align:left"><b>最低保証</b>。上限で抑えるのは police・shape、優先キューの上限は priority</td></tr>
+    <tr><td class="t">WRED で音声を守る</td><td style="text-align:left">WRED は TCP 向け。音声は<b>優先キュー</b></td></tr>
+    <tr><td class="t">シェーピングは入りにも使える</td><td style="text-align:left">シェーピングは<b>出口だけ</b>。入りで使えるのはポリシング</td></tr>
+    <tr><td class="t">ポリシングは遅延を増やす</td><td style="text-align:left">ためないので増えない。遅延が増えるのは<b>シェーピング</b></td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">考え方<span>帯域・遅延・ジッター・損失。音声は片道 150 ms 未満。混むのは出口。各機器が印を見て扱う＝PHB</span></div>
+      <div class="box b2">印<span>CoS 3ビット（L2）・IP Precedence 3ビット・DSCP 6ビット。EF 46・AFxy＝8x＋2y・CSx＝8x・Default 0。信頼境界はアクセスに</span></div>
+      <div class="box b3">キュー<span>LLQ＝priority（音声）、CBWFQ＝bandwidth（最低保証）。テールドロップ→TCP グローバル同期、WRED で防ぐ</span></div>
+      <div class="box b4">速さの制限<span>ポリシング＝捨てる・入出どちらも／シェーピング＝ためる・出口だけ。Tc＝Bc÷CIR</span></div>
+    </div>
+    <div>
+      <div class="cap">設定のまとめ（MQC）</div>
+<pre class="cli small">class-map match-any VOICE
+ match dscp ef
+policy-map WAN-OUT
+ class VOICE
+  priority 512
+ class class-default
+  fair-queue
+interface g0/1
+ service-policy output WAN-OUT</pre>
+      <div class="point"><b>確かめる：</b><code>show policy-map interface g0/1</code>（クラスごとの数と捨てた数）</div>
+      <div class="point"><b>次の分野：</b>#20 セキュリティの基本と AAA で、脅威・パスワード・AAA を読む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
