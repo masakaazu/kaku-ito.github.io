@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS SAA #01 IAMとポリシー 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">AWS SAA（SAA-C03）　分野1 セキュアなアーキテクチャの設計　#01</div>
+  <h1>IAMとポリシー</h1>
+  <p>だれが、何に、どの条件でアクセスできるか。許可はどう決まるか</p>
+  <div class="refs-legend">各ページの下に、根拠にした AWS の公式ドキュメント（日本語版の IAM ユーザーガイドと SAA-C03 試験ガイド）を書いた（青い文字を押すと開く）。「」の中はドキュメントの原文どおり。会社名や場面は Claude が作った例</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>試験ガイド タスク 1.1「AWS リソースへのセキュアなアクセスを設計する」</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 だれがアクセスするか（ID）<span>ルートユーザー・IAM ユーザー・グループ・ロール。人もアプリも、できるだけ一時的な認証情報で</span></div>
+      <div class="box b2">2 ポリシーの書き方<span>ID に付けるか、リソースに付けるか。Effect・Action・Resource・Principal・Condition</span></div>
+      <div class="box b3">3 許可の決まり方<span>最初は全部拒否。Allow で開き、明示的な Deny がいちばん強い。境界は上限だけ</span></div>
+      <div class="box b4">4 最小権限と点検<span>必要な分だけ。Access Analyzer・認証情報レポート・最終アクセス情報で見直す</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">試験ガイドに並ぶ知識（タスク 1.1 から抜粋）</th><th>このPDF</th></tr>
+        <tr><td class="l">AWS のサービスへのアクセス制御とアクセス管理</td><td class="t">第1・2章</td></tr>
+        <tr><td class="l">ルートユーザーの保護、MFA</td><td class="t">第1章</td></tr>
+        <tr><td class="l">ユーザー・グループ・ロール・ポリシーの柔軟な認可モデル</td><td class="t">第1・2章</td></tr>
+        <tr><td class="l">最小権限の原則</td><td class="t">第3章</td></tr>
+        <tr><td class="l">クロスアカウントアクセスの戦略</td><td class="t">第3章</td></tr>
+        <tr><td class="l">Organizations・SCP・フェデレーション・Identity Center</td><td class="t">#02 で</td></tr>
+      </table>
+      <div class="point"><b>本番の問題は「場面」で出る。</b>「EC2 のアプリに S3 を読ませたい」「別アカウントに見せたい」のような要件に、いちばん安全で手間の少ないしくみを選ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html">AWS「コンテンツ分野 1: セキュアなアーキテクチャの設計」</a>タスク 1.1 の知識の一覧</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>だれがアクセスするか（ID）</h1>
+  <p>人には人の ID、アプリやサービスにはロール。長く使える鍵はなるべく持たせない。</p>
+  <div class="foot"><span>AWS SAA #01 IAMとポリシー</span><span>タスク 1.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>4つの ID：だれの・どんな鍵か</h1>
+  <svg width="856" height="170" viewBox="0 0 856 170">
+    <g font-size="13" text-anchor="middle">
+      <rect x="10" y="10" width="836" height="150" rx="12" fill="#f5f5f7" stroke="#d2d2d7"/>
+      <text x="40" y="34" text-anchor="start" fill="#6e6e73" font-size="12">AWS アカウント</text>
+      <rect x="30" y="46" width="180" height="100" rx="10" fill="#b23a2c"/>
+      <text x="120" y="76" fill="#fff" font-weight="700">ルートユーザー</text>
+      <text x="120" y="98" fill="#fff" font-size="11.5">メール＋パスワード（＋MFA）</text>
+      <text x="120" y="118" fill="#fff" font-size="11.5">すべてに完全なアクセス</text>
+      <text x="120" y="136" fill="#fff" font-size="11.5">ポリシーで絞れない</text>
+      <rect x="236" y="46" width="180" height="100" rx="10" fill="#1f3a68"/>
+      <text x="326" y="76" fill="#fff" font-weight="700">IAM ユーザー</text>
+      <text x="326" y="98" fill="#fff" font-size="11.5">パスワード・アクセスキー</text>
+      <text x="326" y="118" fill="#fff" font-size="11.5">＝長期の認証情報</text>
+      <text x="326" y="136" fill="#fff" font-size="11.5">1人の人か1つのアプリ</text>
+      <rect x="442" y="46" width="180" height="100" rx="10" fill="#fff" stroke="#1f3a68" stroke-width="2" stroke-dasharray="6 4"/>
+      <text x="532" y="76" fill="#1f3a68" font-weight="700">ユーザーグループ</text>
+      <text x="532" y="98" fill="#1d1d1f" font-size="11.5">ユーザーの入れ物</text>
+      <text x="532" y="118" fill="#1d1d1f" font-size="11.5">サインインしない</text>
+      <text x="532" y="136" fill="#1d1d1f" font-size="11.5">入れ子にできない</text>
+      <rect x="648" y="46" width="180" height="100" rx="10" fill="#3a7d44"/>
+      <text x="738" y="76" fill="#fff" font-weight="700">IAM ロール</text>
+      <text x="738" y="98" fill="#fff" font-size="11.5">長期の認証情報なし</text>
+      <text x="738" y="118" fill="#fff" font-size="11.5">引き受けると一時的な鍵</text>
+      <text x="738" y="136" fill="#fff" font-size="11.5">人・アプリ・サービスが使う</text>
+    </g>
+  </svg>
+  <table class="mx" style="margin-top:6px">
+    <tr><th style="width:22%">ID</th><th>AWS のおすすめの使い方</th><th style="width:34%">ひっかけ</th></tr>
+    <tr><td class="t">ルートユーザー</td><td class="l">ルートでしかできない作業のときだけ。MFA で守る</td><td class="l">ID ベースのポリシーも境界も付けられない</td></tr>
+    <tr><td class="t">IAM ユーザー</td><td class="l">フェデレーションが使えない場合だけ（ロール非対応のツール・緊急用など）</td><td class="l">アクセスキーは1人2つまで</td></tr>
+    <tr><td class="t">グループ</td><td class="l">同じ権限の人をまとめ、出入りだけで管理</td><td class="l">Principal に書けない／全員が入る既定のグループはない</td></tr>
+    <tr><td class="t">ロール</td><td class="l">EC2・Lambda のアプリ、別アカウント、外部 IdP の人</td><td class="l">「ユーザーを作ってキーを配る」より、ほぼいつもロール</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles.html">IAM ロール</a>（「ロールには標準の長期認証情報 (パスワードやアクセスキーなど) も関連付けられません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_groups.html">IAM ユーザーグループ</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_credentials_access-keys.html">アクセスキーを管理します</a></div>
+</section>
+
+<section class="slide">
+  <h1>ルートユーザー：使うのは「ルートでしかできない作業」だけ</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">ルートでしかできない作業（ドキュメントの一覧から抜粋）</div>
+      <table class="mx">
+        <tr><th style="width:30%">分類</th><th>作業</th></tr>
+        <tr><td class="t">アカウント</td><td class="l">単独のアカウント（Organizations に入っていない）の設定変更・閉鎖・再開</td></tr>
+        <tr><td class="t">IAM</td><td class="l">ただ1人の IAM 管理者が自分の権限を消してしまったときの復旧</td></tr>
+        <tr><td class="t">S3</td><td class="l">MFA に対応するようバケットを設定する（MFA 削除）／すべてのプリンシパルを拒否してしまったバケットポリシーの編集・削除</td></tr>
+        <tr><td class="t">EC2</td><td class="l">リザーブドインスタンスマーケットプレイスへの出品者の登録</td></tr>
+        <tr><td class="t">請求</td><td class="l">請求情報とコスト管理コンソールへの IAM アクセスをオンにする</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="point warn"><b>ルートユーザーとポリシー</b><br>ID ベースのポリシーを付けられない。アクセス許可の境界も設定できない。<br>ただし Organizations のメンバーアカウントなら、ルートユーザーも <b>SCP の制限を受ける</b>（#02）。</div>
+      <div class="point"><b>守り方</b><br>・日常の作業には使わない（管理者は IAM Identity Center などで用意）<br>・MFA を付ける（ルートと IAM ユーザーは1人あたり最大8台の MFA 機器を登録できる）<br>・ルートのアクセスキーは作らない</div>
+      <div class="mini">ひっかけ：「IAM ユーザーを作る」「EC2 を起動する」「CloudTrail の証跡を作る」はルートでなくてよい（権限のある IAM の ID で行う）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_root-user.html">AWS アカウントのルートユーザー</a>（ルートユーザー認証情報が必要なタスク）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/access_policies.html">ポリシーとアクセス許可</a>（ポリシーとルートユーザー）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_credentials_mfa.html">AWSIAM の多要素認証</a></div>
+</section>
+
+<section class="slide">
+  <h1>ロールのしくみ：2枚のポリシーと一時的な鍵</h1>
+  <svg width="856" height="190" viewBox="0 0 856 190">
+    <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12.5" text-anchor="middle">
+      <rect x="10" y="60" width="150" height="70" rx="10" fill="#1f3a68"/><text x="85" y="90" fill="#fff" font-weight="700">引き受ける人</text><text x="85" y="110" fill="#fff" font-size="11">ユーザー・サービス・外部の人</text>
+      <line x1="160" y1="95" x2="300" y2="95" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar)"/><text x="230" y="86">① AssumeRole</text>
+      <rect x="302" y="20" width="250" height="150" rx="12" fill="#eef6ef" stroke="#3a7d44" stroke-width="2"/>
+      <text x="427" y="44" fill="#3a7d44" font-weight="700">IAM ロール</text>
+      <rect x="318" y="56" width="218" height="46" rx="8" fill="#fff" stroke="#3a7d44"/><text x="427" y="76" font-weight="700">信頼ポリシー</text><text x="427" y="93" font-size="11">だれが引き受けられるか（Principal）</text>
+      <rect x="318" y="110" width="218" height="46" rx="8" fill="#fff" stroke="#3a7d44"/><text x="427" y="130" font-weight="700">アクセス許可ポリシー</text><text x="427" y="147" font-size="11">引き受けたら何ができるか</text>
+      <line x1="552" y1="95" x2="660" y2="95" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar)"/><text x="606" y="86">② STS が発行</text>
+      <rect x="662" y="55" width="184" height="80" rx="10" fill="#fff4e5" stroke="#b25000" stroke-width="2"/><text x="754" y="82" fill="#b25000" font-weight="700">一時的な認証情報</text><text x="754" y="102" font-size="11">期限は数分〜数時間</text><text x="754" y="120" font-size="11">切れたら再利用できない</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%">STS の API</th><th>だれが使う</th><th style="width:30%">覚え方</th></tr>
+    <tr><td class="t">AssumeRole</td><td class="l">IAM ユーザーやロール（同じ・別のアカウント）</td><td class="l">基本形。最大セッション時間まで（最大12時間）</td></tr>
+    <tr><td class="t">AssumeRoleWithSAML</td><td class="l">SAML 2.0 の IdP（社内の AD など）で認証した人</td><td class="l">#02 フェデレーション</td></tr>
+    <tr><td class="t">AssumeRoleWithWebIdentity</td><td class="l">OIDC の IdP の JWT を持つワークロード</td><td class="l">#02</td></tr>
+    <tr><td class="t">ロールの連鎖</td><td class="l">ロールの認証情報で、さらに別のロールを引き受ける</td><td class="l">最長1時間。超える値は失敗</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles.html">IAM ロール</a>（ロールに関する用語と概念：信頼ポリシー・委任・ロールの連鎖「最大 43200 秒 (12 時間)」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_credentials_temp.html">IAM の一時的な認証情報</a>（「有効期限は数分から数時間に設定できます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>EC2 にロールを渡す：インスタンスプロファイル</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="230" viewBox="0 0 410 230">
+        <defs><marker id="ar2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="20" width="230" height="190" rx="12" fill="#f5f5f7" stroke="#d2d2d7"/>
+          <text x="125" y="42" font-weight="700">EC2 インスタンス</text>
+          <rect x="30" y="56" width="90" height="40" rx="6" fill="#1f3a68"/><text x="75" y="81" fill="#fff">アプリA</text>
+          <rect x="130" y="56" width="90" height="40" rx="6" fill="#1f3a68"/><text x="175" y="81" fill="#fff">アプリB</text>
+          <rect x="30" y="120" width="190" height="72" rx="8" fill="#fff4e5" stroke="#b25000"/>
+          <text x="125" y="142" fill="#b25000" font-weight="700">インスタンスプロファイル</text>
+          <rect x="62" y="152" width="126" height="30" rx="6" fill="#3a7d44"/><text x="125" y="172" fill="#fff">ロール（1つだけ）</text>
+          <line x1="75" y1="96" x2="95" y2="120" stroke="#1f3a68" stroke-width="1.5"/>
+          <line x1="175" y1="96" x2="155" y2="120" stroke="#1f3a68" stroke-width="1.5"/>
+          <line x1="240" y1="110" x2="330" y2="110" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar2)"/>
+          <text x="285" y="100" font-size="11">一時的な鍵</text><text x="285" y="128" font-size="11">（自動で更新）</text>
+          <rect x="332" y="85" width="68" height="50" rx="8" fill="#1f3a68"/><text x="366" y="115" fill="#fff" font-weight="700">S3</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:44%">決まり</th><th>中身</th></tr>
+        <tr><td class="l">プロファイルに入るロール</td><td class="t">1つだけ（上限は上げられない）</td></tr>
+        <tr><td class="l">インスタンスに同時に付くロール</td><td class="t">1つだけ。アプリはみな同じ権限</td></tr>
+        <tr><td class="l">コンソールで EC2 用のロールを作ると</td><td class="t">同じ名前のプロファイルが自動でできる</td></tr>
+        <tr><td class="l">起動中のインスタンス</td><td class="t">あとからロールを付けられる</td></tr>
+        <tr><td class="l">アプリごとに権限を分けたい</td><td class="t">ECS ならタスクごとにロールを付けられる</td></tr>
+      </table>
+      <div class="point"><b>アクセスキーを置かない理由：</b>ロールの認証情報は一時的で自動で更新されるので、配ったり入れ替えたりする手間も、漏れたときの長期のリスクもない。</div>
+      <div class="mini">ロールをサービスに付ける人には <code>iam:PassRole</code> の許可が要る（第3章）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html">インスタンスプロファイルを使用する</a>（「インスタンスプロファイルに含めることができる IAM ロールは 1 つのみです。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html">EC2 インスタンスで実行されるアプリケーションに IAM ロールを使用</a>（「同時に Amazon EC2 インスタンスに割り当てることができるのは 1 つのロールだけです。」）</div>
+</section>
+
+<section class="slide">
+  <h1>長期の鍵と一時的な鍵</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:24%"></th><th>アクセスキー（長期）</th><th>STS の一時的な認証情報</th></tr>
+        <tr><td class="t">持ち主</td><td>IAM ユーザー（とルート）</td><td>ロールを引き受けたセッションなど</td></tr>
+        <tr><td class="t">期限</td><td>消すまで使える</td><td>数分〜数時間</td></tr>
+        <tr><td class="t">保存</td><td>ユーザーに結びついて残る</td><td>保存されず、そのつど作られる</td></tr>
+        <tr><td class="t">数</td><td>1人2つまで</td><td>―</td></tr>
+        <tr><td class="t">入れ替え</td><td>自分で（新を作る→旧を消す）</td><td>期限で自然に切れる</td></tr>
+        <tr><td class="t">シークレット</td><td>作ったときしか見られない</td><td>―</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">IAM のベストプラクティス（見出しから抜粋）</div>
+      <table class="mx">
+        <tr><td class="l">人間のユーザーは ID プロバイダーとのフェデレーションで一時的な認証情報を使う</td></tr>
+        <tr><td class="l">ワークロードは IAM ロールの一時的な認証情報を使う</td></tr>
+        <tr><td class="l">MFA を必須にする</td></tr>
+        <tr><td class="l">長期の認証情報が要る場合は、アクセスキーを必要なときに更新する</td></tr>
+        <tr><td class="l">ルートユーザーの認証情報を守る</td></tr>
+        <tr><td class="l">最小権限を適用する</td></tr>
+        <tr><td class="l">未使用のユーザー・ロール・権限・認証情報を定期的に消す</td></tr>
+      </table>
+      <div class="point"><b>選択肢の見分け方：</b>「アクセスキーをコード・設定ファイル・AMI に入れる」が出たら、ほぼ誤り。ロールに置き換えられないかを考える。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_credentials_temp.html">IAM の一時的な認証情報</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_credentials_access-keys.html">IAM ユーザーのアクセスキーを管理します</a>（「アクセスキーはユーザーごとに最大 2 つまで持つことができます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/best-practices.html">IAM でのセキュリティのベストプラクティス</a></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>ポリシーの書き方</h1>
+  <p>どこに付けるか（ID か、リソースか）と、許可を与えるか（上限だけか）で種類を分ける。</p>
+  <div class="foot"><span>AWS SAA #01 IAMとポリシー</span><span>タスク 1.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>ポリシーの種類：許可を「与える」ものと「上限を決める」もの</h1>
+  <table class="mx">
+    <tr><th style="width:22%">種類</th><th style="width:22%">付ける先</th><th style="width:14%">許可を与えるか</th><th>ポイント</th></tr>
+    <tr><td class="t">ID ベースのポリシー</td><td>ユーザー・グループ・ロール</td><td class="t">与える</td><td class="l">管理ポリシー（AWS 管理・カスタマー管理）とインライン。Principal は書かない</td></tr>
+    <tr><td class="t">リソースベースのポリシー</td><td>S3 バケット・SQS キュー・KMS キー・ロール（信頼ポリシー）など</td><td class="t">与える</td><td class="l">インラインだけ。Principal に相手を書く。別アカウントも指定できる</td></tr>
+    <tr><td class="t">VPC エンドポイントポリシー</td><td>VPC エンドポイント</td><td class="x">追加の境界</td><td class="l">付けないと、フルアクセスを許すデフォルトのポリシーが付く</td></tr>
+    <tr><td class="t">アクセス許可の境界</td><td>ユーザー・ロール</td><td class="x">与えない</td><td class="l">ID ベースのポリシーの上限。リソースベースのポリシーの許可は絞らない</td></tr>
+    <tr><td class="t">SCP（#02）</td><td>組織・OU・アカウント</td><td class="x">与えない</td><td class="l">アカウントの中のユーザーとロールの上限（メンバーのルートも）</td></tr>
+    <tr><td class="t">RCP（#02）</td><td>組織・OU・アカウント</td><td class="x">与えない</td><td class="l">アカウントの中のリソースの上限</td></tr>
+    <tr><td class="t">ACL</td><td>S3・VPC など</td><td class="t">与える</td><td class="l">JSON でない唯一の種類。別アカウントにだけ使える</td></tr>
+    <tr><td class="t">セッションポリシー</td><td>ロールを引き受けるときに渡す</td><td class="x">与えない</td><td class="l">セッションの権限＝ID ベースとの共通部分</td></tr>
+  </table>
+  <div class="point"><b>「与えない」組は、どれも Allow を書いても権限は増えない。</b>実際の権限は、与える側のポリシーの Allow を、上限の側で削ったもの。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/access_policies.html">AWS Identity and Access Management でのポリシーとアクセス許可</a>（ポリシータイプ。「SCP は許可を付与するものではありません。」「ACL では、同じアカウント内のエンティティにアクセス許可を付与することはできません。」）</div>
+</section>
+
+<section class="slide">
+  <h1>ID ベースのポリシー：3つの持ち方</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:24%"></th><th>AWS 管理</th><th>カスタマー管理</th><th>インライン</th></tr>
+        <tr><td class="t">作る人</td><td>AWS</td><td>自分</td><td>自分</td></tr>
+        <tr><td class="t">中身の変更</td><td class="x">できない</td><td class="t">できる</td><td class="t">できる</td></tr>
+        <tr><td class="t">付けられる数</td><td>多数</td><td>多数</td><td>1つの ID だけ</td></tr>
+        <tr><td class="t">ID を消すと</td><td>残る</td><td>残る</td><td class="x">いっしょに消える</td></tr>
+        <tr><td class="t">ARN</td><td colspan="2">それぞれの ARN を持つ（独立したポリシー）</td><td>なし</td></tr>
+      </table>
+      <div class="mini">AWS 管理ポリシーの例：<code>arn:aws:iam::aws:policy/IAMReadOnlyAccess</code>（アカウント ID の位置が <code>aws</code>）</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">こんなとき</th><th>選ぶもの</th></tr>
+        <tr><td class="l">まず手早く始めたい（よくある職務の権限）</td><td class="t">AWS 管理</td></tr>
+        <tr><td class="l">必要な分だけに絞った権限を、複数のロールで使い回す</td><td class="t">カスタマー管理</td></tr>
+        <tr><td class="l">特定の1つの ID だけに付け、流用させない</td><td class="t">インライン</td></tr>
+      </table>
+      <div class="point"><b>AWS のおすすめの流れ：</b>AWS 管理ポリシーで始め、使われた操作を見ながら、最小権限のカスタマー管理ポリシーへ移る。</div>
+      <div class="mini">AWS 管理ポリシーは AWS がときどき更新し、付けている全員にすぐ効く。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/access_policies_managed-vs-inline.html">管理ポリシーとインラインポリシー</a>（表と「AWS 管理ポリシーで定義されているアクセス許可は変更できません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/best-practices.html">ベストプラクティス</a>（AWS 管理ポリシーの使用を開始し、最小特権のアクセス許可に移行する）</div>
+</section>
+
+<section class="slide">
+  <h1>ポリシーの JSON を読む</h1>
+  <div class="cols">
+    <div>
+<pre class="code small">{
+  <span class="k">"Version"</span>: <span class="s">"2012-10-17"</span>,
+  <span class="k">"Statement"</span>: [
+    {
+      <span class="k">"Sid"</span>: <span class="s">"ReadOwnFolder"</span>,
+      <span class="k">"Effect"</span>: <span class="s">"Allow"</span>,
+      <span class="k">"Action"</span>: [<span class="s">"s3:GetObject"</span>, <span class="s">"s3:PutObject"</span>],
+      <span class="k">"Resource"</span>: <span class="s">"arn:aws:s3:::example-bucket/home/${aws:username}/*"</span>,
+      <span class="k">"Condition"</span>: {
+        <span class="k">"Bool"</span>: { <span class="s">"aws:SecureTransport"</span>: <span class="s">"true"</span> }
+      }
+    }
+  ]
+}</pre>
+      <div class="mini">Claude が作った例。ユーザーが自分のフォルダだけを、HTTPS のときだけ読み書きできる。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:26%">要素</th><th>意味</th></tr>
+        <tr><td class="t">Version</td><td class="l"><code>2012-10-17</code> を使う（変数もこの版から）</td></tr>
+        <tr><td class="t">Statement</td><td class="l">1つ以上。複数あれば OR でまとめて評価</td></tr>
+        <tr><td class="t">Effect</td><td class="l"><code>Allow</code> か <code>Deny</code></td></tr>
+        <tr><td class="t">Action</td><td class="l">操作。<code>NotAction</code> は「これ以外すべて」（拒否ではない）</td></tr>
+        <tr><td class="t">Resource</td><td class="l">対象の ARN。ID ベースでは必須</td></tr>
+        <tr><td class="t">Principal</td><td class="l">相手。リソースベースで使う。ID ベースには書けない</td></tr>
+        <tr><td class="t">Condition</td><td class="l">効く条件。true のときだけそのステートメントが効く</td></tr>
+      </table>
+      <div class="point"><b>ARN の形：</b><code>arn:aws:サービス:リージョン:アカウント:リソース</code>。IAM はリージョンが空、S3 バケットはリージョンもアカウントも空。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/access_policies.html">ポリシーとアクセス許可</a>（JSON ポリシードキュメント構造）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/reference_policies_elements_notaction.html">NotAction</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/reference_policies_variables.html">ポリシー変数</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/reference-arns.html">ARN</a></div>
+</section>
+
+<section class="slide">
+  <h1>Condition でよく使う条件キー</h1>
+  <table class="mx">
+    <tr><th style="width:24%">条件キー</th><th>比べるもの</th><th style="width:36%">本番での使いどころ</th></tr>
+    <tr><td class="t">aws:SourceIp</td><td class="l">リクエスト元の IP アドレス（パブリック IP だけ）</td><td class="l">社内の IP からだけ許可。<b>VPC エンドポイント経由のリクエストには含まれない</b></td></tr>
+    <tr><td class="t">aws:SourceVpce</td><td class="l">リクエストが通った VPC エンドポイントの ID</td><td class="l">S3 バケットを「この VPC エンドポイント経由だけ」にする</td></tr>
+    <tr><td class="t">aws:RequestedRegion</td><td class="l">呼び出されたリージョン</td><td class="l">使えるリージョンを限る</td></tr>
+    <tr><td class="t">aws:MultiFactorAuthPresent</td><td class="l">一時的な認証情報を MFA で確かめたか</td><td class="l">大事な操作は MFA のときだけ。アクセスキーで署名したリクエストには含まれない</td></tr>
+    <tr><td class="t">aws:SecureTransport</td><td class="l">TLS で送られたか（true／false）</td><td class="l">false を Deny して HTTPS を強制</td></tr>
+    <tr><td class="t">aws:PrincipalOrgID</td><td class="l">プリンシパルが属する組織の ID</td><td class="l">バケットを自分の組織のアカウントだけに開く（#02）</td></tr>
+    <tr><td class="t">sts:ExternalId</td><td class="l">ロールを引き受けるときに渡された外部 ID</td><td class="l">第三者に委任するロールの信頼ポリシー（第3章）</td></tr>
+  </table>
+  <div class="point"><b>キーの名前は大文字・小文字を区別しない</b>（aws:SourceIP と AWS:SourceIp は同じ）。<code>aws:</code> で始まるのがどのサービスでも使えるグローバル条件キー。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/reference_policies_condition-keys.html">AWS グローバル条件コンテキストキー</a>（各キーの説明と「可用性」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/reference_policies_elements_condition.html">IAM JSON ポリシー要素Condition</a></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>許可の決まり方と絞り込み</h1>
+  <p>最初はすべて拒否。Allow で開き、明示的な Deny はどこにあっても勝つ。</p>
+  <div class="foot"><span>AWS SAA #01 IAMとポリシー</span><span>タスク 1.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>1つのアカウントの中での判定の流れ</h1>
+  <svg width="856" height="210" viewBox="0 0 856 210">
+    <defs><marker id="ar3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="20" width="140" height="56" rx="8" fill="#1f3a68"/><text x="80" y="44" fill="#fff" font-weight="700">① 明示的な Deny</text><text x="80" y="62" fill="#fff" font-size="11">どこかにあるか</text>
+      <rect x="180" y="20" width="140" height="56" rx="8" fill="#1f3a68"/><text x="250" y="44" fill="#fff" font-weight="700">② SCP・RCP</text><text x="250" y="62" fill="#fff" font-size="11">で許可されているか</text>
+      <rect x="350" y="20" width="160" height="56" rx="8" fill="#1f3a68"/><text x="430" y="44" fill="#fff" font-weight="700">③ リソースベース</text><text x="430" y="62" fill="#fff" font-size="11">か ID ベースに Allow</text>
+      <rect x="540" y="20" width="150" height="56" rx="8" fill="#1f3a68"/><text x="615" y="44" fill="#fff" font-weight="700">④ 境界・セッション</text><text x="615" y="62" fill="#fff" font-size="11">ポリシーの範囲内か</text>
+      <rect x="720" y="20" width="126" height="56" rx="8" fill="#3a7d44"/><text x="783" y="53" fill="#fff" font-weight="700">許可</text>
+      <line x1="150" y1="48" x2="178" y2="48" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar3)"/>
+      <line x1="320" y1="48" x2="348" y2="48" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar3)"/>
+      <line x1="510" y1="48" x2="538" y2="48" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar3)"/>
+      <line x1="690" y1="48" x2="718" y2="48" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar3)"/>
+      <text x="164" y="40" font-size="10" fill="#6e6e73">ない</text><text x="334" y="40" font-size="10" fill="#6e6e73">ある</text><text x="524" y="40" font-size="10" fill="#6e6e73">ある</text><text x="704" y="40" font-size="10" fill="#6e6e73">内</text>
+      <line x1="80" y1="76" x2="80" y2="120" stroke="#b23a2c" stroke-width="2" marker-end="url(#ar3)"/>
+      <line x1="250" y1="76" x2="250" y2="120" stroke="#b23a2c" stroke-width="2" marker-end="url(#ar3)"/>
+      <line x1="430" y1="76" x2="430" y2="120" stroke="#b23a2c" stroke-width="2" marker-end="url(#ar3)"/>
+      <line x1="615" y1="76" x2="615" y2="120" stroke="#b23a2c" stroke-width="2" marker-end="url(#ar3)"/>
+      <text x="92" y="102" font-size="10" fill="#b23a2c" text-anchor="start">ある</text><text x="262" y="102" font-size="10" fill="#b23a2c" text-anchor="start">ない</text><text x="442" y="102" font-size="10" fill="#b23a2c" text-anchor="start">ない（暗黙の拒否）</text><text x="627" y="102" font-size="10" fill="#b23a2c" text-anchor="start">外</text>
+      <rect x="10" y="122" width="680" height="40" rx="8" fill="#fdeceb" stroke="#b23a2c"/><text x="350" y="147" fill="#b23a2c" font-weight="700">拒否</text>
+      <text x="428" y="190" fill="#4a5a78" font-size="11.5">ドキュメントの評価の流れを、本番で使う形に簡単にした図。細かい例外（同じアカウントでリソースベースのポリシーが直接許可する場合など）は省いた</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>暗黙的な拒否：</b>ルートユーザー以外のリクエストは、最初はすべて拒否されている。Allow があって初めて開く。</div>
+    <div class="point warn"><b>明示的な拒否：</b>どの種類のポリシーにあっても、ほかの Allow より強い。ポリシーの順番や範囲の広さは関係ない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/reference_policies_evaluation-logic_policy-eval-denyallow.html">エンフォースメントコードロジックがリクエストを評価してアクセスを許可または拒否する方法</a>（「明示的な拒否は明示的な許可をオーバーライドします。」）</div>
+</section>
+
+<section class="slide">
+  <h1>アクセス許可の境界：共通部分だけが使える</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="210" viewBox="0 0 410 210">
+        <g font-size="12" text-anchor="middle">
+          <circle cx="150" cy="105" r="88" fill="#1f3a68" fill-opacity="0.18" stroke="#1f3a68" stroke-width="2"/>
+          <circle cx="262" cy="105" r="88" fill="#3a7d44" fill-opacity="0.18" stroke="#3a7d44" stroke-width="2"/>
+          <text x="110" y="40" fill="#1f3a68" font-weight="700">ID ベースのポリシー</text>
+          <text x="300" y="40" fill="#3a7d44" font-weight="700">境界</text>
+          <text x="98" y="100">ec2:*</text><text x="98" y="118">iam:*</text>
+          <text x="206" y="100" font-weight="700" font-size="14">s3:*</text><text x="206" y="120" font-size="11">← 使える</text>
+          <text x="310" y="100">cloudwatch:*</text>
+          <text x="205" y="205" fill="#4a5a78" font-size="11">Claude が作った例</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:46%">ポイント</th><th>中身</th></tr>
+        <tr><td class="l">付ける先</td><td class="t">ユーザーかロール（グループには付かない）</td></tr>
+        <tr><td class="l">何で設定するか</td><td class="t">管理ポリシー（AWS 管理かカスタマー管理）</td></tr>
+        <tr><td class="l">権限を与えるか</td><td class="x">与えない（上限だけ）</td></tr>
+        <tr><td class="l">リソースベースのポリシーの許可</td><td class="t">境界では絞られない</td></tr>
+      </table>
+      <div class="point"><b>代表的な使い方＝管理の委任：</b>開発者に「ロールを作ってよい。ただし、この境界を付けたものだけ」と任せる。開発者が強いポリシーを付けても、境界を超えられない。</div>
+      <div class="mini">似たもの：SCP はアカウント全体の上限（#02）、セッションポリシーはそのセッションだけの上限。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/access_policies_boundaries.html">IAM エンティティのアクセス許可境界</a>（「アイデンティティベースのポリシーとそのアクセス許可の境界の両方で許可されているアクションのみを実行できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/best-practices.html">ベストプラクティス</a>（アクセス許可の境界を使用して、アカウント内のアクセス許可の管理を委任する）</div>
+</section>
+
+<section class="slide">
+  <h1>別のアカウントのリソースを使わせる2つの方法</h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <defs><marker id="ar4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="10" width="200" height="180" rx="12" fill="#f5f5f7" stroke="#d2d2d7"/><text x="110" y="32" font-weight="700">アカウントA（信頼される側）</text>
+      <rect x="40" y="70" width="140" height="60" rx="8" fill="#1f3a68"/><text x="110" y="96" fill="#fff" font-weight="700">ユーザー</text><text x="110" y="114" fill="#fff" font-size="11">ID ベースで許可</text>
+      <rect x="440" y="10" width="406" height="180" rx="12" fill="#f5f5f7" stroke="#d2d2d7"/><text x="643" y="32" font-weight="700">アカウントB（信頼する側＝リソースがある）</text>
+      <rect x="470" y="48" width="160" height="56" rx="8" fill="#3a7d44"/><text x="550" y="72" fill="#fff" font-weight="700">ロール</text><text x="550" y="90" fill="#fff" font-size="11">信頼ポリシーで A を許可</text>
+      <rect x="680" y="48" width="140" height="56" rx="8" fill="#fff" stroke="#1f3a68"/><text x="750" y="80">リソース</text>
+      <rect x="470" y="124" width="160" height="56" rx="8" fill="#fff4e5" stroke="#b25000"/><text x="550" y="148" fill="#b25000" font-weight="700">S3 バケット</text><text x="550" y="166" font-size="11">バケットポリシーで A を許可</text>
+      <line x1="180" y1="88" x2="466" y2="76" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar4)"/><text x="320" y="70">① ロールを引き受ける</text>
+      <line x1="630" y1="76" x2="678" y2="76" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar4)"/>
+      <line x1="180" y1="114" x2="466" y2="150" stroke="#b25000" stroke-width="2" marker-end="url(#ar4)"/><text x="320" y="150" fill="#b25000">② リソースに直接</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:18%">方法</th><th>しくみ</th><th style="width:34%">ちがい</th></tr>
+    <tr><td class="t">① ロール</td><td class="l">B にロールを作り、信頼ポリシーで A を許可。A 側では <code>sts:AssumeRole</code> を許可</td><td class="l">引き受けている間は、元の権限は使えない（ロールの権限になる）</td></tr>
+    <tr><td class="t">② リソースベース</td><td class="l">S3・SNS・SQS などのリソースのポリシーで A を許可。A 側では ID ベースのポリシーでそのリソースを許可</td><td class="l">元の権限のまま使える。対応しているサービスだけ</td></tr>
+  </table>
+  <div class="point warn"><b>どちらも「両側の許可」が要る。</b>リソース側のポリシーに相手を書くだけでは信頼関係の半分。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/reference_policies_evaluation-logic-cross-account.html">クロスアカウントポリシーの評価論理</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/access_policies.html">ポリシーとアクセス許可</a>（「信頼関係は半分しか確立されない」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles.html">IAM ロール</a>（委任・クロスアカウントアクセスのロール）</div>
+</section>
+
+<section class="slide">
+  <h1>委任の落とし穴をふさぐ：外部 ID と PassRole</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">外部 ID（混乱した代理問題の対策）</div>
+      <svg width="410" height="150" viewBox="0 0 410 150">
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="140" y="10" width="130" height="44" rx="8" fill="#1f3a68"/><text x="205" y="30" fill="#fff" font-weight="700">外部の会社</text><text x="205" y="46" fill="#fff" font-size="10.5">多くの顧客を持つ</text>
+          <rect x="10" y="96" width="170" height="44" rx="8" fill="#3a7d44"/><text x="95" y="116" fill="#fff">自社のロール</text><text x="95" y="132" fill="#fff" font-size="10.5">ExternalId＝12345 を要求</text>
+          <rect x="230" y="96" width="170" height="44" rx="8" fill="#6e6e73"/><text x="315" y="116" fill="#fff">別の顧客</text><text x="315" y="132" fill="#fff" font-size="10.5">自社のロールの ARN を入力</text>
+          <line x1="180" y1="54" x2="110" y2="94" stroke="#3a7d44" stroke-width="2"/><text x="70" y="70" fill="#3a7d44">12345 を付ける→OK</text>
+          <line x1="250" y1="54" x2="180" y2="110" stroke="#b23a2c" stroke-width="2" stroke-dasharray="5 3"/><text x="330" y="74" fill="#b23a2c">67890 では入れない</text>
+        </g>
+      </svg>
+      <div class="mini">外部の会社が顧客ごとに一意の値を決め、顧客は信頼ポリシーの条件 <code>sts:ExternalId</code> でその値を要求する。値は Claude が作った例。</div>
+    </div>
+    <div>
+      <div class="lbl">iam:PassRole</div>
+      <table class="mx">
+        <tr><th style="width:40%">場面</th><th>要る許可</th></tr>
+        <tr><td class="l">EC2 を起動して既存のロールを付ける</td><td class="t"><code>ec2:RunInstances</code> ＋ そのロールへの <code>iam:PassRole</code></td></tr>
+        <tr><td class="l">Lambda 関数に実行ロールを設定する</td><td class="t">そのロールへの <code>iam:PassRole</code></td></tr>
+        <tr><td class="l">自分でロールを引き受ける</td><td class="t"><code>sts:AssumeRole</code>（PassRole とは別）</td></tr>
+      </table>
+      <div class="point"><b>なぜ要るか：</b>自分の権限は弱くても、強いロールをサービスに付ければ、そのサービス経由で強い操作ができてしまう。渡してよいロールを PassRole で限る。</div>
+      <div class="mini">PassRole で渡せるのは同じアカウントのサービスだけ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/confused-deputy.html">混乱する代理問題</a>（「ロールの信頼ポリシーに `ExternalId` の条件の確認を含めることを必須とする」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles_use_passrole.html">AWS サービスにロールを渡すアクセス許可をユーザーに付与する</a></div>
+</section>
+
+<section class="slide">
+  <h1>最小権限と点検の道具</h1>
+  <table class="mx">
+    <tr><th style="width:22%">道具</th><th>分かること・できること</th><th style="width:30%">こう聞かれたら</th></tr>
+    <tr><td class="t">IAM Access Analyzer（外部アクセス）</td><td class="l">リソースベースのポリシーを分析し、外部（別アカウント・組織の外）と共有されている S3 バケットや IAM ロールを見つける</td><td class="l">「意図せず公開・共有されたリソースを探す」</td></tr>
+    <tr><td class="t">IAM Access Analyzer（未使用のアクセス）</td><td class="l">使われていない権限を見つける</td><td class="l">「余分な権限を洗い出す」</td></tr>
+    <tr><td class="t">IAM Access Analyzer（ポリシーの生成・検証）</td><td class="l">CloudTrail のアクセスの記録から、実際に使った操作だけのポリシーを作る／ポリシーを文法とベストプラクティスで確かめる</td><td class="l">「実際の利用に合わせて最小権限のポリシーを作る」</td></tr>
+    <tr><td class="t">最終アクセス情報</td><td class="l">ユーザー・グループ・ロール・ポリシーが、各サービスに最後にアクセスした日時（アクセスアドバイザー）</td><td class="l">「使っていないサービスの権限を外す」</td></tr>
+    <tr><td class="t">認証情報レポート</td><td class="l">全ユーザーのパスワード・アクセスキー・MFA 機器などの状態の一覧</td><td class="l">「MFA なしのユーザー、古いアクセスキーを一覧に」</td></tr>
+  </table>
+  <div class="point"><b>最小権限：</b>タスクに必要な権限だけを、決まったリソースと条件で与える。広めに始めて、使われ方を見て絞るのが AWS の進め方。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/what-is-access-analyzer.html">IAM Access Analyzer の使用</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_credentials_getting-report.html">認証情報レポート</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/best-practices.html">ベストプラクティス</a>（最小特権アクセス許可を適用する・未使用の…を定期的に確認して削除する）</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">ID<span>ルートは特別な作業だけ。アプリやサービスにはロール。グループは入れ子にできない</span></div>
+      <div class="box b2">ポリシー<span>ID ベース（管理・インライン）とリソースベース（Principal を書く）。境界・SCP・セッションは上限だけ</span></div>
+      <div class="box b3">判定<span>最初は全部拒否。Allow で開き、明示的な Deny が最強。境界とは共通部分</span></div>
+      <div class="box b4">委任と点検<span>別アカウントは両側の許可。外部 ID・PassRole。Access Analyzer と認証情報レポート</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:58%">こんな要件なら</th><th>答え</th></tr>
+        <tr><td class="l">EC2 のアプリに S3 を読ませる</td><td class="t">ロール（インスタンスプロファイル）</td></tr>
+        <tr><td class="l">開発者にロール作成を任せ、上限をかける</td><td class="t">アクセス許可の境界</td></tr>
+        <tr><td class="l">外部の会社に自社のロールを使わせる</td><td class="t">信頼ポリシー＋外部 ID</td></tr>
+        <tr><td class="l">HTTPS 以外を断る</td><td class="t">aws:SecureTransport が false を Deny</td></tr>
+        <tr><td class="l">外部に共有されたリソースを探す</td><td class="t">IAM Access Analyzer</td></tr>
+        <tr><td class="l">MFA なしのユーザーの一覧</td><td class="t">認証情報レポート</td></tr>
+      </table>
+      <div class="point">次の #02 では、アカウントをまとめる Organizations・SCP と、社員の ID をつなぐ IAM Identity Center・フェデレーションを扱う。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
