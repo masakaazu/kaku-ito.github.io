@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Silver #12 インタフェースとシール・クラス 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">Java Silver（SE 17・1Z0-825-JPN）　5 継承とインタフェースの使用　#12</div>
+  <h1>インタフェースとシール・クラス</h1>
+  <p>「何ができるか」の約束を型にする。継承してよい相手を自分で決める</p>
+  <div class="refs-legend">各ページの下に、根拠にした Oracle の資料（JLS 8.1.1.2・8.1.6・8.4.8・9.1・9.3・9.4・15.12、JEP 409）を書いた（青い文字を押すと開く）。コードは Claude が作り、JDK 17 で動かして確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>試験内容チェックリスト 5（インタフェースの作成と実装、デフォルト・メソッドとプライベート・メソッド、シール・クラス）</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 インタフェースの基本<span>フィールドは public static final、メソッドは public abstract が自動で付く</span></div>
+      <div class="box b2">2 default メソッド<span>中身のある実装。衝突したらクラスでオーバーライド、I.super で呼ぶ</span></div>
+      <div class="box b3">3 static・private メソッド<span>static はインタフェース名で。private は中だけで</span></div>
+      <div class="box b4">4 シール・クラス<span>sealed と permits で直接の子を限定。子は final・sealed・non-sealed</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:40%"></th><th>クラス</th><th>インタフェース</th></tr>
+        <tr><td class="t">親を何個</td><td class="l">extends 1 つ</td><td class="l">extends 複数（インタフェースどうし）</td></tr>
+        <tr><td class="t">クラスが実装</td><td class="l">—</td><td class="l">implements 複数</td></tr>
+        <tr><td class="t">new</td><td class="l">できる（abstract 以外）</td><td class="x">できない</td></tr>
+        <tr><td class="t">フィールド</td><td class="l">自由</td><td class="l">定数だけ</td></tr>
+        <tr><td class="t">コンストラクタ</td><td class="l">持てる</td><td class="x">持てない</td></tr>
+      </table>
+      <div class="point"><b>Java 8 で default・static、Java 9 で private、Java 17 で sealed が正式に。</b>試験は Java 17 の範囲。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.oracle.com/jp/education/certification/javase-17-programmer-1/">Oracle「Java SE 17 Programmer I（1Z0-825-JPN）」試験内容チェックリスト</a>／<a class="src" href="https://openjdk.org/jeps/409">JEP 409: Sealed Classes</a>（Java 17 で正式）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-9.html">JLS 9</a></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>インタフェースの基本</h1>
+  <p>書かなくても修飾子が付く。実装する側は public で。</p>
+  <div class="foot"><span>Java Silver #12 インタフェースとシール・クラス</span><span>試験内容 5</span></div>
+</section>
+
+<section class="slide">
+  <h1>インタフェースに書けるものと、自動で付く修飾子</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">interface</span> Shape {
+  <span class="k">int</span> SIDES = <span class="s">0</span>;                 <span class="c">// public static final</span>
+  <span class="k">double</span> area();                  <span class="c">// public abstract</span>
+  <span class="k">default</span> String info() {          <span class="c">// public</span>
+    <span class="k">return</span> label(<span class="s">"area"</span>) + area();
+  }
+  <span class="k">static</span> Shape unit() { … }       <span class="c">// public static</span>
+  <span class="k">private</span> String label(String s) { <span class="k">return</span> s + <span class="s">"="</span>; }
+}</pre>
+      <div class="mini">… は省略。各行の右の注釈は、書かなくても付く修飾子（Claude が作成）。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">書き方</th><th>JDK 17</th></tr>
+        <tr><td class="l"><code>int N;</code>（初期値なし）</td><td class="x">= expected</td></tr>
+        <tr><td class="l"><code>I.N = 20;</code></td><td class="x">cannot assign a value to final variable N</td></tr>
+        <tr><td class="l"><code>void m() { }</code>（default なし）</td><td class="x">interface abstract methods cannot have body</td></tr>
+        <tr><td class="l"><code>protected void m();</code></td><td class="x">modifier protected not allowed here</td></tr>
+        <tr><td class="l"><code>final void m();</code></td><td class="x">modifier final not allowed here</td></tr>
+        <tr><td class="l"><code>new I()</code></td><td class="x">I is abstract; cannot be instantiated</td></tr>
+      </table>
+      <div class="point"><b>アクセス修飾子は public と private だけ。</b>何も書かなければ public。クラスの「修飾子なし＝パッケージアクセス」とはちがう。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-9.html">JLS 9.3</a>（Every field declaration in the body of an interface delaration is implicitly public, static, and final）・9.4（If no access modifier is given, the method is implicitly public／An interface method lacking a private, default, or static modifier is implicitly abstract）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>implements：複数実装と、実装の決まり</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="136" viewBox="0 0 420 136">
+        <defs><marker id="a12" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5b80bf"/></marker></defs>
+        <g font-size="12" text-anchor="middle">
+          <rect x="20" y="8" width="150" height="34" rx="6" fill="#fff" stroke="#5b80bf" stroke-width="2" stroke-dasharray="5 3"/><text x="95" y="30" fill="#1f3a68">«interface» Flyer</text>
+          <rect x="250" y="8" width="150" height="34" rx="6" fill="#fff" stroke="#5b80bf" stroke-width="2" stroke-dasharray="5 3"/><text x="325" y="30" fill="#1f3a68">«interface» Swimmer</text>
+          <rect x="135" y="80" width="150" height="34" rx="6" fill="#1f3a68"/><text x="210" y="102" fill="#fff">Duck</text>
+          <line x1="190" y1="78" x2="110" y2="46" stroke="#5b80bf" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#a12)"/>
+          <line x1="230" y1="78" x2="310" y2="46" stroke="#5b80bf" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#a12)"/>
+          <text x="210" y="131" fill="#b25000" font-size="11">点線の矢印 = implements Flyer, Swimmer</text>
+        </g>
+      </svg>
+<pre class="code small"><span class="k">class</span> Duck <span class="k">implements</span> Flyer, Swimmer {
+  <span class="k">public</span> String fly()  { <span class="k">return</span> <span class="s">"fly"</span>; }
+  <span class="k">public</span> String swim() { <span class="k">return</span> <span class="s">"swim"</span>; }
+}
+Flyer f = <span class="k">new</span> Duck();
+Swimmer s = (Swimmer) f;    <span class="c">// OK（中身は Duck）</span>
+<span class="c">// f.swim() は cannot find symbol（Flyer 型には swim がない）</span></pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:50%">実装クラスの書き方（I に void m(); void n();）</th><th>JDK 17</th></tr>
+        <tr><td class="l"><code>void m() { }</code>（public なし）</td><td class="x">m() in C cannot implement m() in I ／ attempting to assign weaker access privileges; was public</td></tr>
+        <tr><td class="l">m() だけ実装した普通のクラス</td><td class="x">C is not abstract and does not override abstract method n() in I</td></tr>
+        <tr><td class="l">m() だけ実装した <code>abstract</code> クラス</td><td class="t">OK（残りはサブクラスで）</td></tr>
+        <tr><td class="l"><code>interface AB extends A, B</code></td><td class="t">OK（インタフェースは複数 extends）</td></tr>
+      </table>
+      <div class="point"><b>extends と implements を両方書くときは</b> <code>class C extends P implements I, J</code> の順。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.1.5</a>（The optional implements clause in a class declaration specifies the direct superinterface types of the class being declared）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-9.html">JLS 9.1.3</a>（the interface being declared extends each of the specified interface types）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>インタフェース型へのキャスト</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">コード（Flyer はインタフェース）</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>(Swimmer) flyer</code>（中身が両方を実装）</td><td class="t">OK</td></tr>
+        <tr><td class="l"><code>(Flyer) dog</code>（Dog は final でなく、Flyer を実装しない）</td><td class="x">コンパイルは通り、実行時に ClassCastException</td></tr>
+        <tr><td class="l"><code>(Flyer) cat</code>（Cat は final で、Flyer を実装しない）</td><td class="x">incompatible types: Cat cannot be converted to Flyer</td></tr>
+        <tr><td class="l"><code>obj instanceof I</code>（中身が I を実装）</td><td class="t">true</td></tr>
+      </table>
+      <div class="point"><b>理由：</b>final でない Dog には「Flyer を実装したサブクラス」があるかもしれない。だからコンパイラは止めず、実行時に調べる。final の Cat にはサブクラスがないので、ありえないと判断できる。</div>
+    </div>
+    <div>
+      <svg width="420" height="200" viewBox="0 0 420 200">
+        <g font-size="12" text-anchor="middle">
+          <rect x="0" y="6" width="200" height="34" rx="6" fill="#5b80bf"/><text x="100" y="28" fill="#fff">class Dog（final でない）</text>
+          <rect x="0" y="70" width="200" height="34" rx="6" fill="#c9daf2"/><text x="100" y="92" fill="#1f3a68">class X extends Dog</text>
+          <text x="100" y="122" fill="#1f3a68" font-size="11">implements Flyer かもしれない</text>
+          <line x1="100" y1="68" x2="100" y2="42" stroke="#5b80bf" stroke-width="2"/>
+          <rect x="220" y="6" width="200" height="34" rx="6" fill="#1f3a68"/><text x="320" y="28" fill="#fff">final class Cat</text>
+          <rect x="220" y="70" width="200" height="34" rx="6" fill="#fde8e8" stroke="#e2a3a3"/><text x="320" y="92" fill="#9b1c1c">サブクラスは作れない</text>
+          <text x="100" y="160" fill="#1f3a68">→ 実行時に検査</text>
+          <text x="320" y="160" fill="#9b1c1c">→ コンパイルエラー</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-5.html">JLS 5.1.6.3</a>（If T is an interface type, then R must implement interface T (§8.1.5), or a ClassCastException is thrown）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.16</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>default・static・private メソッド</h1>
+  <p>インタフェースにも中身を書ける。ただし呼び方と継承のされ方がちがう。</p>
+  <div class="foot"><span>Java Silver #12 インタフェースとシール・クラス</span><span>試験内容 5</span></div>
+</section>
+
+<section class="slide">
+  <h1>default メソッド：中身付きの実装</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">interface</span> Greeter {
+  String name();
+  <span class="k">default</span> String greet() { <span class="k">return</span> <span class="s">"Hello, "</span> + name(); }
+}
+<span class="k">class</span> En <span class="k">implements</span> Greeter {
+  <span class="k">public</span> String name() { <span class="k">return</span> <span class="s">"Ann"</span>; }
+}
+<span class="k">class</span> Jp <span class="k">implements</span> Greeter {
+  <span class="k">public</span> String name() { <span class="k">return</span> <span class="s">"Ken"</span>; }
+  <span class="k">public</span> String greet() { <span class="k">return</span> <span class="s">"Konnichiwa, "</span> + name(); }
+}
+<span class="c">// new En().greet() + " / " + new Jp().greet()</span></pre>
+<pre class="sh" style="margin-top:4px"><span class="o">Hello, Ann / Konnichiwa, Ken</span></pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">書き方</th><th>JDK 17</th></tr>
+        <tr><td class="l"><code>default void m();</code>（中身なし）</td><td class="x">missing method body, or declare abstract</td></tr>
+        <tr><td class="l"><code>default String toString() { … }</code></td><td class="x">default method toString in interface I overrides a member of java.lang.Object</td></tr>
+        <tr><td class="l"><code>static default void m() { }</code></td><td class="x">illegal combination of modifiers: static and default</td></tr>
+        <tr><td class="l">実装クラスで public なしでオーバーライド</td><td class="x">weaker access privileges</td></tr>
+      </table>
+      <div class="point"><b>default メソッドはインスタンスメソッド。</b>実装クラスに継承され、オーバーライドできる。中から抽象メソッド（name()）を呼べば、実装クラスのものが動く。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-9.html">JLS 9.4</a>（A default method is an instance method declared in an interface with the default modifier. Its body is always represented by a block, which provides a default implementation for any class that implements the interface without overriding the method）・9.4.1.2（It is a compile-time error if a default method is override-equivalent (§8.4.2) with a non-private method of the class Object）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>default の衝突と、インタフェース名.super</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">衝突する（Claude が作成）</div>
+<pre class="code small"><span class="k">interface</span> I { <span class="k">default</span> String hi() { <span class="k">return</span> <span class="s">"I"</span>; } }
+<span class="k">interface</span> J { <span class="k">default</span> String hi() { <span class="k">return</span> <span class="s">"J"</span>; } }
+<span class="k">class</span> C <span class="k">implements</span> I, J { }</pre>
+<pre class="sh" style="margin-top:4px"><span class="e">error: types I and J are incompatible;
+  class C inherits unrelated defaults for hi() from types I and J</span></pre>
+      <div class="cap" style="margin-top:8px">C でオーバーライドして解決</div>
+<pre class="code small"><span class="k">class</span> C <span class="k">implements</span> I, J {
+  <span class="k">public</span> String hi() {
+    <span class="k">return</span> I.<span class="k">super</span>.hi() + J.<span class="k">super</span>.hi() + <span class="s">"C"</span>;
+  }
+}   <span class="c">// new C().hi() → IJC</span></pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:50%">呼び方（C implements I）</th><th>意味・結果</th></tr>
+        <tr><td class="l"><code>I.super.hi()</code></td><td class="t">I の default メソッド</td></tr>
+        <tr><td class="l"><code>super.hi()</code></td><td class="x">スーパークラス（Object）を探す → cannot find symbol</td></tr>
+        <tr><td class="l"><code>I.hi()</code></td><td class="x">non-static method hi() cannot be referenced from a static context</td></tr>
+      </table>
+      <div class="point"><b>implements に書いた順番では決まらない。</b>関係のない 2 つのインタフェースの default が重なったら、クラスで必ずオーバーライドする。</div>
+      <div class="mini">I.super で呼べるのは、そのクラスが直接 implements しているインタフェースだけ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.4.8.4</a>（It is a compile-time error if a class C inherits a default method whose signature is override-equivalent with another method inherited by C …）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.12.1</a>（It is a compile-time error if I is not a direct superinterface of E）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>どのメソッドが使われる？ 3 つの決まり</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">① クラスが優先<span>スーパークラスの具体的なメソッド ＞ インタフェースの default</span></div>
+      <div class="box b2">② より具体的なインタフェースが優先<span>J extends I で J がオーバーライド → J の default</span></div>
+      <div class="box b3">③ それでも決まらなければエラー<span>無関係な I と J の default → クラスでオーバーライド</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:60%">コード（I・J は default hi() または m() を持つ）</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>class P { public String hi() … }</code><br><code>class C extends P implements I { }</code></td><td class="t">P（クラスが優先）</td></tr>
+        <tr><td class="l">P の hi() が public でない</td><td class="x">hi() in P cannot implement hi() in I</td></tr>
+        <tr><td class="l"><code>interface J extends I</code>（J も m() を default で書く）<br><code>class C implements I, J { }</code></td><td class="t">J</td></tr>
+        <tr><td class="l"><code>interface J extends I { void m(); }</code><br><code>class C implements J { }</code></td><td class="x">C is not abstract and does not override abstract method m() in J</td></tr>
+      </table>
+      <div class="mini">最後の行：子のインタフェースが default を抽象メソッドに戻すと、実装クラスは中身を書かなければならない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.4.8</a>（No concrete method inherited by C from its direct superclass type has a signature that is a subsignature of the signature of m as a member of D）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>static メソッドと private メソッド</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">interface</span> Logger {
+  <span class="k">default void</span> info(String m) { log(<span class="s">"INFO"</span>, m); }
+  <span class="k">default void</span> warn(String m) { log(<span class="s">"WARN"</span>, m); }
+  <span class="k">private void</span> log(String lv, String m) {   <span class="c">// 共通処理</span>
+    System.out.println(<span class="s">"["</span> + lv + <span class="s">"] "</span> + m);
+  }
+}
+<span class="k">interface</span> Calc {
+  <span class="k">static int</span> twice(<span class="k">int</span> x) { <span class="k">return</span> helper(x) * <span class="s">2</span>; }
+  <span class="k">private static int</span> helper(<span class="k">int</span> x) { <span class="k">return</span> x + <span class="s">1</span>; }
+}
+<span class="c">// Calc.twice(3) → 8</span></pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">呼び方（C implements I、x は I 型）</th><th>JDK 17</th></tr>
+        <tr><td class="l"><code>I.s()</code>（static）</td><td class="t">OK</td></tr>
+        <tr><td class="l"><code>x.s()</code></td><td class="x">illegal static interface method call</td></tr>
+        <tr><td class="l"><code>C.s()</code></td><td class="x">cannot find symbol（継承されない）</td></tr>
+        <tr><td class="l">ほかのクラスから private の <code>log()</code></td><td class="x">cannot find symbol</td></tr>
+        <tr><td class="l">static から private（static なし）</td><td class="x">non-static method p() cannot be referenced from a static context</td></tr>
+        <tr><td class="l">static から private static</td><td class="t">OK</td></tr>
+      </table>
+      <div class="point"><b>クラスの static との差：</b>クラスの static は変数やサブクラス名でも呼べるが、インタフェースの static はインタフェース名だけ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.12.3</a>（the compile-time declaration must not be a static method declared in an interface, or a compile-time error occurs）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.4.8</a>（A class does not inherit private or static methods from its superinterface types）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-9.html">JLS 9.4</a>（It is permitted for an interface method declaration to contain both private and static）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>シール・クラス</h1>
+  <p>直接の子を permits で決め、子にはどこまで開くかを書かせる。</p>
+  <div class="foot"><span>Java Silver #12 インタフェースとシール・クラス</span><span>試験内容 5</span></div>
+</section>
+
+<section class="slide">
+  <h1>sealed・permits と 3 つの修飾子</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">sealed class</span> Shape <span class="k">permits</span> Circle, Square, Poly { }
+<span class="k">final class</span> Circle <span class="k">extends</span> Shape { }
+<span class="k">non-sealed class</span> Square <span class="k">extends</span> Shape { }
+<span class="k">sealed class</span> Poly <span class="k">extends</span> Shape <span class="k">permits</span> Tri { }
+<span class="k">final class</span> Tri <span class="k">extends</span> Poly { }
+<span class="k">class</span> Big <span class="k">extends</span> Square { }     <span class="c">// OK</span></pre>
+      <svg width="420" height="150" viewBox="0 0 420 150">
+        <g font-size="11" text-anchor="middle">
+          <rect x="150" y="4" width="120" height="30" rx="6" fill="#1f3a68"/><text x="210" y="24" fill="#fff">sealed Shape</text>
+          <rect x="0" y="60" width="120" height="30" rx="6" fill="#5b80bf"/><text x="60" y="80" fill="#fff">final Circle</text>
+          <rect x="150" y="60" width="120" height="30" rx="6" fill="#c9daf2"/><text x="210" y="80" fill="#1f3a68">non-sealed Square</text>
+          <rect x="300" y="60" width="120" height="30" rx="6" fill="#1f3a68"/><text x="360" y="80" fill="#fff">sealed Poly</text>
+          <rect x="150" y="116" width="120" height="30" rx="6" fill="#f5f5f7" stroke="#d0d7e2"/><text x="210" y="136" fill="#1f3a68">Big（だれでも）</text>
+          <rect x="300" y="116" width="120" height="30" rx="6" fill="#5b80bf"/><text x="360" y="136" fill="#fff">final Tri</text>
+          <line x1="190" y1="36" x2="80" y2="58" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="210" y1="36" x2="210" y2="58" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="230" y1="36" x2="340" y2="58" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="210" y1="92" x2="210" y2="114" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="360" y1="92" x2="360" y2="114" stroke="#5b80bf" stroke-width="2"/>
+          <text x="60" y="110" fill="#9b1c1c">ここで止まる</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:28%">子の修飾子</th><th>意味</th></tr>
+        <tr><td class="t">final</td><td class="l">ここで止める。継承できない</td></tr>
+        <tr><td class="t">sealed</td><td class="l">さらに permits で子を限定する</td></tr>
+        <tr><td class="t">non-sealed</td><td class="l">ここから下はだれでも継承できる</td></tr>
+      </table>
+      <div class="point"><b>permits が限定するのは「直接の」子だけ。</b>Big は Square の子なので Shape の permits に書かなくてよい。new Big() を Shape 型に入れて instanceof Square は true。</div>
+      <div class="mini">レコードと enum は暗黙に final なので、修飾子なしで許可された子になれる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.1.1.2</a>（It is a compile-time error if a class has a sealed direct superclass or a sealed direct superinterface, and is not declared final, sealed, or non-sealed either explicitly or implicitly）／<a class="src" href="https://openjdk.org/jeps/409">JEP 409</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>シール・クラスのコンパイルエラー一覧</h1>
+  <table class="mx">
+    <tr><th style="width:44%">書き方</th><th>JDK 17 のメッセージ</th></tr>
+    <tr><td class="l">許可した子に final・sealed・non-sealed がない</td><td class="x">sealed, non-sealed or final modifiers expected</td></tr>
+    <tr><td class="l">permits にないクラスが extends</td><td class="x">class is not allowed to extend sealed class: Shape (as it is not listed in its permits clause)</td></tr>
+    <tr><td class="l">sealed がないのに permits</td><td class="x">invalid permits clause ／ (class must be sealed)</td></tr>
+    <tr><td class="l">permits に書いたクラスが extends していない</td><td class="x">invalid permits clause ／ (subclass Circle must extend sealed class)</td></tr>
+    <tr><td class="l">permits に同じクラスを 2 回</td><td class="x">invalid permits clause ／ (must not contain duplicates: Circle)</td></tr>
+    <tr><td class="l">permits を省略し、同じファイルに子がない</td><td class="x">sealed class must have subclasses</td></tr>
+    <tr><td class="l"><code>sealed final class</code>・<code>final non-sealed class</code></td><td class="x">illegal combination of modifiers: final and sealed（final and non-sealed）</td></tr>
+    <tr><td class="l">親が sealed でないのに non-sealed</td><td class="x">non-sealed modifier not allowed here</td></tr>
+    <tr><td class="l">シール・インタフェースを継承するインタフェースに何もない</td><td class="x">sealed or non-sealed modifiers expected（インタフェースに final はない）</td></tr>
+  </table>
+  <div class="point"><b>エラーにならないもの：</b>permits を省略して同じファイルに子を書く。abstract でないシール・クラスを new する。sealed abstract class。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.1.6</a>（It is a compile-time error if a class declaration has a permits clause but no sealed modifier／It is a compile-time error if the same class is specified more than once in a permits clause／It is a compile-time error if the declaration of a sealed class C lacks a permits clause and C has no permitted direct subclasses）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>シール・インタフェースとレコード</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">sealed interface</span> Expr <span class="k">permits</span> Num, Add { }
+<span class="k">record</span> Num(<span class="k">int</span> v) <span class="k">implements</span> Expr { }   <span class="c">// 暗黙に final</span>
+<span class="k">final class</span> Add <span class="k">implements</span> Expr {
+  <span class="k">final</span> Expr l, r;
+  Add(Expr l, Expr r) { <span class="k">this</span>.l = l; <span class="k">this</span>.r = r; }
+}
+<span class="k">static int</span> eval(Expr e) {
+  <span class="k">if</span> (e <span class="k">instanceof</span> Num n) <span class="k">return</span> n.v();
+  <span class="k">if</span> (e <span class="k">instanceof</span> Add a) <span class="k">return</span> eval(a.l) + eval(a.r);
+  <span class="k">throw new</span> IllegalStateException();
+}
+<span class="c">// eval(new Add(new Num(2), new Add(new Num(3), new Num(4))))</span></pre>
+<pre class="sh" style="margin-top:4px"><span class="o">9</span></pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:50%">シール・インタフェースの子</th><th>付けるもの</th></tr>
+        <tr><td class="l">実装するクラス</td><td class="t">final・sealed・non-sealed</td></tr>
+        <tr><td class="l">実装するレコード</td><td class="t">なし（暗黙に final）</td></tr>
+        <tr><td class="l">継承するインタフェース</td><td class="t">sealed・non-sealed</td></tr>
+        <tr><td class="l">permits にないクラスが implements</td><td class="x">class is not allowed to extend sealed class: I …</td></tr>
+      </table>
+      <div class="point"><b>種類が決まっている値に向く。</b>式の木・図形・支払い方法など。Java 17 では if と instanceof で分ける。</div>
+      <div class="mini">switch でパターンを使い、全種類を網羅したかをコンパイラに調べさせる書き方は、Java 17 ではプレビュー（Java 21 で正式）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-9.html">JLS 9.1.1.4</a>（It is a compile-time error if an interface has a sealed direct superinterface and is not declared sealed or non-sealed）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.10</a>（A record class is implicitly final）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>問われ方とまちがえやすい点</h1>
+  <table class="mx">
+    <tr><th style="width:32%">こう聞かれたら</th><th>答えの考え方</th></tr>
+    <tr><td class="t">実装クラスがコンパイルできるか</td><td class="l">public を付けたか。抽象メソッドを全部書いたか（abstract クラスなら不要）</td></tr>
+    <tr><td class="t">インタフェースの定数</td><td class="l">public static final。代入はエラー。I.N・C.N・変数.N で読める</td></tr>
+    <tr><td class="t">default が 2 つ重なる</td><td class="l">無関係なら types I and J are incompatible。オーバーライドして I.super.hi()</td></tr>
+    <tr><td class="t">クラスと default が重なる</td><td class="l">クラスが優先。public でないとエラー</td></tr>
+    <tr><td class="t">static・private の呼び方</td><td class="l">static は I.s() だけ。private は同じインタフェースの中だけ</td></tr>
+    <tr><td class="t">シール・クラスの子</td><td class="l">直接の子は permits に書き、final・sealed・non-sealed のどれか。孫は non-sealed の下なら自由</td></tr>
+    <tr><td class="t">修飾子の組み合わせ</td><td class="l">sealed＋final、final＋non-sealed、static＋default はエラー。private＋static は OK</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">インタフェース<span>定数は public static final、メソッドは public abstract。new 不可</span></div>
+      <div class="box b2">default<span>中身付き。クラス優先、具体的なほう優先、決まらなければエラー</span></div>
+      <div class="box b3">static・private<span>static は I.s()。private は共通処理用、private static も可</span></div>
+      <div class="box b4">シール・クラス<span>sealed＋permits。子は final・sealed・non-sealed</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:60%">こんなとき</th><th>結果</th></tr>
+        <tr><td class="l">実装メソッドに public を付けない</td><td class="x">コンパイルエラー</td></tr>
+        <tr><td class="l">default で toString を書く</td><td class="x">コンパイルエラー</td></tr>
+        <tr><td class="l">インタフェース型の変数で static を呼ぶ</td><td class="x">コンパイルエラー</td></tr>
+        <tr><td class="l">non-sealed の子をさらに継承</td><td class="t">OK</td></tr>
+        <tr><td class="l">レコードでシール・インタフェースを実装</td><td class="t">OK（暗黙に final）</td></tr>
+      </table>
+      <div class="point"><b>次は #13 例外処理。</b>チェック例外と非チェック例外、try-catch・finally・try-with-resources・マルチキャッチへ進む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
