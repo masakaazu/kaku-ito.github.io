@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CCNA #06 スイッチの動作 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">CCNA（200-301 v1.1）　1.0 ネットワークの基礎　#06</div>
+  <h1>スイッチの動作</h1>
+  <p>出題範囲 1.13 ― フレームと MAC アドレス、MAC アドレスの学習とエージング、転送・フィルタリング・フラッディングの判断、MAC アドレステーブル、フラッディングが続く原因、IOS での確認</p>
+  <div class="refs-legend">各ページの下に、根拠にしたCiscoの資料やRFCを書いた（青い文字を押すと開く）</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>1.13 Describe switching concepts</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 フレームと MAC アドレス<span>フレームの欄、宛先と送信元、ユニキャスト・マルチキャスト・ブロードキャスト</span></div>
+      <div class="box b2">2 学習とエージング<span>送信元で学ぶ、VLAN ごとの表、300 秒、静的アドレス、加速エージング</span></div>
+      <div class="box b3">3 転送の判断<span>転送・フィルタリング・フラッディング、未知ユニキャスト、ストアアンドフォワードとカットスルー</span></div>
+      <div class="box b4">4 フラッディングが続くとき・IOS<span>非対称ルーティング・TCN・表のあふれ、show mac address-table</span></div>
+    </div>
+    <div>
+      <div class="cap">スイッチがフレーム 1 つごとにすること（Claude が作成）</div>
+      <svg width="400" height="230" viewBox="0 0 400 230">
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="20" y="10" width="360" height="40" rx="8" fill="#1f3a68"/>
+          <text x="200" y="28" fill="#fff"><tspan font-weight="700">① 学習</tspan>：送信元 MAC ＋ 受け取ったポート</text>
+          <text x="200" y="43" fill="#dfe7f3" font-size="10">表に書く（すでにあれば時間をリセット）</text>
+          <rect x="20" y="64" width="360" height="40" rx="8" fill="#5b80bf"/>
+          <text x="200" y="82" fill="#fff"><tspan font-weight="700">② 宛先を表で引く</tspan>（受け取った VLAN の表）</text>
+          <text x="200" y="97" fill="#eef2f8" font-size="10">宛先 MAC で探す</text>
+          <rect x="20" y="120" width="112" height="56" rx="8" fill="#eef2f8" stroke="#1f3a68"/>
+          <text x="76" y="142" fill="#1f3a68"><tspan font-weight="700">転送</tspan></text>
+          <text x="76" y="160" fill="#1f3a68" font-size="10">別のポートにある</text>
+          <rect x="144" y="120" width="112" height="56" rx="8" fill="#eef2f8" stroke="#1f3a68"/>
+          <text x="200" y="142" fill="#1f3a68"><tspan font-weight="700">フィルタリング</tspan></text>
+          <text x="200" y="160" fill="#1f3a68" font-size="10">同じポートにある</text>
+          <rect x="268" y="120" width="112" height="56" rx="8" fill="#fff4e8" stroke="#b25000"/>
+          <text x="324" y="142" fill="#7a3a00"><tspan font-weight="700">フラッディング</tspan></text>
+          <text x="324" y="160" fill="#7a3a00" font-size="10">ない・全員あて</text>
+          <text x="200" y="204" fill="#4a5a78" font-size="10.5">使われない行は時間がたつと消える（エージング）</text>
+        </g>
+      </svg>
+      <div class="point"><b>芯：</b>送信元で<b>学ぶ</b>、宛先で<b>送り先を決める</b>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco CCNA Exam v1.1 (200-301) Exam Topics</a>（1.13 Describe switching concepts: MAC learning and aging／Frame switching／Frame flooding／MAC address table）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sys_mgmt/b_179_sys_mgmt_9300_cg/administering_the_device.html">System Management CG IOS XE 17.9.x（Catalyst 9300）「Administering the Device」</a>（learning the source address of packets it receives on each port／forwards the packet only to the port associated with the destination address／If the destination address is on the port that sent the packet, the packet is filtered）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>フレームと MAC アドレス</h1>
+  <p>スイッチが読むのは、先頭の 12 バイト。</p>
+  <div class="foot"><span>CCNA #06 スイッチの動作</span><span>1.13</span></div>
+</section>
+
+<section class="slide">
+  <h1>イーサネットフレームの形</h1>
+  <div class="stack">
+    <svg width="820" height="96" viewBox="0 0 820 96">
+      <g font-size="11.5" text-anchor="middle">
+        <rect x="6" y="18" width="96" height="40" fill="#8a9bb8"/><text x="54" y="42" fill="#fff">プリアンブル</text>
+        <rect x="102" y="18" width="50" height="40" fill="#8a9bb8"/><text x="127" y="42" fill="#fff">SFD</text>
+        <rect x="152" y="18" width="130" height="40" fill="#b25000"/><text x="217" y="42" fill="#fff"><tspan font-weight="700">宛先 MAC</tspan></text>
+        <rect x="282" y="18" width="130" height="40" fill="#1f3a68"/><text x="347" y="42" fill="#fff"><tspan font-weight="700">送信元 MAC</tspan></text>
+        <rect x="412" y="18" width="70" height="40" fill="#5b80bf"/><text x="447" y="42" fill="#fff">タイプ</text>
+        <rect x="482" y="18" width="250" height="40" fill="#eef2f8" stroke="#5b80bf"/><text x="607" y="42" fill="#1f3a68">データ（IP パケットなど）</text>
+        <rect x="732" y="18" width="82" height="40" fill="#7a3a00"/><text x="773" y="42" fill="#fff">FCS</text>
+        <text x="54" y="12" fill="#4a5a78" font-size="10">7</text><text x="127" y="12" fill="#4a5a78" font-size="10">1</text>
+        <text x="217" y="12" fill="#4a5a78" font-size="10">6</text><text x="347" y="12" fill="#4a5a78" font-size="10">6</text>
+        <text x="447" y="12" fill="#4a5a78" font-size="10">2</text><text x="607" y="12" fill="#4a5a78" font-size="10">46〜1500</text>
+        <text x="773" y="12" fill="#4a5a78" font-size="10">4（バイト）</text>
+        <text x="217" y="78" fill="#7a3a00" font-size="10.5">→ 送り先を決める</text>
+        <text x="347" y="78" fill="#1f3a68" font-size="10.5">→ 学習に使う</text>
+        <text x="773" y="78" fill="#7a3a00" font-size="10.5">→ CRC で傷を調べる</text>
+      </g>
+    </svg>
+    <div class="cols">
+      <table class="mx">
+        <tr><th style="width:28%">欄</th><th>役目</th></tr>
+        <tr><td class="t">プリアンブル</td><td>1・0 のくり返しで「フレームが来る」と知らせる</td></tr>
+        <tr><td class="t">SFD（SOF）</td><td>宛先の直前の 1 バイト。最後が 1 1 で始まりを示す</td></tr>
+        <tr><td class="t">タイプ</td><td>上の層のプロトコル（802.3 の形では長さ）</td></tr>
+        <tr><td class="t">データ</td><td>最小 64 バイトのフレームになるよう、足りなければ埋める</td></tr>
+      </table>
+      <div>
+        <div class="point warn"><b>宛先が先：</b>イーサネットは<b>宛先 → 送信元</b>の順。IP ヘッダーの「送信元 → 宛先」と逆なので注意。</div>
+        <div class="point"><b>アドレスの種類：</b>送信元は<b>いつもユニキャスト</b>。宛先はユニキャスト・マルチキャスト・ブロードキャストのどれにもなる。</div>
+      </div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/en/US/docs/internetworking/troubleshooting/guide/tr1904.pdf">Cisco Internetworking Troubleshooting Handbook「Troubleshooting Ethernet」（tr1904）</a>（Figure 4-2 Preamble 7, SOF 1, Destination address 6, Source address 6, Type 2, Data 46-1500, FCS 4／The preamble tells receiving stations that a frame is coming／This byte ends with 2 consecutive 1 bits／The source address is always a unicast (single node) address, whereas the destination address may be unicast, multicast (group), or broadcast／padding bytes are inserted to ensure at least a 64-byte frame／4-byte frame check sequence (FCS) field containing a cyclic redundancy check (CRC) value）</div>
+</section>
+
+<section class="slide">
+  <h1>MAC アドレスの読み方</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">48 ビット＝前 24（OUI）＋後ろ 24</div>
+      <svg width="400" height="170" viewBox="0 0 400 170">
+        <g font-size="11" text-anchor="middle">
+          <rect x="10" y="10" width="190" height="34" fill="#1f3a68"/><text x="105" y="31" fill="#fff">OUI（IEEE が会社に）</text>
+          <rect x="200" y="10" width="190" height="34" fill="#5b80bf"/><text x="295" y="31" fill="#fff">会社が決める</text>
+          <text x="105" y="62" fill="#1f3a68" font-family="Menlo, monospace">fc58.9a</text><text x="295" y="62" fill="#1f3a68" font-family="Menlo, monospace">02.7382</text>
+          <text x="200" y="88" fill="#4a5a78" font-size="10.5">最初のオクテットの下の 2 ビットに意味がある</text>
+          <rect x="60" y="98" width="280" height="30" fill="#eef2f8" stroke="#5b80bf"/>
+          <text x="200" y="118" fill="#1f3a68" font-family="Menlo, monospace">x x x x x x <tspan fill="#5b80bf" font-weight="700">U/L</tspan> <tspan fill="#b25000" font-weight="700">I/G</tspan></text>
+          <text x="120" y="152" fill="#5b80bf" font-size="10">U/L：0＝IEEE の割り当て</text>
+          <text x="290" y="152" fill="#b25000" font-size="10">I/G：1＝グループあて</text>
+        </g>
+      </svg>
+      <div class="point"><b>早わかり（Claude）：</b>最初のオクテットが<b>奇数</b>ならグループあて（マルチキャストかブロードキャスト）。01・33・FF は奇数。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:26%">種類</th><th style="width:34%">例</th><th>スイッチの扱い</th></tr>
+        <tr><td class="t">ユニキャスト</td><td>fc58.9a02.7382</td><td>表にあれば 1 ポートへ</td></tr>
+        <tr><td class="t">ブロードキャスト</td><td>ffff.ffff.ffff</td><td>VLAN の全ポートへ</td></tr>
+        <tr><td class="t">IPv4 マルチキャスト</td><td>0100.5exx.xxxx</td><td>基本は全ポートへ</td></tr>
+        <tr><td class="t">IPv6 マルチキャスト</td><td>3333.xxxx.xxxx</td><td>基本は全ポートへ</td></tr>
+      </table>
+      <div class="mini">01-00-5E は IPv4 の下位 23 ビット（RFC 1112）、33-33 は IPv6 の下位 32 ビット（RFC 2464）をつける。例：224.0.0.5 → 0100.5e00.0005（Claude が計算）。</div>
+      <div class="point warn"><b>#05 との関係：</b>EUI-64 で反転するのは <b>U/L</b>（下から 2 ビット目）。I/G（いちばん下）ではない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/en/US/docs/internetworking/troubleshooting/guide/tr1904.pdf">tr1904</a>（The first 3 bytes of the addresses are specified by the IEEE on a vendor-dependent basis, and the last 3 bytes are specified by the … vendor）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc9542#section-2.1.1">RFC 9542 2.1.1</a>（M bit … "group" or "multicast" bit. If it is zero, the MAC address is unicast. If it is a one, the address is groupcast (multicast or broadcast)／X bit … "universal/local" bit）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc1112">RFC 1112 6.4</a>（01-00-5E-00-00-00）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc2464#section-7">RFC 2464 7</a>（first two octets are the value 3333）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/10543-chapter20.html">Doc 10543</a>（Broadcasts and multicasts are also flooded）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>学習とエージング</h1>
+  <p>送信元を見て覚え、使わなければ忘れる。</p>
+  <div class="foot"><span>CCNA #06 スイッチの動作</span><span>1.13</span></div>
+</section>
+
+<section class="slide">
+  <h1>表ができるまで</h1>
+  <div class="cols wide-r">
+    <div>
+      <ol class="steps">
+        <li>表は空。A（Gi1/0/1）が B あてに送る</li>
+        <li><b>学習：</b>送信元 A → Gi1/0/1</li>
+        <li>B は表にない → <b>フラッディング</b>（Gi1/0/2・Gi1/0/3）</li>
+        <li>B（Gi1/0/2）が返事 → <b>学習：</b>B → Gi1/0/2</li>
+        <li>A は表にある → Gi1/0/1 だけへ<b>転送</b>。C には届かない</li>
+      </ol>
+      <div class="mini">A・B・C とポートは Claude の例。</div>
+    </div>
+    <div>
+      <svg width="440" height="260" viewBox="0 0 440 260">
+        <g font-size="11" text-anchor="middle">
+          <rect x="150" y="96" width="140" height="44" rx="8" fill="#1f3a68"/><text x="220" y="123" fill="#fff">スイッチ（VLAN 10）</text>
+          <rect x="20" y="200" width="80" height="34" rx="6" fill="#5b80bf"/><text x="60" y="222" fill="#fff">A</text>
+          <rect x="180" y="200" width="80" height="34" rx="6" fill="#b25000"/><text x="220" y="222" fill="#fff">B</text>
+          <rect x="340" y="200" width="80" height="34" rx="6" fill="#8a9bb8"/><text x="380" y="222" fill="#fff">C</text>
+          <line x1="60" y1="200" x2="180" y2="140" stroke="#1f3a68" stroke-width="2"/><text x="96" y="168" fill="#1f3a68" font-size="10">Gi1/0/1</text>
+          <line x1="220" y1="200" x2="220" y2="140" stroke="#1f3a68" stroke-width="2"/><text x="248" y="176" fill="#1f3a68" font-size="10">Gi1/0/2</text>
+          <line x1="380" y1="200" x2="260" y2="140" stroke="#1f3a68" stroke-width="2"/><text x="346" y="168" fill="#1f3a68" font-size="10">Gi1/0/3</text>
+          <rect x="70" y="8" width="300" height="72" rx="8" fill="#eef2f8" stroke="#5b80bf"/>
+          <text x="220" y="26" fill="#1f3a68"><tspan font-weight="700">MAC アドレステーブル（VLAN 10）</tspan></text>
+          <text x="220" y="46" fill="#1f3a68" font-family="Menlo, monospace" font-size="10.5">A  DYNAMIC  Gi1/0/1  ← ②</text>
+          <text x="220" y="64" fill="#7a3a00" font-family="Menlo, monospace" font-size="10.5">B  DYNAMIC  Gi1/0/2  ← ④</text>
+          <text x="220" y="254" fill="#4a5a78" font-size="10">③ で C にも届くが、C は自分あてでないので捨てる</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/10543-chapter20.html">Cisco Doc 10543「Troubleshooting Transparent Bridging Environments」</a>（they learn the topology of the network by analysis of the source address of inbound frames／If … a bridge sees a frame arrive on Line 1 from Host A, the bridge concludes that Host A can be reached through the network connected to Line 1／If no map is found, the frame is flooded to all outbound ports）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/switches/catalyst-6000-series-switches/23563-143.html">Doc 23563</a>（Limited flooding is part of the normal switching process）／<a class="src" href="https://www.cisco.com/en/US/docs/internetworking/troubleshooting/guide/tr1904.pdf">tr1904</a>（Each station must examine received frames to determine whether the station is a destination）</div>
+</section>
+
+<section class="slide">
+  <h1>MAC アドレステーブルの中身</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">Device# show mac address-table
+          Mac Address Table
+-------------------------------------------
+Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+ All    0180.c200.0000    STATIC      CPU
+ All    ffff.ffff.ffff    STATIC      CPU
+   1    780c.f0e1.1dc3    STATIC      Vl1
+   1    fc58.9a02.7382    DYNAMIC     Te1/0/1</pre>
+      <div class="mini">9300 CR 17.9 の出力例から 4 行を抜いて並べた。</div>
+      <table class="mx">
+        <tr><th style="width:26%">Type</th><th>意味</th></tr>
+        <tr><td class="t">DYNAMIC</td><td>学習した。使わないと消える</td></tr>
+        <tr><td class="t">STATIC</td><td>手で入れた・初めからある。消えない</td></tr>
+        <tr><td class="t">CPU</td><td>スイッチ自身が受け取るアドレス</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="box b1">VLAN ごとの表<span>スイッチは VLAN ごとに論理的な表を持つ。<b>VLAN 20 で知っているアドレスも、VLAN 10 では未知</b>。フラッディングも受け取った VLAN の中だけ。</span></div>
+      <div class="box b2">呼び名<span>MAC アドレステーブル＝L2 の転送テーブル＝<b>CAM テーブル</b>。いっぱいになると新しく学習できない。</span></div>
+      <table class="mx">
+        <tr><th>初期値</th><th>中身</th></tr>
+        <tr><td class="t">エージング</td><td><b>300 秒</b></td></tr>
+        <tr><td class="t">動的アドレス</td><td>自動で学習</td></tr>
+        <tr><td class="t">静的アドレス</td><td>設定なし</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/command_reference/b_179_9300_cr/system_management_commands.html">Command Reference IOS XE 17.9.x（Catalyst 9300）「show mac address-table」</a>（出力例）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sys_mgmt/b_179_sys_mgmt_9300_cg/administering_the_device.html">9300 Sys Mgmt CG 17.9</a>（Dynamic address—A source MAC address that the device learns and then ages／Static address—A manually entered unicast address that does not age／Each VLAN maintains its own logical address table. A known address in one VLAN is unknown in another／Aging time 300 seconds）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/switches/catalyst-6000-series-switches/23563-143.html">Doc 23563</a>（forwarding tables (Layer 2 (L2) tables, Content Addressable Memory (CAM) tables)）</div>
+</section>
+
+<section class="slide">
+  <h1>エージングと加速エージング</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">最後に使われてからの時間（Claude が作成）</div>
+      <svg width="400" height="170" viewBox="0 0 400 170">
+        <g font-size="11" text-anchor="middle">
+          <line x1="20" y1="60" x2="380" y2="60" stroke="#1f3a68" stroke-width="3"/>
+          <circle cx="30" cy="60" r="7" fill="#1f3a68"/><text x="30" y="40" fill="#1f3a68">学習・更新</text>
+          <circle cx="360" cy="60" r="7" fill="#b25000"/><text x="360" y="40" fill="#7a3a00">消える</text>
+          <text x="195" y="84" fill="#1f3a68"><tspan font-weight="700">ふつう 300 秒</tspan></text>
+          <line x1="20" y1="130" x2="380" y2="130" stroke="#5b80bf" stroke-width="3" stroke-dasharray="6 4"/>
+          <circle cx="30" cy="130" r="7" fill="#1f3a68"/><circle cx="110" cy="130" r="7" fill="#b25000"/>
+          <text x="70" y="114" fill="#7a3a00">消える</text>
+          <text x="215" y="154" fill="#5b80bf"><tspan font-weight="700">STP の再構成中</tspan>：forward delay（初期 15 秒）</text>
+        </g>
+      </svg>
+      <div class="point"><b>なぜ消す：</b>機器が外れたり別のポートに移ったりしても、表が古いままにならないように。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:44%">設定</th><th>意味</th></tr>
+        <tr><td class="t">aging-time 300</td><td>初期値</td></tr>
+        <tr><td class="t">10〜1000000</td><td>変えられる範囲（秒）</td></tr>
+        <tr><td class="t">aging-time 0</td><td><b>エージングしない</b></td></tr>
+        <tr><td class="t">… vlan 2</td><td>VLAN ごとに指定</td></tr>
+      </table>
+      <div class="box b3">加速エージング<span>STP の再構成で多くの機器の場所が変わりうる。5 分待つと届かない時間が長いので、<b>forward delay の値まで短くして</b>学習しなおす。VLAN ごと（#09）。</span></div>
+      <div class="point warn"><b>静的アドレスはエージングされない。</b>消えたあとの宛先は、次に学習するまで<b>未知ユニキャスト</b>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sys_mgmt/b_179_sys_mgmt_9300_cg/administering_the_device.html">9300 Sys Mgmt CG 17.9</a>（As devices are added or removed … aging out those that are not in use／The range is 10 to 1000000 seconds. The default is 300. You can also enter 0, which disables aging. Static address entries are never aged）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/c9000/lyr2-fwd/stp/stp-configuration-guide/m-stp.html">STP Configuration Guide IOS XE 17「Accelerated aging」</a>（The accelerated aging is the same as the forward-delay parameter value／the switch accelerates aging on a per-VLAN basis）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/19120-122.html">Cisco Doc 19120</a>（The forward delay is the time spent in the listen and learn state. This time is equal to 15 seconds by default）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>転送の判断</h1>
+  <p>送る・捨てる・みんなに流す。</p>
+  <div class="foot"><span>CCNA #06 スイッチの動作</span><span>1.13</span></div>
+</section>
+
+<section class="slide">
+  <h1>3 つの動きを例で確かめる</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+  10    0011.2233.4401    DYNAMIC     Gi1/0/1
+  10    0011.2233.4402    DYNAMIC     Gi1/0/2
+  10    0011.2233.4403    DYNAMIC     Gi1/0/2
+  20    0011.2233.4404    DYNAMIC     Gi1/0/5</pre>
+      <div class="mini">表は Claude の例（列の形は 9300 CR）。Gi1/0/2 の先に 2 台（ハブや別のスイッチの先）。</div>
+      <div class="point"><b>手順：</b>①受け取った VLAN の表だけを見る → ②宛先の行があるか → ③あれば受け取ったポートと同じか。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:36%">受け取ったフレーム</th><th>動き</th></tr>
+        <tr><td class="t">Gi1/0/1 から<br>宛先 …4403</td><td><b>転送</b>：Gi1/0/2 だけ</td></tr>
+        <tr><td class="t">Gi1/0/2 から<br>宛先 …4403</td><td><b>フィルタリング</b>：同じポートの先なので捨てる</td></tr>
+        <tr><td class="t">Gi1/0/1 から<br>宛先 …4404</td><td><b>フラッディング</b>：VLAN 10 では未知（VLAN 20 の行は使わない）</td></tr>
+        <tr><td class="t">宛先 ffff.ffff.ffff</td><td><b>フラッディング</b>：VLAN の受け取ったポート以外の全部</td></tr>
+      </table>
+      <div class="point warn"><b>フラッディングの範囲：</b>同じ VLAN の、<b>受け取ったポート以外</b>の、転送中のポート。別の VLAN には出さない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sys_mgmt/b_179_sys_mgmt_9300_cg/administering_the_device.html">9300 Sys Mgmt CG 17.9</a>（forwards the packet only to the port associated with the destination address. If the destination address is on the port that sent the packet, the packet is filtered and not forwarded／A known address in one VLAN is unknown in another）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/switches/catalyst-6000-series-switches/23563-143.html">Doc 23563</a>（flooded out of all forwarding ports in its VLAN (except the port it was received on)）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/lan-switching/spanning-tree-protocol/10543-chapter20.html">Doc 10543</a>（Broadcasts and multicasts are also flooded in this way）</div>
+</section>
+
+<section class="slide">
+  <h1>ストアアンドフォワードとカットスルー</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">いつ送り始めるか（Claude が作成）</div>
+      <svg width="400" height="190" viewBox="0 0 400 190">
+        <g font-size="11" text-anchor="middle">
+          <text x="200" y="16" fill="#4a5a78" font-size="10">受け取るフレーム（左から順に届く）</text>
+          <rect x="20" y="24" width="60" height="28" fill="#b25000"/><text x="50" y="43" fill="#fff">宛先</text>
+          <rect x="80" y="24" width="60" height="28" fill="#1f3a68"/><text x="110" y="43" fill="#fff">送信元</text>
+          <rect x="140" y="24" width="180" height="28" fill="#eef2f8" stroke="#5b80bf"/><text x="230" y="43" fill="#1f3a68">データ</text>
+          <rect x="320" y="24" width="60" height="28" fill="#7a3a00"/><text x="350" y="43" fill="#fff">FCS</text>
+          <line x1="80" y1="58" x2="80" y2="92" stroke="#5b80bf" stroke-width="2"/><polygon points="74,88 86,88 80,98" fill="#5b80bf"/>
+          <text x="80" y="116" fill="#5b80bf"><tspan font-weight="700">カットスルー</tspan></text>
+          <text x="80" y="132" fill="#5b80bf" font-size="10">宛先を読んだら送る</text>
+          <line x1="380" y1="58" x2="380" y2="92" stroke="#1f3a68" stroke-width="2"/><polygon points="374,88 386,88 380,98" fill="#1f3a68"/>
+          <text x="320" y="116" fill="#1f3a68"><tspan font-weight="700">ストアアンドフォワード</tspan></text>
+          <text x="320" y="132" fill="#1f3a68" font-size="10">全部ためて CRC を調べてから</text>
+          <text x="200" y="172" fill="#4a5a78" font-size="10">遅れ：カットスルー ＜ ストアアンドフォワード</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%"></th><th>ストアアンドフォワード</th><th>カットスルー</th></tr>
+        <tr><td class="t">送り始め</td><td>全部受け取って調べてから</td><td>宛先を読んだらすぐ</td></tr>
+        <tr><td class="t">CRC</td><td>送る<b>前に</b>調べる</td><td>調べる前に送り始める</td></tr>
+        <tr><td class="t">速さ</td><td>遅い</td><td><b>速い</b></td></tr>
+        <tr><td class="t">例</td><td><b>Catalyst 9300</b>（いつも）</td><td>Nexus 9000（初期設定）</td></tr>
+      </table>
+      <div class="point"><b>覚え方：</b>store＝ためる、forward＝送る、cut-through＝突き抜ける（Claude の言い方）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/7-x/layer2/configuration/guide/b_Cisco_Nexus_9000_Series_NX-OS_Layer_2_Switching_Configuration_Guide_7x/Configuring_Switching_Modes.html">Nexus 9000 NX-OS Layer 2 Switching CG 7.x「Configuring Switching Modes」</a>（Cut-through switching mode is enabled by default … start forwarding the frame as soon as the switch has read the destination details in the packet header／checks each frame for cyclic redundancy check (CRC) errors before forwarding … slower than the switching speed in cut-through switching mode）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sys_mgmt/b_179_sys_mgmt_9300_cg/administering_the_device.html">9300 Sys Mgmt CG 17.9</a>（The device always uses the store-and-forward method: complete packets are stored and checked for errors before transmission）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>フラッディングが続くとき</h1>
+  <p>少しはふつう、続くのは原因がある。</p>
+  <div class="foot"><span>CCNA #06 スイッチの動作</span><span>1.13</span></div>
+</section>
+
+<section class="slide">
+  <h1>ユニキャストのフラッディングが続く 3 つの原因</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:24%">原因</th><th>なぜ宛先が表にない</th><th style="width:28%">対策の例</th></tr>
+        <tr><td class="t">非対称ルーティング</td><td>行きと帰りの道がちがい、相手を送信元とするフレームが届かない</td><td>ARP タイムアウトとエージングを近づける</td></tr>
+        <tr><td class="t">STP の TCN</td><td>エージングが短くなり表が消える。ポートのフラップでくり返す</td><td>端末ポートに <b>PortFast</b>（#09）</td></tr>
+        <tr><td class="t">表のあふれ</td><td>表がいっぱいで学習できない（MAC フラッディング攻撃）</td><td><b>ポートセキュリティ</b>（#23）</td></tr>
+      </table>
+      <div class="point"><b>見つけ方：</b>PC でパケットを取り込み、その PC あてでないユニキャストが何度も見えたらフラッディングを疑う。</div>
+    </div>
+    <div>
+      <div class="cap">非対称ルーティング（Doc 23563 の例を簡単にした）</div>
+      <svg width="400" height="190" viewBox="0 0 400 190">
+        <g font-size="10.5" text-anchor="middle">
+          <rect x="10" y="80" width="60" height="30" rx="6" fill="#5b80bf"/><text x="40" y="99" fill="#fff">S1</text>
+          <rect x="330" y="80" width="60" height="30" rx="6" fill="#5b80bf"/><text x="360" y="99" fill="#fff">S2</text>
+          <rect x="90" y="80" width="70" height="30" rx="6" fill="#1f3a68"/><text x="125" y="99" fill="#fff">スイッチA</text>
+          <rect x="240" y="80" width="70" height="30" rx="6" fill="#1f3a68"/><text x="275" y="99" fill="#fff">スイッチB</text>
+          <rect x="165" y="14" width="70" height="28" rx="6" fill="#8a9bb8"/><text x="200" y="32" fill="#fff">ルーターA</text>
+          <rect x="165" y="150" width="70" height="28" rx="6" fill="#8a9bb8"/><text x="200" y="168" fill="#fff">ルーターB</text>
+          <path d="M125 80 L180 42" stroke="#1f3a68" stroke-width="2.5" fill="none"/><path d="M220 42 L275 80" stroke="#1f3a68" stroke-width="2.5" fill="none"/>
+          <path d="M275 110 L220 150" stroke="#b25000" stroke-width="2.5" fill="none"/><path d="M180 150 L125 110" stroke="#b25000" stroke-width="2.5" fill="none"/>
+          <text x="200" y="62" fill="#1f3a68">行き S1→S2</text>
+          <text x="200" y="126" fill="#7a3a00">帰り S2→S1</text>
+          <text x="62" y="140" fill="#7a3a00" font-size="9.5">A は S2 の MAC を</text><text x="62" y="154" fill="#7a3a00" font-size="9.5">見ない</text>
+        </g>
+      </svg>
+      <div class="mini">ルーターをこえると送信元 MAC は書きかわるので、スイッチ A は S2 の MAC を学習できない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/switches/catalyst-6000-series-switches/23563-143.html">Cisco Doc 23563「Unicast Flooding in Switched Campus Networks」</a>（Cause 1: Asymmetric Routing … switch A will not "see" traffic from the S2 MAC address … since the source MAC address will be rewritten by router B／bring the router's ARP timeout and the switches' forwarding table-aging time close to each other／Cause 2 … TCN operates by shortening the forwarding table aging time … Ports with the STP portfast feature enabled will not cause TCNs／Cause 3 … one host starts generating frames each sourced with different MAC address … limiting the number of MAC addresses learned on untrusted ports by using the port security feature／unicast packets not involving the workstation should not be seen repeatedly on the port）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第5章</div>
+  <h1>IOS での確認と設定</h1>
+  <p>表を見て、必要なら手を入れる。</p>
+  <div class="foot"><span>CCNA #06 スイッチの動作</span><span>1.13</span></div>
+</section>
+
+<section class="slide">
+  <h1>show mac address-table と関連コマンド</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">Device# show mac address-table address fc58.9a02.7382
+Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+   1    fc58.9a02.7382    DYNAMIC     Te1/0/1
+Total Mac Addresses for this criterion: 1
+
+Device# show mac address-table aging-time vlan 1
+Global Aging Time:  300
+Vlan    Aging Time
+----    ----------
+   1     300</pre>
+      <div class="mini">9300 CR 17.9 の出力例から（空白を整えた）。</div>
+<pre class="cli small">Device(config)# mac address-table aging-time 500 vlan 2
+Device(config)# mac address-table static c2f3.220a.12f4 vlan 4 interface gi1/0/1
+Device# clear mac address-table dynamic interface gi1/0/1</pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:46%">コマンド</th><th>すること</th></tr>
+        <tr><td class="t">show mac address-table</td><td>表を全部（dynamic・static・vlan・interface でしぼる）</td></tr>
+        <tr><td class="t">… address M</td><td>1 つの MAC のポート</td></tr>
+        <tr><td class="t">… count</td><td>行の数</td></tr>
+        <tr><td class="t">… aging-time</td><td>エージングタイム</td></tr>
+        <tr><td class="t">mac address-table static</td><td>静的な行（drop で捨てる）</td></tr>
+        <tr><td class="t">clear … dynamic</td><td>動的な行を消す</td></tr>
+        <tr><td class="t">no mac address-table learning vlan</td><td>学習を止める</td></tr>
+      </table>
+      <div class="point warn"><b>学習を止めると：</b>ポートが 3 つ以上の VLAN では、入るフレームが<b>すべてフラッディング</b>。Cisco が勧めるのはポートが 2 つの VLAN だけ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/command_reference/b_179_9300_cr/system_management_commands.html">9300 CR 17.9「show mac address-table」</a>（address … for a specific MAC address／count … the number of entries／aging-time／出力例）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sys_mgmt/b_179_sys_mgmt_9300_cg/administering_the_device.html">9300 Sys Mgmt CG 17.9</a>（mac address-table aging-time 500 vlan 2／mac address-table static c2f3.220a.12f4 vlan 4 interface gigabitethernet 1/0/1／… vlan 4 drop／clear mac address-table dynamic interface／If you disable MAC address learning on a VLAN with more than two ports, every packet entering the switch is flooded in that VLAN domain）</div>
+</section>
+
+<section class="slide">
+  <h1>問われ方とまちがえやすい点</h1>
+  <table class="mx">
+    <tr><th style="width:40%">こう聞かれたら</th><th>答えの考え方</th></tr>
+    <tr><td class="t">何を見て学習する</td><td style="text-align:left"><b>送信元</b> MAC と受け取ったポート（宛先ではない）</td></tr>
+    <tr><td class="t">宛先が表にない</td><td style="text-align:left">同じ VLAN の<b>受け取ったポート以外</b>へフラッディング</td></tr>
+    <tr><td class="t">宛先が同じポートの先</td><td style="text-align:left"><b>フィルタリング</b>（捨てる）</td></tr>
+    <tr><td class="t">別の VLAN で学習済み</td><td style="text-align:left">この VLAN では<b>未知</b> → フラッディング</td></tr>
+    <tr><td class="t">エージングの初期値</td><td style="text-align:left"><b>300 秒</b>。0 はエージングしない。STP 再構成中は forward delay</td></tr>
+    <tr><td class="t">静的アドレス</td><td style="text-align:left">エージングしない・再起動でも残る・clear … dynamic で消えない</td></tr>
+    <tr><td class="t">CRC を調べてから送る</td><td style="text-align:left"><b>ストアアンドフォワード</b>（カットスルーは宛先を読んだらすぐ）</td></tr>
+    <tr><td class="t">フラッディングが止まらない</td><td style="text-align:left">非対称ルーティング・TCN（PortFast）・表のあふれ（ポートセキュリティ）</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">フレーム<span>宛先 → 送信元 → タイプ → データ → FCS。送信元はいつもユニキャスト。最初のオクテットが奇数ならグループあて</span></div>
+      <div class="box b2">学習とエージング<span>送信元で学ぶ。表は VLAN ごと。300 秒で消える。静的は消えない。STP 再構成中は短縮</span></div>
+      <div class="box b3">転送の判断<span>表にある→転送、同じポート→フィルタリング、ない・全員あて→フラッディング</span></div>
+      <div class="box b4">続くフラッディングと IOS<span>非対称ルーティング・TCN・表のあふれ。show mac address-table で確かめる</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:44%">数字・値</th><th>中身</th></tr>
+        <tr><td class="t">6・6・2・4</td><td>宛先・送信元・タイプ・FCS（バイト）</td></tr>
+        <tr><td class="t">ffff.ffff.ffff</td><td>ブロードキャスト</td></tr>
+        <tr><td class="t">0100.5e・3333</td><td>IPv4・IPv6 マルチキャスト</td></tr>
+        <tr><td class="t">300 秒</td><td>エージングの初期値</td></tr>
+        <tr><td class="t">15 秒</td><td>forward delay の初期値（加速エージング）</td></tr>
+      </table>
+      <div class="point"><b>この分野で 1.0 ネットワークの基礎（#01〜#06）がそろった。</b>VLAN とトランク（#07）から先は、表を VLAN ごとに分ける話へ進む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
