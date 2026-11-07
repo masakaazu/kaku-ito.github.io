@@ -57,7 +57,9 @@
     escapeHtml(text)
       .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
       .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
-      .replace(/&lt;(https?:[^&\s]+)&gt;/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+      .replace(/&lt;(https?:[^&\s]+)&gt;/g, '<a href="$1" target="_blank" rel="noopener">$1</a>')
+      // `コマンド` のようにバッククォートで囲んだところは等幅で出す
+      .replace(/`([^`]+)`/g, "<code>$1</code>");
 
   const shuffle = (list) => {
     const a = list.slice();
@@ -159,13 +161,22 @@
         return;
       }
       if (inQuestions) {
+        // 問の下の ``` で囲んだ行は、設定や show コマンドの出力としてそのまま出す
+        if (question && /^\s*```/.test(line)) {
+          question.inCode = !question.inCode;
+          return;
+        }
+        if (question && question.inCode) {
+          question.code.push(line.replace(/^ {2}/, ""));
+          return;
+        }
         if (/^##\s/.test(line)) inQuestions = false;
         else {
           if (/^###\s/.test(line)) {
             qGroup = line.replace(/^###\s+/, "");
             question = null;
           } else if (/^####\s/.test(line)) {
-            question = { id: line.replace(/^####\s+(問\s*)?/, "").trim(), section: qGroup, text: "", choices: [], answer: -1, explain: "", notes: [], source: "" };
+            question = { id: line.replace(/^####\s+(問\s*)?/, "").trim(), section: qGroup, text: "", code: [], inCode: false, choices: [], answer: -1, explain: "", notes: [], source: "" };
             doc.questions.push(question);
           } else if (question && /^\s*-\s+/.test(line)) {
             const body = line.replace(/^\s*-\s+/, "");
@@ -382,8 +393,8 @@
     stage: 0, // 0＝用語だけ、1＝正式名称（略語のとき）、最後＝意味まで
   };
 
-  // 意味を出したあとのタップで次のカードへ進むか（応用情報だけ）
-  const tapToNext = topic === "ap";
+  // 意味を出したあとのタップで次のカードへ進むか（基本情報以外）
+  const tapToNext = topic !== "fe";
   const lastStage = (term) => (isAbbr(term) ? 2 : 1);
 
   /* 前回間違えたままの用語（回答記録から読む。ログインしていなければ空） */
@@ -406,7 +417,7 @@
 
   /* ---------- 複数の分野をまぜたクイズ（応用情報だけ） ---------- */
 
-  const multiField = topic === "ap" && !!field;
+  const multiField = topic !== "fe" && !!field;
   const docsByField = new Map(); // 分野番号 → 読み込んだ用語集
   const quizFields = new Set(field ? [String(Number(field))] : []); // クイズに出す分野（最初はこのページの分野だけ）
   let statsRows = null; // 回答記録（間違えた問題を探すのに使う）
@@ -428,7 +439,8 @@
   const fieldCatalog = () => {
     const catalog = window.SITE_CATALOG;
     if (!catalog) return [];
-    const names = new Map((catalog.fields || []).map((f) => [String(f.no), f.name]));
+    const own = catalog.topics && catalog.topics[topic] && catalog.topics[topic].fields;
+    const names = new Map((own || catalog.fields || []).map((f) => [String(f.no), f.name]));
     const seen = new Set();
     return ((catalog.materials && catalog.materials[topic]) || [])
       .filter((m) => m.type === "terms" && m.fields && m.fields.length && /^terms\/\d+\.html$/.test(m.file))
@@ -663,6 +675,7 @@
       <div class="quiz-card">
         <p class="flash-count">第${quiz.index + 1}問 / ${quiz.list.length}<span>${escapeHtml(quizLabel(q, `問題演習${q.section ? `・${q.section}` : ""}`))}</span></p>
         <p class="quiz-question">${inline(q.text)}</p>
+        ${q.code && q.code.length ? `<pre class="quiz-code">${escapeHtml(q.code.join("\n"))}</pre>` : ""}
         <div class="quiz-choices">${q.choices
           .map((c, i) => `<button type="button" class="quiz-choice" data-choice="${i}">${KANA[i]}　${inline(c)}</button>`)
           .join("")}</div>
