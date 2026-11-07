@@ -138,6 +138,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/08.html", title: "CDP・LLDPとEtherChannel 用語集", desc: "CDP・LLDP・LLDP-MEDと show cdp neighbors の読み方、EtherChannel・LACP・PAgP・負荷分散の38語と、出力を読むオリジナル問題30問（出題範囲 2.3・2.4）", fields: [8], pdf: "terms/08.pdf" },
       { type: "terms", file: "terms/09.html", title: "スパニングツリー 用語集", desc: "ルートブリッジ・ルートポート・指定ポートの選び方、Rapid PVST+ のポートの役割と状態、PortFast・BPDUガード・ルートガード・ループガードの34語と、show spanning-tree を読むオリジナル問題30問（出題範囲 2.5）", fields: [9], pdf: "terms/09.pdf" },
       { type: "terms", file: "terms/10.html", title: "無線LAN 用語集", desc: "2.4GHzの重ならないチャネル・SSIDとBSS・RSSIとSNR、WPA2/WPA3・PSKと802.1X・SAE、自律型・CAPWAPとスプリットMAC・FlexConnect・Meraki、APのモード、APとWLCのポートとLAG、WLCのWLAN画面とQoSプロファイルの62語と、オリジナル問題30問（出題範囲 1.11・2.6・2.7・2.9）", fields: [10], pdf: "terms/10.pdf" },
+      { type: "terms", file: "terms/11.html", title: "機器の管理アクセス 用語集", desc: "コンソール・Telnet・SSH・HTTP/HTTPS・クラウド管理、管理用SVIとdefault-gateway、enable secretとパスワードのタイプ・login local・特権レベル、SSHの設定手順とtransport input・access-class、AAAとTACACS+/RADIUS・メソッドリストの34語と、オリジナル問題30問（出題範囲 2.8・4.8・5.3）", fields: [11], pdf: "terms/11.pdf" },
     ],
     ap: [
       { type: "note", file: "notes/apno1.html", title: "TCP/IPとHTTP", desc: "アプリケーション層とHTTPプロトコル", fields: [10] },

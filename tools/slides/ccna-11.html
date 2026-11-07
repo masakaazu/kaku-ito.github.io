@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CCNA #11 機器の管理アクセス 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* WLC の画面を文字で再現する */
+.gui { border: 1px solid #c7c7cc; border-radius: 8px; overflow: hidden; font-size: 12px; background: #fff; }
+.gui .bar { background: #1f3a68; color: #fff; padding: 5px 10px; font-weight: 700; font-size: 12px; }
+.gui .tabs { display: flex; gap: 2px; background: #e5e5ea; padding: 4px 6px 0; }
+.gui .tabs span { padding: 4px 10px; border-radius: 6px 6px 0 0; color: #3a3a3c; font-size: 11.5px; }
+.gui .tabs span.on { background: #fff; color: #1f3a68; font-weight: 700; }
+.gui .body { padding: 6px 10px; }
+.gui .row { display: grid; grid-template-columns: 44% 56%; padding: 3px 0; border-bottom: 1px dashed #e5e5ea; }
+.gui .row:last-child { border-bottom: 0; }
+.gui .row .k { color: #6e6e73; }
+.gui .row .v { color: #1d1d1f; font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11px; }
+.gui .row.on .v { color: #b25000; font-weight: 700; }
+.chk { display: inline-block; width: 11px; height: 11px; border: 1.5px solid #1f3a68; border-radius: 2px; vertical-align: -1px; margin-right: 3px; }
+.chk.y { background: #1f3a68; }
+.num { display: inline-block; width: 18px; height: 18px; border-radius: 50%; background: #b25000; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 18px; margin-right: 4px; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">CCNA（200-301 v1.1）　2.0 ネットワークアクセス・4.0 IPサービス・5.0 セキュリティ　#11</div>
+  <h1>機器の管理アクセス</h1>
+  <p>出題範囲 2.8・4.8・5.3 ― どこから、どうやって、だれが機器に入れるかを決める</p>
+  <div class="refs-legend">各ページの下に、根拠にしたCiscoの資料を書いた（青い文字を押すと開く）</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>出題範囲の3項目を、4章で読む</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 管理アクセスの方法<span>2.8 Describe network device management access（Telnet・SSH・HTTP・HTTPS・console・cloud managed）</span></div>
+      <div class="box b2">2 パスワードと特権レベル<span>5.3 Configure and verify device access control using local passwords</span></div>
+      <div class="box b3">3 SSHの設定<span>4.8 Configure network devices for remote access using SSH</span></div>
+      <div class="box b4">4 AAAとTACACS+・RADIUS<span>2.8（TACACS+/RADIUS）</span></div>
+    </div>
+    <div>
+      <div class="cap">CCNAでの問われ方</div>
+      <table>
+        <tr><td style="width:26%">2.8</td><td><b>Describe</b>。方法ごとのポート番号・暗号化の有無・TACACS+ と RADIUS の違い</td></tr>
+        <tr><td>4.8・5.3</td><td><b>Configure / verify</b>。SSHの手順の抜け、login と login local、enable secret の優先などを設定から読む</td></tr>
+      </table>
+      <div class="point"><b>覚え方の芯：</b>機器に入る道は<b>コンソール</b>（直接）と<b>VTY</b>（ネットワーク）。VTY は「何で入れるか（transport input）」「だれを入れるか（login local・AAA）」「どこから入れるか（access-class）」の3つで守る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco CCNA Exam v1.1 (200-301) Exam Topics</a>（2.8・4.8・5.3）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>管理アクセスの方法</h1>
+  <p>コンソールで直接つなぐか、ネットワーク越しに入るか。ネットワーク越しなら、暗号化するものを選ぶ。</p>
+  <div class="foot"><span>CCNA #11 機器の管理アクセス</span><span>2.8</span></div>
+</section>
+
+<section class="slide">
+  <h1>入り口は2つ：コンソール（直接）と VTY（ネットワーク越し）</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="400" height="300" viewBox="0 0 400 300">
+        <g font-size="12" text-anchor="middle">
+          <rect x="150" y="110" width="110" height="70" rx="10" fill="#1f3a68"/><text x="205" y="140" fill="#fff" font-weight="700">ルーター</text><text x="205" y="160" fill="#fff" font-size="11">／スイッチ</text>
+          <rect x="10" y="230" width="90" height="44" rx="6" fill="#6e6e73"/><text x="55" y="257" fill="#fff">保守用PC</text>
+          <path d="M55 230 Q60 180 150 160" stroke="#6e6e73" stroke-width="3" fill="none"/>
+          <text x="4" y="196" fill="#6e6e73" text-anchor="start">コンソール</text><text x="4" y="212" fill="#6e6e73" font-size="10.5" text-anchor="start">9600 8N1</text>
+          <rect x="290" y="6" width="100" height="40" rx="20" fill="#eef2f8" stroke="#5b80bf"/><text x="340" y="31" fill="#1f3a68">ネットワーク</text>
+          <line x1="300" y1="44" x2="240" y2="110" stroke="#5b80bf" stroke-width="3"/>
+          <rect x="280" y="230" width="110" height="44" rx="6" fill="#5b80bf"/><text x="335" y="250" fill="#fff">管理PC</text><text x="335" y="266" fill="#fff" font-size="10.5">SSH・HTTPS</text>
+          <path d="M335 230 Q370 120 340 46" stroke="#5b80bf" stroke-width="2" fill="none" stroke-dasharray="5 3"/>
+          <rect x="150" y="194" width="110" height="26" rx="5" fill="#fff" stroke="#1f3a68"/><text x="205" y="212" fill="#1f3a68" font-size="11">VTY 0〜15（論理）</text>
+          <text x="130" y="30" fill="#1d1d1f">クラウド管理（Meraki）は</text><text x="130" y="46" fill="#1d1d1f">機器からクラウドへトンネル</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>方法</th><th>ポート</th><th>暗号化</th><th style="width:36%">メモ</th></tr>
+        <tr><td class="t">コンソール</td><td>―</td><td>―</td><td style="text-align:left">直接つなぐ。ネットワークが壊れても使える</td></tr>
+        <tr><td class="t">Telnet</td><td>TCP 23</td><td class="x">なし</td><td style="text-align:left">パスワードも丸見え</td></tr>
+        <tr><td class="t">SSH</td><td>TCP 22</td><td>あり</td><td style="text-align:left">Telnet のかわり。鍵が必要</td></tr>
+        <tr><td class="t">HTTP</td><td>TCP 80</td><td class="x">なし</td><td style="text-align:left"><code>ip http server</code></td></tr>
+        <tr><td class="t">HTTPS</td><td>TCP 443</td><td>あり</td><td style="text-align:left"><code>ip http secure-server</code></td></tr>
+        <tr><td class="t">クラウド</td><td>―</td><td>あり</td><td style="text-align:left">管理のデータだけがクラウドへ</td></tr>
+      </table>
+      <div class="point"><b>VTY：</b>Telnet と SSH のログイン口（仮想のライン）。設定は <b>全部の VTY に同じように</b>入れる（0〜4 だけ設定して 5〜15 を忘れるのがよくあるミス）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/controlling_switch_access_with_passwords_and_privilege_levels.html">Security Configuration Guide 17.9 (Catalyst 9300)「Controlling Switch Access with Passwords and Privilege Levels」</a>（console 9600, 8, 1, no parity・line vty）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_secure_socket_layer_http.html">「Configuring Secure Socket Layer HTTP」</a>／ RFC 854・RFC 4253（ポート）／ <a class="src" href="https://documentation.meraki.com/Architectures_and_Best_Practices/Cisco_Meraki_Best_Practice_Design/Meraki_Cloud_Architecture">Meraki Cloud Architecture</a></div>
+</section>
+
+<section class="slide">
+  <h1>Telnet と SSH：同じ「ログイン」でも、途中で見えるものが違う</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">Telnet（TCP 23）を途中で盗み見ると</div>
+<pre class="cli small">User Access Verification
+Username: <span class="hl">netadmin</span>
+Password: <span class="hl">Adm1n!</span>
+R1&gt;enable
+Password: <span class="hl">Str0ngPass!</span>
+R1#show running-config</pre>
+      <div class="point warn" style="margin-top:6px">ユーザー名・パスワード・入れたコマンドが<b>全部そのまま</b>読める。</div>
+    </div>
+    <div>
+      <div class="cap">SSH（TCP 22）を途中で盗み見ると</div>
+<pre class="cli small">SSH-2.0-Cisco-1.25
+<i>(鍵の交換)</i>
+8f 3a c1 0e 77 d2 9b 41 5e a0 ...
+c4 19 6b f2 03 88 de 7a 21 90 ...
+<i>(暗号化されていて読めない)</i></pre>
+      <div class="point" style="margin-top:6px">鍵を交換したあとは中身が暗号化される。だから<b>ネットワーク越しのログインは SSH</b>、Web は <b>HTTPS</b> にする。</div>
+    </div>
+  </div>
+  <table class="mini" style="margin-top:10px">
+    <tr><th style="width:24%">Cisco の手引き</th><th>中身</th></tr>
+    <tr><td>VTY</td><td>Telnet や rlogin のかわりに <code>transport input ssh</code> で、暗号化した接続だけを受け付ける</td></tr>
+    <tr><td>HTTP</td><td>使わないなら <code>no ip http server</code>・<code>no ip http secure-server</code> で止める</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/access-lists/13608-21.html">Cisco Guide to Harden Cisco IOS Devices</a>（Control Session Timeouts／use transport input ssh instead of clear-text protocols／The HTTP server can be disabled…）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_secure_shell__ssh_.html">Security Configuration Guide 17.9「Configuring Secure Shell」</a>。画面はClaudeが書いた例</div>
+</section>
+
+<section class="slide">
+  <h1>レイヤ2スイッチに入るには：管理用 SVI と ip default-gateway</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="400" height="280" viewBox="0 0 400 280">
+        <g font-size="12" text-anchor="middle">
+          <rect x="20" y="110" width="140" height="60" rx="8" fill="#1f3a68"/><text x="90" y="134" fill="#fff" font-weight="700">SW1（L2）</text><text x="90" y="152" fill="#fff" font-size="10.5">vlan 99：10.1.99.11</text>
+          <rect x="230" y="110" width="140" height="60" rx="8" fill="#b25000"/><text x="300" y="134" fill="#fff" font-weight="700">R1</text><text x="300" y="152" fill="#fff" font-size="10.5">10.1.99.1／10.1.50.1</text>
+          <line x1="160" y1="140" x2="230" y2="140" stroke="#1f3a68" stroke-width="3"/>
+          <rect x="250" y="226" width="100" height="40" rx="6" fill="#5b80bf"/><text x="300" y="244" fill="#fff">管理PC</text><text x="300" y="259" fill="#fff" font-size="10.5">10.1.50.20</text>
+          <line x1="300" y1="170" x2="300" y2="226" stroke="#5b80bf" stroke-width="3"/>
+          <path d="M290 226 Q200 210 120 172" stroke="#3a7d44" stroke-width="2" fill="none" stroke-dasharray="5 3"/>
+          <text x="180" y="230" fill="#3a7d44" font-size="11">① SSH 要求は届く</text>
+          <path d="M100 110 Q130 40 270 108" stroke="#b23a2c" stroke-width="2" fill="none"/>
+          <text x="150" y="40" fill="#b23a2c" font-size="11">② 返事：10.1.50.20 は別のサブネット</text>
+          <text x="150" y="58" fill="#b23a2c" font-size="11">→ default-gateway がないと送れない</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+<pre class="cli">interface vlan 99
+ ip address 10.1.99.11 255.255.255.0
+ no shutdown
+!
+<span class="hl">ip default-gateway 10.1.99.1</span></pre>
+      <ul class="anno" style="font-size:12.5px">
+        <li>レイヤ2スイッチのポートには IP を付けない → <b>VLAN のインタフェース（SVI）</b>に付ける</li>
+        <li>SVI は、その VLAN のポートが up でないと up にならない</li>
+        <li>別のサブネットへの返事は <b>ip default-gateway</b> のルーターに渡す。同じサブネットの PC からは、なくても入れる</li>
+        <li>スイッチが <code>ip routing</code> でルーティングしているなら、default-gateway は要らない（ルートで決める）</li>
+      </ul>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst2960/software/release/12-2_55_se/configuration/guide/scg_2960/swipaddr.html">Catalyst 2960 Software Configuration Guide 12.2(55)SE「Assigning the Switch IP Address and Default Gateway」</a>（interface vlan・ip default-gateway…When your switch is configured to route with IP, it does not need to have a default gateway set）。アドレスはClaudeが書いた例</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>パスワードと特権レベル</h1>
+  <p>「ラインに入るとき」と「特権EXECに上がるとき」の2か所で守る。保存のしかた（タイプ）にも気をつける。</p>
+  <div class="foot"><span>CCNA #11 機器の管理アクセス</span><span>5.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>パスワードを聞かれる場所は2か所</h1>
+  <div class="flow" style="margin-bottom:10px">
+    <div class="box b5">接続<span>コンソール／VTY</span></div><div class="arrow">→</div>
+    <div class="box b1">① ラインのログイン<span>line の password ＋ login<br>または username ＋ login local</span></div><div class="arrow">→</div>
+    <div class="box b4">R1&gt;<span>ユーザーEXEC（レベル1）</span></div><div class="arrow">→</div>
+    <div class="box b2">② enable<span>enable secret（または enable password）</span></div><div class="arrow">→</div>
+    <div class="box b3">R1#<span>特権EXEC（レベル15）</span></div>
+  </div>
+  <div class="cols">
+<pre class="cli">! ① ラインのログイン
+line console 0
+ password C0nsole
+ login
+ exec-timeout 5 0
+line vty 0 15
+ login local
+ transport input ssh
+username netadmin secret Adm1n!
+! ② 特権EXEC
+enable secret Str0ngPass!</pre>
+    <div>
+      <ul class="anno" style="font-size:12.5px">
+        <li><code>username … privilege 15</code> にすると、①のあと<b>すぐ R1#</b> になる（②を飛ばす）</li>
+        <li>初期の特権レベルは<b>2つだけ</b>：1（&gt;）と 15（#）。0〜15 の16段階まで分けられる</li>
+        <li><code>exec-timeout</code>：何もしないで切れるまでの時間（初期10分）。<code>0 0</code> は切れない</li>
+        <li><code>banner motd</code>：ログイン前の警告。機器の名前や機種は書かない</li>
+      </ul>
+      <div class="point">「パスワードを決めたのに聞かれない」→ <b>login</b> が抜けている。「login を入れたら入れない」→ <b>password</b> が抜けている。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/controlling_switch_access_with_passwords_and_privilege_levels.html">Security Configuration Guide 17.9「Controlling Switch Access with Passwords and Privilege Levels」</a>（Privilege Levels・Configuring Username and Password Pairs）／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/access-lists/13608-21.html">Guide to Harden Cisco IOS Devices</a>（exec-timeout・Warning Banners）</div>
+</section>
+
+<section class="slide">
+  <h1>ラインの3つの書き方：何を聞かれるか</h1>
+  <table class="mx">
+    <tr><th style="width:24%">VTY の設定</th><th style="width:28%">Telnet でつなぐと</th><th>説明</th></tr>
+    <tr><td class="t" style="text-align:left"><code>login</code><br>（password なし）</td><td class="x">Password required, but none set で切られる</td><td style="text-align:left">login を入れたとき「password を設定するまで無効」と警告が出る。パスワードのないVTYには入れない</td></tr>
+    <tr><td class="t" style="text-align:left"><code>password letmein</code><br><code>login</code></td><td>Password: だけ聞かれる</td><td style="text-align:left">全員が同じパスワード。だれが入ったかわからない</td></tr>
+    <tr><td class="t" style="text-align:left"><code>login local</code><br>（username あり）</td><td>Username: と Password:</td><td style="text-align:left">line の password は使われない。1人ずつ認証し、記録に名前が残る。SSH はこれ（か AAA）が必要</td></tr>
+  </table>
+<pre class="cli small" style="margin-top:10px">R2(config)# line vty 0 4
+R2(config-line)# login
+% Login disabled on line 66, until 'password' is set
+...
+R1# telnet 10.3.3.1
+Password required, but none set
+[Connection to 10.3.3.1 closed by foreign host]</pre>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ios-nx-os-software/ios-software-releases-121-mainline/46960-config-telnet.html">Cisco「Configure a Telnet Password on a Cisco Router」</a>（Password required, but none set・Login disabled on line…until 'password' is set）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_local_authentication_and_authorization.html">Security Configuration Guide 17.9「Configuring Local Authentication and Authorization」</a></div>
+</section>
+
+<section class="slide">
+  <h1>enable は secret を使う。保存のタイプは「戻せるか」で見る</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">R1(config)# enable password Cisco123
+R1(config)# enable secret Str0ngPass!
+R1(config)# service password-encryption
+R1# show running-config | include enable|password
+enable secret <span class="hl">9</span> $9$sMLBsTFXLnnHTk$0L82...
+enable password <span class="hl">7</span> 0822455D0A16
+line con 0
+ password <span class="hl">7</span> 045802150C2E</pre>
+      <ul class="anno" style="font-size:12.5px">
+        <li>両方あれば <b>enable secret が勝つ</b>（同時には効かない）</li>
+        <li>IOS XE 16.10 以降、タイプを書かない secret は<b>自動でタイプ9</b></li>
+        <li><code>service password-encryption</code> は平文を<b>タイプ7</b>にするだけ。のぞき見よけ</li>
+      </ul>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>タイプ</th><th>中身</th><th>戻せる？</th></tr>
+        <tr><td class="t">0</td><td>平文</td><td class="x">見える</td></tr>
+        <tr><td class="t">7</td><td>ヴィジュネル暗号</td><td class="x">すぐ戻せる</td></tr>
+        <tr><td class="t">5</td><td>MD5</td><td>戻せない（古い）</td></tr>
+        <tr><td class="t">6</td><td>AES（マスターキー）</td><td>鍵で戻せる</td></tr>
+        <tr><td class="t">8</td><td>PBKDF2（SHA-256）</td><td>戻せない</td></tr>
+        <tr><td class="t">9</td><td>scrypt</td><td>戻せない（推奨）</td></tr>
+      </table>
+      <div class="point"><b>Cisco の手引き：</b>タイプ7 は道具ですぐ戻せるので使わない。<b>できるだけタイプ9（scrypt）</b>：<code>username admin algorithm-type scrypt secret …</code></div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/controlling_switch_access_with_passwords_and_privilege_levels.html">Security Configuration Guide 17.9「Controlling Switch Access…」</a>（enable secret takes precedence・auto converted to type 9・type 0, 5, 8, and 9・type 6）／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/access-lists/13608-21.html">Guide to Harden Cisco IOS Devices</a>（simple Vigenère cipher・Use type 9 (scrypt) whenever possible）。出力はClaudeが書いた例</div>
+</section>
+
+<section class="slide">
+  <h1>そのほかの守り：時間・警告・パスワードリカバリー</h1>
+  <div class="cols3">
+    <div class="ex"><div class="cap">exec-timeout</div>
+<pre class="cli small">line vty 0 15
+ exec-timeout 5 0</pre>
+      <ul class="anno"><li>書き方は「<b>分 秒</b>」</li><li>初期は<b>10分</b></li><li><code>0 0</code> は切れない（危ない）</li><li>SSH の交渉の待ち時間（<code>ip ssh time-out</code>）とは別</li></ul>
+    </div>
+    <div class="ex"><div class="cap">banner motd</div>
+<pre class="cli small">banner motd #
+Authorized access only.
+#</pre>
+      <ul class="anno"><li>同じ区切り文字（#）で囲む</li><li>「許可のない利用は禁止」を知らせる</li><li>機器の名前・機種・持ち主は<b>書かない</b>（攻撃のヒント）</li></ul>
+    </div>
+    <div class="ex"><div class="cap">パスワードリカバリー</div>
+      <ul class="anno"><li>起動を途中で止めて、パスワードを設定し直す手順</li><li>コンソールにさわれる人ならだれでもできる → <b>機器は鍵のかかる部屋に</b></li><li>止めると（<code>system disable password recovery switch all</code>）、起動を止めたとき<b>設定が消える</b></li></ul>
+    </div>
+  </div>
+  <div class="point">特権レベルを分ける例：<code>privilege exec level 5 clear counters</code> ＋ <code>enable secret level 5 …</code> → レベル5 に上がった人は clear counters も使える。今のレベルは <code>show privilege</code>。</div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/access-lists/13608-21.html">Guide to Harden Cisco IOS Devices</a>（By default, sessions are disconnected after ten minutes of inactivity・Warning Banners）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/controlling_switch_access_with_passwords_and_privilege_levels.html">Security Configuration Guide 17.9「Controlling Switch Access…」</a>（Password Recovery・Setting the Privilege Level for a Command）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>SSHの設定</h1>
+  <p>名前とドメイン → 鍵 → バージョン2 → ユーザー → VTY。抜けた手順ごとに、何が起きるかを覚える。</p>
+  <div class="foot"><span>CCNA #11 機器の管理アクセス</span><span>4.8</span></div>
+</section>
+
+<section class="slide">
+  <h1>SSH の設定は7行。順番に意味がある</h1>
+  <div class="cols">
+<pre class="cli"><span class="num">1</span>hostname R1
+<span class="num">2</span>ip domain name example.com
+<span class="num">3</span>crypto key generate rsa modulus 2048
+   <i>The name for the keys will be: R1.example.com</i>
+   <i>%SSH-5-ENABLED: SSH 1.99 has been enabled</i>
+<span class="num">4</span>ip ssh version 2
+<span class="num">5</span>username netadmin secret Adm1n!
+   line vty 0 15
+<span class="num">6</span> login local
+<span class="num">7</span> transport input ssh</pre>
+    <div>
+      <table class="mini">
+        <tr><th style="width:8%">#</th><th>なぜ要るか</th></tr>
+        <tr><td>1・2</td><td>鍵の名前は「<b>ホスト名.ドメイン名</b>」。初期の名前（Switch・Router）やドメインなしでは鍵を作れない</td></tr>
+        <tr><td>3</td><td>鍵を作ると <b>SSH が自動で動き出す</b>。SSHv2 は <b>768ビット以上</b>、Cisco の推奨は1024ビット以上</td></tr>
+        <tr><td>4</td><td>弱い v1 を使わない（1.99＝v1とv2の両方 → 2.0）</td></tr>
+        <tr><td>5・6</td><td>SSH の認証は<b>ユーザー名とパスワード</b>（ローカル・RADIUS・TACACS+）</td></tr>
+        <tr><td>7</td><td>VTY で受け付けるのを <b>SSH だけ</b>にする（Telnet を止める）</td></tr>
+      </table>
+      <div class="point">鍵を消す <code>crypto key zeroize rsa</code> をすると、SSH のサーバーも止まる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_secure_shell__ssh_.html">Security Configuration Guide 17.9「Configuring Secure Shell」</a>（Prerequisites・Setting Up the Device to Run SSH・We recommend that a minimum modulus size of 1024 bits）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/secure_shell_version_2_support.html">「Secure Shell Version 2 Support」</a>（at least 768 bits）。表示の行はClaudeが書いた例</div>
+</section>
+
+<section class="slide">
+  <h1>抜けた手順で起きること（トラブルの読み方）</h1>
+  <table class="mx">
+    <tr><th style="width:30%">抜けている／まちがい</th><th>起きること</th></tr>
+    <tr><td class="t" style="text-align:left">hostname が初期のまま</td><td style="text-align:left">crypto key generate rsa で <b>No host name specified</b>。鍵ができず SSH は動かない</td></tr>
+    <tr><td class="t" style="text-align:left">ip domain name がない</td><td style="text-align:left"><b>No domain specified</b>。鍵ができない</td></tr>
+    <tr><td class="t" style="text-align:left">鍵を作っていない</td><td style="text-align:left"><code>show ip ssh</code> が <b>SSH Disabled</b>。SSH でつなぐと拒否される</td></tr>
+    <tr><td class="t" style="text-align:left">username がない（login local）</td><td style="text-align:left">ユーザー名を聞かれても、だれも認証できない</td></tr>
+    <tr><td class="t" style="text-align:left">transport input telnet ssh のまま</td><td style="text-align:left">SSH も使えるが、<b>Telnet でも入れてしまう</b></td></tr>
+    <tr><td class="t" style="text-align:left">vty 0 4 だけ設定</td><td style="text-align:left">5本目以降のセッションは別の設定のまま（入れない、または Telnet で入れる）</td></tr>
+    <tr><td class="t" style="text-align:left">SVI か default-gateway がない（スイッチ）</td><td style="text-align:left">そもそも IP で届かない／別のサブネットから入れない</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_secure_shell__ssh_.html">Security Configuration Guide 17.9「Configuring Secure Shell」</a>（SSH Configuration Guidelines：No host name specified／No domain specified）／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/access-lists/13608-21.html">Guide to Harden Cisco IOS Devices</a>（transport input）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst2960/software/release/12-2_55_se/configuration/guide/scg_2960/swipaddr.html">Catalyst 2960 Configuration Guide</a>（ip default-gateway）</div>
+</section>
+
+<section class="slide">
+  <h1>確かめる：show ip ssh と transport input</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">R1# show ip ssh
+SSH Enabled - version <span class="hl">1.99</span>
+Authentication timeout: 120 secs; Authentication retries: 3
+
+R1(config)# ip ssh version 2
+R1# show ip ssh
+SSH Enabled - version <span class="hl">2.0</span>
+Authentication timeout: 120 secs; Authentication retries: 3</pre>
+      <ul class="anno" style="font-size:12.5px">
+        <li><b>1.99</b>＝v1 と v2 の両方を受け付ける／<b>2.0</b>＝v2 だけ</li>
+        <li>timeout と retries は <code>ip ssh time-out</code>・<code>ip ssh authentication-retries</code> で変える</li>
+        <li><code>show ssh</code> は「今つながっているセッション」の一覧（別のコマンド）</li>
+      </ul>
+    </div>
+    <div>
+      <div class="cap">transport input の書き方</div>
+      <table class="mx">
+        <tr><th>設定</th><th>SSH</th><th>Telnet</th></tr>
+        <tr><td><code>transport input ssh</code></td><td class="t">○</td><td class="x">×</td></tr>
+        <tr><td><code>transport input telnet</code></td><td class="x">×</td><td class="a">○</td></tr>
+        <tr><td><code>transport input telnet ssh</code></td><td class="t">○</td><td class="a">○</td></tr>
+        <tr><td><code>transport input none</code></td><td class="x">×</td><td class="x">×</td></tr>
+      </table>
+      <div class="point"><code>transport output</code> は、その機器から<b>外へ</b>つなぐときのプロトコル。入ってくるのを決めるのは <b>input</b>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/secure_shell_version_2_support.html">Security Configuration Guide 17.9「Secure Shell Version 2 Support」</a>（Verifying the Secure Shell Version 2 Status：SSH Enabled - version 1.99／2.0）／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/access-lists/13608-21.html">Guide to Harden Cisco IOS Devices</a>（transport input ssh・transport input none）</div>
+</section>
+
+<section class="slide">
+  <h1>どこから入れるか：VTY には access-class</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="400" height="270" viewBox="0 0 400 270">
+        <g font-size="12" text-anchor="middle">
+          <rect x="150" y="100" width="110" height="60" rx="8" fill="#1f3a68"/><text x="205" y="126" fill="#fff" font-weight="700">R1</text><text x="205" y="144" fill="#fff" font-size="10.5">VTY：access-class 10</text>
+          <rect x="10" y="20" width="130" height="44" rx="6" fill="#3a7d44"/><text x="75" y="40" fill="#fff">管理用ネットワーク</text><text x="75" y="56" fill="#fff" font-size="10.5">10.1.50.0/24</text>
+          <rect x="10" y="200" width="130" height="44" rx="6" fill="#b23a2c"/><text x="75" y="220" fill="#fff">利用者のネットワーク</text><text x="75" y="236" fill="#fff" font-size="10.5">10.1.20.0/24</text>
+          <path d="M140 50 L180 100" stroke="#3a7d44" stroke-width="3"/><text x="200" y="70" fill="#3a7d44">SSH 許可</text>
+          <path d="M140 220 L180 164" stroke="#b23a2c" stroke-width="3" stroke-dasharray="5 3"/><text x="210" y="205" fill="#b23a2c">SSH 拒否</text>
+          <text x="320" y="110" fill="#6e6e73" font-size="11">ルーティングされる</text><text x="320" y="126" fill="#6e6e73" font-size="11">ふつうの通信には</text><text x="320" y="142" fill="#6e6e73" font-size="11">影響しない</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+<pre class="cli">access-list 10 permit 10.1.50.0 0.0.0.255
+!
+line vty 0 15
+ <span class="hl">access-class 10 in</span>
+ login local
+ transport input ssh</pre>
+      <table class="mini" style="margin-top:8px">
+        <tr><th style="width:36%">コマンド</th><th>かける場所</th></tr>
+        <tr><td><code>access-class … in</code></td><td><b>ライン（VTY）</b>：ログインしてよい送信元を絞る</td></tr>
+        <tr><td><code>ip access-group … in</code></td><td><b>インタフェース</b>：そこを通る全部の通信にかかる</td></tr>
+      </table>
+      <div class="point">最後に見えない「全部拒否」があるので、許す送信元だけ permit を書けばよい（ACL は #22 で詳しく）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/access-lists/13608-21.html">Guide to Harden Cisco IOS Devices</a>（Other forms of vty and tty access controls can be enforced with the transport input or access-class configuration commands）。アドレスはClaudeが書いた例</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>AAAとTACACS+・RADIUS</h1>
+  <p>ユーザーを機器ごとに作らず、サーバーにまとめる。だれか・何をしてよいか・何をしたか、の3つ。</p>
+  <div class="foot"><span>CCNA #11 機器の管理アクセス</span><span>2.8</span></div>
+</section>
+
+<section class="slide">
+  <h1>AAA：だれ？ → 何をしてよい？ → 何をした？</h1>
+  <div class="flow" style="margin-bottom:12px">
+    <div class="box b1">Authentication（認証）<span>だれ？ 本人か確かめる<br>ユーザー名・パスワード・証明書</span></div><div class="arrow">→</div>
+    <div class="box b2">Authorization（認可）<span>何をしてよい？<br>特権レベル・使えるコマンド・VLAN</span></div><div class="arrow">→</div>
+    <div class="box b3">Accounting（アカウンティング）<span>何をした？<br>ログインの時間・入れたコマンドの記録</span></div>
+  </div>
+  <div class="cols">
+<pre class="cli small">aaa new-model
+!
+tacacs server TAC1
+ address ipv4 10.1.50.5
+ key T@cKey
+!
+aaa authentication login default group tacacs+ local
+aaa authorization exec default group tacacs+ local
+aaa accounting commands 15 default start-stop group tacacs+
+!
+username backup privilege 15 secret B@ckup1</pre>
+    <div>
+      <ul class="anno" style="font-size:12.5px">
+        <li><code>aaa new-model</code> で AAA を有効にする</li>
+        <li><b>key</b>（共有の鍵）は機器とサーバーで同じにする。違うと認証できない</li>
+        <li>サーバーが落ちたときのために、<b>ローカルのユーザー</b>（backup）も残す</li>
+        <li>サーバーを使うと、管理者ごとのアカウント・退職者の停止・記録が1か所でできる</li>
+      </ul>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_tacacs_.html">Security Configuration Guide 17.9「Configuring TACACS+」</a>（separate and modular authentication, authorization, and accounting）／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/access-lists/13608-21.html">Guide to Harden Cisco IOS Devices</a>（TACACS+ Authentication・Command Authorization・Command Accounting・fallback）</div>
+</section>
+
+<section class="slide">
+  <h1>TACACS+ と RADIUS：機器の管理には TACACS+、利用者の接続には RADIUS</h1>
+  <table class="mx">
+    <tr><th style="width:22%"></th><th>TACACS+</th><th>RADIUS</th></tr>
+    <tr><td class="t">生まれ</td><td>Cisco（今は RFC 8907）</td><td>IETF の標準（RFC 2865）</td></tr>
+    <tr><td class="t">運び方</td><td><b>TCP 49</b></td><td><b>UDP 1812</b>（認証）・<b>1813</b>（アカウンティング）<br><span style="font-size:11px;color:#6e6e73">Cisco の古い初期値は1645・1646</span></td></tr>
+    <tr><td class="t">暗号化</td><td><b>パケットの中身全部</b></td><td class="x"><b>パスワードだけ</b>（ユーザー名などは見える）</td></tr>
+    <tr><td class="t">認証と認可</td><td><b>分けられる</b></td><td>いっしょ（Access-Accept に認可の情報が入る）</td></tr>
+    <tr><td class="t">コマンドごとの許可</td><td><b>できる</b></td><td>できない</td></tr>
+    <tr><td class="t">主な使い道</td><td>ルーター・スイッチの<b>管理者のログイン</b></td><td>802.1X・無線・VPN など<b>利用者の接続</b></td></tr>
+  </table>
+  <div class="point"><b>覚え方：</b>TACACS+ は <b>T</b>CP・全部暗号化・コマンドの許可 → 管理者向け。RADIUS は UDP・パスワードだけ・標準 → 利用者のネットワーク接続向け。Cisco の手引きも、使えるなら機器の管理は TACACS+ をすすめている。</div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/security-vpn/remote-authentication-dial-user-service-radius/13838-10.html">Cisco「TACACS+ and RADIUS Comparison」</a>（UDP and TCP・Packet Encryption・Authentication and Authorization・Router Management）／ RFC 8907（TCP port 49）・RFC 2865（1812）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_radius.html">「Configuring RADIUS」</a>（auth-port 1812／1645）／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/access-lists/13608-21.html">Guide to Harden</a></div>
+</section>
+
+<section class="slide">
+  <h1>メソッドリスト：次へ進むのは「エラー」のときだけ</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="400" height="300" viewBox="0 0 400 300">
+        <g font-size="12" text-anchor="middle">
+          <rect x="110" y="6" width="180" height="34" rx="6" fill="#1f3a68"/><text x="200" y="28" fill="#fff">① group tacacs+ に聞く</text>
+          <line x1="200" y1="40" x2="200" y2="66" stroke="#1f3a68" stroke-width="2"/>
+          <polygon points="200,66 290,104 200,142 110,104" fill="#eef2f8" stroke="#1f3a68"/><text x="200" y="102" fill="#1f3a68">サーバーの</text><text x="200" y="118" fill="#1f3a68">答えは？</text>
+          <line x1="110" y1="104" x2="60" y2="104" stroke="#3a7d44" stroke-width="2"/><rect x="0" y="150" width="110" height="40" rx="6" fill="#3a7d44"/><text x="55" y="175" fill="#fff">ログイン成功</text><line x1="55" y1="104" x2="55" y2="150" stroke="#3a7d44" stroke-width="2"/><text x="70" y="96" fill="#3a7d44" font-size="11">合っている</text>
+          <line x1="200" y1="142" x2="200" y2="190" stroke="#b23a2c" stroke-width="2"/><rect x="145" y="190" width="110" height="40" rx="6" fill="#b23a2c"/><text x="200" y="215" fill="#fff">ログイン失敗</text><text x="236" y="168" fill="#b23a2c" font-size="11">違う（失敗）</text>
+          <line x1="290" y1="104" x2="345" y2="104" stroke="#b25000" stroke-width="2"/><line x1="345" y1="104" x2="345" y2="190" stroke="#b25000" stroke-width="2"/><rect x="290" y="190" width="110" height="40" rx="6" fill="#b25000"/><text x="345" y="208" fill="#fff">② local で</text><text x="345" y="223" fill="#fff">認証</text><text x="345" y="94" fill="#b25000" font-size="11">応答なし（エラー）</text>
+          <text x="200" y="268" fill="#1d1d1f">失敗では次へ進まない（local は試さない）</text>
+          <text x="200" y="288" fill="#6e6e73" font-size="11">aaa authentication login default group tacacs+ local</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th style="width:34%">方法</th><th>何で認証するか</th></tr>
+        <tr><td><code>group tacacs+</code>／<code>group radius</code></td><td>サーバー</td></tr>
+        <tr><td><code>local</code></td><td>機器の username</td></tr>
+        <tr><td><code>enable</code></td><td>enable のパスワード</td></tr>
+        <tr><td><code>line</code></td><td>line の password</td></tr>
+        <tr><td><code>none</code></td><td>認証しない（入れてしまう）</td></tr>
+      </table>
+      <ul class="anno" style="font-size:12.5px;margin-top:8px">
+        <li><b>default</b> のリストは、ほかのリストを付けていない全部のラインに使われる</li>
+        <li>名前を付けたリストは、ラインで <code>login authentication 名前</code> として付ける</li>
+        <li>AAA を使うと、ラインの <code>login</code>／<code>login local</code> ではなくメソッドリストで認証する</li>
+      </ul>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_tacacs_.html">Security Configuration Guide 17.9「Configuring TACACS+」</a>Configuring TACACS+ Login Authentication（The additional methods of authentication are used only if the previous method returns an error, not if it fails・enable／group tacacs+／line／local／none）</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ：まちがえやすい組</h1>
+  <table class="mini">
+    <tr><th style="width:4%">#</th><th style="width:34%">比べるもの</th><th>見分け方</th></tr>
+    <tr><td>1</td><td>Telnet／SSH／HTTP／HTTPS</td><td>TCP 23 平文／22 暗号化／80 平文／443 暗号化</td></tr>
+    <tr><td>2</td><td>コンソール／VTY</td><td>直接つなぐ（ネットワーク不要）／ネットワーク越し（Telnet・SSH）</td></tr>
+    <tr><td>3</td><td>enable password／enable secret</td><td>平文かタイプ7／ハッシュ（タイプ9）。両方あれば secret</td></tr>
+    <tr><td>4</td><td>login／login local</td><td>line の password／username のユーザー名とパスワード</td></tr>
+    <tr><td>5</td><td>service password-encryption</td><td>平文をタイプ7（すぐ戻せる）にするだけ</td></tr>
+    <tr><td>6</td><td>exec-timeout／ip ssh time-out</td><td>ログイン後の放置（分 秒、初期10分）／SSH の交渉の待ち時間</td></tr>
+    <tr><td>7</td><td>SSH の前提</td><td>hostname・ip domain name → crypto key generate rsa（v2 は768ビット以上）</td></tr>
+    <tr><td>8</td><td>transport input／access-class</td><td>何で入れるか／どこから入れるか</td></tr>
+    <tr><td>9</td><td>認証／認可／アカウンティング</td><td>だれ？／何をしてよい？／何をした？</td></tr>
+    <tr><td>10</td><td>TACACS+／RADIUS</td><td>TCP 49・全部暗号化・コマンド許可／UDP 1812・1813・パスワードだけ</td></tr>
+    <tr><td>11</td><td>メソッドリストの次の方法</td><td>エラー（応答なし）なら進む／失敗（パスワード違い）なら進まない</td></tr>
+  </table>
+  <div class="cite">出典：この資料の各ページ（Cisco Security Configuration Guide 17.9、Guide to Harden Cisco IOS Devices、TACACS+ and RADIUS Comparison、Catalyst 2960 Configuration Guide、RFC）</div>
+</section>
+
+<section class="slide">
+  <h1>出典</h1>
+  <div class="anno" style="font-size:12px; line-height:1.75">
+    <div>・<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco「CCNA Exam v1.1 (200-301) Exam Topics」</a>（2.8・4.8・5.3）</div>
+    <div>・Cisco「Security Configuration Guide, Cisco IOS XE Cupertino 17.9.x (Catalyst 9300 Switches)」：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/controlling_switch_access_with_passwords_and_privilege_levels.html">Controlling Switch Access with Passwords and Privilege Levels</a>／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_secure_shell__ssh_.html">Configuring Secure Shell</a>／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/secure_shell_version_2_support.html">Secure Shell Version 2 Support</a>／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_local_authentication_and_authorization.html">Configuring Local Authentication and Authorization</a>／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_tacacs_.html">Configuring TACACS+</a>／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_radius.html">Configuring RADIUS</a>／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_secure_socket_layer_http.html">Configuring Secure Socket Layer HTTP</a></div>
+    <div>・<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/access-lists/13608-21.html">Cisco「Cisco Guide to Harden Cisco IOS Devices」</a> ／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/security-vpn/remote-authentication-dial-user-service-radius/13838-10.html">Cisco「TACACS+ and RADIUS Comparison」</a> ／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/ios-nx-os-software/ios-software-releases-121-mainline/46960-config-telnet.html">Cisco「Configure a Telnet Password on a Cisco Router」</a></div>
+    <div>・<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst2960/software/release/12-2_55_se/configuration/guide/scg_2960/swipaddr.html">Cisco「Catalyst 2960 Software Configuration Guide 12.2(55)SE」Assigning the Switch IP Address and Default Gateway</a> ／ <a class="src" href="https://documentation.meraki.com/Architectures_and_Best_Practices/Cisco_Meraki_Best_Practice_Design/Meraki_Cloud_Architecture">Cisco Meraki「Meraki Cloud Architecture」</a></div>
+    <div>・<a class="src" href="https://www.rfc-editor.org/rfc/rfc854">RFC 854（Telnet）</a>／<a class="src" href="https://www.rfc-editor.org/rfc/rfc4253">RFC 4253（SSH）</a>／<a class="src" href="https://www.rfc-editor.org/rfc/rfc8907">RFC 8907（TACACS+）</a>／<a class="src" href="https://www.rfc-editor.org/rfc/rfc2865">RFC 2865（RADIUS）</a></div>
+  </div>
+  <div class="point">Ciscoは本番の問題を公開していない。この資料の例と、用語集の問題演習30問はすべてClaudeのオリジナル。設定と出力の例はガイドの書式に沿ってClaudeが書いた（2026-11-07）。</div>
+</section>
+
+</body>
+</html>
