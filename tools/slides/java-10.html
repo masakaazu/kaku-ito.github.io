@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Silver #10 パターンマッチングとレコード 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">Java Silver（SE 17・1Z0-825-JPN）　4 クラスの定義とインスタンス　#10</div>
+  <h1>パターンマッチングとレコード</h1>
+  <p>調べてキャストして変数に入れるを 1 回で。値をまとめるクラスを 1 行で</p>
+  <div class="refs-legend">各ページの下に、根拠にした Oracle の資料（JLS 6.3・8.10・14.30・15.20.2、Java SE 17 API Record）を書いた（青い文字を押すと開く）。コードは Claude が作り、JDK 17 で動かして確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>試験内容チェックリスト 4（instanceof のパターン・マッチング、レコード）</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 instanceof のパターン<span>o instanceof String s。null は false。いつも true の組み合わせはエラー</span></div>
+      <div class="box b2">2 パターン変数のスコープ<span>確実にマッチした場所だけ。&amp;&amp; の右は OK、|| の右は NG</span></div>
+      <div class="box b3">3 レコード<span>record Point(int x, int y)。final で、アクセサは x()</span></div>
+      <div class="box b4">4 レコードのコンストラクタ<span>正規・コンパクト・正規でない（this(…) 必須）</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:44%">機能</th><th>Java 17 では</th></tr>
+        <tr><td class="t">instanceof のパターン</td><td class="t">正式（Java 16 から）</td></tr>
+        <tr><td class="t">レコード</td><td class="t">正式（Java 16 から）</td></tr>
+        <tr><td class="t">switch のパターン</td><td class="x">プレビュー（ふつうはコンパイルエラー）</td></tr>
+        <tr><td class="t">レコード・パターン <code>o instanceof Point(int x, int y)</code></td><td class="x">まだない（Java 21 から）</td></tr>
+      </table>
+      <div class="point"><b>試験は Java 17 の範囲。</b>新しい Java の書き方は「コンパイルエラーになる」側の選択肢として出ることがある。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.oracle.com/jp/education/certification/javase-17-programmer-1/">Oracle「Java SE 17 Programmer I（1Z0-825-JPN）」試験内容チェックリスト</a>／<a class="src" href="https://openjdk.org/jeps/394">JEP 394</a>・<a class="src" href="https://openjdk.org/jeps/395">JEP 395</a>（Java 16 で正式）・<a class="src" href="https://openjdk.org/jeps/406">JEP 406</a>（Java 17 のプレビュー）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>instanceof のパターン・マッチング</h1>
+  <p>調べる・キャストする・変数に入れる、を 1 つの式で。</p>
+  <div class="foot"><span>Java Silver #10 パターンマッチングとレコード</span><span>試験内容 4</span></div>
+</section>
+
+<section class="slide">
+  <h1>キャストからパターンへ</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">前の書き方（Claude が作成）</div>
+<pre class="code small"><span class="k">if</span> (o <span class="k">instanceof</span> String) {
+  String s = (String) o;      <span class="c">// 自分でキャスト</span>
+  System.out.println(s.length());
+}</pre>
+      <div class="cap" style="margin-top:8px">パターン・マッチング</div>
+<pre class="code small"><span class="k">if</span> (o <span class="k">instanceof</span> String s) {   <span class="c">// 型パターン</span>
+  System.out.println(s.length());
+}</pre>
+      <svg width="420" height="80" viewBox="0 0 420 80">
+        <defs><marker id="a10" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5b80bf"/></marker></defs>
+        <g font-size="12" text-anchor="middle">
+          <rect x="0" y="20" width="120" height="36" rx="6" fill="#1f3a68"/><text x="60" y="43" fill="#fff">① String か調べる</text>
+          <line x1="122" y1="38" x2="146" y2="38" stroke="#5b80bf" stroke-width="2" marker-end="url(#a10)"/>
+          <rect x="150" y="20" width="120" height="36" rx="6" fill="#5b80bf"/><text x="210" y="43" fill="#fff">② String にする</text>
+          <line x1="272" y1="38" x2="296" y2="38" stroke="#5b80bf" stroke-width="2" marker-end="url(#a10)"/>
+          <rect x="300" y="20" width="120" height="36" rx="6" fill="#c9daf2"/><text x="360" y="43" fill="#1f3a68">③ s に入れる</text>
+          <text x="210" y="76" fill="#b25000" font-size="11">マッチしたとき（true のとき）だけ ②③ が起きる</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">コード（o は Object 型）</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l">o が "hello"：<code>o instanceof String s</code></td><td class="t">true、s は "hello"</td></tr>
+        <tr><td class="l">o が 42：<code>o instanceof Integer n &amp;&amp; n &gt; 40</code></td><td class="t">true</td></tr>
+        <tr><td class="l">o が 42：<code>o instanceof Number n</code></td><td class="t">true（Integer は Number の一種）</td></tr>
+        <tr><td class="l">o が null：<code>o instanceof String s</code></td><td class="t">false（例外なし）</td></tr>
+        <tr><td class="l">o が null：<code>o instanceof Object</code></td><td class="t">false</td></tr>
+      </table>
+      <div class="point"><b>パターン変数はふつうのローカル変数。</b>Java 17 では final ではないので代入できる（<code>s = s + "!"</code>）。final を付けると代入できない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.20.2 The instanceof Operator</a>（If the value of the RelationalExpression is the null reference, then the result is false／A side effect of a true result is that pattern variables declared in Pattern will be initialized）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.30.1</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>書けるパターン・書けないパターン</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">式</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>o instanceof Integer i</code>（o は Object）</td><td class="t">OK</td></tr>
+        <tr><td class="l"><code>o instanceof final String t</code></td><td class="t">OK（t は代入不可）</td></tr>
+        <tr><td class="l"><code>o instanceof int i</code></td><td class="x">unexpected type</td></tr>
+        <tr><td class="l"><code>o instanceof var v</code></td><td class="x">'var' is not allowed here</td></tr>
+        <tr><td class="l"><code>str instanceof String s</code>（str は String）</td><td class="x">expression type String is a subtype of pattern type String</td></tr>
+        <tr><td class="l"><code>str instanceof String</code>（パターンなし）</td><td class="t">OK（true）</td></tr>
+        <tr><td class="l"><code>i instanceof String s</code>（i は Integer）</td><td class="x">incompatible types: Integer cannot be converted to String</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="point"><b>いつも true はエラー：</b>左の型がパターンの型と同じか、その部分型なら、調べる意味がないのでコンパイルエラー。パターンのない型の比較ならエラーにならない。</div>
+      <div class="point"><b>ありえない組み合わせもエラー：</b>キャストできない型どうし（Integer と String）は、型の比較でもパターンでもコンパイルエラー。</div>
+      <div class="point"><b>パターンの型は参照型だけ。</b>var・基本型・初期化子（= 値）は書けない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.20.2</a>（If the type of the RelationalExpression is a subtype of the type of the Pattern, then a compile-time error occurs／The RelationalExpression must be compatible with the Pattern）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.30.1</a>（The LocalVariableType denotes a reference type (and furthermore is not var)／The VariableDeclarator has no initializer）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>パターン変数のスコープ</h1>
+  <p>使えるのは「確実にマッチした」と言える場所だけ。</p>
+  <div class="foot"><span>Java Silver #10 パターンマッチングとレコード</span><span>試験内容 4</span></div>
+</section>
+
+<section class="slide">
+  <h1>if・&amp;&amp;・||・? :</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">s を使える場所（Claude が作成）</div>
+      <svg width="420" height="220" viewBox="0 0 420 220">
+        <g font-size="12" font-family="DejaVu Sans Mono, monospace">
+          <text x="0" y="20" fill="#1f3a68">if (o instanceof String s) {</text>
+          <rect x="20" y="28" width="230" height="26" rx="4" fill="#c9daf2"/><text x="30" y="46" fill="#1f3a68">s.length()  ← OK</text>
+          <text x="0" y="74" fill="#1f3a68">} else {</text>
+          <rect x="20" y="82" width="230" height="26" rx="4" fill="#fff" stroke="#b25000" stroke-dasharray="4 3"/><text x="30" y="100" fill="#b25000">s  ← cannot find symbol</text>
+          <text x="0" y="128" fill="#1f3a68">}</text>
+          <text x="0" y="160" fill="#1f3a68">o instanceof String s &amp;&amp; <tspan fill="#1f3a68" font-weight="700">s.isEmpty()</tspan></text>
+          <text x="300" y="160" fill="#1f3a68" font-family="IPAPGothic">右は OK</text>
+          <text x="0" y="190" fill="#b25000">o instanceof String s || s.isEmpty()</text>
+          <text x="300" y="190" fill="#b25000" font-family="IPAPGothic">右は NG</text>
+          <text x="0" y="214" fill="#1f3a68">o instanceof Integer i ? i + 1 : 0</text>
+          <text x="300" y="214" fill="#1f3a68" font-family="IPAPGothic">true 側は OK</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">コード</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l">"hello" で <code>s.length() &gt; 3</code>（&amp;&amp;）</td><td class="t">long hello</td></tr>
+        <tr><td class="l">"hi" で同じ条件、else あり</td><td class="t">short（else へ）</td></tr>
+        <tr><td class="l">f(5)・f("5")（? : で i + 1）</td><td class="t">int 6 / other</td></tr>
+        <tr><td class="l">外に String s があるのに <code>o instanceof String s</code></td><td class="x">variable s is already defined</td></tr>
+        <tr><td class="l">if (…) { } のあとで s</td><td class="x">cannot find symbol</td></tr>
+      </table>
+      <div class="point"><b>理由：</b>&amp;&amp; の右は左が true のときだけ評価される。|| の右は左が false（マッチしなかった）ときに評価されるので、s に値がない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-6.html">JLS 6.3.1.1</a>（A pattern variable introduced by a when true is definitely matched at b）・6.3.1.2（A pattern variable introduced by a when false is definitely matched at b）・6.3.1.4・6.3.2.2／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>! と早期 return・while</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">static void</span> m(Object o) {
+  <span class="k">if</span> (!(o <span class="k">instanceof</span> String s)) {
+    System.out.println(<span class="s">"not string"</span>);
+    <span class="k">return</span>;                 <span class="c">// ここで抜ける</span>
+  }
+  System.out.println(s.length());   <span class="c">// OK</span>
+}
+m(<span class="s">"abc"</span>);  m(<span class="s">10</span>);</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">3
+not string</span></pre>
+      <div class="mini">return がないと、マッチしなかったときも if のあとに来るので s は使えない（cannot find symbol）。</div>
+    </div>
+    <div>
+<pre class="code small">Object o = <span class="s">"abc"</span>;
+<span class="k">while</span> (!(o <span class="k">instanceof</span> Integer i)) {
+  o = ((String) o).length();
+}
+System.out.println(i * <span class="s">2</span>);     <span class="c">// 6</span></pre>
+      <table class="mx" style="margin-top:8px">
+        <tr><th style="width:56%">if (!(… s)) S のあとで s を使うには</th><th>S の中身</th></tr>
+        <tr><td class="l">使える</td><td class="t">return・throw などで必ず抜ける</td></tr>
+        <tr><td class="l">使えない</td><td class="x">表示するだけ（正常に終わる）</td></tr>
+      </table>
+      <div class="point"><b>while も同じ考え方。</b>条件が false で抜けるのはマッチしたときだけ（break がない）なら、ループのあとで使える。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-6.html">JLS 6.3.2.2</a>（A pattern variable is introduced by if (e) S iff (i) it is introduced by e when false and (ii) S cannot complete normally）・6.3.2.3（S does not contain a reachable break statement whose break target contains S）・6.3.1.3／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>レコード</h1>
+  <p>1 行で、フィールド・アクセサ・コンストラクタ・equals・hashCode・toString。</p>
+  <div class="foot"><span>Java Silver #10 パターンマッチングとレコード</span><span>試験内容 4</span></div>
+</section>
+
+<section class="slide">
+  <h1>1 行で作られるもの</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">record</span> Point(<span class="k">int</span> x, <span class="k">int</span> y) { }</pre>
+      <div class="cap" style="margin-top:6px">ほぼ次のクラスと同じ意味（Claude が書き直した）</div>
+<pre class="code small"><span class="k">final class</span> Point <span class="k">extends</span> Record {
+  <span class="k">private final int</span> x;
+  <span class="k">private final int</span> y;
+  Point(<span class="k">int</span> x, <span class="k">int</span> y) { <span class="k">this</span>.x = x; <span class="k">this</span>.y = y; }
+  <span class="k">public int</span> x() { <span class="k">return</span> x; }
+  <span class="k">public int</span> y() { <span class="k">return</span> y; }
+  <span class="c">// equals・hashCode・toString も全コンポーネントから</span>
+}</pre>
+      <div class="mini">実際には extends Record とは書けない（レコードは extends を書けない）。説明のための形。</div>
+    </div>
+    <div>
+<pre class="code small">Point p = <span class="k">new</span> Point(<span class="s">1</span>, <span class="s">2</span>);
+Point q = <span class="k">new</span> Point(<span class="s">1</span>, <span class="s">2</span>);
+System.out.println(p.x() + <span class="s">" "</span> + p + <span class="s">" "</span> + p.equals(q) + <span class="s">" "</span> + (p == q));</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">1 Point[x=1, y=2] true false</span></pre>
+      <table class="mx" style="margin-top:8px">
+        <tr><th style="width:56%">外のクラスから</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>p.x()</code></td><td class="t">1</td></tr>
+        <tr><td class="l"><code>p.getX()</code></td><td class="x">cannot find symbol</td></tr>
+        <tr><td class="l"><code>p.x</code></td><td class="x">x has private access in Point</td></tr>
+        <tr><td class="l"><code>new Point()</code></td><td class="x">constructor Point in record Point cannot be applied to given types</td></tr>
+        <tr><td class="l"><code>new E()</code>（<code>record E() { }</code>）</td><td class="t">E[]</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.10.1</a>（a private field declared implicitly, and a public accessor method）・8.10.3（A component field is private, final, and non-static）・8.10.4（a record class does not implicitly declare a default constructor）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Record.html">API Record</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>equals・toString とアクセサの書き直し</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">メソッド</th><th>自動で作られる動き</th></tr>
+        <tr><td class="t">equals</td><td>同じレコード型で、全コンポーネントが等しければ true</td></tr>
+        <tr><td class="t">hashCode</td><td>equals が true どうしなら同じ値</td></tr>
+        <tr><td class="t">toString</td><td>型名・コンポーネント名・値を含む。JDK 17 では <code>Person[name=Ann, age=3]</code></td></tr>
+      </table>
+      <div class="mini">API は toString の正確な形を決めていない（変わることがある）。試験の選択肢では JDK の表示どおりの形が使われる。</div>
+      <div class="point"><b>自分で書けばそちらが使われる。</b><code>public boolean equals(Object o) { return true; }</code> と書けば、new P(1).equals(new P(2)) も true。</div>
+    </div>
+    <div>
+<pre class="code small"><span class="k">record</span> P(<span class="k">int</span> x) {
+  <span class="k">public int</span> x() { <span class="k">return</span> x * <span class="s">10</span>; }   <span class="c">// 書き直し</span>
+}
+P p = <span class="k">new</span> P(<span class="s">2</span>);
+System.out.println(p.x() + <span class="s">" "</span> + p);</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">20 P[x=2]</span></pre>
+      <table class="mx" style="margin-top:8px">
+        <tr><th style="width:56%">書き直すとき</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>public int x()</code></td><td class="t">OK</td></tr>
+        <tr><td class="l"><code>int x()</code>（public なし）</td><td class="x">invalid accessor method in record P</td></tr>
+      </table>
+      <div class="mini">toString はフィールドの値から作られた（x=2）。アクセサを書き直しても toString は変わらなかった（JDK 17）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Record.html">API Record</a>（The implicit declaration of the Object.equals(Object), Object.hashCode(), and Object.toString() methods are derived from all of the component fields／The precise format produced by this implicitly provided implementation is subject to change）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.10.3</a>（The accessor method must be a public instance method with no formal parameters）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>3 種類のコンストラクタ</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">① 正規コンストラクタ（ふつうの形）</div>
+<pre class="code small"><span class="k">record</span> P(<span class="k">int</span> x, <span class="k">int</span> y) {
+  P(<span class="k">int</span> x, <span class="k">int</span> y) { <span class="k">this</span>.x = x; <span class="k">this</span>.y = y * <span class="s">2</span>; }
+}   <span class="c">// new P(1, 2) → P[x=1, y=4]</span></pre>
+      <div class="lbl" style="margin-top:6px">② コンパクト・コンストラクタ（かっこなし）</div>
+<pre class="code small"><span class="k">record</span> Name(String s) {
+  Name { s = s.trim(); }       <span class="c">// s は引数</span>
+}   <span class="c">// new Name("  ann ").s() → "ann"</span></pre>
+      <div class="lbl" style="margin-top:6px">③ 正規でないコンストラクタ（this(…) が必須）</div>
+<pre class="code small"><span class="k">record</span> P(<span class="k">int</span> x, <span class="k">int</span> y) {
+  P(<span class="k">int</span> x) { <span class="k">this</span>(x, <span class="s">0</span>); }
+}   <span class="c">// new P(7) → P[x=7, y=0]</span></pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">書き方</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l">コンパクトで <code>this.s = s.trim();</code></td><td class="x">cannot assign a value to final variable s</td></tr>
+        <tr><td class="l">コンパクトで <code>return;</code></td><td class="x">invalid compact constructor</td></tr>
+        <tr><td class="l">コンパクトと <code>P(int x)</code> を両方</td><td class="x">constructor P(int) is already defined</td></tr>
+        <tr><td class="l"><code>P(int x) { }</code>（this(…) なし）</td><td class="x">constructor is not canonical, so its first statement must invoke another constructor</td></tr>
+        <tr><td class="l">コンパクトで <code>x = x + 1;</code>（new P(1)）</td><td class="t">x() は 2</td></tr>
+        <tr><td class="l">コンパクトで v &lt; 0 なら throw</td><td class="t">new Age(-1) で例外</td></tr>
+      </table>
+      <div class="point"><b>コンパクト・コンストラクタの中の名前は引数。</b>本体が終わると、引数の値でフィールドが自動で初期化される。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.10.4</a>（The body of every non-canonical constructor in a record declaration must start with an alternate constructor invocation）・8.10.4.2（The body must not contain a return statement／must not contain an assignment to a component field／the simple name c … denotes the implicit formal parameter）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>レコードに書けるもの・書けないもの</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">書いたもの</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>static int count;</code>・static メソッド</td><td class="t">OK</td></tr>
+        <tr><td class="l">インスタンスメソッド <code>int twice()</code></td><td class="t">OK</td></tr>
+        <tr><td class="l"><code>implements Comparable&lt;P&gt;</code></td><td class="t">OK</td></tr>
+        <tr><td class="l"><code>int y;</code>（static なし）</td><td class="x">field declaration must be static</td></tr>
+        <tr><td class="l"><code>{ … }</code>（インスタンス初期化子）</td><td class="x">instance initializers not allowed in records</td></tr>
+        <tr><td class="l"><code>extends Object</code></td><td class="x">'{' expected</td></tr>
+        <tr><td class="l"><code>abstract record</code></td><td class="x">modifier abstract not allowed here</td></tr>
+        <tr><td class="l"><code>class Q extends P</code></td><td class="x">cannot inherit from final P</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">浅い不変（Claude が作成）</div>
+<pre class="code small"><span class="k">record</span> R(List&lt;String&gt; list) { }
+R r = <span class="k">new</span> R(<span class="k">new</span> ArrayList&lt;&gt;());
+r.list().add(<span class="s">"a"</span>);              <span class="c">// できてしまう</span>
+System.out.println(r);         <span class="c">// R[list=[a]]</span></pre>
+      <div class="point"><b>final なのはフィールドだけ。</b>指しているリストの中身は変えられる。守りたいならコンパクト・コンストラクタで <code>list = List.copyOf(list);</code> のようにコピーする（#09 の防御的コピー）。</div>
+      <div class="mini">API Record の説明も、正規コンストラクタを書く理由に「引数の検証」「変えられるコンポーネントの防御的コピー」を挙げている。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.10</a>（A record class is implicitly final／It is a compile-time error if a record declaration has the modifier abstract／A record declaration does not have an extends clause）・8.10.2（non-static field declaration／instance initializer）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Record.html">API Record</a>（validate constructor arguments, perform defensive copies on mutable components）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>問われ方とまちがえやすい点</h1>
+  <table class="mx">
+    <tr><th style="width:32%">こう聞かれたら</th><th>答えの考え方</th></tr>
+    <tr><td class="t">instanceof の結果</td><td class="l">null は false。部分型なら true。パターンが付くと、いつも true の組み合わせはコンパイルエラー</td></tr>
+    <tr><td class="t">パターン変数を使えるか</td><td class="l">確実にマッチした場所だけ。else・|| の右・if のあと（return なし）は NG</td></tr>
+    <tr><td class="t">Java 17 で書けるか</td><td class="l">instanceof のパターンとレコードは OK。switch のパターン、レコード・パターンは NG</td></tr>
+    <tr><td class="t">レコードの表示・比較</td><td class="l">toString は Point[x=1, y=2]、equals は中身、== は別オブジェクトなら false</td></tr>
+    <tr><td class="t">レコードがコンパイルできるか</td><td class="l">インスタンスフィールド・初期化子・extends・abstract は NG。アクセサは public。正規でないコンストラクタは this(…)</td></tr>
+    <tr><td class="t">コンパクト・コンストラクタの結果</td><td class="l">中の名前は引数。引数を変えればフィールドに入る。this.x への代入は NG</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">instanceof のパターン<span>o instanceof String s。null は false</span></div>
+      <div class="box b2">スコープ<span>マッチが確実な場所だけ。&amp;&amp; は OK、|| は NG</span></div>
+      <div class="box b3">レコード<span>final・private final フィールド・x()・自動の equals/toString</span></div>
+      <div class="box b4">コンストラクタ<span>正規・コンパクト（引数を整える）・this(…)</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">こんなとき</th><th>結果</th></tr>
+        <tr><td class="l"><code>null instanceof String</code></td><td class="t">false</td></tr>
+        <tr><td class="l">else の中でパターン変数</td><td class="x">コンパイルエラー</td></tr>
+        <tr><td class="l">record の <code>p.getX()</code></td><td class="x">コンパイルエラー</td></tr>
+        <tr><td class="l">record に <code>new P()</code>（コンポーネントあり）</td><td class="x">コンパイルエラー</td></tr>
+        <tr><td class="l">同じ値のレコードを equals</td><td class="t">true</td></tr>
+      </table>
+      <div class="point"><b>次は #11 継承とポリモーフィズム。</b>extends・super・オーバーライド・抽象クラス・キャストと final へ進む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
