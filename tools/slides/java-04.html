@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Silver #04 配列とArrayList 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">Java Silver（SE 17・1Z0-825-JPN）　配列とコレクション　#04</div>
+  <h1>配列と ArrayList</h1>
+  <p>長さが決まった配列と、伸び縮みする ArrayList ― 作り方、添字、コピー、Arrays、List.of と Arrays.asList</p>
+  <div class="refs-legend">各ページの下に、根拠にした Oracle の資料（JLS・Java SE 17 API）を書いた（青い文字を押すと開く）。コードは Claude が作り、JDK 17 で動かして確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>配列の宣言・初期化・操作と ArrayList</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 配列の宣言と生成<span>new int[3]・{1, 2, 3}・既定値・添字・length・例外</span></div>
+      <div class="box b2">2 多次元配列と配列の操作<span>非対称な配列、拡張 for、clone と浅いコピー、Arrays クラス</span></div>
+      <div class="box b3">3 ArrayList<span>ジェネリクス、add・get・set・remove、ConcurrentModificationException</span></div>
+      <div class="box b4">4 変更できないリストとラムダ式<span>List.of と Arrays.asList のちがい、removeIf・forEach</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:26%"></th><th>配列</th><th>ArrayList</th></tr>
+        <tr><td class="t">長さ</td><td>作ったら<b>変わらない</b></td><td>add・remove で<b>変わる</b></td></tr>
+        <tr><td class="t">要素の型</td><td>基本データ型も参照型も</td><td>参照型だけ（int は Integer）</td></tr>
+        <tr><td class="t">要素数</td><td><code>a.length</code></td><td><code>list.size()</code></td></tr>
+        <tr><td class="t">取り出し</td><td><code>a[i]</code></td><td><code>list.get(i)</code></td></tr>
+        <tr><td class="t">範囲外</td><td>ArrayIndexOutOfBounds…</td><td>IndexOutOfBounds…</td></tr>
+        <tr><td class="t">equals</td><td>同じ配列か（== と同じ）</td><td>同じ順に同じ要素か</td></tr>
+        <tr><td class="t">表示</td><td><code>[I@1dbd16a6</code> の形</td><td><code>[a, b]</code></td></tr>
+      </table>
+      <div class="point"><b>芯：</b>配列の変数・リストの変数が持つのは<b>参照</b>。代入はオブジェクトを共有するだけで、コピーにはならない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.oracle.com/jp/education/certification/javase-17-programmer-1/">Oracle「Java SE 17 Programmer I（1Z0-825-JPN）」試験内容チェックリスト</a>／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-10.html">JLS 10 Arrays</a>（Once an array object is created, its length never changes）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/ArrayList.html">Java SE 17 API ArrayList</a>（Resizable-array implementation of the List interface）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>配列の宣言と生成</h1>
+  <p>宣言だけでは配列はない。new か {…} で作って、はじめて要素ができる。</p>
+  <div class="foot"><span>Java Silver #04 配列と ArrayList</span><span>試験内容 配列</span></div>
+</section>
+
+<section class="slide">
+  <h1>配列はオブジェクト、変数は参照</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">int[] a = new int[3]; のあと（Claude が作成）</div>
+      <svg width="400" height="190" viewBox="0 0 400 190">
+        <defs><marker id="a4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5b80bf"/></marker></defs>
+        <g font-size="12.5" text-anchor="middle">
+          <rect x="16" y="56" width="60" height="36" rx="6" fill="#eef2f8" stroke="#1f3a68"/><text x="46" y="79" fill="#1f3a68" font-weight="700">a</text>
+          <text x="46" y="110" fill="#4a5a78" font-size="10.5">参照だけ</text>
+          <line x1="78" y1="74" x2="148" y2="74" stroke="#5b80bf" stroke-width="2" marker-end="url(#a4)"/>
+          <rect x="152" y="22" width="232" height="120" rx="10" fill="#fff" stroke="#c9daf2" stroke-width="2"/>
+          <text x="268" y="40" fill="#4a5a78" font-size="10.5">int[] のオブジェクト</text>
+          <rect x="164" y="54" width="62" height="40" fill="#1f3a68"/><text x="195" y="79" fill="#fff" font-family="DejaVu Sans Mono, monospace">0</text>
+          <rect x="226" y="54" width="62" height="40" fill="#2f5596"/><text x="257" y="79" fill="#fff" font-family="DejaVu Sans Mono, monospace">0</text>
+          <rect x="288" y="54" width="62" height="40" fill="#5b80bf"/><text x="319" y="79" fill="#fff" font-family="DejaVu Sans Mono, monospace">0</text>
+          <text x="195" y="110" fill="#1f3a68" font-size="11">a[0]</text><text x="257" y="110" fill="#1f3a68" font-size="11">a[1]</text><text x="319" y="110" fill="#1f3a68" font-size="11">a[2]</text>
+          <text x="268" y="132" fill="#1f3a68" font-size="11" font-family="DejaVu Sans Mono, monospace">length = 3（final）</text>
+          <text x="200" y="174" fill="#4a5a78" font-size="11">要素は既定値で埋まる。長さはあとから変えられない</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:40%">要素の型</th><th>既定値（JDK 17 の表示）</th></tr>
+        <tr><td class="t">byte・short・int・long</td><td>0</td></tr>
+        <tr><td class="t">float・double</td><td>0.0</td></tr>
+        <tr><td class="t">boolean</td><td>false</td></tr>
+        <tr><td class="t">char</td><td>コード 0 の文字（<code>'\u0000'</code>）</td></tr>
+        <tr><td class="t">参照型（String など）</td><td>null</td></tr>
+      </table>
+      <div class="point"><b>既定値があるのは配列の要素とフィールド。</b>ローカル変数には既定値がなく、代入前に使うとコンパイルエラー。</div>
+      <div class="point"><b>配列はオブジェクト：</b>Object 型の変数に入り、Object のメソッドを呼べる。長さは型の一部ではないので、<code>int[]</code> の変数は長さ 3 の配列も長さ 100 の配列も指せる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-10.html">JLS 10 Arrays</a>（arrays are objects … may be assigned to variables of type Object／10.1 An array's length is not part of its type／10.2 Declaring a variable of array type does not create an array object）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-4.html">JLS 4.12.5 Initial Values of Variables</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>配列の作り方 ― 書ける形・書けない形</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:58%">書き方（main の中）</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>int[] a = new int[3];</code></td><td class="t">OK（要素は 0）</td></tr>
+        <tr><td class="l"><code>int[] a = {1, 2, 3};</code></td><td class="t">OK（長さ 3）</td></tr>
+        <tr><td class="l"><code>int[] a = {1, 2, 3,};</code></td><td class="t">OK（最後のカンマは無視）</td></tr>
+        <tr><td class="l"><code>int a[] = {1, 2};</code></td><td class="t">OK（C 言語風）</td></tr>
+        <tr><td class="l"><code>a = new int[]{1, 2, 3};</code></td><td class="t">OK（あとから作り直す）</td></tr>
+        <tr><td class="l"><code>a = {1, 2, 3};</code></td><td class="x">illegal start of expression</td></tr>
+        <tr><td class="l"><code>new int[3]{1, 2, 3}</code></td><td class="x">both dimension expression and initialization is illegal</td></tr>
+        <tr><td class="l"><code>var b = {1, 2};</code></td><td class="x">cannot infer type</td></tr>
+        <tr><td class="l"><code>new int[n]</code>（n は long）</td><td class="x">possible lossy conversion</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">[] の位置で型が決まる（Claude が作成）</div>
+      <table class="mx">
+        <tr><th style="width:42%">宣言</th><th>それぞれの型</th></tr>
+        <tr><td class="l"><code>int[] a, b;</code></td><td class="l">a：int[]　b：int[]</td></tr>
+        <tr><td class="l"><code>int[] a, b[];</code></td><td class="l">a：int[]　b：<b>int[][]</b></td></tr>
+        <tr><td class="l"><code>int a, b[];</code></td><td class="l">a：<b>int</b>　b：int[]</td></tr>
+        <tr><td class="l"><code>int[] a[];</code></td><td class="l">a：int[][]</td></tr>
+      </table>
+      <div class="point"><b>決まり：</b>型の後ろの [] は<b>全部の変数</b>に、名前の後ろの [] は<b>その変数だけ</b>に付く。両方あれば足し算。</div>
+      <div class="point"><b>{…} だけで作れるのは宣言と同時のときだけ。</b>あとから代入するときやメソッドに渡すときは <code>new int[]{…}</code>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-10.html">JLS 10.2</a>（例 10.2-2：int a, b[], c[][]; is equivalent to … int a; int[] b; int[][] c;）・10.6 Array Initializers（A trailing comma may appear after the last expression）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.10.1</a>（ArrayCreationExpression の構文、The promoted type must be int）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>添字・長さ・例外</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">int</span>[] a = {<span class="s">10</span>, <span class="s">20</span>, <span class="s">30</span>};
+System.out.println(a[<span class="s">0</span>] + a[a.length - <span class="s">1</span>]);  <span class="c">// 40</span>
+System.out.println(a[<span class="s">3</span>]);</pre>
+<pre class="sh" style="margin-top:6px"><span class="o">40</span>
+<span class="e">Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException:
+ Index 3 out of bounds for length 3</span></pre>
+      <div class="point"><b>添字は 0〜length−1。</b>範囲外はコンパイルは通り、<b>実行時</b>に例外。</div>
+      <table class="mx" style="margin-top:8px">
+        <tr><th style="width:44%">数え方</th><th>範囲外の例外</th></tr>
+        <tr><td class="t">配列 <code>a.length</code></td><td>ArrayIndexOutOfBoundsException</td></tr>
+        <tr><td class="t">String <code>s.length()</code></td><td>StringIndexOutOfBoundsException</td></tr>
+        <tr><td class="t">ArrayList <code>list.size()</code></td><td>IndexOutOfBoundsException</td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:44%">コード</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>new int[0]</code></td><td class="t">OK（長さ 0 の配列）</td></tr>
+        <tr><td class="l"><code>new int[n]</code>（n は −1）</td><td class="x">実行時 NegativeArraySizeException</td></tr>
+        <tr><td class="l"><code>a[-1]</code></td><td class="x">実行時 ArrayIndexOutOfBoundsException</td></tr>
+        <tr><td class="l"><code>a.length</code></td><td class="t">要素数（フィールド）</td></tr>
+        <tr><td class="l"><code>a.length()</code>・<code>a.size()</code></td><td class="x">cannot find symbol</td></tr>
+      </table>
+      
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-10.html">JLS 10.4 Array Access</a>（All arrays are 0-origin／All array accesses are checked at run time … ArrayIndexOutOfBoundsException）・10.7（The public final field length）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.10.2</a>（less than zero, then a NegativeArraySizeException is thrown）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>多次元配列と配列の操作</h1>
+  <p>配列の配列。内側の長さはそろわなくてよい。コピーは浅い。</p>
+  <div class="foot"><span>Java Silver #04 配列と ArrayList</span><span>試験内容 配列</span></div>
+</section>
+
+<section class="slide">
+  <h1>多次元配列は「配列の配列」</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">int[][] a = new int[2][]; a[0] = new int[3]; a[1] = new int[]{7};（Claude が作成）</div>
+      <svg width="400" height="200" viewBox="0 0 400 200">
+        <defs><marker id="b4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5b80bf"/></marker></defs>
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="74" width="40" height="32" rx="6" fill="#eef2f8" stroke="#1f3a68"/><text x="30" y="95" fill="#1f3a68" font-weight="700">a</text>
+          <line x1="52" y1="90" x2="86" y2="90" stroke="#5b80bf" stroke-width="2" marker-end="url(#b4)"/>
+          <rect x="90" y="50" width="70" height="40" fill="#1f3a68"/><text x="125" y="75" fill="#fff" font-size="11">a[0]</text>
+          <rect x="90" y="90" width="70" height="40" fill="#2f5596"/><text x="125" y="115" fill="#fff" font-size="11">a[1]</text>
+          <text x="125" y="146" fill="#4a5a78" font-size="10.5">外側 length 2</text>
+          <line x1="162" y1="70" x2="214" y2="44" stroke="#5b80bf" stroke-width="2" marker-end="url(#b4)"/>
+          <line x1="162" y1="110" x2="214" y2="128" stroke="#5b80bf" stroke-width="2" marker-end="url(#b4)"/>
+          <rect x="218" y="26" width="50" height="34" fill="#fff" stroke="#1f3a68"/><text x="243" y="48" font-family="DejaVu Sans Mono, monospace">0</text>
+          <rect x="268" y="26" width="50" height="34" fill="#fff" stroke="#1f3a68"/><text x="293" y="48" font-family="DejaVu Sans Mono, monospace">0</text>
+          <rect x="318" y="26" width="50" height="34" fill="#fff" stroke="#1f3a68"/><text x="343" y="48" font-family="DejaVu Sans Mono, monospace">0</text>
+          <text x="293" y="76" fill="#4a5a78" font-size="10.5">a[0].length は 3</text>
+          <rect x="218" y="112" width="50" height="34" fill="#fde7cf" stroke="#b25000"/><text x="243" y="134" font-family="DejaVu Sans Mono, monospace">7</text>
+          <text x="322" y="134" fill="#4a5a78" font-size="10.5">a[1].length は 1</text>
+          <text x="200" y="186" fill="#b25000" font-size="11">new int[2][] の直後は a[0]・a[1] とも null</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">コード</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>new int[2][3]</code></td><td class="t">長さ 3 の int[] を 2 つ</td></tr>
+        <tr><td class="l"><code>new int[2][]</code></td><td class="t">外側だけ。中は null</td></tr>
+        <tr><td class="l"><code>new int[][3]</code></td><td class="x">']' expected</td></tr>
+        <tr><td class="l"><code>{{1, 2, 3}, {4, 5}, {6}}</code></td><td class="t">内側の長さ 3・2・1</td></tr>
+        <tr><td class="l">上の <code>a[1].length</code>・<code>a[2][0]</code></td><td class="t">2・6</td></tr>
+        <tr><td class="l">null の行に <code>a[0][0]</code></td><td class="x">NullPointerException</td></tr>
+      </table>
+<pre class="code small" style="margin-top:8px"><span class="k">for</span> (<span class="k">int</span>[] row : a) {        <span class="c">// 外側の要素は int[]</span>
+  <span class="k">for</span> (<span class="k">int</span> x : row) sum += x;
+}</pre>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.10.2</a>（A multidimensional array need not have arrays of the same length at each level／例 15.10.2-2 new float[3][3] は new float[3][] とループに同じ）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-10.html">JLS 10.6</a> 例 10.6-1（null の行で NullPointerException）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>代入・clone・浅いコピー</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">int[][] b = a.clone(); のあと（Claude が作成）</div>
+      <svg width="400" height="200" viewBox="0 0 400 200">
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="30" width="40" height="30" rx="6" fill="#eef2f8" stroke="#1f3a68"/><text x="30" y="50" fill="#1f3a68" font-weight="700">a</text>
+          <rect x="10" y="130" width="40" height="30" rx="6" fill="#eef2f8" stroke="#1f3a68"/><text x="30" y="150" fill="#1f3a68" font-weight="700">b</text>
+          <line x1="52" y1="45" x2="88" y2="45" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="52" y1="145" x2="88" y2="145" stroke="#5b80bf" stroke-width="2"/>
+          <rect x="90" y="20" width="60" height="25" fill="#1f3a68"/><text x="120" y="37" fill="#fff" font-size="10.5">[0]</text>
+          <rect x="90" y="45" width="60" height="25" fill="#2f5596"/><text x="120" y="62" fill="#fff" font-size="10.5">[1]</text>
+          <rect x="90" y="120" width="60" height="25" fill="#1f3a68"/><text x="120" y="137" fill="#fff" font-size="10.5">[0]</text>
+          <rect x="90" y="145" width="60" height="25" fill="#2f5596"/><text x="120" y="162" fill="#fff" font-size="10.5">[1]</text>
+          <text x="120" y="190" fill="#4a5a78" font-size="10.5">外側は別々の配列</text>
+          <rect x="250" y="40" width="110" height="32" fill="#fff" stroke="#1f3a68"/><text x="305" y="61" font-family="DejaVu Sans Mono, monospace">{1, 2}</text>
+          <rect x="250" y="118" width="110" height="32" fill="#fff" stroke="#1f3a68"/><text x="305" y="139" font-family="DejaVu Sans Mono, monospace">{3}</text>
+          <line x1="152" y1="32" x2="248" y2="52" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="152" y1="132" x2="248" y2="60" stroke="#e08a2c" stroke-width="2"/>
+          <line x1="152" y1="57" x2="248" y2="128" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="152" y1="157" x2="248" y2="138" stroke="#e08a2c" stroke-width="2"/>
+          <text x="305" y="96" fill="#b25000" font-size="10.5">内側は共有している</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">操作（a は {{1, 2}, {3}}）</th><th>a から見えるか</th></tr>
+        <tr><td class="l"><code>int[][] c = a; c[1] = …</code></td><td class="t">見える（同じ配列）</td></tr>
+        <tr><td class="l"><code>b[0][0] = 9;</code></td><td class="t">見える（内側を共有）</td></tr>
+        <tr><td class="l"><code>b[1] = new int[]{7};</code></td><td class="x">見えない（外側は別）</td></tr>
+        <tr><td class="l"><code>a == b</code></td><td class="x">false</td></tr>
+      </table>
+      <div class="point"><b>1 次元の clone は中身ごと別。</b><code>int[] c = a.clone(); c[1] = 8;</code> は a を変えない。<b>多次元は外側だけ新しい（浅いコピー）。</b></div>
+      <div class="point"><b>拡張 for の変数はコピー：</b><code>for (int x : a) x = x * 10;</code> は a を変えない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-10.html">JLS 10.7 Array Members</a>（A clone of a multidimensional array is shallow, which is to say that it creates only a single new array. Subarrays are shared／例 10.7-1・10.7-2）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.14.2</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>ArrayStoreException ― 配列の型は実行時に調べる</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">Object</span>[] o = <span class="k">new</span> String[<span class="s">2</span>];   <span class="c">// OK：String[] は Object[] に入る</span>
+o[<span class="s">0</span>] = <span class="s">"a"</span>;                  <span class="c">// OK</span>
+<span class="ng">o[<span class="s">1</span>] = Integer.valueOf(<span class="s">1</span>);</span>    <span class="c">// コンパイルは通る</span></pre>
+<pre class="sh" style="margin-top:6px"><span class="e">Exception in thread "main" java.lang.ArrayStoreException:
+ java.lang.Integer</span></pre>
+      <div class="point"><b>コンパイラが見るのは変数の型（Object[]）。</b>実際の配列は String[] なので、JVM が代入のたびに要素の型を調べて止める。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">代入</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>Object[] o = new String[2];</code></td><td class="t">OK（配列は共変）</td></tr>
+        <tr><td class="l"><code>o[1] = 1;</code>（上の o）</td><td class="x">実行時 ArrayStoreException</td></tr>
+        <tr><td class="l"><code>List&lt;Object&gt; l = new ArrayList&lt;String&gt;();</code></td><td class="x">コンパイルエラー（incompatible types）</td></tr>
+        <tr><td class="l"><code>int[] x = new long[1];</code></td><td class="x">コンパイルエラー</td></tr>
+      </table>
+      <div class="point"><b>配列とジェネリクスの差：</b>配列は「String[] は Object[] の一種」として代入でき、まちがいは<b>実行時</b>に見つかる。List&lt;String&gt; は List&lt;Object&gt; に代入できず、<b>コンパイル時</b>に止まる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-10.html">JLS 10.5 Array Store Exception</a>（an assignment to a component of the array is checked at run time … ArrayStoreException is thrown／例 10.5-1）・10.2（v can hold a reference to an instance of any array type B[], provided B can be assigned to A）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>Arrays クラスのメソッド</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">コード（a は {3, 1, 2}）</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>System.out.println(a)</code></td><td class="x"><code>[I@1dbd16a6</code> の形</td></tr>
+        <tr><td class="l"><code>Arrays.toString(a)</code></td><td class="t">"[3, 1, 2]"</td></tr>
+        <tr><td class="l"><code>Arrays.sort(a)</code>（戻り値 void）</td><td class="t">a が [1, 2, 3] に</td></tr>
+        <tr><td class="l"><code>Arrays.fill(b, 7)</code>（b は長さ 4）</td><td class="t">[7, 7, 7, 7]</td></tr>
+        <tr><td class="l"><code>Arrays.copyOf(b, 6)</code></td><td class="t">[7, 7, 7, 7, 0, 0]</td></tr>
+        <tr><td class="l"><code>a.equals(a.clone())</code></td><td class="x">false（== と同じ）</td></tr>
+        <tr><td class="l"><code>Arrays.equals(a, a.clone())</code></td><td class="t">true（中身を比べる）</td></tr>
+      </table>
+      <div class="mini">[I は「int の配列」を表す型の記号。@ のあとの数字は実行ごとに変わりうる。</div>
+    </div>
+    <div>
+      <div class="lbl">文字列の配列を sort すると（文字コード順）</div>
+<pre class="code small">String[] s = {<span class="s">"b"</span>, <span class="s">"B"</span>, <span class="s">"a"</span>, <span class="s">"10"</span>, <span class="s">"9"</span>};
+Arrays.sort(s);
+<span class="c">// [10, 9, B, a, b]</span></pre>
+      <table class="mx" style="margin-top:8px">
+        <tr><th style="width:30%">順番</th><th>理由</th></tr>
+        <tr><td class="t">数字</td><td class="l">'0'〜'9' は 48〜57。"10" は先頭 '1' で "9" より前</td></tr>
+        <tr><td class="t">大文字</td><td class="l">'A'〜'Z' は 65〜90</td></tr>
+        <tr><td class="t">小文字</td><td class="l">'a'〜'z' は 97〜122</td></tr>
+      </table>
+      <div class="point"><b>sort は配列そのものを並べかえる。</b>新しい配列は返さない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Arrays.html">Java SE 17 API Arrays</a>（toString・sort（into ascending order / natural ordering）・fill・copyOf（padding with zeros）・equals）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-10.html">JLS 10.8</a> 例 10.8-1（"[I" is the run-time type signature）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>binarySearch・compare・mismatch</h1>
+  <svg width="856" height="120" viewBox="0 0 856 120">
+    <g font-family="DejaVu Sans Mono, monospace" font-size="18" text-anchor="middle">
+      <rect x="160" y="34" width="70" height="40" fill="#fff" stroke="#1f3a68"/><text x="195" y="60">1</text>
+      <rect x="230" y="34" width="70" height="40" fill="#fff" stroke="#1f3a68"/><text x="265" y="60">3</text>
+      <rect x="300" y="34" width="70" height="40" fill="#c9daf2" stroke="#1f3a68"/><text x="335" y="60">5</text>
+      <rect x="370" y="34" width="70" height="40" fill="#fff" stroke="#1f3a68"/><text x="405" y="60">7</text>
+    </g>
+    <g font-size="12" text-anchor="middle" fill="#4a5a78">
+      <text x="195" y="26">0</text><text x="265" y="26">1</text><text x="335" y="26">2</text><text x="405" y="26">3</text>
+      <line x1="300" y1="80" x2="300" y2="94" stroke="#b25000" stroke-width="2"/><text x="300" y="110" fill="#b25000">4 の挿入位置 2 → −3</text>
+      <line x1="440" y1="80" x2="440" y2="94" stroke="#b25000" stroke-width="2"/><text x="470" y="110" fill="#b25000">9 の挿入位置 4 → −5</text>
+      <line x1="160" y1="80" x2="160" y2="94" stroke="#b25000" stroke-width="2"/><text x="150" y="110" fill="#b25000">0 → −1</text>
+      <text x="660" y="24" fill="#1f3a68" font-weight="700">5 は添字 2 にある → 2</text>
+      <text x="660" y="44" fill="#1f3a68">見つからないとき：−(挿入位置) − 1</text>
+      <text x="660" y="64" fill="#1f3a68">挿入位置 ＝ その値より大きい最初の添字</text>
+      <text x="660" y="84" fill="#1f3a68">−1 するので「見つかった（0 以上）」と区別できる</text>
+    </g>
+  </svg>
+  <div class="cols" style="margin-top:6px">
+    <table class="mx">
+      <tr><th style="width:56%">compare（辞書順）</th><th>結果</th></tr>
+      <tr><td class="l"><code>compare({1,2,3}, {1,2,4})</code></td><td class="t">−1（3 &lt; 4）</td></tr>
+      <tr><td class="l"><code>compare({1,2,3}, {1,2})</code></td><td class="t">1（長いほうが後）</td></tr>
+      <tr><td class="l"><code>compare(a, a.clone())</code></td><td class="t">0</td></tr>
+    </table>
+    <table class="mx">
+      <tr><th style="width:56%">mismatch（最初にちがう添字）</th><th>結果</th></tr>
+      <tr><td class="l"><code>mismatch({1,2,3}, {1,2,4})</code></td><td class="t">2</td></tr>
+      <tr><td class="l"><code>mismatch({1,2,3}, {1,2})</code></td><td class="t">2（短いほうの長さ）</td></tr>
+      <tr><td class="l"><code>mismatch(a, a.clone())</code></td><td class="t">−1（全部同じ）</td></tr>
+    </table>
+  </div>
+  <div class="point" style="margin-top:6px"><b>binarySearch は並べかえ済みが前提。</b>並べかえていない配列の結果は不定（API：the results are undefined）。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Arrays.html">Java SE 17 API Arrays</a> binarySearch（The array must be sorted … otherwise, (-(insertion point) - 1) … the index of the first element greater than the key, or a.length）／compare(int[], int[])（Compares two int arrays lexicographically）／mismatch(int[], int[])（If one array is a proper prefix of the other then the returned index is the length of the smaller array）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>ArrayList</h1>
+  <p>中に配列を持ち、足りなくなったら自分で大きくするリスト。</p>
+  <div class="foot"><span>Java Silver #04 配列と ArrayList</span><span>試験内容 ArrayList</span></div>
+</section>
+
+<section class="slide">
+  <h1>宣言の形 ― ジェネリクスとダイヤモンド</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:62%">宣言（java.util.* は import 済み）</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>List&lt;String&gt; l = new ArrayList&lt;&gt;();</code></td><td class="t">OK（ふつうの形）</td></tr>
+        <tr><td class="l"><code>List&lt;Integer&gt; l = new ArrayList&lt;&gt;(100);</code></td><td class="t">OK（容量 100・size 0）</td></tr>
+        <tr><td class="l"><code>List&lt;int&gt; l = new ArrayList&lt;&gt;();</code></td><td class="x">unexpected type</td></tr>
+        <tr><td class="l"><code>List&lt;String&gt; l = new List&lt;&gt;();</code></td><td class="x">List is abstract; cannot be instantiated</td></tr>
+        <tr><td class="l"><code>List&lt;Object&gt; l = new ArrayList&lt;String&gt;();</code></td><td class="x">incompatible types</td></tr>
+      </table>
+      <div class="point"><b>型引数は参照型だけ。</b>int は Integer にして入れる。<code>list.add(10)</code> はオートボクシングで Integer になる。</div>
+    </div>
+    <div>
+      <div class="lbl">var と &lt;&gt; を組み合わせると</div>
+<pre class="code small"><span class="k">var</span> list = <span class="k">new</span> ArrayList&lt;&gt;();  <span class="c">// ArrayList&lt;Object&gt;</span>
+list.add(<span class="s">"a"</span>);
+list.add(<span class="s">1</span>);                     <span class="c">// どちらも入る</span>
+<span class="ng"><span class="k">String</span> s = list.get(<span class="s">0</span>);</span>       <span class="c">// コンパイルエラー</span></pre>
+<pre class="sh" style="margin-top:4px"><span class="e">error: incompatible types: Object cannot be converted to String</span></pre>
+      <div class="point"><b>容量と size は別。</b>容量は中の配列の大きさ（引数なしは 10）。size は入っている要素の数。<code>new ArrayList&lt;&gt;(10)</code> のあと <code>set(0, "a")</code> は IndexOutOfBoundsException。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/ArrayList.html">Java SE 17 API ArrayList</a>（ArrayList() Constructs an empty list with an initial capacity of ten）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-4.html">JLS 4.5.1</a>（Type arguments may be either reference types or wildcards）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.4.1</a>（var）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>add・set・remove をたどる</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:50%">呼び出し</th><th>list の中身・戻り値</th></tr>
+        <tr><td class="l"><code>add("a"); add("b");</code></td><td class="l"><code>[a, b]</code></td></tr>
+        <tr><td class="l"><code>add(1, "c")</code></td><td class="l"><code>[a, c, b]</code>（b を後ろへずらす）</td></tr>
+        <tr><td class="l"><code>add("d")</code></td><td class="l"><code>[a, c, b, d]</code>　戻り値 true</td></tr>
+        <tr><td class="l"><code>set(1, "X")</code></td><td class="l"><code>[a, X, b, d]</code>　戻り値 <b>"c"</b>（前の値）</td></tr>
+        <tr><td class="l"><code>remove(0)</code></td><td class="l"><code>[X, b, d]</code>　戻り値 "a"</td></tr>
+        <tr><td class="l"><code>remove("z")</code></td><td class="l">変わらない　戻り値 false</td></tr>
+        <tr><td class="l"><code>indexOf("d")</code>・<code>indexOf("z")</code></td><td class="l">2・−1</td></tr>
+      </table>
+      <div class="mini">表の流れは Claude が手で追った例（各メソッドの動きは JDK 17 で確かめた）。</div>
+    </div>
+    <div>
+      <div class="cap">size() が 2 のとき使える添字（Claude が作成）</div>
+      <svg width="400" height="120" viewBox="0 0 400 120">
+        <g font-size="12" text-anchor="middle">
+          <rect x="60" y="20" width="80" height="34" fill="#1f3a68"/><text x="100" y="42" fill="#fff" font-family="DejaVu Sans Mono, monospace">"a"</text>
+          <rect x="140" y="20" width="80" height="34" fill="#2f5596"/><text x="180" y="42" fill="#fff" font-family="DejaVu Sans Mono, monospace">"b"</text>
+          <rect x="220" y="20" width="80" height="34" fill="#fff" stroke="#b25000" stroke-dasharray="5 3"/><text x="260" y="42" fill="#b25000" font-size="11">末尾の次</text>
+          <text x="100" y="14" fill="#4a5a78">0</text><text x="180" y="14" fill="#4a5a78">1</text><text x="260" y="14" fill="#4a5a78">2</text>
+          <text x="140" y="78" fill="#1f3a68">get・set・remove(int)：0〜1</text>
+          <text x="180" y="100" fill="#b25000">add(i, e)：0〜2（size() と同じなら末尾に足す）</text>
+        </g>
+      </svg>
+      <div class="point"><b>remove の 2 つの形：</b><code>List&lt;Integer&gt;</code> で <code>remove(1)</code> は<b>添字 1</b> を消す（int をとる remove(int) が先に選ばれる）。値 1 を消すなら <code>remove(Integer.valueOf(1))</code>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/ArrayList.html">Java SE 17 API ArrayList</a> add(int, E)（Shifts the element currently at that position … to the right／index &gt; size() で例外）・set（Returns: the element previously at the specified position）・remove(int)・remove(Object)（If the list does not contain the element, it is unchanged）・indexOf／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>回しながら消すと ConcurrentModificationException</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">NG：拡張 for の中でリストの remove</div>
+<pre class="code small">List&lt;String&gt; list = <span class="k">new</span> ArrayList&lt;&gt;(List.of(<span class="s">"a"</span>, <span class="s">"b"</span>, <span class="s">"c"</span>));
+<span class="k">for</span> (String s : list) {
+  <span class="ng"><span class="k">if</span> (s.equals(<span class="s">"a"</span>)) list.remove(s);</span>
+}</pre>
+<pre class="sh" style="margin-top:4px"><span class="e">Exception in thread "main" java.util.ConcurrentModificationException</span></pre>
+      <div class="lbl" style="margin-top:8px">OK：removeIf か Iterator の remove</div>
+<pre class="code small">list.removeIf(s -&gt; s.equals(<span class="s">"a"</span>));       <span class="c">// [b, c]</span>
+
+Iterator&lt;String&gt; it = list.iterator();
+<span class="k">while</span> (it.hasNext()) {
+  <span class="k">if</span> (it.next().equals(<span class="s">"a"</span>)) it.remove(); <span class="c">// OK</span>
+}</pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:40%">用語</th><th>中身</th></tr>
+        <tr><td class="t">イテレータ</td><td class="l">要素を 1 つずつ取り出す係。拡張 for は中でこれを使う</td></tr>
+        <tr><td class="t">構造の変更</td><td class="l">add・remove・clear など要素数が変わる操作。set は含まない</td></tr>
+        <tr><td class="t">fail-fast</td><td class="l">イテレータ自身以外による構造の変更に気づいたら、すぐ例外で止まる</td></tr>
+        <tr><td class="t">best-effort</td><td class="l">必ず止まる保証はない。例外を当てにしたコードは書かない</td></tr>
+      </table>
+      <div class="point"><b>本番での判断：</b>拡張 for の中で list.add・list.remove を呼ぶコード → ConcurrentModificationException を選ぶ。安全な書き方は removeIf・Iterator.remove。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/ArrayList.html">Java SE 17 API ArrayList</a>（The iterators returned by this class's iterator and listIterator methods are fail-fast: if the list is structurally modified at any time after the iterator is created, in any way except through the iterator's own remove or add methods, the iterator will throw a ConcurrentModificationException／Fail-fast iterators throw ConcurrentModificationException on a best-effort basis）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>変更できないリストとラムダ式</h1>
+  <p>どれも List 型。でも、できる操作がちがう。</p>
+  <div class="foot"><span>Java Silver #04 配列と ArrayList</span><span>試験内容 ArrayList</span></div>
+</section>
+
+<section class="slide">
+  <h1>ArrayList・Arrays.asList・List.of のちがい</h1>
+  <table class="mx">
+    <tr><th style="width:24%">作り方</th><th>add・remove</th><th>set</th><th>null を入れる</th></tr>
+    <tr><td class="t"><code>new ArrayList&lt;&gt;()</code></td><td>できる</td><td>できる</td><td>入る</td></tr>
+    <tr><td class="t"><code>Arrays.asList(arr)</code></td><td class="x">UnsupportedOperationException</td><td>できる（元の配列も変わる）</td><td>入る</td></tr>
+    <tr><td class="t"><code>List.of(…)</code></td><td class="x">UnsupportedOperationException</td><td class="x">UnsupportedOperationException</td><td class="x">NullPointerException</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div>
+      <div class="cap">Arrays.asList は配列と中身を共有する（Claude が作成）</div>
+<pre class="code small">String[] arr = {<span class="s">"a"</span>, <span class="s">"b"</span>, <span class="s">"c"</span>};
+List&lt;String&gt; list = Arrays.asList(arr);
+list.set(<span class="s">0</span>, <span class="s">"X"</span>);  <span class="c">// arr[0] も "X"</span>
+arr[<span class="s">2</span>] = <span class="s">"Z"</span>;       <span class="c">// list からも見える</span>
+System.out.println(list + <span class="s">" "</span> + arr[<span class="s">0</span>]);
+<span class="ng">list.add(<span class="s">"d"</span>);</span></pre>
+<pre class="sh" style="margin-top:4px"><span class="o">[X, b, Z] X</span>
+<span class="e">java.lang.UnsupportedOperationException</span></pre>
+    </div>
+    <div>
+      <div class="point"><b>どれもコンパイルは通る。</b>List インタフェースには add も set もあるので、できるかどうかは<b>実行時</b>に分かる。</div>
+      <div class="point"><b>変更できるリストにしたいとき：</b><code>new ArrayList&lt;&gt;(List.of("a", "b"))</code> のようにコピーする。</div>
+      <div class="point"><b>要素の中身は別の話：</b>List.of の要素が StringBuilder なら <code>list.get(0).append("b")</code> はできる（リストの並びは変えていない）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html">Java SE 17 API List</a> Unmodifiable Lists（Calling any mutator method on the List will always cause UnsupportedOperationException to be thrown／They disallow null elements／if the contained elements are themselves mutable, this may cause the List's contents to appear to change）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Arrays.html">API Arrays.asList</a>（Returns a fixed-size list backed by the specified array）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>ラムダ式で removeIf・forEach</h1>
+  <div class="cols">
+    <div>
+<pre class="code small">List&lt;Integer&gt; list = <span class="k">new</span> ArrayList&lt;&gt;(List.of(<span class="s">1</span>, <span class="s">2</span>, <span class="s">3</span>, <span class="s">4</span>, <span class="s">5</span>));
+list.removeIf(n -&gt; n % <span class="s">2</span> == <span class="s">0</span>);           <span class="c">// 偶数を消す</span>
+list.forEach(n -&gt; System.out.print(n + <span class="s">" "</span>));</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">1 3 5</span></pre>
+      <div class="cap" style="margin-top:10px">ラムダ式の形（Claude が作成）</div>
+      <svg width="400" height="96" viewBox="0 0 400 96">
+        <g font-family="DejaVu Sans Mono, monospace" font-size="18" text-anchor="middle">
+          <rect x="30" y="16" width="60" height="38" rx="6" fill="#c9daf2"/><text x="60" y="41" fill="#1f3a68">n</text>
+          <text x="118" y="41" fill="#1f3a68">-&gt;</text>
+          <rect x="146" y="16" width="220" height="38" rx="6" fill="#1f3a68"/><text x="256" y="41" fill="#fff">n % 2 == 0</text>
+        </g>
+        <g font-size="11.5" text-anchor="middle" fill="#4a5a78">
+          <text x="60" y="76">引数（要素 1 つ）</text><text x="256" y="76">式の値を返す（true なら消す）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:42%">書き方</th><th>意味</th></tr>
+        <tr><td class="l"><code>n -&gt; n * 2</code></td><td class="l">引数 1 つ。かっこ省略可</td></tr>
+        <tr><td class="l"><code>(a, b) -&gt; a + b</code></td><td class="l">引数 2 つはかっこが必要</td></tr>
+        <tr><td class="l"><code>() -&gt; 42</code></td><td class="l">引数なし</td></tr>
+        <tr><td class="l"><code>n -&gt; { return n &gt; 0; }</code></td><td class="l">{ } なら return と ; が必要</td></tr>
+      </table>
+      <table class="mx" style="margin-top:8px">
+        <tr><th style="width:42%">メソッド</th><th>動き</th></tr>
+        <tr><td class="t">removeIf</td><td class="l">条件が true の要素を<b>リスト自身から</b>消す。走査中でも安全</td></tr>
+        <tr><td class="t">forEach</td><td class="l">全要素に順に処理。戻り値 void</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html">Java SE 17 API Collection.removeIf</a>（Removes all of the elements of this collection that satisfy the given predicate）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">API Iterable.forEach</a>／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.27 Lambda Expressions</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>問われ方とまちがえやすい点</h1>
+  <table class="mx">
+    <tr><th style="width:32%">こう聞かれたら</th><th>答えの考え方</th></tr>
+    <tr><td class="t">配列の宣言がコンパイルできるか</td><td class="l">長さと {…} の同時はダメ。{…} だけは宣言と同時のみ。多次元は左の [] から長さを書く</td></tr>
+    <tr><td class="t">何も入れていない要素の表示</td><td class="l">既定値：0・0.0・false・null</td></tr>
+    <tr><td class="t">要素数の書き方</td><td class="l">配列 length、String length()、ArrayList size()</td></tr>
+    <tr><td class="t">範囲外・負の長さ</td><td class="l">コンパイルは通る。実行時に ArrayIndexOutOfBounds・NegativeArraySize</td></tr>
+    <tr><td class="t">コピーしたあとの表示</td><td class="l">代入は共有。clone は別の配列だが、多次元の内側は共有（浅いコピー）</td></tr>
+    <tr><td class="t">配列の比較・表示</td><td class="l">equals は ==。中身は Arrays.equals・Arrays.toString</td></tr>
+    <tr><td class="t">ArrayList の操作の結果</td><td class="l">add(i, e) は挿入。set は前の値を返す。remove(int) と remove(Object) を見分ける</td></tr>
+    <tr><td class="t">リストを変更できるか</td><td class="l">List.of は全部ダメ。asList は set だけ OK。どれも実行時の例外</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">配列の宣言と生成<span>長さは固定。要素は既定値。添字は 0〜length−1</span></div>
+      <div class="box b2">多次元配列と操作<span>配列の配列。clone は浅い。Arrays で表示・並べかえ・探索・比較</span></div>
+      <div class="box b3">ArrayList<span>型引数は参照型。add・set・remove の戻り値と添字の範囲</span></div>
+      <div class="box b4">変更できないリスト<span>List.of は変更不可・null 不可。asList は大きさ固定</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:54%">式</th><th>結果</th></tr>
+        <tr><td class="l"><code>new String[2]</code> の要素</td><td class="t">null</td></tr>
+        <tr><td class="l"><code>int[] a, b[];</code> の b</td><td class="t">int[][]</td></tr>
+        <tr><td class="l"><code>binarySearch({1,3,5,7}, 4)</code></td><td class="t">−3</td></tr>
+        <tr><td class="l">[10, 20, 30] で <code>remove(1)</code></td><td class="t">[10, 30]</td></tr>
+        <tr><td class="l"><code>List.of("a").add("b")</code></td><td class="x">UnsupportedOperationException</td></tr>
+      </table>
+      <div class="point"><b>次は #05 演算子。</b>インクリメント、優先順位、== と equals、論理演算の短絡評価へ進む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
