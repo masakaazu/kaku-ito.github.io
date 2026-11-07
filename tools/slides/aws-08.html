@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS SAA #08 コンテナ 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">AWS SAA（SAA-C03）　分野2 弾力性に優れたアーキテクチャの設計　#08</div>
+  <h1>コンテナ</h1>
+  <p>アプリをコンテナにまとめ、ECS か EKS で動かし続ける。動かす場所・権限・ネットワーク・スケーリング・デプロイの決め方</p>
+  <div class="refs-legend">各ページの下に、根拠にした AWS の公式ドキュメント（Amazon ECS・Amazon ECR・Amazon EKS）を書いた（青い文字を押すと開く）。「」の中はドキュメントの原文どおり（日本語版は機械翻訳のため、語順が不自然なところもそのまま）。会社名や構成の例は Claude が作った例</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>試験ガイド タスク 2.1</small></h1>
+  <svg width="856" height="190" viewBox="0 0 856 190">
+    <defs><marker id="c1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="70" width="110" height="50" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="65" y="92" fill="#1f3a68" font-weight="700">開発者</text><text x="65" y="109" font-size="10.5">イメージを作る</text>
+      <rect x="160" y="70" width="120" height="50" rx="8" fill="#b25000"/><text x="220" y="92" fill="#fff" font-weight="700">Amazon ECR</text><text x="220" y="109" fill="#fff" font-size="10.5">イメージの倉庫</text>
+      <line x1="120" y1="95" x2="158" y2="95" stroke="#1f3a68" stroke-width="2" marker-end="url(#c1)"/><text x="139" y="88" font-size="10">push</text>
+      <rect x="330" y="10" width="300" height="80" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="480" y="30" fill="#3a7d44" font-weight="700">Amazon ECS（AWS 独自）</text>
+      <rect x="345" y="42" width="130" height="38" rx="6" fill="#3a7d44"/><text x="410" y="66" fill="#fff" font-size="11">サービス → タスク</text>
+      <rect x="485" y="42" width="130" height="38" rx="6" fill="#fff" stroke="#3a7d44"/><text x="550" y="58" fill="#3a7d44" font-size="10.5">Fargate・EC2・</text><text x="550" y="72" fill="#3a7d44" font-size="10.5">マネージド・Anywhere</text>
+      <rect x="330" y="100" width="300" height="80" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="480" y="120" fill="#1f3a68" font-weight="700">Amazon EKS（Kubernetes）</text>
+      <rect x="345" y="132" width="130" height="38" rx="6" fill="#1f3a68"/><text x="410" y="156" fill="#fff" font-size="11">Deployment → Pod</text>
+      <rect x="485" y="132" width="130" height="38" rx="6" fill="#fff" stroke="#1f3a68"/><text x="550" y="148" fill="#1f3a68" font-size="10.5">ノードグループ・</text><text x="550" y="162" fill="#1f3a68" font-size="10.5">Fargate・Auto Mode</text>
+      <line x1="280" y1="88" x2="328" y2="52" stroke="#1f3a68" stroke-width="2" marker-end="url(#c1)"/><line x1="280" y1="102" x2="328" y2="140" stroke="#1f3a68" stroke-width="2" marker-end="url(#c1)"/><text x="300" y="98" font-size="10">pull</text>
+      <rect x="680" y="60" width="166" height="70" rx="8" fill="#4a5a78"/><text x="763" y="84" fill="#fff" font-weight="700">ALB</text><text x="763" y="102" fill="#fff" font-size="10.5">タスク・Pod に</text><text x="763" y="118" fill="#fff" font-size="10.5">リクエストを分ける</text>
+      <line x1="678" y1="80" x2="632" y2="60" stroke="#1f3a68" stroke-width="2" marker-end="url(#c1)"/><line x1="678" y1="112" x2="632" y2="140" stroke="#1f3a68" stroke-width="2" marker-end="url(#c1)"/>
+      <text x="763" y="160" font-size="10.5" fill="#6e6e73">図は Claude が作った模式図</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:64%">タスク 2.1 の知識・スキル（このPDFに関係する部分の要約）</th><th>このPDF</th></tr>
+    <tr><td class="l">コンテナのオーケストレーション（Amazon ECS、Amazon EKS など）</td><td class="t">全体</td></tr>
+    <tr><td class="l">アプリケーションをコンテナに移行する方法／コンテナを使う場面を判断する</td><td class="t">第1・2・4章</td></tr>
+    <tr><td class="l">コンポーネントのスケーリング戦略を決定する</td><td class="t">第3・4章</td></tr>
+    <tr><td class="l">ロードバランシングの概念（ALB など）</td><td class="t">第3章</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html">AWS「コンテンツ分野 2: 弾力性に優れたアーキテクチャの設計」</a>タスク 2.1</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>ECS と ECR の部品</h1>
+  <p>設計図（タスク定義）から製品（タスク）を作り、係（サービス）が数を保つ。イメージは ECR に置く。</p>
+  <div class="foot"><span>AWS SAA #08 コンテナ</span><span>タスク 2.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>ECS の部品のつながり</h1>
+  <svg width="856" height="190" viewBox="0 0 856 190">
+    <defs><marker id="c2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="20" width="170" height="70" rx="8" fill="#fff4e5" stroke="#b25000"/><text x="95" y="42" fill="#b25000" font-weight="700">タスク定義 web:12</text><text x="95" y="60" font-size="10.5">イメージ・CPU・メモリ</text><text x="95" y="76" font-size="10.5">ポート・ロール・ログ（JSON）</text>
+      <rect x="220" y="20" width="160" height="70" rx="8" fill="#3a7d44"/><text x="300" y="44" fill="#fff" font-weight="700">サービス</text><text x="300" y="62" fill="#fff" font-size="10.5">desiredCount = 4</text><text x="300" y="78" fill="#fff" font-size="10.5">落ちたら置き換え</text>
+      <line x1="180" y1="55" x2="218" y2="55" stroke="#1f3a68" stroke-width="2" marker-end="url(#c2)"/>
+      <rect x="420" y="10" width="420" height="120" rx="12" fill="#f5f5f7" stroke="#1f3a68"/><text x="470" y="30" fill="#1f3a68" font-weight="700">クラスター</text>
+      <rect x="440" y="44" width="90" height="36" rx="6" fill="#1f3a68"/><text x="485" y="67" fill="#fff" font-size="11">タスク</text>
+      <rect x="540" y="44" width="90" height="36" rx="6" fill="#1f3a68"/><text x="585" y="67" fill="#fff" font-size="11">タスク</text>
+      <rect x="640" y="44" width="90" height="36" rx="6" fill="#1f3a68"/><text x="685" y="67" fill="#fff" font-size="11">タスク</text>
+      <rect x="740" y="44" width="90" height="36" rx="6" fill="#b23a2c"/><text x="785" y="60" fill="#fff" font-size="11">タスク</text><text x="785" y="74" fill="#fff" font-size="10">停止 → 新しく</text>
+      <text x="630" y="110" font-size="11">キャパシティ：Fargate・EC2・マネージドインスタンス・外部</text>
+      <line x1="380" y1="55" x2="418" y2="60" stroke="#1f3a68" stroke-width="2" marker-end="url(#c2)"/>
+      <rect x="10" y="130" width="370" height="50" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="195" y="151" fill="#1f3a68" font-weight="700">スタンドアロンタスク／スケジュールされたタスク</text><text x="195" y="169" font-size="10.5">1 回だけのバッチ。終われば止まる（サービスにしない）</text>
+      <text x="630" y="160" font-size="10.5" fill="#6e6e73">図は Claude が作った模式図</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>サービス＝数を保つ係：</b>決めた数のタスクを動かし続け、失敗・停止したら置き換える。ロードバランサーの後ろに置ける。Web・API など長く動くものはサービス。</div>
+    <div class="point warn"><b>REPLICA と DAEMON：</b>レプリカ（デフォルト）は全体で数を保つ。デーモンはコンテナインスタンス（EC2）ごとに 1 つずつ（ログやモニタリングのエージェント）。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/task_definitions.html">Amazon ECSの タスク定義</a>（「タスク定義はアプリケーションのブループリントです。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/ecs_services.html">Amazon ECS サービス</a>（「タスクの 1 つが失敗または停止した場合、Amazon ECS サービススケジューラはタスク定義の別のインスタンスを起動してそれを置き換えます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/clusters.html">Amazon ECS クラスター</a>（「クラスターは AWS リージョン 固有です。」）</div>
+</section>
+
+<section class="slide">
+  <h1>ECR：イメージの倉庫を守り、片付け、配る</h1>
+  <table class="mx">
+    <tr><th style="width:22%">機能</th><th>何をする</th><th style="width:30%">本番の言い回し</th></tr>
+    <tr><td class="t">プライベートリポジトリ</td><td class="l">IAM のリソースベースの権限で守る。Docker・OCI のイメージを置く</td><td class="l">「社外に公開せずイメージを保存」</td></tr>
+    <tr><td class="t">基本スキャン</td><td class="l">AWS ネイティブの技術と CVE のデータベースで、OS の脆弱性を調べる</td><td class="l">「プッシュ時に OS の脆弱性を」</td></tr>
+    <tr><td class="t">拡張スキャン</td><td class="l">Amazon Inspector と連携し、自動で継続的に。OS とプログラミング言語のパッケージ</td><td class="l">「言語のライブラリも継続的に」</td></tr>
+    <tr><td class="t">ライフサイクルポリシー</td><td class="l">ルールに合う古いイメージをアーカイブ・期限切れにする</td><td class="l">「古いイメージのストレージ料金」</td></tr>
+    <tr><td class="t">レプリケーション</td><td class="l">別のリージョン・別のアカウントへ自動でコピー</td><td class="l">「災害対策で別リージョンにも」</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>だれがプルする：</b>ECS のタスクを起動するときは、ECS（Fargate）のエージェントがタスク実行ロールで ECR からプルする（第2章）。</div>
+    <div class="point warn"><b>ひっかけ：</b>イメージの脆弱性は GuardDuty ではなく ECR のスキャン（拡張なら Inspector）。S3 や EFS はレジストリの代わりにならない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECR/latest/userguide/what-is-ecr.html">Amazon Elastic Container Registry とは</a>（「Amazon ECR は、IAM AWS を使用したリソースベースのアクセス許可を持つプライベートリポジトリをサポートします。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECR/latest/userguide/image-scanning.html">Amazon ECR でイメージをスキャンしてソフトウェア脆弱性がないか調べる</a>（「拡張スキャン – Amazon ECR は Amazon Inspector と統合され、リポジトリの自動継続的なスキャンを提供します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECR/latest/userguide/replication.html">Amazon ECR でのプライベートイメージレプリケーション</a>（「Amazon ECR は、クロスリージョンレプリケーションおよびクロスアカウントレプリケーションの両方をサポートしています。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>キャパシティ・権限・ネットワーク</h1>
+  <p>どこで動かすか、だれの権限で何を呼ぶか、タスクにどんな IP とディスクを持たせるか。</p>
+  <div class="foot"><span>AWS SAA #08 コンテナ</span><span>タスク 2.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>どこで動かす：起動タイプとキャパシティプロバイダー</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:32%">動かす場所</th><th>サーバーの管理</th><th style="width:32%">向く場面</th></tr>
+        <tr><td class="t">Fargate</td><td class="t">不要</td><td class="l">まず考える</td></tr>
+        <tr><td class="t">Fargate Spot</td><td class="l">不要・中断あり（2 分前に警告）</td><td class="l">止まってよい処理を安く</td></tr>
+        <tr><td class="t">EC2（ASG）</td><td class="x">自分で</td><td class="l">細かい制御・リザーブドで安く</td></tr>
+        <tr><td class="t">マネージドインスタンス</td><td class="l">AWS がパッチ・スケール</td><td class="l">GPU・特定のインスタンス</td></tr>
+        <tr><td class="t">External</td><td class="x">自分で（オンプレ）</td><td class="l">ECS Anywhere</td></tr>
+      </table>
+      <div class="mini">起動タイプは EC2・Fargate・External の 3 つ。今はキャパシティプロバイダーで指定するのが勧められている。</div>
+    </div>
+    <div>
+      <div class="lbl">キャパシティプロバイダー戦略で混ぜる（例）</div>
+      <svg width="410" height="150" viewBox="0 0 410 150">
+        <g font-size="11" text-anchor="middle">
+          <rect x="4" y="10" width="120" height="40" rx="6" fill="#1f3a68"/><text x="64" y="28" fill="#fff" font-weight="700">FARGATE</text><text x="64" y="43" fill="#fff" font-size="10">ベース 2・重み 1</text>
+          <rect x="4" y="60" width="120" height="40" rx="6" fill="#b25000"/><text x="64" y="78" fill="#fff" font-weight="700">FARGATE_SPOT</text><text x="64" y="93" fill="#fff" font-size="10">重み 3</text>
+          <text x="140" y="34" text-anchor="start">最初の 2 つは必ず FARGATE</text>
+          <text x="140" y="84" text-anchor="start">それより上は 1：3 で配る</text>
+          <rect x="140" y="110" width="20" height="20" fill="#1f3a68"/><rect x="164" y="110" width="20" height="20" fill="#1f3a68"/><rect x="188" y="110" width="20" height="20" fill="#1f3a68"/><rect x="212" y="110" width="20" height="20" fill="#b25000"/><rect x="236" y="110" width="20" height="20" fill="#b25000"/><rect x="260" y="110" width="20" height="20" fill="#b25000"/>
+          <text x="340" y="125" font-size="10.5">タスク 6 つの例</text>
+          <text x="205" y="146" fill="#6e6e73" font-size="10.5">数字は Claude が作った例</text>
+        </g>
+      </svg>
+      <div class="point warn"><b>ひっかけ：</b>「Fargate Spot という起動タイプ」はない。Fargate Spot はキャパシティプロバイダー（FARGATE_SPOT）で使う。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/capacity-launch-type-comparison.html">Amazon ECS の起動タイプとキャパシティプロバイダー</a>（「起動タイプには、EC2、Fargate、External があります。」「Amazon ECS でサポートされているキャパシティプロバイダーは、Fargate および FARGATE_SPOT、セルフマネージド EC2 インスタンス用の Auto Scaling グループ、Amazon ECS マネージドインスタンスです。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/ManagedInstances.html">Amazon ECS マネージドインスタンスの設計</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/ecs-anywhere.html">外部インスタンスの Amazon ECS クラスター</a></div>
+</section>
+
+<section class="slide">
+  <h1>EC2 のどこに置く：タスク配置戦略</h1>
+  <svg width="856" height="170" viewBox="0 0 856 170">
+    <g font-size="12" text-anchor="middle">
+      <text x="140" y="18" fill="#1f3a68" font-weight="700">binpack（詰める）</text>
+      <rect x="20" y="30" width="110" height="110" rx="8" fill="#f5f5f7" stroke="#1f3a68"/><text x="75" y="48" font-size="11">EC2 1</text>
+      <rect x="32" y="56" width="86" height="18" fill="#1f3a68"/><rect x="32" y="78" width="86" height="18" fill="#1f3a68"/><rect x="32" y="100" width="86" height="18" fill="#1f3a68"/>
+      <rect x="150" y="30" width="110" height="110" rx="8" fill="#f5f5f7" stroke="#1f3a68"/><text x="205" y="48" font-size="11">EC2 2</text><rect x="162" y="56" width="86" height="18" fill="#1f3a68"/>
+      <text x="140" y="160" font-size="11" fill="#1f3a68">空きを最小に → 台数が少なくて済む（コスト）</text>
+      <line x1="300" y1="10" x2="300" y2="165" stroke="#d2d2d7"/>
+      <text x="580" y="18" fill="#3a7d44" font-weight="700">spread（散らす、AZ ごとに）</text>
+      <rect x="330" y="30" width="150" height="110" rx="8" fill="#e8f3ea" stroke="#3a7d44"/><text x="405" y="48" font-size="11">AZ a</text><rect x="345" y="60" width="120" height="18" fill="#3a7d44"/><rect x="345" y="84" width="120" height="18" fill="#3a7d44"/>
+      <rect x="505" y="30" width="150" height="110" rx="8" fill="#e8f3ea" stroke="#3a7d44"/><text x="580" y="48" font-size="11">AZ c</text><rect x="520" y="60" width="120" height="18" fill="#3a7d44"/><rect x="520" y="84" width="120" height="18" fill="#3a7d44"/>
+      <rect x="680" y="30" width="150" height="110" rx="8" fill="#e8f3ea" stroke="#3a7d44"/><text x="755" y="48" font-size="11">AZ d</text><rect x="695" y="60" width="120" height="18" fill="#3a7d44"/><rect x="695" y="84" width="120" height="18" fill="#3a7d44"/>
+      <text x="580" y="160" font-size="11" fill="#3a7d44">均等に → 1 つの AZ が落ちても残る（可用性）</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:18%">戦略</th><th>置き方</th><th style="width:34%">使いどころ</th></tr>
+    <tr><td class="t">binpack</td><td class="l">未使用の CPU・メモリが最小になるよう詰める</td><td class="l">インスタンス数を減らしてコスト削減</td></tr>
+    <tr><td class="t">spread</td><td class="l">指定した値（AZ・インスタンス）に均等に。サービスのデフォルトは AZ に spread</td><td class="l">可用性を上げる</td></tr>
+    <tr><td class="t">random</td><td class="l">ランダム</td><td class="l">特にこだわらない</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/task-placement-strategies.html">戦略を使用して Amazon ECS タスク配置を定義する</a>（「binpack タスクはコンテナインスタンスに配置され、未使用の CPU またはメモリを最小にします。」「spreadタスクは指定された値に基づいて均等に配置されます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>2つのロール：タスクロールとタスク実行ロール</h1>
+  <svg width="856" height="180" viewBox="0 0 856 180">
+    <defs><marker id="c3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="260" y="10" width="330" height="160" rx="12" fill="#f5f5f7" stroke="#1f3a68"/><text x="425" y="30" fill="#1f3a68" font-weight="700">タスク</text>
+      <rect x="280" y="44" width="140" height="110" rx="8" fill="#fff4e5" stroke="#b25000"/><text x="350" y="66" fill="#b25000" font-weight="700">ECS エージェント</text><text x="350" y="84" font-size="10.5">（Fargate のエージェント）</text><text x="350" y="112" fill="#b25000" font-weight="700">タスク実行ロール</text><text x="350" y="130" font-size="10.5">起動の準備に使う</text>
+      <rect x="430" y="44" width="140" height="110" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="500" y="66" fill="#1f3a68" font-weight="700">コンテナの中の</text><text x="500" y="82" fill="#1f3a68" font-weight="700">アプリ</text><text x="500" y="112" fill="#1f3a68" font-weight="700">タスクロール</text><text x="500" y="130" font-size="10.5">アプリが AWS を呼ぶ</text>
+      <rect x="10" y="14" width="200" height="40" rx="6" fill="#b25000"/><text x="110" y="39" fill="#fff">ECR からイメージをプル</text>
+      <rect x="10" y="68" width="200" height="40" rx="6" fill="#b25000"/><text x="110" y="93" fill="#fff">CloudWatch Logs へ送る</text>
+      <rect x="10" y="122" width="200" height="40" rx="6" fill="#b25000"/><text x="110" y="142" fill="#fff" font-size="11">Secrets Manager・</text><text x="110" y="156" fill="#fff" font-size="11">Parameter Store を読む</text>
+      <line x1="278" y1="70" x2="212" y2="34" stroke="#b25000" stroke-width="2" marker-end="url(#c3)"/><line x1="278" y1="98" x2="212" y2="88" stroke="#b25000" stroke-width="2" marker-end="url(#c3)"/><line x1="278" y1="126" x2="212" y2="142" stroke="#b25000" stroke-width="2" marker-end="url(#c3)"/>
+      <rect x="646" y="40" width="200" height="40" rx="6" fill="#1f3a68"/><text x="746" y="65" fill="#fff">S3 のファイルを読む</text>
+      <rect x="646" y="100" width="200" height="40" rx="6" fill="#1f3a68"/><text x="746" y="125" fill="#fff">DynamoDB に書く</text>
+      <line x1="572" y1="80" x2="644" y2="60" stroke="#1f3a68" stroke-width="2" marker-end="url(#c3)"/><line x1="572" y1="110" x2="644" y2="120" stroke="#1f3a68" stroke-width="2" marker-end="url(#c3)"/>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point warn"><b>症状で見分ける：</b>「イメージがプルできない」「ログが出ない」「シークレットが取れない」→ 実行ロール。「アプリが S3 で AccessDenied」→ タスクロール。</div>
+    <div class="point"><b>やってはいけない：</b>EC2 のインスタンスロールにアプリの権限を付ける（全タスクが同じ権限に）・アクセスキーを環境変数に書く。DB のパスワードは Secrets Manager に置き、タスク定義の <code>secrets</code> で渡す。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/task-iam-roles.html">Amazon ECS タスクの IAM ロール</a>（「タスクロールは、アプリケーションが Amazon S3 などの他の AWS サービスにアクセスするときに必要です。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/task_execution_IAM_role.html">Amazon ECS タスク実行IAM ロール</a>（「タスク実行ロールは、ユーザーに代わって AWS API コールを実行するためのアクセス許可を Amazon ECS コンテナと Fargate エージェントに付与します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/specifying-sensitive-data.html">Amazon ECS コンテナに機密データを渡す</a></div>
+</section>
+
+<section class="slide">
+  <h1>ネットワークとストレージ</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:22%">モード</th><th>しくみ</th></tr>
+        <tr><td class="t">awsvpc</td><td class="l">タスクごとに専用の ENI とプライベート IP。タスクごとにセキュリティグループ。Fargate はこれ。ターゲットタイプは ip</td></tr>
+        <tr><td class="t">bridge</td><td class="l">EC2 の中の Docker の仮想ネットワーク。動的ホストポートマッピングで ALB に登録</td></tr>
+        <tr><td class="t">host</td><td class="l">ホストの ENI のポートをそのまま使う。同じポートのタスクは 1 台に 1 つ</td></tr>
+      </table>
+      <div class="point"><b>AWS のおすすめ：</b>特別な理由がなければ awsvpc。ECS Anywhere の外部インスタンスでは awsvpc は使えない。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">ストレージ</th><th>特徴</th></tr>
+        <tr><td class="t">Fargate のエフェメラル</td><td class="l">最低 20 GiB、最大 200 GiB。タスクが終われば消える・共有しない</td></tr>
+        <tr><td class="t">EFS ボリューム</td><td class="l">永続・複数のタスクで共有。Fargate でも使える</td></tr>
+        <tr><td class="t">EBS ボリューム</td><td class="l">高性能なブロック。データの多い処理に</td></tr>
+      </table>
+      <div class="point warn"><b>共有して残すなら EFS：</b>アップロードされたファイルをどのタスクでも読むなら EFS。一時ファイルならエフェメラルを増やす。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/task-networking.html">EC2 の Amazon ECS タスクネットワークオプション</a>（「Amazon ECS では、別のネットワークモードを使用する特別の必要性がある場合を除き、awsvpc ネットワークモードの使用を推奨します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/fargate-task-storage.html">Amazon ECS 向けの Fargate タスクエフェメラルストレージ</a>（「エフェメラルストレージの総量は、最大 200 GiB まで増やすことができます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/efs-volumes.html">Amazon ECS での Amazon EFS ボリュームの使用</a>（「これにより、タスクは、配置されているインスタンスにかかわらず、同じ永続的ストレージにアクセスできます。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>スケーリングとデプロイ</h1>
+  <p>タスクを増やし、ALB でつなぎ、止めずに入れ替える。バッチはスケジュールで起動。</p>
+  <div class="foot"><span>AWS SAA #08 コンテナ</span><span>タスク 2.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>タスクを増やす・インスタンスを増やす</h1>
+  <svg width="856" height="150" viewBox="0 0 856 150">
+    <defs><marker id="c4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="40" width="150" height="56" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="85" y="62" fill="#1f3a68" font-weight="700">CloudWatch</text><text x="85" y="80" font-size="10.5">CPU の平均 80%</text>
+      <rect x="210" y="40" width="190" height="56" rx="8" fill="#3a7d44"/><text x="305" y="62" fill="#fff" font-weight="700">サービスの自動スケーリング</text><text x="305" y="80" fill="#fff" font-size="10.5">目標 60% → タスクを 4 → 6</text>
+      <rect x="450" y="40" width="190" height="56" rx="8" fill="#b25000"/><text x="545" y="62" fill="#fff" font-weight="700">キャパシティプロバイダー</text><text x="545" y="80" fill="#fff" font-size="10.5">マネージドスケーリング</text>
+      <rect x="690" y="40" width="156" height="56" rx="8" fill="#1f3a68"/><text x="768" y="62" fill="#fff" font-weight="700">EC2 を増やす</text><text x="768" y="80" fill="#fff" font-size="10.5">入りきらない分</text>
+      <line x1="160" y1="68" x2="208" y2="68" stroke="#1f3a68" stroke-width="2" marker-end="url(#c4)"/><line x1="400" y1="68" x2="448" y2="68" stroke="#1f3a68" stroke-width="2" marker-end="url(#c4)"/><line x1="640" y1="68" x2="688" y2="68" stroke="#1f3a68" stroke-width="2" marker-end="url(#c4)"/>
+      <text x="545" y="122" font-size="11">EC2 のときだけ要る。Fargate ならタスクを増やすだけでよい</text>
+      <text x="428" y="142" font-size="10.5" fill="#6e6e73">数字は Claude が作った例</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:22%">スケーリングの種類</th><th>決め方</th><th style="width:30%">例</th></tr>
+    <tr><td class="t">ターゲット追跡</td><td class="l">メトリクスと目標値を決めるだけ（CPU・メモリ・ALB のリクエスト数）</td><td class="l">CPU の平均を 60% に保つ</td></tr>
+    <tr><td class="t">ステップ</td><td class="l">しきい値ごとに増減する数を決める</td><td class="l">80% 超で +2、90% 超で +4</td></tr>
+    <tr><td class="t">スケジュール</td><td class="l">日時で数を変える</td><td class="l">毎朝 8 時に 10 にする</td></tr>
+    <tr><td class="t">予測</td><td class="l">過去の日次・週次のパターンから前もって増やす</td><td class="l">毎週月曜の朝の山</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/service-autoscaling-targettracking.html">ターゲットメトリクスを使用して Amazon ECS サービスをスケールする</a>（「ターゲット追跡スケーリングポリシーで、メトリクスを選択してターゲット値を設定します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/asg-capacity-providers.html">EC2 ワークロード用の Amazon ECS キャパシティプロバイダー</a>（「マネージドスケーリング機能を使用して、Auto Scaling グループのスケールインおよびスケールアウトアクションを Amazon ECS に管理させることも、自分自身でスケーリングアクションを管理することもできます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>ALB でつなぐ：パスで分ける・ポートを動的に</h1>
+  <svg width="856" height="190" viewBox="0 0 856 190">
+    <defs><marker id="c5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="60" width="140" height="60" rx="8" fill="#4a5a78"/><text x="80" y="84" fill="#fff" font-weight="700">ALB</text><text x="80" y="102" fill="#fff" font-size="10.5">リスナー 443</text>
+      <rect x="200" y="20" width="160" height="44" rx="8" fill="#3a7d44"/><text x="280" y="40" fill="#fff" font-weight="700">API サービス</text><text x="280" y="56" fill="#fff" font-size="10.5">/api/*</text>
+      <rect x="200" y="116" width="160" height="44" rx="8" fill="#1f3a68"/><text x="280" y="136" fill="#fff" font-weight="700">Web サービス</text><text x="280" y="152" fill="#fff" font-size="10.5">それ以外 /*</text>
+      <line x1="150" y1="80" x2="198" y2="44" stroke="#1f3a68" stroke-width="2" marker-end="url(#c5)"/><line x1="150" y1="100" x2="198" y2="136" stroke="#1f3a68" stroke-width="2" marker-end="url(#c5)"/>
+      <text x="185" y="184" font-size="11" fill="#1f3a68">パスベースのルーティング（1 つの ALB で複数のサービス）</text>
+      <line x1="420" y1="10" x2="420" y2="185" stroke="#d2d2d7"/>
+      <rect x="450" y="20" width="390" height="140" rx="10" fill="#f5f5f7" stroke="#1f3a68"/><text x="645" y="40" fill="#1f3a68" font-weight="700">EC2 1 台（bridge モード）</text>
+      <rect x="470" y="56" width="110" height="44" rx="6" fill="#3a7d44"/><text x="525" y="74" fill="#fff" font-size="11">タスク A</text><text x="525" y="90" fill="#fff" font-size="10">80 → 32768</text>
+      <rect x="590" y="56" width="110" height="44" rx="6" fill="#3a7d44"/><text x="645" y="74" fill="#fff" font-size="11">タスク B</text><text x="645" y="90" fill="#fff" font-size="10">80 → 32769</text>
+      <rect x="710" y="56" width="110" height="44" rx="6" fill="#3a7d44"/><text x="765" y="74" fill="#fff" font-size="11">タスク C</text><text x="765" y="90" fill="#fff" font-size="10">80 → 32770</text>
+      <text x="645" y="126" font-size="11">ホストポート 0 → 空いているポートが選ばれる</text>
+      <text x="645" y="146" font-size="11">ALB にはインスタンス ID＋ポートで登録</text>
+      <text x="645" y="184" font-size="11" fill="#3a7d44">動的ホストポートマッピング（ポート番号は Claude が作った例）</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>ロードバランサーの選び方：</b>HTTP/HTTPS で URL やホストで分けるなら ALB。TCP・UDP（レイヤー 4）なら NLB。Fargate では ALB・NLB・GWLB が使える。</div>
+    <div class="point warn"><b>ターゲットタイプ：</b>awsvpc（Fargate）のタスクは ENI に結び付くので、ターゲットグループのターゲットタイプは instance ではなく ip。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/alb.html">Amazon ECS 用の Application Load Balancer を使用する</a>（「Application Load Balancer では、アプリケーションレイヤー (HTTP/HTTPS) でルーティング決定を行い、パスベースのルーティングをサポートします。」「Application Load Balancer では、動的ホストポートマッピングをサポートしています。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/AWS_Fargate.html">Amazon ECS の AWS Fargate 用のアーキテクト</a>（「また、このようなサービスのターゲットグループを作成する場合は、ターゲットタイプとして instance ではなく、ip を選択する必要があります。」）</div>
+</section>
+
+<section class="slide">
+  <h1>止めずに入れ替える：ローリングとブルー/グリーン</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">ローリング更新（desiredCount 4・最小 100%・最大 200%）</div>
+      <svg width="410" height="150" viewBox="0 0 410 150">
+        <g font-size="10.5" text-anchor="middle">
+          <text x="30" y="26">①</text><rect x="50" y="12" width="40" height="22" fill="#1f3a68"/><rect x="94" y="12" width="40" height="22" fill="#1f3a68"/><rect x="138" y="12" width="40" height="22" fill="#1f3a68"/><rect x="182" y="12" width="40" height="22" fill="#1f3a68"/><text x="320" y="27">旧 4</text>
+          <text x="30" y="66">②</text><rect x="50" y="52" width="40" height="22" fill="#1f3a68"/><rect x="94" y="52" width="40" height="22" fill="#1f3a68"/><rect x="138" y="52" width="40" height="22" fill="#1f3a68"/><rect x="182" y="52" width="40" height="22" fill="#1f3a68"/><rect x="226" y="52" width="40" height="22" fill="#3a7d44"/><rect x="270" y="52" width="40" height="22" fill="#3a7d44"/><rect x="314" y="52" width="40" height="22" fill="#3a7d44"/><rect x="358" y="52" width="40" height="22" fill="#3a7d44"/><text x="312" y="92" fill="#3a7d44">新を先に起動（最大 8）</text>
+          <text x="30" y="126">③</text><rect x="226" y="112" width="40" height="22" fill="#3a7d44"/><rect x="270" y="112" width="40" height="22" fill="#3a7d44"/><rect x="314" y="112" width="40" height="22" fill="#3a7d44"/><rect x="358" y="112" width="40" height="22" fill="#3a7d44"/><text x="130" y="127">正常になったら旧を止める</text>
+          <text x="205" y="148" fill="#6e6e73">正常なタスクは常に 4 以上（Claude が作った例）</text>
+        </g>
+      </svg>
+      <div class="mini">minimumHealthyPercent＝正常でなければならない数の下限、maximumPercent＝動かしてよい数の上限（どちらも desiredCount に対する ％）。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:26%"></th><th>ローリング</th><th>ブルー/グリーン</th></tr>
+        <tr><td class="t">入れ替え方</td><td class="l">少しずつ置き換え</td><td class="l">新旧を両方用意して切り替え</td></tr>
+        <tr><td class="t">事前の検証</td><td class="x">しにくい</td><td class="l">テストのトラフィックで確かめる</td></tr>
+        <tr><td class="t">戻し方</td><td class="l">もう一度デプロイ</td><td class="l">ベイク時間中は旧版が残り、すぐ戻せる</td></tr>
+      </table>
+      <div class="point"><b>バッチは EventBridge スケジューラ：</b>毎日 2 時に 1 回、などはサービスにせず、スケジュールで Fargate のタスクを起動する。15 分を超えるので Lambda では無理な処理の定番。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/deployment-type-ecs.html">タスクを置き換えて Amazon ECS サービスをデプロイする</a>（「maximumPercent 設定で許可されている場合、スケジューラは異常な状態のタスクを停止する前に代替タスクを起動します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/deployment-type-blue-green.html">Amazon ECS ブルー/グリーンデプロイ</a>（「Amazon ECS ブルー/グリーンデプロイを使用すると、本番トラフィックをルーティングする前に、新しいサービスリビジョンを検証できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/tasks-scheduled-eventbridge-scheduler.html">Amazon EventBridge スケジューラを使用して Amazon ECS タスクをスケジュールする</a></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>Amazon EKS</h1>
+  <p>Kubernetes をそのまま使いたいなら EKS。コントロールプレーンは AWS、ノードの面倒をどこまで任せるかを選ぶ。</p>
+  <div class="foot"><span>AWS SAA #08 コンテナ</span><span>タスク 2.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>EKS：ノードの面倒をどこまで任せるか</h1>
+  <svg width="856" height="160" viewBox="0 0 856 160">
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="10" width="836" height="40" rx="8" fill="#1f3a68"/><text x="428" y="35" fill="#fff" font-weight="700">コントロールプレーン（Kubernetes の頭脳）＝ AWS が管理</text>
+      <rect x="10" y="62" width="196" height="88" rx="8" fill="#fde7e4" stroke="#b23a2c"/><text x="108" y="84" fill="#b23a2c" font-weight="700">セルフマネージド</text><text x="108" y="104" font-size="10.5">ノードを自分で作り</text><text x="108" y="120" font-size="10.5">更新・パッチも自分で</text>
+      <rect x="220" y="62" width="196" height="88" rx="8" fill="#fff4e5" stroke="#b25000"/><text x="318" y="84" fill="#b25000" font-weight="700">マネージド型ノードグループ</text><text x="318" y="104" font-size="10.5">作成・更新・ドレインを自動化</text><text x="318" y="120" font-size="10.5">EC2 は自分のアカウント</text>
+      <rect x="430" y="62" width="196" height="88" rx="8" fill="#e8f3ea" stroke="#3a7d44"/><text x="528" y="84" fill="#3a7d44" font-weight="700">EKS Auto Mode</text><text x="528" y="104" font-size="10.5">インスタンス選び・スケール</text><text x="528" y="120" font-size="10.5">OS のパッチまで AWS</text>
+      <rect x="640" y="62" width="206" height="88" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="743" y="84" fill="#1f3a68" font-weight="700">Fargate（プロファイル）</text><text x="743" y="104" font-size="10.5">ノードなし。Pod ごとに VM で分離</text><text x="743" y="120" font-size="10.5">DaemonSet 不可・プライベートのみ</text>
+      <text x="108" y="142" font-size="10.5" fill="#b23a2c">手間 大</text><text x="743" y="142" font-size="10.5" fill="#1f3a68">手間 小</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%">オンプレミスで</th><th>しくみ</th></tr>
+    <tr><td class="t">EKS Hybrid Nodes</td><td class="l">自社のサーバーを、リージョンの EKS クラスターのノードにする（リージョンへの安定した接続が要る）</td></tr>
+    <tr><td class="t">EKS on Outposts</td><td class="l">データセンターに置いた AWS 管理のハードウェア（Outposts）の上で EKS</td></tr>
+    <tr><td class="t">EKS Anywhere</td><td class="l">インターネットから切り離した自己完結の環境で、Kubernetes クラスターを自分で動かす</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/eks/latest/userguide/managed-node-groups.html">マネージドノードグループを使用してノードライフサイクルを簡素化する</a>（「Amazon EKS マネージド型ノードグループは、Amazon EKS Kubernetes クラスターのノード (Amazon EC2 インスタンス) のプロビジョニングとライフサイクル管理を自動化します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/eks/latest/userguide/fargate.html">AWS Fargate を使用してコンピューティング管理を簡素化する</a>（「デーモンセットは Fargate ではサポートされていません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/eks/latest/userguide/eks-deployment-options.html">クラウド環境とオンプレミス環境に Amazon EKS クラスターをデプロイする</a>（「Amazon EKS on AWS Outposts と Amazon EKS Hybrid Nodes には、オンプレミス環境から AWS リージョンへの信頼性の高い接続が必要です。」）</div>
+</section>
+
+<section class="slide">
+  <h1>EKS のスケーリングと権限</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">2 段階のスケーリング</div>
+      <svg width="410" height="170" viewBox="0 0 410 170">
+        <defs><marker id="c6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <rect x="4" y="10" width="190" height="60" rx="8" fill="#3a7d44"/><text x="99" y="32" fill="#fff" font-weight="700">Horizontal Pod Autoscaler</text><text x="99" y="50" fill="#fff" font-size="10.5">CPU に合わせて Pod を増減</text>
+          <rect x="216" y="10" width="190" height="60" rx="8" fill="#fde7e4" stroke="#b23a2c"/><text x="311" y="32" fill="#b23a2c" font-weight="700">Pod が Pending</text><text x="311" y="50" font-size="10.5">ノードに入りきらない</text>
+          <line x1="194" y1="40" x2="214" y2="40" stroke="#1f3a68" stroke-width="2" marker-end="url(#c6)"/>
+          <rect x="216" y="94" width="190" height="60" rx="8" fill="#b25000"/><text x="311" y="116" fill="#fff" font-weight="700">Karpenter</text><text x="311" y="134" fill="#fff" font-size="10.5">合うサイズの EC2 を 1 分未満で</text>
+          <line x1="311" y1="70" x2="311" y2="92" stroke="#1f3a68" stroke-width="2" marker-end="url(#c6)"/>
+          <rect x="4" y="94" width="190" height="60" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="99" y="116" fill="#1f3a68" font-weight="700">Cluster Autoscaler</text><text x="99" y="134" font-size="10.5">ASG の台数を増減（昔から）</text>
+          <text x="205" y="168" fill="#6e6e73" font-size="10.5">EKS Auto Mode は Karpenter をもとにしている</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">権限の渡し方</th><th>しくみ</th></tr>
+        <tr><td class="t">EKS Pod Identity</td><td class="l">Pod（サービスアカウント）ごとに IAM ロールの認証情報を渡す</td></tr>
+        <tr><td class="t">IRSA</td><td class="l">IAM ロールを Kubernetes のサービスアカウントに関連付ける</td></tr>
+        <tr><td class="x">ノードのロール</td><td class="x">全 Pod が同じ権限になる（最小権限にならない）</td></tr>
+      </table>
+      <div class="point warn"><b>ECS との対応：</b>ECS のタスクロール ≒ EKS の Pod Identity・IRSA。ECS のサービスの自動スケーリング ≒ HPA。ECS のキャパシティのスケール ≒ Karpenter。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/eks/latest/userguide/horizontal-pod-autoscaler.html">Horizontal Pod Autoscaler を使用してポッドデプロイをスケールする</a>（「ターゲットの CPU 使用率を設定すると、Horizontal Pod Autoscaler はターゲットを満たすようにアプリケーションをスケールインまたはスケールアウトします。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/eks/latest/userguide/autoscaling.html">Karpenter と Cluster Autoscaler を使用したクラスターコンピューティングのスケーリング</a>（「EKS Auto Mode は Karpenter に基づいて構築されます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/eks/latest/userguide/pod-identities.html">EKS Pod Identity が Pod に AWS サービスへのアクセス権を付与する仕組みを学ぶ</a>（「AWS 認証情報を作成してコンテナに配布したり、Amazon EC2 インスタンスのロールを使用したりする必要はありません。」）</div>
+</section>
+
+<section class="slide">
+  <h1>ECS か EKS か</h1>
+  <table class="mx">
+    <tr><th style="width:20%"></th><th>Amazon ECS</th><th>Amazon EKS</th></tr>
+    <tr><td class="t">ひとことで</td><td class="l">AWS 独自のシンプルなオーケストレーション</td><td class="l">Kubernetes をマネージドで</td></tr>
+    <tr><td class="t">選ぶ決め手</td><td class="l">AWS だけで動かす・覚えることを少なく</td><td class="l">既存の Kubernetes のマニフェスト・Helm・kubectl・ノウハウ／複数の環境で同じ Kubernetes</td></tr>
+    <tr><td class="t">サーバーレス</td><td class="l">Fargate</td><td class="l">Fargate（プロファイル）・Auto Mode</td></tr>
+    <tr><td class="t">アプリの権限</td><td class="l">タスクロール</td><td class="l">Pod Identity・IRSA</td></tr>
+    <tr><td class="t">数を増やす</td><td class="l">サービスの自動スケーリング</td><td class="l">HPA（Pod）・Karpenter（ノード）</td></tr>
+    <tr><td class="t">オンプレミス</td><td class="l">ECS Anywhere</td><td class="l">Hybrid Nodes・Outposts・EKS Anywhere</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>本番の言い回し：</b>「Kubernetes を使っている」「Kubernetes の知識を生かしたい」→ EKS。「運用の手間を最小に」「AWS ネイティブで」→ ECS＋Fargate。</div>
+    <div class="point warn"><b>コントロールプレーン：</b>EC2 に自分で Kubernetes を入れると、コントロールプレーンの管理まで自分でやることになる。EKS ならコントロールプレーンは AWS。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/eks/latest/userguide/what-is-eks.html">Amazon EKS とは</a>（「Amazon Elastic Kubernetes Service (EKS) は、Kubernetes クラスターの操作の複雑性を解消する、フルマネージドの Kubernetes サービスです。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/Welcome.html">Amazon Elastic Container Service とは</a>（「フルマネージドサービスである Amazon ECS には、AWS の設定と運用に関するベストプラクティスが組み込まれています。」）</div>
+</section>
+
+<section class="slide">
+  <h1>選び分け：この要件ならこれ</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:55%">要件</th><th>答え</th></tr>
+        <tr><td class="l">常に 4 つ動かし、落ちたら置き換え</td><td class="t">ECS サービス</td></tr>
+        <tr><td class="l">各 EC2 にエージェントを 1 つずつ</td><td class="t">デーモン戦略</td></tr>
+        <tr><td class="l">言語のパッケージも継続的にスキャン</td><td class="t">ECR 拡張スキャン</td></tr>
+        <tr><td class="l">古いイメージを自動で片付け</td><td class="t">ライフサイクルポリシー</td></tr>
+        <tr><td class="l">EC2 の台数を減らしたい</td><td class="t">binpack</td></tr>
+        <tr><td class="l">アプリが S3 を読む</td><td class="t">タスクロール</td></tr>
+        <tr><td class="l">イメージがプルできない</td><td class="t">タスク実行ロール</td></tr>
+        <tr><td class="l">タスクごとにセキュリティグループ</td><td class="t">awsvpc</td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:55%">要件</th><th>答え</th></tr>
+        <tr><td class="l">複数タスクで永続ファイルを共有</td><td class="t">EFS ボリューム</td></tr>
+        <tr><td class="l">最低 2 つは通常、残りは安く</td><td class="t">FARGATE＋FARGATE_SPOT</td></tr>
+        <tr><td class="l">1 台に同じサービスを複数＋ALB</td><td class="t">動的ホストポートマッピング</td></tr>
+        <tr><td class="l">本番前に検証し、すぐ戻す</td><td class="t">ブルー/グリーン</td></tr>
+        <tr><td class="l">毎晩 40 分のバッチ</td><td class="t">スケジューラ＋Fargate タスク</td></tr>
+        <tr><td class="l">Kubernetes をそのまま移す</td><td class="t">EKS</td></tr>
+        <tr><td class="l">Pod の数を CPU で増減</td><td class="t">HPA</td></tr>
+        <tr><td class="l">Pending の Pod のためにノード追加</td><td class="t">Karpenter</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">ECS の部品<span>タスク定義＝設計図、タスク＝動いているもの、サービス＝数を保つ。イメージは ECR</span></div>
+      <div class="box b2">動かす場所と権限<span>Fargate がまず候補。アプリはタスクロール、プルやログは実行ロール。awsvpc</span></div>
+      <div class="box b3">スケーリングとデプロイ<span>ターゲット追跡・ALB（パス・動的ポート）・ローリング（100/200）・ブルー/グリーン</span></div>
+      <div class="box b4">EKS<span>Kubernetes なら EKS。ノードはマネージド・Auto Mode・Fargate。HPA と Karpenter、Pod Identity</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">ひっかけ</th><th>正しくは</th></tr>
+        <tr><td class="l">アプリの権限を実行ロールに</td><td class="x">タスクロール</td></tr>
+        <tr><td class="l">起動タイプ「Fargate Spot」</td><td class="x">キャパシティプロバイダー</td></tr>
+        <tr><td class="l">EKS の Fargate で DaemonSet</td><td class="x">使えない</td></tr>
+        <tr><td class="l">HPA でノードを増やす</td><td class="x">ノードは Karpenter</td></tr>
+        <tr><td class="l">Fargate の一時領域は 20 GiB まで</td><td class="x">200 GiB まで増やせる</td></tr>
+      </table>
+      <div class="point">次の #09 では、ロードバランサーと Auto Scaling を学ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
