@@ -140,6 +140,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/10.html", title: "無線LAN 用語集", desc: "2.4GHzの重ならないチャネル・SSIDとBSS・RSSIとSNR、WPA2/WPA3・PSKと802.1X・SAE、自律型・CAPWAPとスプリットMAC・FlexConnect・Meraki、APのモード、APとWLCのポートとLAG、WLCのWLAN画面とQoSプロファイルの62語と、オリジナル問題30問（出題範囲 1.11・2.6・2.7・2.9）", fields: [10], pdf: "terms/10.pdf" },
       { type: "terms", file: "terms/11.html", title: "機器の管理アクセス 用語集", desc: "コンソール・Telnet・SSH・HTTP/HTTPS・クラウド管理、管理用SVIとdefault-gateway、enable secretとパスワードのタイプ・login local・特権レベル、SSHの設定手順とtransport input・access-class、AAAとTACACS+/RADIUS・メソッドリストの34語と、オリジナル問題30問（出題範囲 2.8・4.8・5.3）", fields: [11], pdf: "terms/11.pdf" },
       { type: "terms", file: "terms/12.html", title: "ルーティングテーブル 用語集", desc: "show ip route の1行の読み方（コード・プレフィックス・AD・メトリック・ネクストホップ・出口）、コネクテッド/ローカル/スタティック/ダイナミック/デフォルトルート、ADとメトリックによる登録、最長一致による転送、ECMP・FIB・再帰検索の用語と、オリジナル問題30問（出題範囲 3.1・3.2）", fields: [12], pdf: "terms/12.pdf" },
+      { type: "terms", file: "terms/13.html", title: "スタティックルート 用語集", desc: "ip route と ipv6 route の書き方（デフォルト・ネットワーク・ホストルート）、ネクストホップ・出口・完全指定の違い、リンクローカルのネクストホップ、フローティングスタティックとAD 255、再帰で予備に切り替わらないトラブルの用語と、オリジナル問題30問（出題範囲 3.3）", fields: [13], pdf: "terms/13.pdf" },
     ],
     ap: [
       { type: "note", file: "notes/apno1.html", title: "TCP/IPとHTTP", desc: "アプリケーション層とHTTPプロトコル", fields: [10] },
