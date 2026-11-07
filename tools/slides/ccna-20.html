@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CCNA #20 セキュリティの基本とAAA 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">CCNA（200-301 v1.1）　5.0 セキュリティの基礎　#20</div>
+  <h1>セキュリティの基本と AAA</h1>
+  <p>出題範囲 5.1・5.2・5.4・5.8 ― 脅威・脆弱性・エクスプロイトと対策、人と場所を守る仕組み、パスワードとその代わり、AAA と 802.1X</p>
+  <div class="refs-legend">各ページの下に、根拠にしたCiscoの資料・RFC・NISTの文書を書いた（青い文字を押すと開く）</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>5.1 Define key security concepts／5.2 Describe security program elements／5.4 Describe security password policy elements／5.8 Compare authentication, authorization, and accounting concepts</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 脅威と攻撃（5.1）<span>脅威・脆弱性・エクスプロイト・リスク・対策、DoS・なりすまし・中間者・マルウェア・フィッシング</span></div>
+      <div class="box b2">2 セキュリティプログラム（5.2）<span>意識向上・トレーニング・物理アクセス制御</span></div>
+      <div class="box b3">3 パスワードとその代わり（5.4）<span>NIST SP 800-63B-4 の決まり、MFA、証明書、生体認証</span></div>
+      <div class="box b4">4 AAA（5.8）<span>認証・認可・アカウンティング、TACACS+ と RADIUS、802.1X</span></div>
+    </div>
+    <div>
+      <div class="cap">CCNAでの問われ方</div>
+      <table>
+        <tr><td style="width:26%">Define・Describe・Compare</td><td>言葉の<b>定義と違い</b>。「脆弱性と脅威の違い」「ワームとウイルス」「MFA になる組み合わせ」「認可はどれ」「802.1X でスイッチの役は」</td></tr>
+      </table>
+      <div class="point"><b>芯：</b>穴（脆弱性）を、だれか（脅威）が、道具（エクスプロイト）で突く。防ぐのは技術だけでなく<b>人（教育）と場所（物理）</b>も。入口では「<b>だれ？・何をしてよい？・何をした？</b>」を分けて管理する（AAA）。</div>
+      <div class="ex" style="margin-top:8px"><span class="lbl">関連</span>パスワード・SSH・TACACS+／RADIUS の設定は #11、DHCP スヌーピング・DAI・ポートセキュリティは #23</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco CCNA Exam v1.1 (200-301) Exam Topics</a>（5.1・5.2・5.4・5.8）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>脅威と攻撃</h1>
+  <p>言葉の関係をおさえ、ネットワーク・ソフト・人をねらう攻撃を見分ける。</p>
+  <div class="foot"><span>CCNA #20 セキュリティの基本と AAA</span><span>5.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>脅威・脆弱性・エクスプロイト・リスク・対策</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="250" viewBox="0 0 420 250">
+        <defs><marker id="a1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="20" width="110" height="50" rx="8" fill="#b25000"/><text x="65" y="42" fill="#fff" font-weight="700">脅威</text><text x="65" y="59" fill="#fff" font-size="10.5">攻撃者・マルウェア</text>
+          <rect x="155" y="20" width="110" height="50" rx="8" fill="#5b80bf"/><text x="210" y="42" fill="#fff" font-weight="700">エクスプロイト</text><text x="210" y="59" fill="#fff" font-size="10.5">穴を突くコード</text>
+          <rect x="300" y="20" width="110" height="50" rx="8" fill="#1f3a68"/><text x="355" y="42" fill="#fff" font-weight="700">脆弱性</text><text x="355" y="59" fill="#fff" font-size="10.5">設計・作り・運用の穴</text>
+          <line x1="120" y1="45" x2="153" y2="45" stroke="#1f3a68" stroke-width="2" marker-end="url(#a1)"/>
+          <line x1="265" y1="45" x2="298" y2="45" stroke="#1f3a68" stroke-width="2" marker-end="url(#a1)"/>
+          <line x1="355" y1="70" x2="355" y2="108" stroke="#1f3a68" stroke-width="2" marker-end="url(#a1)"/>
+          <rect x="270" y="110" width="140" height="44" rx="8" fill="#fff" stroke="#b25000" stroke-width="2"/><text x="340" y="130" fill="#b25000" font-weight="700">被害</text><text x="340" y="146" fill="#b25000" font-size="10.5">C・I・A のどれかが破られる</text>
+          <rect x="10" y="110" width="230" height="44" rx="8" fill="#eef2f8" stroke="#5b80bf"/><text x="125" y="129" fill="#1f3a68" font-weight="700">リスク</text><text x="125" y="146" fill="#1f3a68" font-size="10.5">脅威が穴を突いて害が出る見込み</text>
+          <rect x="10" y="180" width="400" height="56" rx="8" fill="#1f3a68"/><text x="210" y="202" fill="#fff" font-weight="700">対策（mitigation）</text><text x="210" y="222" fill="#fff" font-size="10.5">防ぐ（パッチ・ACL）／害を減らす（バックアップ）／見つけて知らせる（ログ・検知）</text>
+        </g>
+      </svg>
+      <div class="anno">図は RFC 4949 の定義から Claude が作った</div>
+    </div>
+    <div>
+      <div class="cap">CIA の3要素（守るもの）</div>
+      <table class="mx">
+        <tr><th style="width:24%">要素</th><th>意味</th><th style="width:28%">破る攻撃の例</th></tr>
+        <tr><td class="t">機密性 C</td><td style="text-align:left">許された人だけが見られる</td><td>盗み見・中間者</td></tr>
+        <tr><td class="t">完全性 I</td><td style="text-align:left">勝手に変えられていない</td><td>改ざん・中間者</td></tr>
+        <tr><td class="t">可用性 A</td><td style="text-align:left">使いたいときに使える</td><td>DoS・ランサムウェア</td></tr>
+      </table>
+      <div class="point"><b>ゼロデイ：</b>ベンダーがまだ知らない（パッチのない）穴を突く攻撃。パッチだけでは防げないので、不審な動きの検知と組み合わせる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc4949">RFC 4949</a>（threat・vulnerability・risk・countermeasure・data confidentiality・data integrity・availability）／<a class="src" href="https://www.cisco.com/site/us/en/learn/topics/security/what-is-an-exploit.html">Cisco「What Is an Exploit?」</a>（An exploit is not malware itself／zero-day exploits）／<a class="src" href="https://www.cisco.com/c/en/us/products/security/common-cyberattacks.html">Cisco「What Is a Cyberattack?」</a>（CIA Triad）／NIST CSRC Glossary「zero day attack」</div>
+</section>
+
+<section class="slide">
+  <h1>使えなくする：DoS・DDoS とリフレクション・増幅</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="250" viewBox="0 0 420 250">
+        <defs><marker id="a2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker><marker id="a3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker></defs>
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="10" y="95" width="90" height="50" rx="8" fill="#1f3a68"/><text x="55" y="117" fill="#fff" font-weight="700">攻撃者</text><text x="55" y="133" fill="#fff" font-size="10">（ボットたち）</text>
+          <rect x="165" y="20" width="110" height="40" rx="6" fill="#5b80bf"/><text x="220" y="45" fill="#fff">オープンリゾルバー1</text>
+          <rect x="165" y="100" width="110" height="40" rx="6" fill="#5b80bf"/><text x="220" y="125" fill="#fff">オープンリゾルバー2</text>
+          <rect x="165" y="180" width="110" height="40" rx="6" fill="#5b80bf"/><text x="220" y="205" fill="#fff">オープンリゾルバー3</text>
+          <line x1="100" y1="110" x2="163" y2="45" stroke="#1f3a68" stroke-width="1.2" marker-end="url(#a2)"/>
+          <line x1="100" y1="120" x2="163" y2="120" stroke="#1f3a68" stroke-width="1.2" marker-end="url(#a2)"/>
+          <line x1="100" y1="130" x2="163" y2="198" stroke="#1f3a68" stroke-width="1.2" marker-end="url(#a2)"/>
+          <text x="55" y="80" fill="#1f3a68" font-size="10">小さな問い合わせ</text><text x="55" y="165" fill="#1f3a68" font-size="10">送信元＝被害者（偽）</text>
+          <rect x="330" y="95" width="80" height="50" rx="8" fill="#b25000"/><text x="370" y="125" fill="#fff" font-weight="700">被害者</text>
+          <line x1="275" y1="40" x2="335" y2="97" stroke="#b25000" stroke-width="4" marker-end="url(#a3)"/>
+          <line x1="275" y1="120" x2="328" y2="120" stroke="#b25000" stroke-width="4" marker-end="url(#a3)"/>
+          <line x1="275" y1="200" x2="335" y2="143" stroke="#b25000" stroke-width="4" marker-end="url(#a3)"/>
+          <text x="378" y="180" fill="#b25000" font-size="10.5">大きな応答</text><text x="378" y="194" fill="#b25000" font-size="10.5">（約80倍の例）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:28%">攻撃</th><th>しくみ</th></tr>
+        <tr><td class="t">DoS</td><td style="text-align:left">正規の利用をできなくする・遅らせる。例：<b>SYN フラッド</b>（偽の送信元から SYN を大量に送り、返事待ちで埋める）</td></tr>
+        <tr><td class="t">DDoS</td><td style="text-align:left"><b>たくさんの機器</b>（乗っ取られたボット）から一斉に</td></tr>
+        <tr><td class="t">リフレクション・増幅</td><td style="text-align:left">送信元を<b>被害者に偽り</b>、第三者のサーバーに問い合わせて、<b>大きな応答</b>を被害者へ</td></tr>
+      </table>
+      <div class="point"><b>根本の対策：</b>送信元を偽ったパケットを自分のネットワークから出さない<b>入口フィルタリング</b>（BCP 38／RFC 2827）。DNS は外の人に再帰の問い合わせを許さない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc5358">RFC 5358</a>（reflector attacks … small query-large response … amplification factor … could be around 80／the only real solution: … ingress filtering）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc2827">RFC 2827</a>／RFC 4949（denial of service・SYN flood・distributed attack・zombie）／<a class="src" href="https://www.cisco.com/site/us/en/learn/topics/security/what-is-a-ddos-attack.html">Cisco「What Is a DDoS Attack?」</a>（botnets）。図はClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>偽る・割り込む・調べる・突く・当てる</h1>
+  <table class="mx">
+    <tr><th style="width:20%">攻撃</th><th>何をする</th><th style="width:30%">主な対策</th></tr>
+    <tr><td class="t">スプーフィング</td><td style="text-align:left">送信元の IP・MAC などを<b>偽って</b>なりすます。ほかの攻撃の土台</td><td style="text-align:left">入口フィルタリング、DHCP スヌーピング・DAI（#23）</td></tr>
+    <tr><td class="t">中間者攻撃（MITM）</td><td style="text-align:left">2者の<b>間に割り込み</b>、盗み見・書き換え。LAN ではうその ARP でルーターになりすます方法がある</td><td style="text-align:left">暗号化と相手の認証（証明書）、DAI</td></tr>
+    <tr><td class="t">偵察</td><td style="text-align:left">攻撃の<b>前に</b>、機器・ソフトの版・開いたポート・人の情報を集める</td><td style="text-align:left">不要なサービスを止める、出す情報を減らす</td></tr>
+    <tr><td class="t">バッファオーバーフロー</td><td style="text-align:left">書き込みの範囲を確かめない不具合を突き、長いデータで動きを乗っ取る・止める</td><td style="text-align:left">パッチ（修正）</td></tr>
+    <tr><td class="t">パスワード攻撃</td><td style="text-align:left"><b>辞書攻撃</b>（一覧を順に試す）・<b>総当たり</b>・ほかで漏れた組を試す（クレデンシャルスタッフィング）</td><td style="text-align:left">長いパスワード、失敗回数の制限、MFA</td></tr>
+  </table>
+  <div class="point"><b>見分け方：</b>「間に入る」なら中間者、「偽の送信元」ならスプーフィング、「攻撃の前の下調べ」なら偵察、「一覧を試す」なら辞書攻撃。</div>
+  <div class="cite">出典：RFC 4949（masquerade／spoof・man-in-the-middle attack・buffer overflow・dictionary attack・brute force）／<a class="src" href="https://www.cisco.com/c/en/us/products/security/common-cyberattacks.html">Cisco「What Is a Cyberattack?」</a>（Reconnaissance・Brute force attacks・credential stuffing）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/access-lists/13608-21.html">Cisco Guide to Harden Cisco IOS Devices</a>（ARP poisoning … man-in-the-middle）</div>
+</section>
+
+<section class="slide">
+  <h1>マルウェアの見分け方</h1>
+  <div class="cols wide-r">
+    <div>
+      <table class="mx">
+        <tr><th style="width:26%">種類</th><th>単独で動く</th><th>自分で増える</th></tr>
+        <tr><td class="t">ウイルス</td><td>×（宿主が要る）</td><td>○（ほかのファイルへ）</td></tr>
+        <tr><td class="t">ワーム</td><td><b>○</b></td><td><b>○（ネットワークで）</b></td></tr>
+        <tr><td class="t">トロイの木馬</td><td>○（役に立つふり）</td><td><b>×</b></td></tr>
+      </table>
+      <div class="cap" style="margin-top:10px">ほかに出てくる名前</div>
+      <table class="mini">
+        <tr><td style="width:30%"><b>ランサムウェア</b></td><td>データを暗号化して使えなくし、お金を要求</td></tr>
+        <tr><td><b>スパイウェア</b></td><td>こっそり情報を集めて送る（キーロガーなど）</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">エクスプロイトとマルウェアの関係</div>
+      <svg width="440" height="130" viewBox="0 0 440 130">
+        <defs><marker id="a4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="5" y="40" width="120" height="50" rx="8" fill="#eef2f8" stroke="#5b80bf"/><text x="65" y="62" fill="#1f3a68" font-weight="700">フィッシング</text><text x="65" y="78" fill="#1f3a68" font-size="10">リンクを開かせる</text>
+          <rect x="160" y="40" width="120" height="50" rx="8" fill="#5b80bf"/><text x="220" y="62" fill="#fff" font-weight="700">エクスプロイト</text><text x="220" y="78" fill="#fff" font-size="10">穴を突いて入る</text>
+          <rect x="315" y="40" width="120" height="50" rx="8" fill="#b25000"/><text x="375" y="62" fill="#fff" font-weight="700">マルウェア</text><text x="375" y="78" fill="#fff" font-size="10">入れられて害をなす</text>
+          <line x1="125" y1="65" x2="158" y2="65" stroke="#1f3a68" stroke-width="2" marker-end="url(#a4)"/>
+          <line x1="280" y1="65" x2="313" y2="65" stroke="#1f3a68" stroke-width="2" marker-end="url(#a4)"/>
+          <text x="220" y="118" fill="#1f3a68" font-size="10.5">例：メール → ブラウザーの穴を突く → ランサムウェアが動く</text>
+        </g>
+      </svg>
+      <div class="point"><b>ひっかけ：</b>「トロイの木馬は自分で増える」は誤り。「ウイルスは単独で動ける」も誤り（宿主のプログラムが実行されて動く）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：RFC 4949（virus：A virus cannot run by itself; it requires that its host program be run／worm：can run independently, can propagate … onto other hosts／Trojan horse）／<a class="src" href="https://www.cisco.com/site/us/en/learn/topics/security/what-is-malware.html">Cisco「What Is Malware?」</a>（Trojan viruses are not designed to self-replicate／Ransomware … Spyware）／Cisco「What Is an Exploit?」（a method used by cybercriminals to deliver malware）。流れの例はClaudeが作った</div>
+</section>
+
+<section class="slide">
+  <h1>人をねらう：ソーシャルエンジニアリング</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:32%">手口</th><th>中身</th></tr>
+        <tr><td class="t">フィッシング</td><td style="text-align:left">本物らしいメール・メッセージで、入力させる・入れさせる。<b>多くの人に</b>ばらまく</td></tr>
+        <tr><td class="t">スピアフィッシング</td><td style="text-align:left"><b>特定の人・部署</b>にねらいを絞る</td></tr>
+        <tr><td class="t">ホエーリング</td><td style="text-align:left"><b>経営者</b>など地位の高い人をねらう</td></tr>
+        <tr><td class="t">ビッシング／スミッシング</td><td style="text-align:left"><b>電話の声</b>／<b>SMS</b> で行う</td></tr>
+        <tr><td class="t">プリテキスティング</td><td style="text-align:left">口実（「銀行の者です」など）を作ってなりすます</td></tr>
+        <tr><td class="t">テールゲーティング</td><td style="text-align:left">許された人のあとについて<b>建物に入る</b>（物理）</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">対策の組み合わせ</div>
+      <div class="stack">
+        <div class="box b1">教育<span>意識向上と、模擬フィッシングなどの訓練</span></div>
+        <div class="box b2">決まり（ポリシー）<span>パスワードを人に教えない、来訪者はエスコート、など</span></div>
+        <div class="box b3">技術<span>メールのフィルター、盗まれても入られない MFA</span></div>
+      </div>
+      <div class="point">技術の穴ではなく<b>人の心理</b>（信頼・好奇心・あせり）をつくので、技術だけでは防げない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/site/us/en/learn/topics/security/what-is-phishing.html">Cisco「What Is Phishing?」</a>（spear phishing／vishing・SMiShing／Security awareness training／A strong MFA solution）／<a class="src" href="https://www.cisco.com/site/us/en/learn/topics/security/what-is-social-engineering.html">Cisco「What Is Social Engineering?」</a>（whaling／awareness training／security policies／physical security controls such as visitor logs, escort requirements）／NIST SP 800-53 Rev. 5 AT-2(3)（phishing, pretexting, … tailgating）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>セキュリティプログラム</h1>
+  <p>人に知らせ、役割ごとに鍛え、場所への出入りを限る。</p>
+  <div class="foot"><span>CCNA #20 セキュリティの基本と AAA</span><span>5.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>意識向上・トレーニング・物理アクセス制御</h1>
+  <div class="cols wide-r">
+    <div>
+      <table class="mx">
+        <tr><th style="width:22%">要素</th><th>だれに・何を</th><th style="width:30%">例</th></tr>
+        <tr><td class="t">意識向上</td><td style="text-align:left"><b>全員</b>に。注意を向けさせる。受け手は聞く側</td><td style="text-align:left">ポスター、ログイン画面の注意、お知らせメール</td></tr>
+        <tr><td class="t">トレーニング</td><td style="text-align:left"><b>役割ごと</b>に。仕事に要る知識と技能</td><td style="text-align:left">管理者向けの講習、<b>予告なしの模擬フィッシング</b></td></tr>
+        <tr><td class="t">物理アクセス制御</td><td style="text-align:left">建物・部屋・機器に<b>入れる人を限り記録</b></td><td style="text-align:left">カードリーダー、鍵、生体認証の読み取り機、入退室の記録、来訪者のエスコート</td></tr>
+      </table>
+      <div class="point warn"><b>なぜ物理か：</b>機器に直接さわれれば、コンソールからパスワードリカバリーができてしまう（#11）。ネットワークの設定だけでは守れない。</div>
+    </div>
+    <div>
+      <div class="cap">アクセス制御の前室（マントラップ）</div>
+      <svg width="360" height="170" viewBox="0 0 360 170">
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="10" y="30" width="340" height="100" fill="#eef2f8" stroke="#1f3a68"/>
+          <rect x="120" y="30" width="120" height="100" fill="#fff" stroke="#1f3a68" stroke-width="2"/>
+          <rect x="116" y="60" width="8" height="40" fill="#b25000"/><rect x="236" y="60" width="8" height="40" fill="#b25000"/>
+          <text x="65" y="85" fill="#1f3a68">外</text><text x="295" y="85" fill="#1f3a68">サーバー室</text>
+          <circle cx="180" cy="80" r="12" fill="#5b80bf"/><text x="180" y="115" fill="#1f3a68" font-size="10.5">1人ずつ確かめる</text>
+          <text x="180" y="20" fill="#b25000" font-size="11">2つの扉は同時に開かない</text>
+          <text x="180" y="155" fill="#1f3a68" font-size="11">あとについて入る（テールゲーティング）を防ぐ</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final">NIST SP 800-53 Rev. 5</a> AT-2（Awareness techniques include displaying posters, … logon screen messages）・AT-2(1)（no-notice social engineering attempts）・AT-3（Role-based Training）・PE-3（Physical access devices include keys, locks, combinations, biometric readers, and card readers／Escort visitors）・PE-3(8)（access control vestibule … also known as piggybacking or tailgating）／NIST CSRC Glossary「awareness」（Awareness is not training）。図はClaudeが作った</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>パスワードとその代わり</h1>
+  <p>長さとブロックリストで守り、パスワード以外の要素と組み合わせる。</p>
+  <div class="foot"><span>CCNA #20 セキュリティの基本と AAA</span><span>5.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>パスワードの決まり：NIST SP 800-63B-4</h1>
+  <div class="cols wide-r">
+    <div>
+      <table class="mx">
+        <tr><th style="width:24%">項目</th><th>よくある古い決まり</th><th>NIST SP 800-63B-4</th></tr>
+        <tr><td class="t">長さ</td><td>8文字以上</td><td style="text-align:left">1要素だけで使うなら <b>15文字以上</b>（MFA の一部なら 8 以上）。<b>64文字以上</b>まで入れられる</td></tr>
+        <tr><td class="t">組み合わせ</td><td>大文字・数字・記号を必ず</td><td style="text-align:left">そうした決まりは<b>課さない</b></td></tr>
+        <tr><td class="t">定期変更</td><td>90日ごと</td><td style="text-align:left"><b>求めない</b>。漏れた証拠があれば変えさせる</td></tr>
+        <tr><td class="t">弱いもの</td><td>―</td><td style="text-align:left">よく使われる・漏れたものの<b>ブロックリスト</b>で拒む</td></tr>
+        <tr><td class="t">入力</td><td>貼り付け禁止</td><td style="text-align:left"><b>パスワードマネージャー</b>・貼り付けを許す</td></tr>
+        <tr><td class="t">失敗</td><td>―</td><td style="text-align:left">失敗回数を<b>制限</b>する</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">なぜ組み合わせの決まりをやめたか</div>
+      <div class="point">決まりを課すと、人は予想しやすい形で応じる（「password」→「Password1」）。強さはあまり増えず、使いにくくなるだけ。</div>
+      <div class="cap" style="margin-top:8px">機器では</div>
+      <table class="mini">
+        <tr><td style="width:36%">初期パスワード</td><td>最初に使う前に変える</td></tr>
+        <tr><td>保存</td><td>平文で残さない（enable secret など、#11）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://pages.nist.gov/800-63-4/sp800-63b.html">NIST SP 800-63B-4</a> 3.1.1.2（minimum of 15 characters … minimum of eight characters／maximum password length of at least 64／SHALL NOT impose other composition rules／SHALL NOT require subscribers to change passwords periodically／blocklist／password managers … paste／rate-limiting）・Appendix A（users respond in very predictable ways … "Password1"）／NIST SP 800-53 Rev. 5 IA-5（Changing default authenticators prior to first use）</div>
+</section>
+
+<section class="slide">
+  <h1>多要素認証（MFA）：違う種類を2つ以上</h1>
+  <svg width="856" height="150" viewBox="0 0 856 150">
+    <g font-size="12.5" text-anchor="middle">
+      <rect x="10" y="10" width="270" height="90" rx="10" fill="#1f3a68"/><text x="145" y="38" fill="#fff" font-weight="700">知っているもの</text><text x="145" y="56" fill="#fff" font-size="11">something you know</text><text x="145" y="80" fill="#fff" font-size="11.5">パスワード・PIN</text>
+      <rect x="293" y="10" width="270" height="90" rx="10" fill="#5b80bf"/><text x="428" y="38" fill="#fff" font-weight="700">持っているもの</text><text x="428" y="56" fill="#fff" font-size="11">something you have</text><text x="428" y="80" fill="#fff" font-size="11.5">スマホのアプリ（OTP）・トークン・スマートカード</text>
+      <rect x="576" y="10" width="270" height="90" rx="10" fill="#b25000"/><text x="711" y="38" fill="#fff" font-weight="700">本人の特徴</text><text x="711" y="56" fill="#fff" font-size="11">something you are</text><text x="711" y="80" fill="#fff" font-size="11.5">指紋・顔・虹彩（生体認証）</text>
+      <text x="428" y="132" fill="#1f3a68" font-size="12.5">この3種類のうち、<tspan font-weight="700">違う種類を2つ以上</tspan>組み合わせると MFA</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:36%">組み合わせ</th><th style="width:14%">MFA？</th><th>理由</th></tr>
+    <tr><td class="t">パスワード＋スマホに出る6桁の数字</td><td><b>○</b></td><td style="text-align:left">知っている＋持っている</td></tr>
+    <tr><td class="t">スマートカード＋PIN</td><td><b>○</b></td><td style="text-align:left">持っている＋知っている</td></tr>
+    <tr><td class="t">パスワード＋秘密の質問</td><td>×</td><td style="text-align:left">どちらも知っているもの</td></tr>
+    <tr><td class="t">パスワードを2回</td><td>×</td><td style="text-align:left">同じ要素の繰り返し</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final">NIST SP 800-53 Rev. 5</a> IA-2(1)（two or more different factors … something you know …, something you have …, or something you are）／NIST CSRC Glossary「multi-factor authentication」（CNSSI 4009-2022）／NIST SP 800-63B-4 3.1.4（Single-factor OTP … as few as six decimal digits）。表の例はClaudeが作った</div>
+</section>
+
+<section class="slide">
+  <h1>証明書と生体認証</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">証明書（X.509）のしくみ</div>
+      <svg width="420" height="210" viewBox="0 0 420 210">
+        <defs><marker id="a5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="10" y="10" width="120" height="50" rx="8" fill="#1f3a68"/><text x="70" y="32" fill="#fff" font-weight="700">認証局（CA）</text><text x="70" y="49" fill="#fff" font-size="10">信頼のもと</text>
+          <rect x="200" y="10" width="210" height="130" rx="6" fill="#fff" stroke="#5b80bf" stroke-width="2"/>
+          <text x="305" y="30" fill="#1f3a68" font-weight="700">証明書</text>
+          <g text-anchor="start" fill="#1f3a68" font-size="11"><text x="212" y="52">発行者（issuer）：CA</text><text x="212" y="72">持ち主（subject）：vpn.example.jp</text><text x="212" y="92">公開鍵</text><text x="212" y="112">有効期限（validity）</text></g>
+          <rect x="300" y="118" width="100" height="18" fill="#b25000"/><text x="350" y="131" fill="#fff" font-size="10.5">CA の署名</text>
+          <line x1="130" y1="35" x2="198" y2="125" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#a5)"/><text x="140" y="100" fill="#1f3a68" font-size="10.5">署名して発行</text>
+          <rect x="200" y="160" width="210" height="40" rx="6" fill="#eef2f8" stroke="#5b80bf"/><text x="305" y="178" fill="#1f3a68" font-size="11">持ち主は対の<tspan font-weight="700">秘密鍵</tspan>を持つ</text><text x="305" y="194" fill="#1f3a68" font-size="10.5">→ 持っていることを示して認証</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:26%"></th><th>証明書</th><th>生体認証</th></tr>
+        <tr><td class="t">要素</td><td>持っているもの（秘密鍵の入った機器）</td><td>本人の特徴</td></tr>
+        <tr><td class="t">よさ</td><td>パスワードを送らない</td><td>覚えなくてよい</td></tr>
+        <tr><td class="t">気をつけること</td><td>秘密鍵を守る、期限と失効</td><td>確率で判定（誤って合う・合わない）、<b>漏れても取り替えにくい</b></td></tr>
+      </table>
+      <div class="point warn"><b>NIST：</b>生体認証は<b>単独の認証手段とは認めない</b>。持っているもの（機器）と組み合わせた MFA の一部としてだけ使い、生体以外の方法も用意する。</div>
+    </div>
+  </div>
+  <div class="cite">出典：RFC 4949（public-key certificate：binds a system entity's identifier to a public key value … digitally signed・certification authority）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc5280">RFC 5280</a> 4.1（issuer・validity・subject・subjectPublicKeyInfo）／<a class="src" href="https://pages.nist.gov/800-63-4/sp800-63b.html">NIST SP 800-63B-4</a> 3.2.3（Biometrics SHALL only be used as part of multi-factor authentication with a physical authenticator … An alternative non-biometric authentication option SHALL always be provided／Biometric comparison is probabilistic）。図はClaudeが作った例</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>AAA と 802.1X</h1>
+  <p>だれ？・何をしてよい？・何をした？ を分けて考え、ポートでも利用者を確かめる。</p>
+  <div class="foot"><span>CCNA #20 セキュリティの基本と AAA</span><span>5.8</span></div>
+</section>
+
+<section class="slide">
+  <h1>AAA：認証・認可・アカウンティングを比べる</h1>
+  <svg width="856" height="130" viewBox="0 0 856 130">
+    <defs><marker id="a6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="20" width="250" height="80" rx="10" fill="#1f3a68"/><text x="135" y="46" fill="#fff" font-weight="700">認証 Authentication</text><text x="135" y="66" fill="#fff">あなたは<tspan font-weight="700">だれ</tspan>？</text><text x="135" y="86" fill="#fff" font-size="10.5">ユーザー名とパスワード・証明書・MFA</text>
+      <rect x="303" y="20" width="250" height="80" rx="10" fill="#5b80bf"/><text x="428" y="46" fill="#fff" font-weight="700">認可 Authorization</text><text x="428" y="66" fill="#fff"><tspan font-weight="700">何をしてよい</tspan>？</text><text x="428" y="86" fill="#fff" font-size="10.5">使えるコマンド・VLAN・ACL</text>
+      <rect x="596" y="20" width="250" height="80" rx="10" fill="#b25000"/><text x="721" y="46" fill="#fff" font-weight="700">アカウンティング Accounting</text><text x="721" y="66" fill="#fff"><tspan font-weight="700">何をした</tspan>？</text><text x="721" y="86" fill="#fff" font-size="10.5">時刻・実行したコマンド・通信量の記録</text>
+      <line x1="260" y1="60" x2="301" y2="60" stroke="#1f3a68" stroke-width="2.5" marker-end="url(#a6)"/>
+      <line x1="553" y1="60" x2="594" y2="60" stroke="#1f3a68" stroke-width="2.5" marker-end="url(#a6)"/>
+    </g>
+  </svg>
+  <div class="cols">
+    <div>
+      <div class="cap">ローカルとサーバー</div>
+      <table class="mx">
+        <tr><th style="width:24%"></th><th>ローカル</th><th>サーバー（TACACS+・RADIUS）</th></tr>
+        <tr><td class="t">ユーザー</td><td>機器ごとに username</td><td><b>一か所</b>にまとめる</td></tr>
+        <tr><td class="t">記録</td><td>機器ごとにばらばら</td><td>サーバーに集まる</td></tr>
+        <tr><td class="t">サーバー停止</td><td>影響なし</td><td>最後に <code>local</code> を置いて備える</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">TACACS+ と RADIUS（詳しくは #11）</div>
+      <table class="mx">
+        <tr><th style="width:24%"></th><th>TACACS+</th><th>RADIUS</th></tr>
+        <tr><td class="t">運ぶ</td><td>TCP 49</td><td>UDP 1812・1813</td></tr>
+        <tr><td class="t">暗号化</td><td>中身全部</td><td>パスワードだけ</td></tr>
+        <tr><td class="t">認証と認可</td><td><b>分ける</b></td><td>いっしょ</td></tr>
+        <tr><td class="t">向く用途</td><td>管理者のログイン</td><td>利用者の接続（802.1X）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_tacacs_.html">Security CG IOS XE 17.9（Catalyst 9300）「Configuring TACACS+」</a>（centralized validation of users／Authorization … what commands a user can execute／Accounting … billing, auditing … user identities, start and stop times, executed commands）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/security-vpn/remote-authentication-dial-user-service-radius/13838-10.html">Cisco「TACACS+ and RADIUS Comparison」</a>／RFC 8907・RFC 2865</div>
+</section>
+
+<section class="slide">
+  <h1>802.1X：ポートにつないだ人を、使わせる前に確かめる</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="200" viewBox="0 0 420 200">
+        <defs><marker id="a7" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="5" y="40" width="110" height="60" rx="8" fill="#5b80bf"/><text x="60" y="64" fill="#fff" font-weight="700">サプリカント</text><text x="60" y="82" fill="#fff" font-size="10.5">PC（のソフト）</text>
+          <rect x="155" y="40" width="110" height="60" rx="8" fill="#1f3a68"/><text x="210" y="64" fill="#fff" font-weight="700">オーセンティケーター</text><text x="210" y="82" fill="#fff" font-size="10.5">スイッチ・AP</text>
+          <rect x="305" y="40" width="110" height="60" rx="8" fill="#b25000"/><text x="360" y="64" fill="#fff" font-weight="700">認証サーバー</text><text x="360" y="82" fill="#fff" font-size="10.5">RADIUS</text>
+          <line x1="115" y1="70" x2="153" y2="70" stroke="#1f3a68" stroke-width="2" marker-end="url(#a7)"/><line x1="265" y1="70" x2="303" y2="70" stroke="#1f3a68" stroke-width="2" marker-end="url(#a7)"/>
+          <text x="135" y="122" fill="#1f3a68" font-weight="700">EAPOL</text><text x="285" y="122" fill="#1f3a68" font-weight="700">RADIUS</text>
+          <text x="210" y="148" fill="#1f3a68" font-size="11">スイッチは自分で判断せず EAP を<tspan font-weight="700">中継</tspan>する</text>
+          <rect x="60" y="160" width="300" height="32" rx="6" fill="#eef2f8" stroke="#5b80bf"/><text x="210" y="181" fill="#1f3a68" font-size="11">認証前：EAPOL・CDP・STP だけ → 認証後：ふつうの通信</text>
+        </g>
+      </svg>
+      <div class="ex"><span class="lbl">注意</span>Catalyst 9300 では TACACS+ は 802.1X に使えない。802.1X は初期では無効</div>
+    </div>
+    <div>
+<pre class="cli small">aaa new-model
+aaa authentication dot1x default group radius
+<b>dot1x system-auth-control</b>      <i>! 全体で有効</i>
+radius server RAD1
+ address ipv4 10.0.1.12
+ key Rad1Key
+interface g1/0/2
+ switchport mode access
+ <b>authentication port-control auto</b>
+ <b>dot1x pae authenticator</b></pre>
+      <table class="mini">
+        <tr><td style="width:36%"><b>EAP</b></td><td>いろいろな認証方法（パスワード・証明書）を載せる<b>入れ物</b></td></tr>
+        <tr><td><b>EAPOL</b></td><td>EAP を LAN のフレームで運ぶ形</td></tr>
+        <tr><td><b>port-control auto</b></td><td>最初は unauthorized、認証が済むと authorized</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_ieee_802_1x_port_based_authentication.html">Security CG IOS XE 17.9「Configuring IEEE 802.1x Port-Based Authentication」</a>（TACACS is not supported with 802.1x authentication／allows only EAPOL, CDP, and STP traffic／the switch begins its role as the intermediary, passing EAP frames／Switch 802.1x enable state: Disabled／設定の手順）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc3748">RFC 3748</a> 1.2（authenticator・Supplicant・backend authentication server）。設定はCiscoの例の書式でClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>よくあるひっかけ</h1>
+  <table class="mx">
+    <tr><th style="width:42%">よくある思い込み</th><th>正しくは</th></tr>
+    <tr><td class="t">脆弱性と脅威は同じ</td><td style="text-align:left">脆弱性は<b>穴</b>、脅威は<b>害を与えうるもの</b>、エクスプロイトは<b>穴を突く道具</b></td></tr>
+    <tr><td class="t">エクスプロイトはマルウェアの一種</td><td style="text-align:left">Cisco の説明では、マルウェアを<b>送り込む方法</b>でマルウェアそのものではない</td></tr>
+    <tr><td class="t">トロイの木馬は自分で増える</td><td style="text-align:left">増えない。自分で広がるのは<b>ワーム</b></td></tr>
+    <tr><td class="t">フィッシングはメールだけ</td><td style="text-align:left">電話（ビッシング）・SMS（スミッシング）もある</td></tr>
+    <tr><td class="t">パスワード＋秘密の質問は MFA</td><td style="text-align:left">どちらも知っているもの。<b>違う種類</b>が要る</td></tr>
+    <tr><td class="t">パスワードは記号を混ぜ、定期的に変えるのが NIST の決まり</td><td style="text-align:left">SP 800-63B-4 は<b>どちらも求めない</b>。長さ・ブロックリスト・失敗回数の制限</td></tr>
+    <tr><td class="t">意識向上とトレーニングは同じ</td><td style="text-align:left">意識向上は<b>全員に注意</b>、トレーニングは<b>役割ごとの技能</b></td></tr>
+    <tr><td class="t">認可は「本人か確かめる」</td><td style="text-align:left">それは<b>認証</b>。認可は「何をしてよい」</td></tr>
+    <tr><td class="t">802.1X でスイッチが合否を決める</td><td style="text-align:left">決めるのは<b>認証サーバー</b>（RADIUS）。スイッチは中継</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">脅威と攻撃<span>脆弱性（穴）・脅威・エクスプロイト・リスク・対策、CIA。DoS／DDoS／増幅・スプーフィング・中間者・偵察・パスワード攻撃・マルウェア・フィッシング</span></div>
+      <div class="box b2">セキュリティプログラム<span>意識向上（全員）・トレーニング（役割ごと・模擬訓練）・物理アクセス制御（カード・記録・前室）</span></div>
+      <div class="box b3">パスワードとその代わり<span>長さ・ブロックリスト・組み合わせの決まりと定期変更は求めない。MFA＝違う種類2つ以上、証明書、生体認証は MFA の一部</span></div>
+      <div class="box b4">AAA と 802.1X<span>だれ？・何をしてよい？・何をした？。サプリカント・オーセンティケーター・RADIUS、EAPOL</span></div>
+    </div>
+    <div>
+      <div class="cap">設定のまとめ</div>
+<pre class="cli small">aaa new-model
+aaa authentication login default group tacacs+ local
+aaa authentication dot1x default group radius
+dot1x system-auth-control
+interface g1/0/2
+ authentication port-control auto
+ dot1x pae authenticator</pre>
+      <div class="point"><b>確かめる：</b><code>show dot1x</code>・<code>show authentication sessions</code></div>
+      <div class="point"><b>次の分野：</b>#21 VPN で、IPsec のサイト間 VPN とリモートアクセス VPN を読む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
