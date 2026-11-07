@@ -134,6 +134,7 @@ window.SITE_CATALOG = {
 
   materials: {
     ccna: [
+      { type: "terms", file: "terms/01.html", title: "ネットワーク機器と構成 用語集", desc: "ルーター・レイヤ2／レイヤ3スイッチ（SVI・ルーテッドポート）・ファイアウォールとNGFW・IPSとIDS、アクセスポイント・WLC・コントローラー・エンドポイント・サーバー・PoE（PSEとPD・802.3af/at/bt・クラス）、アクセス・ディストリビューション・コア層と2層（コラプストコア）・3層・SOHO、スパイン・リーフ・WAN・ハブアンドスポーク・SD-WAN・オンプレミスとクラウド（IaaS・PaaS・SaaS）、仮想化・ハイパーバイザー（Type 1・Type 2）・仮想マシン・コンテナ・VRFの用語と、オリジナル問題30問（出題範囲 1.1・1.2・1.12）", fields: [1], pdf: "terms/01.pdf" },
       { type: "terms", file: "terms/07.html", title: "VLANとトランク 用語集", desc: "VLANとアクセスポート・音声VLAN・802.1Qトランク・DTP・ネイティブVLAN・VLAN間ルーティングの49語と、show の出力を読むオリジナル問題30問（出題範囲 2.1・2.2）", fields: [7], pdf: "terms/07.pdf" },
       { type: "terms", file: "terms/08.html", title: "CDP・LLDPとEtherChannel 用語集", desc: "CDP・LLDP・LLDP-MEDと show cdp neighbors の読み方、EtherChannel・LACP・PAgP・負荷分散の38語と、出力を読むオリジナル問題30問（出題範囲 2.3・2.4）", fields: [8], pdf: "terms/08.pdf" },
       { type: "terms", file: "terms/09.html", title: "スパニングツリー 用語集", desc: "ルートブリッジ・ルートポート・指定ポートの選び方、Rapid PVST+ のポートの役割と状態、PortFast・BPDUガード・ルートガード・ループガードの34語と、show spanning-tree を読むオリジナル問題30問（出題範囲 2.5）", fields: [9], pdf: "terms/09.pdf" },

@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CCNA #01 ネットワーク機器と構成 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">CCNA（200-301 v1.1）　1.0 ネットワークの基礎　#01</div>
+  <h1>ネットワーク機器と構成</h1>
+  <p>出題範囲 1.1・1.2・1.12 ― ネットワークの部品の役割（ルーター・スイッチ・NGFW・IPS・AP・コントローラー・PoE）、キャンパスとデータセンターと WAN の形、クラウドと仮想化（VM・コンテナ・VRF）</p>
+  <div class="refs-legend">各ページの下に、根拠にしたCiscoの資料やNISTの文書を書いた（青い文字を押すと開く）</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>1.1・1.12 は Explain、1.2 は Describe（説明できる）</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 ネットワークの機器（1.1）<span>ルーター・L2／L3 スイッチ・ファイアウォールと NGFW・IPS、AP・WLC・エンドポイント・サーバー・PoE</span></div>
+      <div class="box b2">2 キャンパスの形（1.2）<span>アクセス・ディストリビューション・コア、2 層（コラプストコア）と 3 層、SOHO</span></div>
+      <div class="box b3">3 データセンター・WAN・クラウド（1.2）<span>スパイン・リーフ、WAN とハブアンドスポーク・SD-WAN、オンプレミスとクラウド</span></div>
+      <div class="box b4">4 仮想化（1.12）<span>ハイパーバイザー（Type 1・2）と仮想マシン、コンテナ、VRF</span></div>
+    </div>
+    <div>
+      <div class="cap">小さな会社のネットワークの例（Claude が作成）</div>
+      <svg width="400" height="210" viewBox="0 0 400 210">
+        <g font-size="10.5" text-anchor="middle">
+          <ellipse cx="200" cy="20" rx="70" ry="15" fill="#eef2f8" stroke="#5b80bf"/><text x="200" y="24" fill="#1f3a68">インターネット</text>
+          <line x1="200" y1="35" x2="200" y2="48" stroke="#1f3a68" stroke-width="2"/>
+          <rect x="140" y="48" width="120" height="26" rx="5" fill="#1f3a68"/><text x="200" y="65" fill="#fff">ルーター</text>
+          <line x1="200" y1="74" x2="200" y2="86" stroke="#1f3a68" stroke-width="2"/>
+          <rect x="140" y="86" width="120" height="26" rx="5" fill="#b25000"/><text x="200" y="103" fill="#fff">NGFW（IPS 内蔵）</text>
+          <line x1="200" y1="112" x2="200" y2="124" stroke="#1f3a68" stroke-width="2"/>
+          <rect x="120" y="124" width="160" height="26" rx="5" fill="#5b80bf"/><text x="200" y="141" fill="#fff">L3 スイッチ（PoE）</text>
+          <line x1="140" y1="150" x2="50" y2="172" stroke="#1f3a68" stroke-width="1.5"/>
+          <line x1="180" y1="150" x2="150" y2="172" stroke="#1f3a68" stroke-width="1.5"/>
+          <line x1="220" y1="150" x2="250" y2="172" stroke="#1f3a68" stroke-width="1.5"/>
+          <line x1="260" y1="150" x2="350" y2="172" stroke="#1f3a68" stroke-width="1.5"/>
+          <rect x="10" y="172" width="80" height="26" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="50" y="189" fill="#1f3a68">PC</text>
+          <rect x="110" y="172" width="80" height="26" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="150" y="189" fill="#1f3a68">AP</text>
+          <rect x="210" y="172" width="80" height="26" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="250" y="189" fill="#1f3a68">IP 電話</text>
+          <rect x="310" y="172" width="80" height="26" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="350" y="189" fill="#1f3a68">サーバー</text>
+        </g>
+      </svg>
+      <div class="point"><b>芯：</b>どの機器が<b>何を見て</b>（MAC・IP・アプリ）何をするかで見分ける。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco CCNA Exam v1.1 (200-301) Exam Topics</a>（1.1 Explain the role and function of network components／1.2 Describe characteristics of network topology architectures／1.12 Explain virtualization fundamentals (server virtualization, containers, and VRFs)）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>ネットワークの機器</h1>
+  <p>それぞれの機器が、何を見て、何をするのか。</p>
+  <div class="foot"><span>CCNA #01 ネットワーク機器と構成</span><span>1.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>ルーター・L2 スイッチ・L3 スイッチ</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="250" viewBox="0 0 400 250">
+        <g font-size="10.5" text-anchor="middle">
+          <text x="100" y="14" fill="#1f3a68" font-weight="700" font-size="11.5">ルーター：別々のネットワークをつなぐ</text>
+          <rect x="6" y="26" width="80" height="40" rx="6" fill="#eef2f8" stroke="#5b80bf"/><text x="46" y="44" fill="#1f3a68">LAN A</text><text x="46" y="58" fill="#1f3a68" font-size="9.5">10.1.1.0/24</text>
+          <rect x="114" y="30" width="72" height="32" rx="16" fill="#1f3a68"/><text x="150" y="50" fill="#fff">ルーター</text>
+          <rect x="214" y="26" width="80" height="40" rx="6" fill="#eef2f8" stroke="#5b80bf"/><text x="254" y="44" fill="#1f3a68">LAN B</text><text x="254" y="58" fill="#1f3a68" font-size="9.5">10.1.2.0/24</text>
+          <line x1="86" y1="46" x2="114" y2="46" stroke="#1f3a68" stroke-width="2"/><line x1="186" y1="46" x2="214" y2="46" stroke="#1f3a68" stroke-width="2"/>
+          <text x="345" y="44" fill="#1f3a68" font-size="10">宛先 IP を見て</text><text x="345" y="58" fill="#1f3a68" font-size="10">経路を選ぶ</text>
+          <text x="100" y="98" fill="#1f3a68" font-weight="700" font-size="11.5">L2 スイッチ：同じ LAN の中</text>
+          <rect x="120" y="108" width="140" height="28" rx="5" fill="#5b80bf"/><text x="190" y="127" fill="#fff">L2 スイッチ</text>
+          <line x1="140" y1="136" x2="80" y2="156" stroke="#1f3a68" stroke-width="1.5"/><line x1="190" y1="136" x2="190" y2="156" stroke="#1f3a68" stroke-width="1.5"/><line x1="240" y1="136" x2="300" y2="156" stroke="#1f3a68" stroke-width="1.5"/>
+          <rect x="50" y="156" width="60" height="20" rx="3" fill="#eef2f8" stroke="#5b80bf"/><text x="80" y="170" fill="#1f3a68" font-size="9.5">PC</text>
+          <rect x="160" y="156" width="60" height="20" rx="3" fill="#eef2f8" stroke="#5b80bf"/><text x="190" y="170" fill="#1f3a68" font-size="9.5">プリンター</text>
+          <rect x="270" y="156" width="60" height="20" rx="3" fill="#eef2f8" stroke="#5b80bf"/><text x="300" y="170" fill="#1f3a68" font-size="9.5">サーバー</text>
+          <text x="345" y="126" fill="#1f3a68" font-size="10">宛先 MAC で</text>
+          <text x="200" y="204" fill="#1f3a68" font-weight="700" font-size="11.5">L3 スイッチ：スイッチ＋ルーティング</text>
+          <rect x="60" y="214" width="120" height="26" rx="5" fill="#1f3a68"/><text x="120" y="231" fill="#fff">SVI（interface vlan）</text>
+          <rect x="220" y="214" width="120" height="26" rx="5" fill="#1f3a68"/><text x="280" y="231" fill="#fff">ルーテッドポート</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:24%">機器</th><th>見るもの</th><th>仕事</th></tr>
+        <tr><td class="t">ルーター</td><td>宛先 <b>IP</b></td><td>別々のネットワークをつなぎ、最適な経路を選ぶ</td></tr>
+        <tr><td class="t">L2 スイッチ</td><td>宛先 <b>MAC</b></td><td>同じ LAN の中で、必要なポートにだけ送る</td></tr>
+        <tr><td class="t">L3 スイッチ</td><td>MAC と IP</td><td>スイッチの働き＋ VLAN の間などのルーティング</td></tr>
+      </table>
+      <div class="point"><b>L3 スイッチの L3 インタフェース：</b><b>SVI</b>（「interface vlan 10」）、<b>ルーテッドポート</b>（物理ポートを 「no switchport」）、L3 の EtherChannel。IP ルーティングは<b>既定で無効</b>なので 「ip routing」 を入れる。</div>
+      <div class="point warn"><b>落とし穴：</b>エッジルーター（ゲートウェイ）＝ネットワークの<b>いちばん外側</b>で、インターネットなど外とつなぐルーター。家庭の無線ルーターは、エッジと配布の役を1台にまとめたもの。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/site/us/en/learn/topics/small-business/what-is-a-router.html">Cisco「What Is a Router?」</a>（chooses the best route／An edge router, also called a gateway router … is a network's outermost point of connection with external networks／Wireless routers, or residential gateways, combine the functions of edge routers and distribution routers）／<a class="src" href="https://www.cisco.com/site/us/en/learn/topics/small-business/what-are-the-different-types-of-network-switches.html">Cisco「Different Types of Network Switches」</a>（operates at the data link layer … forwarding data packets based on their destination MAC addresses）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/rtng/b_179_rtng_9300_cg/configuring_ip_unicast_routing.html">Catalyst 9300 IP Routing CG 17.9「Configuring IP Unicast Routing」</a>（By default, IP routing is disabled／A routed port … no switchport／A switch virtual interface (SVI) … interface vlan）</div>
+</section>
+
+<section class="slide">
+  <h1>ファイアウォール・NGFW・IPS</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="210" viewBox="0 0 400 210">
+        <defs><marker id="a1" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="10.5" text-anchor="middle">
+          <text x="200" y="14" fill="#1f3a68" font-weight="700" font-size="11.5">IPS はインライン、IDS は横で見張る</text>
+          <rect x="6" y="40" width="70" height="30" rx="5" fill="#eef2f8" stroke="#5b80bf"/><text x="41" y="59" fill="#1f3a68">外</text>
+          <rect x="160" y="36" width="80" height="38" rx="6" fill="#b25000"/><text x="200" y="53" fill="#fff" font-weight="700">IPS</text><text x="200" y="67" fill="#fff" font-size="9">止める・変える</text>
+          <rect x="324" y="40" width="70" height="30" rx="5" fill="#eef2f8" stroke="#5b80bf"/><text x="359" y="59" fill="#1f3a68">内</text>
+          <line x1="78" y1="55" x2="156" y2="55" stroke="#1f3a68" stroke-width="2" marker-end="url(#a1)"/><line x1="242" y1="55" x2="320" y2="55" stroke="#1f3a68" stroke-width="2" marker-end="url(#a1)"/>
+          <rect x="6" y="130" width="70" height="30" rx="5" fill="#eef2f8" stroke="#5b80bf"/><text x="41" y="149" fill="#1f3a68">外</text>
+          <rect x="324" y="130" width="70" height="30" rx="5" fill="#eef2f8" stroke="#5b80bf"/><text x="359" y="149" fill="#1f3a68">内</text>
+          <line x1="78" y1="145" x2="320" y2="145" stroke="#1f3a68" stroke-width="2" marker-end="url(#a1)"/>
+          <line x1="200" y1="145" x2="200" y2="170" stroke="#5b80bf" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <rect x="160" y="170" width="80" height="34" rx="6" fill="#5b80bf"/><text x="200" y="186" fill="#fff" font-weight="700">IDS</text><text x="200" y="199" fill="#fff" font-size="9">写しを見て知らせる</text>
+          <text x="200" y="124" fill="#5b80bf" font-size="10">通信の写しを受け取る（考え方の図・Claude が作成）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:26%"></th><th>見るもの</th><th>できること</th></tr>
+        <tr><td class="t">ファイアウォール</td><td><b>5 タプル</b>（送信元・宛先の IP とポート、プロトコル）＋状態</td><td>許可した通信だけ通す（ステートフル）</td></tr>
+        <tr><td class="t">NGFW</td><td>＋<b>アプリ</b>・<b>ユーザー</b></td><td>アプリの制御・IPS・マルウェア対策・TLS の復号</td></tr>
+        <tr><td class="t">IDS</td><td>パケットの中身（ルール）</td><td>受け身で見張り、<b>知らせる</b></td></tr>
+        <tr><td class="t">IPS</td><td>パケットの中身（ルール）</td><td>検知＋<b>止める・変える</b></td></tr>
+      </table>
+      <div class="point"><b>NGFW：</b>従来の「ステートフルな検査」に、<b>アプリの識別と制御</b>・<b>組み込みの IPS</b>・高度な脅威の検知・<b>ユーザーの識別</b>を足したもの。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/site/us/en/learn/topics/security/what-is-a-next-generation-firewall.html">Cisco「What Is a Next-Generation Firewall?」</a>（combines traditional stateful firewall functions with application awareness and control, integrated intrusion prevention, advanced threat detection, and user identity awareness／filters traffic on the 5-tuple）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/snort3/snort3-custom-policies/g_an_overview_of_network_analysis_and_intrusion_policies_snort3/c_network_analysis_and_intrusion_policy_basics_snort3.html">Secure Firewall Management Center「Intrusion Prevention Overview」</a>（passively monitoring … "Intrusion Detection System (IDS)"／adds the ability to block or alter malicious traffic … "Intrusion Prevention System (IPS)"）</div>
+</section>
+
+<section class="slide">
+  <h1>AP・WLC・エンドポイント・サーバー</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="400" height="250" viewBox="0 0 400 250">
+        <g font-size="10.5" text-anchor="middle">
+          <rect x="140" y="8" width="120" height="34" rx="6" fill="#1f3a68"/><text x="200" y="24" fill="#fff">WLC</text><text x="200" y="37" fill="#fff" font-size="9">AP をまとめて管理</text>
+          <rect x="130" y="70" width="140" height="30" rx="5" fill="#5b80bf"/><text x="200" y="90" fill="#fff">スイッチ（PoE）</text>
+          <line x1="200" y1="42" x2="200" y2="70" stroke="#1f3a68" stroke-width="2"/>
+          <line x1="150" y1="100" x2="70" y2="130" stroke="#1f3a68" stroke-width="2"/><line x1="250" y1="100" x2="330" y2="130" stroke="#1f3a68" stroke-width="2"/>
+          <rect x="30" y="130" width="80" height="28" rx="14" fill="#b25000"/><text x="70" y="148" fill="#fff">AP 1</text>
+          <rect x="290" y="130" width="80" height="28" rx="14" fill="#b25000"/><text x="330" y="148" fill="#fff">AP 2</text>
+          <path d="M60,170 q10,-8 20,0" fill="none" stroke="#b25000" stroke-width="1.5"/><path d="M54,178 q16,-14 32,0" fill="none" stroke="#b25000" stroke-width="1.5"/>
+          <rect x="30" y="196" width="80" height="24" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="70" y="212" fill="#1f3a68">ノート PC</text>
+          <text x="200" y="182" fill="#1f3a68" font-size="10">→ つながったまま移動</text><text x="200" y="196" fill="#1f3a68" font-size="10">（ローミング）</text>
+          <rect x="290" y="196" width="80" height="24" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="330" y="212" fill="#1f3a68">スマホ</text>
+          <text x="200" y="242" fill="#1f3a68" font-size="10">AP は有線の LAN につないで、無線の入口になる</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:28%">部品</th><th>役割</th></tr>
+        <tr><td class="t">AP</td><td style="text-align:left">無線の端末を<b>有線のネットワークにつなぐ</b>。複数あれば移動しても切れない</td></tr>
+        <tr><td class="t">WLC</td><td style="text-align:left">たくさんの <b>AP をまとめて管理</b>。集中型のほか、AP に入れたコントローラーレスもある</td></tr>
+        <tr><td class="t">コントローラー</td><td style="text-align:left">機器をまとめて管理・制御（WLC、Catalyst Center：#24）</td></tr>
+        <tr><td class="t">エンドポイント</td><td style="text-align:left">端につながる機器。<b>PC・IP 電話・AP・監視カメラ</b>など</td></tr>
+        <tr><td class="t">サーバー</td><td style="text-align:left">要求に応えて<b>サービスやデータを返す</b>コンピューター</td></tr>
+      </table>
+      <div class="mini">Cisco の設計ガイドは、アクセス層につながる機器として PC・IP 電話・無線の AP・監視カメラを挙げている。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/site/us/en/learn/topics/small-business/what-is-an-access-point.html">Cisco「What Is a Wireless Access Point?」</a>（allows wireless-capable devices to connect to a wired network／users can roam from one area of a facility to another）／<a class="src" href="https://www.cisco.com/site/us/en/learn/topics/networking/what-is-a-wireless-lan-controller.html">Cisco「What Is a Wireless LAN Controller?」</a>（A WLAN controller manages wireless network access points／a WLAN controller is embedded in the access point）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/cisco-campus-lan-wlan-design-guide.html">Cisco「Campus LAN and Wireless LAN Solution Design Guide」</a>（personal computers, IP phones, wireless APs, and IP video surveillance cameras）</div>
+</section>
+
+<section class="slide">
+  <h1>PoE（Power over Ethernet）</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="110" viewBox="0 0 400 110">
+        <defs><marker id="a2" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker></defs>
+        <g font-size="10.5" text-anchor="middle">
+          <rect x="6" y="20" width="120" height="50" rx="6" fill="#1f3a68"/><text x="66" y="40" fill="#fff" font-weight="700">PSE</text><text x="66" y="58" fill="#fff" font-size="9.5">給電する側（スイッチ）</text>
+          <rect x="274" y="20" width="120" height="50" rx="6" fill="#5b80bf"/><text x="334" y="40" fill="#fff" font-weight="700">PD</text><text x="334" y="58" fill="#fff" font-size="9.5">給電される側（AP・電話）</text>
+          <line x1="128" y1="38" x2="270" y2="38" stroke="#1f3a68" stroke-width="2"/>
+          <line x1="128" y1="52" x2="270" y2="52" stroke="#b25000" stroke-width="2" marker-end="url(#a2)"/>
+          <text x="200" y="32" fill="#1f3a68" font-size="10">データ</text><text x="200" y="66" fill="#b25000" font-size="10">直流の電気（同じ銅線）</text>
+          <text x="200" y="96" fill="#1f3a68" font-size="10">ケーブルは最大 100 m。PD かを確かめてから給電する</text>
+        </g>
+      </svg>
+      <table class="mx">
+        <tr><th>規格</th><th>呼び名</th><th>1 ポートの最大</th></tr>
+        <tr><td class="t">802.3af</td><td>PoE</td><td><b>15.4 W</b></td></tr>
+        <tr><td class="t">802.3at</td><td>PoE+（Type 2）</td><td><b>30 W</b></td></tr>
+        <tr><td class="t">802.3bt Type 3</td><td>4 対すべて使う（Cisco UPOE も 60 W）</td><td><b>60 W</b></td></tr>
+        <tr><td class="t">802.3bt Type 4</td><td>Cisco UPOE+</td><td><b>90 W</b></td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">IEEE のクラス</th><th>最大の電力</th></tr>
+        <tr><td class="t">0（不明）</td><td>15.4 W</td></tr>
+        <tr><td class="t">1</td><td>4 W</td></tr>
+        <tr><td class="t">2</td><td>7 W</td></tr>
+        <tr><td class="t">3</td><td>15.4 W</td></tr>
+        <tr><td class="t">4</td><td>30 W</td></tr>
+        <tr><td class="t">5〜8</td><td>45・60・75・90 W</td></tr>
+      </table>
+      <div class="point"><b>Catalyst の既定：</b>ポートは 「power inline auto」（自動で見つけて給電）。クラス 0・3・4 には<b>まず 15.4 W</b> を割り当て、CDP・LLDP で求められれば 30 W まで増やす。</div>
+      <div class="point warn"><b>落とし穴：</b>PoE は<b>銅線</b>のイーサネットで送る。光ファイバーや無線では送れない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/int_hw/b_179_int_and_hw_9300_cg/configuring_poe.html">Catalyst 9300 Interface and Hardware CG 17.9「Configuring Power over Ethernet」</a>（from 15.4 W per port to 30 W per port／Cisco UPOE … up to 60 W／Table 1. IEEE Power Classifications／The initial allocation for Class 0, Class 3, and Class 4 powered devices is 15.4 W／The auto mode is the default setting）／<a class="src" href="https://www.cisco.com/site/us/en/learn/topics/networking/what-is-power-over-ethernet.html">Cisco「What Is Power over Ethernet (PoE)?」</a>（delivering DC power to devices over copper Ethernet cabling／powered devices and power sourcing equipment／IEEE 802.3at, known as PoE+ or Type 2 … 30W／802.3bt … 90W／a maximum length set at 100m）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>キャンパス・データセンター・WAN</h1>
+  <p>規模と場所に合わせた、ネットワークの組み立て方。</p>
+  <div class="foot"><span>CCNA #01 ネットワーク機器と構成</span><span>1.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>キャンパスの 3 つの層</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="270" viewBox="0 0 400 270">
+        <g font-size="10.5" text-anchor="middle">
+          <text x="30" y="40" fill="#1f3a68" font-weight="700" text-anchor="start">コア</text>
+          <rect x="130" y="22" width="70" height="28" rx="5" fill="#1f3a68"/><text x="165" y="40" fill="#fff">C1</text>
+          <rect x="230" y="22" width="70" height="28" rx="5" fill="#1f3a68"/><text x="265" y="40" fill="#fff">C2</text>
+          <line x1="200" y1="36" x2="230" y2="36" stroke="#1f3a68" stroke-width="2"/>
+          <text x="10" y="114" fill="#1f3a68" font-weight="700" text-anchor="start">ディストリ</text><text x="10" y="128" fill="#1f3a68" font-weight="700" text-anchor="start">ビューション</text>
+          <rect x="100" y="100" width="60" height="28" rx="5" fill="#5b80bf"/><text x="130" y="118" fill="#fff">D1</text>
+          <rect x="170" y="100" width="60" height="28" rx="5" fill="#5b80bf"/><text x="200" y="118" fill="#fff">D2</text>
+          <rect x="270" y="100" width="60" height="28" rx="5" fill="#5b80bf"/><text x="300" y="118" fill="#fff">D3</text>
+          <rect x="340" y="100" width="54" height="28" rx="5" fill="#5b80bf"/><text x="367" y="118" fill="#fff">D4</text>
+          <g stroke="#1f3a68" stroke-width="1.3">
+            <line x1="130" y1="100" x2="155" y2="50"/><line x1="130" y1="100" x2="255" y2="50"/>
+            <line x1="200" y1="100" x2="170" y2="50"/><line x1="200" y1="100" x2="260" y2="50"/>
+            <line x1="300" y1="100" x2="180" y2="50"/><line x1="300" y1="100" x2="275" y2="50"/>
+            <line x1="367" y1="100" x2="190" y2="50"/><line x1="367" y1="100" x2="290" y2="50"/>
+          </g>
+          <text x="30" y="200" fill="#1f3a68" font-weight="700" text-anchor="start">アクセス</text>
+          <rect x="100" y="186" width="56" height="26" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="128" y="203" fill="#1f3a68">A</text>
+          <rect x="174" y="186" width="56" height="26" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="202" y="203" fill="#1f3a68">A</text>
+          <rect x="270" y="186" width="56" height="26" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="298" y="203" fill="#1f3a68">A</text>
+          <rect x="338" y="186" width="56" height="26" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="366" y="203" fill="#1f3a68">A</text>
+          <g stroke="#5b80bf" stroke-width="1.3">
+            <line x1="128" y1="186" x2="130" y2="128"/><line x1="128" y1="186" x2="200" y2="128"/>
+            <line x1="202" y1="186" x2="135" y2="128"/><line x1="202" y1="186" x2="205" y2="128"/>
+            <line x1="298" y1="186" x2="300" y2="128"/><line x1="298" y1="186" x2="365" y2="128"/>
+            <line x1="366" y1="186" x2="305" y2="128"/><line x1="366" y1="186" x2="370" y2="128"/>
+          </g>
+          <text x="128" y="232" fill="#1f3a68" font-size="9.5">PC・電話・AP</text><text x="300" y="232" fill="#1f3a68" font-size="9.5">PC・カメラ</text>
+          <text x="200" y="258" fill="#1f3a68" font-size="10">考え方を示した図（Claude が作成）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:28%">層</th><th>役割</th></tr>
+        <tr><td class="t">アクセス</td><td style="text-align:left">端末や利用者がつながる<b>入口</b>（有線と無線）。セキュリティ・PoE・QoS</td></tr>
+        <tr><td class="t">ディストリ<br>ビューション</td><td style="text-align:left">アクセス層を<b>集約</b>し、サービス（WAN・WLC など）へつなぐ。障害を小さい範囲にとどめる</td></tr>
+        <tr><td class="t">コア</td><td style="text-align:left">大きな LAN で<b>ディストリビューション層どうしをつなぐ</b>。止まらず、単純に、L3 だけ</td></tr>
+      </table>
+      <div class="point"><b>集約の理由：</b>アクセススイッチが 2〜3 台を超えると、全部を互いにつなぐのは現実的でない。だからディストリビューションでまとめる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/cisco-campus-lan-wlan-design-guide.html">Cisco「Campus LAN and Wireless LAN Solution Design Guide」</a>（Access layer —Provides endpoints and users direct access to the network／Distribution layer —Aggregates access layers and provides connectivity to services／Core layer —Provides connectivity between distribution layers for large LAN environments／At any site with more than two or three access-layer devices, it is impractical to interconnect all access switches／Connectivity to and from the core is Layer 3–only）</div>
+</section>
+
+<section class="slide">
+  <h1>2 層・3 層・SOHO</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:24%"></th><th>2 層（コラプストコア）</th><th>3 層</th></tr>
+        <tr><td class="t">層</td><td>アクセス＋ディストリビューション（<b>コアを兼ねる</b>）</td><td>アクセス＋ディストリビューション＋<b>コア</b></td></tr>
+        <tr><td class="t">向く所</td><td><b>1 棟</b>の建物など</td><td><b>何棟も</b>ある大きなキャンパス</td></tr>
+        <tr><td class="t">目安</td><td>ディストリビューションが少ない</td><td>ディストリビューションが <b>3 つを超えたら</b>コアを置く</td></tr>
+      </table>
+      <div class="point"><b>SOHO（自宅・小さな事務所）：</b>1 台の<b>無線ルーター</b>（ホームゲートウェイ）が、外とつなぐルーターと、利用者に配る役（有線のポートと無線）をまとめてこなすことが多い。</div>
+    </div>
+    <div>
+      <div class="cap">コアがあるとリンクが減る（N＝ディストリビューションの数）</div>
+      <div class="formula" style="font-size:16px">コアなし：N×(N−1)÷2 本　　コアあり：N×2 本</div>
+      <table class="mx">
+        <tr><th>N</th><th>コアなし</th><th>コアあり</th></tr>
+        <tr><td class="t">4</td><td>4×3÷2＝<b>6</b></td><td>4×2＝<b>8</b></td></tr>
+        <tr><td class="t">6</td><td>6×5÷2＝<b>15</b></td><td>6×2＝<b>12</b></td></tr>
+        <tr><td class="t">10</td><td>10×9÷2＝<b>45</b></td><td>10×2＝<b>20</b></td></tr>
+      </table>
+      <div class="mini">式は Cisco の設計ガイドのもの。計算の例は Claude が作成。N が小さいうちはコアなしでも本数は少ないが、増えるほどコアありが有利になる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/cisco-campus-lan-wlan-design-guide.html">Cisco「Campus LAN and Wireless LAN Solution Design Guide」</a>（This is also referred to as a collapsed core design／a site that occupies a single building might only require the access and distribution layers, while a campus of multiple buildings will most likely require all three layers／As networks grow beyond three distribution layers … should use a core layer／N * 2 redundant links for N distributions, down from N * (N-1) / 2）／<a class="src" href="https://www.cisco.com/site/us/en/learn/topics/small-business/what-is-a-router.html">Cisco「What Is a Router?」</a>（residential gateways, combine the functions of edge routers and distribution routers）</div>
+</section>
+
+<section class="slide">
+  <h1>データセンターのスパイン・リーフ</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="400" height="240" viewBox="0 0 400 240">
+        <g font-size="10.5" text-anchor="middle">
+          <text x="200" y="14" fill="#1f3a68" font-weight="700">スパイン（背骨）</text>
+          <rect x="70" y="24" width="90" height="30" rx="5" fill="#1f3a68"/><text x="115" y="43" fill="#fff">Spine 1</text>
+          <rect x="240" y="24" width="90" height="30" rx="5" fill="#1f3a68"/><text x="285" y="43" fill="#fff">Spine 2</text>
+          <g stroke="#5b80bf" stroke-width="1.5">
+            <line x1="115" y1="54" x2="45" y2="130"/><line x1="115" y1="54" x2="145" y2="130"/><line x1="115" y1="54" x2="255" y2="130"/><line x1="115" y1="54" x2="355" y2="130"/>
+            <line x1="285" y1="54" x2="45" y2="130"/><line x1="285" y1="54" x2="145" y2="130"/><line x1="285" y1="54" x2="255" y2="130"/><line x1="285" y1="54" x2="355" y2="130"/>
+          </g>
+          <rect x="10" y="130" width="70" height="28" rx="5" fill="#5b80bf"/><text x="45" y="148" fill="#fff">Leaf 1</text>
+          <rect x="110" y="130" width="70" height="28" rx="5" fill="#5b80bf"/><text x="145" y="148" fill="#fff">Leaf 2</text>
+          <rect x="220" y="130" width="70" height="28" rx="5" fill="#5b80bf"/><text x="255" y="148" fill="#fff">Leaf 3</text>
+          <rect x="320" y="130" width="70" height="28" rx="5" fill="#5b80bf"/><text x="355" y="148" fill="#fff">Leaf 4</text>
+          <g fill="#eef2f8" stroke="#5b80bf">
+            <rect x="20" y="176" width="50" height="18" rx="3"/><rect x="120" y="176" width="50" height="18" rx="3"/><rect x="230" y="176" width="50" height="18" rx="3"/><rect x="330" y="176" width="50" height="18" rx="3"/>
+          </g>
+          <text x="45" y="189" fill="#1f3a68" font-size="9">サーバー</text><text x="145" y="189" fill="#1f3a68" font-size="9">サーバー</text><text x="255" y="189" fill="#1f3a68" font-size="9">サーバー</text><text x="355" y="189" fill="#1f3a68" font-size="9">サーバー</text>
+          <line x1="45" y1="158" x2="45" y2="176" stroke="#1f3a68"/><line x1="145" y1="158" x2="145" y2="176" stroke="#1f3a68"/><line x1="255" y1="158" x2="255" y2="176" stroke="#1f3a68"/><line x1="355" y1="158" x2="355" y2="176" stroke="#1f3a68"/>
+          <text x="200" y="216" fill="#1f3a68" font-size="10">全リーフ × 全スパインをつなぐ。リーフどうし・スパインどうしはつながない</text>
+          <text x="200" y="232" fill="#1f3a68" font-size="10">→ どのリーフからどのリーフへも、スパイン 1 台を通るだけ</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:26%"></th><th>スパイン・リーフ</th><th>従来の 3 層</th></tr>
+        <tr><td class="t">形</td><td>2 層（スパインとリーフ）</td><td>コア・アグリゲーション・アクセス</td></tr>
+        <tr><td class="t">広げ方</td><td><b>横に足す</b>（スケールアウト）</td><td>大きな機器に替える（スケールアップ）</td></tr>
+        <tr><td class="t">1 台の故障</td><td>スパイン 4 台なら <b>25％</b>、8 台なら <b>12.5％</b> 失う</td><td>大きな集約スイッチで <b>50％</b> 失う</td></tr>
+        <tr><td class="t">サーバー</td><td><b>リーフ</b>につなぐ</td><td>アクセスにつなぐ</td></tr>
+      </table>
+      <div class="point warn"><b>落とし穴：</b>サーバーをつなぐのは<b>リーフ</b>。スパインは背骨で、リーフどうしを結ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/products/collateral/switches/nexus-9000-series-switches/white-paper-c11-743245.html">Cisco「Massively Scalable Data Center Network Fabric」White Paper</a>（every leaf layer switch is connected to each of the spine layer switches in a full-mesh topology … The spine layer is the backbone）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/dcn/whitepapers/cisco-application-centric-infrastructure-design-guide.html">Cisco ACI Design Guide</a>（each leaf switch is connected to every spine switch … with no interconnection between leaf switches or spine switches）／<a class="src" href="https://www.cisco.com/c/en/us/products/collateral/switches/nexus-9000-series-switches/white-paper-c11-743731.pdf">Cisco VXLAN EVPN spine-and-leaf White Paper</a>（traditional three-tier core-aggregation-access scale-up to a scale-out spine-and-leaf／loses 25 percent or 12.5 percent … 50 percent capacity loss）。「スパイン 1 台を通るだけ」は全結線から Claude が導いた</div>
+</section>
+
+<section class="slide">
+  <h1>WAN・ハブアンドスポーク・SD-WAN</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="230" viewBox="0 0 400 230">
+        <g font-size="10.5" text-anchor="middle">
+          <text x="100" y="14" fill="#1f3a68" font-weight="700">従来：ハブアンドスポーク</text>
+          <rect x="60" y="30" width="80" height="30" rx="5" fill="#1f3a68"/><text x="100" y="49" fill="#fff">本社（ハブ）</text>
+          <g stroke="#1f3a68" stroke-width="1.5"><line x1="80" y1="60" x2="30" y2="110"/><line x1="100" y1="60" x2="100" y2="110"/><line x1="120" y1="60" x2="170" y2="110"/></g>
+          <rect x="6" y="110" width="50" height="24" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="31" y="126" fill="#1f3a68" font-size="9.5">支社</text>
+          <rect x="75" y="110" width="50" height="24" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="100" y="126" fill="#1f3a68" font-size="9.5">支社</text>
+          <rect x="145" y="110" width="50" height="24" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="170" y="126" fill="#1f3a68" font-size="9.5">支社</text>
+          <text x="100" y="156" fill="#b25000" font-size="9.5">クラウドへも本社に戻ってから</text>
+          <text x="300" y="14" fill="#1f3a68" font-weight="700">今：SD-WAN</text>
+          <ellipse cx="300" cy="45" rx="60" ry="16" fill="#eef2f8" stroke="#5b80bf"/><text x="300" y="49" fill="#1f3a68">クラウド・SaaS</text>
+          <rect x="250" y="110" width="100" height="26" rx="5" fill="#5b80bf"/><text x="300" y="127" fill="#fff">支社</text>
+          <line x1="285" y1="110" x2="285" y2="61" stroke="#b25000" stroke-width="2"/><text x="236" y="88" fill="#b25000" font-size="9.5">直接出る</text>
+          <line x1="315" y1="110" x2="360" y2="70" stroke="#1f3a68" stroke-width="1.5" stroke-dasharray="4 3"/><text x="372" y="92" fill="#1f3a68" font-size="9.5">本社へ</text>
+          <text x="300" y="156" fill="#1f3a68" font-size="9.5">MPLS・ブロードバンド・5G を使い分け</text>
+          <text x="200" y="196" fill="#1f3a68" font-size="10">考え方を示した図（Claude が作成）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:28%">言葉</th><th>中身</th></tr>
+        <tr><td class="t">WAN</td><td style="text-align:left">離れた LAN どうしをつなぐ「ネットワークのネットワーク」。<b>インターネットは世界最大の WAN</b></td></tr>
+        <tr><td class="t">ハブアンド<br>スポーク</td><td style="text-align:left">拠点を中心（ハブ）にだけつなぐ。従来はすべての通信を本社に戻して（<b>バックホール</b>）処理</td></tr>
+        <tr><td class="t">MPLS</td><td style="text-align:left">通信事業者の WAN のサービス。従来の支社でよく使った（高い）</td></tr>
+        <tr><td class="t">SD-WAN</td><td style="text-align:left">アプリごとのポリシーとオーバーレイで、<b>複数の回線を使い分ける</b>。安い回線も使える</td></tr>
+        <tr><td class="t">ローカル<br>ブレイクアウト</td><td style="text-align:left">SaaS への通信を支社から<b>直接</b>インターネットに出す</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/site/us/en/learn/topics/networking/what-is-a-wan-wide-area-network.html">Cisco「What Is a WAN?」</a>（a collection of local-area networks (LANs) or other networks … the Internet the world's largest WAN／A WAN router, also known as an edge router／SD-WAN … relies on virtualization, application-level policies and overlay networks … moving traffic to lower-cost network links）／<a class="src" href="https://www.cisco.com/site/us/en/learn/topics/networking/what-is-branch-networking.html">Cisco「What Is Branch Networking?」</a>（"hub-and-spoke" model, backhauling all traffic through a central data center／relied heavily on expensive, private MPLS circuits／local internet breakout）</div>
+</section>
+
+<section class="slide">
+  <h1>オンプレミスとクラウド</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">誰が管理するか（NIST SP 800-145 をもとに Claude が図にした）</div>
+      <svg width="400" height="200" viewBox="0 0 400 200">
+        <g font-size="10" text-anchor="middle">
+          <text x="62" y="14" fill="#1f3a68" font-weight="700">オンプレミス</text><text x="162" y="14" fill="#1f3a68" font-weight="700">IaaS</text><text x="262" y="14" fill="#1f3a68" font-weight="700">PaaS</text><text x="356" y="14" fill="#1f3a68" font-weight="700">SaaS</text>
+          <g>
+            <rect x="20" y="22" width="84" height="30" fill="#b25000"/><rect x="20" y="54" width="84" height="30" fill="#b25000"/><rect x="20" y="86" width="84" height="30" fill="#b25000"/><rect x="20" y="118" width="84" height="30" fill="#b25000"/>
+            <rect x="120" y="22" width="84" height="30" fill="#b25000"/><rect x="120" y="54" width="84" height="30" fill="#b25000"/><rect x="120" y="86" width="84" height="30" fill="#5b80bf"/><rect x="120" y="118" width="84" height="30" fill="#5b80bf"/>
+            <rect x="220" y="22" width="84" height="30" fill="#b25000"/><rect x="220" y="54" width="84" height="30" fill="#5b80bf"/><rect x="220" y="86" width="84" height="30" fill="#5b80bf"/><rect x="220" y="118" width="84" height="30" fill="#5b80bf"/>
+            <rect x="314" y="22" width="84" height="30" fill="#5b80bf"/><rect x="314" y="54" width="84" height="30" fill="#5b80bf"/><rect x="314" y="86" width="84" height="30" fill="#5b80bf"/><rect x="314" y="118" width="84" height="30" fill="#5b80bf"/>
+          </g>
+          <g fill="#fff">
+            <text x="62" y="41">アプリ</text><text x="62" y="73">OS</text><text x="62" y="105">サーバー</text><text x="62" y="137">ネットワーク</text>
+            <text x="162" y="41">アプリ</text><text x="162" y="73">OS</text><text x="162" y="105">サーバー</text><text x="162" y="137">ネットワーク</text>
+            <text x="262" y="41">アプリ</text><text x="262" y="73">OS</text><text x="262" y="105">サーバー</text><text x="262" y="137">ネットワーク</text>
+            <text x="356" y="41">アプリ</text><text x="356" y="73">OS</text><text x="356" y="105">サーバー</text><text x="356" y="137">ネットワーク</text>
+          </g>
+          <rect x="60" y="168" width="14" height="12" fill="#b25000"/><text x="120" y="178" fill="#1f3a68">利用者が管理</text>
+          <rect x="220" y="168" width="14" height="12" fill="#5b80bf"/><text x="280" y="178" fill="#1f3a68">提供者が管理</text>
+        </g>
+      </svg>
+      <div class="mini">SaaS でも利用者ごとの設定は少しできる。IaaS では一部のネットワーク部品（ホストのファイアウォールなど）を利用者が扱えることがある。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:36%">NIST の 5 つの特徴</th><th>意味</th></tr>
+        <tr><td class="t">オンデマンド・セルフサービス</td><td style="text-align:left">人を通さず自分で資源を用意できる</td></tr>
+        <tr><td class="t">幅広いネットワーク利用</td><td style="text-align:left">ネットワーク越しに、いろいろな端末から使える</td></tr>
+        <tr><td class="t">資源の共有</td><td style="text-align:left">提供者の資源を多くの利用者で分け合う</td></tr>
+        <tr><td class="t">すばやい伸び縮み</td><td style="text-align:left">必要に応じてすぐ増やし、すぐ減らす</td></tr>
+        <tr><td class="t">従量（測定）</td><td style="text-align:left">使った分を測って管理する</td></tr>
+      </table>
+      <div class="point"><b>置き方：</b><b>パブリック</b>（誰でも）・<b>プライベート</b>（1 つの組織だけ。社内にあっても社外にあってもよい）・<b>ハイブリッド</b>（2 つ以上を組み合わせ）・コミュニティ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-145.pdf">NIST SP 800-145</a>（Cloud computing is a model for enabling ubiquitous, convenient, on-demand network access to a shared pool of configurable computing resources／On-demand self-service／Broad network access／Resource pooling／Rapid elasticity／Measured service／SaaS … the consumer does not manage or control the underlying cloud infrastructure … with the possible exception of limited user-specific application configuration settings／IaaS … has control over operating systems, storage, and deployed applications; and possibly limited control of select networking components (e.g., host firewalls)／Private cloud … may exist on or off premises）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>仮想化</h1>
+  <p>1 台の上に、たくさんのサーバー・アプリ・ルーティングテーブルを作る。</p>
+  <div class="foot"><span>CCNA #01 ネットワーク機器と構成</span><span>1.12</span></div>
+</section>
+
+<section class="slide">
+  <h1>ハイパーバイザーと仮想マシン</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="230" viewBox="0 0 400 230">
+        <g font-size="10" text-anchor="middle">
+          <text x="100" y="14" fill="#1f3a68" font-weight="700" font-size="11">ベアメタル型（Type 1）</text>
+          <rect x="10" y="24" width="56" height="36" fill="#eef2f8" stroke="#5b80bf"/><text x="38" y="38" fill="#1f3a68">アプリ</text><text x="38" y="52" fill="#1f3a68">ゲスト OS</text>
+          <rect x="72" y="24" width="56" height="36" fill="#eef2f8" stroke="#5b80bf"/><text x="100" y="38" fill="#1f3a68">アプリ</text><text x="100" y="52" fill="#1f3a68">ゲスト OS</text>
+          <rect x="134" y="24" width="56" height="36" fill="#eef2f8" stroke="#5b80bf"/><text x="162" y="38" fill="#1f3a68">アプリ</text><text x="162" y="52" fill="#1f3a68">ゲスト OS</text>
+          <rect x="10" y="64" width="180" height="26" fill="#b25000"/><text x="100" y="81" fill="#fff">ハイパーバイザー</text>
+          <rect x="10" y="94" width="180" height="26" fill="#1f3a68"/><text x="100" y="111" fill="#fff">ハードウェア</text>
+          <text x="300" y="14" fill="#1f3a68" font-weight="700" font-size="11">ホスト型（Type 2）</text>
+          <rect x="210" y="24" width="56" height="36" fill="#eef2f8" stroke="#5b80bf"/><text x="238" y="38" fill="#1f3a68">アプリ</text><text x="238" y="52" fill="#1f3a68">ゲスト OS</text>
+          <rect x="272" y="24" width="56" height="36" fill="#eef2f8" stroke="#5b80bf"/><text x="300" y="38" fill="#1f3a68">アプリ</text><text x="300" y="52" fill="#1f3a68">ゲスト OS</text>
+          <rect x="334" y="24" width="56" height="36" fill="#fff" stroke="#5b80bf" stroke-dasharray="3 2"/><text x="362" y="38" fill="#1f3a68">ふつうの</text><text x="362" y="52" fill="#1f3a68">アプリ</text>
+          <rect x="210" y="64" width="118" height="26" fill="#b25000"/><text x="269" y="81" fill="#fff">ハイパーバイザー</text>
+          <rect x="210" y="94" width="180" height="26" fill="#5b80bf"/><text x="300" y="111" fill="#fff">ホスト OS（Windows・macOS・Linux）</text>
+          <rect x="210" y="124" width="180" height="26" fill="#1f3a68"/><text x="300" y="141" fill="#fff">ハードウェア</text>
+          <text x="100" y="146" fill="#1f3a68">ホスト OS がない</text>
+          <text x="200" y="182" fill="#1f3a68" font-size="10.5">サーバーはベアメタル型、パソコンはホスト型が多い</text>
+          <text x="200" y="202" fill="#1f3a68" font-size="10.5">1 台の上で Linux と Windows の VM を同時に動かせる</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:26%"></th><th>ベアメタル型</th><th>ホスト型</th></tr>
+        <tr><td class="t">別名</td><td><b>Type 1</b>・ネイティブ型</td><td><b>Type 2</b></td></tr>
+        <tr><td class="t">入る場所</td><td>ハードの上に<b>直接</b></td><td>ふつうの <b>OS の上</b></td></tr>
+        <tr><td class="t">よく使う所</td><td>サーバー</td><td>パソコン</td></tr>
+        <tr><td class="t">例</td><td>9800-CL が対応する種類</td><td>VirtualBox・VMware Fusion</td></tr>
+      </table>
+      <div class="point"><b>仮想マシン（VM）：</b>ハイパーバイザーが作る仮想のコンピューター。自分の仮想ハードと<b>完全なゲスト OS</b> を持ち、VM どうしはハードのレベルで分けられる。</div>
+      <div class="point warn"><b>注意：</b>1 台に多くをまとめるので、壊れたり侵入されたりしたときの影響が大きくなる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-125.pdf">NIST SP 800-125</a> 2.2（In bare metal virtualization, also known as native virtualization, the hypervisor runs directly on the underlying hardware, without a host OS … hosted virtualization, the hypervisor runs on top of the host OS … Windows, Linux, or MacOS／Servers are most often virtualized on computers using bare metal virtualization. Desktops are most often virtualized on computers with hosted virtualization／combining many systems onto a single physical computer can cause a larger impact if a security compromise occurs）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/9800-cloud/installation/b-c9800-cl-install-guide/controller_overview.html">Catalyst 9800-CL Installation Guide</a>（Type 1 (native, bare metal) hypervisors／Type 2 (hosted) hypervisors, such as VMware Fusion, VMware Player, and Virtual Box）</div>
+</section>
+
+<section class="slide">
+  <h1>仮想マシンとコンテナ</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="200" viewBox="0 0 400 200">
+        <g font-size="10" text-anchor="middle">
+          <text x="100" y="14" fill="#1f3a68" font-weight="700" font-size="11">仮想マシン</text>
+          <rect x="10" y="24" width="56" height="20" fill="#eef2f8" stroke="#5b80bf"/><text x="38" y="38" fill="#1f3a68">アプリ A</text>
+          <rect x="72" y="24" width="56" height="20" fill="#eef2f8" stroke="#5b80bf"/><text x="100" y="38" fill="#1f3a68">アプリ B</text>
+          <rect x="134" y="24" width="56" height="20" fill="#eef2f8" stroke="#5b80bf"/><text x="162" y="38" fill="#1f3a68">アプリ C</text>
+          <rect x="10" y="46" width="56" height="20" fill="#5b80bf"/><text x="38" y="60" fill="#fff">ゲスト OS</text>
+          <rect x="72" y="46" width="56" height="20" fill="#5b80bf"/><text x="100" y="60" fill="#fff">ゲスト OS</text>
+          <rect x="134" y="46" width="56" height="20" fill="#5b80bf"/><text x="162" y="60" fill="#fff">ゲスト OS</text>
+          <rect x="10" y="70" width="180" height="22" fill="#b25000"/><text x="100" y="85" fill="#fff">ハイパーバイザー</text>
+          <rect x="10" y="96" width="180" height="22" fill="#1f3a68"/><text x="100" y="111" fill="#fff">ハードウェア</text>
+          <text x="300" y="14" fill="#1f3a68" font-weight="700" font-size="11">コンテナ</text>
+          <rect x="210" y="46" width="56" height="20" fill="#eef2f8" stroke="#5b80bf"/><text x="238" y="60" fill="#1f3a68">アプリ A</text>
+          <rect x="272" y="46" width="56" height="20" fill="#eef2f8" stroke="#5b80bf"/><text x="300" y="60" fill="#1f3a68">アプリ B</text>
+          <rect x="334" y="46" width="56" height="20" fill="#eef2f8" stroke="#5b80bf"/><text x="362" y="60" fill="#1f3a68">アプリ C</text>
+          <rect x="210" y="70" width="180" height="22" fill="#5b80bf"/><text x="300" y="85" fill="#fff">ホスト OS（カーネルを共有）＋ランタイム</text>
+          <rect x="210" y="96" width="180" height="22" fill="#1f3a68"/><text x="300" y="111" fill="#fff">ハードウェア</text>
+          <text x="300" y="36" fill="#1f3a68" font-size="9.5">ゲスト OS がない → 軽い</text>
+          <text x="200" y="150" fill="#1f3a68" font-size="10.5">NIST SP 800-190 の Figure 2 をもとに Claude が簡略化した</text>
+        </g>
+      </svg>
+      <div class="point"><b>コンテナイメージ：</b>コンテナを動かすのに要るファイル（実行ファイル・ライブラリ・設定）をまとめたもの。OS の働きはホストのカーネルが受け持つ。層で作り、レジストリに置いて共有する。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:24%"></th><th>仮想マシン</th><th>コンテナ</th></tr>
+        <tr><td class="t">分け方</td><td>ハイパーバイザーで<b>ハードのレベル</b></td><td>同じ <b>OS カーネルを共有</b>して分ける</td></tr>
+        <tr><td class="t">中身</td><td><b>ゲスト OS</b>＋アプリ</td><td>アプリと必要なライブラリだけ</td></tr>
+        <tr><td class="t">違う OS</td><td>Linux と Windows を<b>同時に</b></td><td><b>ホストと同じ系統</b>だけ</td></tr>
+        <tr><td class="t">分離の強さ</td><td><b>強い</b></td><td>VM より<b>弱い</b></td></tr>
+        <tr><td class="t">動かすもの</td><td>ハイパーバイザー</td><td>ランタイム（Docker など）</td></tr>
+      </table>
+      <div class="point warn"><b>落とし穴：</b>「コンテナはゲスト OS を持つ」「コンテナのほうが分離が強い」は誤り。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf">NIST SP 800-190</a> 2.2（Examples of runtimes include Docker／VMs use a hypervisor that provides hardware-level isolation … includes a complete guest OS … VMs allow different OSs, such as Linux and Windows, to share the same physical hardware／With containers, multiple apps share the same OS kernel instance／a Linux host can only run containers built for Linux）・2.3（An image is a package that contains all the files required to run a container／Images are typically stored in central locations）・3.5.2（the level of isolation provided by container runtimes is not as high as that provided by hypervisors）</div>
+</section>
+
+<section class="slide">
+  <h1>VRF（Virtual Routing and Forwarding）</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="210" viewBox="0 0 400 210">
+        <g font-size="10.5" text-anchor="middle">
+          <rect x="110" y="20" width="180" height="150" rx="10" fill="#f6f8fb" stroke="#1f3a68" stroke-width="1.5"/>
+          <text x="200" y="38" fill="#1f3a68" font-weight="700">1 台の L3 スイッチ</text>
+          <rect x="126" y="50" width="148" height="46" rx="6" fill="#5b80bf"/><text x="200" y="68" fill="#fff" font-weight="700">VRF STAFF の表</text><text x="200" y="86" fill="#fff" font-size="9.5">10.1.1.0/24 …</text>
+          <rect x="126" y="108" width="148" height="46" rx="6" fill="#b25000"/><text x="200" y="126" fill="#fff" font-weight="700">VRF GUEST の表</text><text x="200" y="144" fill="#fff" font-size="9.5">10.1.1.0/24 …（重なってよい）</text>
+          <rect x="6" y="60" width="80" height="26" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="46" y="77" fill="#1f3a68">社員の VLAN</text>
+          <rect x="6" y="118" width="80" height="26" rx="4" fill="#fde9d9" stroke="#b25000"/><text x="46" y="135" fill="#b25000">来客の VLAN</text>
+          <line x1="86" y1="73" x2="126" y2="73" stroke="#5b80bf" stroke-width="2"/><line x1="86" y1="131" x2="126" y2="131" stroke="#b25000" stroke-width="2"/>
+          <text x="345" y="80" fill="#1f3a68" font-size="10">表が別なので</text><text x="345" y="96" fill="#1f3a68" font-size="10">互いに届かない</text>
+          <text x="200" y="194" fill="#1f3a68" font-size="10">考え方を示した図（Claude が作成）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="cap">設定の流れ（Cisco の手順をもとに）</div>
+<pre class="cli small">vrf definition GUEST
+ rd 100:2
+ address-family ipv4
+interface vlan 20
+ vrf forwarding GUEST
+ ip address 10.1.1.1 255.255.255.0
+show ip route vrf GUEST</pre>
+      <table class="mx">
+        <tr><th style="width:36%">決まり</th><th>中身</th></tr>
+        <tr><td class="t">表</td><td style="text-align:left">VRF ごとに<b>別のルーティングテーブル</b></td></tr>
+        <tr><td class="t">アドレス</td><td style="text-align:left">別の VRF なら<b>同じ IP を重ねて使える</b></td></tr>
+        <tr><td class="t">インタフェース</td><td style="text-align:left"><b>L3</b>（ルーテッドポート・SVI）。1 つは <b>1 つの VRF</b> だけ</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-2/configuration_guide/rtng/b_172_rtng_9300_cg/configuring_vrf_lite.html">Catalyst 9300 IP Routing CG 17.2「Configuring VRF-lite」</a>（IP addresses can be overlapped among the VPNs／Interfaces in a VRF can be either physical, such as Ethernet ports, or logical, such as VLAN SVIs, but a Layer 3 interface cannot belong to more than one VRF at any time／VRF-lite interfaces must be Layer 3 interfaces／all customers have their own routing tables／vrf definition vrf-name／rd route-distinguisher／vrf forwarding vrf-name／ip address／show ip route vrf vrf-name）。VRF の名前・アドレスは Claude が決めた</div>
+</section>
+
+<section class="slide">
+  <h1>よくあるひっかけ</h1>
+  <table class="mx">
+    <tr><th style="width:44%">よくある思い込み</th><th>正しくは</th></tr>
+    <tr><td class="t">L2 スイッチは IP アドレスで転送する</td><td style="text-align:left">宛先 <b>MAC</b>。IP で経路を選ぶのはルーター（と L3 スイッチ）</td></tr>
+    <tr><td class="t">IDS は悪い通信を止める</td><td style="text-align:left">IDS は<b>見張って知らせる</b>だけ。止めるのは <b>IPS</b></td></tr>
+    <tr><td class="t">従来のファイアウォールでアプリを見分ける</td><td style="text-align:left">アプリやユーザーまで見るのは <b>NGFW</b></td></tr>
+    <tr><td class="t">PoE+（802.3at）は 15.4 W</td><td style="text-align:left">802.3at は <b>30 W</b>。15.4 W は 802.3af</td></tr>
+    <tr><td class="t">2 層構成はアクセスとコアの 2 つ</td><td style="text-align:left"><b>アクセスとディストリビューション</b>（ディストリビューションがコアを兼ねる）</td></tr>
+    <tr><td class="t">スパインにサーバーをつなぐ</td><td style="text-align:left">サーバーは<b>リーフ</b>。全リーフが全スパインにつながる</td></tr>
+    <tr><td class="t">SaaS では OS を利用者が管理する</td><td style="text-align:left">OS から管理するのは <b>IaaS</b>。SaaS は提供者のアプリを使うだけ</td></tr>
+    <tr><td class="t">Type 1 ハイパーバイザーは Windows の上で動く</td><td style="text-align:left">Type 1 は<b>ハードの上に直接</b>。OS の上は Type 2</td></tr>
+    <tr><td class="t">VLAN を分ければ同じ IP を重ねて使える</td><td style="text-align:left">ルーティングテーブルを分ける <b>VRF</b> が要る</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">機器（1.1）<span>ルーター＝IP で経路、L2 スイッチ＝MAC、L3 スイッチ＝SVI でルーティング。FW＝5 タプル、NGFW＝＋アプリ・IPS・ユーザー。AP・WLC・PoE（15.4／30／60／90 W）</span></div>
+      <div class="box b2">キャンパス（1.2）<span>アクセス＝入口、ディストリビューション＝集約、コア＝ディストリどうし。2 層＝コラプストコア、3 層＝大きなキャンパス。SOHO＝1 台の無線ルーター</span></div>
+      <div class="box b3">DC・WAN・クラウド（1.2）<span>スパイン・リーフ＝全リーフ×全スパイン。ハブアンドスポーク→SD-WAN。IaaS・PaaS・SaaS、パブリック・プライベート・ハイブリッド</span></div>
+      <div class="box b4">仮想化（1.12）<span>Type 1＝ハードの上、Type 2＝OS の上。VM＝ゲスト OS あり、コンテナ＝カーネル共有。VRF＝表を分ける</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:48%">数字</th><th>中身</th></tr>
+        <tr><td class="t">PoE のケーブル</td><td>最大 <b>100 m</b></td></tr>
+        <tr><td class="t">802.3af／at</td><td><b>15.4 W／30 W</b></td></tr>
+        <tr><td class="t">802.3bt</td><td><b>60 W／90 W</b></td></tr>
+        <tr><td class="t">コアなしのリンク</td><td><b>N(N−1)/2</b></td></tr>
+        <tr><td class="t">コアありのリンク</td><td><b>2N</b></td></tr>
+      </table>
+      <div class="point"><b>次の分野：</b>#02 ケーブルとインタフェースで、光ファイバーと銅線、二重モード・速度の不一致など、つなぐ部分の問題を読む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
