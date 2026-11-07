@@ -168,6 +168,7 @@ window.SITE_CATALOG = {
   materials: {
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },
+      { type: "terms", file: "terms/02.html", title: "変数とデータ型 用語集", desc: "8つの基本データ型と初期値、整数・小数・文字のリテラルとアンダースコア、識別子と予約語、ローカル変数の初期化とスコープ、拡大・縮小変換とキャスト、ラッパークラスとボクシング、var など38語と問題30問", fields: [2], pdf: "terms/02.pdf" },
     ],
     ccna: [
       { type: "terms", file: "terms/01.html", title: "ネットワーク機器と構成 用語集", desc: "ルーター・レイヤ2／レイヤ3スイッチ（SVI・ルーテッドポート）・ファイアウォールとNGFW・IPSとIDS、アクセスポイント・WLC・コントローラー・エンドポイント・サーバー・PoE（PSEとPD・802.3af/at/bt・クラス）、アクセス・ディストリビューション・コア層と2層（コラプストコア）・3層・SOHO、スパイン・リーフ・WAN・ハブアンドスポーク・SD-WAN・オンプレミスとクラウド（IaaS・PaaS・SaaS）、仮想化・ハイパーバイザー（Type 1・Type 2）・仮想マシン・コンテナ・VRFの用語と、オリジナル問題30問（出題範囲 1.1・1.2・1.12）", fields: [1], pdf: "terms/01.pdf" },
