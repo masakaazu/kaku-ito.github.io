@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CCNA #14 OSPF 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">CCNA（200-301 v1.1）　3.0 IPコネクティビティ　#14</div>
+  <h1>OSPF</h1>
+  <p>出題範囲 3.4 ― シングルエリアの OSPFv2 を設定し、ネイバー・DR/BDR・ルーター ID を読み解く</p>
+  <div class="refs-legend">各ページの下に、根拠にしたCiscoの資料・RFCを書いた（青い文字を押すと開く）</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>出題範囲 3.4 の4項目を、4章で読む</small></h1>
+  <div class="cols">
+    <div>
+      <div class="cap">3.4 Configure and verify single area OSPFv2</div>
+      <table class="mx">
+        <tr><th style="width:10%"></th><th style="width:34%">項目</th><th>このPDFでは</th></tr>
+        <tr><td class="t">a</td><td>Neighbor adjacencies</td><td style="text-align:left">第2章 ネイバーと隣接</td></tr>
+        <tr><td class="t">b</td><td>Point-to-point</td><td style="text-align:left">第3章 ネットワークタイプ</td></tr>
+        <tr><td class="t">c</td><td>Broadcast (DR/BDR selection)</td><td style="text-align:left">第3章 DR・BDR の選び方</td></tr>
+        <tr><td class="t">d</td><td>Router ID</td><td style="text-align:left">第4章 ルーター ID</td></tr>
+      </table>
+      <div class="point"><b>シングルエリア：</b>全部のルーターがエリア 0 にいる形だけを扱う。複数エリア・LSA の種類の細かい話は CCNA の範囲外。</div>
+    </div>
+    <div class="stack">
+      <div class="box b1">1 OSPF のしくみと設定<span>LSA・LSDB・SPF／network area・ip ospf area・passive-interface</span></div>
+      <div class="box b2">2 ネイバーと隣接<span>Hello・一致が必要な項目・Init〜Full の状態</span></div>
+      <div class="box b3">3 ネットワークタイプと DR・BDR<span>broadcast と point-to-point・優先度・交代しない</span></div>
+      <div class="box b4">4 ルーター ID<span>router-id → ループバック → 物理の順</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco CCNA Exam v1.1 (200-301) Exam Topics</a>（3.4 a〜d）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>OSPF のしくみと設定</h1>
+  <p>全員が同じ地図（LSDB）を持ち、各自が最短の道を計算する。設定は「どのインタフェースで動かすか」を決めるのが中心。</p>
+  <div class="foot"><span>CCNA #14 OSPF</span><span>3.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>リンクステート型：地図を配って、各自で道を計算する</h1>
+  <div class="flow">
+    <div class="box b5">① Hello<span>隣のルーターを見つける<br>224.0.0.5</span></div>
+    <div class="to">→</div>
+    <div class="box b1">② LSA を交換<span>自分のリンクとコストを<br>エリア全体に配る</span></div>
+    <div class="to">→</div>
+    <div class="box b2">③ LSDB<span>エリアの全員が<br>同じ地図を持つ</span></div>
+    <div class="to">→</div>
+    <div class="box b3">④ SPF で計算<span>自分を根に<br>コスト最小の道</span></div>
+    <div class="to">→</div>
+    <div class="box b4">⑤ テーブルへ<span>O 10.1.30.0/24<br>[110/3]</span></div>
+  </div>
+  <div class="cols" style="margin-top:12px">
+    <table class="mx">
+      <tr><th style="width:34%">項目</th><th>OSPF の値</th></tr>
+      <tr><td class="t">AD</td><td>110</td></tr>
+      <tr><td class="t">メトリック</td><td>コスト（基準 100 Mbps ÷ 帯域）</td></tr>
+      <tr><td class="t">運び方</td><td>IP に直接（プロトコル番号 89）</td></tr>
+      <tr><td class="t">宛先</td><td>224.0.0.5（全員）／224.0.0.6（DR・BDR）</td></tr>
+    </table>
+    <div>
+      <div class="point"><b>距離ベクトル型（RIP）との違い：</b>RIP は隣から「宛先まであと何ホップ」だけを聞く。OSPF は<b>リンクの状態そのもの</b>を全員で共有するので、各ルーターがネットワーク全体を見て計算できる。</div>
+      <div class="ex"><span class="lbl">語</span>OSPF＝Open Shortest Path First／LSA＝Link-State Advertisement／LSDB＝Link-State Database</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc2328">RFC 2328 OSPF Version 2</a>（link-state database・SPF・IP protocol number 89・AllSPFRouters 224.0.0.5／AllDRouters 224.0.0.6）／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/border-gateway-protocol-bgp/15986-admin-distance.html">What Is Administrative Distance?</a>（OSPF 110）</div>
+</section>
+
+<section class="slide">
+  <h1>設定の2つの書き方：network コマンドと ip ospf area</h1>
+  <svg width="856" height="96" viewBox="0 0 856 96">
+    <g font-size="12" text-anchor="middle">
+      <ellipse cx="80" cy="48" rx="70" ry="28" fill="#eef2f8" stroke="#5b80bf"/><text x="80" y="44" fill="#1f3a68">PC の LAN</text><text x="80" y="60" fill="#1f3a68" font-size="11">10.1.1.0/24</text>
+      <rect x="250" y="20" width="120" height="56" rx="10" fill="#1f3a68"/><text x="310" y="46" fill="#fff" font-weight="700">R1</text><text x="310" y="63" fill="#fff" font-size="10.5">Lo0 1.1.1.1</text>
+      <rect x="560" y="20" width="120" height="56" rx="10" fill="#1f3a68"/><text x="620" y="53" fill="#fff" font-weight="700">R2</text>
+      <line x1="150" y1="48" x2="250" y2="48" stroke="#5b80bf" stroke-width="3"/><line x1="370" y1="48" x2="560" y2="48" stroke="#1d1d1f" stroke-width="3"/>
+      <text x="200" y="40" fill="#6e6e73" font-size="11">Gi0/2 .1</text><text x="400" y="40" fill="#6e6e73" font-size="11">Gi0/0 .1</text><text x="530" y="40" fill="#6e6e73" font-size="11">.2</text>
+      <text x="465" y="70" fill="#1d1d1f" font-size="11">10.1.12.0/30　エリア 0</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div>
+      <div class="cap">A：network コマンド（ルーター設定モード）</div>
+<pre class="cli small">R1(config)#router ospf 1
+R1(config-router)#router-id 1.1.1.1
+R1(config-router)#network 10.1.12.0 0.0.0.3 area 0
+R1(config-router)#network 10.1.1.0 0.0.0.255 area 0
+R1(config-router)#passive-interface Gi0/2</pre>
+    </div>
+    <div>
+      <div class="cap">B：インタフェースごと</div>
+<pre class="cli small">R1(config)#router ospf 1
+R1(config-router)#router-id 1.1.1.1
+R1(config-router)#passive-interface Gi0/2
+R1(config)#interface Gi0/0
+R1(config-if)#ip ospf 1 area 0
+R1(config)#interface Gi0/2
+R1(config-if)#ip ospf 1 area 0</pre>
+    </div>
+  </div>
+  <div class="point"><b>プロセス ID（router ospf 1 の 1）：</b>そのルーターの中だけの番号。相手と違ってもネイバーになれる。<b>エリア番号（area 0）</b>は相手と同じでなければならない。</div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_ospf/command/iro-cr-book/m_ospf-i1.html">OSPF Command Reference</a>（network area・router-id）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_ospf/command/iro-cr-book/m_ospf-a1.html">「ip ospf area」</a>（ip ospf process-id area area-id）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_ospf/configuration/xe-16/iro-xe-16-book/iro-cfg.html">OSPF Configuration Guide</a>（passive-interface）。構成はClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>計算手順：network コマンドのワイルドカードを読む</h1>
+  <div class="cols">
+    <div>
+      <ol class="steps">
+        <li>各オクテットを 255 から引くとサブネットマスクに戻る：<b>0.0.0.255 ＝ /24、0.0.0.3 ＝ /30、0.0.0.0 ＝ 1つのアドレス</b></li>
+        <li>ワイルドカードの <b>0 の部分</b>だけを比べる（1 の部分は見ない）</li>
+        <li>インタフェースの<b>プライマリの</b>アドレスが当てはまれば、そのインタフェースで OSPF が動き、指定したエリアに入る</li>
+        <li>何行書いてもよい。範囲が重なったら先に当てはまった行のエリア</li>
+      </ol>
+      <div class="point warn"><b>サブネットマスクを書かない：</b>network 10.1.1.0 <b>255.255.255.0</b> area 0 は誤り。OSPF の network はワイルドカード。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:38%">network の行</th><th>当てはまるアドレス</th></tr>
+        <tr><td class="t">10.1.1.0 0.0.0.255</td><td>10.1.1.0〜10.1.1.255</td></tr>
+        <tr><td class="t">10.1.12.0 0.0.0.3</td><td>10.1.12.0〜10.1.12.3</td></tr>
+        <tr><td class="t">10.1.12.1 0.0.0.0</td><td>10.1.12.1 だけ</td></tr>
+        <tr><td class="t">10.1.0.0 0.0.255.255</td><td>10.1.0.0〜10.1.255.255</td></tr>
+        <tr><td class="t">0.0.0.0 255.255.255.255</td><td>全部のアドレス</td></tr>
+      </table>
+      <div class="ex"><span class="lbl">例</span>Gi0/0＝10.1.1.1、Gi0/1＝10.1.12.1、Gi0/2＝172.16.5.1 に <code>network 10.1.0.0 0.0.255.255 area 0</code> → Gi0/0 と Gi0/1 だけ</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_ospf/command/iro-cr-book/m_ospf-i1.html">OSPF Command Reference「network area」</a>（wildcard-mask: IP-address-type mask that includes "don't care" bits・For OSPF to operate on the interface, the primary address of the interface must be covered・overlap … adopt the first area）。表の範囲はClaudeが計算した</div>
+</section>
+
+<section class="slide">
+  <h1>passive-interface と default-information originate</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="190" viewBox="0 0 410 190">
+        <g font-size="12" text-anchor="middle">
+          <rect x="150" y="66" width="110" height="56" rx="10" fill="#1f3a68"/><text x="205" y="99" fill="#fff" font-weight="700">R1</text>
+          <ellipse cx="60" cy="94" rx="52" ry="26" fill="#eef2f8" stroke="#5b80bf"/><text x="60" y="98" fill="#1f3a68" font-size="11">PC の LAN</text>
+          <line x1="112" y1="94" x2="150" y2="94" stroke="#5b80bf" stroke-width="3"/>
+          <text x="80" y="140" fill="#b23a2c" font-size="11">passive：Hello を出さない</text>
+          <text x="80" y="156" fill="#3a7d44" font-size="11">でもこの LAN は広告される</text>
+          <rect x="300" y="10" width="100" height="44" rx="8" fill="#b25000"/><text x="350" y="37" fill="#fff">ISP</text>
+          <line x1="250" y1="70" x2="310" y2="54" stroke="#1d1d1f" stroke-width="3"/>
+          <rect x="300" y="130" width="100" height="44" rx="8" fill="#1f3a68"/><text x="350" y="157" fill="#fff" font-weight="700">R2</text>
+          <line x1="260" y1="110" x2="300" y2="140" stroke="#1d1d1f" stroke-width="3"/>
+          <text x="330" y="112" fill="#3a7d44" font-size="11">O*E2 0.0.0.0/0</text>
+        </g>
+      </svg>
+      <div class="cap">passive-interface</div>
+      <ul class="anno">
+        <li>指定したインタフェースから <b>Hello を送らない</b> → ネイバーはできない</li>
+        <li>そのネットワークは OSPF で<b>広告される</b>（network が当てはまっていれば）</li>
+        <li>PC だけの LAN に付ける。ルーターどうしのリンクに付けるとネイバーが消える</li>
+      </ul>
+    </div>
+    <div>
+      <div class="cap">default-information originate</div>
+<pre class="cli small">R1(config)#ip route 0.0.0.0 0.0.0.0 203.0.113.1
+R1(config)#router ospf 1
+R1(config-router)#default-information originate
+
+R2#show ip route ospf
+O*E2  0.0.0.0/0 [110/1] via 10.1.12.1, 00:00:12, Gi0/0</pre>
+      <ul class="anno">
+        <li>R1 が<b>自分のデフォルトルート</b>を OSPF で配る（ないときは配らない。always を付けると無くても配る）</li>
+        <li>受け取った側は <b>O*E2</b>（OSPF の外から入れた種類2、* はデフォルトの候補）</li>
+        <li>E2 の経路は、途中のリンクのコストを足さない（CCNA では表示の読み方を覚える）</li>
+      </ul>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_ospf/configuration/xe-16/iro-xe-16-book/iro-cfg.html">OSPF Configuration Guide</a>（passive-interface：Suppresses the sending of hello packets）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_ospf/command/iro-cr-book/m_ospf-a1.html">「default-information originate (OSPF)」</a>（always・default is type 2 external route）。出力はClaudeが作った例</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>ネイバーと隣接</h1>
+  <p>Hello で互いを見つけ（ネイバー）、LSDB をそろえて隣接（Full）になる。どこで止まったかで原因が分かる。</p>
+  <div class="foot"><span>CCNA #14 OSPF</span><span>3.4.a</span></div>
+</section>
+
+<section class="slide">
+  <h1>Hello の中身：これが合わないとネイバーにならない</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">Hello パケットに入っているもの（主なもの）</div>
+      <table class="mx">
+        <tr><th style="width:40%">項目</th><th>相手と一致が必要か</th></tr>
+        <tr><td class="t">エリア番号</td><td class="a">必要</td></tr>
+        <tr><td class="t">ネットワークマスク</td><td class="a">必要（同じサブネット）</td></tr>
+        <tr><td class="t">Hello 間隔・Dead 間隔</td><td class="a">必要</td></tr>
+        <tr><td class="t">エリアの種類（stub など）</td><td class="a">必要</td></tr>
+        <tr><td class="t">認証</td><td class="a">必要</td></tr>
+        <tr><td class="t">ルーター ID</td><td class="x">違わなければならない</td></tr>
+        <tr><td class="t">優先度・DR・BDR</td><td>不要（選出に使う）</td></tr>
+        <tr><td class="t">見えているネイバーの ID</td><td>不要（2-Way の確認に使う）</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">Hello には入らないが、問題になるもの</div>
+      <table class="mini">
+        <tr><td style="width:34%">MTU</td><td>合わないと ExStart/Exchange で止まる</td></tr>
+        <tr><td>ネットワークタイプ</td><td>合わないと隣接や経路の計算に問題が出る</td></tr>
+        <tr><td>passive-interface</td><td>Hello を出さないのでネイバーができない</td></tr>
+      </table>
+      <div class="cap" style="margin-top:8px">一致しなくてよいもの</div>
+      <table class="mini">
+        <tr><td style="width:34%">プロセス ID</td><td>ルーターの中だけの番号</td></tr>
+        <tr><td>優先度</td><td>違ってよい（DR の選出に使う）</td></tr>
+        <tr><td>コスト</td><td>違ってよい（各自の道の計算に使う）</td></tr>
+      </table>
+      <div class="ex"><span class="lbl">初期値</span>イーサネット：Hello 10 秒・Dead 40 秒（Hello の4倍）</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/open-shortest-path-first-ospf/13699-29.html">Troubleshoot OSPF Neighbor Problems</a>（Verify these HELLO parameters match・duplicate Router IDs・Typical Reasons for OSPF Neighbor Problems）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_ospf/command/iro-cr-book/m_ospf-i1.html">ip ospf hello-interval</a>・dead-interval（10 seconds (Ethernet)・Four times）</div>
+</section>
+
+<section class="slide">
+  <h1>ネイバーの状態：Down から Full まで</h1>
+  <svg width="856" height="150" viewBox="0 0 856 150">
+    <g font-size="12" text-anchor="middle">
+      <g fill="#fff" font-weight="700">
+        <rect x="0" y="40" width="104" height="46" rx="8" fill="#6e6e73"/><text x="52" y="68">Down</text>
+        <rect x="122" y="40" width="104" height="46" rx="8" fill="#5b80bf"/><text x="174" y="68">Init</text>
+        <rect x="244" y="40" width="104" height="46" rx="8" fill="#1f3a68"/><text x="296" y="68">2-Way</text>
+        <rect x="366" y="40" width="104" height="46" rx="8" fill="#b25000"/><text x="418" y="68">ExStart</text>
+        <rect x="488" y="40" width="104" height="46" rx="8" fill="#b25000"/><text x="540" y="68">Exchange</text>
+        <rect x="610" y="40" width="104" height="46" rx="8" fill="#b25000"/><text x="662" y="68">Loading</text>
+        <rect x="732" y="40" width="104" height="46" rx="8" fill="#3a7d44"/><text x="784" y="68">Full</text>
+      </g>
+      <g fill="#1d1d1f"><text x="113" y="68">›</text><text x="235" y="68">›</text><text x="357" y="68">›</text><text x="479" y="68">›</text><text x="601" y="68">›</text><text x="723" y="68">›</text></g>
+      <rect x="0" y="6" width="348" height="24" rx="6" fill="#eef2f8"/><text x="174" y="23" fill="#1f3a68">ネイバー（Hello）</text>
+      <rect x="366" y="6" width="470" height="24" rx="6" fill="#fff4e8"/><text x="601" y="23" fill="#b25000">隣接を作る（LSDB をそろえる）</text>
+      <g font-size="11" fill="#1d1d1f">
+        <text x="52" y="106">Hello が来ない</text>
+        <text x="174" y="106">来たが自分の ID</text><text x="174" y="121">が入っていない</text>
+        <text x="296" y="106">両方向を確認</text><text x="296" y="121">DR・BDR を選ぶ</text>
+        <text x="418" y="106">主と従を決める</text><text x="418" y="121">（ID が大きい方が主）</text>
+        <text x="540" y="106">DBD（目次）を</text><text x="540" y="121">交換</text>
+        <text x="662" y="106">足りない LSA を</text><text x="662" y="121">LSR → LSU</text>
+        <text x="784" y="106">LSDB がそろった</text>
+      </g>
+      <text x="428" y="144" fill="#b23a2c" font-size="11.5">イーサネットの DROTHER どうしは 2-Way で止まるのが正常。それ以外で Full 以外に止まるのは問題</text>
+    </g>
+  </svg>
+  <table class="mx" style="margin-top:6px">
+    <tr><th style="width:18%">止まった状態</th><th>考えられる原因</th></tr>
+    <tr><td class="t">何も出ない</td><td style="text-align:left">エリア・マスク・Hello/Dead・認証の不一致、passive、OSPF が有効でない、ルーター ID の重複</td></tr>
+    <tr><td class="t">Init</td><td style="text-align:left">相手に自分の Hello が届いていない（片方向だけ届く。ACL など）</td></tr>
+    <tr><td class="t">ExStart/Exchange</td><td style="text-align:left">MTU の不一致（大きい DBD が捨てられる）</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/open-shortest-path-first-ospf/13685-13.html">Understand OSPF Neighbor States</a>／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/open-shortest-path-first-ospf/13699-29.html">Troubleshoot OSPF Neighbor Problems</a>／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/open-shortest-path-first-ospf/13684-12.html">Neighbors Stuck in Exstart/Exchange State</a>（MTU mismatch）</div>
+</section>
+
+<section class="slide">
+  <h1>show ip ospf neighbor を読む</h1>
+<pre class="cli small">R1#<b>show ip ospf neighbor</b>
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+2.2.2.2           1   FULL/DR         00:00:35    10.1.1.2        GigabitEthernet0/0
+3.3.3.3           1   FULL/BDR        00:00:31    10.1.1.3        GigabitEthernet0/0
+4.4.4.4           1   <span class="hl">2WAY/DROTHER</span>    00:00:38    10.1.1.4        GigabitEthernet0/0
+5.5.5.5           0   FULL/  -        00:00:33    10.1.15.5       Serial0/1/0</pre>
+  <table class="mx" style="margin-top:8px">
+    <tr><th style="width:16%">列</th><th>意味</th><th style="width:36%">ひっかけ</th></tr>
+    <tr><td class="t">Neighbor ID</td><td style="text-align:left">相手の<b>ルーター ID</b></td><td style="text-align:left">相手のインタフェースのアドレスではない</td></tr>
+    <tr><td class="t">Pri</td><td style="text-align:left">相手のそのインタフェースの優先度</td><td style="text-align:left">0 なら DR・BDR にならない</td></tr>
+    <tr><td class="t">State</td><td style="text-align:left">状態／<b>相手の</b>役割（DR・BDR・DROTHER・- ＝選出なし）</td><td style="text-align:left">自分の役割ではない</td></tr>
+    <tr><td class="t">Dead Time</td><td style="text-align:left">Hello が来ないまま落とすまでの残り時間</td><td style="text-align:left">ネイバーになってからの時間ではない</td></tr>
+    <tr><td class="t">Address</td><td style="text-align:left">相手のインタフェースのアドレス</td><td style="text-align:left">ルーター ID と取り違えない</td></tr>
+  </table>
+  <div class="point">この出力の R1 は、DR・BDR と FULL、DROTHER の 4.4.4.4 とは 2WAY なので、<b>R1 自身も DROTHER</b>。シリアルの 5.5.5.5 はポイントツーポイントなので「-」。</div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_ospf/command/iro-cr-book/ospf-s1.html">OSPF Command Reference「show ip ospf neighbor」</a>（出力例：Neighbor ID・Pri・State FULL/DR・FULL/DROTHER・Dead Time・Address・Interface）／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/open-shortest-path-first-ospf/13685-13.html">Doc 13685</a>（FULL/DROTHER の意味）。出力はClaudeが作った例</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>ネットワークタイプと DR・BDR</h1>
+  <p>イーサネット（broadcast）は代表を選んでまとめる。2台だけのリンク（point-to-point）は代表を選ばない。</p>
+  <div class="foot"><span>CCNA #14 OSPF</span><span>3.4.b・c</span></div>
+</section>
+
+<section class="slide">
+  <h1>なぜ DR を選ぶのか：隣接の数を減らす</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="210" viewBox="0 0 410 210">
+        <g font-size="12" text-anchor="middle">
+          <text x="100" y="18" fill="#b23a2c" font-weight="700">全員どうし：10 本</text>
+          <g stroke="#b23a2c" stroke-width="1.6">
+            <line x1="100" y1="40" x2="170" y2="90"/><line x1="100" y1="40" x2="145" y2="175"/><line x1="100" y1="40" x2="55" y2="175"/><line x1="100" y1="40" x2="30" y2="90"/>
+            <line x1="170" y1="90" x2="145" y2="175"/><line x1="170" y1="90" x2="55" y2="175"/><line x1="170" y1="90" x2="30" y2="90"/>
+            <line x1="145" y1="175" x2="55" y2="175"/><line x1="145" y1="175" x2="30" y2="90"/><line x1="55" y1="175" x2="30" y2="90"/>
+          </g>
+          <g fill="#6e6e73"><circle cx="100" cy="40" r="15"/><circle cx="170" cy="90" r="15"/><circle cx="145" cy="175" r="15"/><circle cx="55" cy="175" r="15"/><circle cx="30" cy="90" r="15"/></g>
+          <text x="310" y="18" fill="#3a7d44" font-weight="700">DR・BDR とだけ：7 本</text>
+          <g stroke="#3a7d44" stroke-width="2">
+            <line x1="280" y1="80" x2="250" y2="170"/><line x1="280" y1="80" x2="310" y2="180"/><line x1="280" y1="80" x2="370" y2="170"/>
+            <line x1="345" y1="80" x2="250" y2="170"/><line x1="345" y1="80" x2="310" y2="180"/><line x1="345" y1="80" x2="370" y2="170"/>
+            <line x1="280" y1="80" x2="345" y2="80"/>
+          </g>
+          <circle cx="280" cy="80" r="20" fill="#1f3a68"/><text x="280" y="84" fill="#fff" font-size="11">DR</text>
+          <circle cx="345" cy="80" r="20" fill="#5b80bf"/><text x="345" y="84" fill="#fff" font-size="11">BDR</text>
+          <g fill="#6e6e73"><circle cx="250" cy="170" r="15"/><circle cx="310" cy="180" r="15"/><circle cx="370" cy="170" r="15"/></g>
+          <text x="310" y="206" fill="#6e6e73" font-size="11">DROTHER どうしは 2-Way のまま</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>1つのセグメントに n 台いると、全員どうしで隣接になれば n(n−1)/2 本。5台で 10 本、10台で 45 本</li>
+        <li>DR と BDR を決め、ほかのルーターは <b>DR・BDR とだけ</b>隣接になる</li>
+        <li>DROTHER は変化を <b>224.0.0.6</b>（DR・BDR 宛て）に送り、DR が <b>224.0.0.5</b>（全員）に配り直す</li>
+        <li>DR が落ちたら、すでに全員と隣接の BDR がすぐ DR になる</li>
+      </ol>
+      <div class="point"><b>DR はセグメントごと：</b>「ルーター全体の DR」ではなく、インタフェース（セグメント）ごとに選ぶ。同じルーターが、ある LAN では DR、別の LAN では DROTHER ということもある。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc2328">RFC 2328</a> 7.3 The Designated Router（becomes adjacent to all other routers on the network）・7.4 The Backup Designated Router・A.1（AllSPFRouters・AllDRouters）／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/open-shortest-path-first-ospf/13685-13.html">Doc 13685</a>。本数の計算はClaudeが書いた</div>
+</section>
+
+<section class="slide">
+  <h1>broadcast と point-to-point：DR を選ぶか選ばないか</h1>
+  <div class="cols wide-r">
+    <div>
+      <table class="mx">
+        <tr><th style="width:28%"></th><th>broadcast</th><th>point-to-point</th></tr>
+        <tr><td class="t">初期値になる線</td><td>イーサネット</td><td>シリアル（HDLC・PPP）</td></tr>
+        <tr><td class="t">DR・BDR</td><td>選ぶ</td><td>選ばない</td></tr>
+        <tr><td class="t">隣接の相手</td><td>DR・BDR とだけ</td><td>相手と必ず</td></tr>
+        <tr><td class="t">Hello／Dead</td><td>10／40 秒</td><td>10／40 秒</td></tr>
+        <tr><td class="t">State の表示</td><td>FULL/DR など</td><td>FULL/-</td></tr>
+        <tr><td class="t">優先度</td><td>使う</td><td>使わない</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">ルーター2台だけをつなぐイーサネット</div>
+<pre class="cli small">R1(config)#interface Gi0/0
+R1(config-if)#ip ospf network point-to-point
+R2(config)#interface Gi0/0
+R2(config-if)#ip ospf network point-to-point</pre>
+      <ul class="anno">
+        <li>相手が1台しかいないので、DR を選ぶ意味がない</li>
+        <li>point-to-point にすると選出を省き、相手と直接 Full になる</li>
+        <li><b>両側で同じタイプ</b>にする。片側だけ変えると問題が起きる</li>
+      </ul>
+      <div class="ex"><span class="lbl">確認</span><code>show ip ospf interface Gi0/0</code> の Network Type</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_ospf/configuration/xe-16/iro-xe-16-book/iro-cfg.html">OSPF Configuration Guide</a>（Broadcast networks (Ethernet…)・Point-to-point networks (HDLC and PPP)）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_ospf/command/iro-cr-book/m_ospf-i1.html">ip ospf network</a>・ip ospf priority（not to point-to-point networks）／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/open-shortest-path-first-ospf/13699-29.html">Doc 13699</a>（network-type mismatch）</div>
+</section>
+
+<section class="slide">
+  <h1>計算手順：DR と BDR を当てる</h1>
+  <div class="cols">
+    <div>
+      <ol class="steps">
+        <li><b>優先度 0</b> のルーターを外す（DR にも BDR にもならない）</li>
+        <li>残りで<b>優先度</b>がいちばん大きいものが DR、2番目が BDR</li>
+        <li>優先度が同じなら、<b>ルーター ID</b> が大きいほう</li>
+        <li>ただし、<b>すでに DR・BDR がいるなら交代しない</b>（あとから来たルーターは DROTHER）</li>
+      </ol>
+      <div class="point warn"><b>インタフェースの IP アドレスでは比べない：</b>同点の決め手はルーター ID。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>ルーター</th><th>ルーター ID</th><th>優先度</th><th>結果</th></tr>
+        <tr><td class="t">R1</td><td>1.1.1.1</td><td>200</td><td class="a">DR</td></tr>
+        <tr><td class="t">R2</td><td>2.2.2.2</td><td>1</td><td>DROTHER</td></tr>
+        <tr><td class="t">R3</td><td>3.3.3.3</td><td>1</td><td>DROTHER</td></tr>
+        <tr><td class="t">R4</td><td>4.4.4.4</td><td>1</td><td class="a">BDR</td></tr>
+        <tr><td class="t">R5</td><td>9.9.9.9</td><td>0</td><td class="x">DROTHER（選ばれない）</td></tr>
+      </table>
+      <div class="ex"><span class="lbl">考え方</span>R5 は ID が最大でも優先度 0。R1 は優先度で勝つ。残り（R2〜R4）は優先度 1 で同じなので ID が最大の R4 が BDR</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_ospf/command/iro-cr-book/m_ospf-i1.html">OSPF Command Reference「ip ospf priority」</a>（higher router priority takes precedence. If there is a tie, the router with the higher router ID・priority set to zero is ineligible・Priority of 1・range 0 to 255）。表はClaudeが作った練習（全部が同時に起動した場合）</div>
+</section>
+
+<section class="slide">
+  <h1>DR は交代しない：先に起動したルーターが DR のまま</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="230" viewBox="0 0 410 230">
+        <g font-size="12" text-anchor="middle">
+          <line x1="20" y1="30" x2="20" y2="220" stroke="#c7c7cc" stroke-width="2"/>
+          <circle cx="20" cy="40" r="6" fill="#1f3a68"/><text x="34" y="44" text-anchor="start">① R2（優先度1）と R3（優先度1）が起動</text>
+          <text x="34" y="62" text-anchor="start" fill="#1f3a68" font-size="11">→ DR＝R3（ID が大きい）、BDR＝R2</text>
+          <circle cx="20" cy="100" r="6" fill="#b25000"/><text x="34" y="104" text-anchor="start">② あとから R1（優先度 255）をつなぐ</text>
+          <text x="34" y="122" text-anchor="start" fill="#b25000" font-size="11">→ DR も BDR も変わらない。R1 は DROTHER</text>
+          <circle cx="20" cy="160" r="6" fill="#3a7d44"/><text x="34" y="164" text-anchor="start">③ R3（DR）が落ちる</text>
+          <text x="34" y="182" text-anchor="start" fill="#3a7d44" font-size="11">→ BDR の R2 が DR に。新しい BDR は R1</text>
+          <text x="34" y="214" text-anchor="start" fill="#6e6e73" font-size="11">R1 を DR にしたいなら、今の DR・BDR の OSPF をやり直す</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="point"><b>RFC 2328 の考え方：</b>インタフェースが動き出したとき、すでに DR がいれば優先度に関係なくそれを受け入れる。DR が変わると LSA を作り直し、一時的に通信が乱れるので、<b>なるべく変わらない</b>ようにしている。</div>
+      <table class="mini" style="margin-top:8px">
+        <tr><th style="width:42%">したいこと</th><th>やり方</th></tr>
+        <tr><td>今すぐ DR を変えたい</td><td>優先度を変えたあと <code>clear ip ospf process</code></td></tr>
+        <tr><td>DR にしない</td><td><code>ip ospf priority 0</code></td></tr>
+        <tr><td>DR を選ばない</td><td><code>ip ospf network point-to-point</code>（2台のとき）</td></tr>
+      </table>
+      <div class="point warn"><b>本番のわな：</b>優先度や ID だけを見て「いちばん大きいのが DR」と答えると、起動の順番が書かれた問題で間違える。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc2328">RFC 2328</a> 7.3（If there is, it accepts that Designated Router, regardless of its Router Priority … ensures that the Designated Router changes less often）・7.4（BDR becomes DR when the previous DR fails）。時系列の例はClaudeが作った</div>
+</section>
+
+<section class="slide">
+  <h1>show ip ospf interface を読む</h1>
+  <div class="cols wide-r">
+    <div>
+<pre class="cli small">R1#<b>show ip ospf interface Gi0/0</b>
+GigabitEthernet0/0 is up, line protocol is up
+  Internet Address 10.1.1.1/24, <span class="hl">Area 0</span>,
+    Attached via Network Statement
+  Process ID 1, <span class="hl">Router ID 1.1.1.1</span>,
+    <span class="hl">Network Type BROADCAST</span>, Cost: 1
+  Transmit Delay is 1 sec, <span class="hl">State BDR</span>, Priority 1
+  Designated Router (ID) 3.3.3.3,
+    Interface address 10.1.1.3
+  Backup Designated router (ID) 1.1.1.1,
+    Interface address 10.1.1.1
+  Timer intervals configured,
+    <span class="hl">Hello 10, Dead 40</span>, Wait 40, Retransmit 5
+  Neighbor Count is 2, Adjacent neighbor count is 2</pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:40%">行</th><th>分かること</th></tr>
+        <tr><td class="t">Area 0</td><td style="text-align:left">このインタフェースのエリア</td></tr>
+        <tr><td class="t">Attached via Network Statement</td><td style="text-align:left">network コマンドで有効になった（ip ospf area なら Interface Enable）</td></tr>
+        <tr><td class="t">Router ID</td><td style="text-align:left">自分のルーター ID</td></tr>
+        <tr><td class="t">Network Type</td><td style="text-align:left">BROADCAST か POINT_TO_POINT</td></tr>
+        <tr><td class="t">Cost</td><td style="text-align:left">このインタフェースのコスト</td></tr>
+        <tr><td class="t">State／Priority</td><td style="text-align:left"><b>自分の</b>役割と優先度</td></tr>
+        <tr><td class="t">Hello／Dead</td><td style="text-align:left">相手と比べる間隔</td></tr>
+      </table>
+      <div class="point"><b>neighbor との違い：</b>show ip ospf neighbor の State は<b>相手の</b>役割、show ip ospf interface の State は<b>自分の</b>役割。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/open-shortest-path-first-ospf/13699-29.html">Troubleshoot OSPF Neighbor Problems</a>（show ip ospf interface の出力例：Attached via Network Statement・Network Type BROADCAST・State BDR・Hello 10, Dead 40）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_ospf/command/iro-cr-book/ospf-s1.html">show ip ospf interface</a>。出力はその形式にそろえてClaudeが作った例</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>ルーター ID</h1>
+  <p>OSPF の中でルーターを見分ける名札。手で決める → ループバック → 物理の順に決まる。</p>
+  <div class="foot"><span>CCNA #14 OSPF</span><span>3.4.d</span></div>
+</section>
+
+<section class="slide">
+  <h1>ルーター ID の決まり方と、変えるときの注意</h1>
+  <div class="cols">
+    <div>
+      <div class="stack">
+        <div class="box b1">① router-id コマンドの値<span>インタフェースのアドレスでなくてもよい（1.1.1.1 など）</span></div>
+        <div class="box b2">② up しているループバックの最大のアドレス<span>ループバックは down しないので安定する</span></div>
+        <div class="box b5">③ up している物理インタフェースの最大のアドレス<span>そのインタフェースが落ちると ID を選び直すことになる</span></div>
+      </div>
+      <div class="ex"><span class="lbl">例</span>Gi0/0＝192.168.1.1、Lo0＝1.1.1.1、Lo1＝2.2.2.2、router-id なし → <b>2.2.2.2</b>（物理の 192.168.1.1 より、ループバックが先）</div>
+    </div>
+    <div>
+<pre class="cli small">R1(config)#router ospf 1
+R1(config-router)#router-id 1.1.1.1
+% OSPF: Reload or use "clear ip ospf process" command,
+  for this to take effect
+R1#clear ip ospf process
+Reset ALL OSPF processes? [no]: yes
+R1#show ip ospf | include ID
+ Routing Process "ospf 1" with ID 1.1.1.1</pre>
+      <ul class="anno">
+        <li>ネイバーがいる OSPF で変えると、<b>再起動か clear ip ospf process のあと</b>で使われる</li>
+        <li>ルーター ID は<b>一意</b>でなければならない。同じ ID どうしは Hello を無視し、隣接にならない</li>
+        <li>ExStart の主と従、DR の同点の決め手にも使う</li>
+      </ul>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_ospf/configuration/xe-16/iro-xe-16-book/iro-cfg.html">OSPF Configuration Guide</a>（OSPF automatically prefers a loopback interface … highest IP address among all loopback interfaces. If no loopback interfaces are present, the highest IP address）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_ospf/command/iro-cr-book/m_ospf-i1.html">router-id</a>（next reload or manual OSPF process restart）／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/open-shortest-path-first-ospf/13699-29.html">Doc 13699</a>（duplicate Router IDs）。出力はClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>よくあるひっかけ</h1>
+  <table class="mx">
+    <tr><th style="width:40%">よくある思い込み</th><th>正しくは</th></tr>
+    <tr><td class="t">プロセス ID をそろえないとネイバーにならない</td><td style="text-align:left">プロセス ID はルーターの中だけ。そろえるのは<b>エリア番号</b>など</td></tr>
+    <tr><td class="t">network 10.1.1.0 255.255.255.0 area 0</td><td style="text-align:left">ワイルドカードで書く：network 10.1.1.0 <b>0.0.0.255</b> area 0</td></tr>
+    <tr><td class="t">passive-interface でネットワークも広告されない</td><td style="text-align:left">広告はされる。Hello を出さないだけ</td></tr>
+    <tr><td class="t">DROTHER どうしが 2WAY なのは異常</td><td style="text-align:left">broadcast では正常。DR・BDR とだけ FULL になる</td></tr>
+    <tr><td class="t">優先度のいちばん大きいルーターが必ず DR</td><td style="text-align:left">すでに DR がいれば交代しない</td></tr>
+    <tr><td class="t">優先度が同じならインタフェースの IP が大きいほうが DR</td><td style="text-align:left">決め手は<b>ルーター ID</b></td></tr>
+    <tr><td class="t">ルーター ID は物理インタフェースが先</td><td style="text-align:left">router-id → <b>ループバック</b> → 物理</td></tr>
+    <tr><td class="t">router-id を入れればすぐ変わる</td><td style="text-align:left">ネイバーがいれば clear ip ospf process（か再起動）が要る</td></tr>
+    <tr><td class="t">ExStart で止まるのは Hello 間隔の違い</td><td style="text-align:left">Hello 間隔が違えばネイバーにもならない。ExStart は MTU を疑う</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">設定と確認</div>
+      <table class="mini">
+        <tr><td style="width:36%">有効にする</td><td><code>network アドレス ワイルドカード area 0</code>／<code>ip ospf 1 area 0</code></td></tr>
+        <tr><td>Hello を止める</td><td><code>passive-interface</code>（広告はされる）</td></tr>
+        <tr><td>デフォルトを配る</td><td><code>default-information originate</code> → O*E2</td></tr>
+        <tr><td>ネイバー</td><td><code>show ip ospf neighbor</code>（State は相手の役割）</td></tr>
+        <tr><td>インタフェース</td><td><code>show ip ospf interface</code>（State は自分の役割）</td></tr>
+      </table>
+      <div class="cap" style="margin-top:8px">ネイバーの条件</div>
+      <table class="mini">
+        <tr><td style="width:36%">一致</td><td>エリア・マスク・Hello/Dead・認証・エリアの種類（＋MTU・ネットワークタイプ）</td></tr>
+        <tr><td>違うこと</td><td>ルーター ID</td></tr>
+      </table>
+    </div>
+    <div class="stack">
+      <div class="box b1">状態：Down → Init → 2-Way → ExStart → Exchange → Loading → Full<span>DROTHER どうしの 2-Way は正常／ExStart で止まるなら MTU</span></div>
+      <div class="box b2">DR・BDR（broadcast のみ）<span>優先度（初期1、0 は対象外）→ ルーター ID。交代しない</span></div>
+      <div class="box b3">ルーター ID<span>router-id → ループバック最大 → 物理最大。変更は clear ip ospf process</span></div>
+      <div class="point"><b>次の分野：</b>#15 FHRP で、デフォルトゲートウェイを冗長にする HSRP を読む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
