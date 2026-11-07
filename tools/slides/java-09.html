@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Silver #09 staticとアクセス修飾子 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">Java Silver（SE 17・1Z0-825-JPN）　4 クラスの定義とインスタンス　#09</div>
+  <h1>static とアクセス修飾子</h1>
+  <p>クラスに 1 つのものと、オブジェクトごとのもの。どこから見えるかを決める 4 つのレベル</p>
+  <div class="refs-legend">各ページの下に、根拠にした Oracle の資料（JLS 6・8・12・15 章、Java Tutorials）を書いた（青い文字を押すと開く）。コードは Claude が作り、JDK 17 で動かして確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>試験内容チェックリスト 4（static、初期化子、アクセス修飾子、カプセル化と不変オブジェクト）</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 static フィールド<span>クラスに 1 つ。全インスタンスで共有</span></div>
+      <div class="box b2">2 static メソッド<span>オブジェクトなしで呼ぶ。this とインスタンスメンバーは直接使えない</span></div>
+      <div class="box b3">3 static 初期化子<span>クラスの初期化で 1 回だけ。上から順</span></div>
+      <div class="box b4">4 アクセス修飾子<span>public・protected・なし・private</span></div>
+      <div class="box b1">5 カプセル化と不変<span>private で隠し、変えられないオブジェクトを作る</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%"></th><th>static あり</th><th>static なし</th></tr>
+        <tr><td class="t">フィールド</td><td>クラス変数（1 つ）</td><td>インスタンス変数（オブジェクトごと）</td></tr>
+        <tr><td class="t">メソッド</td><td>クラスメソッド</td><td>インスタンスメソッド</td></tr>
+        <tr><td class="t">初期化子</td><td>static { } クラスで 1 回</td><td>{ } new のたび（#08）</td></tr>
+        <tr><td class="t">呼び方</td><td><code>クラス名.名前</code></td><td><code>変数.名前</code></td></tr>
+        <tr><td class="t">this</td><td class="x">使えない</td><td>使える</td></tr>
+      </table>
+      <div class="point"><b>static とアクセス修飾子は別の軸。</b>private static も public static もある。static だから広く使えるわけではない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.oracle.com/jp/education/certification/javase-17-programmer-1/">Oracle「Java SE 17 Programmer I（1Z0-825-JPN）」試験内容チェックリスト</a>／<a class="src" href="https://docs.oracle.com/javase/tutorial/java/javaOO/classvars.html">The Java Tutorials「Understanding Class Members」</a></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>static フィールド</h1>
+  <p>どの変数から触っても、同じ 1 つ。</p>
+  <div class="foot"><span>Java Silver #09 static とアクセス修飾子</span><span>試験内容 4</span></div>
+</section>
+
+<section class="slide">
+  <h1>クラス変数は全インスタンスで 1 つ</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">3 つ new したあと（Claude が作成）</div>
+      <svg width="420" height="240" viewBox="0 0 420 240">
+        <defs><marker id="a9" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker></defs>
+        <g font-size="12">
+          <rect x="120" y="8" width="180" height="56" rx="8" fill="#1f3a68"/><text x="132" y="30" fill="#fff" font-weight="700">クラス C（1 つ）</text><text x="132" y="52" fill="#fff" font-family="DejaVu Sans Mono, monospace">static count = 3</text>
+          <rect x="10" y="150" width="120" height="60" rx="8" fill="#c9daf2"/><text x="22" y="172" fill="#1f3a68">c1 のオブジェクト</text><text x="22" y="196" fill="#1f3a68" font-family="DejaVu Sans Mono, monospace">id = 1</text>
+          <rect x="150" y="150" width="120" height="60" rx="8" fill="#c9daf2"/><text x="162" y="172" fill="#1f3a68">c2 のオブジェクト</text><text x="162" y="196" fill="#1f3a68" font-family="DejaVu Sans Mono, monospace">id = 2</text>
+          <rect x="290" y="150" width="120" height="60" rx="8" fill="#c9daf2"/><text x="302" y="172" fill="#1f3a68">c3 のオブジェクト</text><text x="302" y="196" fill="#1f3a68" font-family="DejaVu Sans Mono, monospace">id = 3</text>
+          <line x1="70" y1="148" x2="170" y2="68" stroke="#b25000" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#a9)"/>
+          <line x1="210" y1="148" x2="210" y2="68" stroke="#b25000" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#a9)"/>
+          <line x1="350" y1="148" x2="250" y2="68" stroke="#b25000" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#a9)"/>
+          <text x="210" y="234" fill="#b25000" text-anchor="middle">c1.count も c3.count も C.count も同じ 3</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+<pre class="code small"><span class="k">class</span> C {
+  <span class="k">static int</span> count;     <span class="c">// クラスに 1 つ</span>
+  <span class="k">int</span> id;               <span class="c">// オブジェクトごと</span>
+  C() { count++; id = count; }
+}
+<span class="c">// new C() を 3 回 → c1, c2, c3</span>
+System.out.println(C.count + <span class="s">" "</span> + c1.id + <span class="s">" "</span> + c3.id + <span class="s">" "</span> + c1.count);</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">3 1 3 3</span></pre>
+      <table class="mx" style="margin-top:8px">
+        <tr><th style="width:56%">コード</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>a.s = 5;</code> のあと <code>b.s</code>・<code>C.s</code></td><td class="t">5・5</td></tr>
+        <tr><td class="l"><code>a.n = 5;</code> のあと <code>b.n</code></td><td class="t">0（別の変数）</td></tr>
+        <tr><td class="l"><code>static final int X;</code>（代入なし）</td><td class="x">variable X not initialized in the default constructor</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.3.1.1 static Fields</a>（there exists exactly one incarnation of the field, no matter how many instances (possibly zero) of the class may eventually be created）・8.3.1.2（A blank final class variable must be definitely assigned by a static initializer）／<a class="src" href="https://docs.oracle.com/javase/tutorial/java/javaOO/classvars.html">Java Tutorials「Understanding Class Members」</a>（Every instance of the class shares a class variable）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>static メソッド</h1>
+  <p>今のオブジェクトがない場所。this もインスタンス変数も、そのままでは使えない。</p>
+  <div class="foot"><span>Java Silver #09 static とアクセス修飾子</span><span>試験内容 4</span></div>
+</section>
+
+<section class="slide">
+  <h1>static コンテキストで使えるもの</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">どこから</th><th style="width:30%">何を</th><th>JDK 17</th></tr>
+        <tr><td class="t" rowspan="4">static メソッド</td><td>static のメンバー</td><td class="t">OK</td></tr>
+        <tr><td>インスタンス変数 <code>n</code></td><td class="x">non-static variable n cannot be referenced from a static context</td></tr>
+        <tr><td><code>this.n</code></td><td class="x">non-static variable this …</td></tr>
+        <tr><td><code>new A().k</code></td><td class="t">OK（オブジェクトを通す）</td></tr>
+        <tr><td class="t">インスタンスメソッド</td><td>static もインスタンスも</td><td class="t">OK</td></tr>
+      </table>
+      <div class="point"><b>理由：</b>static メソッドは特定のオブジェクトなしで呼ばれるので、「どのオブジェクトの n か」が決まらない。</div>
+    </div>
+    <div>
+      <div class="cap">main からインスタンスメソッドを呼ぶ（Claude が作成）</div>
+<pre class="code small"><span class="k">public class</span> Main {
+  <span class="k">void</span> hi() { System.out.println(<span class="s">"hi"</span>); }
+  <span class="k">public static void</span> main(String[] args) {
+    <span class="ng">hi();</span>              <span class="c">// コンパイルエラー</span>
+    <span class="k">new</span> Main().hi();    <span class="c">// OK → hi</span>
+  }
+}</pre>
+<pre class="sh" style="margin-top:4px"><span class="e">error: non-static method hi() cannot be referenced from a static context</span></pre>
+      <div class="mini">static コンテキスト：static メソッド・static 初期化子・static フィールドの初期化式の中。this と super は使えない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.4.3.2 static Methods</a>（Notably, the keywords this and super are prohibited in a static context, as are unqualified references to instance variables, instance methods …）／<a class="src" href="https://docs.oracle.com/javase/tutorial/java/javaOO/classvars.html">Java Tutorials</a>（Class methods cannot access instance variables or instance methods directly—they must use an object reference）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>null の変数でも static は使える</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">class</span> C {
+  <span class="k">static int</span> s = <span class="s">7</span>;
+  <span class="k">static</span> String hello() { <span class="k">return</span> <span class="s">"hello"</span>; }
+  <span class="k">int</span> n = <span class="s">1</span>;
+}
+C c = <span class="k">null</span>;
+System.out.println(c.s + <span class="s">" "</span> + c.hello());   <span class="c">// 7 hello</span>
+System.out.println(c.n);                        <span class="c">// NullPointerException</span></pre>
+      <div class="point"><b>static は宣言された型で決まる。</b>c.s は C.s と同じ意味で、c の中身（オブジェクト）は使わない。だから null でも例外にならない。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">コード（c は null の C 型変数）</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>c.s</code>（static フィールド）</td><td class="t">7</td></tr>
+        <tr><td class="l"><code>c.hello()</code>（static メソッド）</td><td class="t">hello</td></tr>
+        <tr><td class="l"><code>c.n</code>（インスタンス変数）</td><td class="x">NullPointerException</td></tr>
+      </table>
+      <div class="mini">変数を通して static を使う書き方は、読む人に誤解を与えるのですすめられない。試験では「例外になる」をえらばせるひっかけに使われる。</div>
+      <table class="mx" style="margin-top:8px">
+        <tr><th style="width:56%">count の動き（Claude が作成）</th><th>count</th></tr>
+        <tr><td class="l"><code>C.next(); C.next();</code></td><td>2</td></tr>
+        <tr><td class="l"><code>new C().count += 10;</code></td><td>12（new で 0 に戻らない）</td></tr>
+        <tr><td class="l"><code>C.next()</code></td><td>13</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.11.1</a>（If the field is static: The Primary expression is evaluated, and the result is discarded）・15.12.4.1（If the invocation mode is static, then there is no target reference）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>static 初期化子</h1>
+  <p>クラスがはじめて使われる直前に 1 回だけ。</p>
+  <div class="foot"><span>Java Silver #09 static とアクセス修飾子</span><span>試験内容 4</span></div>
+</section>
+
+<section class="slide">
+  <h1>初期化のタイミングと順番</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">class</span> A {
+  <span class="k">static</span> { System.out.print(<span class="s">"s1 "</span>); }
+  { System.out.print(<span class="s">"i "</span>); }
+  A() { System.out.print(<span class="s">"c "</span>); }
+  <span class="k">static</span> { System.out.print(<span class="s">"s2 "</span>); }
+}
+<span class="c">// main：print("m "); new A(); new A();</span></pre>
+<pre class="sh" style="margin-top:4px"><span class="o">m s1 s2 i c i c</span></pre>
+      <svg width="420" height="70" viewBox="0 0 420 70">
+        <g font-size="11" text-anchor="middle">
+          <rect x="0" y="10" width="40" height="28" rx="4" fill="#f5f5f7" stroke="#d0d7e2"/><text x="20" y="28" fill="#1f3a68">m</text>
+          <rect x="46" y="10" width="110" height="28" rx="4" fill="#1f3a68"/><text x="101" y="28" fill="#fff">s1 s2（1 回だけ）</text>
+          <rect x="162" y="10" width="110" height="28" rx="4" fill="#c9daf2"/><text x="217" y="28" fill="#1f3a68">i c（1 個目）</text>
+          <rect x="278" y="10" width="110" height="28" rx="4" fill="#c9daf2"/><text x="333" y="28" fill="#1f3a68">i c（2 個目）</text>
+          <text x="101" y="56" fill="#1f3a68">クラスの初期化</text><text x="275" y="56" fill="#1f3a68">インスタンスの初期化（new のたび）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:58%">こんなとき</th><th>クラスは初期化される？</th></tr>
+        <tr><td class="l">main のあるクラス</td><td class="t">main の前に（static 初期化子が先）</td></tr>
+        <tr><td class="l"><code>A a = null;</code>（宣言だけ）</td><td class="x">されない</td></tr>
+        <tr><td class="l">はじめての <code>new A()</code></td><td class="t">される</td></tr>
+        <tr><td class="l">はじめての <code>A.f()</code></td><td class="t">される</td></tr>
+        <tr><td class="l">2 回目の <code>A.f()</code></td><td>もう済んでいる</td></tr>
+      </table>
+<pre class="code small" style="margin-top:6px">A a = <span class="k">null</span>;  print(<span class="s">"1 "</span>);  A.f();  A.f();
+<span class="c">// 1 A-init f f</span></pre>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.7 Static Initializers</a>（A static initializer declared in a class is executed when the class is initialized）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-12.html">JLS 12.4.1 When Initialization Occurs</a>（T is a class and an instance of T is created. A static method declared by T is invoked …）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>上から順 ― 前方参照に注意</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">class</span> A {
+  <span class="k">static int</span> x;            <span class="c">// 0</span>
+  <span class="k">static</span> { x = <span class="s">5</span>; }          <span class="c">// 5</span>
+  <span class="k">static int</span> y = x * <span class="s">2</span>;    <span class="c">// 10</span>
+}
+System.out.println(A.x + <span class="s">" "</span> + A.y);   <span class="c">// 5 10</span></pre>
+      <div class="point"><b>static フィールドの初期化式と static 初期化子は、ひとまとめのブロックのように上から順に実行される。</b>static 初期化子が全部のあとにまとめて動くわけではない。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:58%">コード</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>static int a = b + 1;</code><br><code>static int b = 2;</code></td><td class="x">illegal forward reference</td></tr>
+        <tr><td class="l"><code>static int a = A.b + 1;</code><br><code>static int b = 2;</code></td><td class="t">a は 1、b は 2</td></tr>
+        <tr><td class="l"><code>static final int X;</code><br><code>static { X = 3; }</code></td><td class="t">OK（3）</td></tr>
+      </table>
+      <div class="mini">A.b と書くと前方参照のチェックを通るが、その時点の b はまだ既定値 0。だから a は 1 になる（試験ではまれ。しくみの理解用）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-12.html">JLS 12.4.2</a>（execute either the class variable initializers and static initializers of the class … in textual order, as though they were a single block）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.3.3</a>（For a reference by simple name to a class variable f … at a point to the left of f's declarator）／<a class="src" href="https://docs.oracle.com/javase/tutorial/java/javaOO/initial.html">Java Tutorials「Initializing Fields」</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>アクセス修飾子</h1>
+  <p>同じクラス・同じパッケージ・サブクラス・どこからでも。</p>
+  <div class="foot"><span>Java Silver #09 static とアクセス修飾子</span><span>試験内容 4</span></div>
+</section>
+
+<section class="slide">
+  <h1>4 つのアクセスレベル</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">修飾子</th><th>同じクラス</th><th>同じパッケージ</th><th>別パッケージのサブクラス</th><th>どこでも</th></tr>
+        <tr><td class="t">public</td><td>○</td><td>○</td><td>○</td><td>○</td></tr>
+        <tr><td class="t">protected</td><td>○</td><td>○</td><td>○</td><td class="x">×</td></tr>
+        <tr><td class="t">なし</td><td>○</td><td>○</td><td class="x">×</td><td class="x">×</td></tr>
+        <tr><td class="t">private</td><td>○</td><td class="x">×</td><td class="x">×</td><td class="x">×</td></tr>
+      </table>
+      <div class="point"><b>広い順：</b>public → protected → なし（パッケージアクセス）→ private。protected は「なし」の範囲に、別パッケージのサブクラスを足したもの。</div>
+      <div class="mini">「なし」を default と呼ぶこともあるが、default という修飾子を書くわけではない。</div>
+    </div>
+    <div>
+      <div class="cap">エラーの表示（JDK 17）</div>
+      <table class="mx">
+        <tr><th style="width:52%">使ったもの</th><th>メッセージ</th></tr>
+        <tr><td class="l">private（別クラスから）</td><td class="x">n has private access in A</td></tr>
+        <tr><td class="l">なし（別パッケージから）</td><td class="x">def is not public in A; cannot be accessed from outside package</td></tr>
+        <tr><td class="l">protected（別パッケージの非サブクラスから）</td><td class="x">pro has protected access in A</td></tr>
+      </table>
+      <div class="point"><b>private はクラス単位。</b>同じクラスの中なら、別のインスタンスの private フィールド（<code>o.n</code>）も使える。同じファイルの別クラスからは使えない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html">Java Tutorials「Controlling Access to Members of a Class」</a>（Access Levels の表／The protected modifier specifies that the member can only be accessed within its own package … and, in addition, by a subclass of its class in another package）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-6.html">JLS 6.6.1</a>／結果は JDK 17 で確かめたもの（パッケージは p1・p2 にファイルを分けた）</div>
+</section>
+
+<section class="slide">
+  <h1>protected のくわしいルール</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">p1 の A と、p2 の B（A のサブクラス）（Claude が作成）</div>
+<pre class="code small"><span class="k">package</span> p1;
+<span class="k">public class</span> A {
+  <span class="k">protected int</span> pro = <span class="s">2</span>;
+  <span class="k">protected static int</span> ps = <span class="s">5</span>;
+}
+<span class="c">// ---- 別ファイル ----</span>
+<span class="k">package</span> p2;
+<span class="k">public class</span> B <span class="k">extends</span> p1.A {
+  <span class="k">void</span> t(p1.A a, B b) {
+    <span class="k">int</span> v1 = pro;        <span class="c">// OK</span>
+    <span class="k">int</span> v2 = <span class="k">this</span>.pro;   <span class="c">// OK</span>
+    <span class="k">int</span> v3 = b.pro;      <span class="c">// OK（B 型）</span>
+    <span class="k">int</span> v4 = <span class="ng">a.pro</span>;      <span class="c">// エラー（A 型）</span>
+    <span class="k">int</span> v5 = ps;         <span class="c">// OK</span>
+  }
+}</pre>
+    </div>
+    <div>
+      <svg width="400" height="150" viewBox="0 0 400 150">
+        <g font-size="12">
+          <rect x="6" y="10" width="170" height="130" rx="8" fill="#f5f5f7" stroke="#1f3a68"/><text x="16" y="30" fill="#1f3a68" font-weight="700">パッケージ p1</text>
+          <rect x="22" y="44" width="138" height="34" rx="4" fill="#1f3a68"/><text x="34" y="66" fill="#fff">A（protected pro）</text>
+          <rect x="22" y="90" width="138" height="34" rx="4" fill="#c9daf2"/><text x="34" y="112" fill="#1f3a68">Same → a.pro OK</text>
+          <rect x="216" y="10" width="178" height="130" rx="8" fill="#fff" stroke="#b25000"/><text x="226" y="30" fill="#b25000" font-weight="700">パッケージ p2</text>
+          <rect x="232" y="44" width="146" height="34" rx="4" fill="#c9daf2"/><text x="242" y="66" fill="#1f3a68">B extends A → 条件付き</text>
+          <rect x="232" y="90" width="146" height="34" rx="4" fill="#fff" stroke="#b25000" stroke-dasharray="4 3"/><text x="242" y="112" fill="#b25000">Other → a.pro ×</text>
+        </g>
+      </svg>
+      <div class="point"><b>別パッケージのサブクラスでの条件：</b>インスタンスのフィールド・メソッドは、自分（B）か B のサブクラスの型を通したときだけ。親の型 A の変数を通すとエラー。</div>
+      <div class="mini">サブクラスでない p2 のクラスからは、protected は static（A.ps）でも使えない。使えるのは public だけ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-6.html">JLS 6.6.2.1 Access to a protected Member</a>（Access is permitted only within the body of a subclass S of C … access to the instance field Id is permitted if and only if the qualifying type is S or a subclass of S）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>修飾子を付けられる場所</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">書いたもの</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>private class A { }</code>（トップレベル）</td><td class="x">modifier private not allowed here</td></tr>
+        <tr><td class="l"><code>protected class A { }</code>（トップレベル）</td><td class="x">modifier protected not allowed here</td></tr>
+        <tr><td class="l"><code>class A { }</code>（トップレベル）</td><td class="t">OK（パッケージアクセス）</td></tr>
+        <tr><td class="l"><code>public private int x;</code></td><td class="x">illegal combination of modifiers: public and private</td></tr>
+        <tr><td class="l">main の中で <code>private int x = 0;</code></td><td class="x">illegal start of expression</td></tr>
+        <tr><td class="l">main の中で <code>static int x = 0;</code></td><td class="x">illegal start of expression</td></tr>
+        <tr><td class="l">main の中で <code>final int x = 0;</code></td><td class="t">OK</td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:40%">場所</th><th>付けられるアクセス修飾子</th></tr>
+        <tr><td class="t">トップレベルクラス</td><td>public か なし</td></tr>
+        <tr><td class="t">フィールド・メソッド・コンストラクタ</td><td>4 つのどれか 1 つ</td></tr>
+        <tr><td class="t">クラスの中のクラス</td><td>4 つのどれか 1 つ</td></tr>
+        <tr><td class="t">ローカル変数</td><td class="x">なし（final だけ付けられる）</td></tr>
+      </table>
+      <div class="point"><b>public のトップレベルクラスは 1 ファイルに 1 つ</b>で、ファイル名と同じ名前（#01）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">JLS 8.1.1 Class Modifiers</a>（The access modifiers protected and private pertain only to member classes）・8.3.1（more than one of the access modifiers public, protected, and private）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.4</a>（VariableModifier: Annotation | final）／<a class="src" href="https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html">Java Tutorials</a>（At the top level—public, or package-private）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第5章</div>
+  <h1>カプセル化と不変オブジェクト</h1>
+  <p>隠して、決めた入口からだけ触らせる。</p>
+  <div class="foot"><span>Java Silver #09 static とアクセス修飾子</span><span>試験内容 4</span></div>
+</section>
+
+<section class="slide">
+  <h1>カプセル化と private コンストラクタ</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">class</span> Account {
+  <span class="k">private int</span> balance;              <span class="c">// 隠す</span>
+  <span class="k">void</span> deposit(<span class="k">int</span> x) {
+    <span class="k">if</span> (x &gt; <span class="s">0</span>) balance += x;          <span class="c">// 入口で確かめる</span>
+  }
+  <span class="k">int</span> getBalance() { <span class="k">return</span> balance; }
+}
+a.deposit(<span class="s">100</span>);  a.deposit(-<span class="s">50</span>);
+System.out.println(a.getBalance());   <span class="c">// 100</span></pre>
+      <div class="point"><b>カプセル化：</b>フィールドを private にし、メソッドを通してだけ読み書きさせる。おかしな値をメソッドではじける。</div>
+      <div class="mini">Java Tutorials：「意味のある範囲でいちばん制限の強いアクセスレベルを使う。理由がなければ private」。</div>
+    </div>
+    <div>
+<pre class="code small"><span class="k">class</span> S {
+  <span class="k">private</span> S() { }
+  <span class="k">static</span> S create() { <span class="k">return new</span> S(); }   <span class="c">// 中からは OK</span>
+}
+S s1 = <span class="ng">new S()</span>;      <span class="c">// エラー</span>
+S s2 = S.create();    <span class="c">// OK</span></pre>
+<pre class="sh" style="margin-top:4px"><span class="e">error: S() has private access in S</span></pre>
+      <div class="point"><b>private コンストラクタ：</b>外から new させず、作り方を static メソッド（ファクトリメソッド）に限る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html">Java Tutorials「Controlling Access to Members of a Class」</a>（Use the most restrictive access level that makes sense for a particular member. Use private unless you have a good reason not to）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-6.html">JLS 6.6.1</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>不変オブジェクトの作り方</h1>
+  <div class="cols">
+    <div>
+      <div class="stack">
+        <div class="box b1">1 setter を作らない</div>
+        <div class="box b2">2 フィールドはすべて private final</div>
+        <div class="box b3">3 クラスを final にする（またはコンストラクタを private にしてファクトリメソッド）</div>
+        <div class="box b4">4 配列などはコピーを保存し、コピーを返す</div>
+      </div>
+      <div class="mini" style="margin-top:6px">Java Tutorials「A Strategy for Defining Immutable Objects」の手順を Claude がまとめた。</div>
+      <table class="mx" style="margin-top:6px">
+        <tr><th style="width:58%">final の参照フィールド list</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>list.add("x")</code></td><td class="t">OK（中身は変えられる）</td></tr>
+        <tr><td class="l"><code>list = new ArrayList&lt;&gt;()</code></td><td class="x">cannot assign a value to final variable list</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">コピーしないと外から変えられる（Claude が作成）</div>
+<pre class="code small"><span class="k">final class</span> P {
+  <span class="k">private final int</span>[] data;
+  P(<span class="k">int</span>[] d) { data = d; }          <span class="c">// ×そのまま</span>
+  <span class="k">int</span>[] get() { <span class="k">return</span> data; }     <span class="c">// ×そのまま</span>
+}
+<span class="k">int</span>[] src = {<span class="s">1</span>, <span class="s">2</span>};
+P p = <span class="k">new</span> P(src);
+src[<span class="s">0</span>] = <span class="s">9</span>;  p.get()[<span class="s">1</span>] = <span class="s">9</span>;</pre>
+      <table class="mx" style="margin-top:6px">
+        <tr><th style="width:58%">P の書き方</th><th>p.get() の中身</th></tr>
+        <tr><td class="l">そのまま保存・そのまま返す</td><td class="x">9 9（変えられた）</td></tr>
+        <tr><td class="l"><code>data = d.clone();</code>・<code>return data.clone();</code></td><td class="t">1 2（守られた）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/tutorial/essential/concurrency/imstrat.html">Java Tutorials「A Strategy for Defining Immutable Objects」</a>（Don't provide "setter" methods／Make all fields final and private／Never store references to external, mutable objects passed to the constructor; if necessary, create copies）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-4.html">JLS 4.12.4</a>（the state of the object may be changed … but the variable will always refer to the same object）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>問われ方とまちがえやすい点</h1>
+  <table class="mx">
+    <tr><th style="width:32%">こう聞かれたら</th><th>答えの考え方</th></tr>
+    <tr><td class="t">static フィールドの表示</td><td class="l">1 つしかない。どの変数を通して変えても同じもの。new で 0 に戻らない</td></tr>
+    <tr><td class="t">static メソッドがコンパイルできるか</td><td class="l">this・インスタンス変数・インスタンスメソッドを名前だけで使っていないか。オブジェクトを通せば OK</td></tr>
+    <tr><td class="t">null の変数で static を使う</td><td class="l">例外にならない。宣言された型のメンバーが使われる</td></tr>
+    <tr><td class="t">初期化の表示順</td><td class="l">クラスの初期化（static、1 回）→ new のたびにインスタンス初期化子 → コンストラクタ。宣言だけでは初期化されない</td></tr>
+    <tr><td class="t">アクセスできるか</td><td class="l">表で考える。protected は別パッケージのサブクラスで自分の型を通したときだけ。private はクラス単位</td></tr>
+    <tr><td class="t">修飾子の付け方</td><td class="l">トップレベルは public かなし。ローカル変数は final だけ。アクセス修飾子は 1 つ</td></tr>
+    <tr><td class="t">不変クラス</td><td class="l">private final、setter なし、final クラス、コピーを保存・返す。final は中身を守らない</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">static フィールド<span>クラスに 1 つ。全インスタンスで共有</span></div>
+      <div class="box b2">static メソッド<span>this なし。インスタンスはオブジェクト経由で</span></div>
+      <div class="box b3">static 初期化子<span>クラスの初期化で 1 回。上から順</span></div>
+      <div class="box b4">アクセス修飾子<span>public・protected・なし・private</span></div>
+      <div class="box b1">カプセル化と不変<span>private で隠し、コピーで守る</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">こんなとき</th><th>結果</th></tr>
+        <tr><td class="l">main から同じクラスの hi()（static なし）</td><td class="x">コンパイルエラー</td></tr>
+        <tr><td class="l">null の C 型変数で <code>c.s</code>（static）</td><td class="t">値が読める</td></tr>
+        <tr><td class="l"><code>A a = null;</code> だけ</td><td class="t">A は初期化されない</td></tr>
+        <tr><td class="l">トップレベルクラスに private</td><td class="x">コンパイルエラー</td></tr>
+        <tr><td class="l">final の配列フィールドの要素を変える</td><td class="t">変えられる</td></tr>
+      </table>
+      <div class="point"><b>次は #10 パターンマッチングとレコード。</b>instanceof のパターン、record のしくみと自動で作られるメンバーへ進む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

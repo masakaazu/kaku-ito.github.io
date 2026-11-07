@@ -175,6 +175,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/06.html", title: "分岐とswitch 用語集", desc: "if・else とぶら下がり else、空文、switch 文のセレクタの型・case 定数・フォールスルー・default、String と enum の switch、アロー形式、switch 式と yield・網羅性・式の型など27語と問題30問", fields: [6], pdf: "terms/06.pdf" },
       { type: "terms", file: "terms/07.html", title: "繰り返し 用語集", desc: "while・do-while・基本のforと拡張for、break・continueとラベル、到達できない文。21語と問題30問", fields: [7], pdf: "terms/07.pdf" },
       { type: "terms", file: "terms/08.html", title: "クラスとオブジェクト 用語集", desc: "フィールドと既定値、参照と値渡し、可変長引数、オーバーロードの解決、コンストラクタ・this(…)・初期化の順番、ガベージコレクション。29語と問題30問", fields: [8], pdf: "terms/08.pdf" },
+      { type: "terms", file: "terms/09.html", title: "staticとアクセス修飾子 用語集", desc: "クラス変数とクラスメソッド、static コンテキスト、static 初期化子とクラスの初期化、public・protected・パッケージアクセス・private、カプセル化と不変オブジェクト。23語と問題30問", fields: [9], pdf: "terms/09.pdf" },
     ],
     ccna: [
       { type: "terms", file: "terms/01.html", title: "ネットワーク機器と構成 用語集", desc: "ルーター・レイヤ2／レイヤ3スイッチ（SVI・ルーテッドポート）・ファイアウォールとNGFW・IPSとIDS、アクセスポイント・WLC・コントローラー・エンドポイント・サーバー・PoE（PSEとPD・802.3af/at/bt・クラス）、アクセス・ディストリビューション・コア層と2層（コラプストコア）・3層・SOHO、スパイン・リーフ・WAN・ハブアンドスポーク・SD-WAN・オンプレミスとクラウド（IaaS・PaaS・SaaS）、仮想化・ハイパーバイザー（Type 1・Type 2）・仮想マシン・コンテナ・VRFの用語と、オリジナル問題30問（出題範囲 1.1・1.2・1.12）", fields: [1], pdf: "terms/01.pdf" },
