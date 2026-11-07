@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Silver #06 分岐とswitch 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">Java Silver（SE 17・1Z0-825-JPN）　3 演算子と制御構造　#06</div>
+  <h1>分岐と switch</h1>
+  <p>if の範囲はかっこで決まり、switch はコロンなら落ちていく ― if・else、switch 文、アロー形式、switch 式と yield</p>
+  <div class="refs-legend">各ページの下に、根拠にした Oracle の資料（JLS 14 章・15.28）を書いた（青い文字を押すと開く）。コードは Claude が作り、JDK 17 で動かして確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>試験内容チェックリスト 3（if/else、switch 文、switch 式）</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 if 文<span>対象は直後の 1 文。else はいちばん近い if に付く。条件は boolean</span></div>
+      <div class="box b2">2 switch 文<span>セレクタの型と case 定数の決まり。break がないと下へ落ちる</span></div>
+      <div class="box b3">3 アロー形式と switch 式<span>-> は落ちない。switch 式は値を返し、すべての値を処理する</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:28%"></th><th>コロン（:）</th><th>アロー（->）</th></tr>
+        <tr><td class="t">フォールスルー</td><td>する（break で止める）</td><td>しない</td></tr>
+        <tr><td class="t">switch 文の右側</td><td>文をいくつでも</td><td>式文・ブロック・throw</td></tr>
+        <tr><td class="t">switch 式の値</td><td><code>yield 値;</code></td><td><code>-> 値;</code> か <code>yield</code></td></tr>
+        <tr><td class="t">変数のスコープ</td><td>switch の { } 全体</td><td>各ブロックの中</td></tr>
+        <tr><td class="t">まぜて書く</td><td colspan="2" class="x">different case kinds used in the switch</td></tr>
+      </table>
+      <table class="mx" style="margin-top:8px">
+        <tr><th style="width:28%"></th><th>switch 文</th><th>switch 式</th></tr>
+        <tr><td class="t">値</td><td>返さない</td><td>返す（最後に ;）</td></tr>
+        <tr><td class="t">すべての値</td><td>処理しなくてよい</td><td><b>必ず処理する</b>（網羅性）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.oracle.com/jp/education/certification/javase-17-programmer-1/">Oracle「Java SE 17 Programmer I（1Z0-825-JPN）」試験内容チェックリスト</a>／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.11 The switch Statement</a>／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.28 switch Expressions</a>（all possible values of that expression must be handled）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>if 文</h1>
+  <p>字下げは飾り。範囲を決めるのは { } と文の区切り。</p>
+  <div class="foot"><span>Java Silver #06 分岐と switch</span><span>試験内容 3</span></div>
+</section>
+
+<section class="slide">
+  <h1>if の範囲とぶら下がり else</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">else はいちばん近い if に付く（Claude が作成）</div>
+<pre class="code small"><span class="k">int</span> x = <span class="s">5</span>;
+<span class="k">if</span> (x &gt; <span class="s">3</span>)
+  <span class="k">if</span> (x &gt; <span class="s">10</span>) System.out.println(<span class="s">"A"</span>);
+<span class="ng"><span class="k">else</span> System.out.println(<span class="s">"B"</span>);</span>   <span class="c">// 内側の if のもの</span>
+System.out.println(<span class="s">"C"</span>);</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">B
+C</span></pre>
+      <div class="cap" style="margin-top:8px">コンパイラから見た形（かっこを補った）</div>
+<pre class="code small"><span class="k">if</span> (x &gt; <span class="s">3</span>) {
+  <span class="k">if</span> (x &gt; <span class="s">10</span>) { …<span class="s">"A"</span> } <span class="k">else</span> { …<span class="s">"B"</span> }
+}
+System.out.println(<span class="s">"C"</span>);</pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">書き方</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l">{ } なしで 2 行を字下げ</td><td class="t">2 行目は if の外（いつも実行）</td></tr>
+        <tr><td class="l"><code>if (…) A; B; else C;</code></td><td class="x">'else' without 'if'</td></tr>
+        <tr><td class="l"><code>if (x &gt; 0) ; { … }</code></td><td class="t">{ } はいつも実行（; が空文）</td></tr>
+        <tr><td class="l"><code>if (x = 10)</code>（x は int）</td><td class="x">int cannot be converted to boolean</td></tr>
+        <tr><td class="l"><code>if (b = x &gt; 0)</code>（b は boolean）</td><td class="t">OK（代入式の値が条件）</td></tr>
+        <tr><td class="l"><code>Boolean f …; if (f)</code></td><td class="t">OK（アンボクシング）</td></tr>
+        <tr><td class="l"><code>else (x &lt; 0) { }</code></td><td class="x">not a statement（else if にする）</td></tr>
+      </table>
+      <div class="point"><b>読み方：</b>if のあとの<b>文 1 つ</b>（または { } 1 つ）だけが対象。外側の if に else を付けたいときは、内側の if を { } で囲む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.5 Statements</a>（an else clause belongs to the innermost if to which it might possibly belong）・14.6 The Empty Statement（An empty statement does nothing）・14.9 The if Statement（The Expression must have type boolean or Boolean）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>else if は上から 1 つだけ</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">x = 75 のときの流れ（Claude が作成）</div>
+      <svg width="400" height="230" viewBox="0 0 400 230">
+        <defs><marker id="a6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5b80bf"/></marker></defs>
+        <g font-size="12" text-anchor="middle">
+          <rect x="30" y="10" width="150" height="34" rx="6" fill="#1f3a68"/><text x="105" y="32" fill="#fff" font-family="DejaVu Sans Mono, monospace">x &gt;= 60 ?</text>
+          <line x1="182" y1="27" x2="246" y2="27" stroke="#5b80bf" stroke-width="2" marker-end="url(#a6)"/><text x="214" y="20" fill="#1f3a68" font-size="11">true</text>
+          <rect x="250" y="10" width="130" height="34" rx="6" fill="#c9daf2"/><text x="315" y="32" fill="#1f3a68" font-weight="700">C を表示して終わり</text>
+          <line x1="105" y1="44" x2="105" y2="70" stroke="#b25000" stroke-width="2" stroke-dasharray="4 3"/>
+          <rect x="30" y="72" width="150" height="34" rx="6" fill="#fff" stroke="#b25000" stroke-dasharray="5 3"/><text x="105" y="94" fill="#b25000" font-family="DejaVu Sans Mono, monospace">x &gt;= 70 ?</text>
+          <line x1="105" y1="106" x2="105" y2="132" stroke="#b25000" stroke-width="2" stroke-dasharray="4 3"/>
+          <rect x="30" y="134" width="150" height="34" rx="6" fill="#fff" stroke="#b25000" stroke-dasharray="5 3"/><text x="105" y="156" fill="#b25000" font-family="DejaVu Sans Mono, monospace">x &gt;= 80 ?</text>
+          <line x1="105" y1="168" x2="105" y2="194" stroke="#b25000" stroke-width="2" stroke-dasharray="4 3"/>
+          <rect x="30" y="196" width="150" height="28" rx="6" fill="#fff" stroke="#b25000" stroke-dasharray="5 3"/><text x="105" y="215" fill="#b25000">else：F</text>
+          <text x="290" y="110" fill="#b25000" font-size="11">点線の枝は調べもしない</text>
+          <text x="290" y="128" fill="#b25000" font-size="11">（75 は B のつもりでも C）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+<pre class="code small"><span class="c">// 正しい順：範囲のせまい条件から</span>
+<span class="k">if</span> (x &gt;= <span class="s">80</span>)      System.out.println(<span class="s">"A"</span>);
+<span class="k">else if</span> (x &gt;= <span class="s">70</span>) System.out.println(<span class="s">"B"</span>);
+<span class="k">else if</span> (x &gt;= <span class="s">60</span>) System.out.println(<span class="s">"C"</span>);
+<span class="k">else</span>               System.out.println(<span class="s">"F"</span>);</pre>
+      <div class="point"><b>else if は特別な文法ではない。</b>else のあとの文が、たまたま次の if 文になっているだけ。だから上から順に、最初に true になった枝だけを実行する。</div>
+      <div class="point"><b>else だけの枝：</b>上のどれにも当てはまらないとき。else のあとに条件は書けない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.9.2 The if-then-else Statement</a>（If the value is true, then the first contained Statement … is executed／If the value is false, then the second contained Statement … is executed）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>switch 文</h1>
+  <p>合った case から入り、break まで下へ落ちていく。</p>
+  <div class="foot"><span>Java Silver #06 分岐と switch</span><span>試験内容 3</span></div>
+</section>
+
+<section class="slide">
+  <h1>入口は 1 つ、出口は break</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">k = 2 のとき（Claude が作成）</div>
+      <svg width="400" height="220" viewBox="0 0 400 220">
+        <defs><marker id="b6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker></defs>
+        <g font-size="12">
+          <rect x="20" y="10" width="250" height="34" rx="4" fill="#f5f5f7" stroke="#d0d7e2"/><text x="32" y="32" fill="#4a5a78" font-family="DejaVu Sans Mono, monospace">case 1: print("one ");</text>
+          <rect x="20" y="54" width="250" height="34" rx="4" fill="#c9daf2" stroke="#1f3a68"/><text x="32" y="76" fill="#1f3a68" font-family="DejaVu Sans Mono, monospace">case 2: print("two ");</text>
+          <rect x="20" y="98" width="250" height="34" rx="4" fill="#c9daf2" stroke="#1f3a68"/><text x="32" y="120" fill="#1f3a68" font-family="DejaVu Sans Mono, monospace">case 3: print("three ");</text>
+          <rect x="20" y="142" width="250" height="34" rx="4" fill="#c9daf2" stroke="#1f3a68"/><text x="32" y="164" fill="#1f3a68" font-family="DejaVu Sans Mono, monospace">default: print("other ");</text>
+          <line x1="370" y1="71" x2="276" y2="71" stroke="#1f3a68" stroke-width="2" marker-end="url(#b6)"/><text x="330" y="62" fill="#1f3a68" text-anchor="middle">入口</text>
+          <line x1="290" y1="80" x2="290" y2="170" stroke="#b25000" stroke-width="3" marker-end="url(#b6)"/>
+          <text x="340" y="128" fill="#b25000" text-anchor="middle">break が</text><text x="340" y="144" fill="#b25000" text-anchor="middle">ないので落ちる</text>
+          <text x="200" y="205" fill="#1f3a68" text-anchor="middle" font-family="DejaVu Sans Mono, monospace">→ two three other</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:54%">ケース</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l">上の switch で k = 2</td><td class="t">two three other</td></tr>
+        <tr><td class="l">k = 9（合う case なし）</td><td class="t">other</td></tr>
+        <tr><td class="l">default を先頭に置き、k = 9、その次の case 1 に break</td><td class="t">d 1（default から break まで）</td></tr>
+        <tr><td class="l">合う case も default もない</td><td class="t">何もしない</td></tr>
+      </table>
+      <div class="point"><b>default は「合う case がないときの入口」。</b>どこに書いても、合う case があれば使われない。入ったあとは break まで落ちる。1 つの switch に 1 つまで。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.11.3 Execution of a switch Statement</a>（all the statements in the switch block that follow the switch label are executed in order／If no switch label matches, the entire switch statement completes normally／例 14.11.3-1 Fall-Through in the switch Statement）・14.11.1（If no case label matches but there is a default label …）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>セレクタの型と case 定数の決まり</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:44%">セレクタの型</th><th>使えるか</th></tr>
+        <tr><td class="t">char・byte・short・int</td><td class="t">使える</td></tr>
+        <tr><td class="t">Character・Byte・Short・Integer</td><td class="t">使える（アンボクシング）</td></tr>
+        <tr><td class="t">String・enum</td><td class="t">使える</td></tr>
+        <tr><td class="t">long・float・double・boolean</td><td class="x">コンパイルエラー</td></tr>
+      </table>
+      <div class="mini">long や boolean を使ったときの JDK 17 の表示は「patterns in switch statements are a preview feature …」と、もう一つの型のエラー。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">case の書き方</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>case y:</code>（y はふつうの変数）</td><td class="x">constant expression required</td></tr>
+        <tr><td class="l"><code>final int y = 2; … case y:</code></td><td class="t">OK（定数変数）</td></tr>
+        <tr><td class="l"><code>case 1: … case 1:</code></td><td class="x">duplicate case label</td></tr>
+        <tr><td class="l"><code>byte</code> のセレクタに <code>case 200:</code></td><td class="x">possible lossy conversion</td></tr>
+        <tr><td class="l"><code>char</code> のセレクタに <code>case 98:</code></td><td class="t">OK（'b' のとき合う）</td></tr>
+        <tr><td class="l"><code>case 1, 7:</code></td><td class="t">OK（どちらかに合えば）</td></tr>
+      </table>
+      <div class="point"><b>case 定数は「コンパイル時に値が決まる」もの：</b>リテラル、定数式、final で定数に初期化した変数、enum の定数名。セレクタの型に代入できる値であること。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.11</a>（The type of the selector expression must be char, byte, short, int, Character, Byte, Short, Integer, String, or an enum type）・14.11.1（Every case constant must be either a constant expression or the name of an enum constant／No two of the case constants … may have the same value／every case constant … is assignment compatible with T）／JLS 15.29／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>String・enum・null とスコープ</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">コード</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>s</code> が "Java" で <code>case "java":</code></td><td class="t">合わない（equals で比べる）</td></tr>
+        <tr><td class="l"><code>s</code> が null の switch</td><td class="x">NullPointerException（default にも入らない）</td></tr>
+        <tr><td class="l"><code>case Color.RED:</code></td><td class="x">must be the unqualified name of an enumeration constant</td></tr>
+        <tr><td class="l"><code>case RED:</code></td><td class="t">OK</td></tr>
+        <tr><td class="l">switch 文で enum の定数が足りない</td><td class="t">OK（合わなければ何もしない）</td></tr>
+      </table>
+      <div class="point"><b>case null は書けない（Java 17）。</b>セレクタが null になりうるときは、switch の前に null を調べる。</div>
+    </div>
+    <div>
+      <div class="cap">コロン形式の { } は 1 つのブロック（Claude が作成）</div>
+<pre class="code small"><span class="k">int</span> k = <span class="s">3</span>;
+<span class="k">switch</span> (k) {
+  <span class="k">case</span> <span class="s">1</span>:
+    <span class="k">int</span> a = <span class="s">10</span>;     <span class="c">// ここで宣言</span>
+    <span class="k">break</span>;
+  <span class="k">case</span> <span class="s">3</span>:
+    a = <span class="s">30</span>;         <span class="c">// 見える。代入してから使う</span>
+    System.out.println(a);   <span class="c">// 30</span>
+    <span class="k">break</span>;
+}</pre>
+      <div class="mini">アロー形式で <code>case 1 -&gt; { int a = 10; }</code> と書けば、a はそのブロックの中だけ。各ブロックで同じ名前を宣言できる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.11.1</a>（unless the value is a String, in which case equality is defined in terms of the equals method of class String／If T is an enum type, then every case constant … is an enum constant of type T）・14.11.3（if the result of evaluating the selector expression is null, then a NullPointerException is thrown）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-6.html">JLS 6.3</a>（the rest of the block）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>アロー形式と switch 式</h1>
+  <p>-> は落ちない。switch 式は必ず値を返す。</p>
+  <div class="foot"><span>Java Silver #06 分岐と switch</span><span>試験内容 3</span></div>
+</section>
+
+<section class="slide">
+  <h1>アロー形式（switch ルール）</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">int</span> day = <span class="s">6</span>;
+<span class="k">switch</span> (day) {
+  <span class="k">case</span> <span class="s">1</span>, <span class="s">7</span> -&gt; System.out.println(<span class="s">"holiday"</span>);
+  <span class="k">case</span> <span class="s">2</span>, <span class="s">3</span>, <span class="s">4</span>, <span class="s">5</span>, <span class="s">6</span> -&gt; System.out.println(<span class="s">"weekday"</span>);
+  <span class="k">default</span> -&gt; System.out.println(<span class="s">"?"</span>);
+}
+<span class="c">// weekday だけ（下へ落ちない）</span></pre>
+      <table class="mx" style="margin-top:8px">
+        <tr><th style="width:36%">右側の形</th><th>例</th></tr>
+        <tr><td class="t">式</td><td class="l"><code>case 1 -&gt; count++;</code></td></tr>
+        <tr><td class="t">ブロック</td><td class="l"><code>case 1 -&gt; { … }</code></td></tr>
+        <tr><td class="t">throw 文</td><td class="l"><code>case 1 -&gt; throw new …;</code></td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">書き方</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>case 1 -&gt; …; case 2: …</code></td><td class="x">different case kinds used in the switch</td></tr>
+        <tr><td class="l">switch 文で <code>case 2 -&gt; "two";</code></td><td class="x">not a statement</td></tr>
+        <tr><td class="l"><code>default -&gt;</code> を先頭、k は 2</td><td class="t">case 2 だけ実行</td></tr>
+        <tr><td class="l">ブロックごとに <code>int a</code> を宣言</td><td class="t">OK（スコープが別）</td></tr>
+      </table>
+      <div class="point"><b>switch 文の -> の右は「式文」だけ：</b>メソッド呼び出し・代入・++/-- ・new。値だけの式（"two" や 1 + 2）は文にならない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.11.1</a>（SwitchRule: SwitchLabel -&gt; Expression ; | SwitchLabel -&gt; Block | SwitchLabel -&gt; ThrowStatement）・14.11.2（Every switch rule expression in the switch block is a statement expression）・14.11.3（the switch rule expression or statement introduced by the switch label is executed, and nothing else）・14.8 Expression Statements／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>switch 式 ― 値を返し、すべての値を処理する</h1>
+  <div class="cols">
+    <div>
+<pre class="code small">String s = <span class="k">switch</span> (day) {
+  <span class="k">case</span> <span class="s">1</span>, <span class="s">7</span> -&gt; <span class="s">"holiday"</span>;
+  <span class="k">default</span> -&gt; {
+    System.out.print(<span class="s">"calc "</span>);
+    <span class="k">yield</span> <span class="s">"weekday"</span>;     <span class="c">// ブロックから値を返す</span>
+  }
+};                            <span class="c">// 代入文の終わりの ;</span></pre>
+      <div class="lbl" style="margin-top:8px">ブロックの最後に書けないもの（JDK 17 の表示）</div>
+      <table class="mx">
+        <tr><td class="l"><code>"weekday";</code></td><td class="x">not a statement</td></tr>
+        <tr><td class="l"><code>return "weekday";</code></td><td class="x">attempt to return out of a switch expression</td></tr>
+        <tr><td class="l"><code>break "weekday";</code></td><td class="x">';' expected</td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:44%">セレクタ</th><th>網羅性の満たし方</th></tr>
+        <tr><td class="t">int・String など</td><td class="l"><b>default が必須</b>（ちょうど 1 つ）</td></tr>
+        <tr><td class="t">enum</td><td class="l">全定数を case に書けば default 不要</td></tr>
+      </table>
+      <div class="point"><b>足りないと：</b>the switch expression does not cover all possible input values。実際に来る値が書いてあっても、型で判断される。</div>
+      <div class="point"><b>switch 文との差：</b>switch 文は、合うものがなければ何もせず終わる。switch 式は必ず値が必要なので、コンパイル時に全部を処理しているか調べる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.28.1 The Switch Block of a switch Expression</a>（If the type of the selector expression is not an enum type, then there is exactly one default label／If the type … is an enum type, then (i) the set of the case constants … includes every enum constant … A default label is permitted, but not required）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.21 The yield Statement</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>コロン形式の switch 式・式の型・throw</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">コロン形式でも書ける（yield まで落ちる）</div>
+<pre class="code small"><span class="k">int</span> k = <span class="s">2</span>;
+<span class="k">int</span> r = <span class="k">switch</span> (k) {
+  <span class="k">case</span> <span class="s">1</span>: <span class="k">yield</span> <span class="s">10</span>;
+  <span class="k">case</span> <span class="s">2</span>: System.out.print(<span class="s">"x "</span>);
+  <span class="k">case</span> <span class="s">3</span>: <span class="k">yield</span> <span class="s">30</span>;
+  <span class="k">default</span>: <span class="k">yield</span> <span class="s">0</span>;
+};
+System.out.println(r);         <span class="c">// x 30</span></pre>
+      <div class="lbl" style="margin-top:8px">throw の枝</div>
+<pre class="code small"><span class="k">int</span> r = <span class="k">switch</span> (k) {
+  <span class="k">case</span> <span class="s">2</span> -&gt; <span class="k">throw new</span> IllegalStateException(<span class="s">"no"</span>);
+  <span class="k">default</span> -&gt; <span class="s">1</span>;
+};                       <span class="c">// k が 2 なら例外</span></pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">結果の式</th><th>switch 式の型（var で受けたとき）</th></tr>
+        <tr><td class="l">全部 String</td><td class="t">String</td></tr>
+        <tr><td class="l">int と double</td><td class="t">double（1 は 1.0）</td></tr>
+        <tr><td class="l">boolean と Boolean</td><td class="t">boolean</td></tr>
+        <tr><td class="l">String と int</td><td class="t">共通の参照型（Object など）</td></tr>
+      </table>
+<pre class="code small" style="margin-top:8px"><span class="k">var</span> r = <span class="k">switch</span> (<span class="s">1</span>) {
+  <span class="k">case</span> <span class="s">1</span> -&gt; <span class="s">1</span>;  <span class="k">case</span> <span class="s">2</span> -&gt; <span class="s">2.5</span>;  <span class="k">default</span> -&gt; <span class="s">0</span>;
+};   <span class="c">// 1.0</span></pre>
+      <div class="point"><b>代入先がある場合</b>（<code>int r = switch…</code>）は、各結果の式が int に代入できればよい。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.28.1</a>（If the switch block consists of switch labeled statement groups, then every expression immediately contained in a yield statement … is a result expression／The type of a standalone switch expression … general numeric promotion／The type of a poly switch expression is the same as its target type）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.11.1</a>（SwitchLabel -&gt; ThrowStatement）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>問われ方とまちがえやすい点</h1>
+  <table class="mx">
+    <tr><th style="width:32%">こう聞かれたら</th><th>答えの考え方</th></tr>
+    <tr><td class="t">if の表示結果</td><td class="l">字下げを無視し、{ } と ; で範囲を読む。else はいちばん近い if</td></tr>
+    <tr><td class="t">else if の結果</td><td class="l">上から順に、最初に true の枝だけ</td></tr>
+    <tr><td class="t">コロン形式の switch の表示</td><td class="l">合った case から break まで。default は合う case がないときの入口</td></tr>
+    <tr><td class="t">switch がコンパイルできるか</td><td class="l">セレクタの型、case は定数・重複なし・型に入る値、enum は定数名だけ、: と -> をまぜない</td></tr>
+    <tr><td class="t">switch 式がコンパイルできるか</td><td class="l">網羅性（default か enum 全定数）、ブロックは yield、最後の ;</td></tr>
+    <tr><td class="t">例外になるか</td><td class="l">セレクタが null なら NullPointerException。throw の枝</td></tr>
+    <tr><td class="t">switch 式の値</td><td class="l">アローは落ちない。コロン形式は yield まで落ちる。int と double がまざれば double</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">if 文<span>対象は 1 文。else は近い if。条件は boolean か Boolean</span></div>
+      <div class="box b2">switch 文<span>セレクタは int 以下・ラッパー・String・enum。break まで落ちる</span></div>
+      <div class="box b3">アロー形式と switch 式<span>-> は落ちない。switch 式は網羅して値を返す。yield</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">こんなとき</th><th>結果</th></tr>
+        <tr><td class="l">break のない case 2（k は 2）</td><td class="t">下の case も実行</td></tr>
+        <tr><td class="l"><code>switch (1L)</code></td><td class="x">コンパイルエラー</td></tr>
+        <tr><td class="l">String のセレクタが null</td><td class="x">NullPointerException</td></tr>
+        <tr><td class="l">int の switch 式に default なし</td><td class="x">コンパイルエラー</td></tr>
+        <tr><td class="l">ブロックから値を返す</td><td class="t">yield 値;</td></tr>
+      </table>
+      <div class="point"><b>次は #07 繰り返し。</b>while・do-while・for・拡張 for と、break・continue・ラベルへ進む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

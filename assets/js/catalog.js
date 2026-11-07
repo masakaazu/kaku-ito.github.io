@@ -172,6 +172,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/03.html", title: "文字列 用語集", desc: "String の不変性・== と equals・文字列リテラルのプール・連結の順序、length・charAt・indexOf・substring・replace・trim・isBlank・split などのメソッド、StringBuilder の append・insert・delete・reverse、テキストブロックの区切りと字下げなど40語と問題30問", fields: [3], pdf: "terms/03.pdf" },
       { type: "terms", file: "terms/04.html", title: "配列とArrayList 用語集", desc: "1次元・多次元配列の宣言と生成、既定値、clone と浅いコピー、Arrays の sort・binarySearch・equals・compare・mismatch、ArrayList の add・set・remove、List.of と Arrays.asList、removeIf など42語と問題30問", fields: [4], pdf: "terms/04.pdf" },
       { type: "terms", file: "terms/05.html", title: "演算子 用語集", desc: "算術演算子と整数の割り算・余り・0 割り、前置と後置のインクリメント、評価の順序、複合代入、== と浮動小数点、短絡評価（&& ||）と & |、ビット演算とシフト、優先順位、三項演算子など31語と問題30問", fields: [5], pdf: "terms/05.pdf" },
+      { type: "terms", file: "terms/06.html", title: "分岐とswitch 用語集", desc: "if・else とぶら下がり else、空文、switch 文のセレクタの型・case 定数・フォールスルー・default、String と enum の switch、アロー形式、switch 式と yield・網羅性・式の型など27語と問題30問", fields: [6], pdf: "terms/06.pdf" },
     ],
     ccna: [
       { type: "terms", file: "terms/01.html", title: "ネットワーク機器と構成 用語集", desc: "ルーター・レイヤ2／レイヤ3スイッチ（SVI・ルーテッドポート）・ファイアウォールとNGFW・IPSとIDS、アクセスポイント・WLC・コントローラー・エンドポイント・サーバー・PoE（PSEとPD・802.3af/at/bt・クラス）、アクセス・ディストリビューション・コア層と2層（コラプストコア）・3層・SOHO、スパイン・リーフ・WAN・ハブアンドスポーク・SD-WAN・オンプレミスとクラウド（IaaS・PaaS・SaaS）、仮想化・ハイパーバイザー（Type 1・Type 2）・仮想マシン・コンテナ・VRFの用語と、オリジナル問題30問（出題範囲 1.1・1.2・1.12）", fields: [1], pdf: "terms/01.pdf" },
