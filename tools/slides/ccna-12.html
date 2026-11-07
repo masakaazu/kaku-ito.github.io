@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CCNA #12 ルーティングテーブル 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">CCNA（200-301 v1.1）　3.0 IPコネクティビティ　#12</div>
+  <h1>ルーティングテーブル</h1>
+  <p>出題範囲 3.1・3.2 ― show ip route を1行ずつ読み、ルーターがどの経路でパケットを送るかを決める</p>
+  <div class="refs-legend">各ページの下に、根拠にしたCiscoの資料を書いた（青い文字を押すと開く）</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>出題範囲の2項目を、2章で読む</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 ルーティングテーブルの読み方<span>3.1 Interpret the components of routing table（コード・プレフィックス・マスク・ネクストホップ・AD・メトリック・Gateway of last resort）</span></div>
+      <div class="box b2">2 経路の選び方<span>3.2 Determine how a router makes a forwarding decision by default（最長一致・AD・メトリック）</span></div>
+    </div>
+    <div>
+      <div class="cap">CCNAでの問われ方</div>
+      <table>
+        <tr><td style="width:22%">3.1</td><td><b>Interpret</b>。show ip route の出力を見せて「この行の 110 は何か」「この経路はどうやって覚えたか」を問う</td></tr>
+        <tr><td>3.2</td><td><b>Determine</b>。経路が何本も並んだ表と宛先アドレスを見せて「どの経路で送るか」を問う。AD・メトリック・最長一致の順番がわなになる</td></tr>
+      </table>
+      <div class="point"><b>覚え方の芯：</b>経路は<b>2つの段階</b>で選ばれる。① テーブルに<b>入れる</b>ときに AD とメトリックを使う。② パケットを<b>送る</b>ときは、テーブルの中から<b>プレフィックスがいちばん長い</b>経路を使う。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco CCNA Exam v1.1 (200-301) Exam Topics</a>（3.1・3.2）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>ルーティングテーブルの読み方</h1>
+  <p>show ip route は「出どころ・宛先・信用の度合い・道の良さ・次の相手・出口」を1行に詰めている。</p>
+  <div class="foot"><span>CCNA #12 ルーティングテーブル</span><span>3.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>show ip route の全体：上から「凡例・最後の手段・経路」</h1>
+  <div class="cols wide-r">
+    <div>
+<pre class="cli small">R1#<b>show ip route</b>
+Codes: L - local, C - connected, S - static,
+       R - RIP, B - BGP, D - EIGRP, O - OSPF,
+       * - candidate default ...  <i>(①凡例)</i>
+
+<span class="hl">Gateway of last resort is 203.0.113.1 to network 0.0.0.0</span>  <i>(②)</i>
+
+S*    0.0.0.0/0 [1/0] via 203.0.113.1
+      10.0.0.0/8 is variably subnetted, 5 subnets, 3 masks  <i>(③)</i>
+C        10.1.12.0/24 is directly connected, Gi0/1
+L        10.1.12.1/32 is directly connected, Gi0/1
+O        10.1.30.0/24 [110/3] via 10.1.12.2, 00:05:12, Gi0/1
+D        10.1.40.0/24 [90/130816] via 10.1.12.2, 00:02:01, Gi0/1
+S        10.2.0.0/16 [1/0] via 10.1.12.2
+      203.0.113.0/24 is variably subnetted, 2 subnets, 2 masks
+C        203.0.113.0/30 is directly connected, Gi0/0
+L        203.0.113.2/32 is directly connected, Gi0/0</pre>
+    </div>
+    <div>
+      <ul class="anno">
+        <li><b>① Codes</b>：行の先頭の1〜2文字の意味の一覧。毎回出るので、本番でも表の上を見れば確かめられる</li>
+        <li><b>② Gateway of last resort</b>：デフォルトルートの行き先。なければ <code>is not set</code></li>
+        <li><b>③ 見出しの行</b>：同じクラスのネットワーク（10.0.0.0/8）の経路をまとめる見出し。<b>経路ではない</b>。字下げされた下の行が経路</li>
+        <li>経路の行は <b>コード → 宛先 → [AD/メトリック] → via ネクストホップ → 時間 → 出口</b> の順</li>
+        <li>C と L には [AD/メトリック] が出ない（is directly connected）</li>
+      </ul>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_pi/command/iri-cr-book/iri-cr-s1.html">IP Routing: Protocol-Independent Command Reference「show ip route」</a>（Codes・Gateway of last resort・is subnetted の例と Field Descriptions）。出力はその形式にそろえてClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>1行を分解する：6つの部分</h1>
+  <svg width="856" height="150" viewBox="0 0 856 150">
+    <g font-family="DejaVu Sans Mono, IPAGothic, monospace" font-size="19">
+      <rect x="0" y="40" width="856" height="44" rx="8" fill="#1d1d1f"/>
+      <text x="14" y="69" fill="#ffd479">O</text>
+      <text x="60" y="69" fill="#9fd0ff">10.1.30.0/24</text>
+      <text x="222" y="69" fill="#ffb3a7">[110/3]</text>
+      <text x="318" y="69" fill="#b5f0b5">via 10.1.12.2,</text>
+      <text x="494" y="69" fill="#c7c7cc">00:05:12,</text>
+      <text x="612" y="69" fill="#e8c3ff">GigabitEthernet0/1</text>
+    </g>
+    <g font-size="13" text-anchor="middle" fill="#1d1d1f">
+      <line x1="20" y1="84" x2="20" y2="104" stroke="#b25000" stroke-width="2"/><text x="24" y="122">①コード</text>
+      <line x1="130" y1="84" x2="130" y2="104" stroke="#1f3a68" stroke-width="2"/><text x="130" y="122">②宛先（プレフィックス）</text>
+      <line x1="248" y1="84" x2="248" y2="104" stroke="#b23a2c" stroke-width="2"/><text x="258" y="122">③AD／④メトリック</text>
+      <line x1="400" y1="84" x2="400" y2="104" stroke="#3a7d44" stroke-width="2"/><text x="400" y="122">⑤ネクストホップ</text>
+      <line x1="540" y1="84" x2="540" y2="104" stroke="#6e6e73" stroke-width="2"/><text x="540" y="122">更新からの時間</text>
+      <line x1="720" y1="84" x2="720" y2="104" stroke="#7a3fa0" stroke-width="2"/><text x="720" y="122">⑥出口のインタフェース</text>
+      <text x="428" y="22" fill="#6e6e73">OSPF で覚えた、10.1.30.0/24 への経路。AD 110・コスト 3。10.1.12.2 に渡し、Gi0/1 から出す</text>
+    </g>
+  </svg>
+  <table class="mx" style="margin-top:6px">
+    <tr><th style="width:16%">部分</th><th>読み方</th><th style="width:34%">ひっかけ</th></tr>
+    <tr><td class="t">③ AD</td><td style="text-align:left">出どころ（プロトコル）の信用の値。小さいほど信用する</td><td style="text-align:left">[ ] の<b>左</b>が AD、<b>右</b>がメトリック</td></tr>
+    <tr><td class="t">④ メトリック</td><td style="text-align:left">同じプロトコルの中で、道の良さ（コスト・ホップ数など）</td><td style="text-align:left">プロトコルが違うと比べられない</td></tr>
+    <tr><td class="t">⑤ ネクストホップ</td><td style="text-align:left">次に渡すルーターのアドレス（隣のルーター）</td><td style="text-align:left">最終の宛先ではない</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_pi/command/iri-cr-book/iri-cr-s1.html">show ip route Field Descriptions</a>（[160/5] の左が administrative distance、右が metric・via が next router のアドレス・時間・インタフェース）</div>
+</section>
+
+<section class="slide">
+  <h1>C と L：IP アドレスを1つ付けると、経路が2本入る</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="190" viewBox="0 0 410 190">
+        <g font-size="12" text-anchor="middle">
+          <rect x="20" y="60" width="120" height="66" rx="10" fill="#1f3a68"/><text x="80" y="90" fill="#fff" font-weight="700">R1</text><text x="80" y="108" fill="#fff" font-size="11">Gi0/1</text>
+          <line x1="140" y1="93" x2="390" y2="93" stroke="#5b80bf" stroke-width="4"/>
+          <circle cx="150" cy="93" r="6" fill="#b25000"/>
+          <text x="160" y="80" fill="#b25000" text-anchor="start" font-weight="700">10.1.12.1/24</text>
+          <rect x="150" y="128" width="240" height="26" rx="5" fill="#eef2f8" stroke="#5b80bf"/><text x="270" y="146" fill="#1f3a68">ネットワーク 10.1.12.0〜10.1.12.255</text>
+          <text x="270" y="40" fill="#1d1d1f">ip address 10.1.12.1 255.255.255.0 ＋ up</text>
+        </g>
+      </svg>
+<pre class="cli small">C   10.1.12.0/24 is directly connected, Gi0/1
+L   10.1.12.1/32 is directly connected, Gi0/1</pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:18%"></th><th>C（connected）</th><th>L（local）</th></tr>
+        <tr><td class="t">宛先</td><td>つながったネットワーク全体</td><td>ルーター自身のアドレス1つ</td></tr>
+        <tr><td class="t">長さ</td><td>付けたマスク（/24）</td><td>いつも /32</td></tr>
+        <tr><td class="t">使い道</td><td>そのネットワークの機器へ送る</td><td>ルーター宛て（ping・SSH）を自分で受け取る</td></tr>
+        <tr><td class="t">AD</td><td colspan="2">0（いちばん信用する）</td></tr>
+      </table>
+      <div class="point warn"><b>入る条件：</b>アドレスを付けるだけでは足りない。インタフェースが <b>up/up</b> のときだけ入り、down になると消える（そこへのスタティックルートも一緒に使えなくなる）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_pi/command/iri-cr-book/iri-cr-s1.html">show ip route</a>（C - connected・L - local）／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/border-gateway-protocol-bgp/15986-admin-distance.html">What Is Administrative Distance?</a>（Connected interface 0）</div>
+</section>
+
+<section class="slide">
+  <h1>経路の出どころ：手で書いたか、教え合ったか</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:14%">コード</th><th>出どころ</th><th style="width:22%">AD</th><th style="width:30%">メトリックの中身</th></tr>
+        <tr><td class="t">C / L</td><td>直接つながっている</td><td>0</td><td>なし</td></tr>
+        <tr><td class="t">S</td><td>管理者が ip route で書いた</td><td>1</td><td>0</td></tr>
+        <tr><td class="t">D</td><td>EIGRP</td><td>90（外部 170）</td><td>帯域と遅延から計算</td></tr>
+        <tr><td class="t">O</td><td>OSPF</td><td>110</td><td>コスト</td></tr>
+        <tr><td class="t">R</td><td>RIP</td><td>120</td><td>ホップ数</td></tr>
+        <tr><td class="t">B</td><td>BGP</td><td>外部20・内部200</td><td>（属性で選ぶ）</td></tr>
+      </table>
+      <div class="point" style="margin-top:8px"><b>EIGRP は D：</b>E ではなく <b>D</b>。外部から入れた EIGRP の経路は <b>D EX</b>（AD 170）と表示される。</div>
+    </div>
+    <div>
+      <div class="cap">スタティック（S）とダイナミック（D・O・R・B）</div>
+      <table class="mini">
+        <tr><th style="width:26%"></th><th>スタティック</th><th>ダイナミック</th></tr>
+        <tr><td>作り方</td><td>1行ずつ手で書く</td><td>ルーターどうしが教え合う</td></tr>
+        <tr><td>変化</td><td>切れても自動では変わらない</td><td>切れたら別の道に作り直す</td></tr>
+        <tr><td>向く場面</td><td>出口が1つの小さな拠点</td><td>道が何本もある大きな網</td></tr>
+      </table>
+      <div class="ex"><span class="lbl">S*</span>アスタリスクは「デフォルトルートの候補」。S* 0.0.0.0/0 は<b>スタティックで書いたデフォルトルート</b></div>
+      <div class="ex"><span class="lbl">注意</span>EIGRP のメトリック（例 130816）は大きな数になる。数が大きくても「悪い経路」とは限らない（ほかのプロトコルと比べられない）</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/border-gateway-protocol-bgp/15986-admin-distance.html">What Is Administrative Distance?</a>（Default Distance Value Table）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_pi/command/iri-cr-book/iri-cr-s1.html">show ip route</a>（Codes：D - EIGRP, EX - EIGRP external）</div>
+</section>
+
+<section class="slide">
+  <h1>デフォルトルートと Gateway of last resort</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="380" height="260" viewBox="0 0 380 260">
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="100" width="110" height="60" rx="10" fill="#1f3a68"/><text x="65" y="135" fill="#fff" font-weight="700">支店 R1</text>
+          <rect x="250" y="100" width="120" height="60" rx="10" fill="#b25000"/><text x="310" y="126" fill="#fff" font-weight="700">ISP</text><text x="310" y="144" fill="#fff" font-size="11">203.0.113.1</text>
+          <line x1="120" y1="130" x2="250" y2="130" stroke="#1d1d1f" stroke-width="3"/>
+          <text x="185" y="120" fill="#1d1d1f" font-size="11">0.0.0.0/0</text>
+          <ellipse cx="310" cy="40" rx="62" ry="26" fill="#eef2f8" stroke="#5b80bf"/><text x="310" y="44" fill="#1f3a68">インターネット</text>
+          <line x1="310" y1="66" x2="310" y2="100" stroke="#5b80bf" stroke-width="2"/>
+          <rect x="10" y="200" width="110" height="40" rx="6" fill="#5b80bf"/><text x="65" y="225" fill="#fff">社内 10.1.0.0/16</text>
+          <line x1="65" y1="160" x2="65" y2="200" stroke="#5b80bf" stroke-width="2"/>
+          <text x="190" y="200" fill="#3a7d44" font-size="11.5">表にない宛先は</text><text x="190" y="216" fill="#3a7d44" font-size="11.5">全部 ISP へ</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <dl class="def">
+        <dt>デフォルトルート（0.0.0.0/0）</dt>
+        <dd>マスクの長さが 0 なので、<b>どの宛先にも当てはまる</b>。ただし長さが一番短いので、ほかに当てはまる経路があればそちらが勝つ（第2章の最長一致）</dd>
+        <dt>Gateway of last resort</dt>
+        <dd>デフォルトルートが選ばれたときの行き先。表示は <code>Gateway of last resort is 203.0.113.1 to network 0.0.0.0</code></dd>
+        <dt>is not set のとき</dt>
+        <dd>デフォルトルートがない。テーブルのどの経路にも当てはまらない宛先のパケットは<b>捨てられる</b></dd>
+      </dl>
+<pre class="cli small">R1(config)#ip route 0.0.0.0 0.0.0.0 203.0.113.1
+S*  0.0.0.0/0 [1/0] via 203.0.113.1</pre>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_pi/command/iri-cr-book/iri-cr-s1.html">show ip route</a>（Gateway of last resort is … to network …・is not set・* - candidate default）／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/enhanced-interior-gateway-routing-protocol-eigrp/8651-21.html">Route Selection in Cisco Routers</a>（宛先に当てはまる経路を探す）</div>
+</section>
+
+<section class="slide">
+  <h1>見出しの行：is subnetted と is variably subnetted</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">      172.16.0.0/24 is subnetted, 2 subnets
+O        172.16.1.0 [110/2] via 10.1.12.2, ...
+O        172.16.2.0 [110/2] via 10.1.12.2, ...
+      10.0.0.0/8 is variably subnetted, 3 subnets, 3 masks
+C        10.1.12.0/24 is directly connected, Gi0/1
+L        10.1.12.1/32 is directly connected, Gi0/1
+S        10.2.0.0/16 [1/0] via 10.1.12.2</pre>
+      <div class="cap" style="margin-top:6px">見出しから分かること</div>
+      <table class="mini">
+        <tr><th style="width:36%">見出し</th><th>意味</th></tr>
+        <tr><td>/24 is subnetted, 2 subnets</td><td>下に経路が2本。マスクは全部 /24（行には /24 を書かない）</td></tr>
+        <tr><td>variably subnetted, 3 subnets, 3 masks</td><td>下に経路が3本。マスクは3種類（/24・/32・/16）なので、各行に /nn が付く</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="point"><b>読み方の手順</b></div>
+      <ol class="steps">
+        <li>コードの付いていない字下げの浅い行は<b>見出し</b>。経路として数えない</li>
+        <li>subnets の数＝下に並ぶ経路の本数</li>
+        <li>subnetted（マスク1種類）なら、各行のマスクは見出しのマスク</li>
+        <li>variably subnetted なら、各行に /nn が書かれる</li>
+      </ol>
+      <div class="point warn"><b>ひっかけ：</b>「10.0.0.0/8 への経路がある」と読むのは誤り。見出しの /8 はクラスAのまとまりを示すだけで、10.0.0.0/8 宛ての経路は入っていない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_pi/command/iri-cr-book/iri-cr-s1.html">show ip route</a>（10.89.0.0 is subnetted (mask is 255.255.255.0), 3 subnets の例）／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/enhanced-interior-gateway-routing-protocol-eigrp/8651-21.html">Route Selection in Cisco Routers</a>（172.30.0.0/16 is variably subnetted, 2 subnets, 2 masks の例）</div>
+</section>
+
+<section class="slide">
+  <h1>ネクストホップと出口：再帰検索で「どこから出すか」を決める</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="390" height="270" viewBox="0 0 390 270">
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="10" width="370" height="50" rx="8" fill="#eef2f8" stroke="#5b80bf"/>
+          <text x="195" y="32" fill="#1f3a68" font-weight="700">① 宛先 10.2.5.9 を探す</text>
+          <text x="195" y="50" fill="#1d1d1f" font-size="11.5">S 10.2.0.0/16 via 10.1.12.2 ← 出口が書いていない</text>
+          <path d="M195 60 L195 84" stroke="#1f3a68" stroke-width="2.5" marker-end="url(#a12)"/>
+          <rect x="10" y="88" width="370" height="50" rx="8" fill="#fff4e8" stroke="#b25000"/>
+          <text x="195" y="110" fill="#b25000" font-weight="700">② ネクストホップ 10.1.12.2 をもう一度探す</text>
+          <text x="195" y="128" fill="#1d1d1f" font-size="11.5">C 10.1.12.0/24 is directly connected, Gi0/1</text>
+          <path d="M195 138 L195 162" stroke="#1f3a68" stroke-width="2.5" marker-end="url(#a12)"/>
+          <rect x="10" y="166" width="370" height="44" rx="8" fill="#eaf5ec" stroke="#3a7d44"/>
+          <text x="195" y="193" fill="#3a7d44" font-weight="700">③ 出口は Gi0/1、相手は 10.1.12.2</text>
+          <text x="195" y="240" fill="#b23a2c" font-size="11.5">② で見つからない → この S の経路はテーブルに入らない</text>
+          <defs><marker id="a12" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#1f3a68"/></marker></defs>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <dl class="def">
+        <dt>ネクストホップ（via の後ろ）</dt>
+        <dd>次に渡す<b>隣のルーター</b>のアドレス。ふつうは自分の C のネットワークの中にある</dd>
+        <dt>出口のインタフェース（行の最後）</dt>
+        <dd>パケットを出す自分のインタフェース。ダイナミックルートでは両方が表示される</dd>
+        <dt>再帰検索</dt>
+        <dd>ネクストホップだけの経路は、そのアドレスへ行く経路を<b>もう一度</b>引いて出口を決める</dd>
+      </dl>
+      <div class="point"><b>確かめ方：</b><code>show ip route 10.2.5.9</code> のように宛先を付けると、その宛先に使われる経路の詳しい情報が出る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/border-gateway-protocol-bgp/15986-admin-distance.html">What Is Administrative Distance?</a>（ネクストホップに届かない経路はテーブルに入らない旨）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_pi/command/iri-cr-book/iri-cr-s1.html">show ip route</a>（ip-address を付けた表示）。図はClaudeが作った例</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>経路の選び方</h1>
+  <p>入れるときは AD とメトリック、送るときは最長一致。2つの段階を混ぜないのがコツ。</p>
+  <div class="foot"><span>CCNA #12 ルーティングテーブル</span><span>3.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>2つの段階：「テーブルに入れる」と「パケットを送る」</h1>
+  <div class="flow">
+    <div class="box b5">覚えた経路<span>OSPF 10.1.30.0/24 [110/3]<br>EIGRP 10.1.30.0/24 [90/…]<br>静的 10.1.0.0/16 [1/0]</span></div>
+    <div class="to">→</div>
+    <div class="box b1">① 入れる<span>同じ宛先・同じ長さで<br>AD → メトリック</span></div>
+    <div class="to">→</div>
+    <div class="box b2">ルーティングテーブル<span>D 10.1.30.0/24<br>S 10.1.0.0/16</span></div>
+    <div class="to">→</div>
+    <div class="box b3">② 送る<span>当てはまる中で<br>最長一致</span></div>
+  </div>
+  <table class="mx" style="margin-top:12px">
+    <tr><th style="width:16%">段階</th><th style="width:22%">比べる相手</th><th>使う値</th><th style="width:28%">この例では</th></tr>
+    <tr><td class="t">① 入れる</td><td>同じ宛先・同じ長さの経路</td><td style="text-align:left">プロトコルが違う → <b>AD</b> が小さいほう／同じプロトコル → <b>メトリック</b>が小さいほう</td><td style="text-align:left">/24 は EIGRP（90）が OSPF（110）に勝つ</td></tr>
+    <tr><td class="t">② 送る</td><td>宛先に当てはまる全部の経路</td><td style="text-align:left"><b>プレフィックスの長さ</b>だけ。AD もメトリックも見ない</td><td style="text-align:left">宛先 10.1.30.7 は /24 の D で送る（/16 の S ではない）</td></tr>
+  </table>
+  <div class="point warn"><b>いちばんのわな：</b>/16 と /24 は「違う宛先」なので、AD で比べられることはない。両方テーブルに入り、送るときに長いほうが使われる。</div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/enhanced-interior-gateway-routing-protocol-eigrp/8651-21.html">Route Selection in Cisco Routers</a>（routing protocols・routing table・forwarding decisions の3つのプロセス／prefix length が違えば別の宛先として全部入る）</div>
+</section>
+
+<section class="slide">
+  <h1>AD の初期値：小さいほど信用する</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="380" height="330" viewBox="0 0 380 330">
+        <g font-size="12">
+          <g fill="#1d1d1f" text-anchor="end">
+            <text x="118" y="22">コネクテッド</text><text x="118" y="50">スタティック</text><text x="118" y="78">EIGRP 集約</text><text x="118" y="106">eBGP</text><text x="118" y="134">EIGRP 内部</text><text x="118" y="162">OSPF</text><text x="118" y="190">IS-IS</text><text x="118" y="218">RIP</text><text x="118" y="246">EIGRP 外部</text><text x="118" y="274">iBGP</text><text x="118" y="302">信用しない</text>
+          </g>
+          <g fill="#5b80bf">
+            <rect x="126" y="12" width="2" height="14"/><rect x="126" y="40" width="2" height="14"/><rect x="126" y="68" width="5" height="14"/><rect x="126" y="96" width="18" height="14"/>
+            <rect x="126" y="124" width="81" height="14" fill="#1f3a68"/><rect x="126" y="152" width="99" height="14" fill="#1f3a68"/><rect x="126" y="180" width="104" height="14"/><rect x="126" y="208" width="108" height="14" fill="#1f3a68"/><rect x="126" y="236" width="153" height="14"/><rect x="126" y="264" width="180" height="14"/><rect x="126" y="292" width="230" height="14" fill="#b23a2c"/>
+          </g>
+          <g fill="#1d1d1f" font-weight="700">
+            <text x="134" y="24">0</text><text x="134" y="52">1</text><text x="137" y="80">5</text><text x="150" y="108">20</text><text x="213" y="136">90</text><text x="231" y="164">110</text><text x="236" y="192">115</text><text x="240" y="220">120</text><text x="285" y="248">170</text><text x="312" y="276">200</text><text x="300" y="320" fill="#b23a2c">255</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="cap">覚える4つ（本番によく出る）</div>
+      <table class="mx">
+        <tr><th>出どころ</th><th>AD</th></tr>
+        <tr><td class="t">EIGRP（内部）</td><td>90</td></tr>
+        <tr><td class="t">OSPF</td><td>110</td></tr>
+        <tr><td class="t">RIP</td><td>120</td></tr>
+        <tr><td class="t">スタティック</td><td>1</td></tr>
+      </table>
+      <div class="point" style="margin-top:8px"><b>並び：</b>EIGRP 90 → OSPF 110 → RIP 120。同じ宛先を3つとも覚えたら、テーブルに入るのは EIGRP の経路。</div>
+      <div class="point warn"><b>255：</b>「信用しない」。この AD の経路はテーブルに入らない。予備にしたいときは 255 ではなく、本物より少し大きい値にする。</div>
+      <div class="ex"><span class="lbl">性質</span>AD はそのルーターの中だけの値。ほかのルーターには伝わらない</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/border-gateway-protocol-bgp/15986-admin-distance.html">What Is Administrative Distance?</a>（Default Distance Value Table：0/1/5/20/90/110/115/120/170/200/255・255 は信用しないためテーブルに入らない）。棒の長さは AD の値に比例</div>
+</section>
+
+<section class="slide">
+  <h1>AD による選択：同じ宛先を2つのプロトコルから覚えたら</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="200" viewBox="0 0 410 200">
+        <g font-size="12" text-anchor="middle">
+          <rect x="150" y="70" width="110" height="60" rx="10" fill="#1f3a68"/><text x="205" y="104" fill="#fff" font-weight="700">R1</text>
+          <rect x="10" y="10" width="120" height="44" rx="6" fill="#5b80bf"/><text x="70" y="30" fill="#fff">EIGRP から</text><text x="70" y="46" fill="#fff" font-size="11">10.1.30.0/24 AD 90</text>
+          <rect x="280" y="10" width="120" height="44" rx="6" fill="#6e6e73"/><text x="340" y="30" fill="#fff">OSPF から</text><text x="340" y="46" fill="#fff" font-size="11">10.1.30.0/24 AD 110</text>
+          <line x1="110" y1="54" x2="170" y2="72" stroke="#5b80bf" stroke-width="3"/>
+          <line x1="300" y1="54" x2="240" y2="72" stroke="#6e6e73" stroke-width="3" stroke-dasharray="5 3"/>
+          <rect x="60" y="150" width="290" height="40" rx="6" fill="#eaf5ec" stroke="#3a7d44"/><text x="205" y="168" fill="#3a7d44" font-weight="700">テーブル：D 10.1.30.0/24 [90/…]</text><text x="205" y="184" fill="#6e6e73" font-size="11">OSPF の経路は予備として残る（表には出ない）</text>
+          <line x1="205" y1="130" x2="205" y2="150" stroke="#3a7d44" stroke-width="2.5"/>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>宛先とプレフィックスの長さが<b>同じ</b>かを確かめる（違えば比べない）</li>
+        <li>プロトコルが違えば <b>AD が小さいほう</b>を入れる</li>
+        <li>入らなかった経路は捨てられず、入った経路が消えると代わりに入る</li>
+      </ol>
+      <div class="cap">この性質を使う：フローティングスタティック</div>
+<pre class="cli small">ip route 10.1.30.0 255.255.255.0 10.1.99.2 <span class="hl">115</span></pre>
+      <div class="point">OSPF（110）が生きている間は OSPF の経路が入り、OSPF が消えたら AD 115 のスタティックが入る。<b>本物より大きく 255 より小さい</b>値にする（設定は #13）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/border-gateway-protocol-bgp/15986-admin-distance.html">What Is Administrative Distance?</a>（EIGRP 90 と OSPF 110 の例・floating static routes）／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/enhanced-interior-gateway-routing-protocol-eigrp/8651-21.html">Route Selection in Cisco Routers</a>（Backup Routes）</div>
+</section>
+
+<section class="slide">
+  <h1>メトリック：同じプロトコルの中で、道の良さを比べる</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="210" viewBox="0 0 410 210">
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="90" width="60" height="40" rx="8" fill="#1f3a68"/><text x="40" y="115" fill="#fff" font-weight="700">R1</text>
+          <rect x="340" y="90" width="60" height="40" rx="8" fill="#1f3a68"/><text x="370" y="115" fill="#fff" font-weight="700">R4</text>
+          <rect x="175" y="10" width="60" height="36" rx="8" fill="#6e6e73"/><text x="205" y="33" fill="#fff">R2</text>
+          <rect x="120" y="170" width="60" height="34" rx="8" fill="#6e6e73"/><text x="150" y="192" fill="#fff">R3</text>
+          <rect x="230" y="170" width="60" height="34" rx="8" fill="#6e6e73"/><text x="260" y="192" fill="#fff">R5</text>
+          <line x1="70" y1="100" x2="175" y2="34" stroke="#b23a2c" stroke-width="2"/><line x1="235" y1="34" x2="340" y2="100" stroke="#b23a2c" stroke-width="2"/>
+          <text x="205" y="66" fill="#b23a2c" font-size="11.5">10 Mbps × 2本（2ホップ）</text>
+          <line x1="60" y1="130" x2="130" y2="172" stroke="#3a7d44" stroke-width="5"/><line x1="180" y1="187" x2="230" y2="187" stroke="#3a7d44" stroke-width="5"/><line x1="280" y1="172" x2="350" y2="130" stroke="#3a7d44" stroke-width="5"/>
+          <text x="205" y="160" fill="#3a7d44" font-size="11.5">1 Gbps × 3本（3ホップ）</text>
+        </g>
+      </svg>
+      <table class="mini">
+        <tr><th style="width:24%"></th><th>上の道</th><th>下の道</th><th>選ぶ道</th></tr>
+        <tr><td>RIP（ホップ数）</td><td>2</td><td>3</td><td>上（遅い）</td></tr>
+        <tr><td>OSPF（コスト）</td><td>10＋10＝20</td><td>1＋1＋1＝3</td><td>下（速い）</td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:22%">プロトコル</th><th>メトリック</th><th style="width:30%">特徴</th></tr>
+        <tr><td class="t">RIP</td><td style="text-align:left">ホップ数（通るルーターの数）</td><td style="text-align:left">速さを見ない。16 は「届かない」</td></tr>
+        <tr><td class="t">OSPF</td><td style="text-align:left">コストの合計。コスト＝基準の帯域÷インタフェースの帯域</td><td style="text-align:left">基準の初期値は 100 Mbps</td></tr>
+        <tr><td class="t">EIGRP</td><td style="text-align:left">道のいちばん細い帯域と、遅延の合計から計算</td><td style="text-align:left">初期の K 値は 1,0,1,0,0（帯域と遅延だけ使う）</td></tr>
+      </table>
+      <div class="point warn"><b>比べられない：</b>RIP の 2 と OSPF の 20 は単位が違う。プロトコルどうしは AD で比べる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_rip/configuration/xe-16/irr-xe-16-book/irr-cfg-info-prot.html">RIP Configuration Guide</a>（hop count・16 は unreachable）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_ospf/configuration/xe-16/iro-xe-16-book/iro-cfg.html">OSPF Configuration Guide</a>（auto-cost reference-bandwidth）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_eigrp/configuration/xe-16/ire-xe-16-book/ire-enhanced-igrp.html">EIGRP Configuration Guide</a>（metric weights 0 1 0 1 0 0）。図の数値はClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>計算手順：OSPF のコストを出す</h1>
+  <div class="cols">
+    <div>
+      <div class="formula" style="font-size:20px;text-align:center;padding:10px">コスト ＝ 基準の帯域 ÷ インタフェースの帯域<br><span style="font-size:14px">（1 より小さくなるときは 1）</span></div>
+      <table class="mx" style="margin-top:10px">
+        <tr><th>インタフェース</th><th>基準 100 Mbps（初期）</th><th>基準 10000 Mbps</th></tr>
+        <tr><td class="t">10 Mbps</td><td>10</td><td>1000</td></tr>
+        <tr><td class="t">100 Mbps</td><td>1</td><td>100</td></tr>
+        <tr><td class="t">1 Gbps</td><td class="x">1</td><td>10</td></tr>
+        <tr><td class="t">10 Gbps</td><td class="x">1</td><td>1</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">経路全体のコスト</div>
+      <ol class="steps">
+        <li>宛先までに<b>出ていく</b>インタフェースを順に並べる</li>
+        <li>それぞれのコストを出す</li>
+        <li>全部足す。それが [110/○] の ○</li>
+      </ol>
+      <div class="ex"><span class="lbl">例</span>100M → 1G → 1G（初期の基準）→ 1＋1＋1＝<b>3</b>（[110/3]）</div>
+      <div class="point warn"><b>初期のままの弱点：</b>100 Mbps も 1 Gbps も 10 Gbps もコスト 1。速さの違いが出ないので、全部のルーターで <code>auto-cost reference-bandwidth</code> を同じ値に上げる。</div>
+<pre class="cli small">R1(config)#router ospf 1
+R1(config-router)#auto-cost reference-bandwidth 10000</pre>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_ospf/configuration/xe-16/iro-xe-16-book/iro-cfg.html">OSPF Configuration Guide, IOS XE</a>（auto-cost reference-bandwidth・Reference bandwidth unit is 100 mbps）。表の値はその式でClaudeが計算した</div>
+</section>
+
+<section class="slide">
+  <h1>ECMP：メトリックが同じなら、両方入れて分けて送る</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="380" height="220" viewBox="0 0 380 220">
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="85" width="80" height="50" rx="8" fill="#1f3a68"/><text x="50" y="115" fill="#fff" font-weight="700">R1</text>
+          <rect x="150" y="20" width="80" height="40" rx="8" fill="#6e6e73"/><text x="190" y="45" fill="#fff">R2 .2</text>
+          <rect x="150" y="160" width="80" height="40" rx="8" fill="#6e6e73"/><text x="190" y="185" fill="#fff">R3 .3</text>
+          <ellipse cx="320" cy="110" rx="52" ry="30" fill="#eef2f8" stroke="#5b80bf"/><text x="320" y="114" fill="#1f3a68" font-size="11">10.1.30.0/24</text>
+          <line x1="90" y1="100" x2="150" y2="40" stroke="#3a7d44" stroke-width="3"/><line x1="230" y1="40" x2="280" y2="95" stroke="#3a7d44" stroke-width="3"/>
+          <line x1="90" y1="120" x2="150" y2="180" stroke="#3a7d44" stroke-width="3"/><line x1="230" y1="180" x2="280" y2="125" stroke="#3a7d44" stroke-width="3"/>
+          <text x="100" y="60" fill="#3a7d44" font-size="11">Gi0/1 コスト3</text><text x="100" y="172" fill="#3a7d44" font-size="11">Gi0/2 コスト3</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+<pre class="cli small">O    10.1.30.0/24 [110/3] via 10.1.12.2, 00:01:10, Gi0/1
+                  [110/3] via 10.1.13.3, 00:01:10, Gi0/2</pre>
+      <ul class="anno">
+        <li>宛先の行の下に <b>via の行が何行も</b>並ぶ → ECMP</li>
+        <li>2本とも <b>AD もメトリックも同じ</b>。片方でも違えば、小さいほう1本だけ</li>
+        <li>何本まで入れるかは、プロトコルの設定 <code>maximum-paths</code> で変えられる</li>
+        <li>プロトコルが違う経路どうしは ECMP にならない（AD で1つに決まる）</li>
+      </ul>
+      <div class="ex"><span class="lbl">語</span>ECMP＝Equal-Cost Multi-Path（同じコストの複数の道）</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/enhanced-interior-gateway-routing-protocol-eigrp/8651-21.html">Route Selection in Cisco Routers</a>（equal metrics なら load balancing）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_eigrp/configuration/xe-16/ire-xe-16-book/ire-enhanced-igrp.html">EIGRP Configuration Guide</a>（maximum-paths）</div>
+</section>
+
+<section class="slide">
+  <h1>最長一致：当てはまる経路が何本あっても、いちばん細かいものを使う</h1>
+<pre class="cli small">D   192.168.32.0/26 [90/25789217] via 10.1.1.1
+R   192.168.32.0/24 [120/4] via 10.1.1.2
+O   192.168.32.0/19 [110/229840] via 10.1.1.3</pre>
+  <table class="mx" style="margin-top:8px">
+    <tr><th style="width:18%">経路</th><th style="width:30%">範囲</th><th>宛先 192.168.32.1</th><th>宛先 192.168.32.100</th><th>宛先 192.168.33.5</th></tr>
+    <tr><td class="t">/26（D）</td><td>192.168.32.0〜32.63</td><td class="a">当てはまる ◎</td><td class="x">外</td><td class="x">外</td></tr>
+    <tr><td class="t">/24（R）</td><td>192.168.32.0〜32.255</td><td>当てはまる</td><td class="a">当てはまる ◎</td><td class="x">外</td></tr>
+    <tr><td class="t">/19（O）</td><td>192.168.32.0〜63.255</td><td>当てはまる</td><td>当てはまる</td><td class="a">当てはまる ◎</td></tr>
+    <tr><td class="t">使う経路</td><td></td><td><b>10.1.1.1 へ</b></td><td><b>10.1.1.2 へ</b></td><td><b>10.1.1.3 へ</b></td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>3本とも入る理由：</b>長さが違うので「別の宛先」。AD（90・120・110）で1本に絞られることはない。</div>
+    <div class="point warn"><b>AD は関係ない：</b>宛先 32.100 は AD 120 の RIP で送られる。AD 90 の EIGRP の範囲（〜.63）に入らないから。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/enhanced-interior-gateway-routing-protocol-eigrp/8651-21.html">Route Selection in Cisco Routers</a>（Prefix Lengths・Make Forwarding Decisions：192.168.32.1 は 10.1.1.1、192.168.32.100 は 10.1.1.2）。192.168.33.5 の列はClaudeが同じ方法で計算した</div>
+</section>
+
+<section class="slide">
+  <h1>計算手順：宛先がどの経路に当てはまるかを2進数で確かめる</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">宛先 192.168.32.100 と /26 の経路</div>
+      <table class="mx" style="font-family:'DejaVu Sans Mono','IPAGothic',monospace;font-size:12.5px">
+        <tr><th style="width:30%"></th><th>第4オクテット</th></tr>
+        <tr><td class="t">宛先 .100</td><td><span style="color:#b23a2c;font-weight:700">01</span>100100</td></tr>
+        <tr><td class="t">経路 .0 /26</td><td><span style="color:#1f3a68;font-weight:700">00</span>000000</td></tr>
+        <tr><td class="t">判定</td><td>前の2ビット（25・26ビット目）が違う → <b>外</b></td></tr>
+      </table>
+      <div class="cap" style="margin-top:8px">宛先 192.168.33.5 と /19 の経路</div>
+      <table class="mx" style="font-family:'DejaVu Sans Mono','IPAGothic',monospace;font-size:12.5px">
+        <tr><th style="width:30%"></th><th>第3オクテット</th></tr>
+        <tr><td class="t">宛先 33</td><td><span style="color:#3a7d44;font-weight:700">001</span>00001</td></tr>
+        <tr><td class="t">経路 32 /19</td><td><span style="color:#3a7d44;font-weight:700">001</span>00000</td></tr>
+        <tr><td class="t">判定</td><td>前の3ビット（17〜19ビット目）が同じ → <b>当てはまる</b></td></tr>
+      </table>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>経路のマスクが切れるオクテットを見つける（/26 なら第4、/19 なら第3）</li>
+        <li><b>ブロックの大きさ</b>＝256 −（そのオクテットのマスクの値）。/26 は 256−192＝64、/19 は 256−224＝32</li>
+        <li>経路の範囲＝ネットワークアドレスから「ブロック−1」まで。/26 は .0〜.63、/19 は 32〜63</li>
+        <li>宛先が範囲の中なら当てはまる。当てはまる中で一番長いものを選ぶ</li>
+        <li>どれにも当てはまらなければデフォルトルート。それもなければ捨てる</li>
+      </ol>
+      <div class="point"><b>2進数を書かなくてよい：</b>本番は手順2〜3の「ブロックの大きさ」で範囲を出すと速い。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/enhanced-interior-gateway-routing-protocol-eigrp/8651-21.html">Route Selection in Cisco Routers</a>（prefix length＝the number of bits set in the subnet mask）。計算の手順と値はClaudeが書いた</div>
+</section>
+
+<section class="slide">
+  <h1>練習：この表で、宛先ごとにどこへ送るか</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">Gateway of last resort is 198.51.100.1 to network 0.0.0.0
+S*  0.0.0.0/0 [1/0] via 198.51.100.1
+O   172.16.0.0/16 [110/20] via 10.0.0.2, Gi0/1
+D   172.16.4.0/22 [90/30720] via 10.0.0.6, Gi0/2
+S   172.16.5.0/24 [1/0] via 10.0.0.10
+R   172.16.5.128/25 [120/3] via 10.0.0.14, Gi0/4
+<i>(C・L の行は省略)</i></pre>
+      <div class="point" style="margin-top:8px"><b>考え方：</b>AD やメトリックは無視して、範囲と長さだけを見る。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:24%">宛先</th><th style="width:44%">当てはまる経路</th><th>送り先</th></tr>
+        <tr><td class="t">172.16.5.200</td><td>/0・/16・/22・/24・<b>/25</b></td><td>10.0.0.14（R）</td></tr>
+        <tr><td class="t">172.16.5.20</td><td>/0・/16・/22・<b>/24</b></td><td>10.0.0.10（S）</td></tr>
+        <tr><td class="t">172.16.7.1</td><td>/0・/16・<b>/22</b>（4〜7）</td><td>10.0.0.6（D）</td></tr>
+        <tr><td class="t">172.16.8.1</td><td>/0・<b>/16</b></td><td>10.0.0.2（O）</td></tr>
+        <tr><td class="t">172.17.0.1</td><td><b>/0</b> だけ</td><td>198.51.100.1</td></tr>
+      </table>
+      <div class="point warn" style="margin-top:8px"><b>ひっかけ：</b>172.16.5.200 は AD 120 の RIP で送る。AD 1 の S（/24）より長い /25 に当てはまるから。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/enhanced-interior-gateway-routing-protocol-eigrp/8651-21.html">Route Selection in Cisco Routers</a>（Longer prefixes are always preferred）。表と答えはClaudeが作った練習</div>
+</section>
+
+<section class="slide">
+  <h1>よくあるひっかけ</h1>
+  <table class="mx">
+    <tr><th style="width:36%">よくある思い込み</th><th>正しくは</th></tr>
+    <tr><td class="t">AD が小さい経路で必ず送る</td><td style="text-align:left">AD はテーブルに<b>入れる</b>ときだけ。送るときは<b>最長一致</b>。長さが違えば AD は比べない</td></tr>
+    <tr><td class="t">[110/3] の 3 が AD</td><td style="text-align:left">[ ] の<b>左</b>（110）が AD、<b>右</b>（3）がメトリック</td></tr>
+    <tr><td class="t">RIP の 2 と OSPF の 20 なら RIP が良い</td><td style="text-align:left">メトリックは<b>同じプロトコルの中だけ</b>で比べる。違うプロトコルは AD で決まる</td></tr>
+    <tr><td class="t">「10.0.0.0/8 is variably subnetted」は経路</td><td style="text-align:left">見出しの行。経路は下に字下げされた行</td></tr>
+    <tr><td class="t">via の後ろは最終の宛先</td><td style="text-align:left">次に渡す<b>隣のルーター</b>（ネクストホップ）</td></tr>
+    <tr><td class="t">予備のスタティックは AD 255 にする</td><td style="text-align:left">255 はテーブルに入らない。本物より大きく 255 より小さい値にする</td></tr>
+    <tr><td class="t">Gateway of last resort is not set でも届く</td><td style="text-align:left">デフォルトルートがないので、どの経路にも当てはまらない宛先は<b>捨てる</b></td></tr>
+    <tr><td class="t">EIGRP のコードは E</td><td style="text-align:left"><b>D</b>（外部は D EX）</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/border-gateway-protocol-bgp/15986-admin-distance.html">What Is Administrative Distance?</a>／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/enhanced-interior-gateway-routing-protocol-eigrp/8651-21.html">Route Selection in Cisco Routers</a>／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_pi/command/iri-cr-book/iri-cr-s1.html">show ip route</a></div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">3.1 読み方</div>
+      <table class="mini">
+        <tr><td style="width:36%">コード</td><td>C・L 直接／S 手書き／D EIGRP／O OSPF／R RIP／B BGP／* 候補</td></tr>
+        <tr><td>[AD/メトリック]</td><td>左が出どころの信用、右が道の良さ</td></tr>
+        <tr><td>via</td><td>ネクストホップ（隣のルーター）</td></tr>
+        <tr><td>行の最後</td><td>出口のインタフェース</td></tr>
+        <tr><td>Gateway of last resort</td><td>デフォルトルートの行き先。not set なら無い</td></tr>
+        <tr><td>見出しの行</td><td>is (variably) subnetted。経路ではない</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">3.2 選び方</div>
+      <div class="stack">
+        <div class="box b1">① 入れる：同じ宛先・同じ長さ<span>プロトコルが違う → AD（0/1/90/110/120）　同じ → メトリック　同じメトリック → ECMP</span></div>
+        <div class="box b3">② 送る：宛先に当てはまる中で最長一致<span>AD・メトリックは見ない。何もなければデフォルトルート、なければ捨てる</span></div>
+      </div>
+      <div class="point"><b>次の分野：</b>#13 スタティックルートで、ip route の書き方とフローティングスタティックを設定する。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
