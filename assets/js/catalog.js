@@ -210,6 +210,7 @@ window.SITE_CATALOG = {
   materials: {
     aws: [
       { type: "terms", file: "terms/01.html", title: "IAMとポリシー 用語集", desc: "ルートユーザー・IAM ユーザー・グループ・ロール・インスタンスプロファイル・STS の一時的な認証情報・アクセスキー・MFA、ID ベースとリソースベースのポリシー・AWS 管理／カスタマー管理／インライン・Effect・Action・NotAction・Resource・Principal・Condition とグローバル条件キー・ポリシー変数・ARN、暗黙的な拒否と明示的な拒否・アクセス許可の境界・セッションポリシー・クロスアカウントアクセス・外部 ID・iam:PassRole・IAM Access Analyzer・認証情報レポート。38語と問題30問（タスク 1.1）", fields: [1], pdf: "terms/01.pdf" },
+      { type: "terms", file: "terms/02.html", title: "マルチアカウントとフェデレーション 用語集", desc: "Organizations の管理アカウント・メンバーアカウント・OU・ルート・すべての機能と一括請求・委任管理者・タグポリシー・AWS RAM、SCP（FullAWSAccess・評価のしかた）と RCP、Control Tower のランディングゾーン・コントロール（予防・検出・プロアクティブ）・Account Factory、責任共有モデル、ID フェデレーション・SAML 2.0・OIDC・IAM Identity Center と権限セット・ID ソース、AWS Managed Microsoft AD・AD Connector・Simple AD、Cognito のユーザープールと ID プール。30語と問題30問（タスク 1.1）", fields: [2], pdf: "terms/02.pdf" },
     ],
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },

@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS SAA #02 マルチアカウントとフェデレーション 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">AWS SAA（SAA-C03）　分野1 セキュアなアーキテクチャの設計　#02</div>
+  <h1>マルチアカウントとフェデレーション</h1>
+  <p>アカウントをまとめて縛る。社員とアプリの利用者を、外の ID のままつなぐ</p>
+  <div class="refs-legend">各ページの下に、根拠にした AWS の公式ドキュメント（Organizations・Control Tower・IAM Identity Center・Directory Service・Cognito など）を書いた（青い文字を押すと開く）。「」の中はドキュメントの原文どおり。会社名や場面は Claude が作った例</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>試験ガイド タスク 1.1 の後半</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 組織とアカウント<span>Organizations で束ねる。OU で分ける。管理アカウントには作業用のリソースを置かない</span></div>
+      <div class="box b2">2 ガードレール<span>SCP（自分の組織の人の上限）・RCP（自分の組織のリソースの上限）・Control Tower</span></div>
+      <div class="box b3">3 社員の ID<span>IAM Identity Center ＋ 権限セット。ID ソースは AD や外部 IdP</span></div>
+      <div class="box b4">4 アプリの利用者の ID<span>Cognito：ユーザープール＝だれか（認証）、ID プール＝何を使えるか（認可）</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:62%">タスク 1.1 の知識・スキル（要約）</th><th>このPDF</th></tr>
+        <tr><td class="l">複数のアカウントにまたがるアクセス制御と管理</td><td class="t">第1・2章</td></tr>
+        <tr><td class="l">複数アカウントのセキュリティ戦略（Control Tower・SCP）</td><td class="t">第2章</td></tr>
+        <tr><td class="l">フェデレーションアクセスと ID サービス（IAM・Identity Center）</td><td class="t">第3章</td></tr>
+        <tr><td class="l">Directory Service を IAM ロールでフェデレートする場面</td><td class="t">第3章</td></tr>
+        <tr><td class="l">AWS 責任共有モデル</td><td class="t">第2章</td></tr>
+        <tr><td class="l">Cognito（タスク 1.2 のセキュリティサービス）</td><td class="t">第3章</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html">AWS「コンテンツ分野 1: セキュアなアーキテクチャの設計」</a>タスク 1.1・1.2</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>組織とアカウント</h1>
+  <p>アカウントは、権限・セキュリティ・コストの境界。分けて、束ねる。</p>
+  <div class="foot"><span>AWS SAA #02 マルチアカウントとフェデレーション</span><span>タスク 1.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>Organizations の木の形</h1>
+  <svg width="856" height="230" viewBox="0 0 856 230">
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="8" width="836" height="214" rx="12" fill="#f5f5f7" stroke="#d2d2d7"/>
+      <text x="30" y="30" text-anchor="start" fill="#6e6e73">組織</text>
+      <rect x="348" y="20" width="160" height="38" rx="8" fill="#1f3a68"/><text x="428" y="44" fill="#fff" font-weight="700">ルート（管理ルート）</text>
+      <line x1="428" y1="58" x2="428" y2="72" stroke="#1f3a68" stroke-width="2"/>
+      <line x1="130" y1="72" x2="730" y2="72" stroke="#1f3a68" stroke-width="2"/>
+      <line x1="130" y1="72" x2="130" y2="86" stroke="#1f3a68" stroke-width="2"/><line x1="350" y1="72" x2="350" y2="86" stroke="#1f3a68" stroke-width="2"/><line x1="560" y1="72" x2="560" y2="86" stroke="#1f3a68" stroke-width="2"/><line x1="730" y1="72" x2="730" y2="86" stroke="#1f3a68" stroke-width="2"/>
+      <rect x="50" y="86" width="160" height="40" rx="8" fill="#b23a2c"/><text x="130" y="104" fill="#fff" font-weight="700">管理アカウント</text><text x="130" y="119" fill="#fff" font-size="10.5">支払い・SCP が効かない</text>
+      <rect x="270" y="86" width="160" height="40" rx="8" fill="#fff" stroke="#1f3a68" stroke-width="2"/><text x="350" y="111" fill="#1f3a68" font-weight="700">セキュリティ OU</text>
+      <rect x="480" y="86" width="160" height="40" rx="8" fill="#fff" stroke="#1f3a68" stroke-width="2"/><text x="560" y="111" fill="#1f3a68" font-weight="700">ワークロード OU</text>
+      <rect x="670" y="86" width="120" height="40" rx="8" fill="#fff4e5" stroke="#b25000"/><text x="730" y="104" fill="#b25000" font-weight="700">SCP</text><text x="730" y="119" font-size="10.5">OU やルートに付ける</text>
+      <line x1="350" y1="126" x2="350" y2="150" stroke="#1f3a68" stroke-width="1.5"/>
+      <rect x="280" y="150" width="140" height="34" rx="6" fill="#3a7d44"/><text x="350" y="172" fill="#fff">ログ用・監査用</text>
+      <line x1="560" y1="126" x2="560" y2="140" stroke="#1f3a68" stroke-width="1.5"/><line x1="490" y1="140" x2="630" y2="140" stroke="#1f3a68" stroke-width="1.5"/>
+      <line x1="490" y1="140" x2="490" y2="150" stroke="#1f3a68" stroke-width="1.5"/><line x1="630" y1="140" x2="630" y2="150" stroke="#1f3a68" stroke-width="1.5"/>
+      <rect x="440" y="150" width="100" height="34" rx="6" fill="#fff" stroke="#1f3a68"/><text x="490" y="172" fill="#1f3a68">本番 OU</text>
+      <rect x="580" y="150" width="100" height="34" rx="6" fill="#fff" stroke="#1f3a68"/><text x="630" y="172" fill="#1f3a68">開発 OU</text>
+      <rect x="440" y="190" width="100" height="24" rx="5" fill="#3a7d44"/><text x="490" y="207" fill="#fff" font-size="11">アプリA 本番</text>
+      <rect x="580" y="190" width="100" height="24" rx="5" fill="#3a7d44"/><text x="630" y="207" fill="#fff" font-size="11">アプリA 開発</text>
+      <text x="160" y="190" fill="#4a5a78" font-size="11">緑＝メンバーアカウント。構成は Claude が作った例</text>
+    </g>
+  </svg>
+  <table class="mx" style="margin-top:4px">
+    <tr><th style="width:20%">部品</th><th>決まり</th></tr>
+    <tr><td class="t">ルート</td><td class="l">組織に1つ。自動でできる。#01 のルートユーザーとは別物</td></tr>
+    <tr><td class="t">OU</td><td class="l">アカウントのグループ。入れ子にできる。付けたポリシーは下のアカウントすべてに効く</td></tr>
+    <tr><td class="t">メンバーアカウント</td><td class="l">一度に1つの組織にだけ入れる。新しく作るか、招待して入れる</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_getting-started_concepts.html">AWS Organizations の概念と用語</a>（組織構造・「ルートは 1 つのみ持つことができます。」「メンバーアカウントは、一度に 1 つの組織のみに所属できます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>管理アカウントは「組織の管理だけ」に使う</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:36%"></th><th>管理アカウント</th><th>メンバーアカウント</th></tr>
+        <tr><td class="t">役割</td><td>組織を作る・アカウントを作る／招待する・ポリシーを付ける</td><td>ワークロードを動かす</td></tr>
+        <tr><td class="t">料金</td><td>全員分を払う（支払者）</td><td>管理アカウントにまとまる</td></tr>
+        <tr><td class="t">SCP</td><td class="x">効かない</td><td class="t">効く（ルートユーザーも）</td></tr>
+        <tr><td class="t">ほかに変更</td><td class="x">できない</td><td>―</td></tr>
+      </table>
+      <div class="point warn"><b>SCP で守れないので、管理アカウントに作業用のリソースを置かない。</b>リソースはメンバーアカウントに分けるのが AWS のおすすめ。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:38%">機能のセット</th><th>使えること</th></tr>
+        <tr><td class="t">すべての機能（既定・推奨）</td><td class="l">一括請求に加えて、SCP などのポリシー、ほかのサービスとの統合、委任</td></tr>
+        <tr><td class="t">一括請求だけ</td><td class="l">請求をまとめるだけ。SCP は使えない</td></tr>
+      </table>
+      <div class="mini">一括請求だけ → すべての機能に変えるには、招待で入ったメンバーアカウントすべての承認が要る。</div>
+      <table class="mx" style="margin-top:8px">
+        <tr><th style="width:38%">委任管理者</th><th>中身</th></tr>
+        <tr><td class="t">Organizations の</td><td class="l">組織のポリシーの管理を任せる</td></tr>
+        <tr><td class="t">AWS サービスの</td><td class="l">GuardDuty など統合したサービスの管理を任せる</td></tr>
+      </table>
+      <div class="mini">委任管理者はメンバーアカウントなので SCP が効く。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_getting-started_concepts.html">AWS Organizations の概念と用語</a>（管理アカウント・利用可能な機能セット・委任された管理者）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html">サービスコントロールポリシー (SCP)</a>（「SCP は、管理アカウントのユーザーやロールには影響を与えません。」）</div>
+</section>
+
+<section class="slide">
+  <h1>アカウントをまたいで「そろえる」「分け合う」</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">AWS RAM（Resource Access Manager）</div>
+      <svg width="410" height="150" viewBox="0 0 410 150">
+        <defs><marker id="r1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="10" y="20" width="170" height="110" rx="10" fill="#f5f5f7" stroke="#d2d2d7"/><text x="95" y="40" font-weight="700">ネットワーク用アカウント</text>
+          <rect x="30" y="52" width="130" height="64" rx="8" fill="#fff" stroke="#1f3a68"/><text x="95" y="72">VPC</text>
+          <rect x="45" y="80" width="100" height="26" rx="5" fill="#1f3a68"/><text x="95" y="97" fill="#fff">サブネット</text>
+          <line x1="180" y1="93" x2="236" y2="93" stroke="#1f3a68" stroke-width="2" marker-end="url(#r1)"/><text x="208" y="84" font-size="10.5">共有</text>
+          <rect x="238" y="20" width="162" height="110" rx="10" fill="#f5f5f7" stroke="#d2d2d7"/><text x="319" y="40" font-weight="700">アプリ用アカウント</text>
+          <rect x="258" y="70" width="122" height="40" rx="6" fill="#3a7d44"/><text x="319" y="94" fill="#fff">EC2 を置ける</text>
+        </g>
+      </svg>
+      <div class="mini">リソースごとにリソースベースのポリシーを書かなくても、アカウント・OU・組織全体と共有できる。代表例は VPC のサブネット、Transit Gateway、Route 53 Resolver のルール。</div>
+    </div>
+    <div>
+      <div class="lbl">タグポリシー</div>
+      <table class="mx">
+        <tr><th>そろえる前</th><th>タグポリシーで</th></tr>
+        <tr><td class="x">costcenter / Cost-Center / CostCenter</td><td class="t">CostCenter に統一</td></tr>
+      </table>
+      <div class="mini">組織のアカウントのリソースに付けるタグを標準化する（キーや値の大文字・小文字など）。コスト配分タグ（#23）の集計がずれない。</div>
+      <div class="point"><b>似たものの見分け：</b>そろえる＝タグポリシー、止める＝SCP、分け合う＝RAM、アカウントを束ねる＝Organizations。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/ram/latest/userguide/what-is.html">AWS RAM とは</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/access_policies.html">ポリシーとアクセス許可</a>（AWS RAM リソース共有の一般的なユースケース）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_tag-policies.html">タグポリシー</a></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>ガードレール：SCP・RCP・Control Tower</h1>
+  <p>アカウントの管理者でも外せない「上限」を、上の階層からかける。</p>
+  <div class="foot"><span>AWS SAA #02 マルチアカウントとフェデレーション</span><span>タスク 1.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>SCP：権限は与えない。上限だけ</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="200" viewBox="0 0 410 200">
+        <g font-size="12" text-anchor="middle">
+          <rect x="20" y="20" width="370" height="160" rx="12" fill="#fff4e5" stroke="#b25000" stroke-width="2"/>
+          <text x="205" y="42" fill="#b25000" font-weight="700">SCP が許す範囲（上限）</text>
+          <rect x="60" y="60" width="290" height="100" rx="10" fill="#e3eefc" stroke="#1f3a68" stroke-width="2"/>
+          <text x="205" y="84" fill="#1f3a68" font-weight="700">IAM のポリシーで許可した範囲</text>
+          <rect x="120" y="98" width="170" height="46" rx="8" fill="#3a7d44"/><text x="205" y="126" fill="#fff" font-weight="700">実際にできること</text>
+        </g>
+      </svg>
+      <div class="mini">実際の権限＝SCP（と RCP）が許す範囲と、ID ベース・リソースベースのポリシーが許す範囲の共通部分。図は Claude が作った模式図。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">だれに効くか</th><th>SCP</th></tr>
+        <tr><td class="l">メンバーアカウントの IAM ユーザー・ロール</td><td class="t">効く</td></tr>
+        <tr><td class="l">メンバーアカウントのルートユーザー</td><td class="t">効く</td></tr>
+        <tr><td class="l">委任管理者のアカウント</td><td class="t">効く</td></tr>
+        <tr><td class="l">管理アカウント</td><td class="x">効かない</td></tr>
+        <tr><td class="l">サービスにリンクされたロール</td><td class="x">効かない</td></tr>
+        <tr><td class="l">組織の外のユーザー・ロール</td><td class="x">効かない（→ RCP）</td></tr>
+      </table>
+      <div class="point warn"><b>IAM のポリシーがないユーザーは、SCP がすべてを許していても何もできない。</b>SCP は「開ける」ものではない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html">サービスコントロールポリシー (SCP)</a>（「SCP は、組織内の IAM ユーザーと IAM ロールにアクセス許可を付与しません。」「SCP はサービスにリンクされたロールに影響***しません***。」）</div>
+</section>
+
+<section class="slide">
+  <h1>SCP の評価：Allow は全階層、Deny はどこか1つ</h1>
+  <svg width="856" height="190" viewBox="0 0 856 190">
+    <g font-size="12" text-anchor="middle">
+      <text x="210" y="20" font-weight="700" fill="#1f3a68">許可：経路のすべてに Allow が要る</text>
+      <rect x="40" y="34" width="120" height="34" rx="6" fill="#3a7d44"/><text x="100" y="56" fill="#fff">ルート：全許可</text>
+      <rect x="40" y="88" width="120" height="34" rx="6" fill="#fdeceb" stroke="#b23a2c"/><text x="100" y="110" fill="#b23a2c">本番 OU：S3 だけ</text>
+      <rect x="40" y="142" width="120" height="34" rx="6" fill="#3a7d44"/><text x="100" y="164" fill="#fff">アカウントB：全許可</text>
+      <line x1="100" y1="68" x2="100" y2="88" stroke="#1f3a68" stroke-width="2"/><line x1="100" y1="122" x2="100" y2="142" stroke="#1f3a68" stroke-width="2"/>
+      <rect x="200" y="80" width="200" height="50" rx="8" fill="#fff" stroke="#1f3a68"/><text x="300" y="102" font-weight="700">アカウントB の上限</text><text x="300" y="120">＝ S3 だけ</text>
+      <text x="640" y="20" font-weight="700" fill="#b23a2c">拒否：経路のどこか1つの Deny で決まる</text>
+      <rect x="470" y="34" width="130" height="34" rx="6" fill="#3a7d44"/><text x="535" y="56" fill="#fff">ルート：EC2 許可</text>
+      <rect x="470" y="88" width="130" height="34" rx="6" fill="#b23a2c"/><text x="535" y="110" fill="#fff">開発 OU：削除を Deny</text>
+      <rect x="470" y="142" width="130" height="34" rx="6" fill="#3a7d44"/><text x="535" y="164" fill="#fff">アカウントC：EC2 許可</text>
+      <line x1="535" y1="68" x2="535" y2="88" stroke="#1f3a68" stroke-width="2"/><line x1="535" y1="122" x2="535" y2="142" stroke="#1f3a68" stroke-width="2"/>
+      <rect x="640" y="80" width="200" height="50" rx="8" fill="#fff" stroke="#b23a2c"/><text x="740" y="102" font-weight="700">アカウントC</text><text x="740" y="120">インスタンスの削除は不可</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>FullAWSAccess：</b>組織を作ると、すべてのルート・OU・アカウントに自動で付く「全部許可」の SCP。外して代わりの許可を付けないと、メンバーアカウントのすべての操作が失敗する。</div>
+    <div class="point"><b>2つの書き方：</b>FullAWSAccess を残して Deny を足す（拒否リスト）か、FullAWSAccess を外して必要なサービスだけ Allow する（許可リスト）。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html">SCP 評価</a>（SCP と Allow の連携の仕組み・SCP と Deny の連携の仕組み・SCP の使用戦略）。図の組織とポリシーは Claude が作った例</div>
+</section>
+
+<section class="slide">
+  <h1>SCP と RCP：守る向きがちがう</h1>
+  <svg width="856" height="170" viewBox="0 0 856 170">
+    <defs><marker id="r2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="250" y="10" width="420" height="150" rx="12" fill="#f5f5f7" stroke="#d2d2d7"/><text x="460" y="30" font-weight="700">自分の組織</text>
+      <rect x="280" y="56" width="140" height="56" rx="8" fill="#1f3a68"/><text x="350" y="82" fill="#fff" font-weight="700">IAM ロール</text><text x="350" y="100" fill="#fff" font-size="11">（プリンシパル）</text>
+      <rect x="500" y="56" width="140" height="56" rx="8" fill="#3a7d44"/><text x="570" y="82" fill="#fff" font-weight="700">S3 バケット</text><text x="570" y="100" fill="#fff" font-size="11">（リソース）</text>
+      <text x="350" y="138" fill="#b25000" font-weight="700">SCP がここを縛る</text>
+      <text x="570" y="138" fill="#b25000" font-weight="700">RCP がここを縛る</text>
+      <rect x="20" y="56" width="150" height="56" rx="8" fill="#6e6e73"/><text x="95" y="82" fill="#fff">組織の外の</text><text x="95" y="100" fill="#fff">プリンシパル</text>
+      <rect x="720" y="56" width="120" height="56" rx="8" fill="#6e6e73"/><text x="780" y="82" fill="#fff">組織の外の</text><text x="780" y="100" fill="#fff">リソース</text>
+      <line x1="420" y1="70" x2="498" y2="70" stroke="#1f3a68" stroke-width="2" marker-end="url(#r2)"/>
+      <path d="M170,96 C 300,170 420,160 498,104" fill="none" stroke="#6e6e73" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#r2)"/>
+      <path d="M420,96 C 520,40 640,40 718,70" fill="none" stroke="#1f3a68" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#r2)"/>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:18%"></th><th>SCP</th><th>RCP</th></tr>
+    <tr><td class="t">縛るもの</td><td class="l">自分の組織のプリンシパルが「何をできるか」（相手のリソースがどこにあっても）</td><td class="l">自分の組織のリソースに「だれが何をできるか」（組織の外の人も含む）</td></tr>
+    <tr><td class="t">こんなとき</td><td class="l">社員が使えるリージョンやサービスを限る</td><td class="l">組織の外からバケットに触らせない</td></tr>
+    <tr><td class="t">共通</td><td class="l" colspan="2">権限は与えない。管理アカウントには効かない。Organizations の「すべての機能」で使う</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_rcps.html">リソースコントロールポリシー (RCP)</a>（「組織のメンバーアカウント内の IAM プリンシパルのアクセス許可を制限する必要がある場合は、SCP を使用します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Control Tower：安全なマルチアカウント環境をすぐ作る</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">機能</th><th>中身</th></tr>
+        <tr><td class="t">ランディングゾーン</td><td class="l">ベストプラクティスに沿って設計された複数アカウントの環境（OU・アカウント・ユーザーなど）</td></tr>
+        <tr><td class="t">コントロール</td><td class="l">環境全体を統制するルール（ガードレールとも呼ぶ）。OU 単位で効く</td></tr>
+        <tr><td class="t">Account Factory</td><td class="l">承認済みの設定で新しいアカウントを作るテンプレート（Service Catalog の上に作られている）</td></tr>
+        <tr><td class="t">ダッシュボード</td><td class="l">アカウント・有効なコントロール・違反の状況を見る</td></tr>
+      </table>
+      <div class="mini">Control Tower は Organizations・Service Catalog・IAM Identity Center などを組み合わせて動かす。</div>
+    </div>
+    <div>
+      <div class="lbl">コントロールのふるまい</div>
+      <table class="mx">
+        <tr><th style="width:24%">種類</th><th>何をする</th><th style="width:30%">実装</th></tr>
+        <tr><td class="t">予防</td><td class="l">違反になる操作を許さない</td><td>SCP・RCP・宣言型ポリシー</td></tr>
+        <tr><td class="t">検出</td><td class="l">違反を見つけて知らせる</td><td>AWS Config ルール</td></tr>
+        <tr><td class="t">プロアクティブ</td><td class="l">作る前に調べ、違反なら作らせない</td><td>CloudFormation フック</td></tr>
+      </table>
+      <div class="mini">指針（ガイダンス）は別の分類で、必須・強く推奨・選択の3つ。</div>
+      <div class="point"><b>本番の言い回し：</b>「最小の運用の手間で、ガバナンスの効いた複数アカウントの環境を用意」→ Control Tower。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/controltower/latest/userguide/what-is-control-tower.html">AWS Control Tower とは</a>（機能）／<a class="src" href="https://docs.aws.amazon.com/controltower/latest/controlreference/control-behavior.html">Control behavior and guidance</a>（「The detective controls are implemented using AWS Config rules.」）</div>
+</section>
+
+<section class="slide">
+  <h1>責任共有モデル：どこまでが AWS で、どこからが自分か</h1>
+  <svg width="856" height="160" viewBox="0 0 856 160">
+    <g font-size="12.5" text-anchor="middle">
+      <rect x="20" y="10" width="816" height="64" rx="10" fill="#e3eefc" stroke="#1f3a68"/>
+      <text x="80" y="46" fill="#1f3a68" font-weight="700">お客様</text>
+      <rect x="140" y="22" width="160" height="40" rx="6" fill="#fff" stroke="#1f3a68"/><text x="220" y="47">データ・アプリ</text>
+      <rect x="310" y="22" width="190" height="40" rx="6" fill="#fff" stroke="#1f3a68"/><text x="405" y="47">ゲスト OS（更新・パッチ）</text>
+      <rect x="510" y="22" width="150" height="40" rx="6" fill="#fff" stroke="#1f3a68"/><text x="585" y="47">セキュリティグループ</text>
+      <rect x="670" y="22" width="150" height="40" rx="6" fill="#fff" stroke="#1f3a68"/><text x="745" y="47">IAM・暗号化の設定</text>
+      <rect x="20" y="86" width="816" height="64" rx="10" fill="#fff4e5" stroke="#b25000"/>
+      <text x="80" y="122" fill="#b25000" font-weight="700">AWS</text>
+      <rect x="140" y="98" width="200" height="40" rx="6" fill="#fff" stroke="#b25000"/><text x="240" y="123">ホスト OS・仮想化レイヤー</text>
+      <rect x="350" y="98" width="200" height="40" rx="6" fill="#fff" stroke="#b25000"/><text x="450" y="123">ハードウェア</text>
+      <rect x="560" y="98" width="260" height="40" rx="6" fill="#fff" stroke="#b25000"/><text x="690" y="123">施設の物理セキュリティ</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>範囲はサービスで変わる：</b>EC2 のようにサーバーを借りる形ほどお客様の範囲が広く、マネージドサービスほど AWS が多くを受け持つ（運用の負担が減る）。</div>
+    <div class="point warn"><b>ひっかけ：</b>「EC2 の OS のパッチは AWS が当てる」は誤り。ゲスト OS はお客様の責任。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/whitepapers/latest/aws-risk-and-compliance/shared-responsibility-model.html">AWS ホワイトペーパー「責任共有モデル」</a>（「お客様の責任範囲は、使用するサービス、IT 環境へのサービス統合、および関係法令に応じて異なります。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>ID の連携（フェデレーション）</h1>
+  <p>人には IAM ユーザーを作らない。外の ID でサインインして、ロールの一時的な鍵を使う。</p>
+  <div class="foot"><span>AWS SAA #02 マルチアカウントとフェデレーション</span><span>タスク 1.1・1.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>だれを、どれでつなぐか</h1>
+  <table class="mx">
+    <tr><th style="width:22%">フェデレーション</th><th style="width:22%">アカウント</th><th style="width:24%">対象</th><th>ID ソース</th></tr>
+    <tr><td class="t">IAM Identity Center</td><td>Organizations の複数のアカウント</td><td>社員（ワークフォース）</td><td class="l">SAML 2.0・マネージド Active Directory・Identity Center ディレクトリ</td></tr>
+    <tr><td class="t">IAM</td><td>単一のスタンドアロンアカウント</td><td>短期間の小規模な利用の人・マシン</td><td class="l">SAML 2.0・OIDC</td></tr>
+    <tr><td class="t">Cognito ID プール</td><td>どちらでも</td><td>AWS のリソースを使うアプリの利用者</td><td class="l">SAML 2.0・OIDC・ソーシャル（OAuth 2.0）</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">標準</th><th>IAM で使う STS の API</th><th style="width:34%">代表的な使い方</th></tr>
+        <tr><td class="t">SAML 2.0</td><td><code>AssumeRoleWithSAML</code></td><td class="l">社内の IdP（AD FS など）の社員</td></tr>
+        <tr><td class="t">OIDC</td><td><code>AssumeRoleWithWebIdentity</code></td><td class="l">GitHub Actions など AWS の外のワークロード</td></tr>
+      </table>
+    </div>
+    <div class="point"><b>AWS のおすすめ：</b>人間のユーザーには IAM ユーザーを個別に作らず、ID プロバイダーとのフェデレーションを使う。組織で一元管理するなら IAM Identity Center。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_roles_providers.html">ID プロバイダーと AWS とのフェデレーション</a>（IAM フェデレーションタイプの表。表は簡単にした）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/best-practices.html">IAM でのセキュリティのベストプラクティス</a></div>
+</section>
+
+<section class="slide">
+  <h1>IAM Identity Center と権限セット</h1>
+  <svg width="856" height="190" viewBox="0 0 856 190">
+    <defs><marker id="r3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="60" width="150" height="70" rx="10" fill="#6e6e73"/><text x="85" y="88" fill="#fff" font-weight="700">ID ソース</text><text x="85" y="106" fill="#fff" font-size="10.5">外部 IdP・AD・</text><text x="85" y="120" fill="#fff" font-size="10.5">Identity Center ディレクトリ</text>
+      <line x1="160" y1="95" x2="208" y2="95" stroke="#1f3a68" stroke-width="2" marker-end="url(#r3)"/>
+      <rect x="210" y="30" width="250" height="130" rx="12" fill="#e3eefc" stroke="#1f3a68" stroke-width="2"/><text x="335" y="52" fill="#1f3a68" font-weight="700">IAM Identity Center</text>
+      <rect x="230" y="64" width="210" height="34" rx="6" fill="#fff" stroke="#1f3a68"/><text x="335" y="86">グループ「監査」×権限セット「ReadOnly」</text>
+      <rect x="230" y="108" width="210" height="34" rx="6" fill="#fff" stroke="#1f3a68"/><text x="335" y="130">グループ「開発」×権限セット「PowerUser」</text>
+      <line x1="460" y1="80" x2="560" y2="50" stroke="#1f3a68" stroke-width="2" marker-end="url(#r3)"/>
+      <line x1="460" y1="95" x2="560" y2="100" stroke="#1f3a68" stroke-width="2" marker-end="url(#r3)"/>
+      <line x1="460" y1="125" x2="560" y2="150" stroke="#1f3a68" stroke-width="2" marker-end="url(#r3)"/>
+      <rect x="562" y="30" width="270" height="40" rx="8" fill="#3a7d44"/><text x="697" y="55" fill="#fff">本番アカウント：ReadOnly のロール</text>
+      <rect x="562" y="80" width="270" height="40" rx="8" fill="#3a7d44"/><text x="697" y="105" fill="#fff">開発アカウント：PowerUser のロール</text>
+      <rect x="562" y="130" width="270" height="40" rx="8" fill="#3a7d44"/><text x="697" y="155" fill="#fff">ログアカウント：ReadOnly のロール</text>
+      <text x="560" y="186" fill="#4a5a78" font-size="11">割り当てると Identity Center が各アカウントにロールを作る（構成は Claude の例）</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%">用語</th><th>決まり</th></tr>
+    <tr><td class="t">権限セット</td><td class="l">IAM ポリシーをまとめたテンプレート。AWS 管理・カスタマー管理・インライン・職務機能のポリシーを入れられ、境界も付けられる。1人に複数を割り当てられる</td></tr>
+    <tr><td class="t">ID ソース</td><td class="l">組織に1つ。外部 IdP（Okta・Entra ID など）、Active Directory（オンプレミスか AWS Managed Microsoft AD）、Identity Center ディレクトリ（既定）。Simple AD は不可</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/singlesignon/latest/userguide/permissionsetsconcept.html">権限セットを使用して AWS アカウントを管理する</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/singlesignon/latest/userguide/manage-your-identity-source.html">ID ソースを管理する</a>（「ID ソースは AWS Organizations で組織あたり 1 つのみ持つことができます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Active Directory を AWS で使う3つの形</h1>
+  <table class="mx">
+    <tr><th style="width:22%"></th><th>AWS Managed Microsoft AD</th><th>AD Connector</th><th>Simple AD</th></tr>
+    <tr><td class="t">中身</td><td>AWS が管理する本物の Microsoft AD</td><td>オンプレミスの AD へ問い合わせを転送するゲートウェイ</td><td>Samba 4 の AD 互換ディレクトリ</td></tr>
+    <tr><td class="t">ユーザーの置き場所</td><td>AWS の中のドメイン</td><td>オンプレミスの AD のまま（キャッシュしない）</td><td>AWS の中</td></tr>
+    <tr><td class="t">配置</td><td>VPC の複数の AZ にドメインコントローラーのペア</td><td>オンプレミスのドメインと1対1</td><td>―</td></tr>
+    <tr><td class="t">オンプレミスとの信頼関係</td><td class="t">結べる</td><td>（AD そのものに転送する）</td><td>―</td></tr>
+    <tr><td class="t">ほかのアカウントと共有</td><td class="t">できる</td><td class="x">できない</td><td>―</td></tr>
+    <tr><td class="t">向いている場面</td><td class="l">SharePoint・.NET・SQL Server など AD 対応アプリを AWS で動かす</td><td class="l">今の AD のアカウントのまま AWS にサインイン</td><td class="l">新しい顧客には提供されていない</td></tr>
+  </table>
+  <div class="point"><b>選び方：</b>「AWS の中に AD のドメインが要る」→ Managed Microsoft AD。「ユーザー情報を AWS に置かずに今の AD を使う」→ AD Connector。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/directoryservice/latest/admin-guide/directory_microsoft_ad.html">AWS Managed Microsoft AD</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/directoryservice/latest/admin-guide/directory_ad_connector.html">AD Connector</a>（「AD Connector を他の AWS アカウントと共有することはできません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/directoryservice/latest/admin-guide/directory_simple_ad.html">Simple AD</a>（「Simple AD は新規顧客に公開されなくなりました。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Cognito：アプリの利用者の「だれか」と「何を使えるか」</h1>
+  <svg width="856" height="180" viewBox="0 0 856 180">
+    <defs><marker id="r4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="60" width="120" height="60" rx="10" fill="#6e6e73"/><text x="70" y="86" fill="#fff" font-weight="700">アプリの</text><text x="70" y="104" fill="#fff" font-weight="700">利用者</text>
+      <line x1="130" y1="90" x2="178" y2="90" stroke="#1f3a68" stroke-width="2" marker-end="url(#r4)"/><text x="154" y="80" font-size="10.5">ログイン</text>
+      <rect x="180" y="30" width="210" height="120" rx="12" fill="#e3eefc" stroke="#1f3a68" stroke-width="2"/><text x="285" y="54" fill="#1f3a68" font-weight="700">ユーザープール（認証）</text>
+      <text x="285" y="78" font-size="11">サインアップ・サインイン</text><text x="285" y="98" font-size="11">Google・Apple・SAML・OIDC もまとめる</text><text x="285" y="122" font-size="11" font-weight="700">→ JWT を発行</text>
+      <line x1="390" y1="90" x2="438" y2="90" stroke="#1f3a68" stroke-width="2" marker-end="url(#r4)"/><text x="414" y="80" font-size="10.5">トークン</text>
+      <rect x="440" y="30" width="210" height="120" rx="12" fill="#eef6ef" stroke="#3a7d44" stroke-width="2"/><text x="545" y="54" fill="#3a7d44" font-weight="700">ID プール（認可）</text>
+      <text x="545" y="78" font-size="11">トークンを AWS の</text><text x="545" y="98" font-size="11">一時的な認証情報に交換</text><text x="545" y="122" font-size="11" font-weight="700">ゲスト（未ログイン）にも出せる</text>
+      <line x1="650" y1="90" x2="698" y2="90" stroke="#1f3a68" stroke-width="2" marker-end="url(#r4)"/>
+      <rect x="700" y="50" width="140" height="80" rx="10" fill="#3a7d44"/><text x="770" y="84" fill="#fff" font-weight="700">S3・DynamoDB</text><text x="770" y="104" fill="#fff" font-size="11">を直接呼ぶ</text>
+      <text x="420" y="172" fill="#4a5a78" font-size="11">2つは別々にも組み合わせても使える。API Gateway の API だけならユーザープールの JWT で足りる</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%">聞かれ方</th><th>答え</th></tr>
+    <tr><td class="l">会員登録・ログイン画面・ソーシャルログインを付けたい</td><td class="t">ユーザープール</td></tr>
+    <tr><td class="l">アプリから S3 に直接アップロードさせたい（鍵を埋め込まずに）</td><td class="t">ID プール</td></tr>
+    <tr><td class="l">ログインしていない人にも一部のデータを読ませたい</td><td class="t">ID プールのゲストアクセス</td></tr>
+    <tr><td class="l">社員が組織の AWS アカウントを使う</td><td class="x">Cognito ではなく IAM Identity Center</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/cognito/latest/developerguide/what-is-amazon-cognito.html">Amazon Cognito とは</a>（「このユーザーは誰ですか? (認証)」「このユーザーはどの AWS リソースにアクセスできますか? (認可)」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/cognito/latest/developerguide/cognito-identity.html">Amazon Cognito アイデンティティプール</a></div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">組織<span>OU で分け、OU にポリシー。管理アカウントには SCP が効かないので作業に使わない</span></div>
+      <div class="box b2">SCP・RCP<span>上限だけ。Allow は全階層、Deny はどこか1つ。SCP＝自分の人、RCP＝自分のリソース</span></div>
+      <div class="box b3">Control Tower<span>ランディングゾーン・コントロール（予防・検出・プロアクティブ）・Account Factory</span></div>
+      <div class="box b4">フェデレーション<span>社員＝Identity Center＋権限セット。AD＝Managed AD か AD Connector。アプリ＝Cognito</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:58%">こんな要件なら</th><th>答え</th></tr>
+        <tr><td class="l">メンバーアカウントで特定の操作を絶対にさせない</td><td class="t">SCP で Deny</td></tr>
+        <tr><td class="l">組織の外から自社のリソースに触らせない</td><td class="t">RCP</td></tr>
+        <tr><td class="l">ガバナンス済みの複数アカウントをすぐ用意</td><td class="t">Control Tower</td></tr>
+        <tr><td class="l">社員が今の IdP で複数アカウントにサインイン</td><td class="t">IAM Identity Center</td></tr>
+        <tr><td class="l">今の AD をそのまま使い、AWS にユーザーを置かない</td><td class="t">AD Connector</td></tr>
+        <tr><td class="l">アプリの利用者に S3 を直接使わせる</td><td class="t">Cognito ID プール</td></tr>
+      </table>
+      <div class="point">次の #03 では、VPC のセキュリティグループ・ネットワーク ACL と、WAF・Shield などの外からの攻撃への守りを扱う。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
