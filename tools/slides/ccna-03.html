@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CCNA #03 TCP・UDP と端末の IP 設定 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">CCNA（200-301 v1.1）　1.0 ネットワークの基礎　#03</div>
+  <h1>TCP・UDP と端末の IP 設定</h1>
+  <p>出題範囲 1.5・1.10 ― TCP と UDP のちがい（つなぎ方・信頼性・ポート番号）、そして Windows・macOS・Linux で IP アドレス・マスク・ゲートウェイ・DNS を確かめる方法</p>
+  <div class="refs-legend">各ページの下に、根拠にしたRFCやOSのベンダーの資料を書いた（青い文字を押すと開く）</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>1.5 は Compare（比べる）、1.10 は Verify（確かめる）</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 TCP のしくみ（1.5）<span>3 ウェイハンドシェイク、シーケンス番号と確認応答、再送、ウィンドウ、輻輳制御</span></div>
+      <div class="box b2">2 UDP のしくみ（1.5）<span>8 バイトのヘッダー、コネクションレス、ベストエフォート、RTP</span></div>
+      <div class="box b3">3 ポート番号（1.5）<span>範囲（0〜1023・1024〜49151・49152〜65535）と主なポート</span></div>
+      <div class="box b4">4 端末の IP 設定（1.10）<span>IP・マスク・ゲートウェイ・DNS、APIPA、ipconfig・ip・resolv.conf・macOS の設定画面</span></div>
+    </div>
+    <div>
+      <div class="cap">どの層が何を見分けるか（Claude が作成）</div>
+      <svg width="400" height="210" viewBox="0 0 400 210">
+        <g font-size="10.5" text-anchor="middle">
+          <rect x="20" y="10" width="360" height="40" rx="6" fill="#eef2f8" stroke="#5b80bf"/>
+          <text x="200" y="27" fill="#1f3a68" font-weight="700">アプリケーション</text><text x="200" y="42" fill="#1f3a68" font-size="9.5">Web・SSH・DNS・DHCP・音声</text>
+          <rect x="20" y="58" width="175" height="40" rx="6" fill="#1f3a68"/><text x="107" y="75" fill="#fff" font-weight="700">TCP</text><text x="107" y="90" fill="#fff" font-size="9.5">確実・順番どおり</text>
+          <rect x="205" y="58" width="175" height="40" rx="6" fill="#b25000"/><text x="292" y="75" fill="#fff" font-weight="700">UDP</text><text x="292" y="90" fill="#fff" font-size="9.5">軽い・速い</text>
+          <rect x="20" y="106" width="360" height="40" rx="6" fill="#5b80bf"/><text x="200" y="123" fill="#fff" font-weight="700">IP</text><text x="200" y="138" fill="#fff" font-size="9.5">どの機器へ（IP アドレス）</text>
+          <text x="200" y="168" fill="#1f3a68" font-size="10">ポート番号 ＝ どのアプリへ　／　IP アドレス ＝ どの機器へ</text>
+          <text x="200" y="190" fill="#7a3a00" font-size="10">端末は IP・マスク・ゲートウェイ・DNS の 4 つで外とつながる</text>
+        </g>
+      </svg>
+      <div class="point"><b>芯：</b>TCP は「確実さ」のために手間をかけ、UDP は手間を省いて「軽さ」を取る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco CCNA Exam v1.1 (200-301) Exam Topics</a>（1.5 Compare TCP to UDP／1.10 Verify IP parameters for Client OS (Windows, Mac OS, Linux)）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc9293#section-2.2">RFC 9293 2.2</a>（TCP uses port numbers to identify application services）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>TCP と UDP</h1>
+  <p>確実さを取るか、軽さを取るか。</p>
+  <div class="foot"><span>CCNA #03 TCP・UDP と端末の IP 設定</span><span>1.5</span></div>
+</section>
+
+<section class="slide">
+  <h1>TCP と UDP をくらべる</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">ヘッダーの大きさ（1 行 ＝ 32 ビット）</div>
+      <svg width="400" height="200" viewBox="0 0 400 200">
+        <g font-size="10" text-anchor="middle">
+          <text x="100" y="12" fill="#1f3a68" font-weight="700">TCP（20 バイト〜）</text>
+          <rect x="10" y="18" width="90" height="22" fill="#eef2f8" stroke="#5b80bf"/><text x="55" y="33" fill="#1f3a68">送信元ポート</text>
+          <rect x="100" y="18" width="90" height="22" fill="#eef2f8" stroke="#5b80bf"/><text x="145" y="33" fill="#1f3a68">宛先ポート</text>
+          <rect x="10" y="40" width="180" height="22" fill="#1f3a68"/><text x="100" y="55" fill="#fff">シーケンス番号</text>
+          <rect x="10" y="62" width="180" height="22" fill="#1f3a68"/><text x="100" y="77" fill="#fff">確認応答番号</text>
+          <rect x="10" y="84" width="90" height="22" fill="#eef2f8" stroke="#5b80bf"/><text x="55" y="99" fill="#1f3a68">長さ・フラグ</text>
+          <rect x="100" y="84" width="90" height="22" fill="#1f3a68"/><text x="145" y="99" fill="#fff">ウィンドウ</text>
+          <rect x="10" y="106" width="90" height="22" fill="#eef2f8" stroke="#5b80bf"/><text x="55" y="121" fill="#1f3a68">チェックサム</text>
+          <rect x="100" y="106" width="90" height="22" fill="#eef2f8" stroke="#5b80bf"/><text x="145" y="121" fill="#1f3a68">緊急ポインタ</text>
+          <rect x="10" y="128" width="180" height="18" fill="#fff" stroke="#9fb0cf" stroke-dasharray="4 3"/><text x="100" y="141" fill="#4a5a78">オプション（あれば）</text>
+          <text x="300" y="12" fill="#b25000" font-weight="700">UDP（8 バイト）</text>
+          <rect x="210" y="18" width="90" height="22" fill="#eef2f8" stroke="#b25000"/><text x="255" y="33" fill="#7a3a00">送信元ポート</text>
+          <rect x="300" y="18" width="90" height="22" fill="#eef2f8" stroke="#b25000"/><text x="345" y="33" fill="#7a3a00">宛先ポート</text>
+          <rect x="210" y="40" width="90" height="22" fill="#eef2f8" stroke="#b25000"/><text x="255" y="55" fill="#7a3a00">長さ</text>
+          <rect x="300" y="40" width="90" height="22" fill="#eef2f8" stroke="#b25000"/><text x="345" y="55" fill="#7a3a00">チェックサム</text>
+          <text x="300" y="90" fill="#7a3a00" font-size="9.5">番号・確認応答・ウィンドウは</text>
+          <text x="300" y="104" fill="#7a3a00" font-size="9.5">ない</text>
+          <text x="200" y="170" fill="#1f3a68" font-size="10">濃い紺の欄 ＝ TCP にだけある「確実さ」のための欄</text>
+          <text x="200" y="188" fill="#4a5a78" font-size="9.5">（図は RFC 9293 図 1・RFC 768 をもとに Claude が簡略化）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:24%"></th><th>TCP</th><th>UDP</th></tr>
+        <tr><td class="t">接続</td><td>コネクション型</td><td>コネクションレス</td></tr>
+        <tr><td class="t">信頼性</td><td>順番どおり・再送</td><td>保証しない（ベストエフォート）</td></tr>
+        <tr><td class="t">番号</td><td>シーケンス・確認応答</td><td>なし</td></tr>
+        <tr><td class="t">流れの制御</td><td>ウィンドウ・輻輳制御</td><td>なし</td></tr>
+        <tr><td class="t">ヘッダー</td><td>20 バイト〜</td><td><b>8 バイト</b></td></tr>
+        <tr><td class="t">共通</td><td colspan="2">ポート番号・チェックサム</td></tr>
+      </table>
+      <div class="point warn"><b>落とし穴：</b>チェックサムは<b>両方にある</b>。UDP は壊れたことは分かるが、<b>直さない</b>（再送しない）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc9293#section-3.1">RFC 9293 3.1</a>（Figure 1: TCP Header Format／size(Options) == (DOffset-5)*32）・<a class="src" href="https://www.rfc-editor.org/rfc/rfc9293#section-2.2">2.2</a>（reliable, in-order, byte-stream service）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc768">RFC 768</a>（delivery and duplicate protection are not guaranteed／the minimum value of the length is eight）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc8085">RFC 8085</a>（minimal, unreliable, best-effort, message-passing transport）</div>
+</section>
+
+<section class="slide">
+  <h1>3 ウェイハンドシェイクと終わり方</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="240" viewBox="0 0 400 240">
+        <g font-size="10.5" text-anchor="middle">
+          <rect x="10" y="6" width="90" height="26" rx="5" fill="#1f3a68"/><text x="55" y="23" fill="#fff">A（PC）</text>
+          <rect x="300" y="6" width="90" height="26" rx="5" fill="#1f3a68"/><text x="345" y="23" fill="#fff">B（サーバー）</text>
+          <line x1="55" y1="32" x2="55" y2="232" stroke="#9fb0cf" stroke-width="2"/>
+          <line x1="345" y1="32" x2="345" y2="232" stroke="#9fb0cf" stroke-width="2"/>
+          <line x1="55" y1="50" x2="343" y2="74" stroke="#1f3a68" stroke-width="2"/><polygon points="343,74 333,67 331,77" fill="#1f3a68"/>
+          <text x="200" y="52" fill="#1f3a68">① SYN　SEQ=100</text>
+          <line x1="345" y1="90" x2="57" y2="114" stroke="#b25000" stroke-width="2"/><polygon points="57,114 69,107 67,117" fill="#b25000"/>
+          <text x="200" y="92" fill="#7a3a00">② SYN＋ACK　SEQ=300・ACK=101</text>
+          <line x1="55" y1="130" x2="343" y2="154" stroke="#1f3a68" stroke-width="2"/><polygon points="343,154 333,147 331,157" fill="#1f3a68"/>
+          <text x="200" y="132" fill="#1f3a68">③ ACK　SEQ=101・ACK=301</text>
+          <rect x="120" y="170" width="160" height="24" rx="5" fill="#2e7d32"/><text x="200" y="186" fill="#fff">両方 ESTABLISHED</text>
+          <text x="200" y="214" fill="#1f3a68" font-size="10">SYN は番号を 1 つ使うので、ACK は＋1</text>
+          <text x="200" y="230" fill="#4a5a78" font-size="9.5">（RFC 9293 図 6 の番号を使った）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:22%">フラグ</th><th>意味</th><th>使う場面</th></tr>
+        <tr><td class="t">SYN</td><td>番号を合わせる</td><td>始めるとき</td></tr>
+        <tr><td class="t">ACK</td><td>確認応答の欄が有効</td><td>接続後はいつも</td></tr>
+        <tr><td class="t">FIN</td><td>もう送るデータはない</td><td>ふつうの終わり</td></tr>
+        <tr><td class="t">RST</td><td>コネクションをリセット</td><td>打ち切り・異常</td></tr>
+      </table>
+      <div class="point"><b>ふつうの終わり方：</b>片方が FIN →相手が ACK。相手も送り終えたら FIN →ACK。閉じるのは<b>片方向ずつ</b>で、FIN を送った側も相手が閉じるまで受け取れる。</div>
+      <div class="point warn"><b>UDP には</b>この手順がない。いきなりデータを送る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc9293#section-3.5">RFC 9293 3.5</a>（The "three-way handshake" is the procedure used to establish a connection／Figure 6: Basic Three-Way Handshake）・<a class="src" href="https://www.rfc-editor.org/rfc/rfc9293#section-3.6">3.6</a>（We have chosen to treat CLOSE in a simplex fashion. The user who CLOSEs may continue to RECEIVE until … the remote peer has CLOSED also）・<a class="src" href="https://www.rfc-editor.org/rfc/rfc9293#section-3.1">3.1</a>（ACK: Acknowledgment field is significant／RST: Reset the connection／SYN: Synchronize sequence numbers／FIN: No more data from sender）</div>
+</section>
+
+<section class="slide">
+  <h1>シーケンス番号と確認応答の計算</h1>
+  <div class="cols">
+    <div>
+      <div class="formula" style="font-size:16px">次の SEQ ＝ 今の SEQ ＋ データのバイト数</div>
+      <div class="formula" style="font-size:16px">ACK ＝ 受け取った最後のバイト ＋ 1</div>
+      <ol class="steps">
+        <li>A が SEQ=101 で <b>500 バイト</b>送る（101〜600 番）</li>
+        <li>B は 600 番まで受けたので <b>ACK=601</b>（次は 601 がほしい）</li>
+        <li>A は次に SEQ=601 から送る</li>
+        <li>601 のセグメントが失われると、B は ACK=601 のまま → A は時間切れ（RTO）で<b>再送</b></li>
+      </ol>
+      <div class="mini">数字は計算の例として Claude が作った。</div>
+    </div>
+    <div>
+      <svg width="400" height="150" viewBox="0 0 400 150">
+        <g font-size="10" text-anchor="middle">
+          <text x="200" y="14" fill="#1f3a68" font-weight="700">バイトの番号の流れ</text>
+          <rect x="10" y="24" width="180" height="30" fill="#5b80bf"/><text x="100" y="43" fill="#fff">SEQ=101〜600（500 B）</text>
+          <rect x="190" y="24" width="120" height="30" fill="#8fa8d6"/><text x="250" y="43" fill="#fff">601〜</text>
+          <line x1="190" y1="62" x2="190" y2="80" stroke="#b25000" stroke-width="2"/>
+          <text x="190" y="94" fill="#7a3a00" font-weight="700">ACK=601 ＝ ここから先がほしい</text>
+          <text x="200" y="124" fill="#1f3a68">SYN を送ると番号を 1 つ使う（ISN、データは ISN＋1 から）</text>
+        </g>
+      </svg>
+      <div class="point"><b>番号はバイトの数：</b>セグメントの数ではなく、送ったバイトの位置を表す。だから受け手は抜け・重複・順番の入れ替わりが分かる。</div>
+      <div class="point warn"><b>落とし穴：</b>ACK は「受け取った最後の番号」ではなく<b>その次</b>。600 ではなく 601。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc9293#section-3.1">RFC 9293 3.1</a>（Sequence Number: The sequence number of the first data octet in this segment … If SYN is set, the sequence number is the initial sequence number (ISN) and the first data octet is ISN+1／Acknowledgment Number: … the value of the next sequence number the sender of the segment is expecting to receive）・<a class="src" href="https://www.rfc-editor.org/rfc/rfc9293#section-3.8.1">3.8.1</a>（the retransmission timeout (RTO) must be dynamically determined）</div>
+</section>
+
+<section class="slide">
+  <h1>ウィンドウと輻輳制御</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">ウィンドウ ＝ 受け手が今受け取れる量（Claude が作成）</div>
+      <svg width="400" height="170" viewBox="0 0 400 170">
+        <g font-size="10" text-anchor="middle">
+          <rect x="10" y="30" width="80" height="30" fill="#2e7d32"/><text x="50" y="49" fill="#fff">ACK 済み</text>
+          <rect x="90" y="30" width="200" height="30" fill="#5b80bf" stroke="#1f3a68" stroke-width="2"/><text x="190" y="49" fill="#fff">ACK を待たずに送れる範囲</text>
+          <rect x="290" y="30" width="100" height="30" fill="#dde5f2"/><text x="340" y="49" fill="#4a5a78">まだ送れない</text>
+          <text x="190" y="22" fill="#1f3a68" font-weight="700">← ウィンドウ（受け手が知らせる）→</text>
+          <line x1="110" y1="74" x2="170" y2="74" stroke="#2e7d32" stroke-width="2"/><polygon points="170,69 180,74 170,79" fill="#2e7d32"/>
+          <text x="190" y="94" fill="#2e7d32">ACK が来るたびに右へずれる（スライディング）</text>
+          <rect x="10" y="112" width="380" height="46" rx="8" fill="#fff4e8" stroke="#b25000"/>
+          <text x="200" y="132" fill="#7a3a00">受け手が 0 を知らせると、送り手は止まる</text>
+          <text x="200" y="149" fill="#7a3a00" font-size="9.5">（RFC 9293 3.8.6.1 Zero-Window Probing）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:24%"></th><th>フロー制御</th><th>輻輳制御</th></tr>
+        <tr><td class="t">合わせる相手</td><td><b>受け手</b>のバッファー</td><td><b>ネットワーク</b>の混み具合</td></tr>
+        <tr><td class="t">しくみ</td><td>ウィンドウの欄（16 ビット）</td><td>スロースタート・輻輳回避・高速再送・高速回復</td></tr>
+        <tr><td class="t">決まり</td><td>RFC 9293</td><td>RFC 5681</td></tr>
+        <tr><td class="t">UDP</td><td>なし</td><td>なし</td></tr>
+      </table>
+      <div class="point"><b>なぜ速い？</b>1 つ送るたびに ACK を待つと遅い。ウィンドウの範囲までは続けて送り、まとめて ACK を受ける。</div>
+      <div class="mini">UDP は輻輳制御を持たないので、アプリが線の速さで送り続けると経路を混ませる（RFC 8085）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc9293#section-3.8.6">RFC 9293 3.8.6</a>（The window sent in each segment indicates the range of sequence numbers the sender of the window (the data receiver) is currently prepared to accept … related to the data buffer space）・3.1（Window: 16 bits）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc5681">RFC 5681</a>（slow start, congestion avoidance, fast retransmit, and fast recovery）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc8085">RFC 8085</a>（UDP … provides no inherent congestion control mechanisms）</div>
+</section>
+
+<section class="slide">
+  <h1>UDP の性質と使いどころ</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">UDP がしないこと</th><th>だから…</th></tr>
+        <tr><td class="t">接続をつくる</td><td>つなぐ・切る手間がない、覚える状態が少ない</td></tr>
+        <tr><td class="t">再送</td><td>失ったら失ったまま。遅れが増えない</td></tr>
+        <tr><td class="t">重複・順番の処理</td><td>必要ならアプリが自分で作る</td></tr>
+        <tr><td class="t">輻輳制御</td><td>送る量はアプリしだい</td></tr>
+      </table>
+      <div class="point"><b>RFC 8085：</b>確実な配達がいるアプリは、その仕組みを<b>自分で作らなければならない（MUST）</b>。順番がいるなら自分で並べ直す。</div>
+    </div>
+    <div>
+      <div class="box b2">音声・動画（RTP）<span>遅れて届いた音は役に立たない。再送して待つより、次を流す。RTP はふつう UDP の上で動き、UDP のポート番号とチェックサムを使う。</span></div>
+      <div class="box b1" style="margin-top:8px">1 往復で済むやりとり<span>DNS の問い合わせ、DHCP、TFTP、SNMP、syslog、NTP。接続をつくる手間のほうが大きい。</span></div>
+      <div class="point warn"><b>落とし穴：</b>「UDP は信頼性がない＝役に立たない」ではない。<b>軽さ・速さ</b>のために選ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc8085">RFC 8085</a> 1（they do not establish end-to-end connections … does not incur connection establishment and teardown overheads）・3.3（UDP does not provide any reliability … Applications that do require reliable message delivery MUST implement an appropriate mechanism themselves／does not protect against datagram duplication／Applications that require ordered delivery MUST reestablish datagram ordering themselves）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc3550">RFC 3550</a>（Applications typically run RTP on top of UDP to make use of its multiplexing and checksum services）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>ポート番号</h1>
+  <p>どの機器の、どのアプリへ届けるか。</p>
+  <div class="foot"><span>CCNA #03 TCP・UDP と端末の IP 設定</span><span>1.5</span></div>
+</section>
+
+<section class="slide">
+  <h1>ポート番号の範囲</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="110" viewBox="0 0 400 110">
+        <g font-size="10" text-anchor="middle">
+          <rect x="10" y="20" width="60" height="34" fill="#1f3a68"/><text x="40" y="41" fill="#fff">System</text>
+          <rect x="70" y="20" width="230" height="34" fill="#5b80bf"/><text x="185" y="41" fill="#fff">User（Registered）</text>
+          <rect x="300" y="20" width="90" height="34" fill="#b25000"/><text x="345" y="41" fill="#fff">Dynamic</text>
+          <text x="10" y="70" fill="#1f3a68" text-anchor="start">0</text>
+          <text x="70" y="70" fill="#1f3a68">1024</text>
+          <text x="300" y="70" fill="#1f3a68">49152</text>
+          <text x="390" y="70" fill="#1f3a68" text-anchor="end">65535</text>
+          <text x="200" y="98" fill="#4a5a78" font-size="9.5">16 ビット＝0〜65535（幅は見やすさのため調整）</text>
+        </g>
+      </svg>
+      <table class="mx">
+        <tr><th style="width:30%">範囲</th><th>RFC 6335 の名前</th><th>使い方</th></tr>
+        <tr><td class="t">0〜1023</td><td>System（Well Known）</td><td>サーバーの待ち受け</td></tr>
+        <tr><td class="t">1024〜49151</td><td>User（Registered）</td><td>IANA に登録</td></tr>
+        <tr><td class="t">49152〜65535</td><td>Dynamic（Private・Ephemeral）</td><td>割り当てない。一時的に使う</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">PC が Web サーバーにつなぐとき（Claude が作成）</div>
+      <svg width="400" height="140" viewBox="0 0 400 140">
+        <g font-size="10" text-anchor="middle">
+          <rect x="10" y="20" width="110" height="50" rx="6" fill="#eef2f8" stroke="#5b80bf"/><text x="65" y="40" fill="#1f3a68">PC</text><text x="65" y="56" fill="#1f3a68" font-size="9.5">192.168.1.23</text>
+          <rect x="280" y="20" width="110" height="50" rx="6" fill="#1f3a68"/><text x="335" y="40" fill="#fff">Web サーバー</text><text x="335" y="56" fill="#fff" font-size="9.5">203.0.113.10</text>
+          <line x1="120" y1="38" x2="278" y2="38" stroke="#1f3a68" stroke-width="2"/><polygon points="278,33 288,38 278,43" fill="#1f3a68"/>
+          <text x="200" y="32" fill="#1f3a68" font-size="9.5">送信元 50123 → 宛先 443</text>
+          <line x1="280" y1="56" x2="122" y2="56" stroke="#b25000" stroke-width="2"/><polygon points="122,51 112,56 122,61" fill="#b25000"/>
+          <text x="200" y="70" fill="#7a3a00" font-size="9.5">送信元 443 → 宛先 50123</text>
+          <text x="200" y="100" fill="#1f3a68">送信元・宛先の IP ＋ ポート ＋ プロトコル</text>
+          <text x="200" y="116" fill="#1f3a68">→ 1 つの通信が決まる</text>
+        </g>
+      </svg>
+      <div class="point"><b>覚え方：</b>サーバーは<b>決まった番号</b>で待ち、クライアントは<b>一時的な番号</b>から送る。返事は番号を入れ替えて戻る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc6335#section-6">RFC 6335 6</a>（the System Ports, also known as the Well Known Ports, from 0-1023／the User Ports, also known as the Registered Ports, from 1024-49151／the Dynamic Ports, also known as the Private or Ephemeral Ports, from 49152-65535 (never assigned)）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc9293#section-2.2">RFC 9293 2.2</a>（TCP uses port numbers to identify application services and to multiplex distinct flows between hosts）</div>
+</section>
+
+<section class="slide">
+  <h1>主なポート番号</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">TCP を使う</div>
+      <table class="mx">
+        <tr><th style="width:30%">ポート</th><th>プロトコル</th><th>根拠</th></tr>
+        <tr><td class="t">20・21</td><td>FTP（データ・制御）</td><td>RFC 959・IANA</td></tr>
+        <tr><td class="t">22</td><td>SSH</td><td>RFC 4253</td></tr>
+        <tr><td class="t">23</td><td>Telnet</td><td>RFC 854・IANA</td></tr>
+        <tr><td class="t">25</td><td>SMTP</td><td>RFC 5321</td></tr>
+        <tr><td class="t">80・443</td><td>HTTP・HTTPS</td><td>IANA</td></tr>
+      </table>
+      <div class="point"><b>DNS（53）は両方：</b>ふつうの問い合わせは UDP（512 バイトまで、長いと TC ビット）。<b>ゾーン転送は TCP</b>。</div>
+    </div>
+    <div>
+      <div class="cap">UDP を使う</div>
+      <table class="mx">
+        <tr><th style="width:30%">ポート</th><th>プロトコル</th><th>根拠</th></tr>
+        <tr><td class="t">67・68</td><td>DHCP（サーバー・クライアント）</td><td>RFC 2131</td></tr>
+        <tr><td class="t">69</td><td>TFTP</td><td>RFC 1350</td></tr>
+        <tr><td class="t">123</td><td>NTP</td><td>RFC 5905（#16）</td></tr>
+        <tr><td class="t">161・162</td><td>SNMP・トラップ</td><td>RFC 3417（#18）</td></tr>
+        <tr><td class="t">514</td><td>syslog</td><td>IANA（#18）</td></tr>
+      </table>
+      <div class="point warn"><b>取り違えやすい組：</b>FTP（TCP 20・21）⇔ TFTP（UDP 69）／DHCP の 67（サーバー）⇔ 68（クライアント）／SNMP の 161（問い合わせ）⇔ 162（トラップ）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml">IANA Service Name and Transport Protocol Port Number Registry</a>（ftp-data 20, ftp 21, telnet 23, http 80, https 443, ntp 123, snmp 161, snmptrap 162, syslog 514/udp）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc4253#section-4.1">RFC 4253 4.1</a>（the server normally listens for connections on port 22）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc854">RFC 854</a>（A TELNET connection is a Transmission Control Protocol (TCP) connection）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc5321">RFC 5321</a>（port 25）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc2131#section-4.1">RFC 2131 4.1</a>（DHCP uses UDP … port (67) … port (68)）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc1350">RFC 1350</a>（known TID 69）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc1035#section-4.2">RFC 1035 4.2</a>（restricted to 512 bytes … TC bit／UDP is not acceptable for zone transfers）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>端末の IP 設定を確かめる</h1>
+  <p>4 つの設定と、OS ごとの見方。</p>
+  <div class="foot"><span>CCNA #03 TCP・UDP と端末の IP 設定</span><span>1.10</span></div>
+</section>
+
+<section class="slide">
+  <h1>4 つの設定と「同じネットワーク？」の判断</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:32%">設定</th><th>役割</th><th>例</th></tr>
+        <tr><td class="t">IP アドレス</td><td>自分の住所</td><td>192.168.10.25</td></tr>
+        <tr><td class="t">サブネットマスク</td><td>どこまでが同じネットワークか</td><td>255.255.255.0</td></tr>
+        <tr><td class="t">デフォルトゲートウェイ</td><td>外への出口（同じネットワークの中）</td><td>192.168.10.1</td></tr>
+        <tr><td class="t">DNS サーバー</td><td>名前 → IP アドレス</td><td>192.168.10.53</td></tr>
+      </table>
+      <div class="point"><b>もらい方：</b>DHCP で 4 つまとめて自動、または手で入れる。もらえないと <b>169.254.0.0/16</b>（リンクローカル、APIPA）が付き、同じリンクの中しか通じない。</div>
+    </div>
+    <div>
+      <div class="cap">送る前の判断（RFC 1122 3.3.1.1）</div>
+      <ol class="steps">
+        <li>自分のアドレスと宛先を、<b>同じマスク</b>でネットワークの部分だけ取り出す</li>
+        <li>同じ → 同じネットワーク：<b>宛先へ直接</b>送る</li>
+        <li>違う → <b>ゲートウェイ</b>へ送る</li>
+      </ol>
+      <div class="formula" style="font-size:15px">192.168.10.25／24 → 192.168.10.0<br>宛先 192.168.20.7 → 192.168.20.0 → 違う → GW へ</div>
+      <div class="mini">アドレスの例は Claude が作った。マスクの計算のくわしい方法は #04。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc1122#section-3.3.1.1">RFC 1122 3.3.1.1</a>（If the IP destination address bits extracted by the address mask match the IP source address bits extracted by the same mask, then the destination is on the corresponding connected network … If not, then the destination is accessible only through a gateway）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc3927">RFC 3927</a>（an IPv4 address within the 169.254/16 prefix that is valid for communication with other devices connected to the same physical (or logical) link）／<a class="src" href="https://support.apple.com/guide/mac-help/use-tcp-ip-settings-on-mac-mchlp2718/mac">Apple Support</a>（Using DHCP／Manually … subnet mask and router／DNS）</div>
+</section>
+
+<section class="slide">
+  <h1>症状から、まちがった設定を当てる</h1>
+  <table class="mx">
+    <tr><th style="width:36%">症状</th><th style="width:26%">疑う設定</th><th>理由</th></tr>
+    <tr><td class="t">同じ LAN とは通じるが、外と通じない</td><td><b>デフォルトゲートウェイ</b></td><td style="text-align:left">外あての通信は出口へ送る。出口がまちがっていると届かない</td></tr>
+    <tr><td class="t">IP アドレスなら通じるが、名前では通じない</td><td><b>DNS サーバー</b></td><td style="text-align:left">経路は正しい。名前を IP に変えられていない</td></tr>
+    <tr><td class="t">IPv4 アドレスが 169.254.x.x</td><td><b>DHCP</b>（届いていない）</td><td style="text-align:left">ほかに設定の方法がないときに付くリンクローカルのアドレス</td></tr>
+    <tr><td class="t">同じ LAN の一部の相手と通じない</td><td><b>サブネットマスク</b></td><td style="text-align:left">同じネットワークの相手を外だと思い（またはその逆）、送り先をまちがえる</td></tr>
+    <tr><td class="t">ゲートウェイが別のネットワークの番号</td><td><b>ゲートウェイの値</b></td><td style="text-align:left">ゲートウェイは自分と<b>同じネットワーク</b>の中になければならない</td></tr>
+  </table>
+  <div class="point"><b>確かめる順番の例：</b>①自分の IP・マスク → ②ゲートウェイ → ③DNS。設定を見るのは次のページのコマンドや画面で。</div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc1122#section-3.3.1">RFC 1122 3.3.1</a>（destination is accessible only through a gateway／selects the correct first hop on the connected network）／<a class="src" href="https://man7.org/linux/man-pages/man5/resolv.conf.5.html">resolv.conf(5)</a>（nameserver … that the resolver should query）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc3927">RFC 3927</a>（where no other configuration mechanism is available）。表の整理は Claude</div>
+</section>
+
+<section class="slide">
+  <h1>Windows：ipconfig</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">C:\&gt; ipconfig /all
+Ethernet adapter Ethernet:
+   Physical Address. . . . . : 00-0D-3A-E6-CE-A3
+   DHCP Enabled. . . . . . . : No
+   IPv4 Address. . . . . . . : 10.1.0.4(Preferred)
+   Subnet Mask . . . . . . . : 255.255.255.0
+   Default Gateway . . . . . : 10.1.0.1
+   DNS Servers . . . . . . . : 168.63.129.16</pre>
+      <div class="mini">Microsoft Learn（Azure の手順）にある出力例から一部をとった。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:34%">コマンド</th><th>すること</th></tr>
+        <tr><td class="t">ipconfig</td><td>IPv4・IPv6 アドレス、マスク、ゲートウェイ</td></tr>
+        <tr><td class="t">ipconfig /all</td><td>くわしい設定（MAC・DHCP の有無・DNS サーバーなど）</td></tr>
+        <tr><td class="t">ipconfig /release</td><td>DHCPRELEASE を送り、アドレスを手放す</td></tr>
+        <tr><td class="t">ipconfig /renew</td><td>DHCP の設定をもらい直す（自動のときだけ）</td></tr>
+        <tr><td class="t">ipconfig /flushdns</td><td>DNS のキャッシュを消す</td></tr>
+        <tr><td class="t">ipconfig /displaydns</td><td>DNS のキャッシュを表示</td></tr>
+      </table>
+      <div class="point warn"><b>落とし穴：</b>何も付けない <b>ipconfig は DNS サーバーを出さない</b>。DNS を見るなら /all。/flushdns は IP の設定を変えない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/ipconfig">Microsoft Learn「ipconfig」</a>（Used without parameters, ipconfig displays … IPv4 and IPv6 addresses, subnet mask, and default gateway for all adapters／/all: Displays the full TCP/IP configuration／/release: Sends a DHCPRELEASE message／/renew … available only on computers with adapters that are configured to obtain an IP address automatically／/flushdns: Flushes and resets the contents of the DNS client resolver cache）／<a class="src" href="https://learn.microsoft.com/en-us/azure/virtual-network/ip-services/virtual-network-multiple-ip-addresses-cli">Microsoft Learn「Assign multiple IP addresses to VMs - Azure CLI」</a>（ipconfig /all の出力例）</div>
+</section>
+
+<section class="slide">
+  <h1>macOS と Linux</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">macOS（Apple の手順）</div>
+      <ol class="steps">
+        <li>アップルメニュー › システム設定 › <b>ネットワーク</b></li>
+        <li>使う接続を選び <b>詳細（Details）</b> › <b>TCP/IP</b></li>
+        <li>Configure IPv4 で <b>Using DHCP</b> か <b>Manually</b>（手動なら IP・マスク・ルーター）</li>
+        <li>DNS サーバーは <b>DNS</b> で追加</li>
+      </ol>
+<pre class="cli small">$ netstat -nr      <i># ルーティングテーブル（default の行）</i></pre>
+      <div class="mini">Apple は Network Utility の Netstat の説明で、ターミナルの netstat を案内している。</div>
+    </div>
+    <div>
+      <div class="cap">Linux（man ページ）</div>
+<pre class="cli small">$ ip address show          <i># ip addr / ip a</i>
+2: eth0: ...
+    inet 192.168.1.23/24 ... eth0
+$ ip route show
+default via 192.168.1.1 dev eth0
+$ cat /etc/resolv.conf
+nameserver 192.168.1.53</pre>
+      <div class="point"><b>読み方：</b>inet の行＝自分の IP（/24 がマスク）、<b>default via</b>＝ゲートウェイ、<b>nameserver</b>＝DNS サーバー（上から順に問い合わせる）。</div>
+      <div class="mini">出力は Claude が作った例。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://support.apple.com/guide/mac-help/use-tcp-ip-settings-on-mac-mchlp2718/mac">Apple Support「Use DHCP or a manual IP address on Mac」</a>（click Details. Click TCP/IP. Click the Configure IPv4 pop-up menu … Using DHCP … Manually … subnet mask and router … click DNS）／<a class="src" href="https://support.apple.com/guide/mac-help/mchlp1002/10.15/mac/10.15">Apple Support「View routing tables and statistics using Network Utility」</a>（open Terminal … then type netstat）／<a class="src" href="https://man7.org/linux/man-pages/man8/ip-address.8.html">ip-address(8)</a>（ip address show - look at protocol addresses）／<a class="src" href="https://man7.org/linux/man-pages/man8/ip-route.8.html">ip-route(8)</a>（ip route add default via 192.168.1.1 dev eth0）／<a class="src" href="https://man7.org/linux/man-pages/man5/resolv.conf.5.html">resolv.conf(5)</a>（nameserver … queries them in the order listed）</div>
+</section>
+
+<section class="slide">
+  <h1>OS ごとの早見表</h1>
+  <table class="mx">
+    <tr><th style="width:18%">見たいもの</th><th>Windows</th><th>macOS</th><th>Linux</th></tr>
+    <tr><td class="t">IP・マスク</td><td>ipconfig</td><td>システム設定 › ネットワーク › 詳細 › TCP/IP</td><td>ip address show</td></tr>
+    <tr><td class="t">ゲートウェイ</td><td>ipconfig（Default Gateway）</td><td>同じ画面の Router、netstat -nr</td><td>ip route show（default via）</td></tr>
+    <tr><td class="t">DNS サーバー</td><td>ipconfig /all（DNS Servers）</td><td>詳細 › DNS</td><td>/etc/resolv.conf（nameserver）</td></tr>
+    <tr><td class="t">MAC アドレス</td><td>ipconfig /all（Physical Address）</td><td>―</td><td>―</td></tr>
+    <tr><td class="t">DHCP</td><td>ipconfig /release・/renew</td><td>Configure IPv4：Using DHCP</td><td>（ディストリビューションによる）</td></tr>
+  </table>
+  <div class="point warn"><b>取り違えやすい：</b>Cisco の機器は 「show ip interface brief」、PC は OS ごとのコマンド。<b>ipconfig は Windows</b>、<b>ip は Linux</b>。</div>
+  <div class="cite">出典：<a class="src" href="https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/ipconfig">Microsoft Learn「ipconfig」</a>／<a class="src" href="https://support.apple.com/guide/mac-help/use-tcp-ip-settings-on-mac-mchlp2718/mac">Apple Support</a>／<a class="src" href="https://man7.org/linux/man-pages/man8/ip-address.8.html">ip-address(8)</a>／<a class="src" href="https://man7.org/linux/man-pages/man8/ip-route.8.html">ip-route(8)</a>／<a class="src" href="https://man7.org/linux/man-pages/man5/resolv.conf.5.html">resolv.conf(5)</a></div>
+</section>
+
+<section class="slide">
+  <h1>問われ方とまちがえやすい点</h1>
+  <table class="mx">
+    <tr><th style="width:40%">こう聞かれたら</th><th>答えの考え方</th></tr>
+    <tr><td class="t">3 ウェイハンドシェイクの順番</td><td style="text-align:left"><b>SYN → SYN＋ACK → ACK</b></td></tr>
+    <tr><td class="t">SEQ=1001 で 500 バイト、ACK は？</td><td style="text-align:left">1001＋500＝<b>1501</b>（最後の番号＋1）</td></tr>
+    <tr><td class="t">TCP にあって UDP にないもの</td><td style="text-align:left">シーケンス番号・確認応答・ウィンドウ（ポートとチェックサムは両方）</td></tr>
+    <tr><td class="t">音声に UDP を使う理由</td><td style="text-align:left">再送で遅れるより、<b>遅れずに</b>届くことが大事</td></tr>
+    <tr><td class="t">DNS のトランスポート</td><td style="text-align:left">問い合わせは <b>UDP 53</b>、ゾーン転送は <b>TCP 53</b></td></tr>
+    <tr><td class="t">LAN は通じるが外へ出られない</td><td style="text-align:left"><b>デフォルトゲートウェイ</b></td></tr>
+    <tr><td class="t">IP で通じて名前で通じない</td><td style="text-align:left"><b>DNS サーバー</b></td></tr>
+    <tr><td class="t">169.254.x.x が付いた</td><td style="text-align:left"><b>DHCP サーバーに届いていない</b>（リンクローカル）</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">TCP（1.5）<span>コネクション型。SYN→SYN＋ACK→ACK。番号はバイト単位、ACK は次にほしい番号。ウィンドウ＝受け手、輻輳制御＝ネットワーク</span></div>
+      <div class="box b2">UDP（1.5）<span>コネクションレス・8 バイト・再送なし。音声（RTP）・DHCP・TFTP・SNMP・DNS の問い合わせ</span></div>
+      <div class="box b3">ポート（1.5）<span>0〜1023 System、1024〜49151 User、49152〜65535 Dynamic。サーバーは決まった番号で待つ</span></div>
+      <div class="box b4">端末の設定（1.10）<span>IP・マスク・ゲートウェイ・DNS。ipconfig（/all）、ip address・ip route・resolv.conf、macOS の TCP/IP 画面</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:48%">数字</th><th>中身</th></tr>
+        <tr><td class="t">TCP／UDP ヘッダー</td><td><b>20 B〜／8 B</b></td></tr>
+        <tr><td class="t">DNS の UDP</td><td><b>512 バイト</b>まで</td></tr>
+        <tr><td class="t">DHCP</td><td><b>67</b>（サーバー）・<b>68</b>（クライアント）</td></tr>
+        <tr><td class="t">FTP／TFTP</td><td><b>TCP 20・21／UDP 69</b></td></tr>
+        <tr><td class="t">リンクローカル</td><td><b>169.254.0.0/16</b></td></tr>
+      </table>
+      <div class="point"><b>次の分野：</b>#04 IPv4 アドレスとサブネットで、マスクの計算、プライベートアドレス、サブネットの切り方を読む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
