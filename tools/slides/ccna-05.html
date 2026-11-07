@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CCNA #05 IPv6 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">CCNA（200-301 v1.1）　1.0 ネットワークの基礎　#05</div>
+  <h1>IPv6</h1>
+  <p>出題範囲 1.8・1.9 ― 128 ビットのアドレスの書き方と省略、プレフィックス、アドレスの種類（グローバルユニキャスト・ユニークローカル・リンクローカル・エニーキャスト・マルチキャスト）、修正 EUI-64、近隣探索と SLAAC、IOS での設定と確認</p>
+  <div class="refs-legend">各ページの下に、根拠にしたCiscoの資料やRFCを書いた（青い文字を押すと開く）</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>1.8 は Configure and verify、1.9 は Describe</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 書き方と構造（1.8）<span>16 ビット×8 の 16 進、先頭の 0 と :: の省略、RFC 5952、プレフィックス長、/64</span></div>
+      <div class="box b2">2 アドレスの種類（1.9）<span>グローバルユニキャスト・ユニークローカル・リンクローカル、エニーキャスト、マルチキャスト</span></div>
+      <div class="box b3">3 インタフェース ID と自動設定（1.9）<span>修正 EUI-64、近隣探索（RS・RA・NS・NA）、SLAAC、DAD</span></div>
+      <div class="box b4">4 IOS での設定と確認（1.8）<span>ipv6 unicast-routing・ipv6 address（eui-64・link-local・autoconfig）・show ipv6 interface</span></div>
+    </div>
+    <div>
+      <div class="cap">IPv4 と IPv6 の主なちがい</div>
+      <table class="mx">
+        <tr><th style="width:30%"></th><th>IPv4</th><th>IPv6</th></tr>
+        <tr><td class="t">長さ</td><td>32 ビット</td><td><b>128 ビット</b></td></tr>
+        <tr><td class="t">書き方</td><td>10 進と点</td><td><b>16 進とコロン</b></td></tr>
+        <tr><td class="t">ネットワーク</td><td>マスクか /n</td><td><b>/n だけ</b>（ふつう /64）</td></tr>
+        <tr><td class="t">全員あて</td><td>ブロードキャスト</td><td><b>なし</b>（マルチキャスト）</td></tr>
+        <tr><td class="t">MAC を調べる</td><td>ARP</td><td><b>NS／NA</b>（近隣探索）</td></tr>
+        <tr><td class="t">1 つの IF のアドレス</td><td>1 つ＋secondary</td><td><b>いくつでも</b>（リンクローカルは必ず 1 つ）</td></tr>
+      </table>
+      <div class="point"><b>芯：</b>先頭のビットで<b>種類</b>が決まり、後ろ 64 ビットが<b>インタフェース ID</b>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco CCNA Exam v1.1 (200-301) Exam Topics</a>（1.8 Configure and verify IPv6 addressing and prefix／1.9 Describe IPv6 address types）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/routers/ios/config/17-x/ip-addressing/b-ip-addressing/m_ip6-add-basic-conn-xe.html">IP Addressing CG IOS XE 17.x「IPv6 Addressing and Basic Connectivity」</a>（IPv6 quadruples the number of network address bits from 32 bits … to 128 bits）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc4291#section-2">RFC 4291 2</a>（There are no broadcast addresses in IPv6）・<a class="src" href="https://www.rfc-editor.org/rfc/rfc4291#section-2.1">2.1</a>（All interfaces are required to have at least one Link-Local unicast address）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc4861#section-3.1">RFC 4861 3.1</a>（corresponds to a combination of the IPv4 protocols Address Resolution Protocol …）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>書き方と構造</h1>
+  <p>128 ビットを、短く正しく書く。</p>
+  <div class="foot"><span>CCNA #05 IPv6</span><span>1.8</span></div>
+</section>
+
+<section class="slide">
+  <h1>128 ビットの書き方と 2 つの省略</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">16 ビットずつ 8 つ（16 進 1 けた＝4 ビット）</div>
+      <svg width="400" height="96" viewBox="0 0 400 96">
+        <g font-size="11" text-anchor="middle" font-family="Menlo, monospace">
+          <rect x="4" y="10" width="46" height="30" fill="#1f3a68"/><text x="27" y="30" fill="#fff">2001</text>
+          <rect x="53" y="10" width="46" height="30" fill="#1f3a68"/><text x="76" y="30" fill="#fff">0DB8</text>
+          <rect x="102" y="10" width="46" height="30" fill="#8a9bb8"/><text x="125" y="30" fill="#fff">0000</text>
+          <rect x="151" y="10" width="46" height="30" fill="#8a9bb8"/><text x="174" y="30" fill="#fff">0000</text>
+          <rect x="200" y="10" width="46" height="30" fill="#1f3a68"/><text x="223" y="30" fill="#fff">0008</text>
+          <rect x="249" y="10" width="46" height="30" fill="#1f3a68"/><text x="272" y="30" fill="#fff">0800</text>
+          <rect x="298" y="10" width="46" height="30" fill="#1f3a68"/><text x="321" y="30" fill="#fff">200C</text>
+          <rect x="347" y="10" width="46" height="30" fill="#1f3a68"/><text x="370" y="30" fill="#fff">417A</text>
+          <text x="200" y="60" fill="#4a5a78" font-family="sans-serif" font-size="10">← 16 ビット × 8 ＝ 128 ビット →</text>
+          <text x="200" y="84" fill="#b25000" font-size="12"><tspan font-weight="700">2001:DB8::8:800:200C:417A</tspan></text>
+        </g>
+      </svg>
+      <table class="mx">
+        <tr><th style="width:34%">省略</th><th>決まり</th></tr>
+        <tr><td class="t">① 先頭の 0</td><td>各フィールドの<b>左側</b>の 0 は省ける。<b>右側は省けない</b>。0000 は 0</td></tr>
+        <tr><td class="t">② ::</td><td>0 だけのフィールドが続く所をまとめる。<b>1 つのアドレスで 1 回だけ</b></td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">RFC 4291 の例</div>
+<pre class="cli small">2001:DB8:0:0:8:800:200C:417A → 2001:DB8::8:800:200C:417A
+FF01:0:0:0:0:0:0:101         → FF01::101
+0:0:0:0:0:0:0:1              → ::1   <i>ループバック</i>
+0:0:0:0:0:0:0:0              → ::    <i>未指定</i></pre>
+      <div class="point warn"><b>:: が 2 回はだめ：</b>2001:DB8::1::2 は、前と後ろの :: にそれぞれ何個の 0 が入るか決まらない。</div>
+      <div class="point"><b>右の 0 は残す：</b>0800 → <b>800</b>（○）、0800 → 08（×、0008 になる）。</div>
+      <div class="mini">英字の A〜F は大文字でも小文字でもよい（IPv6 Basic CG）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc4291#section-2.2">RFC 4291 2.2</a>（x:x:x:x:x:x:x:x, where the 'x's are one to four hexadecimal digits of the eight 16-bit pieces／it is not necessary to write the leading zeros in an individual field／The "::" can only appear once in an address／2001:DB8::8:800:200C:417A … FF01::101 … ::1 … ::）・<a class="src" href="https://www.rfc-editor.org/rfc/rfc4291#section-2.3">2.3</a>（may drop leading zeros, but not trailing zeros）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/routers/ios/config/17-x/ip-addressing/b-ip-addressing/m_ip6-add-basic-conn-xe.html">IPv6 Basic CG</a>（The hexadecimal letters in IPv6 addresses are not case-sensitive）</div>
+</section>
+
+<section class="slide">
+  <h1>推奨表記（RFC 5952）と、プレフィックスの書き方</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">1 つのアドレスを 1 通りに書くための推奨</div>
+      <table class="mx">
+        <tr><th style="width:44%">決まり</th><th>例</th></tr>
+        <tr><td class="t">先頭の 0 は必ず省く</td><td>2001:0db8::0001 → <b>2001:db8::1</b></td></tr>
+        <tr><td class="t">:: はできるだけ長く</td><td>2001:db8::0:1 → <b>2001:db8::1</b></td></tr>
+        <tr><td class="t">0 が 1 つなら :: にしない</td><td><b>2001:db8:0:1:1:1:1:1</b> のまま</td></tr>
+        <tr><td class="t">一番長い 0 の並びを ::</td><td>2001:0:0:1:<b>0:0:0</b>:1 → 2001:0:0:1::1</td></tr>
+        <tr><td class="t">同じ長さなら前を ::</td><td>2001:db8:0:0:1:0:0:1 → <b>2001:db8::1:0:0:1</b></td></tr>
+        <tr><td class="t">英字は小文字</td><td>2001:DB8::1 → 2001:db8::1</td></tr>
+      </table>
+      <div class="mini">読む側は、どの正しい書き方も受け付けなければならない。Cisco の出力は大文字で出る。</div>
+    </div>
+    <div>
+      <div class="cap">60 ビットのプレフィックス 2001:0DB8:0000:CD3</div>
+      <table class="mx">
+        <tr><th>書き方</th><th style="width:22%">判定</th></tr>
+        <tr><td>2001:0DB8:0000:CD30:0000:0000:0000:0000/60</td><td class="t">○</td></tr>
+        <tr><td>2001:0DB8::CD30:0:0:0:0/60</td><td class="t">○</td></tr>
+        <tr><td>2001:0DB8:0:CD30::/60</td><td class="t">○</td></tr>
+        <tr><td>2001:0DB8:0:CD3/60</td><td class="t">× 右の 0 を消した</td></tr>
+        <tr><td>2001:0DB8::CD30/60</td><td class="t">× CD30 が末尾になる</td></tr>
+      </table>
+      <div class="point"><b>プレフィックス長：</b>「アドレス/10 進」で、左から何ビットがプレフィックスかを表す。IPv4 のような点区切りのマスクは使わない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc5952#section-4">RFC 5952 4</a>（all implementations MUST accept and be able to handle any legitimate [RFC4291] format／4.1 Leading zeros MUST be suppressed／4.2.1 MUST be used to its maximum capability／4.2.2 MUST NOT be used to shorten just one 16-bit 0 field／4.2.3 the longest run … the first sequence of zero bits MUST be shortened／4.3 MUST be represented in lowercase）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc4291#section-2.3">RFC 4291 2.3</a>（ipv6-address/prefix-length／the following are legal representations of the 60-bit prefix 20010DB80000CD3／The following are NOT legal representations）</div>
+</section>
+
+<section class="slide">
+  <h1>プレフィックスとインタフェース ID</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">ユニキャストアドレスを 2 つに分けて読む</div>
+      <svg width="400" height="150" viewBox="0 0 400 150">
+        <g font-size="11" text-anchor="middle">
+          <text x="200" y="16" fill="#1f3a68" font-size="12"><tspan font-weight="700">2001:DB8:C18:1:260:3EFF:FE47:1530/64</tspan></text>
+          <rect x="10" y="28" width="190" height="34" fill="#1f3a68"/><text x="105" y="49" fill="#fff">サブネットプレフィックス（64）</text>
+          <rect x="200" y="28" width="190" height="34" fill="#b25000"/><text x="295" y="49" fill="#fff">インタフェース ID（64）</text>
+          <text x="105" y="80" fill="#1f3a68" font-size="10">2001:DB8:C18:1::/64</text>
+          <text x="295" y="80" fill="#7a3a00" font-size="10">260:3EFF:FE47:1530</text>
+          <rect x="10" y="94" width="380" height="48" rx="8" fill="#eef2f8" stroke="#5b80bf"/>
+          <text x="200" y="114" fill="#1f3a68">先頭が 2 進 000 以外のユニキャストは</text>
+          <text x="200" y="132" fill="#1f3a68"><tspan font-weight="700">インタフェース ID が 64 ビット</tspan> → ふつうのサブネットは /64</text>
+        </g>
+      </svg>
+      <div class="cap">サイトの中の切り方（RFC 3587 の形から計算）</div>
+      <table class="mx">
+        <tr><th>受け取る長さ</th><th>サブネット ID</th><th>作れる /64</th></tr>
+        <tr><td class="t">/48</td><td>16 ビット</td><td><b>65,536</b></td></tr>
+        <tr><td class="t">/56</td><td>8 ビット</td><td><b>256</b></td></tr>
+        <tr><td class="t">/64</td><td>0</td><td>1</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">IPv6 ヘッダー（固定の長さ）</div>
+      <svg width="400" height="150" viewBox="0 0 400 150">
+        <g font-size="10" text-anchor="middle">
+          <rect x="10" y="6" width="50" height="24" fill="#5b80bf"/><text x="35" y="22" fill="#fff">Version</text>
+          <rect x="60" y="6" width="100" height="24" fill="#5b80bf"/><text x="110" y="22" fill="#fff">Traffic Class</text>
+          <rect x="160" y="6" width="230" height="24" fill="#5b80bf"/><text x="275" y="22" fill="#fff">Flow Label</text>
+          <rect x="10" y="30" width="190" height="24" fill="#1f3a68"/><text x="105" y="46" fill="#fff">Payload Length</text>
+          <rect x="200" y="30" width="95" height="24" fill="#1f3a68"/><text x="247" y="46" fill="#fff">Next Header</text>
+          <rect x="295" y="30" width="95" height="24" fill="#b25000"/><text x="342" y="46" fill="#fff">Hop Limit</text>
+          <rect x="10" y="54" width="380" height="40" fill="#eef2f8" stroke="#5b80bf"/><text x="200" y="78" fill="#1f3a68">送信元アドレス（128 ビット）</text>
+          <rect x="10" y="94" width="380" height="40" fill="#eef2f8" stroke="#5b80bf"/><text x="200" y="118" fill="#1f3a68">宛先アドレス（128 ビット）</text>
+          <text x="200" y="148" fill="#4a5a78" font-size="9.5">欄を足すと 32＋32＋128＋128 ビット＝40 バイト（Claude が図から計算）</text>
+        </g>
+      </svg>
+      <div class="point"><b>Hop Limit：</b>転送するたびに 1 減らし、0 で捨てる（IPv4 の TTL）。<b>Next Header：</b>次に続くヘッダーの種類（IPv4 の Protocol と同じ値）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc4291#section-2.5.1">RFC 4291 2.5.1</a>（For all unicast addresses, except those that start with the binary value 000, Interface IDs are required to be 64 bits long）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc3587#section-3">RFC 3587 3</a>（| 3 | 45 bits | 16 bits | 64 bits |）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/routers/ios/config/17-x/ip-addressing/b-ip-addressing/m_ip6-add-basic-conn-xe.html">IPv6 Basic CG</a>（2001:DB8:C18:1:260:3EFF:FE47:1530, subnet is 2001:DB8:C18:1::/64）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc8200#section-3">RFC 8200 3</a>（Hop Limit … Decremented by 1 by each node that forwards the packet／Next Header … Uses the same values as the IPv4 Protocol field）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>アドレスの種類</h1>
+  <p>先頭のビットで、届く範囲が決まる。</p>
+  <div class="foot"><span>CCNA #05 IPv6</span><span>1.9</span></div>
+</section>
+
+<section class="slide">
+  <h1>先頭を見れば種類がわかる</h1>
+  <div class="cols wide-r">
+    <div>
+      <div class="cap">届く範囲（Claude が作成）</div>
+      <svg width="300" height="260" viewBox="0 0 300 260">
+        <g font-size="11" text-anchor="middle">
+          <rect x="6" y="6" width="288" height="248" rx="14" fill="#eef2f8" stroke="#5b80bf"/>
+          <text x="150" y="26" fill="#1f3a68"><tspan font-weight="700">インターネット</tspan>：グローバル 2000::/3</text>
+          <rect x="30" y="40" width="240" height="200" rx="12" fill="#fff" stroke="#1f3a68"/>
+          <text x="150" y="60" fill="#1f3a68"><tspan font-weight="700">組織の中</tspan>：ユニークローカル FD</text>
+          <rect x="56" y="76" width="188" height="110" rx="10" fill="#fff4e8" stroke="#b25000"/>
+          <text x="150" y="96" fill="#7a3a00"><tspan font-weight="700">同じリンク</tspan>：リンクローカル FE80</text>
+          <rect x="96" y="112" width="108" height="56" rx="8" fill="#fff" stroke="#b25000"/>
+          <text x="150" y="134" fill="#7a3a00"><tspan font-weight="700">自分の中</tspan></text>
+          <text x="150" y="152" fill="#7a3a00">ループバック ::1</text>
+          <text x="150" y="210" fill="#4a5a78" font-size="10">マルチキャスト FF は</text>
+          <text x="150" y="226" fill="#4a5a78" font-size="10">スコープで範囲を決める</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">種類</th><th style="width:26%">プレフィックス</th><th>先頭の見え方・使い方</th></tr>
+        <tr><td class="t">グローバルユニキャスト</td><td>2000::/3</td><td>2 か 3 で始まる。インターネットで 1 つ</td></tr>
+        <tr><td class="t">ユニークローカル</td><td>FC00::/7</td><td>実際は <b>FD</b>。組織の中だけ</td></tr>
+        <tr><td class="t">リンクローカル</td><td>FE80::/10</td><td>FE80。全 IF が必ず持つ。転送されない</td></tr>
+        <tr><td class="t">マルチキャスト</td><td>FF00::/8</td><td><b>FF</b>。グループあて</td></tr>
+        <tr><td class="t">ループバック</td><td>::1/128</td><td>自分あて（IPv4 の 127.0.0.1）</td></tr>
+        <tr><td class="t">未指定</td><td>::/128</td><td>アドレスがない</td></tr>
+        <tr><td class="t">サイトローカル</td><td>FEC0::/10</td><td><b>廃止</b>。使わない</td></tr>
+      </table>
+      <div class="point warn"><b>エニーキャストには専用の範囲がない。</b>ユニキャストの範囲から取るので、見た目では区別できない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc4291#section-2.4">RFC 4291 2.4</a>（Unspecified ::/128／Loopback ::1/128／Multicast FF00::/8／Link-Local unicast FE80::/10／Anycast addresses are taken from the unicast address spaces … not syntactically distinguishable）／<a class="src" href="https://www.iana.org/assignments/ipv6-address-space/">IANA IPv6 Address Space</a>（2000::/3 Global Unicast … IANA unicast address assignments are currently limited to … 2000::/3／fc00::/7 Unique Local Unicast／fec0::/10 … Deprecated … Formerly a Site-Local scoped address prefix）</div>
+</section>
+
+<section class="slide">
+  <h1>グローバルユニキャストとユニークローカルの形</h1>
+  <div class="stack">
+    <div>
+      <div class="cap">グローバルユニキャスト（RFC 3587 の例）</div>
+      <svg width="820" height="62" viewBox="0 0 820 62">
+        <g font-size="11" text-anchor="middle">
+          <rect x="10" y="6" width="40" height="30" fill="#b25000"/><text x="30" y="26" fill="#fff">001</text>
+          <rect x="50" y="6" width="260" height="30" fill="#1f3a68"/><text x="180" y="26" fill="#fff">グローバルルーティングプレフィックス（45）</text>
+          <rect x="310" y="6" width="110" height="30" fill="#5b80bf"/><text x="365" y="26" fill="#fff">サブネット ID（16）</text>
+          <rect x="420" y="6" width="390" height="30" fill="#8a9bb8"/><text x="615" y="26" fill="#fff">インタフェース ID（64）</text>
+          <text x="180" y="54" fill="#1f3a68" font-size="10">RIR・ISP が階層にして配る（ここまで /48）</text>
+          <text x="365" y="54" fill="#1f3a68" font-size="10">サイトの管理者が決める</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="cap">ユニークローカル（RFC 4193）</div>
+      <svg width="820" height="62" viewBox="0 0 820 62">
+        <g font-size="11" text-anchor="middle">
+          <rect x="10" y="6" width="70" height="30" fill="#b25000"/><text x="45" y="26" fill="#fff">FC00::/7</text>
+          <rect x="80" y="6" width="30" height="30" fill="#7a3a00"/><text x="95" y="26" fill="#fff">L</text>
+          <rect x="110" y="6" width="200" height="30" fill="#1f3a68"/><text x="210" y="26" fill="#fff">グローバル ID（40・乱数）</text>
+          <rect x="310" y="6" width="110" height="30" fill="#5b80bf"/><text x="365" y="26" fill="#fff">サブネット ID（16）</text>
+          <rect x="420" y="6" width="390" height="30" fill="#8a9bb8"/><text x="615" y="26" fill="#fff">インタフェース ID（64）</text>
+          <text x="95" y="54" fill="#7a3a00" font-size="10">L＝1 → 先頭は FD</text>
+          <text x="210" y="54" fill="#1f3a68" font-size="10">順番や覚えやすい値は使わない</text>
+        </g>
+      </svg>
+    </div>
+    <div class="cols">
+      <div>
+        <table class="mx">
+          <tr><th style="width:30%"></th><th>グローバル</th><th>ユニークローカル</th></tr>
+          <tr><td class="t">どこから</td><td>RIR・ISP</td><td>自分で乱数</td></tr>
+          <tr><td class="t">範囲</td><td>インターネット</td><td>組織の中（BGP で外へ出さない）</td></tr>
+          <tr><td class="t">例</td><td>2001:DB8:ACAD::/48</td><td>FD12:3456:789A::/48</td></tr>
+        </table>
+        <div class="mini">例の値は Claude が作った（2001:DB8::/32 は文書用）。</div>
+      </div>
+      <div>
+        <div class="point"><b>IPv4 のプライベートに似ている</b>が、グローバル ID が乱数なので、2 つの組織が合併してもアドレスの重なりが起きにくい。</div>
+        <div class="point warn"><b>FC00::/7 の外：</b>FE80（リンクローカル）や FEC0（廃止）と見まちがえない。</div>
+      </div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc3587#section-3">RFC 3587 3</a>（|001|global routing prefix| subnet ID | interface ID|／The global routing prefix is designed to be structured hierarchically by the RIRs and ISPs. The subnet field is designed to be structured hierarchically by site administrators）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc4193#section-3.1">RFC 4193 3.1</a>（| 7 bits |1| 40 bits | 16 bits | 64 bits |）・<a class="src" href="https://www.rfc-editor.org/rfc/rfc4193#section-3.2">3.2</a>（MUST NOT be assigned sequentially or with well-known numbers）・<a class="src" href="https://www.rfc-editor.org/rfc/rfc4193#section-4.1">4.1</a>（the default BGP configuration must filter out any Local IPv6 address prefixes）・4.2（When merging multiple sites … unlikely to need to be renumbered）</div>
+</section>
+
+<section class="slide">
+  <h1>リンクローカルと特別なアドレス</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">リンクローカル FE80::/10</div>
+      <svg width="400" height="60" viewBox="0 0 400 60">
+        <g font-size="10.5" text-anchor="middle">
+          <rect x="6" y="6" width="80" height="28" fill="#b25000"/><text x="46" y="25" fill="#fff">1111111010</text>
+          <rect x="86" y="6" width="120" height="28" fill="#8a9bb8"/><text x="146" y="25" fill="#fff">0（54 ビット）</text>
+          <rect x="206" y="6" width="188" height="28" fill="#1f3a68"/><text x="300" y="25" fill="#fff">インタフェース ID（64）</text>
+          <text x="200" y="52" fill="#4a5a78">だから見た目は FE80::xxxx:xxxx:xxxx:xxxx</text>
+        </g>
+      </svg>
+      <ol class="steps">
+        <li><b>すべてのインタフェースが必ず 1 つ</b>持つ（IOS も 1 つだけ）</li>
+        <li>ルーターは、送信元・宛先がリンクローカルのパケットを<b>他のリンクへ転送しない</b></li>
+        <li>近隣探索・自動設定・ルーターがいないときの通信に使う</li>
+      </ol>
+<pre class="cli small">IPv6 is enabled, link-local address is FE80::260:3EFF:FE47:1530</pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:32%">アドレス</th><th>意味と決まり</th></tr>
+        <tr><td class="t">::1</td><td>ループバック。物理 IF に付けない。外へ出さない</td></tr>
+        <tr><td class="t">::</td><td>未指定。機器に付けない。宛先にしない。アドレスをまだ持たないホストの送信元</td></tr>
+        <tr><td class="t">::FFFF:a.b.c.d</td><td>IPv4 射影アドレス。IPv4 の機器を IPv6 の形で表す</td></tr>
+        <tr><td class="t">2001:DB8::/32</td><td>文書用。どこにも割り当てない</td></tr>
+        <tr><td class="t">::/0</td><td>既定ルート（#13）</td></tr>
+      </table>
+      <div class="point"><b>下位 32 ビットだけ</b>は 10 進の点区切りで書いてよい：::FFFF:129.144.52.38</div>
+      <div class="point warn"><b>上位が全部 0 の「IPv4 互換アドレス」は廃止。</b></div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc4291#section-2.5.6">RFC 4291 2.5.6</a>（|1111111010| 0 | interface ID|／Routers must not forward any packets with Link-Local source or destination addresses to other links）・<a class="src" href="https://www.rfc-editor.org/rfc/rfc4291#section-2.5.2">2.5.2</a>・2.5.3・2.5.5（The "IPv4-Compatible IPv6 address" is now deprecated／::FFFF:129.144.52.38）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc3849">RFC 3849</a>（2001:DB8::/32 … documentation-only prefix）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/routers/ios/config/17-x/ip-addressing/b-ip-addressing/m_ip6-add-basic-conn-xe.html">IPv6 Basic CG</a>（Multiple IPv6 link-local addresses on an interface are not supported／link-local address is FE80::260:3EFF:FE47:1530）</div>
+</section>
+
+<section class="slide">
+  <h1>ユニキャスト・エニーキャスト・マルチキャスト</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">送り先の数（Claude が作成）</div>
+      <svg width="400" height="250" viewBox="0 0 400 250">
+        <g font-size="10.5" text-anchor="middle">
+          <text x="60" y="16" fill="#1f3a68"><tspan font-weight="700">ユニキャスト</tspan></text>
+          <circle cx="30" cy="50" r="12" fill="#1f3a68"/><line x1="44" y1="50" x2="96" y2="50" stroke="#1f3a68" stroke-width="2"/>
+          <circle cx="110" cy="50" r="12" fill="#b25000"/>
+          <text x="60" y="84" fill="#4a5a78">1 つの IF に届く</text>
+          <text x="200" y="110" fill="#1f3a68"><tspan font-weight="700">エニーキャスト</tspan>（同じアドレスを 3 か所に）</text>
+          <circle cx="40" cy="160" r="12" fill="#1f3a68"/>
+          <line x1="54" y1="156" x2="150" y2="136" stroke="#b25000" stroke-width="2.5"/>
+          <circle cx="164" cy="134" r="12" fill="#b25000"/><text x="164" y="164" fill="#7a3a00">近い</text>
+          <circle cx="270" cy="134" r="12" fill="#8a9bb8"/><circle cx="360" cy="150" r="12" fill="#8a9bb8"/>
+          <text x="315" y="178" fill="#4a5a78">遠い方には行かない</text>
+          <text x="200" y="204" fill="#1f3a68"><tspan font-weight="700">マルチキャスト</tspan>：グループの全員に届く（FF で始まる）</text>
+          <text x="200" y="224" fill="#4a5a78">IPv6 にブロードキャストはない。役目はマルチキャストへ</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="box b1">エニーキャスト<span>複数のインタフェース（ふつう別の機器）に<b>同じアドレス</b>を付け、経路の上で<b>いちばん近い 1 つ</b>に届く。付ける機器で anycast と明示する。DAD はしない。</span></div>
+      <div class="box b2">サブネットルーター・エニーキャスト<span>プレフィックス＋<b>インタフェース ID 全部 0</b>。そのサブネットのルーターのどれか 1 台に届く。ルーターは必ず受け付ける。</span></div>
+<pre class="cli small">2001:DB8:A:1::/64 → 2001:DB8:A:1::
+<i>! ↑サブネットルーター・エニーキャスト</i>
+(config-if)# ipv6 address
+  2001:0DB8:1:1:FFFF:FFFF:FFFF:FFFE/64 anycast</pre>
+      <div class="mini">下の 2 行は IOS IPv6 CR の例（1 行のコマンドを折り返した）。show ipv6 interface では [ANY] と出る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc4291#section-2.6">RFC 4291 2.6</a>（routed to the "nearest" interface having that address／the nodes to which the address is assigned must be explicitly configured）・<a class="src" href="https://www.rfc-editor.org/rfc/rfc4291#section-2.6.1">2.6.1</a>（| subnet prefix | 00000000000000 |／delivered to one router on the subnet. All routers are required to support）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc4862#section-5.4">RFC 4862 5.4</a>（MUST NOT be performed on anycast addresses）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipv6/command/ipv6-cr-book/ipv6-i1.html">Cisco IOS IPv6 CR</a>「ipv6 address anycast」／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-8/command_reference/b_178_9300_cr/ip_addressing_services_commands.html">9300 CR 17.8</a>（ANY Anycast）</div>
+</section>
+
+<section class="slide">
+  <h1>マルチキャストの形とスコープ</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="96" viewBox="0 0 400 96">
+        <g font-size="11" text-anchor="middle">
+          <rect x="6" y="6" width="80" height="30" fill="#b25000"/><text x="46" y="26" fill="#fff">11111111</text>
+          <rect x="86" y="6" width="50" height="30" fill="#5b80bf"/><text x="111" y="26" fill="#fff">フラグ</text>
+          <rect x="136" y="6" width="60" height="30" fill="#1f3a68"/><text x="166" y="26" fill="#fff">スコープ</text>
+          <rect x="196" y="6" width="198" height="30" fill="#8a9bb8"/><text x="295" y="26" fill="#fff">グループ ID（112）</text>
+          <text x="46" y="54" fill="#7a3a00">FF</text><text x="111" y="54" fill="#1f3a68">0＝IANA</text><text x="166" y="54" fill="#1f3a68">2＝リンク</text>
+          <text x="200" y="80" fill="#1f3a68" font-size="12"><tspan font-weight="700">FF02::1</tspan> ＝ FF・0・2・…1</text>
+        </g>
+      </svg>
+      <table class="mx">
+        <tr><th>スコープ</th><th>範囲</th><th>例（NTP サーバー）</th></tr>
+        <tr><td class="t">1</td><td>インタフェースの中</td><td>FF01::101</td></tr>
+        <tr><td class="t">2</td><td><b>リンク</b></td><td>FF02::101</td></tr>
+        <tr><td class="t">5</td><td>サイト</td><td>FF05::101</td></tr>
+        <tr><td class="t">8</td><td>組織</td><td>—</td></tr>
+        <tr><td class="t">E</td><td>グローバル</td><td>FF0E::101</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">CCNA でよく見るアドレス</div>
+      <table class="mx">
+        <tr><th style="width:36%">アドレス</th><th>グループ</th></tr>
+        <tr><td class="t">FF02::1</td><td>リンクの<b>全ノード</b></td></tr>
+        <tr><td class="t">FF02::2</td><td>リンクの<b>全ルーター</b>（FF05::2 はサイト）</td></tr>
+        <tr><td class="t">FF02::5／::6</td><td>OSPF のルーター／DR（#14）</td></tr>
+        <tr><td class="t">FF02::9／::A</td><td>RIP／EIGRP のルーター</td></tr>
+        <tr><td class="t">FF02::1:2</td><td>DHCP リレーとサーバー（#17）</td></tr>
+        <tr><td class="t">FF02::1:FFxx:xxxx</td><td>要請ノード（次のページ）</td></tr>
+      </table>
+      <div class="point warn"><b>決まり：</b>マルチキャストは<b>送信元に使えない</b>。ルーターは<b>スコープの外へ転送しない</b>。1 つの IF はいくつのグループにも入れる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc4291#section-2.7">RFC 4291 2.7</a>（|11111111|flgs|scop| group ID|／T = 0 indicates a permanently-assigned／1 Interface-Local 2 Link-Local 5 Site-Local 8 Organization-Local E Global／FF01 … FF02 … FF05 … FF0E:0:0:0:0:0:0:101／must not be used as source addresses／must not forward … beyond of the scope）・<a class="src" href="https://www.rfc-editor.org/rfc/rfc4291#section-2.7.1">2.7.1</a>（All Nodes FF02::1／All Routers FF02::2 FF05::2）／<a class="src" href="https://www.iana.org/assignments/ipv6-multicast-addresses/">IANA IPv6 Multicast Address Space</a>（FF02::5 OSPFIGP／FF02::6 OSPFIGP Designated Routers／FF02::9 RIP Routers／FF02::A EIGRP Routers／FF02::1:2 All_DHCP_Relay_Agents_and_Servers）</div>
+</section>
+
+<section class="slide">
+  <h1>要請ノードマルチキャスト</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">作り方：下位 24 ビットを FF02::1:FF00:0/104 の後ろへ</div>
+      <svg width="400" height="150" viewBox="0 0 400 150">
+        <g font-size="11" text-anchor="middle" font-family="Menlo, monospace">
+          <text x="200" y="18" fill="#1f3a68">2001:DB8:1:10:3E5A:B4FF:FE<tspan font-weight="700" fill="#b25000">12:3456</tspan></text>
+          <line x1="300" y1="26" x2="300" y2="66" stroke="#b25000" stroke-width="2"/><polygon points="294,62 306,62 300,72" fill="#b25000"/>
+          <rect x="40" y="76" width="210" height="30" fill="#1f3a68"/><text x="145" y="96" fill="#fff">FF02::1:FF</text>
+          <rect x="250" y="76" width="110" height="30" fill="#b25000"/><text x="305" y="96" fill="#fff">12:3456</text>
+          <text x="200" y="130" fill="#1f3a68" font-size="12"><tspan font-weight="700">FF02::1:FF12:3456</tspan></text>
+        </g>
+      </svg>
+      <table class="mx">
+        <tr><th>ユニキャスト</th><th>要請ノード</th></tr>
+        <tr><td>2001::1</td><td class="t">FF02::1:FF00:1</td></tr>
+        <tr><td>2001::A8BB:CCFF:FE00:6700</td><td class="t">FF02::1:FF00:6700</td></tr>
+        <tr><td>4037::01:800:200E:8C6C</td><td class="t">FF02::1:FF0E:8C6C</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="point"><b>なぜ使う：</b>ノードは自分の各アドレスについてこのグループに入る。NS をここへ送ると、<b>下位 24 ビットが同じ機器だけ</b>が受け取る。リンクの全員を起こさない。</div>
+      <div class="box b3">IPv4 の ARP との比べ<span>ARP の質問は全員へのブロードキャスト。IPv6 の NS は相手の要請ノードマルチキャストへ。上位のビットだけがちがうアドレスは同じグループになるので、入るグループの数も少なくてすむ。</span></div>
+<pre class="cli small">Joined group address(es):
+  FF02::1
+  FF02::2
+  FF02::1:FF00:1        <i>2001::1 などの分</i>
+  FF02::1:FF00:6700     <i>EUI-64 のアドレスの分</i></pre>
+      <div class="mini">9300 CR 17.8 の show ipv6 interface の出力から一部。注は Claude。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc4291#section-2.7.1">RFC 4291 2.7.1</a>（formed by taking the low-order 24 bits of an address (unicast or anycast) and appending those bits to the prefix FF02:0:0:0:0:1:FF00::/104／4037::01:800:200E:8C6C is FF02::1:FF0E:8C6C／addresses that differ only in the high-order bits … will map to the same Solicited-Node address／A node is required to compute and join）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc4861#section-3">RFC 4861 3</a>（Neighbor Solicitation messages are multicast to the solicited-node multicast address of the target address）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-8/command_reference/b_178_9300_cr/ip_addressing_services_commands.html">9300 CR 17.8</a>「show ipv6 interface」</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>インタフェース ID と自動設定</h1>
+  <p>MAC から 64 ビットを作り、RA から住所を作る。</p>
+  <div class="foot"><span>CCNA #05 IPv6</span><span>1.9</span></div>
+</section>
+
+<section class="slide">
+  <h1>修正 EUI-64 の手順</h1>
+  <div class="cols wide-r">
+    <div>
+      <ol class="steps">
+        <li><b>分ける：</b>48 ビットの MAC を前 24・後ろ 24 ビットに</li>
+        <li><b>挟む：</b>間に <b>FFFE</b> を入れて 64 ビットに</li>
+        <li><b>反転：</b>先頭オクテットの<b>左から 7 ビット目</b>（U/L ビット）を反転</li>
+        <li><b>つける：</b>プレフィックス（FE80:: や RA の /64）の後ろへ</li>
+      </ol>
+      <div class="point warn"><b>反転の早わかり：</b>先頭オクテットの値に 2 を足すか引く。00→02、3C→3E、02→00、A8→AA（Claude の言い方）。</div>
+      <div class="mini">U/L ビットは MAC では 0＝世界で 1 つ。修正 EUI-64 では反転するので 1＝世界で 1 つになる。</div>
+    </div>
+    <div>
+      <svg width="440" height="250" viewBox="0 0 440 250">
+        <g font-size="11.5" text-anchor="middle" font-family="Menlo, monospace">
+          <text x="220" y="16" fill="#4a5a78" font-family="sans-serif" font-size="10.5">例：MAC 0003.a0d6.141e（9300 CR の show ipv6 neighbors の行）</text>
+          <rect x="60" y="26" width="150" height="28" fill="#1f3a68"/><text x="135" y="45" fill="#fff">00 03 a0</text>
+          <rect x="230" y="26" width="150" height="28" fill="#5b80bf"/><text x="305" y="45" fill="#fff">d6 14 1e</text>
+          <text x="20" y="45" fill="#b25000" font-family="sans-serif" font-weight="700">①</text>
+          <rect x="20" y="70" width="120" height="28" fill="#1f3a68"/><text x="80" y="89" fill="#fff">00 03 a0</text>
+          <rect x="140" y="70" width="120" height="28" fill="#b25000"/><text x="200" y="89" fill="#fff">ff fe</text>
+          <rect x="260" y="70" width="160" height="28" fill="#5b80bf"/><text x="340" y="89" fill="#fff">d6 14 1e</text>
+          <text x="8" y="89" fill="#b25000" font-family="sans-serif" font-weight="700">②</text>
+          <text x="220" y="126" fill="#1f3a68">0000 00<tspan font-weight="700" fill="#b25000">0</tspan>0 → 0000 00<tspan font-weight="700" fill="#b25000">1</tspan>0（00 → 02）</text>
+          <text x="20" y="126" fill="#b25000" font-family="sans-serif" font-weight="700">③</text>
+          <rect x="20" y="140" width="400" height="30" fill="#eef2f8" stroke="#5b80bf"/>
+          <text x="220" y="160" fill="#1f3a68">インタフェース ID ＝ <tspan font-weight="700">0203:a0ff:fed6:141e</tspan></text>
+          <text x="20" y="200" fill="#b25000" font-family="sans-serif" font-weight="700">④</text>
+          <text x="230" y="200" fill="#1f3a68" font-size="13"><tspan font-weight="700">FE80::203:A0FF:FED6:141E</tspan></text>
+          <text x="220" y="232" fill="#4a5a78" font-family="sans-serif" font-size="10">CR の行：FE80::203:A0FF:FED6:141E … 0003.a0d6.141e REACH</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc4291#appendix-A">RFC 4291 付録 A</a>（insert two octets, with hexadecimal values of 0xFF and 0xFE … in the middle of the 48-bit MAC (between the company_id and vendor-supplied id)／The only change is inverting the value of the universal/local bit）・<a class="src" href="https://www.rfc-editor.org/rfc/rfc4291#section-2.5.1">2.5.1</a>（the "u" bit is set to one (1) to indicate universal scope）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-8/command_reference/b_178_9300_cr/ip_addressing_services_commands.html">9300 CR 17.8</a>「show ipv6 neighbors」（FE80::203:A0FF:FED6:141E 0 0003.a0d6.141e REACH Ethernet2）。手順の計算は Claude</div>
+</section>
+
+<section class="slide">
+  <h1>近隣探索（NDP）の 5 つのメッセージ</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:24%">メッセージ</th><th style="width:12%">タイプ</th><th>だれが・何のため</th></tr>
+        <tr><td class="t">RS</td><td>133</td><td>ホスト→ルーター。「RA をすぐ送って」</td></tr>
+        <tr><td class="t">RA</td><td>134</td><td>ルーター→全員。自分がいること、プレフィックス、ホップリミット、DHCPv6 を使うか</td></tr>
+        <tr><td class="t">NS</td><td>135</td><td>相手の MAC を聞く。まだ届くかの確認。<b>DAD</b></td></tr>
+        <tr><td class="t">NA</td><td>136</td><td>NS への答え（MAC を返す）</td></tr>
+        <tr><td class="t">Redirect</td><td>137</td><td>ルーター→ホスト。もっとよい次の転送先</td></tr>
+      </table>
+      <div class="point"><b>IPv4 なら：</b>ARP＋ICMP ルーター発見＋ICMP リダイレクト を 1 つにまとめたもの。</div>
+    </div>
+    <div>
+      <div class="cap">アドレス解決（Claude が作成）</div>
+      <svg width="400" height="200" viewBox="0 0 400 200">
+        <g font-size="10.5" text-anchor="middle">
+          <rect x="10" y="10" width="110" height="32" rx="6" fill="#1f3a68"/><text x="65" y="31" fill="#fff">PC-A</text>
+          <rect x="280" y="10" width="110" height="32" rx="6" fill="#b25000"/><text x="335" y="31" fill="#fff">PC-B（…FE12:3456）</text>
+          <line x1="65" y1="42" x2="65" y2="190" stroke="#8a9bb8" stroke-dasharray="4 3"/>
+          <line x1="335" y1="42" x2="335" y2="190" stroke="#8a9bb8" stroke-dasharray="4 3"/>
+          <line x1="65" y1="80" x2="328" y2="80" stroke="#1f3a68" stroke-width="2"/><polygon points="324,75 334,80 324,85" fill="#1f3a68"/>
+          <text x="200" y="70" fill="#1f3a68">NS → 宛先 FF02::1:FF12:3456（要請ノード）</text>
+          <line x1="335" y1="130" x2="72" y2="130" stroke="#b25000" stroke-width="2"/><polygon points="76,125 66,130 76,135" fill="#b25000"/>
+          <text x="200" y="120" fill="#7a3a00">NA ← ユニキャストで MAC を返す</text>
+          <text x="200" y="166" fill="#4a5a78">1 往復で両方が相手の MAC を知る</text>
+          <text x="200" y="184" fill="#4a5a78">（NS に自分の MAC を入れて送るため）</text>
+        </g>
+      </svg>
+      <div class="mini">PC-B のアドレスは Claude の例（2001:DB8:1:10:3E5A:B4FF:FE12:3456）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc4861#section-3">RFC 4861 3</a>（Neighbor Discovery defines five different ICMP packet types／Router Solicitation … request routers to generate Router Advertisements immediately／Router Advertisement … prefixes … a suggested hop limit value／Neighbor Solicitation … also used for Duplicate Address Detection／Redirect／A single request-response pair of packets is sufficient for both … the initiator includes its link-layer address）・<a class="src" href="https://www.rfc-editor.org/rfc/rfc4861#section-4.1">4.1〜4.5</a>（Type 133〜137）・<a class="src" href="https://www.rfc-editor.org/rfc/rfc4861#section-3.1">3.1</a></div>
+</section>
+
+<section class="slide">
+  <h1>SLAAC と DAD</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">ホストがアドレスを作る流れ（Claude が作成）</div>
+      <ol class="steps">
+        <li>リンクローカル（FE80::＋インタフェース ID）を作り、<b>DAD</b></li>
+        <li><b>RS</b> を送る（FF02::2 へ）</li>
+        <li>ルーターが <b>RA</b> を返す（プレフィックス 2001:DB8:1:10::/64）</li>
+        <li>プレフィックス 64＋インタフェース ID 64 ＝ グローバルアドレス</li>
+        <li>そのアドレスも <b>DAD</b>。重ならなければ使う。RA のルーターを既定ルーターの候補に</li>
+      </ol>
+      <div class="point"><b>ステートレス：</b>だれにどのアドレスを渡したかをだれも覚えていない。きっちり管理したいなら DHCPv6（#17）。両方同時も可。</div>
+    </div>
+    <div>
+      <div class="box b2">DAD（重複アドレス検出）<span>アドレスを付ける<b>前に</b>、同じリンクで使われていないか NS で確かめる。SLAAC・DHCPv6・手動のどれでも、ユニキャストに行う。</span></div>
+      <table class="mx">
+        <tr><th style="width:34%">DAD の NS</th><th>中身</th></tr>
+        <tr><td class="t">送信元</td><td><b>::</b>（未指定）</td></tr>
+        <tr><td class="t">宛先</td><td>調べるアドレスの<b>要請ノード</b></td></tr>
+        <tr><td class="t">調べる対象</td><td>まだ仮（tentative）のアドレス</td></tr>
+        <tr><td class="t">答えが来たら</td><td>重なり → そのアドレスは使えない</td></tr>
+      </table>
+      <div class="point warn"><b>一時アドレス（RFC 8981）：</b>インタフェース ID を乱数で作り、時間がたつと取りかえる。MAC から作った ID で通信が結びつけられるのを防ぐ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/routers/ios/config/17-x/ip-addressing/b-ip-addressing/m_ip6-statlss-auto-xe.html">IP Addressing CG IOS XE 17.x「IPv6 Stateless Autoconfiguration」</a>（appending its interface identifier (64 bits) to the prefixes (64 bits) included in the RA messages … subjected to duplicate address detection）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc4862#section-1">RFC 4862 1</a>（DHCPv6 … is used when a site requires tighter control／Both … may be used simultaneously）・<a class="src" href="https://www.rfc-editor.org/rfc/rfc4862#section-5.4">5.4</a>（MUST be performed on all unicast addresses … regardless of whether they are obtained through stateless autoconfiguration, DHCPv6, or manual configuration）・5.4.2（the IP source is set to the unspecified address, and the IP destination is set to the solicited-node multicast address）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc8981">RFC 8981</a>（temporary addresses with randomized interface identifiers）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc4861#section-4.1">RFC 4861 4.1</a>（Typically the all-routers multicast address）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>IOS での設定と確認</h1>
+  <p>付け方は 4 通り、確かめるのは show ipv6 interface。</p>
+  <div class="foot"><span>CCNA #05 IPv6</span><span>1.8</span></div>
+</section>
+
+<section class="slide">
+  <h1>アドレスを付ける</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">Router(config)# ipv6 unicast-routing   <i>! 転送を有効に（初期は無効）</i>
+Router(config)# interface gigabitethernet0/0/0
+Router(config-if)# ipv6 address 2001:DB8:c18:1::/64 eui-64
+Router(config-if)# ipv6 address FE80::1 link-local
+Router(config-if)# interface gigabitethernet0/0/1
+Router(config-if)# ipv6 address 2001:DB8:c18:2::1/64
+Router(config-if)# ip address 192.168.99.1 255.255.255.0
+Router(config-if)# interface gigabitethernet0/0/2
+Router(config-if)# ipv6 address autoconfig default</pre>
+      <div class="mini">各行は IPv6 Basic CG・IOS IPv6 CR の例をもとに Claude が 1 台分にまとめた。0/0/1 は IPv4 と IPv6 の<b>デュアルスタック</b>。</div>
+      <div class="point warn"><b>IPv4 とのちがい：</b>ipv6 address は何個でも足せる（secondary 不要）。リンクローカルは自動で 1 つ付き、link-local で付けると<b>置きかわる</b>。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:42%">コマンド</th><th>付くアドレス</th></tr>
+        <tr><td class="t">ipv6 address P/64 eui-64</td><td>プレフィックス＋<b>MAC から</b>の 64 ビット</td></tr>
+        <tr><td class="t">ipv6 address A/64</td><td>手で全部書いたアドレス</td></tr>
+        <tr><td class="t">… link-local</td><td>自動のリンクローカルの<b>代わり</b></td></tr>
+        <tr><td class="t">ipv6 enable</td><td><b>リンクローカルだけ</b></td></tr>
+        <tr><td class="t">ipv6 address autoconfig</td><td><b>RA</b> のプレフィックスで SLAAC。default で既定ルートも</td></tr>
+        <tr><td class="t">… anycast</td><td>エニーキャスト</td></tr>
+      </table>
+      <div class="point"><b>ipv6 unicast-routing を忘れると</b>、アドレスはあっても LAN の間で IPv6 を転送しない（RA も送らない）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/routers/ios/config/17-x/ip-addressing/b-ip-addressing/m_ip6-add-basic-conn-xe.html">IPv6 Basic CG</a>（By default, IPv6 addresses are not configured and IPv6 routing is disabled／ipv6 unicast-routing Enables the forwarding of IPv6 unicast datagrams／ipv6 address 2001:DB8:c18:1::/64 eui-64／ip address 192.168.99.1 255.255.255.0 ipv6 address 2001:DB8:c18:1::3/64）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipv6/command/ipv6-cr-book/ipv6-i1.html">Cisco IOS IPv6 CR</a>（ipv6 address link-local … overrides the link-local address that is automatically generated／ipv6 enable … automatically configures an IPv6 link-local unicast address／ipv6 address autoconfig … the default keyword causes a default route to be installed）</div>
+</section>
+
+<section class="slide">
+  <h1>確かめる：show ipv6 interface</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">Device# show ipv6 interface ethernet0/0
+Ethernet0/0 is up, line protocol is up
+  IPv6 is enabled, link-local address is FE80::A8BB:CCFF:FE00:6700
+  Global unicast address(es):
+    2001::1, subnet is 2001::/64 [DUP]
+    2001::A8BB:CCFF:FE00:6700, subnet is 2001::/64 [EUI]
+    2001:100::1, subnet is 2001:100::/64
+  Joined group address(es):
+    FF02::1
+    FF02::2
+    FF02::1:FF00:1
+    FF02::1:FF00:6700
+  ND DAD is enabled, number of DAD attempts: 1
+  ND router advertisements are sent every 200 seconds</pre>
+      <div class="mini">9300 CR 17.8 の出力例から一部を抜いた。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">印・行</th><th>意味</th></tr>
+        <tr><td class="t">[EUI]</td><td>EUI-64 で作った</td></tr>
+        <tr><td class="t">[DUP]</td><td>DAD で<b>重なり</b>が見つかった（shutdown／no shutdown でやり直し）</td></tr>
+        <tr><td class="t">[ANY]</td><td>エニーキャスト</td></tr>
+        <tr><td class="t">[TEN]</td><td>DAD の途中（仮）</td></tr>
+        <tr><td class="t">IPv6 is stalled</td><td><b>リンクローカル</b>が重なり、IPv6 の処理が止まった</td></tr>
+        <tr><td class="t">FF02::2</td><td>全ルーターのグループに入っている</td></tr>
+      </table>
+      <div class="point"><b>EUI の逆算（Claude）：</b>A8BB:CCFF:FE00:6700 → A8 を反転して AA → MAC は <b>aabb.cc00.6700</b>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-8/command_reference/b_178_9300_cr/ip_addressing_services_commands.html">Command Reference IOS XE 17.8.x（Catalyst 9300）「show ipv6 interface」</a>（出力例／DUP Duplicate … To re-attampt DAD, the user must use the shutdown or no shutdown command／EUI EUI-64 based／ANY Anycast／TEN Tentative／If duplicate address detection processing identified the link-local address of the interface as being a duplicate address, the processing of IPv6 packets is disabled on the interface and the interface is marked "stalled"）</div>
+</section>
+
+<section class="slide">
+  <h1>近隣キャッシュと、リンクの設計</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">Device# show ipv6 neighbors ethernet 2
+IPv6 Address              Age Link-layer Addr State Interface
+2000:0:0:4::2               0 0003.a0d6.141e  REACH Ethernet2
+FE80::203:A0FF:FED6:141E    0 0003.a0d6.141e  REACH Ethernet2
+3001:1::45a                 - 0002.7d1a.9472  REACH Ethernet2</pre>
+      <table class="mx">
+        <tr><th style="width:24%">State</th><th>意味</th></tr>
+        <tr><td class="t">INCMP</td><td>NS を送ったが NA がまだ</td></tr>
+        <tr><td class="t">REACH</td><td>最近、届くのを確かめた</td></tr>
+        <tr><td class="t">STALE</td><td>しばらく確かめていない（送るまで何もしない）</td></tr>
+        <tr><td class="t">Age「-」</td><td>手で登録した静的な行</td></tr>
+      </table>
+      <div class="mini">IPv4 の show ip arp にあたる（Claude の対比）。</div>
+    </div>
+    <div>
+<pre class="cli small">Device# show ipv6 interface brief
+Ethernet0    [up/up]
+    unassigned
+Ethernet5    [administratively down/down]
+    2001:123::210:7BFF:FEC2:ACD8</pre>
+      <div class="mini">9300 CR 17.8 の brief の出力例から一部。</div>
+      <table class="mx">
+        <tr><th style="width:28%">リンク</th><th>プレフィックス</th></tr>
+        <tr><td class="t">ふつうの LAN</td><td><b>/64</b>（SLAAC・EUI-64 は 64 ビットの ID が前提）</td></tr>
+        <tr><td class="t">ルーター間 1 対 1</td><td><b>/127</b> も可（IPv4 の /31 にあたる）。サブネットルーター・エニーキャストは止める</td></tr>
+        <tr><td class="t">ループバック</td><td>/128（Claude の補足）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-8/command_reference/b_178_9300_cr/ip_addressing_services_commands.html">9300 CR 17.8</a>「show ipv6 neighbors」（出力例／Age … A hyphen (-) indicates a static entry／INCMP … A neighbor solicitation message has been sent … but the corresponding neighbor advertisement message has not yet been received／REACH／STALE）・「show ipv6 interface brief」の出力例／<a class="src" href="https://www.rfc-editor.org/rfc/rfc6164#section-6">RFC 6164 6</a>（Routers MUST support the assignment of /127 prefixes on point-to-point inter-router links. Routers MUST disable Subnet-Router anycast for the prefix when /127 prefixes are used）・Abstract（parallels the use of 31-bit prefixes in IPv4）</div>
+</section>
+
+<section class="slide">
+  <h1>問われ方とまちがえやすい点</h1>
+  <table class="mx">
+    <tr><th style="width:40%">こう聞かれたら</th><th>答えの考え方</th></tr>
+    <tr><td class="t">いちばん短い正しい書き方</td><td style="text-align:left">先頭の 0 だけ消す。:: は<b>一番長い 0 の並びに 1 回</b></td></tr>
+    <tr><td class="t">FE80・FD・FF・2001 はどれ</td><td style="text-align:left">リンクローカル・ユニークローカル・マルチキャスト・グローバル</td></tr>
+    <tr><td class="t">MAC から EUI-64</td><td style="text-align:left">真ん中に <b>FFFE</b>、先頭オクテットの <b>7 ビット目を反転</b>（±2）</td></tr>
+    <tr><td class="t">要請ノードマルチキャスト</td><td style="text-align:left">FF02::1:FF ＋ <b>下位 24 ビット</b></td></tr>
+    <tr><td class="t">ARP の代わり</td><td style="text-align:left">要請ノードあての <b>NS</b> と <b>NA</b>（ブロードキャストはない）</td></tr>
+    <tr><td class="t">いちばん近い 1 台に届く</td><td style="text-align:left"><b>エニーキャスト</b>（マルチキャストは全員）</td></tr>
+    <tr><td class="t">ルーターが IPv6 を転送しない</td><td style="text-align:left"><b>ipv6 unicast-routing</b> を確かめる</td></tr>
+    <tr><td class="t">[DUP]・stalled</td><td style="text-align:left">DAD で重なり。stalled は<b>リンクローカル</b>が重なった</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">書き方（1.8）<span>16 ビット×8 の 16 進。先頭の 0 は省ける、:: は 1 回。/n でプレフィックス。ふつう /64</span></div>
+      <div class="box b2">種類（1.9）<span>2000::/3 グローバル、FC00::/7（FD）ユニークローカル、FE80::/10 リンクローカル、FF00::/8 マルチキャスト、エニーキャストは見た目がユニキャスト</span></div>
+      <div class="box b3">自動設定（1.9）<span>修正 EUI-64（FFFE と U/L 反転）、RS/RA で SLAAC、NS/NA で MAC、DAD で重なり確認</span></div>
+      <div class="box b4">IOS（1.8）<span>ipv6 unicast-routing、ipv6 address（eui-64・link-local・autoconfig・anycast）、ipv6 enable、show ipv6 interface／neighbors</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:44%">数字</th><th>中身</th></tr>
+        <tr><td class="t">128・64</td><td>アドレス長・インタフェース ID</td></tr>
+        <tr><td class="t">/48 → /64</td><td>サブネット <b>65,536</b> 個</td></tr>
+        <tr><td class="t">FF02::1・::2</td><td>全ノード・全ルーター</td></tr>
+        <tr><td class="t">133・134・135・136</td><td>RS・RA・NS・NA</td></tr>
+        <tr><td class="t">2001:DB8::/32</td><td>文書用</td></tr>
+      </table>
+      <div class="point"><b>次の分野：</b>#06 スイッチの動作で、MAC アドレスの学習とエージング、フレームの転送とフラッディング、MAC アドレステーブルを読む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
