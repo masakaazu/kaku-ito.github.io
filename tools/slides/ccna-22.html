@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CCNA #22 ACL 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">CCNA（200-301 v1.1）　5.0 セキュリティの基礎　#22</div>
+  <h1>ACL</h1>
+  <p>出題範囲 5.6 ― 条件の並んだリストで、パケットを通すか捨てるかを決める。上から順に比べるしくみ、ワイルドカードマスク、標準と拡張、付ける向きと場所、直し方と確かめ方</p>
+  <div class="refs-legend">各ページの下に、根拠にしたCiscoの資料を書いた（青い文字を押すと開く）</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>5.6 Configure and verify access control lists</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 ACL の基本<span>ACL と ACE、上から順の照合、暗黙の deny、ワイルドカードマスク、any と host</span></div>
+      <div class="box b2">2 標準と拡張<span>番号の範囲、比べられるもの、プロトコルとポート、established、名前付き ACL、IPv6 ACL</span></div>
+      <div class="box b3">3 適用と置き場所<span>ip access-group の in と out、3つの P、置き場所の目安、access-class、中身のない ACL</span></div>
+      <div class="box b4">4 編集と確認<span>シーケンス番号での挿入と削除、resequence、remark、log、show access-lists、show ip interface</span></div>
+    </div>
+    <div>
+      <div class="cap">CCNAでの問われ方</div>
+      <table>
+        <tr><td style="width:26%">Configure and verify</td><td><b>設定を読んで結果を答える</b>問題が中心。「このパケットは通るか」「ワイルドカードはどれか」「どこに、どの向きで付けるか」「1行だけ消すには」</td></tr>
+      </table>
+      <div class="point"><b>芯：</b>ACL は<b>上から順に比べ、最初に合った行で決まる</b>。どの行にも合わなければ<b>最後の暗黙の deny</b>で捨てる。作っただけでは効かず、<b>インタフェースに向きを決めて付けて</b>初めて働く。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco CCNA Exam v1.1 (200-301) Exam Topics</a>（5.6）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>ACL の基本</h1>
+  <p>上から順に比べて、最初に合った行で決める。</p>
+  <div class="foot"><span>CCNA #22 ACL</span><span>5.6</span></div>
+</section>
+
+<section class="slide">
+  <h1>上から順の照合と暗黙の deny</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="300" viewBox="0 0 420 300">
+        <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5b80bf"/></marker></defs>
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="150" y="6" width="120" height="28" rx="14" fill="#5b80bf"/><text x="210" y="25" fill="#fff">パケットが来た</text>
+          <line x1="210" y1="34" x2="210" y2="50" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/>
+          <rect x="110" y="52" width="200" height="34" rx="6" fill="#eef2f8" stroke="#5b80bf"/><text x="210" y="74" fill="#1f3a68">1行目に合う？</text>
+          <line x1="210" y1="86" x2="210" y2="104" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/><text x="222" y="99" text-anchor="start" fill="#5b80bf" font-size="10">いいえ</text>
+          <rect x="110" y="106" width="200" height="34" rx="6" fill="#eef2f8" stroke="#5b80bf"/><text x="210" y="128" fill="#1f3a68">2行目に合う？</text>
+          <line x1="210" y1="140" x2="210" y2="158" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/><text x="222" y="153" text-anchor="start" fill="#5b80bf" font-size="10">いいえ</text>
+          <rect x="110" y="160" width="200" height="34" rx="6" fill="#eef2f8" stroke="#5b80bf"/><text x="210" y="182" fill="#1f3a68">…最後の行に合う？</text>
+          <line x1="210" y1="194" x2="210" y2="212" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/><text x="222" y="207" text-anchor="start" fill="#5b80bf" font-size="10">いいえ</text>
+          <rect x="110" y="214" width="200" height="40" rx="6" fill="#b25000"/><text x="210" y="231" fill="#fff">暗黙の deny</text><text x="210" y="247" fill="#fff" font-size="10">（書いていないが必ずある）</text>
+          <line x1="310" y1="69" x2="340" y2="69" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar)"/>
+          <line x1="310" y1="123" x2="340" y2="123" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar)"/>
+          <line x1="310" y1="177" x2="340" y2="177" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar)"/>
+          <text x="325" y="62" fill="#1f3a68" font-size="10">はい</text><text x="325" y="116" fill="#1f3a68" font-size="10">はい</text><text x="325" y="170" fill="#1f3a68" font-size="10">はい</text>
+          <rect x="342" y="52" width="72" height="140" rx="8" fill="#1f3a68"/><text x="378" y="104" fill="#fff" font-size="11">その行の</text><text x="378" y="120" fill="#fff" font-size="11">permit か</text><text x="378" y="136" fill="#fff" font-size="11">deny で決定</text><text x="378" y="160" fill="#fff" font-size="9.5">下の行は</text><text x="378" y="173" fill="#fff" font-size="9.5">見ない</text>
+          <text x="210" y="280" fill="#1f3a68" font-size="10.5">どの行にも合わなければ捨てる</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="cap">順番をまちがえた例（1台だけ止めたい）</div>
+<pre class="cli small">access-list 1 permit any               <i>! 全部に合う</i>
+access-list 1 deny host 192.168.10.1   <i>! ここまで来ない</i></pre>
+      <div class="cap">正しい順番</div>
+<pre class="cli small">access-list 1 deny host 192.168.10.1
+access-list 1 permit any               <i>! 書かないと全部止まる</i></pre>
+      <div class="point warn"><b>2つの落とし穴：</b>広い条件を上に書くと、下の細かい行に届かない。<b>permit を1行も書かない ACL は全部を止める</b>（暗黙の deny）。</div>
+      <div class="ex" style="margin-top:6px"><span class="lbl">Cisco の勧め</span>よく合う行は上に置く（比べる回数が減る）</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_ipv4_acls.html">Security CG IOS XE 17.9（Catalyst 9300）「IPv4 ACLs」</a>（The first match determines whether the device accepts or rejects the packet … the order of the conditions is critical. If no conditions match, the device denies the packet）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/access-lists/26448-ACLsamples.html">Cisco Doc 26448「Configure Commonly Used IP ACLs」</a>（If the order of the entries is reversed …, the first line matches every packet source address）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/security/ios-firewall/23602-confaccesslists.html">Cisco Doc 23602</a>（you must have the frequently hit entries at the top of the list）</div>
+</section>
+
+<section class="slide">
+  <h1>ワイルドカードマスク<small>0 は「同じでなければならない」、1 は「何でもよい」</small></h1>
+  <div class="cols">
+    <div>
+      <div class="cap">10.1.1.0 0.0.0.255 を2進数で見る</div>
+      <table class="mx">
+        <tr><th style="width:24%"></th><th>第1</th><th>第2</th><th>第3</th><th>第4</th></tr>
+        <tr><td class="t">アドレス</td><td>00001010</td><td>00000001</td><td>00000001</td><td>00000000</td></tr>
+        <tr><td class="t">ワイルドカード</td><td>00000000</td><td>00000000</td><td>00000000</td><td><b>11111111</b></td></tr>
+        <tr><td class="t">意味</td><td>一致</td><td>一致</td><td>一致</td><td><b>何でもよい</b></td></tr>
+      </table>
+      <div class="point">→ <b>10.1.1.0〜10.1.1.255</b> のどれにも合う。サブネットマスク（255.255.255.0）と 0 と 1 の意味が<b>逆</b>なので、<b>逆マスク（inverse mask）</b>とも呼ぶ。</div>
+      <div class="formula" style="margin-top:8px;font-size:16px">ワイルドカード ＝ 255.255.255.255 − サブネットマスク</div>
+    </div>
+    <div>
+      <div class="cap">キーワードで書ける2つ</div>
+      <table class="mx">
+        <tr><th style="width:24%">キーワード</th><th>正式な書き方</th><th>合うもの</th></tr>
+        <tr><td class="t">any</td><td>0.0.0.0 255.255.255.255</td><td>全部（全ビット無視）</td></tr>
+        <tr><td class="t">host 10.1.1.2</td><td>10.1.1.2 0.0.0.0</td><td>その1台（全ビット一致）</td></tr>
+      </table>
+      <div class="cap" style="margin-top:8px">求め方の例</div>
+      <table class="mx">
+        <tr><th>プレフィックス</th><th>サブネットマスク</th><th>ワイルドカード</th></tr>
+        <tr><td class="t">/24</td><td>255.255.255.0</td><td><b>0.0.0.255</b></td></tr>
+        <tr><td class="t">/26</td><td>255.255.255.192</td><td><b>0.0.0.63</b></td></tr>
+        <tr><td class="t">/27</td><td>255.255.255.224</td><td><b>0.0.0.31</b></td></tr>
+        <tr><td class="t">/30</td><td>255.255.255.252</td><td><b>0.0.0.3</b></td></tr>
+      </table>
+      <div class="mini">標準 ACL でマスクを省くと 0.0.0.0（host と同じ）とみなされる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/security/ios-firewall/23602-confaccesslists.html">Cisco Doc 23602「Configure IP Access Lists」</a>（ACLs use a wildcard mask (also called an inverse mask) … each 0 … must match exactly, and each 1 … can be ignored／0.0.0.0/255.255.255.255 means any）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_ipv4_acls.html">Security CG 17.9（9300）「IPv4 ACLs」</a>（The keyword host … source 0.0.0.0／if you omit the mask …, 0.0.0.0 is assumed）。/26・/30 の行はClaudeが同じ式で計算した例</div>
+</section>
+
+<section class="slide">
+  <h1>ワイルドカードの範囲を読む</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">192.168.148.0 0.0.1.255（Cisco の例）</div>
+      <table class="mx">
+        <tr><th style="width:30%"></th><th>第3オクテット</th><th>第4オクテット</th></tr>
+        <tr><td class="t">アドレス</td><td>1001010<b>0</b>（148）</td><td>00000000</td></tr>
+        <tr><td class="t">ワイルドカード</td><td>0000000<b>1</b>（1）</td><td>11111111（255）</td></tr>
+        <tr><td class="t">取りうる値</td><td><b>148 と 149</b></td><td>0〜255</td></tr>
+      </table>
+      <div class="point">→ <b>192.168.148.0〜192.168.149.255</b>（/23 と同じ範囲）。ワイルドカードが 1 のビットの数だけ範囲が広がる。</div>
+      <div class="cap" style="margin-top:8px">172.20.128.64 0.0.0.31（Cisco の例）</div>
+      <div class="ex"><span class="lbl">範囲</span>64 から 32 個 → <b>172.20.128.64〜172.20.128.95</b></div>
+    </div>
+    <div>
+      <div class="cap">読み方の手順</div>
+      <ol class="steps">
+        <li>ワイルドカードが <b>0 のオクテット</b>はそのまま（一致が必要）</li>
+        <li><b>0 でも 255 でもないオクテット</b>を探す（例：1、31、63）</li>
+        <li>その値＋1 が<b>そのオクテットの幅</b>（1→2、31→32、63→64）</li>
+        <li>アドレスのその値から、幅のぶんだけが範囲</li>
+        <li>右側の 255 のオクテットは 0〜255 全部</li>
+      </ol>
+      <div class="point warn"><b>ひっかけ：</b>/27 のワイルドカードを <b>0.0.0.32</b>（ブロックの大きさそのもの）と答えない。<b>1 を引いて 0.0.0.31</b>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/security/ios-firewall/23602-confaccesslists.html">Cisco Doc 23602</a>（access-list 10 permit 192.168.148.0 0.0.1.255）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_ipv4_acls.html">Security CG 17.9（9300）「IPv4 ACLs」</a>（access-list 6 permit 172.20.128.64 0.0.0.31 … source addresses 172.20.128.64 to 172.20.128.95）。読み方の手順はClaudeがまとめた</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>標準と拡張</h1>
+  <p>送信元だけを見るか、宛先やポートまで見るか。</p>
+  <div class="foot"><span>CCNA #22 ACL</span><span>5.6</span></div>
+</section>
+
+<section class="slide">
+  <h1>標準 ACL と拡張 ACL</h1>
+  <table class="mx">
+    <tr><th style="width:18%"></th><th>標準 ACL</th><th>拡張 ACL</th></tr>
+    <tr><td class="t">番号</td><td><b>1〜99</b>、1300〜1999</td><td><b>100〜199</b>、2000〜2699</td></tr>
+    <tr><td class="t">比べるもの</td><td><b>送信元アドレスだけ</b></td><td>プロトコル・送信元・<b>宛先</b>・<b>ポート</b>・TCP のフラグなど</td></tr>
+    <tr><td class="t">書き方</td><td>access-list 6 permit 172.20.128.64 0.0.0.31</td><td>access-list 106 permit ip any 172.20.128.64 0.0.0.31</td></tr>
+    <tr><td class="t">名前付きで作る</td><td>ip access-list standard 名前</td><td>ip access-list extended 名前</td></tr>
+    <tr><td class="t">置き場所の目安</td><td>宛先の近く</td><td>送信元の近く</td></tr>
+  </table>
+  <div class="cols" style="margin-top:10px">
+    <div class="point"><b>拡張 ACL の決まり：</b>送信元と宛先の前に<b>プロトコル（ip・tcp・udp・icmp など）を必ず書く</b>。<b>ip は TCP・UDP・ICMP も含む</b>全部。</div>
+    <div class="point warn"><b>標準 ACL の限界：</b>宛先を見られないので「この送信元から、<b>このサーバーへの通信だけ</b>止める」は書けない。それには拡張 ACL。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_ipv4_acls.html">Security CG 17.9（9300）「IPv4 ACLs」</a>（Access List Numbers の表／standard ACLs use only source addresses …／with extended ACLs, you must enter the protocol (IP) before the source and destination information／例 access-list 6・access-list 106）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/security/ios-firewall/23602-confaccesslists.html">Cisco Doc 23602</a>（IP includes TCP, UDP, ICMP）</div>
+</section>
+
+<section class="slide">
+  <h1>拡張 ACL の1行を分解する</h1>
+  <svg width="856" height="150" viewBox="0 0 856 150">
+    <g font-size="13" text-anchor="middle">
+      <rect x="4" y="20" width="120" height="40" rx="6" fill="#1f3a68"/><text x="64" y="45" fill="#fff">access-list 110</text>
+      <rect x="130" y="20" width="76" height="40" rx="6" fill="#b25000"/><text x="168" y="45" fill="#fff">permit</text>
+      <rect x="212" y="20" width="56" height="40" rx="6" fill="#5b80bf"/><text x="240" y="45" fill="#fff">tcp</text>
+      <rect x="274" y="20" width="180" height="40" rx="6" fill="#eef2f8" stroke="#5b80bf"/><text x="364" y="45" fill="#1f3a68">10.1.1.0 0.0.0.255</text>
+      <rect x="460" y="20" width="160" height="40" rx="6" fill="#eef2f8" stroke="#5b80bf"/><text x="540" y="45" fill="#1f3a68">host 10.5.5.5</text>
+      <rect x="626" y="20" width="80" height="40" rx="6" fill="#eef2f8" stroke="#b25000"/><text x="666" y="45" fill="#b25000">eq 80</text>
+      <rect x="712" y="20" width="140" height="40" rx="6" fill="#fff" stroke="#5b80bf" stroke-dasharray="4 3"/><text x="782" y="45" fill="#5b80bf">（log など）</text>
+      <g font-size="11.5" fill="#1f3a68">
+        <text x="64" y="80">番号（100〜199）</text>
+        <text x="168" y="80">動作</text>
+        <text x="240" y="80">プロトコル</text>
+        <text x="364" y="80">送信元とワイルドカード</text>
+        <text x="540" y="80">宛先</text>
+        <text x="666" y="80">宛先ポート</text>
+        <text x="782" y="80">付け足しのキーワード</text>
+      </g>
+      <text x="428" y="118" font-size="12" fill="#1f3a68">ポートは<tspan font-weight="700">送信元のあとに書けば送信元ポート</tspan>、<tspan font-weight="700">宛先のあとに書けば宛先ポート</tspan>。ポートが書けるのは tcp と udp のときだけ</text>
+      <text x="428" y="140" font-size="11" fill="#5b80bf">意味：10.1.1.0/24 から 10.5.5.5 の TCP 80 番（HTTP）への通信を許可</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div>
+      <div class="cap">ポートの比べ方</div>
+      <table class="mx">
+        <tr><th style="width:22%">書き方</th><th>意味</th><th>例</th></tr>
+        <tr><td class="t">eq</td><td>等しい</td><td>eq 23（Telnet）</td></tr>
+        <tr><td class="t">gt／lt</td><td>より大きい／より小さい</td><td>gt 1023</td></tr>
+        <tr><td class="t">neq</td><td>等しくない</td><td>neq 80</td></tr>
+        <tr><td class="t">range</td><td>範囲（両端を含む）</td><td>range 20 21</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">established</div>
+      <div class="ex"><span class="lbl">意味</span>TCP の <b>ACK か RST</b> が立ったパケットに合う＝すでに始まった通信</div>
+<pre class="cli small">access-list 102 permit tcp any 172.16.0.0 0.0.255.255 established</pre>
+      <div class="mini">中から始めた TCP の戻りは通り、外から始める SYN だけのパケットは合わない。<b>UDP には使えない</b>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_ipv4_acls.html">Security CG 17.9（9300）「IPv4 ACLs」</a>（operator and port … source (if positioned after source …) or destination (if positioned after destination …)／eq, gt, lt, neq, range (inclusive range)／established … same function as matching on the ack or rst flag／the flag and established keywords are not valid for UDP）。上の1行の例はClaudeが書いた</div>
+</section>
+
+<section class="slide">
+  <h1>名前付き ACL と IPv6 ACL</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">番号付きと名前付き</div>
+      <table class="mx">
+        <tr><th style="width:26%"></th><th>番号付き（access-list で作る）</th><th>名前付き</th></tr>
+        <tr><td class="t">作り方</td><td>access-list 101 …</td><td>ip access-list extended WEB</td></tr>
+        <tr><td class="t">行を足す</td><td><b>いつも最後</b>に付く</td><td>番号を付けて<b>間に入れられる</b></td></tr>
+        <tr><td class="t">1行だけ消す</td><td>できない（<b>no access-list で全部消える</b>）</td><td><b>できる</b>（no 20 など）</td></tr>
+      </table>
+<pre class="cli small">ip access-list extended WEB
+ permit tcp any host 10.5.5.5 eq 443
+ deny   ip any any log</pre>
+      <div class="mini">名前の代わりに番号（ip access-list extended 101）で入ると、番号付き ACL も行ごとに直せる（第4章）。</div>
+    </div>
+    <div>
+      <div class="cap">IPv6 ACL</div>
+      <table class="mx">
+        <tr><th style="width:30%"></th><th>IPv4</th><th>IPv6</th></tr>
+        <tr><td class="t">作り方</td><td>番号付き・名前付き</td><td><b>名前付きだけ</b>（ipv6 access-list）</td></tr>
+        <tr><td class="t">付け方</td><td>ip access-group</td><td><b>ipv6 traffic-filter</b></td></tr>
+        <tr><td class="t">最後</td><td>暗黙の deny</td><td>暗黙の deny</td></tr>
+      </table>
+<pre class="cli small">ipv6 access-list V6IN
+ deny tcp any any gt 5000
+ permit icmp any any
+ permit ipv6 any any       <i>! 書かないと残りが止まる</i>
+interface g0/1
+ ipv6 traffic-filter V6IN in</pre>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_ipv4_acls.html">Security CG 17.9（9300）「IPv4 ACLs」</a>（The advantage of using named ACLs … you can delete individual entries／any additions are placed at the end of the list）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_ipv6_acls.html">Security CG 17.9（9300）「IPv6 ACLs」</a>（IPv6 supports only named ACLs／ipv6 traffic-filter／an implicit deny-all condition is at the end of each IPv6 access list）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/security/ios-firewall/23602-confaccesslists.html">Cisco Doc 23602</a>（no access-list … the entire ACL is deleted）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>適用と置き場所</h1>
+  <p>どのインタフェースに、どの向きで付けるか。</p>
+  <div class="foot"><span>CCNA #22 ACL</span><span>5.6</span></div>
+</section>
+
+<section class="slide">
+  <h1>in と out<small>ip access-group 番号か名前 in｜out</small></h1>
+  <svg width="856" height="170" viewBox="0 0 856 170">
+    <defs><marker id="ar2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="20" y="60" width="90" height="44" rx="8" fill="#5b80bf"/><text x="65" y="87" fill="#fff">送ってきた側</text>
+      <line x1="110" y1="82" x2="200" y2="82" stroke="#1f3a68" stroke-width="2.5" marker-end="url(#ar2)"/>
+      <rect x="200" y="20" width="460" height="125" rx="12" fill="#eef2f8" stroke="#1f3a68"/><text x="430" y="40" fill="#1f3a68" font-weight="700">ルーター</text>
+      <rect x="215" y="58" width="120" height="48" rx="6" fill="#b25000"/><text x="275" y="78" fill="#fff">in の ACL</text><text x="275" y="96" fill="#fff" font-size="10.5">受け取った直後</text>
+      <line x1="335" y1="82" x2="370" y2="82" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar2)"/>
+      <rect x="372" y="58" width="116" height="48" rx="6" fill="#1f3a68"/><text x="430" y="78" fill="#fff">ルーティング</text><text x="430" y="96" fill="#fff" font-size="10.5">出口を決める</text>
+      <line x1="488" y1="82" x2="523" y2="82" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar2)"/>
+      <rect x="525" y="58" width="120" height="48" rx="6" fill="#b25000"/><text x="585" y="78" fill="#fff">out の ACL</text><text x="585" y="96" fill="#fff" font-size="10.5">送り出す前</text>
+      <line x1="660" y1="82" x2="740" y2="82" stroke="#1f3a68" stroke-width="2.5" marker-end="url(#ar2)"/>
+      <rect x="742" y="60" width="96" height="44" rx="8" fill="#5b80bf"/><text x="790" y="87" fill="#fff">宛先の側</text>
+      <text x="275" y="130" fill="#b25000" font-size="10.5">deny ならここで捨てる</text>
+      <text x="585" y="130" fill="#b25000" font-size="10.5">出口が決まってから調べる</text>
+      <text x="155" y="160" fill="#1f3a68" font-size="10.5">入口のインタフェース</text>
+      <text x="700" y="160" fill="#1f3a68" font-size="10.5">出口のインタフェース</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div>
+<pre class="cli small">interface g0/1
+ ip access-group 106 in     <i>! 入ってくるパケット</i>
+interface g0/2
+ ip access-group 6 out      <i>! 出ていくパケット</i></pre>
+    </div>
+    <div class="point"><b>向きはルーターから見る：</b>in＝そのインタフェースに<b>入ってくる</b>、out＝そのインタフェースから<b>出ていく</b>。in で捨てればルーティングの手間もかからない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_ipv4_acls.html">Security CG 17.9（9300）「IPv4 ACLs」</a>（For inbound ACLs, after receiving a packet, the device checks the packet against the ACL／For outbound ACLs, after receiving and routing a packet to a controlled interface, the device checks the packet／ip access-group 106 in・ip access-group 6 out）</div>
+</section>
+
+<section class="slide">
+  <h1>どこに置くか<small>拡張は送信元の近く、標準は宛先の近く</small></h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="380" height="270" viewBox="0 0 380 270">
+        <defs><marker id="ar3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5b80bf"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <rect x="6" y="40" width="70" height="36" rx="6" fill="#5b80bf"/><text x="41" y="62" fill="#fff">PC（送信元）</text>
+          <rect x="110" y="40" width="50" height="36" rx="6" fill="#1f3a68"/><text x="135" y="62" fill="#fff">R1</text>
+          <rect x="200" y="40" width="50" height="36" rx="6" fill="#1f3a68"/><text x="225" y="62" fill="#fff">R2</text>
+          <rect x="290" y="20" width="84" height="32" rx="6" fill="#eef2f8" stroke="#5b80bf"/><text x="332" y="40" fill="#1f3a68">サーバー A</text>
+          <rect x="290" y="66" width="84" height="32" rx="6" fill="#eef2f8" stroke="#5b80bf"/><text x="332" y="86" fill="#1f3a68">サーバー B</text>
+          <line x1="76" y1="58" x2="110" y2="58" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="160" y1="58" x2="200" y2="58" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="250" y1="52" x2="290" y2="38" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="250" y1="64" x2="290" y2="80" stroke="#5b80bf" stroke-width="2"/>
+          <circle cx="108" cy="58" r="7" fill="#b25000"/><text x="100" y="30" fill="#b25000">拡張 ACL（in）</text>
+          <circle cx="282" cy="39" r="7" fill="#5b80bf" stroke="#1f3a68"/><text x="282" y="122" fill="#1f3a68">標準 ACL（out）</text>
+          <line x1="282" y1="46" x2="282" y2="110" stroke="#1f3a68" stroke-dasharray="3 3"/>
+          <text x="190" y="150" fill="#1f3a68" font-size="11.5" font-weight="700">ねらい：PC からサーバー A への通信だけ止める</text>
+          <text x="6" y="178" text-anchor="start" fill="#b25000">拡張 ACL：宛先まで書けるので、PC の近く（R1 の入口）で</text>
+          <text x="6" y="196" text-anchor="start" fill="#b25000">早く捨てる。いらない通信が網を流れない</text>
+          <text x="6" y="222" text-anchor="start" fill="#1f3a68">標準 ACL：送信元しか見られない。R1 に置くと PC から</text>
+          <text x="6" y="240" text-anchor="start" fill="#1f3a68">サーバー B への通信まで止まるので、A の手前（R2 の出口）に置く</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:22%"></th><th>置き場所</th><th>理由</th></tr>
+        <tr><td class="t">拡張</td><td><b>送信元</b>のできるだけ近く</td><td>宛先・ポートで絞れるので、早く捨てても止めすぎない</td></tr>
+        <tr><td class="t">標準</td><td><b>宛先</b>のできるだけ近く</td><td>宛先を見られないので、送信元の近くでは止めすぎる</td></tr>
+      </table>
+      <div class="point">Cisco の教材は、ほかに<b>管理の範囲</b>（自分が設定できる機器か）、<b>帯域</b>、<b>設定のしやすさ</b>も置き場所を決める理由に挙げている。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://netacad.fit.vutbr.cz/wp-content/uploads/ccna/ccna2/v50/lectures/CCNA2_Chapter9.pdf">Cisco Networking Academy「Routing and Switching Essentials」Chapter 9</a>（Extended ACLs - Locate extended ACLs as close as possible to the source … Standard ACLs - … place them as close to the destination as possible）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/security/ios-firewall/23602-confaccesslists.html">Cisco Doc 23602</a>（It is a good practice to apply the ACL on the interface closest to the source of the traffic）。図の構成はClaudeが書いた例</div>
+</section>
+
+<section class="slide">
+  <h1>3つの P・access-class・中身のない ACL</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">3つの P（1つのインタフェースに付けられる数）</div>
+      <table class="mx">
+        <tr><th style="width:32%">ごとに1つ</th><th>意味</th></tr>
+        <tr><td class="t">Protocol</td><td>IPv4 と IPv6 は別の ACL</td></tr>
+        <tr><td class="t">Direction</td><td>in と out は別の ACL</td></tr>
+        <tr><td class="t">Interface</td><td>インタフェースごとに付ける</td></tr>
+      </table>
+      <div class="point">IPv4＋IPv6 で in と out → 1つのインタフェースに<b>最大4つ</b>。同じ向きに別の ACL を付けると<b>入れ替わる</b>。</div>
+      <div class="cap" style="margin-top:8px">中身のない ACL を付けたら</div>
+      <div class="point warn">ip access-group 150 in と書いて ACL 150 を作っていないと、<b>ACL がないのと同じで全部通る</b>（暗黙の deny で止まるのではない）。</div>
+    </div>
+    <div>
+      <div class="cap">機器へのログインをしぼる：access-class</div>
+<pre class="cli small">access-list 10 permit host 10.10.10.5
+line vty 0 4
+ access-class 10 in</pre>
+      <table class="mx" style="margin-top:6px">
+        <tr><th style="width:30%"></th><th>ip access-group</th><th>access-class</th></tr>
+        <tr><td class="t">付け先</td><td>インタフェース</td><td><b>VTY 回線</b></td></tr>
+        <tr><td class="t">しぼるもの</td><td>通り抜ける通信</td><td><b>Telnet・SSH のログイン</b></td></tr>
+        <tr><td class="t">ACL</td><td>標準・拡張</td><td>送信元だけで決めるので<b>標準で足りる</b></td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://netacad.fit.vutbr.cz/wp-content/uploads/ccna/ccna2/v50/lectures/CCNA2_Chapter9.pdf">Netacad「Routing and Switching Essentials」Chapter 9</a>（The Three Ps … One ACL per protocol … per direction … per interface／because the access-class command is used to filter … Telnet/SSH sessions by source address, a standard ACL can be used）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_ipv4_acls.html">Security CG 17.9（9300）「IPv4 ACLs」</a>（the new ACL replaces the previously configured one／When you apply an undefined ACL …, the device acts as if the ACL has not been applied … and permits all packets／access-class 10 in）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>編集と確認</h1>
+  <p>シーケンス番号で直し、一致数と付け先を確かめる。</p>
+  <div class="foot"><span>CCNA #22 ACL</span><span>5.6</span></div>
+</section>
+
+<section class="slide">
+  <h1>シーケンス番号で直す</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">先頭に1行入れる（Cisco の例）</div>
+<pre class="cli small">Router# show access-list
+Extended IP access list 101
+    10 permit tcp any any
+    20 permit udp any any
+    30 permit icmp any any
+Router(config)# ip access-list extended 101
+Router(config-ext-nacl)# 5 deny tcp any any eq telnet
+Router# show access-list
+Extended IP access list 101
+    <b>5 deny tcp any any eq telnet</b>
+    10 permit tcp any any
+    20 permit udp any any
+    30 permit icmp any any</pre>
+      <div class="mini">番号を書かずに足した行は 10 ずつ増え、<b>最後</b>に付く。番号は 1〜32767（9300）。</div>
+    </div>
+    <div>
+      <div class="cap">直し方の早見表</div>
+      <table class="mx">
+        <tr><th style="width:34%">やりたいこと</th><th>コマンド</th></tr>
+        <tr><td class="t">間に入れる</td><td>ACL のモードで <b>15 permit …</b></td></tr>
+        <tr><td class="t">1行消す</td><td>ACL のモードで <b>no 20</b></td></tr>
+        <tr><td class="t">番号を付け直す</td><td><b>ip access-list resequence</b> 名前 100 15</td></tr>
+        <tr><td class="t">ACL を全部消す</td><td>no access-list 101</td></tr>
+      </table>
+      <div class="point warn"><b>ひっかけ：</b>グローバル設定で <b>no access-list 101 deny icmp any any</b> と1行を書いても、<b>ACL 101 が丸ごと消える</b>。</div>
+      <div class="mini">resequence kmd1 100 15 → 100、115、130 … と付け直す（順番は変わらない）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/security/ios-firewall/23602-confaccesslists.html">Cisco Doc 23602</a>（The sequence numbers such as 10, 20, and 30／5 deny tcp any any eq telnet … added as the first entry／if you intend to delete a specific line from a numbered ACL …, the entire ACL is deleted）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/sec_data_acl/configuration/xe-16/sec-data-acl-xe-16-book/sec-acl-seq-num.html">Security CG: ACLs（IOS XE）「IP Access List Entry Sequence Numbering」</a>（Use the no sequence-number command to delete an entry／ip access-list resequence kmd1 100 15）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_ipv4_acls.html">Security CG 17.9（9300）「IPv4 ACLs」</a>（sequence number (1 to 32767)）</div>
+</section>
+
+<section class="slide">
+  <h1>確かめる：一致数と付け先</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">show ip access-lists（中身と一致数）</div>
+<pre class="cli small">Router# show ip access-lists interface FastEthernet0/0 in
+Extended IP access list 150 in
+    10 permit ip host 10.1.1.1 any
+    30 permit ip host 10.2.2.2 any <b>(15 matches)</b></pre>
+      <div class="mini">行の後ろの (15 matches) がその行に合ったパケットの数。合っていない行には出ない。show access-lists は IP 以外（MAC）の ACL も含めて出す。</div>
+      <div class="cap" style="margin-top:8px">remark と log</div>
+<pre class="cli small">access-list 1 remark Permit only user1 workstation through
+access-list 101 deny ip any any log</pre>
+      <div class="mini">remark は説明（1行 100 文字まで、照合に使わない）。log は合ったパケットを informational のログに出す。</div>
+    </div>
+    <div>
+      <div class="cap">何で何が分かるか</div>
+      <table class="mx">
+        <tr><th style="width:42%">コマンド</th><th>分かること</th></tr>
+        <tr><td class="t">show access-lists</td><td>全部の ACL の中身と一致数</td></tr>
+        <tr><td class="t">show ip access-lists</td><td>IPv4 の ACL だけ</td></tr>
+        <tr><td class="t">show ip interface g0/1</td><td>そのインタフェースに<b>どの ACL がどの向き</b>で付いているか</td></tr>
+        <tr><td class="t">show running-config</td><td>ACL の設定と付け先の両方</td></tr>
+      </table>
+      <div class="point warn"><b>log の注意：</b>ログはソフトウェアで作るので、たくさん合うと<b>全部は記録されない</b>。数を正確に数えるのは一致数（matches）で。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/security/s1/sec-s1-cr-book/sec-cr-s4.html">Cisco IOS Security Command Reference: Commands S to Z「show ip access-lists」</a>（出力例 30 permit ip host 10.2.2.2 any (15 matches)／identical to the show access-lists command, except that it is IP-specific）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_ipv4_acls.html">Security CG 17.9（9300）「IPv4 ACLs」</a>（show ip interface … the access groups are included in the display／Each remark line is limited to 100 characters／informational logging message … not all packets will be logged）</div>
+</section>
+
+<section class="slide">
+  <h1>よくあるひっかけ</h1>
+  <table class="mx">
+    <tr><th style="width:42%">よくある思い込み</th><th>正しくは</th></tr>
+    <tr><td class="t">合った行が複数あれば、いちばん細かい行で決まる</td><td style="text-align:left"><b>上から最初に合った行</b>で決まる。下は見ない</td></tr>
+    <tr><td class="t">どの行にも合わなければ通る</td><td style="text-align:left">最後の<b>暗黙の deny</b> で捨てる</td></tr>
+    <tr><td class="t">/27 のワイルドカードは 0.0.0.32</td><td style="text-align:left"><b>0.0.0.31</b>（255.255.255.255 − 255.255.255.224）</td></tr>
+    <tr><td class="t">標準 ACL は 100〜199</td><td style="text-align:left">標準は <b>1〜99・1300〜1999</b>、拡張が 100〜199・2000〜2699</td></tr>
+    <tr><td class="t">標準 ACL は送信元の近くに置く</td><td style="text-align:left">標準は<b>宛先の近く</b>、拡張が<b>送信元の近く</b></td></tr>
+    <tr><td class="t">同じ向きに ACL を2つ付けられる</td><td style="text-align:left"><b>1つの向きに1つ</b>。新しい方と入れ替わる</td></tr>
+    <tr><td class="t">中身のない ACL を付けると全部止まる</td><td style="text-align:left">ACL がないのと同じで<b>全部通る</b></td></tr>
+    <tr><td class="t">no access-list 101 deny … で1行だけ消える</td><td style="text-align:left"><b>ACL 101 が丸ごと消える</b>。1行なら ACL のモードで no 番号</td></tr>
+    <tr><td class="t">VTY には ip access-group で付ける</td><td style="text-align:left">VTY は <b>access-class</b>。IPv6 のインタフェースは <b>ipv6 traffic-filter</b></td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">ACL の基本<span>上から順に比べ、最初に合った行で決定。最後は暗黙の deny。ワイルドカードは 0＝一致・1＝無視、any と host</span></div>
+      <div class="box b2">標準と拡張<span>標準 1〜99（送信元だけ）、拡張 100〜199（プロトコル・宛先・ポート・established）。名前付きは1行ずつ直せる。IPv6 は名前付きだけ</span></div>
+      <div class="box b3">適用と置き場所<span>ip access-group in／out。1つの向きに1つ。拡張は送信元、標準は宛先の近く。VTY は access-class</span></div>
+      <div class="box b4">編集と確認<span>シーケンス番号で挿入・削除・resequence。remark・log。show access-lists（一致数）と show ip interface（付け先）</span></div>
+    </div>
+    <div>
+      <div class="cap">確かめるコマンド（IOS）</div>
+<pre class="cli small">show access-lists
+show ip access-lists 101
+show ip interface g0/1
+show running-config | section access-list</pre>
+      <div class="point"><b>次の分野：</b>#23 レイヤ2と無線のセキュリティで、DHCP スヌーピング・DAI・ポートセキュリティと WPA を読む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
