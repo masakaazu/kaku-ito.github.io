@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CCNA #04 IPv4 アドレスとサブネット 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">CCNA（200-301 v1.1）　1.0 ネットワークの基礎　#04</div>
+  <h1>IPv4 アドレスとサブネット</h1>
+  <p>出題範囲 1.6・1.7 ― 2 進数とマスク、ネットワークアドレスとブロードキャストの出し方、サブネットの切り方（VLSM・/31・/32）、プライベートアドレスが要る理由、IOS での設定と確認</p>
+  <div class="refs-legend">各ページの下に、根拠にしたCiscoの資料やRFCを書いた（青い文字を押すと開く）</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>1.6 は Configure and verify、1.7 は Describe</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 アドレスとマスク（1.6）<span>32 ビット・オクテット・2 進と 10 進、マスクとプレフィックス長、クラスと CIDR</span></div>
+      <div class="box b2">2 サブネットの切り方（1.6）<span>ネットワーク・ブロードキャスト・使える範囲、2^s と 2^h−2、VLSM、/30・/31・/32</span></div>
+      <div class="box b3">3 プライベートアドレス（1.7）<span>10/8・172.16/12・192.168/16、必要な理由、外との通信と経路のフィルター</span></div>
+      <div class="box b4">4 IOS での設定と確認（1.6）<span>ip address・secondary・ip subnet-zero・show ip interface brief</span></div>
+    </div>
+    <div>
+      <div class="cap">1 つのアドレスを 2 つに分けて読む（Claude が作成）</div>
+      <svg width="400" height="190" viewBox="0 0 400 190">
+        <g font-size="11" text-anchor="middle">
+          <text x="200" y="20" fill="#1f3a68" font-weight="700" font-size="14">192.168.5.37 / 27</text>
+          <rect x="20" y="36" width="270" height="34" fill="#1f3a68"/><text x="155" y="57" fill="#fff">ネットワーク部（27 ビット）</text>
+          <rect x="290" y="36" width="90" height="34" fill="#b25000"/><text x="335" y="57" fill="#fff">ホスト部（5）</text>
+          <text x="155" y="92" fill="#1f3a68" font-size="10">マスクが 1 の所 → どのネットワークか</text>
+          <text x="335" y="92" fill="#7a3a00" font-size="10">0 の所 → どの機器か</text>
+          <rect x="20" y="110" width="360" height="66" rx="8" fill="#eef2f8" stroke="#5b80bf"/>
+          <text x="200" y="132" fill="#1f3a68">ネットワーク 192.168.5.32　ブロードキャスト .63</text>
+          <text x="200" y="152" fill="#1f3a68">使える範囲 .33〜.62（30 台）</text>
+          <text x="200" y="169" fill="#4a5a78" font-size="9.5">この出し方を第 2 章で手順にする</text>
+        </g>
+      </svg>
+      <div class="point"><b>芯：</b>マスクの境目がオクテットのどこにあるかを見て、<b>ブロックの大きさ</b>で区切る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco CCNA Exam v1.1 (200-301) Exam Topics</a>（1.6 Configure and verify IPv4 addressing and subnetting／1.7 Describe private IPv4 addressing）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13788-3.html">Cisco Doc 13788</a>（192.168.5.32 255.255.255.224 host address range 33 to 62）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>アドレスとマスク</h1>
+  <p>32 ビットを、どこで切るか。</p>
+  <div class="foot"><span>CCNA #04 IPv4 アドレスとサブネット</span><span>1.6</span></div>
+</section>
+
+<section class="slide">
+  <h1>2 進数と 10 進数</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">1 オクテットのビットの重み</div>
+      <table class="mx">
+        <tr><th>ビット</th><td class="t">8</td><td class="t">7</td><td class="t">6</td><td class="t">5</td><td class="t">4</td><td class="t">3</td><td class="t">2</td><td class="t">1</td></tr>
+        <tr><th>重み</th><td>128</td><td>64</td><td>32</td><td>16</td><td>8</td><td>4</td><td>2</td><td>1</td></tr>
+        <tr><th>23</th><td>0</td><td>0</td><td>0</td><td><b>1</b></td><td>0</td><td><b>1</b></td><td><b>1</b></td><td><b>1</b></td></tr>
+        <tr><th>255</th><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+      </table>
+      <div class="formula" style="font-size:16px">00010111 ＝ 16＋4＋2＋1 ＝ 23</div>
+<pre class="cli small">10.1.23.19（10 進）
+00001010.00000001.00010111.00010011（2 進）</pre>
+    </div>
+    <div>
+      <div class="cap">マスクに出てくる 9 つの値（左から 1 を詰める）</div>
+      <table class="mx">
+        <tr><th>2 進</th><th>10 進</th><th>2 進</th><th>10 進</th></tr>
+        <tr><td>00000000</td><td class="t">0</td><td>11111000</td><td class="t">248</td></tr>
+        <tr><td>10000000</td><td class="t">128</td><td>11111100</td><td class="t">252</td></tr>
+        <tr><td>11000000</td><td class="t">192</td><td>11111110</td><td class="t">254</td></tr>
+        <tr><td>11100000</td><td class="t">224</td><td>11111111</td><td class="t">255</td></tr>
+        <tr><td>11110000</td><td class="t">240</td><td></td><td></td></tr>
+      </table>
+      <div class="point"><b>IPv4 アドレス：</b>32 ビットを 8 ビット（オクテット）ずつ 4 つに分け、10 進で書いて点でつなぐ。1 つは 0〜255。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13788-3.html">Cisco Doc 13788「Understand IP Addresses」</a>（The address is made up of 32 binary bits … broken into four octets … The value in each octet ranges from 0 to 255 decimal／128 64 32 16 8 4 2 1／10. 1. 23. 19 (decimal) 00001010.00000001.00010111.00010011 (binary)）</div>
+</section>
+
+<section class="slide">
+  <h1>マスクとプレフィックス長</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>長さ</th><th>マスク</th><th>ブロック</th><th>使える台数</th></tr>
+        <tr><td class="t">/24</td><td>255.255.255.0</td><td>256</td><td>254</td></tr>
+        <tr><td class="t">/25</td><td>255.255.255.128</td><td>128</td><td>126</td></tr>
+        <tr><td class="t">/26</td><td>255.255.255.192</td><td>64</td><td>62</td></tr>
+        <tr><td class="t">/27</td><td>255.255.255.224</td><td>32</td><td>30</td></tr>
+        <tr><td class="t">/28</td><td>255.255.255.240</td><td>16</td><td>14</td></tr>
+        <tr><td class="t">/29</td><td>255.255.255.248</td><td>8</td><td>6</td></tr>
+        <tr><td class="t">/30</td><td>255.255.255.252</td><td>4</td><td>2</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">論理積（AND）でネットワークを出す</div>
+<pre class="cli small">172.16.17.30  = 10101100.00010000.00010001.00011110
+255.255.240.0 = 11111111.11111111.11110000.00000000
+AND           = 10101100.00010000.<b>0001</b>0000.00000000
+              = <b>172.16.16.0</b></pre>
+      <div class="point"><b>規則：</b>マスクが 1 の所はアドレスのビットをそのまま、0 の所は 0 にする。結果がネットワークアドレス。</div>
+      <div class="point warn"><b>プレフィックス長 ＝ マスクの 1 の数。</b>255.255.240.0 は 8＋8＋4＝<b>/20</b>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13788-3.html">Cisco Doc 13788</a>（Any address bits which have corresponding mask bits set to 1 represent the network ID／Sample Exercise 1: subnet = … = 172.16.16.0 … equivalent to when you perform a logical AND between the mask and address）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc4632#section-3.1">RFC 4632 3.1</a>（followed by the "/" (slash) character, followed by a decimal value between 0 and 32 that describes the number of significant bits）</div>
+</section>
+
+<section class="slide">
+  <h1>クラスと CIDR</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>クラス</th><th>最初のオクテット</th><th>既定のマスク</th></tr>
+        <tr><td class="t">A</td><td>1〜127</td><td>255.0.0.0（/8）</td></tr>
+        <tr><td class="t">B</td><td>128〜191</td><td>255.255.0.0（/16）</td></tr>
+        <tr><td class="t">C</td><td>192〜223</td><td>255.255.255.0（/24）</td></tr>
+        <tr><td class="t">D・E</td><td>224〜</td><td>特別な用途（予約）</td></tr>
+      </table>
+      <div class="mini">表は Doc 13788 の範囲から作った。127 はループバック（第 2 章）。</div>
+      <div class="point warn"><b>今は CIDR：</b>クラスという言葉は、CIDR の導入でほとんど使われなくなった（Doc 13788 の注）。マスクはプレフィックス長で自由に決める。</div>
+    </div>
+    <div>
+      <div class="box b1">CIDR（Classless Inter-Domain Routing）<span>クラスにしばられず、好きな長さのプレフィックスで割り当てる。目的は<b>アドレスの無駄を減らす</b>ことと、<b>インターネットの経路表を小さくする</b>こと。</span></div>
+      <div class="formula" style="font-size:15px">172.16.0.0 255.255.0.0 ＝ 172.16.0.0/16</div>
+      <div class="point">2 の累乗の大きさなら、1 個から 2^32 個まで、どんな大きさのブロックも表せる（RFC 4632）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13788-3.html">Cisco Doc 13788</a>（Class A … 1.0.0.x - 127.255.255.x／Class B … 128.0.0.x - 191.255.255.x／Class C … 192.0.0.x - 223.255.255.x／Class A: 255.0.0.0 Class B: 255.255.0.0 Class C: 255.255.255.0／These terms are rarely used in the industry anymore because of the introduction of classless interdomain routing (CIDR)／CIDR was introduced in order to improve both address space utilization and routing scalability）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc4632#section-3.1">RFC 4632 3.1</a>（any power of two-sized block of between one and 2^32 end system addresses）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>サブネットの切り方</h1>
+  <p>ブロックの大きさで区切る。</p>
+  <div class="foot"><span>CCNA #04 IPv4 アドレスとサブネット</span><span>1.6</span></div>
+</section>
+
+<section class="slide">
+  <h1>アドレスから「範囲」を出す手順</h1>
+  <div class="cols">
+    <div>
+      <ol class="steps">
+        <li>マスクが 255 でない<b>最後のオクテット</b>を見る（/27 → 4 つめ、224）</li>
+        <li><b>ブロックの大きさ</b> ＝ 256 − 224 ＝ <b>32</b></li>
+        <li>そのオクテットの値（37）を超えない、32 の倍数 → <b>32</b>＝ネットワーク</li>
+        <li>次のブロック（64）の 1 つ前 → <b>63</b>＝ブロードキャスト</li>
+        <li>その間 → <b>33〜62</b> が使える（30 台）</li>
+      </ol>
+      <div class="formula" style="font-size:15px">192.168.5.37/27 → .32〜.63（使えるのは .33〜.62）</div>
+      <div class="mini">ブロックの大きさで区切るやり方は、Doc 13788 のサブネットの一覧を早く出すための近道として Claude がまとめた。</div>
+    </div>
+    <div>
+      <svg width="400" height="150" viewBox="0 0 400 150">
+        <g font-size="10" text-anchor="middle">
+          <text x="200" y="14" fill="#1f3a68" font-weight="700">/27 の 4 つめのオクテット（32 ごと）</text>
+          <rect x="10" y="26" width="47" height="30" fill="#dde5f2"/><text x="33" y="45" fill="#4a5a78">0</text>
+          <rect x="57" y="26" width="47" height="30" fill="#5b80bf"/><text x="80" y="45" fill="#fff">32</text>
+          <rect x="104" y="26" width="47" height="30" fill="#dde5f2"/><text x="127" y="45" fill="#4a5a78">64</text>
+          <rect x="151" y="26" width="47" height="30" fill="#dde5f2"/><text x="174" y="45" fill="#4a5a78">96</text>
+          <rect x="198" y="26" width="47" height="30" fill="#dde5f2"/><text x="221" y="45" fill="#4a5a78">128</text>
+          <rect x="245" y="26" width="47" height="30" fill="#dde5f2"/><text x="268" y="45" fill="#4a5a78">160</text>
+          <rect x="292" y="26" width="47" height="30" fill="#dde5f2"/><text x="315" y="45" fill="#4a5a78">192</text>
+          <rect x="339" y="26" width="47" height="30" fill="#dde5f2"/><text x="362" y="45" fill="#4a5a78">224</text>
+          <line x1="80" y1="60" x2="80" y2="80" stroke="#b25000" stroke-width="2"/>
+          <text x="80" y="94" fill="#7a3a00" font-weight="700">37 はここ</text>
+          <text x="200" y="122" fill="#1f3a68">ネットワーク 32 ／ ブロードキャスト 63</text>
+          <text x="200" y="140" fill="#4a5a78" font-size="9.5">8 つのブロック（2^3）。それぞれ 30 台</text>
+        </g>
+      </svg>
+      <div class="point"><b>使えない 2 つ：</b>ホスト部が全部 0（ネットワークアドレス）と全部 1（ブロードキャスト）。10.255.255.255 あては 10.0.0.0 の全員が受け取る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13788-3.html">Cisco Doc 13788</a>（192.168.5.0 255.255.255.224 host address range 1 to 30 … 192.168.5.32 … 33 to 62 … 192.168.5.224 … 225 to 254）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/routers/ios/config/17-x/ip-addressing/b-ip-addressing/m_config-ipv4-addr-0.html">IP Addressing CG IOS XE 17.x「Configuring IPv4 Addresses」</a>（The all 0's host address cannot be used because it is the same as the network address／The all 1's address is a broadcast address … addressed to 10.255.255.255 will be accepted by every host on network 10.0.0.0）</div>
+</section>
+
+<section class="slide">
+  <h1>サブネットの数とホストの数</h1>
+  <div class="cols">
+    <div>
+      <div class="formula" style="font-size:16px">サブネットの数 ＝ 2^s（s＝借りたビット）</div>
+      <div class="formula" style="font-size:16px">使える台数 ＝ 2^h − 2（h＝ホスト部のビット）</div>
+      <table class="mx">
+        <tr><th>元</th><th>新しい長さ</th><th>s</th><th>数</th><th>h</th><th>台数</th></tr>
+        <tr><td class="t">/24</td><td>/27</td><td>3</td><td>8</td><td>5</td><td>30</td></tr>
+        <tr><td class="t">/24</td><td>/28</td><td>4</td><td>16</td><td>4</td><td>14</td></tr>
+        <tr><td class="t">/16</td><td>/21</td><td>5</td><td>32</td><td>11</td><td>2046</td></tr>
+        <tr><td class="t">/16</td><td>/24</td><td>8</td><td>256</td><td>8</td><td>254</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">「5 つ、最大 28 台」を /24 から切る（Doc 13788 の練習）</div>
+      <ol class="steps">
+        <li>5 つ必要 → 2^2＝4 では足りない → <b>s＝3</b>（8 つ）</li>
+        <li>ホスト部は 8−3＝5 ビット → 2^5−2＝<b>30 台</b> ≥ 28</li>
+        <li>マスクは /27（255.255.255.224）</li>
+      </ol>
+      <div class="point warn"><b>トレードオフ：</b>借りるビットを増やすほどサブネットは増え、1 つのサブネットの台数は減る。</div>
+      <div class="mini">サブネットゼロ（借りたビットが全部 0）は、Cisco では ip subnet-zero で使える。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13788-3.html">Cisco Doc 13788</a>（With these three bits, it is possible to create eight subnets. With the other five host ID bits … 30 of which can actually be assigned／16 subnets, each of which can have up to 16 host addresses (14 …)／32 subnets (2 5 ) … 2046 of which could be assigned／Sample Exercise 2: you would need to use three bits … Two bits would only allow you four subnets／The more host bits you use for a subnet mask, the more subnets you have available. However … the less host addresses available per subnet／ip subnet-zero）</div>
+</section>
+
+<section class="slide">
+  <h1>VLSM：大きいサブネットから割り当てる</h1>
+  <div class="cols wide-r">
+    <div>
+      <table class="mx">
+        <tr><th>ネット</th><th>台数</th><th>マスク</th></tr>
+        <tr><td class="t">netB</td><td>28</td><td>/27</td></tr>
+        <tr><td class="t">netE</td><td>28</td><td>/27</td></tr>
+        <tr><td class="t">netA</td><td>14</td><td>/28</td></tr>
+        <tr><td class="t">netD</td><td>7</td><td>/28（/29 は 6 台）</td></tr>
+        <tr><td class="t">netC</td><td>2</td><td>/30</td></tr>
+      </table>
+      <div class="point"><b>VLSM：</b>サブネットごとに<b>ちがう長さのマスク</b>を使い、台数に合わせて切る。同じマスクだけだと小さいサブネットで余る。</div>
+    </div>
+    <div>
+      <div class="cap">192.168.5.0/24 の使い方（Doc 13788 の例）</div>
+      <svg width="440" height="170" viewBox="0 0 440 170">
+        <g font-size="9.5" text-anchor="middle">
+          <rect x="10" y="20" width="105" height="40" fill="#1f3a68"/><text x="62" y="37" fill="#fff">netB /27</text><text x="62" y="51" fill="#fff">.0〜.31</text>
+          <rect x="115" y="20" width="105" height="40" fill="#1f3a68"/><text x="167" y="37" fill="#fff">netE /27</text><text x="167" y="51" fill="#fff">.32〜.63</text>
+          <rect x="220" y="20" width="52" height="40" fill="#5b80bf"/><text x="246" y="37" fill="#fff">netA</text><text x="246" y="51" fill="#fff">.64/28</text>
+          <rect x="272" y="20" width="52" height="40" fill="#5b80bf"/><text x="298" y="37" fill="#fff">netD</text><text x="298" y="51" fill="#fff">.80/28</text>
+          <rect x="324" y="20" width="14" height="40" fill="#b25000"/>
+          <rect x="338" y="20" width="92" height="40" fill="#dde5f2"/><text x="384" y="44" fill="#4a5a78">空き</text>
+          <line x1="331" y1="64" x2="331" y2="84" stroke="#b25000" stroke-width="1.5"/>
+          <text x="331" y="96" fill="#7a3a00">netC .96/30</text>
+          <text x="220" y="128" fill="#1f3a68" font-size="10.5">.100〜.255 が後のために残る</text>
+          <text x="220" y="148" fill="#4a5a78">（全部 /27 にすると 5 つで .0〜.159 を使う）</text>
+          <text x="220" y="12" fill="#4a5a78">幅はアドレスの数に合わせた（0〜255）</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13788-3.html">Cisco Doc 13788 VLSM Example</a>（Variable Length Subnet Masks (VLSM) allow you to use different masks for each subnet／netD: requires a /28 … a /29 (255.255.255.248) would only allow 6 usable host addresses／The easiest way to assign the subnets is to assign the largest first／netB: 192.168.5.0/27 … netE: 192.168.5.32/27 … netA: 192.168.5.64/28 … netD: 192.168.5.80/28 … netC: 192.168.5.96/30／VLSM helped save more than half of the address space）</div>
+</section>
+
+<section class="slide">
+  <h1>/30・/31・/32 と特別なアドレス</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:18%">長さ</th><th>アドレス</th><th>使い道</th></tr>
+        <tr><td class="t">/30</td><td>4（使えるのは 2）</td><td>1 対 1 のリンク（昔からの形）</td></tr>
+        <tr><td class="t">/31</td><td><b>2（両方使う）</b></td><td>1 対 1 のリンク。ネットワーク・ブロードキャストなし</td></tr>
+        <tr><td class="t">/32</td><td>1</td><td><b>ループバック</b>インタフェース。リンクには使えない</td></tr>
+      </table>
+<pre class="cli small">R1(config-if)# ip address 192.168.1.0 255.255.255.254
+% Warning: use /31 mask on non point-to-point interface cautiously</pre>
+      <div class="mini">Ethernet はブロードキャスト型なので注意が出る。2 台だけなら使える。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:38%">アドレス</th><th>名前・意味</th></tr>
+        <tr><td class="t">127.0.0.0/8</td><td>ループバック。機器の外に出ない</td></tr>
+        <tr><td class="t">169.254.0.0/16</td><td>リンクローカル（#03）</td></tr>
+        <tr><td class="t">255.255.255.255</td><td>限定ブロードキャスト。ルーターを越えない</td></tr>
+        <tr><td class="t">192.0.2.0/24 など</td><td>文書用（TEST-NET-1〜3）</td></tr>
+        <tr><td class="t">100.64.0.0/10</td><td>ISP の CGN 用シェアードアドレス</td></tr>
+      </table>
+      <div class="point warn"><b>落とし穴：</b>「interface Loopback0」（ルーターの論理インタフェース）と 127.0.0.1 は別もの。Loopback0 にはふつうのアドレスを /32 で付ける。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13788-3.html">Cisco Doc 13788 Special Subnets</a>（A 31-bit subnet mask allows for exactly two host addresses, and eliminates the broadcast and all-zeros addresses／% Warning … The warning is printed because gigabitEthernet is a broadcast segment／The example for Cisco routers is the loopback interface）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc3021">RFC 3021</a>／<a class="src" href="https://www.rfc-editor.org/rfc/rfc1122#section-3.2.1.3">RFC 1122 3.2.1.3</a>（Limited broadcast … will not be forwarded outside that network／Internal host loopback address … MUST NOT appear outside a host）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc6890">RFC 6890</a>（Loopback・Link Local・Documentation・Shared Address Space）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc5737">RFC 5737</a>／<a class="src" href="https://www.rfc-editor.org/rfc/rfc6598">RFC 6598</a></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>プライベートアドレス</h1>
+  <p>なぜ、組織の中だけのアドレスが要るのか。</p>
+  <div class="foot"><span>CCNA #04 IPv4 アドレスとサブネット</span><span>1.7</span></div>
+</section>
+
+<section class="slide">
+  <h1>RFC 1918 の 3 つのブロック</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>範囲</th><th>プレフィックス</th><th>昔のクラスでは</th></tr>
+        <tr><td class="t">10.0.0.0〜10.255.255.255</td><td>10/8</td><td>A が 1 つ</td></tr>
+        <tr><td class="t">172.16.0.0〜172.31.255.255</td><td>172.16/12</td><td>B が 16 個</td></tr>
+        <tr><td class="t">192.168.0.0〜192.168.255.255</td><td>192.168/16</td><td>C が 256 個</td></tr>
+      </table>
+      <div class="point warn"><b>いちばん取り違えやすいのは 172：</b>/12 なので 2 つめのオクテットは <b>16〜31</b>。172.15.x.x・172.32.x.x はプライベートではない。169.254 や 100.64 も RFC 1918 ではない。</div>
+    </div>
+    <div>
+      <div class="box b1">なぜ必要か（RFC 1918 2・3）<span>① 世界で一意のアドレスが<b>なくなる</b>心配　② インターネットの<b>経路が増えすぎる</b>心配。外と直接つながらない機器は、一意のアドレスを使わなくてよい。</span></div>
+      <div class="box b2" style="margin-top:8px">使い方<span>IANA や登録機関に頼まずに、<b>どの組織でも使える</b>。そのかわり一意なのは組織の中だけ。外とつなぐためにこの範囲が割り当てられることはない。</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc1918">RFC 1918</a> 2（a concern within the community that globally unique address space will be exhausted. A separate and far more pressing concern is that the amount of routing overhead will grow）・3（10.0.0.0 - 10.255.255.255 (10/8 prefix) … 172.16.0.0 - 172.31.255.255 (172.16/12 prefix) … 192.168.0.0 - 192.168.255.255 (192.168/16 prefix)／a single class A network number … a set of 16 contiguous class B … a set of 256 contiguous class C／without any coordination with IANA or an Internet registry／will never be assigned addresses from the blocks defined above）</div>
+</section>
+
+<section class="slide">
+  <h1>プライベートアドレスと外の世界</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="220" viewBox="0 0 400 220">
+        <g font-size="10" text-anchor="middle">
+          <rect x="10" y="20" width="170" height="150" rx="10" fill="#eef2f8" stroke="#5b80bf"/>
+          <text x="95" y="38" fill="#1f3a68" font-weight="700">会社 A（10.0.0.0/8）</text>
+          <rect x="30" y="54" width="60" height="24" rx="4" fill="#fff" stroke="#5b80bf"/><text x="60" y="70" fill="#1f3a68">10.1.1.5</text>
+          <rect x="100" y="54" width="60" height="24" rx="4" fill="#fff" stroke="#5b80bf"/><text x="130" y="70" fill="#1f3a68">10.1.1.6</text>
+          <rect x="60" y="110" width="90" height="34" rx="6" fill="#1f3a68"/><text x="105" y="125" fill="#fff">出口ルーター</text><text x="105" y="139" fill="#fff" font-size="9">NAT（#16）</text>
+          <line x1="60" y1="78" x2="90" y2="110" stroke="#1f3a68"/><line x1="130" y1="78" x2="120" y2="110" stroke="#1f3a68"/>
+          <ellipse cx="300" cy="80" rx="88" ry="48" fill="#fff4e8" stroke="#b25000"/>
+          <text x="300" y="76" fill="#7a3a00" font-weight="700">インターネット</text>
+          <text x="300" y="92" fill="#7a3a00" font-size="9.5">グローバルアドレスだけ</text>
+          <line x1="150" y1="126" x2="218" y2="100" stroke="#2e7d32" stroke-width="2"/>
+          <text x="196" y="132" fill="#2e7d32" font-size="9.5">変換して出る</text>
+          <rect x="220" y="150" width="170" height="40" rx="8" fill="#fff" stroke="#c62828"/>
+          <text x="305" y="166" fill="#c62828" font-size="9.5">ISP は 10/8 などの経路を</text>
+          <text x="305" y="180" fill="#c62828" font-size="9.5">捨てる（フィルター）</text>
+          <text x="95" y="196" fill="#4a5a78" font-size="9.5">会社 B も同じ 10/8 を使える</text>
+        </g>
+      </svg>
+      <div class="mini">図は RFC 1918 の説明をもとに Claude が作成。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%"></th><th>プライベート</th><th>グローバル</th></tr>
+        <tr><td class="t">一意な範囲</td><td>組織の中だけ</td><td>インターネット全体</td></tr>
+        <tr><td class="t">もらい方</td><td>自由に使う</td><td>登録機関から</td></tr>
+        <tr><td class="t">外と IP で</td><td>直接はつながれない</td><td>つながれる</td></tr>
+      </table>
+      <div class="point"><b>外のサービスを使うには：</b>中継するゲートウェイを通す（RFC 1918）。今はふつう <b>NAT</b> でグローバルアドレスに変える。</div>
+      <div class="point warn"><b>経路の決まり：</b>プライベートの経路は組織の間に<b>広告しない</b>。送信元・宛先がプライベートのパケットも転送しない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc1918">RFC 1918</a> 3（Addresses within this private address space will only be unique within the enterprise／Private hosts … cannot have IP connectivity to any host outside of the enterprise … can still have access to external services via mediating gateways／routing information about private networks shall not be propagated on inter-enterprise links … Routers … of Internet service providers, are expected to be configured to reject (filter out) routing information about private networks）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>IOS での設定と確認</h1>
+  <p>アドレスを付けて、確かめる。</p>
+  <div class="foot"><span>CCNA #04 IPv4 アドレスとサブネット</span><span>1.6</span></div>
+</section>
+
+<section class="slide">
+  <h1>アドレスを付ける</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">Router(config)# interface gigabitethernet0/0/0
+Router(config-if)# no shutdown
+Router(config-if)# ip address 172.16.16.1 255.255.240.0
+<i>! 同じ区間にもう 1 つのネットワークを足す</i>
+Router(config-if)# ip address 172.16.32.1 255.255.240.0 secondary
+Router(config-if)# exit
+Router(config)# ip subnet-zero</pre>
+      <div class="mini">設定の流れは IOS XE 17 CG の手順と例から。インタフェース名は Claude が変えた。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:36%">コマンド</th><th>意味</th></tr>
+        <tr><td class="t">ip address A M</td><td>アドレスとマスク（10 進）を付ける</td></tr>
+        <tr><td class="t">… secondary</td><td>今のアドレスを残して<b>足す</b>。付けないと<b>置き換わる</b></td></tr>
+        <tr><td class="t">ip subnet-zero</td><td>サブネットゼロも使えるようにする</td></tr>
+        <tr><td class="t">no shutdown</td><td>インタフェースを動かす</td></tr>
+      </table>
+      <div class="point warn"><b>重なりは拒否：</b>IP ルーティングが有効なとき、IOS は<b>同じネットワークを 2 つ以上のインタフェース</b>に付けさせない。どちらへ送るか決められないから。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/routers/ios/config/17-x/ip-addressing/b-ip-addressing/m_config-ipv4-addr-0.html">IP Addressing CG IOS XE 17.x「Configuring IPv4 Addresses」</a>（Establishing IP Connectivity … interface type number／no shutdown／ip address ip-address mask／Secondary IP Addresses: you can avoid having to readdress all of the hosts … ip address 172.16.32.1 255.255.240.0 secondary／ip subnet-zero … adds one more usable network address／will not allow you to configure the same IP network address on two or more interfaces in the router when IP routing is enabled）</div>
+</section>
+
+<section class="slide">
+  <h1>確かめる：show ip interface brief</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">Router# show ip interface brief
+Interface            IP-Address    OK? Method Status                Protocol
+GigabitEthernet0/0/0 172.16.16.1   YES manual up                    up
+GigabitEthernet0/0/1 10.1.1.1      YES manual administratively down down
+GigabitEthernet0/0/2 unassigned    YES unset  down                  down</pre>
+      <div class="mini">列と表示のしかたは Catalyst 9500 CR 17.11 の例にならい、値は Claude が作った。</div>
+      <div class="point"><b>マスクは出ない。</b>マスクを見るなら 「show ip interface」（インタフェースを指定）や 「show running-config」。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:40%">表示</th><th>読み方</th></tr>
+        <tr><td class="t">up／up</td><td>動いている</td></tr>
+        <tr><td class="t">administratively down</td><td>shutdown のまま → <b>no shutdown</b></td></tr>
+        <tr><td class="t">down／down</td><td>ケーブル・相手（#02）</td></tr>
+        <tr><td class="t">unassigned</td><td>アドレスが付いていない</td></tr>
+      </table>
+      <div class="point warn"><b>確かめる順番の例：</b>①付けたアドレスとマスクが計画どおりか → ②Status が up か → ③同じリンクの相手と同じサブネットか（#02・#12）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9500/software/release/17-11/command_reference/b_1711_9500_cr/interface_and_hardware_commands.html">Command Reference IOS XE 17.11.x（Catalyst 9500）「show ip interface」</a>（To display the usability status of interfaces configured for IP／brief: Displays a summary of the usability status information for each interface／Interface IP-Address OK? Method Status Protocol … Vlan1 unassigned YES NVRAM administratively down down）</div>
+</section>
+
+<section class="slide">
+  <h1>問われ方とまちがえやすい点</h1>
+  <table class="mx">
+    <tr><th style="width:40%">こう聞かれたら</th><th>答えの考え方</th></tr>
+    <tr><td class="t">x.x.x.37/27 のネットワーク・ブロードキャスト</td><td style="text-align:left">ブロック 32 → <b>.32 と .63</b>（使えるのは .33〜.62）</td></tr>
+    <tr><td class="t">/26 で使える台数</td><td style="text-align:left">2^6 − 2 ＝ <b>62</b>（2 を引き忘れない）</td></tr>
+    <tr><td class="t">5 つに分けたい</td><td style="text-align:left">2^2＝4 では足りない → <b>3 ビット</b>借りる</td></tr>
+    <tr><td class="t">7 台のサブネット</td><td style="text-align:left">/29 は 6 台で足りない → <b>/28</b></td></tr>
+    <tr><td class="t">1 対 1 でいちばん節約</td><td style="text-align:left"><b>/31</b>（/32 はループバック用）</td></tr>
+    <tr><td class="t">プライベートアドレスはどれ</td><td style="text-align:left">10/8・<b>172.16〜172.31</b>・192.168。169.254 はちがう</td></tr>
+    <tr><td class="t">プライベートが要る理由</td><td style="text-align:left">一意のアドレスの<b>枯渇</b>と経路の増加。外へは <b>NAT</b> で</td></tr>
+    <tr><td class="t">administratively down</td><td style="text-align:left"><b>no shutdown</b></td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">形（1.6）<span>32 ビット＝4 オクテット。マスクの 1＝ネットワーク部。/n＝1 の数。AND でネットワークアドレス</span></div>
+      <div class="box b2">切り方（1.6）<span>ブロック＝256−マスク値。最初＝ネットワーク、最後＝ブロードキャスト。2^s 個・2^h−2 台。VLSM は大きい順</span></div>
+      <div class="box b3">プライベート（1.7）<span>10/8・172.16/12・192.168/16。枯渇と経路の対策。外へは NAT、経路は広告しない</span></div>
+      <div class="box b4">IOS（1.6）<span>ip address A M（10 進）、secondary で足す、ip subnet-zero、show ip interface brief</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:48%">数字</th><th>中身</th></tr>
+        <tr><td class="t">/27・/28・/29・/30</td><td><b>30・14・6・2</b> 台</td></tr>
+        <tr><td class="t">/31・/32</td><td><b>2 台（リンク）・1（ループバック）</b></td></tr>
+        <tr><td class="t">172.16/12</td><td><b>172.16〜172.31</b></td></tr>
+        <tr><td class="t">ループバック</td><td><b>127.0.0.0/8</b></td></tr>
+        <tr><td class="t">文書用</td><td><b>192.0.2・198.51.100・203.0.113</b></td></tr>
+      </table>
+      <div class="point"><b>次の分野：</b>#05 IPv6 で、128 ビットのアドレスの書き方、EUI-64、アドレスの種類（グローバルユニキャスト・リンクローカルなど）を読む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

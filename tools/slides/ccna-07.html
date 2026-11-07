@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CCNA #07 VLANとトランク 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12px; padding: 7px 3px; white-space: nowrap; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">CCNA（200-301 v1.1）　2.0 ネットワークアクセス　#07</div>
+  <h1>VLANとトランク</h1>
+  <p>出題範囲 2.1・2.2 ― Ciscoの構成ガイドとコマンドリファレンスで確かめた参考書版</p>
+  <div class="refs-legend">各ページの下に、根拠にしたCiscoの資料を書いた（青い文字を押すと開く）</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>公式の出題範囲の2項目を、3章で読む</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 VLANとアクセスポート<span>2.1 Configure and verify VLANs (normal range) spanning multiple switches<br>2.1.a アクセスポート（データ・音声）／2.1.b デフォルトVLAN</span></div>
+      <div class="box b2">2 トランクと802.1Q<span>2.2 Configure and verify interswitch connectivity<br>2.2.a トランクポート／2.2.b 802.1Q／2.2.c ネイティブVLAN</span></div>
+      <div class="box b3">3 VLAN間ルーティング<span>2.1.c InterVLAN connectivity<br>ルータオンアスティック・SVI・ip routing</span></div>
+    </div>
+    <div>
+      <div class="cap">CCNAでの問われ方</div>
+      <table>
+        <tr><td style="width:30%">動詞</td><td>2.1・2.2 はどちらも <b>Configure and verify</b>。「設定できる」「show で確かめられる」が求められる</td></tr>
+        <tr><td>問題の型</td><td><b>設定を選ぶ</b>／<b>show の出力を読む</b>／<b>つながらない原因を探す</b>の3つが中心</td></tr>
+        <tr><td>試験</td><td>120分。問題はCiscoが公開していないので、この資料の問題は全部オリジナル</td></tr>
+      </table>
+      <div class="point"><b>この資料の読み方：</b>VLANは「ブロードキャストが届く範囲を切る」こと、トランクは「タグを付けて1本で運ぶ」こと。この2つを絵で覚えてから、コマンドと show の読み方に進む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco CCNA Exam v1.1 (200-301) Exam Topics</a>（2.0 Network Access 20%）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>VLANとアクセスポート</h1>
+  <p>1台のスイッチを、配線を変えずに論理的に分ける。端末をつなぐポートは「アクセスポート」で、VLANを1つだけ持つ。</p>
+  <div class="foot"><span>CCNA #07 VLANとトランク</span><span>2.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>VLAN＝ブロードキャストが届く範囲を、ポート単位で切ったもの</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="400" height="300" viewBox="0 0 400 300">
+        <rect x="40" y="110" width="320" height="60" rx="8" fill="#1f3a68"/>
+        <text x="200" y="135" font-size="14" fill="#fff" text-anchor="middle" font-weight="700">SW1（1台のスイッチ）</text>
+        <text x="200" y="155" font-size="11" fill="#fff" text-anchor="middle">ポート1・2＝VLAN 10　／　ポート3・4＝VLAN 20</text>
+        <g font-size="11" text-anchor="middle">
+          <rect x="45" y="215" width="70" height="40" rx="6" fill="#5b80bf"/><text x="80" y="239" fill="#fff">PC-A</text>
+          <rect x="125" y="215" width="70" height="40" rx="6" fill="#5b80bf"/><text x="160" y="239" fill="#fff">PC-B</text>
+          <rect x="205" y="215" width="70" height="40" rx="6" fill="#e08a2c"/><text x="240" y="239" fill="#fff">PC-C</text>
+          <rect x="285" y="215" width="70" height="40" rx="6" fill="#e08a2c"/><text x="320" y="239" fill="#fff">PC-D</text>
+          <line x1="80" y1="215" x2="80" y2="170" stroke="#5b80bf" stroke-width="3"/>
+          <line x1="160" y1="215" x2="160" y2="170" stroke="#5b80bf" stroke-width="3"/>
+          <line x1="240" y1="215" x2="240" y2="170" stroke="#e08a2c" stroke-width="3"/>
+          <line x1="320" y1="215" x2="320" y2="170" stroke="#e08a2c" stroke-width="3"/>
+          <text x="80" y="275" fill="#1d1d1f">送信元</text>
+          <text x="160" y="275" fill="#1f3a68" font-weight="700">届く</text>
+          <text x="240" y="275" fill="#b25000" font-weight="700">届かない</text>
+          <text x="320" y="275" fill="#b25000" font-weight="700">届かない</text>
+        </g>
+        <path d="M80 100 C 80 60, 160 60, 160 100" fill="none" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar)"/>
+        <text x="120" y="52" font-size="11" text-anchor="middle" fill="#1f3a68">PC-Aのブロードキャスト</text>
+        <rect x="200" y="20" width="170" height="54" rx="6" fill="#e8eef8" stroke="#c9daf2"/>
+        <text x="285" y="42" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">VLAN 10 ⇔ VLAN 20 は</text>
+        <text x="285" y="60" font-size="11.5" text-anchor="middle" fill="#1f3a68">ルータかL3スイッチが必要</text>
+        <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1f3a68"/></marker></defs>
+      </svg>
+    </div>
+    <div>
+      <dl class="def">
+        <dt>VLAN（Virtual LAN）</dt><dd>スイッチのポートを、配線と関係なく論理的なグループに分けたもの。1つのVLAN＝1つの<b>ブロードキャストドメイン</b>。</dd>
+        <dt>ユニキャスト・ブロードキャスト・マルチキャスト</dt><dd>どれも同じVLANの中にしか流れない（構成ガイド「forwarded and flooded only to end stations in the VLAN」）。</dd>
+        <dt>VLANどうしの通信</dt><dd>スイッチだけでは届かない。<b>ルーティング</b>が必要（第3章）。</dd>
+        <dt>VLANとサブネット</dt><dd>1つのVLANに1つのIPサブネットを割り当てるのが基本。VLAN 10＝192.168.10.0/24 のように番号をそろえると読みやすい。</dd>
+      </dl>
+      <div class="point"><b>スタティックVLAN：</b>ポートごとに手でVLANを決める方式（構成ガイドでは interface-based / static membership）。PCをつなぎ替えるとVLANも変わる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/vlan/b_179_vlan_9300_cg/configuring_vlans.html">Cisco VLAN Configuration Guide, IOS XE 17.9.x (Catalyst 9300)「Configuring VLANs」Logical Networks</a></div>
+</section>
+
+<section class="slide">
+  <h1>ブロードキャストドメインと衝突ドメインの数え方</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">数え方の手順</div>
+      <ol class="steps">
+        <li><b>ブロードキャストドメイン</b>はルータ（L3）とVLANで切れる。<br>→ ルータのポートの数、またはスイッチのVLANの数を数える</li>
+        <li><b>衝突ドメイン</b>はスイッチとルータのポートごとに切れる。<br>→ スイッチ・ルータの使っているポートを数える</li>
+        <li><b>ハブ</b>は何も切らない。ハブにつながった全体で衝突ドメイン1つ</li>
+        <li>全二重ならコリジョンは起きないが、数える問題では「ポートごとに1つ」と数える</li>
+      </ol>
+    </div>
+    <div>
+      <div class="ex"><span class="lbl">例題</span>24ポートのスイッチ1台。VLAN 10に12ポート、VLAN 20に12ポートを割り当て、全ポートに端末をつないだ。</div>
+      <table style="margin-top:10px">
+        <tr><th>数えるもの</th><th>答え</th><th>理由</th></tr>
+        <tr><td>ブロードキャストドメイン</td><td><b>2</b></td><td>VLANの数</td></tr>
+        <tr><td>衝突ドメイン</td><td><b>24</b></td><td>スイッチのポートの数。VLANでは変わらない</td></tr>
+      </table>
+      <div class="point warn"><b>引っかけ：</b>「VLANを分けたら衝突ドメインも2つ」「ポートごとにブロードキャストドメインが分かれる」はどちらも誤り。<b>VLAN→ブロードキャスト、ポート→衝突</b>と対で覚える。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/vlan/b_179_vlan_9300_cg/configuring_vlans.html">Cisco VLAN Configuration Guide 17.9.x「Configuring VLANs」</a>（VLANとブロードキャストの範囲）。例題はClaudeが作成</div>
+</section>
+
+<section class="slide">
+  <h1>VLAN番号は4つの範囲。消せないのは1と1002〜1005</h1>
+  <div class="cols wide-r">
+    <div>
+      <table>
+        <tr><th>範囲</th><th>名前</th><th>ポイント</th></tr>
+        <tr><td><b>1</b></td><td>デフォルトVLAN</td><td>最初から全ポートが入っている。削除・名前の変更はできない</td></tr>
+        <tr><td><b>2〜1001</b></td><td>標準範囲</td><td>自由に作れる。vlan.dat に保存。VTPで伝わる</td></tr>
+        <tr><td><b>1002〜1005</b></td><td>予約</td><td>トークンリング・FDDI用。最初からあり削除できない</td></tr>
+        <tr><td><b>1006〜4094</b></td><td>拡張範囲</td><td>VTPバージョン1・2では伝わらない（v3なら伝わる）</td></tr>
+      </table>
+      <div class="point"><b>12ビット：</b>802.1QのVLAN IDは12ビットなので0〜4095。使うのは<b>1〜4094</b>（0と4095は使わない）。「4096個作れる」は誤り。</div>
+    </div>
+    <div>
+      <div class="cap">覚えておきたい動き</div>
+      <table class="mini">
+        <tr><td style="width:44%">存在しないVLANを <code>switchport access vlan 30</code></td><td>VLAN 30が<b>自動で作られる</b>（名前は VLAN0030）</td></tr>
+        <tr><td>VLANを <code>no vlan 40</code> で削除</td><td>VLAN 40のポートは<b>使えない状態（inactive）</b>のまま。別のVLANに入れ直すまで通信できない</td></tr>
+        <tr><td>名前を付けない</td><td>VLAN0004 のように「VLAN＋0で埋めた番号」</td></tr>
+        <tr><td><code>write erase</code> で初期化</td><td>vlan.dat は消えない。<code>delete flash:vlan.dat</code> も必要</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/vlan/b_179_vlan_9300_cg/configuring_vlans.html">Cisco VLAN Configuration Guide 17.9.x「Configuring VLANs」</a> Normal-Range／Extended-Range VLAN Configuration Guidelines・Deleting a VLAN・Supported VLANs ／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/command_reference/b_179_9300_cr/layer_2_3_commands.html">Command Reference「switchport access vlan」</a></div>
+</section>
+
+<section class="slide">
+  <h1>アクセスポートの設定は3行。確かめるのは show vlan brief</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">設定（VLANを作ってポートに割り当てる）</div>
+<pre class="cli">SW1(config)# <b>vlan 10</b>
+SW1(config-vlan)# <b>name SALES</b>
+SW1(config-vlan)# exit
+SW1(config)# <b>interface g1/0/1</b>
+SW1(config-if)# <b>switchport mode access</b>
+SW1(config-if)# <b>switchport access vlan 10</b>
+SW1(config-if)# end
+SW1# copy running-config startup-config</pre>
+      <ul class="anno">
+        <li><code>switchport mode access</code>：相手が何でもトランクにしない（DTPの交渉も非トランクにする）</li>
+        <li><code>switchport access vlan</code>：アクセスポートが入るVLANは<b>1つだけ</b></li>
+        <li>まとめて設定するなら <code>interface range g1/0/1 - 12</code></li>
+      </ul>
+    </div>
+    <div>
+      <div class="cap">確認（show vlan brief）</div>
+<pre class="cli small">SW1# show vlan brief
+VLAN Name           Status    Ports
+---- -------------- --------- -----------------
+1    default        active    Gi1/0/13, Gi1/0/14
+10   SALES          active    Gi1/0/1, Gi1/0/2
+20   ENG            active
+1002 fddi-default   act/unsup</pre>
+      <ul class="anno">
+        <li>Ports に並ぶのは<b>アクセスポートだけ</b>。トランクのポートは出ない</li>
+        <li>VLAN 20 は作られているが、所属するポートがない</li>
+        <li>1002〜1005 は act/unsup（存在するが、この機器では使えない）</li>
+        <li>1ポートを詳しく見るなら <code>show interfaces g1/0/1 switchport</code></li>
+      </ul>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/vlan/b_179_vlan_9300_cg/configuring_vlans.html">Cisco VLAN Configuration Guide 17.9.x「Configuring VLANs」</a> Creating or Modifying an Ethernet VLAN・Assigning Static-Access Ports to a VLAN。出力の例はClaudeが手順に沿って書いた</div>
+</section>
+
+<section class="slide">
+  <h1>show interfaces switchport は「設定」と「結果」を分けて読む</h1>
+  <div class="cols wide-r">
+    <div>
+<pre class="cli small">SW1# show interfaces g1/0/8 switchport
+Name: Gi1/0/8
+Switchport: Enabled
+<span class="hl">Administrative Mode: dynamic auto</span>
+<span class="hl">Operational Mode: static access</span>
+Administrative Trunking Encapsulation: dot1q
+Negotiation of Trunking: On
+Access Mode VLAN: 1 (default)
+Trunking Native Mode VLAN: 1 (default)
+Voice VLAN: none
+Trunking VLANs Enabled: ALL
+Pruning VLANs Enabled: 2-1001</pre>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th>行</th><th>読み方</th></tr>
+        <tr><td>Administrative Mode</td><td><b>設定した</b>モード（access／trunk／dynamic auto／dynamic desirable）</td></tr>
+        <tr><td>Operational Mode</td><td><b>実際に動いている</b>モード。static access＝アクセスとして動作、trunk＝トランク</td></tr>
+        <tr><td>Negotiation of Trunking</td><td>DTPで交渉するか（nonegotiate なら Off）</td></tr>
+        <tr><td>Access Mode VLAN</td><td>アクセスのときに入るVLAN（データVLAN）</td></tr>
+        <tr><td>Trunking Native Mode VLAN</td><td>トランクのときのネイティブVLAN</td></tr>
+        <tr><td>Voice VLAN</td><td>音声VLAN。none＝設定なし</td></tr>
+        <tr><td>Trunking VLANs Enabled</td><td>トランクの許可VLANリスト</td></tr>
+      </table>
+      <div class="point"><b>この例：</b>何も設定していない（初期値の dynamic auto）ので、相手もトランクを持ちかけず、<b>アクセスポートとしてVLAN 1で動いている</b>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/command_reference/b_179_9300_cr/interface_and_hardware_commands.html">Cisco Command Reference 17.9.x Interface and Hardware Commands「show interfaces switchport」</a>（出力の各行の説明）</div>
+</section>
+
+<section class="slide">
+  <h1>音声VLAN：アクセスポート1つで、電話の音声とPCを分ける</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="410" height="240" viewBox="0 0 410 240">
+        <rect x="290" y="80" width="110" height="70" rx="8" fill="#1f3a68"/><text x="345" y="110" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">SW1</text><text x="345" y="128" font-size="10.5" fill="#fff" text-anchor="middle">g1/0/5</text><text x="345" y="142" font-size="10.5" fill="#fff" text-anchor="middle">（アクセスポート）</text>
+        <rect x="150" y="85" width="90" height="60" rx="8" fill="#e08a2c"/><text x="195" y="112" font-size="12" fill="#fff" text-anchor="middle" font-weight="700">IP電話</text><text x="195" y="130" font-size="10" fill="#fff" text-anchor="middle">内蔵スイッチ</text>
+        <rect x="10" y="85" width="80" height="60" rx="8" fill="#5b80bf"/><text x="50" y="120" font-size="12" fill="#fff" text-anchor="middle" font-weight="700">PC</text>
+        <line x1="90" y1="115" x2="150" y2="115" stroke="#5b80bf" stroke-width="3"/>
+        <line x1="240" y1="105" x2="290" y2="105" stroke="#e08a2c" stroke-width="3"/>
+        <line x1="240" y1="125" x2="290" y2="125" stroke="#5b80bf" stroke-width="3"/>
+        <text x="120" y="105" font-size="10" text-anchor="middle" fill="#1f3a68">タグなし</text>
+        <rect x="150" y="20" width="250" height="44" rx="6" fill="#fdf3ea" stroke="#e08a2c"/>
+        <text x="275" y="38" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">音声：802.1Qタグ VLAN 20・CoS 5</text>
+        <text x="275" y="55" font-size="10.5" text-anchor="middle" fill="#b25000">→ 音声VLAN（voice vlan 20）</text>
+        <rect x="150" y="166" width="250" height="44" rx="6" fill="#e8eef8" stroke="#5b80bf"/>
+        <text x="275" y="184" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">PCのデータ：タグなし</text>
+        <text x="275" y="201" font-size="10.5" text-anchor="middle" fill="#1f3a68">→ アクセスVLAN（access vlan 10）</text>
+        <text x="205" y="232" font-size="10.5" text-anchor="middle" fill="#6e6e73">音声VLANの番号は、スイッチがCDPで電話に伝える</text>
+      </svg>
+    </div>
+    <div>
+<pre class="cli">SW1(config)# interface g1/0/5
+SW1(config-if)# <b>switchport mode access</b>
+SW1(config-if)# <b>switchport access vlan 10</b>
+SW1(config-if)# <b>switchport voice vlan 20</b></pre>
+      <ul class="anno">
+        <li>トランクにしなくてよい（アクセスポートのまま2つのVLANを運ぶ）</li>
+        <li>Cisco IP電話は音声に <b>CoS 5</b>（IP precedence も5）を付けるのが初期値</li>
+        <li>音声VLANを設定すると <b>PortFast が自動で有効</b>になる（外しても自動では無効にならない）</li>
+        <li>確認：<code>show interfaces g1/0/5 switchport</code> の Access Mode VLAN と Voice VLAN</li>
+        <li>ほかの書き方：<code>voice vlan dot1p</code>＝VLAN 0（優先度だけのタグ）、<code>untagged</code>、<code>none</code></li>
+      </ul>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/vlan/b_179_vlan_9300_cg/configuring_voice_vlans.html">Cisco VLAN Configuration Guide 17.9.x「Configuring Voice VLANs」</a>（Cisco IP Phone Voice Traffic・Voice VLAN Configuration Guidelines）／ Command Reference「switchport voice vlan」</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>トランクと802.1Q</h1>
+  <p>複数のVLANを1本のリンクで運ぶ。どのVLANのフレームかはタグで区別する。トランクにするかはDTPで交渉できる。</p>
+  <div class="foot"><span>CCNA #07 VLANとトランク</span><span>2.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>トランク＝タグを付けて、複数のVLANを1本で運ぶリンク</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">トランクがないと（VLANの数だけケーブル）</div>
+      <svg width="400" height="120" viewBox="0 0 400 120">
+        <rect x="10" y="30" width="90" height="60" rx="8" fill="#1f3a68"/><text x="55" y="65" font-size="13" fill="#fff" text-anchor="middle">SW1</text>
+        <rect x="300" y="30" width="90" height="60" rx="8" fill="#1f3a68"/><text x="345" y="65" font-size="13" fill="#fff" text-anchor="middle">SW2</text>
+        <line x1="100" y1="48" x2="300" y2="48" stroke="#5b80bf" stroke-width="4"/><text x="200" y="42" font-size="11" text-anchor="middle" fill="#1f3a68">VLAN 10用のケーブル</text>
+        <line x1="100" y1="74" x2="300" y2="74" stroke="#e08a2c" stroke-width="4"/><text x="200" y="94" font-size="11" text-anchor="middle" fill="#b25000">VLAN 20用のケーブル</text>
+      </svg>
+      <div class="cap" style="margin-top:6px">トランクがあると（1本で全部）</div>
+      <svg width="400" height="120" viewBox="0 0 400 120">
+        <rect x="10" y="30" width="90" height="60" rx="8" fill="#1f3a68"/><text x="55" y="65" font-size="13" fill="#fff" text-anchor="middle">SW1</text>
+        <rect x="300" y="30" width="90" height="60" rx="8" fill="#1f3a68"/><text x="345" y="65" font-size="13" fill="#fff" text-anchor="middle">SW2</text>
+        <line x1="100" y1="60" x2="300" y2="60" stroke="#1f3a68" stroke-width="6"/>
+        <rect x="130" y="34" width="60" height="18" rx="3" fill="#5b80bf"/><text x="160" y="47" font-size="10" fill="#fff" text-anchor="middle">tag 10</text>
+        <rect x="210" y="68" width="60" height="18" rx="3" fill="#e08a2c"/><text x="240" y="81" font-size="10" fill="#fff" text-anchor="middle">tag 20</text>
+        <text x="200" y="110" font-size="11" text-anchor="middle" fill="#1f3a68">802.1Q トランク（ポイントツーポイント）</text>
+      </svg>
+    </div>
+    <div>
+      <dl class="def">
+        <dt>トランク</dt><dd>2台の機器を結ぶ<b>ポイントツーポイント</b>のリンクで、複数のVLANのトラフィックを運ぶ。つなぐ相手はスイッチ・ルータ・コントローラなど。</dd>
+        <dt>タグ</dt><dd>送る側がフレームにVLANの番号を付け、受け取った側がタグを外して、そのVLANに転送する。</dd>
+        <dt>初期状態で通るVLAN</dt><dd>VLAN 1〜4094の<b>全部</b>。許可リストで絞れる（このあと）。</dd>
+        <dt>アクセスポートとの違い</dt><dd>アクセス＝VLAN 1つ・タグなし。トランク＝VLAN複数・タグ付き（ネイティブVLANだけタグなし）。</dd>
+      </dl>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/vlan/b_179_vlan_9300_cg/configuring_vlan_trunks.html">Cisco VLAN Configuration Guide 17.9.x「Configuring VLAN Trunks」</a> Trunking Overview・Allowed VLANs on a Trunk</div>
+</section>
+
+<section class="slide">
+  <h1>802.1Qタグは4バイト。送信元MACの後ろに入れて、FCSを計算し直す</h1>
+  <svg width="856" height="190" viewBox="0 0 856 190">
+    <g font-size="12" text-anchor="middle">
+      <rect x="0" y="20" width="120" height="44" fill="#c9daf2" stroke="#fff"/><text x="60" y="47" fill="#1f3a68">宛先MAC（6）</text>
+      <rect x="120" y="20" width="120" height="44" fill="#c9daf2" stroke="#fff"/><text x="180" y="47" fill="#1f3a68">送信元MAC（6）</text>
+      <rect x="240" y="20" width="150" height="44" fill="#e08a2c" stroke="#fff"/><text x="315" y="40" fill="#fff" font-weight="700">802.1Qタグ（4）</text><text x="315" y="56" fill="#fff" font-size="10.5">ここに挿入</text>
+      <rect x="390" y="20" width="110" height="44" fill="#c9daf2" stroke="#fff"/><text x="445" y="47" fill="#1f3a68">タイプ（2）</text>
+      <rect x="500" y="20" width="250" height="44" fill="#e8eef8" stroke="#fff"/><text x="625" y="47" fill="#1f3a68">データ（46〜1500）</text>
+      <rect x="750" y="20" width="106" height="44" fill="#1f3a68" stroke="#fff"/><text x="803" y="40" fill="#fff">FCS（4）</text><text x="803" y="56" fill="#fff" font-size="10.5">計算し直す</text>
+      <line x1="240" y1="64" x2="60" y2="110" stroke="#e08a2c" stroke-dasharray="4 3"/>
+      <line x1="390" y1="64" x2="796" y2="110" stroke="#e08a2c" stroke-dasharray="4 3"/>
+      <rect x="60" y="110" width="320" height="50" fill="#b25000" stroke="#fff"/><text x="220" y="132" fill="#fff" font-weight="700">TPID　16ビット</text><text x="220" y="150" fill="#fff" font-size="11">0x8100（タグ付きの目印）</text>
+      <rect x="380" y="110" width="110" height="50" fill="#e08a2c" stroke="#fff"/><text x="435" y="132" fill="#fff" font-weight="700">PCP 3</text><text x="435" y="150" fill="#fff" font-size="11">優先度 0〜7</text>
+      <rect x="490" y="110" width="70" height="50" fill="#e08a2c" stroke="#fff"/><text x="525" y="132" fill="#fff" font-weight="700">CFI 1</text><text x="525" y="150" fill="#fff" font-size="10">(DEI)</text>
+      <rect x="560" y="110" width="236" height="50" fill="#b25000" stroke="#fff"/><text x="678" y="132" fill="#fff" font-weight="700">VID　12ビット</text><text x="678" y="150" fill="#fff" font-size="11">VLAN番号 0〜4095</text>
+      <text x="428" y="182" fill="#6e6e73" font-size="11">（　）内の数字はバイト。タグの下段はビット数。合計 16＋3＋1＋12＝32ビット＝4バイト</text>
+    </g>
+  </svg>
+  <div class="cols3" style="margin-top:6px">
+    <div class="ex"><span class="lbl">TPID</span>0x8100。普通ならタイプ（IPv4は0x0800）がある位置に来るので、受け取った側はタグ付きとわかる</div>
+    <div class="ex"><span class="lbl">PCP</span>IEEE 802.1p の優先度（CoS）。3ビットで8段階。音声はCoS 5がよく使われる</div>
+    <div class="ex"><span class="lbl">VID</span>12ビット。使えるのは1〜4094。VID 0 は「優先度だけのタグ」（voice vlan dot1p）</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/lan-switching/8021q/17056-741-4.html">Cisco「Inter-Switch Link and IEEE 802.1Q Frame Format」</a>（IEEE 802.1Q Frame Fields）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/vlan/b_179_vlan_9300_cg/configuring_voice_vlans.html">Configuring Voice VLANs</a>（dot1p＝VLAN ID 0）。CFIは新しい版の規格ではDEIと呼ぶ</div>
+</section>
+
+<section class="slide">
+  <h1>802.1Q と ISL：「中に挿入」か「外から包む」か</h1>
+  <table class="vs">
+    <tr><th style="width:22%">比べる点</th><th>IEEE 802.1Q</th><th>ISL（Inter-Switch Link）</th></tr>
+    <tr><td>作ったところ</td><td><b>IEEE の標準</b>。他社の機器ともつながる</td><td><b>Cisco 独自</b>。古い方式</td></tr>
+    <tr><td>付け方</td><td>元のフレームの<b>中</b>（送信元MACの後ろ）に4バイトのタグを<b>挿入</b></td><td>元のフレームを26バイトのヘッダーと4バイトのFCSで<b>丸ごと包む</b></td></tr>
+    <tr><td>FCS</td><td>フレームが変わるので<b>計算し直す</b></td><td>外側に新しいFCSを付ける（元のFCSも残る）</td></tr>
+    <tr><td>VLANの数</td><td>VID 12ビット（4096通り。使うのは1〜4094）</td><td>1024</td></tr>
+    <tr><td>ネイティブVLAN</td><td><b>ある</b>（タグなしで送るVLAN）</td><td>ない（全部包む）</td></tr>
+    <tr><td>いまの機器</td><td>Catalyst 9300 などは802.1Qだけ</td><td>使わない。古い機種で使えても802.1Qへ移すのが推奨</td></tr>
+  </table>
+  <div class="point"><b>設定の注意：</b>ISLも使える古い機種では、<code>switchport mode trunk</code> の前に <code>switchport trunk encapsulation dot1q</code> でカプセル化を決める。802.1Qだけの機種にはこのコマンドがない。</div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/lan-switching/8021q/17056-741-4.html">Cisco「Inter-Switch Link and IEEE 802.1Q Frame Format」</a> ／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/switches/catalyst-6500-series-switches/24330-185.html">Cisco「Best Practices for Catalyst 6500/6000 and 4500/4000 Series Switches Running Cisco IOS」</a>（Encapsulation Type）</div>
+</section>
+
+<section class="slide">
+  <h1>ネイティブVLAN：トランクの中で、タグを付けないVLAN</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="400" height="210" viewBox="0 0 400 210">
+        <rect x="10" y="70" width="90" height="60" rx="8" fill="#1f3a68"/><text x="55" y="97" font-size="13" fill="#fff" text-anchor="middle">SW1</text><text x="55" y="115" font-size="10" fill="#fff" text-anchor="middle">native 99</text>
+        <rect x="300" y="70" width="90" height="60" rx="8" fill="#1f3a68"/><text x="345" y="97" font-size="13" fill="#fff" text-anchor="middle">SW2</text><text x="345" y="115" font-size="10" fill="#fff" text-anchor="middle">native 99</text>
+        <line x1="100" y1="100" x2="300" y2="100" stroke="#1f3a68" stroke-width="6"/>
+        <rect x="120" y="50" width="70" height="20" rx="3" fill="#5b80bf"/><text x="155" y="64" font-size="10" fill="#fff" text-anchor="middle">tag 10</text>
+        <rect x="210" y="50" width="70" height="20" rx="3" fill="#e08a2c"/><text x="245" y="64" font-size="10" fill="#fff" text-anchor="middle">tag 20</text>
+        <rect x="160" y="128" width="80" height="20" rx="3" fill="#fff" stroke="#6e6e73" stroke-dasharray="3 2"/><text x="200" y="142" font-size="10" fill="#1d1d1f" text-anchor="middle">タグなし</text>
+        <text x="200" y="170" font-size="11" text-anchor="middle" fill="#1d1d1f">タグなし＝ネイティブVLAN（99）のフレーム</text>
+        <text x="200" y="190" font-size="11" text-anchor="middle" fill="#1d1d1f">受け取ったタグなし → 自分のネイティブVLANへ</text>
+      </svg>
+<pre class="cli">SW1(config-if)# <b>switchport trunk native vlan 99</b></pre>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th>決まりごと</th><th>中身</th></tr>
+        <tr><td>初期値</td><td>VLAN 1。1〜4094のどれにでも変えられる</td></tr>
+        <tr><td>送るとき</td><td>出ていくフレームのVLANがネイティブVLANなら<b>タグなし</b>、それ以外はタグ付き</td></tr>
+        <tr><td>受け取るとき</td><td>タグなしのフレームは<b>ネイティブVLANのもの</b>として転送</td></tr>
+        <tr><td>両端</td><td><b>同じ番号にそろえる</b>。違うとスパニングツリーのループが起こりうる</td></tr>
+        <tr><td>推奨</td><td>ユーザーが使わない番号（例：999）にする。VLANホッピング対策</td></tr>
+      </table>
+      <div class="point"><b>VLAN 1の特別扱い：</b>許可リストからVLAN 1を外しても、CDP・DTP・VTP・PAgP・LACPなどの制御フレームはVLAN 1で送受信を続ける。止まるのはユーザーのデータだけ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/vlan/b_179_vlan_9300_cg/configuring_vlan_trunks.html">Cisco VLAN Configuration Guide 17.9.x「Configuring VLAN Trunks」</a> Configuring the Native VLAN for Untagged Traffic・Prerequisites・Allowed VLANs on a Trunk</div>
+</section>
+
+<section class="slide">
+  <h1>ネイティブVLANの不一致とVLANホッピング</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">不一致（SW1 native 10 ／ SW2 native 20）</div>
+      <svg width="400" height="150" viewBox="0 0 400 150">
+        <rect x="10" y="40" width="90" height="60" rx="8" fill="#1f3a68"/><text x="55" y="67" font-size="13" fill="#fff" text-anchor="middle">SW1</text><text x="55" y="85" font-size="10" fill="#fff" text-anchor="middle">native 10</text>
+        <rect x="300" y="40" width="90" height="60" rx="8" fill="#1f3a68"/><text x="345" y="67" font-size="13" fill="#fff" text-anchor="middle">SW2</text><text x="345" y="85" font-size="10" fill="#fff" text-anchor="middle">native 20</text>
+        <line x1="100" y1="70" x2="300" y2="70" stroke="#1f3a68" stroke-width="6"/>
+        <rect x="150" y="44" width="100" height="18" rx="3" fill="#fff" stroke="#6e6e73" stroke-dasharray="3 2"/><text x="200" y="57" font-size="10" text-anchor="middle">VLAN 10・タグなし</text>
+        <text x="200" y="118" font-size="11.5" text-anchor="middle" fill="#b25000" font-weight="700">SW2はVLAN 20として受け取る</text>
+        <text x="200" y="138" font-size="11" text-anchor="middle" fill="#1d1d1f">→ VLAN 10と20がつながる。リンクは上がったまま</text>
+      </svg>
+      <ul class="anno">
+        <li>トランクは上がるので気づきにくい</li>
+        <li>構成ガイド：「両端のネイティブVLANが違うとスパニングツリーのループになりうる」</li>
+        <li>確認：両側で <code>show interfaces trunk</code> の Native vlan を比べる</li>
+      </ul>
+    </div>
+    <div>
+      <div class="cap">VLANホッピング（ダブルタギング）の流れ</div>
+      <ol class="steps">
+        <li>攻撃者はアクセスVLAN＝<b>トランクのネイティブVLAN</b>（例：VLAN 1）にいる</li>
+        <li>外側にVLAN 1、内側にVLAN 20の<b>2つのタグ</b>を付けて送る</li>
+        <li>SW1は外側のタグ（ネイティブVLAN）を外し、タグなしの扱いでトランクへ出す</li>
+        <li>SW2は残った内側のタグを見て、<b>VLAN 20</b>に届けてしまう</li>
+      </ol>
+      <div class="point"><b>対策：</b>ネイティブVLANを端末に使わない番号にする／端末用ポートは <code>switchport mode access</code> にしてDTPを止める（DTPでトランクを結ばれる「スイッチスプーフィング」も防ぐ）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/vlan/b_179_vlan_9300_cg/configuring_vlan_trunks.html">Configuring VLAN Trunks</a> Prerequisites ／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/switches/catalyst-6500-series-switches/24330-185.html">Cisco Best Practices for Catalyst 6500/4500</a>（802.1Q Operational Overview：ネイティブVLANの暗黙のタグとセキュリティ、使わない番号にする対策）。手順の図はClaudeが整理</div>
+</section>
+
+<section class="slide">
+  <h1>DTP：トランクにするかを隣と交渉する。モードは5つ</h1>
+  <table>
+    <tr><th style="width:24%">モード（コマンド）</th><th>動き</th><th style="width:14%">DTPを送る</th><th style="width:20%">トランクになる相手</th></tr>
+    <tr><td><code>switchport mode access</code></td><td>常に非トランク。相手が何でもアクセス</td><td>送らない（変更時の通知だけ）</td><td>なし</td></tr>
+    <tr><td><code>dynamic auto</code></td><td><b>待つだけ</b>。持ちかけられたら応じる。<b>Catalystの初期値</b></td><td>送る</td><td>trunk・desirable</td></tr>
+    <tr><td><code>dynamic desirable</code></td><td><b>自分から持ちかける</b></td><td>送る</td><td>trunk・desirable・auto</td></tr>
+    <tr><td><code>switchport mode trunk</code></td><td>常にトランク。相手にも持ちかける</td><td>送る</td><td>（自分は常にトランク）</td></tr>
+    <tr><td><code>trunk</code>＋<code>nonegotiate</code></td><td>常にトランク。DTPを止める。相手も手で trunk にする</td><td><b>送らない</b></td><td>（相手も trunk が必要）</td></tr>
+  </table>
+  <div class="cols" style="margin-top:10px">
+    <div class="point"><b>DTPの条件：</b>Cisco独自。交渉には両方の<b>VTPドメイン名が一致</b>している必要がある。nonegotiate は access か trunk のときだけ使える（dynamic ではエラー）。</div>
+    <div class="point warn"><b>勧められる使い方：</b>DTPを話さない機器（他社のスイッチなど）とは、トランクなら trunk＋nonegotiate、トランクにしないなら access に固定する。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/vlan/b_179_vlan_9300_cg/configuring_vlan_trunks.html">Configuring VLAN Trunks</a> Layer 2 Interface Modes ／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/command_reference/b_179_9300_cr/layer_2_3_commands.html">Command Reference「switchport mode」「switchport nonegotiate」</a> ／ Best Practices for Catalyst 6500/4500（DTP Frames Transmitted?）</div>
+</section>
+
+<section class="slide">
+  <h1>組み合わせ表：トランクにならないのは「auto どうし」と「access がいる」とき</h1>
+  <div class="cols" style="grid-template-columns:1.15fr 0.85fr">
+    <div>
+      <table class="mx">
+        <tr><th>自分＼相手</th><th>access</th><th>dynamic auto</th><th>dynamic desirable</th><th>trunk</th></tr>
+        <tr><th class="rowh">access</th><td class="a">アクセス</td><td class="a">アクセス</td><td class="a">アクセス</td><td class="x">不一致</td></tr>
+        <tr><th class="rowh">dynamic auto</th><td class="a">アクセス</td><td class="a">アクセス</td><td class="t">トランク</td><td class="t">トランク</td></tr>
+        <tr><th class="rowh">dynamic desirable</th><td class="a">アクセス</td><td class="t">トランク</td><td class="t">トランク</td><td class="t">トランク</td></tr>
+        <tr><th class="rowh">trunk</th><td class="x">不一致</td><td class="t">トランク</td><td class="t">トランク</td><td class="t">トランク</td></tr>
+      </table>
+      <div style="font-size:11px;color:#6e6e73;margin-top:4px">不一致＝片方だけがトランクとして動く。通信できないVLANが出る</div>
+    </div>
+    <div>
+      <div class="ex"><span class="lbl">考え方</span>「誰か1人でも持ちかける（desirable か trunk）」かつ「誰も拒否しない（access がいない）」ならトランク。</div>
+      <ol class="steps" style="margin-top:8px">
+        <li>初期設定のスイッチどうし＝auto＋auto → <b>アクセス</b>（よく出る）</li>
+        <li>trunk＋auto → トランク（trunk はDTPで持ちかける）</li>
+        <li><b>trunk＋nonegotiate</b>＋相手 auto → 相手はDTPを受け取れずアクセス → <b>不一致</b></li>
+        <li>DTPで交渉した結果は、必ず両側で同じになる</li>
+      </ol>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/vlan/b_179_vlan_9300_cg/configuring_vlan_trunks.html">Configuring VLAN Trunks</a> Layer 2 Interface Modes（各モードがどの相手でトランクになるか）。表はその記述からClaudeが組み合わせた</div>
+</section>
+
+<section class="slide">
+  <h1>トランクの設定と、許可VLANリストの「置き換え」の罠</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">設定の例</div>
+<pre class="cli">SW1(config)# interface g1/0/24
+SW1(config-if)# <i>switchport trunk encapsulation dot1q</i>  <i>! 古い機種だけ</i>
+SW1(config-if)# <b>switchport mode trunk</b>
+SW1(config-if)# <b>switchport trunk native vlan 99</b>
+SW1(config-if)# <b>switchport trunk allowed vlan 10,20,99</b>
+SW1(config-if)# <b>switchport nonegotiate</b>          <i>! 必要なら</i></pre>
+      <table class="mini" style="margin-top:8px">
+        <tr><th>allowed vlan の書き方</th><th>意味</th></tr>
+        <tr><td><code>10,20</code>（番号だけ）</td><td>一覧を<b>置き換え</b>る</td></tr>
+        <tr><td><code>add 30</code></td><td>今の一覧に足す</td></tr>
+        <tr><td><code>remove 2</code></td><td>今の一覧から外す</td></tr>
+        <tr><td><code>except 100-200</code></td><td>指定以外の全部</td></tr>
+        <tr><td><code>all</code> ／ <code>none</code></td><td>全部（初期値）／空</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="ex"><span class="lbl">例題</span>許可リストが 10,20,30 のトランクに、VLAN 40も通したい。</div>
+      <table style="margin-top:8px">
+        <tr><th>入れたコマンド</th><th>結果の一覧</th></tr>
+        <tr><td><code>allowed vlan 40</code></td><td class="hl">40 だけ（10・20・30が止まる）</td></tr>
+        <tr><td><code>allowed vlan add 40</code></td><td><b>10,20,30,40</b>（正しい）</td></tr>
+        <tr><td><code>allowed vlan except 40</code></td><td>40以外の全部（逆）</td></tr>
+      </table>
+      <div class="point warn"><b>本番でも実務でも：</b>add の付け忘れで、動いていたVLANを止めてしまうミスが多い。コマンドリファレンスの説明「add adds … instead of replacing the list」が根拠。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/command_reference/b_179_9300_cr/layer_2_3_commands.html">Cisco Command Reference 17.9.x「switchport trunk」</a> Usage Guidelines ／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/vlan/b_179_vlan_9300_cg/configuring_vlan_trunks.html">Configuring VLAN Trunks</a> Defining the Allowed VLANs on a Trunk</div>
+</section>
+
+<section class="slide">
+  <h1>show interfaces trunk は4つのかたまりを上から読む</h1>
+  <div class="cols wide-r">
+    <div>
+<pre class="cli small">SW1# show interfaces trunk
+
+Port      Mode   Encapsulation  Status    Native vlan
+Gi1/0/24  <span class="hl">on</span>     802.1q         trunking  <span class="hl">99</span>
+
+Port      Vlans allowed on trunk
+Gi1/0/24  10,20,<span class="hl">30</span>,99
+
+Port      Vlans allowed and active in management domain
+Gi1/0/24  10,20,99
+
+Port      Vlans in spanning tree forwarding state and not pruned
+Gi1/0/24  10,20,99</pre>
+    </div>
+    <div>
+      <ol class="steps">
+        <li><b>Mode・Status・Native vlan</b>：on＝<code>mode trunk</code>（desirable／auto なら交渉で上がった）。ネイティブVLANは両側で比べる</li>
+        <li><b>Vlans allowed on trunk</b>：許可リスト。allowed vlan の設定そのもの</li>
+        <li><b>allowed and active</b>：許可されていて、<b>このスイッチに存在する</b>VLAN。VLAN 30はここにない → <b>スイッチにVLAN 30がない</b></li>
+        <li><b>forwarding state and not pruned</b>：STPで転送中で、プルーニングもされていないVLAN。ここにあるVLANだけが実際に流れる</li>
+      </ol>
+      <div class="point"><b>つながらないときの切り分け：</b>②にない→許可リストの問題／③にない→VLANを作っていない／④にない→STPでブロックかプルーニング。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/command_reference/b_179_9300_cr/interface_and_hardware_commands.html">Cisco Command Reference 17.9.x「show interfaces」</a>（trunk の出力例）／ Configuring VLAN Trunks（A trunk port can become a member of a VLAN if the VLAN is enabled … and in the allowed list）</div>
+</section>
+
+<section class="slide">
+  <h1>VTP：VLANの追加・削除をトランクで伝える（CCNA v1.1は項目外）</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th>モード</th><th>VLANを作れる</th><th>受け取って反映</th><th>中継</th></tr>
+        <tr><td>サーバ</td><td>○</td><td>○</td><td>○</td></tr>
+        <tr><td>クライアント</td><td>×</td><td>○</td><td>○</td></tr>
+        <tr><td>トランスペアレント</td><td>○（自分だけ）</td><td>×</td><td>○</td></tr>
+      </table>
+      <ul class="anno">
+        <li>VTPは<b>Cisco独自</b>。メッセージはトランクでだけ流れる</li>
+        <li>構成ガイド：「VTPは必須ではない。使わないならトランスペアレントに」</li>
+        <li>VTPバージョン1・2は拡張範囲（1006〜）を伝えない</li>
+        <li>VLAN名は v1・v2 で20文字、v3 で128文字まで</li>
+      </ul>
+    </div>
+    <div>
+      <div class="cap">VTPプルーニングと許可リストの違い</div>
+      <table class="mini">
+        <tr><th></th><th>許可VLANリスト</th><th>VTPプルーニング</th></tr>
+        <tr><td>誰が絞る</td><td>管理者が手で</td><td>VTPが自動で</td></tr>
+        <tr><td>何を止める</td><td>そのVLANの全部の通信</td><td>先にポートがないVLANのフラッディング</td></tr>
+        <tr><td>対象</td><td>1〜4094</td><td>2〜1001だけ（VLAN 1と拡張範囲は不可）</td></tr>
+      </table>
+      <div class="point"><b>位置づけ：</b>CCNA v1.1 の出題範囲には VTP の項目はない。show interfaces trunk の4つ目のかたまり（not pruned）や、VLANの範囲の説明に出てくるので、言葉の意味だけ押さえる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/vlan/b_179_vlan_9300_cg/configuring_vlans.html">Configuring VLANs</a> VTP Characteristics・Supported VLANs ／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/vlan/b_179_vlan_9300_cg/configuring_vlan_trunks.html">Configuring VLAN Trunks</a> Changing the Pruning-Eligible List ／ CCNA Exam Topics v1.1</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>VLAN間ルーティング</h1>
+  <p>VLANが違えばサブネットも違う。間をつなぐのはルータのサブインタフェースか、レイヤ3スイッチのSVI。</p>
+  <div class="foot"><span>CCNA #07 VLANとトランク</span><span>2.1.c</span></div>
+</section>
+
+<section class="slide">
+  <h1>VLAN間ルーティングは3つの方法。いまの主流はSVI</h1>
+  <div class="cols3">
+    <div>
+      <div class="cap">① VLANごとに物理ポート</div>
+      <svg width="260" height="150" viewBox="0 0 260 150">
+        <rect x="80" y="10" width="100" height="40" rx="8" fill="#1f3a68"/><text x="130" y="35" font-size="12" fill="#fff" text-anchor="middle">R1</text>
+        <rect x="80" y="100" width="100" height="40" rx="8" fill="#2f5596"/><text x="130" y="125" font-size="12" fill="#fff" text-anchor="middle">SW1</text>
+        <line x1="110" y1="50" x2="110" y2="100" stroke="#5b80bf" stroke-width="4"/><line x1="150" y1="50" x2="150" y2="100" stroke="#e08a2c" stroke-width="4"/>
+        <text x="100" y="80" font-size="10" text-anchor="end" fill="#1f3a68">VLAN10</text><text x="160" y="80" font-size="10" fill="#b25000">VLAN20</text>
+      </svg>
+      <div class="anno">ルータのポートとケーブルがVLANの数だけ要る。わかりやすいが広げられない</div>
+    </div>
+    <div>
+      <div class="cap">② ルータオンアスティック</div>
+      <svg width="260" height="150" viewBox="0 0 260 150">
+        <rect x="80" y="10" width="100" height="40" rx="8" fill="#1f3a68"/><text x="130" y="28" font-size="12" fill="#fff" text-anchor="middle">R1</text><text x="130" y="43" font-size="9.5" fill="#fff" text-anchor="middle">g0/0.10・g0/0.20</text>
+        <rect x="80" y="100" width="100" height="40" rx="8" fill="#2f5596"/><text x="130" y="125" font-size="12" fill="#fff" text-anchor="middle">SW1</text>
+        <line x1="130" y1="50" x2="130" y2="100" stroke="#1f3a68" stroke-width="6"/>
+        <text x="140" y="80" font-size="10" fill="#1f3a68">トランク1本</text>
+      </svg>
+      <div class="anno">サブインタフェース＋<code>encapsulation dot1Q</code>。ケーブル1本で済むが、VLAN間の通信が全部そのリンクを往復する</div>
+    </div>
+    <div>
+      <div class="cap">③ SVI（レイヤ3スイッチ）</div>
+      <svg width="260" height="150" viewBox="0 0 260 150">
+        <rect x="40" y="40" width="180" height="80" rx="8" fill="#1f3a68"/><text x="130" y="62" font-size="12" fill="#fff" text-anchor="middle">L3SW（ip routing）</text>
+        <rect x="55" y="75" width="70" height="30" rx="5" fill="#5b80bf"/><text x="90" y="95" font-size="10" fill="#fff" text-anchor="middle">Vlan10</text>
+        <rect x="135" y="75" width="70" height="30" rx="5" fill="#e08a2c"/><text x="170" y="95" font-size="10" fill="#fff" text-anchor="middle">Vlan20</text>
+        <line x1="125" y1="90" x2="135" y2="90" stroke="#fff" stroke-width="2"/>
+      </svg>
+      <div class="anno"><code>interface vlan 10</code> にIPアドレス。スイッチの中でハードウェアで中継するので速い</div>
+    </div>
+  </div>
+  <div class="point"><b>どの方法でも：</b>端末のデフォルトゲートウェイ＝<b>自分のVLANを受け持つ</b>サブインタフェースかSVIのアドレス。VLAN 10の端末に VLAN 20 側のアドレスを入れると、VLANの外へ出られない。</div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/vlan/b_179_vlan_9300_cg/configuring_layer_3_subinterfaces.html">Configuring Layer 3 Subinterfaces</a> ／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/rtng/b_179_rtng_9300_cg/configuring_ip_unicast_routing.html">IP Routing Configuration Guide 17.9.x「Configuring IP Unicast Routing」</a>（SVI・routed port）</div>
+</section>
+
+<section class="slide">
+  <h1>ルータオンアスティック：サブインタフェースにVLANを1つずつ受け持たせる</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">ルータ R1</div>
+<pre class="cli">R1(config)# interface g0/0
+R1(config-if)# <b>no shutdown</b>          <i>! 親の物理ポート</i>
+R1(config)# interface <b>g0/0.10</b>
+R1(config-subif)# <b>encapsulation dot1Q 10</b>
+R1(config-subif)# ip address 192.168.10.1 255.255.255.0
+R1(config)# interface <b>g0/0.20</b>
+R1(config-subif)# <b>encapsulation dot1Q 20</b>
+R1(config-subif)# ip address 192.168.20.1 255.255.255.0
+R1(config)# interface g0/0.99
+R1(config-subif)# <b>encapsulation dot1Q 99 native</b></pre>
+      <div class="cap" style="margin-top:8px">スイッチ SW1（R1につなぐポート）</div>
+<pre class="cli">SW1(config-if)# switchport mode trunk
+SW1(config-if)# switchport trunk native vlan 99</pre>
+    </div>
+    <div>
+      <ul class="anno">
+        <li><b>.10 の番号は名前だけ</b>。どのVLANかを決めるのは <code>encapsulation dot1Q 10</code>（番号をそろえるのは読みやすさのため）</li>
+        <li>サブインタフェースどうしは<b>別のサブネット</b>にする（構成ガイド）</li>
+        <li>ネイティブVLANを受け持つときは <b><code>native</code> を必ず付ける</b>。付けないとタグなしのフレームを受け取れない</li>
+        <li>ルータのサブインタフェースに <code>switchport</code> 系のコマンドはない。switchport はスイッチ側</li>
+        <li>物理ポート（g0/0）を shutdown するとサブインタフェースも全部止まる。サブインタフェースだけを止めるなら、そのサブインタフェースで shutdown</li>
+      </ul>
+      <div class="ex"><span class="lbl">確認</span><code>show ip interface brief</code> でサブインタフェースが up/up か、<code>show interfaces trunk</code>（SW1側）で許可VLANに10・20があるかを見る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/vlan/b_179_vlan_9300_cg/configuring_layer_3_subinterfaces.html">Cisco VLAN Configuration Guide 17.9.x「Configuring Layer 3 Subinterfaces」</a>（Restrictions：native キーワード、Information About：別のサブネット、encapsulation dot1q vlan-id [native]）</div>
+</section>
+
+<section class="slide">
+  <h1>SVI と ip routing：レイヤ3スイッチの中でVLAN間を中継する</h1>
+  <div class="cols">
+    <div>
+<pre class="cli">L3SW(config)# <b>ip routing</b>                 <i>! 初期値は無効</i>
+L3SW(config)# vlan 10
+L3SW(config)# vlan 20
+L3SW(config)# <b>interface vlan 10</b>
+L3SW(config-if)# ip address 192.168.10.1 255.255.255.0
+L3SW(config-if)# no shutdown
+L3SW(config)# <b>interface vlan 20</b>
+L3SW(config-if)# ip address 192.168.20.1 255.255.255.0
+L3SW(config-if)# no shutdown
+L3SW(config)# interface g1/0/24          <i>! 上位ルータ向け</i>
+L3SW(config-if)# <b>no switchport</b>
+L3SW(config-if)# ip address 10.0.0.1 255.255.255.252</pre>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th>つまずきどころ</th><th>理由</th></tr>
+        <tr><td>SVIにIPを付けたのにVLAN間で届かない</td><td><b>ip routing がない</b>。Catalystのレイヤ3スイッチでは IP routing の初期値は Disabled</td></tr>
+        <tr><td>SVIが up にならない</td><td>そのVLANに<b>upしているポートがない</b>（「物理ポートと結び付くまで active にならない」）。VLAN自体がない場合も</td></tr>
+        <tr><td>1つのVLANにSVIを2つ</td><td>できない。SVIはVLANに1つ</td></tr>
+        <tr><td>interface vlan 1 を消したい</td><td>VLAN 1のSVIは最初からあり、削除できない</td></tr>
+        <tr><td>ルーテッドポート</td><td><code>no switchport</code> でL3にした物理ポート。VLANに属さない</td></tr>
+      </table>
+      <div class="point"><b>SVIとルーテッドポート：</b>SVI＝「VLANの代表のL3インタフェース」、ルーテッドポート＝「そのポートだけのL3インタフェース」。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/rtng/b_179_rtng_9300_cg/configuring_ip_unicast_routing.html">IP Routing Configuration Guide 17.9.x「Configuring IP Unicast Routing」</a>（By default, IP routing is disabled）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/int_hw/b_179_int_and_hw_9300_cg/configuring_interface_characteristics.html">Interface and Hardware Components Configuration Guide「Configuring Interface Characteristics」</a>（Switch Virtual Interfaces）</div>
+</section>
+
+<section class="slide">
+  <h1>「VLAN間で通信できない」ときに確かめる順番</h1>
+  <div class="cols">
+    <div>
+      <ol class="steps">
+        <li><b>端末</b>：IPアドレス・マスク・デフォルトゲートウェイが自分のVLANのサブネットか（<code>ipconfig</code>）</li>
+        <li><b>アクセスポート</b>：正しいVLANに入っているか（<code>show vlan brief</code>）。VLANを消していないか</li>
+        <li><b>トランク</b>：トランクになっているか、許可リストとネイティブVLANは正しいか（<code>show interfaces trunk</code>）</li>
+        <li><b>VLANの存在</b>：途中のスイッチ全部にVLANがあるか（③のかたまり）</li>
+        <li><b>ルーティング</b>：サブインタフェースの encapsulation の番号、SVIの up/up、<code>ip routing</code></li>
+      </ol>
+    </div>
+    <div>
+      <div class="cap">症状から逆引き</div>
+      <table class="mini">
+        <tr><th>症状</th><th>まず疑うところ</th></tr>
+        <tr><td>同じVLAN内も、別のスイッチだと届かない</td><td>トランク（auto＋auto、許可リスト、VLANがない）</td></tr>
+        <tr><td>同じVLAN内は届く。別のVLANだけ届かない</td><td>デフォルトゲートウェイ、ip routing、encapsulation の番号</td></tr>
+        <tr><td>1台だけ別のVLANの通信が混ざる</td><td>ネイティブVLANの不一致</td></tr>
+        <tr><td>設定を足したら他のVLANが止まった</td><td>allowed vlan の add の付け忘れ</td></tr>
+        <tr><td>ポートがどのVLANにも出てこない</td><td>トランクになっている（show vlan brief に出ない）、または削除したVLANのまま inactive</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：このページはここまでの各ページの根拠（Cisco VLAN／IP Routing Configuration Guide 17.9.x、Command Reference）をClaudeが手順にまとめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>本番で迷いやすい比較10選</h1>
+  <table class="mini">
+    <tr><th style="width:4%">#</th><th style="width:30%">比べるもの</th><th>見分け方</th></tr>
+    <tr><td>1</td><td>ブロードキャストドメイン／衝突ドメイン</td><td>VLAN・ルータで切れる／ポートごとに切れる</td></tr>
+    <tr><td>2</td><td>アクセスポート／トランクポート</td><td>VLAN 1つ・タグなし／複数・タグ付き（ネイティブだけタグなし）</td></tr>
+    <tr><td>3</td><td>access vlan／voice vlan</td><td>PCのデータ（タグなし）／IP電話の音声（タグ付き・CoS 5）</td></tr>
+    <tr><td>4</td><td>802.1Q／ISL</td><td>IEEE標準・4バイトを挿入・FCS再計算／Cisco独自・26＋4バイトで包む</td></tr>
+    <tr><td>5</td><td>dynamic auto／dynamic desirable</td><td>待つだけ（初期値）／自分から持ちかける。auto＋auto はアクセス</td></tr>
+    <tr><td>6</td><td>trunk／trunk＋nonegotiate</td><td>DTPを送る／送らない（相手も手で trunk に）</td></tr>
+    <tr><td>7</td><td>allowed vlan 40／allowed vlan add 40</td><td>40だけに置き換え／今の一覧に40を足す</td></tr>
+    <tr><td>8</td><td>allowed on trunk／allowed and active</td><td>許可リスト／許可されていて、スイッチに存在するVLAN</td></tr>
+    <tr><td>9</td><td>サブインタフェース／SVI</td><td>ルータの物理ポートを分ける（dot1Q）／L3スイッチのVLANの代表（interface vlan）</td></tr>
+    <tr><td>10</td><td>SVIがupしない／VLAN間で届かない</td><td>VLANにupのポートがない／ip routing がない・ゲートウェイ違い</td></tr>
+  </table>
+  <div class="cite">出典：この資料の各ページ（Cisco VLAN Configuration Guide・Command Reference・IP Routing Configuration Guide 17.9.x、Inter-Switch Link and IEEE 802.1Q Frame Format）</div>
+</section>
+
+<section class="slide">
+  <h1>出典</h1>
+  <div class="anno" style="font-size:12.5px; line-height:1.8">
+    <div>・<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco「CCNA Exam v1.1 (200-301) Exam Topics」</a>（2.0 Network Access：2.1・2.2）</div>
+    <div>・<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/vlan/b_179_vlan_9300_cg/configuring_vlans.html">Cisco「VLAN Configuration Guide, Cisco IOS XE Cupertino 17.9.x (Catalyst 9300 Switches)」Configuring VLANs</a></div>
+    <div>・同 <a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/vlan/b_179_vlan_9300_cg/configuring_vlan_trunks.html">Configuring VLAN Trunks</a>／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/vlan/b_179_vlan_9300_cg/configuring_voice_vlans.html">Configuring Voice VLANs</a>／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/vlan/b_179_vlan_9300_cg/configuring_layer_3_subinterfaces.html">Configuring Layer 3 Subinterfaces</a></div>
+    <div>・<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/command_reference/b_179_9300_cr/layer_2_3_commands.html">Cisco「Command Reference, Cisco IOS XE Cupertino 17.9.x (Catalyst 9300 Switches)」Layer 2/3 Commands</a>（switchport access vlan・switchport mode・switchport nonegotiate・switchport trunk・switchport voice vlan）</div>
+    <div>・同 <a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/command_reference/b_179_9300_cr/interface_and_hardware_commands.html">Interface and Hardware Commands</a>（show interfaces trunk・show interfaces switchport）</div>
+    <div>・<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/rtng/b_179_rtng_9300_cg/configuring_ip_unicast_routing.html">Cisco「IP Routing Configuration Guide, Cisco IOS XE Cupertino 17.9.x (Catalyst 9300 Switches)」Configuring IP Unicast Routing</a></div>
+    <div>・<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/int_hw/b_179_int_and_hw_9300_cg/configuring_interface_characteristics.html">Cisco「Interface and Hardware Components Configuration Guide 17.9.x」Configuring Interface Characteristics</a>（Switch Virtual Interfaces）</div>
+    <div>・<a class="src" href="https://www.cisco.com/c/en/us/support/docs/lan-switching/8021q/17056-741-4.html">Cisco「Inter-Switch Link and IEEE 802.1Q Frame Format」</a></div>
+    <div>・<a class="src" href="https://www.cisco.com/c/en/us/support/docs/switches/catalyst-6500-series-switches/24330-185.html">Cisco「Best Practices for Catalyst 6500/6000 Series and Catalyst 4500/4000 Series Switches Running Cisco IOS Software」</a>（VLAN 1・DTP・802.1Q）</div>
+  </div>
+  <div class="point">Ciscoは本番の問題を公開していない。この資料の例題と、用語集の問題演習30問はすべてClaudeのオリジナル。出力の例は構成ガイドとコマンドリファレンスの書式に沿ってClaudeが書いた（2026-11-07）。</div>
+</section>
+
+</body>
+</html>

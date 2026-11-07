@@ -1,0 +1,734 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CCNA #02 ケーブルとインタフェース 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">CCNA（200-301 v1.1）　1.0 ネットワークの基礎　#02</div>
+  <h1>ケーブルとインタフェース</h1>
+  <p>出題範囲 1.3・1.4 ― 銅線とシングルモード・マルチモードの光ファイバー、共有メディアとポイントツーポイント、そしてインタフェースとケーブルの問題（衝突・エラー・二重モードと速度の不一致）</p>
+  <div class="refs-legend">各ページの下に、根拠にしたCiscoの資料を書いた（青い文字を押すと開く）</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>1.3 は Compare（比べる）、1.4 は Identify（見分ける）</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 銅線と光ファイバー（1.3）<span>UTP・RJ-45・カテゴリ、ストレートとクロス・Auto-MDIX、シングルモードとマルチモード、SFP</span></div>
+      <div class="box b2">2 共有メディアとポイントツーポイント（1.3）<span>ハブ・CSMA/CD・コリジョンドメイン・バックオフ、半二重と全二重</span></div>
+      <div class="box b3">3 速度と二重モード（1.4）<span>オートネゴシエーション・パラレル検出、二重モードの不一致と速度の不一致</span></div>
+      <div class="box b4">4 状態とエラー（1.4）<span>up/up・administratively down・notconnect・err-disabled、CRC・ラント・レイトコリジョン・出力ドロップ</span></div>
+    </div>
+    <div>
+      <div class="cap">つなぐ部分の 3 つの選び方（Claude が作成）</div>
+      <svg width="400" height="200" viewBox="0 0 400 200">
+        <g font-size="10.5" text-anchor="middle">
+          <rect x="10" y="10" width="110" height="34" rx="6" fill="#1f3a68"/><text x="65" y="31" fill="#fff">どの媒体？</text>
+          <rect x="145" y="10" width="110" height="34" rx="6" fill="#5b80bf"/><text x="200" y="31" fill="#fff">どうつなぐ？</text>
+          <rect x="280" y="10" width="110" height="34" rx="6" fill="#b25000"/><text x="335" y="31" fill="#fff">どう合わせる？</text>
+          <text x="65" y="66" fill="#1f3a68">銅線 100 m まで</text>
+          <text x="65" y="84" fill="#1f3a68">MMF 数百 m</text>
+          <text x="65" y="102" fill="#1f3a68">SMF 10 km〜</text>
+          <text x="200" y="66" fill="#1f3a68">共有（ハブ）</text>
+          <text x="200" y="84" fill="#1f3a68">→ 半二重・CSMA/CD</text>
+          <text x="200" y="102" fill="#1f3a68">1 対 1 → 全二重</text>
+          <text x="335" y="66" fill="#1f3a68">速度</text>
+          <text x="335" y="84" fill="#1f3a68">二重モード</text>
+          <text x="335" y="102" fill="#1f3a68">波長（光）</text>
+          <rect x="10" y="128" width="380" height="58" rx="8" fill="#fff4e8" stroke="#b25000"/>
+          <text x="200" y="152" fill="#7a3a00">合わないと…</text>
+          <text x="200" y="172" fill="#7a3a00" font-size="10">速度・波長 → リンクしない　／　二重モード → つながるが遅い</text>
+        </g>
+      </svg>
+      <div class="point"><b>芯：</b>「つながらない」のか「つながるが遅い・エラーが出る」のかで、原因の見当をつける。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco CCNA Exam v1.1 (200-301) Exam Topics</a>（1.3 Compare physical interface and cabling types: single-mode fiber, multimode fiber, copper; connections (Ethernet shared media and point-to-point)／1.4 Identify interface and cable issues (collisions, errors, mismatch duplex, and/or speed)）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>銅線と光ファイバー</h1>
+  <p>何で、どこまで、何とつなぐか。</p>
+  <div class="foot"><span>CCNA #02 ケーブルとインタフェース</span><span>1.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>UTP ケーブルと RJ-45</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">UTP の中身：より合わせた 2 本の線が 4 対（Claude が作成）</div>
+      <svg width="400" height="150" viewBox="0 0 400 150">
+        <g font-size="10.5" text-anchor="middle">
+          <rect x="10" y="20" width="250" height="110" rx="14" fill="#eef2f8" stroke="#5b80bf"/>
+          <path d="M30 40 q10 -10 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0" fill="none" stroke="#b25000" stroke-width="2"/>
+          <path d="M30 40 q10 10 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0" fill="none" stroke="#f0b070" stroke-width="2"/>
+          <path d="M30 64 q10 -10 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0" fill="none" stroke="#2e7d32" stroke-width="2"/>
+          <path d="M30 64 q10 10 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0" fill="none" stroke="#9ccc9c" stroke-width="2"/>
+          <path d="M30 88 q10 -10 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0" fill="none" stroke="#1f3a68" stroke-width="2"/>
+          <path d="M30 88 q10 10 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0" fill="none" stroke="#8fa8d6" stroke-width="2"/>
+          <path d="M30 112 q10 -10 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0" fill="none" stroke="#6d4c41" stroke-width="2"/>
+          <path d="M30 112 q10 10 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0" fill="none" stroke="#bcaaa4" stroke-width="2"/>
+          <rect x="280" y="40" width="100" height="70" rx="6" fill="#fff" stroke="#1f3a68" stroke-width="1.5"/>
+          <text x="330" y="62" fill="#1f3a68" font-weight="700">RJ-45</text>
+          <text x="330" y="80" fill="#1f3a68" font-size="9.5">8 ピン</text>
+          <text x="330" y="96" fill="#1f3a68" font-size="9.5">1 2 3 4 5 6 7 8</text>
+          <line x1="260" y1="75" x2="280" y2="75" stroke="#1f3a68" stroke-width="2"/>
+          <text x="135" y="146" fill="#4a5a78" font-size="9.5">シールドなし（Unshielded）・より合わせ（Twisted）・対（Pair）</text>
+        </g>
+      </svg>
+      <div class="point"><b>長さ：</b>銅線のツイストペアは 1 区間 <b>100 m（328 フィート）</b>まで。それより遠い所は光ファイバー。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">規格</th><th>使う対</th><th>ケーブル</th></tr>
+        <tr><td class="t">10BASE-T</td><td>2 対</td><td>カテゴリ 3・4・5</td></tr>
+        <tr><td class="t">100BASE-TX</td><td>2 対</td><td>カテゴリ 5 が必要</td></tr>
+        <tr><td class="t">1000BASE-T</td><td><b>4 対すべて</b></td><td>4 対のカテゴリ 5 以上</td></tr>
+        <tr><td class="t">10GBASE-T</td><td>4 対</td><td>Cisco の SFP+ 品は Cat6A で 30 m</td></tr>
+      </table>
+      <div class="point warn"><b>落とし穴：</b>10/100 は 2 対で動くが、<b>1000BASE-T は 4 対すべて</b>を使う。2 対しかつながっていない配線ではギガビットにならない。</div>
+      <div class="mini">カテゴリ＝UTP の品質の等級。数字が大きいほど速い通信に耐える。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst2960/hardware/installation/guide/2960_hg/higcable.pdf">Catalyst 2960 HIG Appendix B</a>（standard RJ-45 connectors／You can use Category 3, 4, or 5 cabling when connecting to 10BASE-T … You must use Category 5 cabling when connecting to 100BASE-TX／four twisted-pair, Category 5 or greater cable at lengths up to 328 feet (100 meters)）／<a class="src" href="https://www.cisco.com/en/US/docs/internetworking/troubleshooting/guide/tr1904.pdf">Internetworking Troubleshooting Handbook Ch.4</a>（10/100BaseT systems … use only two pairs of copper wire）／<a class="src" href="https://www.cisco.com/c/en/us/products/collateral/interfaces-modules/transceiver-modules/data_sheet_c78-455693.html">Cisco 10GBASE SFP+ Data Sheet</a>（10GBASE-T SFP+ Module for CAT6A cables (up to 30 meters)）</div>
+</section>
+
+<section class="slide">
+  <h1>ストレートとクロス、Auto-MDIX</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="190" viewBox="0 0 400 190">
+        <g font-size="10.5" text-anchor="middle">
+          <text x="95" y="14" fill="#1f3a68" font-weight="700">ストレート</text>
+          <text x="300" y="14" fill="#b25000" font-weight="700">クロス</text>
+          <g fill="#1f3a68">
+            <text x="30" y="40">1</text><text x="30" y="62">2</text><text x="30" y="84">3</text><text x="30" y="106">6</text>
+            <text x="160" y="40">1</text><text x="160" y="62">2</text><text x="160" y="84">3</text><text x="160" y="106">6</text>
+            <text x="235" y="40">1</text><text x="235" y="62">2</text><text x="235" y="84">3</text><text x="235" y="106">6</text>
+            <text x="365" y="40">1</text><text x="365" y="62">2</text><text x="365" y="84">3</text><text x="365" y="106">6</text>
+          </g>
+          <line x1="40" y1="36" x2="150" y2="36" stroke="#1f3a68" stroke-width="2"/>
+          <line x1="40" y1="58" x2="150" y2="58" stroke="#1f3a68" stroke-width="2"/>
+          <line x1="40" y1="80" x2="150" y2="80" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="40" y1="102" x2="150" y2="102" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="245" y1="36" x2="355" y2="80" stroke="#b25000" stroke-width="2"/>
+          <line x1="245" y1="58" x2="355" y2="102" stroke="#b25000" stroke-width="2"/>
+          <line x1="245" y1="80" x2="355" y2="36" stroke="#f0b070" stroke-width="2"/>
+          <line x1="245" y1="102" x2="355" y2="58" stroke="#f0b070" stroke-width="2"/>
+          <text x="95" y="128" fill="#1f3a68" font-size="10">1→1、2→2（同じ番号）</text>
+          <text x="300" y="128" fill="#b25000" font-size="10">1→3、2→6（送受信を入れ替え）</text>
+          <rect x="10" y="142" width="170" height="40" rx="6" fill="#eef2f8" stroke="#5b80bf"/>
+          <text x="95" y="160" fill="#1f3a68" font-size="10">違う層：PC ⇔ スイッチ</text>
+          <text x="95" y="175" fill="#1f3a68" font-size="10">ルーター ⇔ スイッチ</text>
+          <rect x="215" y="142" width="170" height="40" rx="6" fill="#fff4e8" stroke="#b25000"/>
+          <text x="300" y="160" fill="#7a3a00" font-size="10">同じ層：スイッチ ⇔ スイッチ</text>
+          <text x="300" y="175" fill="#7a3a00" font-size="10">ルーター ⇔ ルーター、PC ⇔ PC</text>
+        </g>
+      </svg>
+      <div class="mini">この覚え方では <b>PC をレイヤ3</b> の機器として数える（Doc 10561）。図は 1・2・3・6 番の線だけを描いた。</div>
+    </div>
+    <div>
+      <div class="point"><b>見分け方：</b>両端のコネクタを、つめを奥にして並べる。片方の 1 本目の色が反対の端で <b>3 本目</b>、2 本目が <b>6 本目</b>ならクロス。</div>
+      <div class="box b2" style="margin-top:8px">Auto-MDIX<span>ポートが必要なケーブルの種類（ストレートかクロスか）を見分けて、送受信の線を自動で合わせる。<b>どちらのケーブルでもつながる</b>。Catalyst 9300・2960 とも<b>既定で有効</b>。</span></div>
+<pre class="cli small">Switch# show controllers ethernet-controller g1/0/1 phy
+<i>! Auto-MDIX が動いているかを見る</i></pre>
+      <div class="point warn"><b>落とし穴：</b>「スイッチどうしはクロス」は Auto-MDIX が<b>ない</b>ときの話。今の Catalyst は既定でどちらでもつながる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/lan-switching/ethernet/10561-3.html">Cisco Doc 10561</a> Appendix B・C（use a crossover cable when the two ports that are connected are in the same layer of the OSI model／treat a PC as a Layer 3 device／Auto-MDIX … detect the required cable connection type）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst2960/hardware/installation/guide/2960_hg/higcable.pdf">Catalyst 2960 HIG</a>（pin 1 at one end … is the third colored wire (pin 3) at the other end … pin 2 … is the sixth colored wire (pin 6)／The auto-MDIX feature is enabled by default）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/int_hw/b_179_int_and_hw_9300_cg/configuring_interface_characteristics.html">9300 CG 17.9「Configuring Interface Characteristics」</a>（Auto-MDIX: Enabled／show controllers ethernet-controller … phy）</div>
+</section>
+
+<section class="slide">
+  <h1>シングルモードとマルチモード</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">断面と光の通り方（太さは誇張。Claude が作成）</div>
+      <svg width="400" height="210" viewBox="0 0 400 210">
+        <g font-size="10.5" text-anchor="middle">
+          <text x="200" y="14" fill="#1f3a68" font-weight="700">シングルモード（SMF）コア 約 9 µm</text>
+          <rect x="20" y="24" width="360" height="40" rx="4" fill="#eef2f8" stroke="#5b80bf"/>
+          <rect x="20" y="40" width="360" height="8" fill="#ffd9a8"/>
+          <line x1="24" y1="44" x2="376" y2="44" stroke="#b25000" stroke-width="2"/>
+          <text x="200" y="80" fill="#1f3a68" font-size="10">通り道（モード）は 1 つ → ずれない → <tspan font-weight="700">km 単位</tspan></text>
+          <text x="200" y="110" fill="#1f3a68" font-weight="700">マルチモード（MMF）コア 50 µm・62.5 µm</text>
+          <rect x="20" y="120" width="360" height="56" rx="4" fill="#eef2f8" stroke="#5b80bf"/>
+          <rect x="20" y="128" width="360" height="40" fill="#ffd9a8"/>
+          <line x1="24" y1="148" x2="376" y2="148" stroke="#b25000" stroke-width="2"/>
+          <polyline points="24,148 64,130 104,166 144,130 184,166 224,130 264,166 304,130 344,166 376,152" fill="none" stroke="#1f3a68" stroke-width="1.5"/>
+          <polyline points="24,148 84,138 144,158 204,138 264,158 324,138 376,152" fill="none" stroke="#2e7d32" stroke-width="1.5"/>
+          <text x="200" y="196" fill="#1f3a68" font-size="10">通り道が多い → 着く時間がずれる → <tspan font-weight="700">数百 m</tspan></text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:26%"></th><th>シングルモード</th><th>マルチモード</th></tr>
+        <tr><td class="t">コア／クラッド</td><td>9／125 µm</td><td>50／125、62.5／125 µm</td></tr>
+        <tr><td class="t">主な波長</td><td>1310・1550 nm</td><td>850 nm（LX は 1310）</td></tr>
+        <tr><td class="t">距離</td><td><b>10 km</b>（LR・LX）〜 40 km（ER）</td><td><b>数百 m</b>（OM4 で SR 400 m）</td></tr>
+        <tr><td class="t">性能の表し方</td><td>―</td><td>モード帯域（MHz·km）</td></tr>
+        <tr><td class="t">使う所</td><td>建物の間・遠い拠点</td><td>建物の中・データセンター</td></tr>
+      </table>
+      <div class="point"><b>OM3 と OM4：</b>マルチモードの等級。モード帯域が OM3＝2000、OM4＝4700 MHz·km。同じ 10GBASE-SR でも、FDDI 級 26 m → OM3 300 m → OM4 400 m と延びる。</div>
+      <div class="mini">2960 HIG の表は「モード帯域はマルチモードだけにある」と注記している。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst2960/hardware/installation/guide/2960_hg/higcable.pdf">Catalyst 2960 HIG 表 B-1</a>（Core Size/Cladding Size: MMF 50/125・62.5/125、SMF G.652 mode-field diameter/cladding diameter = 9/125／Modal bandwidth applies only to multimode fiber）／<a class="src" href="https://www.cisco.com/c/en/us/products/collateral/interfaces-modules/transceiver-modules/data_sheet_c78-455693.html">Cisco 10GBASE SFP+ Data Sheet</a>（26 meters on standard FDDI-grade MMF … 2000 MHz*km MMF (OM3), up to 300 … 4700 MHz*km MMF (OM4), up to 400／10GBASE-LR … 10 kilometers on SMF／10GBASE-ER … up to 40 kilometers）</div>
+</section>
+
+<section class="slide">
+  <h1>光の規格をくらべる</h1>
+  <div class="cols wide-r">
+    <div>
+      <div class="cap">届く距離（目盛りは 10 倍ごと。Cisco データシートの値）</div>
+      <svg width="400" height="230" viewBox="0 0 400 230">
+        <g font-size="10" text-anchor="start">
+          <line x1="110" y1="10" x2="110" y2="200" stroke="#9fb0cf"/>
+          <line x1="185" y1="10" x2="185" y2="200" stroke="#dde5f2"/>
+          <line x1="260" y1="10" x2="260" y2="200" stroke="#dde5f2"/>
+          <line x1="335" y1="10" x2="335" y2="200" stroke="#dde5f2"/>
+          <text x="110" y="216" fill="#4a5a78" text-anchor="middle">10 m</text>
+          <text x="185" y="216" fill="#4a5a78" text-anchor="middle">100 m</text>
+          <text x="260" y="216" fill="#4a5a78" text-anchor="middle">1 km</text>
+          <text x="335" y="216" fill="#4a5a78" text-anchor="middle">10 km</text>
+          <text x="104" y="27" fill="#1f3a68" text-anchor="end">銅線 UTP</text><rect x="110" y="16" width="75" height="16" fill="#8fa8d6"/><text x="189" y="28" fill="#1f3a68">100 m</text>
+          <text x="104" y="51" fill="#1f3a68" text-anchor="end">1000BASE-SX</text><rect x="110" y="40" width="130" height="16" fill="#5b80bf"/><text x="244" y="52" fill="#1f3a68">550 m</text>
+          <text x="104" y="75" fill="#1f3a68" text-anchor="end">10GBASE-SR</text><rect x="110" y="64" width="120" height="16" fill="#5b80bf"/><text x="234" y="76" fill="#1f3a68">400 m（OM4）</text>
+          <text x="104" y="99" fill="#1f3a68" text-anchor="end">1000BASE-LX</text><rect x="110" y="88" width="225" height="16" fill="#b25000"/><text x="339" y="100" fill="#1f3a68">10 km</text>
+          <text x="104" y="123" fill="#1f3a68" text-anchor="end">10GBASE-LR</text><rect x="110" y="112" width="225" height="16" fill="#b25000"/><text x="339" y="124" fill="#1f3a68">10 km</text>
+          <text x="104" y="147" fill="#1f3a68" text-anchor="end">10GBASE-ER</text><rect x="110" y="136" width="270" height="16" fill="#7a3a00"/><text x="320" y="148" fill="#fff">40 km</text>
+          <text x="104" y="171" fill="#1f3a68" text-anchor="end">Twinax（DAC）</text><rect x="110" y="160" width="52" height="16" fill="#2e7d32"/><text x="166" y="172" fill="#1f3a68">1〜5 m（パッシブ）</text>
+          <rect x="120" y="184" width="10" height="8" fill="#5b80bf"/><text x="134" y="192" fill="#4a5a78" font-size="9">マルチモード</text>
+          <rect x="210" y="184" width="10" height="8" fill="#b25000"/><text x="224" y="192" fill="#4a5a78" font-size="9">シングルモード</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">規格</th><th>波長</th><th>ファイバー</th></tr>
+        <tr><td class="t">1000BASE-SX</td><td>850 nm</td><td>MMF 専用（62.5 µm 220 m、50 µm 550 m）</td></tr>
+        <tr><td class="t">1000BASE-LX/LH</td><td>1310 nm</td><td>SMF 10 km（MMF でも 550 m）</td></tr>
+        <tr><td class="t">10GBASE-SR</td><td>850 nm</td><td>MMF</td></tr>
+        <tr><td class="t">10GBASE-LR</td><td>1310 nm</td><td>SMF</td></tr>
+        <tr><td class="t">10GBASE-ER</td><td>1550 nm</td><td>SMF</td></tr>
+      </table>
+      <div class="point"><b>名前の読み方：</b>S＝Short（短い波長・短い距離）、L＝Long、E＝Extended。R＝Reach（到達距離）。<b>S はマルチモード、L・E はシングルモード</b>と覚える。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/products/collateral/interfaces-modules/gigabit-ethernet-gbic-sfp-modules/datasheet-c78-366584.html">Cisco SFP Modules for Gigabit Ethernet Data Sheet</a>（1000BASE-SX SFP for multimode fiber only … up to 550 m … 62.5 μm … up to 220 m／1000BASE-LX/LH … single-mode fiber-optic link spans of up to 10 km and up to 550 m on any multimode fibers）／<a class="src" href="https://www.cisco.com/c/en/us/products/collateral/interfaces-modules/transceiver-modules/data_sheet_c78-455693.html">Cisco 10GBASE SFP+ Data Sheet</a>（10GBASE-SR 850nm MMF／10GBASE-LR … 10 kilometers／10GBASE-ER … 40 kilometers／passive Twinax cables in lengths of 1 … 5 meters）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst2960/hardware/installation/guide/2960_hg/higcable.pdf">2960 HIG 表 B-1</a>（1000BASE-SX 850／LX/LH 1310）</div>
+</section>
+
+<section class="slide">
+  <h1>SFP・LC コネクタ・波長をそろえる</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="150" viewBox="0 0 400 150">
+        <g font-size="10.5" text-anchor="middle">
+          <rect x="10" y="30" width="120" height="60" rx="6" fill="#1f3a68"/><text x="70" y="55" fill="#fff">スイッチ A</text><text x="70" y="72" fill="#fff" font-size="9.5">SFP: SX</text>
+          <rect x="270" y="30" width="120" height="60" rx="6" fill="#1f3a68"/><text x="330" y="55" fill="#fff">スイッチ B</text><text x="330" y="72" fill="#fff" font-size="9.5">SFP: LX</text>
+          <line x1="130" y1="52" x2="270" y2="52" stroke="#b25000" stroke-width="2"/>
+          <line x1="130" y1="68" x2="270" y2="68" stroke="#b25000" stroke-width="2"/>
+          <text x="200" y="45" fill="#7a3a00" font-size="9.5">送信と受信の 2 本（Dual LC）</text>
+          <text x="200" y="88" fill="#c62828" font-weight="700">✕ リンクしない</text>
+          <rect x="60" y="110" width="280" height="30" rx="6" fill="#fff4e8" stroke="#b25000"/>
+          <text x="200" y="130" fill="#7a3a00">SX は SX と、LX は LX と。両端の規格をそろえる</text>
+        </g>
+      </svg>
+      <table class="mx">
+        <tr><th style="width:30%">モジュール</th><th>速度</th></tr>
+        <tr><td class="t">SFP</td><td>1 Gbps まで</td></tr>
+        <tr><td class="t">SFP+</td><td>10 Gbps まで</td></tr>
+        <tr><td class="t">SFP28</td><td>25 Gbps まで</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="box b1">SFP（差し込むトランシーバー）<span>ポートに差すモジュールで、光・銅線の種類を選べる。光は <b>LC コネクタ</b>、銅線の 1000BASE-T SFP は RJ-45。</span></div>
+      <div class="point"><b>SFP ポートの設定：</b>Catalyst 9300 の SFP（1 Gbps）・SFP+（10 Gbps）ポートで使えるのは 「speed nonegotiate」 と 「no speed nonegotiate」 だけ。<b>二重モードは設定できない</b>（1000BASE-T SFP などを除く）。</div>
+      <div class="point warn"><b>モード調整パッチコード：</b>LX/LH を<b>マルチモード</b>で使うと、受信側が飽和して誤りが増えることがある。62.5 µm の MMF では送受信の両端に入れ、<b>300 m を超える</b>リンクで必要。</div>
+      <div class="mini">Cisco の SFP+ 光モジュールは Dual LC で、PC か UPC 研磨のパッチコードだけに対応（APC は不可）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/switches/catalyst-6500-series-switches/12027-53.html">Cisco Doc 12027</a>（An SX GBIC needs to connect with an SX GBIC; an SX GBIC does not link with an LX GBIC）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst2960/hardware/installation/guide/2960_hg/higcable.pdf">2960 HIG</a>（Each port must match the wave-length specifications on the other end／mode-conditioning patch cord … on both the sending and receiving ends … greater than 984 feet (300 m)）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/int_hw/b_179_int_and_hw_9300_cg/configuring_interface_characteristics.html">9300 CG 17.9</a>（SFP modules … up to 1 Gbps, SFP+ … 10 Gbps; SFP28 … 25 Gbps／only no speed nonegotiate or speed nonegotiate. Duplex options are not supported）／<a class="src" href="https://www.cisco.com/c/en/us/products/collateral/interfaces-modules/transceiver-modules/data_sheet_c78-455693.html">SFP+ Data Sheet</a>（Dual LC/PC connector／APC connectors are not supported）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>共有メディアとポイントツーポイント</h1>
+  <p>みんなで 1 本を分け合うか、1 対 1 でつなぐか。</p>
+  <div class="foot"><span>CCNA #02 ケーブルとインタフェース</span><span>1.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>共有メディアと CSMA/CD</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">ハブ＝受けた信号を全ポートへそのまま出す（Claude が作成）</div>
+      <svg width="400" height="190" viewBox="0 0 400 190">
+        <g font-size="10.5" text-anchor="middle">
+          <rect x="150" y="80" width="100" height="34" rx="6" fill="#5b80bf"/><text x="200" y="101" fill="#fff">ハブ</text>
+          <rect x="20" y="10" width="70" height="28" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="55" y="29" fill="#1f3a68">PC1</text>
+          <rect x="310" y="10" width="70" height="28" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="345" y="29" fill="#1f3a68">PC2</text>
+          <rect x="20" y="150" width="70" height="28" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="55" y="169" fill="#1f3a68">PC3</text>
+          <rect x="310" y="150" width="70" height="28" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="345" y="169" fill="#1f3a68">PC4</text>
+          <line x1="90" y1="30" x2="160" y2="80" stroke="#b25000" stroke-width="2.5"/>
+          <line x1="310" y1="30" x2="240" y2="80" stroke="#b25000" stroke-width="2.5"/>
+          <line x1="90" y1="160" x2="160" y2="114" stroke="#1f3a68" stroke-width="1.5"/>
+          <line x1="310" y1="160" x2="240" y2="114" stroke="#1f3a68" stroke-width="1.5"/>
+          <text x="200" y="64" fill="#c62828" font-weight="700">同時に送った → 衝突</text>
+          <rect x="120" y="128" width="160" height="22" rx="4" fill="#fff4e8" stroke="#b25000"/>
+          <text x="200" y="143" fill="#7a3a00" font-size="10">全員で 1 つのコリジョンドメイン</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <ol class="steps">
+        <li><b>聞く</b>（Carrier Sense）：線に信号があれば送らない</li>
+        <li>空いていれば<b>送る</b>（Multiple Access：だれでも送れる）</li>
+        <li>最初の 64 バイトを送る間に別の信号が聞こえたら<b>衝突</b>と判断（Collision Detection）</li>
+        <li><b>バックオフ</b>：ランダムな時間待って送り直す</li>
+      </ol>
+      <div class="point"><b>共有メディア：</b>何台もの機器が 1 本の通り道を分け合う。一度に送れるのは <b>1 台だけ</b>（半二重）。昔の同軸のバス（10Base5・10Base2）や、ハブを中心にした 10BaseT のスター。</div>
+      <div class="point warn"><b>全二重では CSMA/CD を使わない。</b>ポイントツーポイントで衝突が起きないから。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/en/US/docs/internetworking/troubleshooting/guide/tr1904.pdf">Internetworking Troubleshooting Handbook Ch.4 Troubleshooting Ethernet</a>（Before sending data, CSMA/CD stations "listen" … A collision occurs when two stations listen for network traffic, "hear" none, and transmit simultaneously／If a station "hears" another signal on the wire while transmitting the first 64 bytes of a frame, it should recognize that its frame has collided／When Ethernet is operated in full-duplex mode, CSMA/CD is not used／表 4-3 Topology: Bus・Star）</div>
+</section>
+
+<section class="slide">
+  <h1>コリジョンドメインとバックオフ</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="200" viewBox="0 0 400 200">
+        <g font-size="10.5" text-anchor="middle">
+          <text x="100" y="14" fill="#1f3a68" font-weight="700">ハブ：1 つ</text>
+          <rect x="10" y="22" width="180" height="120" rx="10" fill="#fff4e8" stroke="#b25000" stroke-dasharray="5 3"/>
+          <rect x="70" y="64" width="60" height="26" rx="5" fill="#5b80bf"/><text x="100" y="81" fill="#fff">ハブ</text>
+          <circle cx="40" cy="44" r="10" fill="#1f3a68"/><circle cx="160" cy="44" r="10" fill="#1f3a68"/>
+          <circle cx="40" cy="116" r="10" fill="#1f3a68"/><circle cx="160" cy="116" r="10" fill="#1f3a68"/>
+          <line x1="48" y1="50" x2="74" y2="66" stroke="#1f3a68"/><line x1="152" y1="50" x2="126" y2="66" stroke="#1f3a68"/>
+          <line x1="48" y1="110" x2="74" y2="90" stroke="#1f3a68"/><line x1="152" y1="110" x2="126" y2="90" stroke="#1f3a68"/>
+          <text x="300" y="14" fill="#1f3a68" font-weight="700">スイッチ：ポートごと</text>
+          <rect x="270" y="64" width="60" height="26" rx="5" fill="#1f3a68"/><text x="300" y="81" fill="#fff">スイッチ</text>
+          <rect x="216" y="28" width="44" height="34" rx="8" fill="#eef2f8" stroke="#5b80bf" stroke-dasharray="4 3"/><circle cx="238" cy="45" r="9" fill="#1f3a68"/>
+          <rect x="340" y="28" width="44" height="34" rx="8" fill="#eef2f8" stroke="#5b80bf" stroke-dasharray="4 3"/><circle cx="362" cy="45" r="9" fill="#1f3a68"/>
+          <rect x="216" y="96" width="44" height="34" rx="8" fill="#eef2f8" stroke="#5b80bf" stroke-dasharray="4 3"/><circle cx="238" cy="113" r="9" fill="#1f3a68"/>
+          <rect x="340" y="96" width="44" height="34" rx="8" fill="#eef2f8" stroke="#5b80bf" stroke-dasharray="4 3"/><circle cx="362" cy="113" r="9" fill="#1f3a68"/>
+          <line x1="246" y1="50" x2="272" y2="66" stroke="#1f3a68"/><line x1="354" y1="50" x2="328" y2="66" stroke="#1f3a68"/>
+          <line x1="246" y1="108" x2="272" y2="90" stroke="#1f3a68"/><line x1="354" y1="108" x2="328" y2="90" stroke="#1f3a68"/>
+          <text x="100" y="162" fill="#7a3a00" font-size="10">共有の LAN 全体が 1 つ</text>
+          <text x="300" y="150" fill="#1f3a68" font-size="10">ポートごとに分かれる</text>
+          <text x="300" y="166" fill="#1f3a68" font-size="10">全二重なら衝突そのものがない</text>
+        </g>
+      </svg>
+      <div class="mini">tr1904：「リピーターでつないだイーサネットの LAN …この共有の LAN の別名が<b>コリジョンドメイン</b>」。図は Claude が作成。</div>
+    </div>
+    <div>
+      <div class="cap">バックオフ：n 回目の衝突のあと 0〜2ⁿ−1 スロットからランダム</div>
+      <table class="mx">
+        <tr><th style="width:30%">衝突の回数 n</th><th>2ⁿ</th><th>待つスロットタイム</th></tr>
+        <tr><td class="t">1</td><td>2</td><td>0 か 1</td></tr>
+        <tr><td class="t">2</td><td>4</td><td>0〜3</td></tr>
+        <tr><td class="t">3</td><td>8</td><td>0〜7</td></tr>
+        <tr><td class="t">4</td><td>16</td><td>0〜15</td></tr>
+      </table>
+      <div class="formula" style="font-size:16px">待つ数 ＝ 0〜(2ⁿ − 1) の中からランダム</div>
+      <div class="point"><b>なぜランダム？</b>全員が同じだけ待つと、また同時に送って衝突するから。衝突が重なるほど範囲を広げる。</div>
+      <div class="point warn"><b>16 回続けて衝突</b>すると、そのフレームはあきらめて捨てる（Excess-Col）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/en/US/docs/internetworking/troubleshooting/guide/tr1904.pdf">Internetworking Troubleshooting Handbook Ch.4</a>（Another name for this shared LAN is a collision domain／based on the value of 2n, where n is the number of collisions／表 4-2: Stations randomly wait zero, one, two, or three slot times … from zero to seven slot times）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/switches/catalyst-6500-series-switches/12027-53.html">Cisco Doc 12027</a>（An excessive collision happens when a packet has a collision 16 times in a row. The packet is then dropped）</div>
+</section>
+
+<section class="slide">
+  <h1>半二重と全二重</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="180" viewBox="0 0 400 180">
+        <g font-size="10.5" text-anchor="middle">
+          <text x="200" y="14" fill="#1f3a68" font-weight="700">半二重：片方ずつ（交互）</text>
+          <rect x="10" y="22" width="70" height="40" rx="5" fill="#1f3a68"/><text x="45" y="47" fill="#fff">A</text>
+          <rect x="320" y="22" width="70" height="40" rx="5" fill="#1f3a68"/><text x="355" y="47" fill="#fff">B</text>
+          <line x1="80" y1="42" x2="320" y2="42" stroke="#9fb0cf" stroke-width="8"/>
+          <polygon points="250,34 270,42 250,50" fill="#b25000"/><line x1="130" y1="42" x2="252" y2="42" stroke="#b25000" stroke-width="3"/>
+          <text x="200" y="76" fill="#4a5a78" font-size="10">A が送る間、B は待つ（CSMA/CD）</text>
+          <text x="200" y="104" fill="#1f3a68" font-weight="700">全二重：同時に送受信</text>
+          <rect x="10" y="112" width="70" height="40" rx="5" fill="#1f3a68"/><text x="45" y="137" fill="#fff">A</text>
+          <rect x="320" y="112" width="70" height="40" rx="5" fill="#1f3a68"/><text x="355" y="137" fill="#fff">B</text>
+          <line x1="80" y1="124" x2="300" y2="124" stroke="#b25000" stroke-width="3"/><polygon points="298,118 312,124 298,130" fill="#b25000"/>
+          <line x1="100" y1="140" x2="320" y2="140" stroke="#2e7d32" stroke-width="3"/><polygon points="102,134 88,140 102,146" fill="#2e7d32"/>
+          <text x="200" y="170" fill="#4a5a78" font-size="10">送る線と受ける線が別 → 衝突しない</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:26%"></th><th>半二重</th><th>全二重</th></tr>
+        <tr><td class="t">送受信</td><td>どちらか一方</td><td><b>同時</b></td></tr>
+        <tr><td class="t">つなぎ方</td><td>ハブ（共有）</td><td><b>1 対 1</b>（スイッチ、またはクロスで直結）</td></tr>
+        <tr><td class="t">CSMA/CD</td><td>使う</td><td>使わない</td></tr>
+        <tr><td class="t">衝突</td><td>起きるのがふつう</td><td>起きてはいけない</td></tr>
+        <tr><td class="t">9300 で</td><td>10・100 Mbps だけ</td><td>すべての速度</td></tr>
+      </table>
+      <div class="point"><b>ポイントツーポイント：</b>2 台だけを 1 本のリンクでつなぐ。今のイーサネット（スイッチのポートと PC、スイッチどうし）はほとんどこれで、全二重で動く。</div>
+      <div class="point warn"><b>1000 Mbps 以上では半二重を使えない</b>（9300）。マルチギガビットのポートは auto と full だけ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/en/US/docs/internetworking/troubleshooting/guide/tr1904.pdf">Internetworking Troubleshooting Handbook Ch.4</a> Full-Duplex Operation（Full-duplex mode allows stations to transmit and receive data simultaneously … can function only with Ethernet switching hubs or via Ethernet cross-over cables … expects links to be point-to-point links. There are also no collisions in full-duplex mode）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/int_hw/b_179_int_and_hw_9300_cg/configuring_interface_characteristics.html">9300 CG 17.9</a>（Gigabit Ethernet ports operating at 1000 Mb/s and above do not support half-duplex mode／Multigigabit ethernet ports … only support auto and full duplex mode）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/switches/catalyst-6500-series-switches/12027-53.html">Doc 12027</a>（Collisions must not be seen on interfaces configured as full duplex）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>速度と二重モード</h1>
+  <p>両端の設定が食い違うと、何が起きるか。</p>
+  <div class="foot"><span>CCNA #02 ケーブルとインタフェース</span><span>1.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>オートネゴシエーションとパラレル検出</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="200" viewBox="0 0 400 200">
+        <g font-size="10.5" text-anchor="middle">
+          <text x="200" y="14" fill="#1f3a68" font-weight="700">両側 auto：FLP でできることを伝え合う</text>
+          <rect x="10" y="22" width="90" height="36" rx="5" fill="#1f3a68"/><text x="55" y="44" fill="#fff">PC（auto）</text>
+          <rect x="300" y="22" width="90" height="36" rx="5" fill="#1f3a68"/><text x="345" y="44" fill="#fff">SW（auto）</text>
+          <line x1="100" y1="34" x2="300" y2="34" stroke="#2e7d32" stroke-width="2" stroke-dasharray="5 3"/>
+          <line x1="100" y1="48" x2="300" y2="48" stroke="#2e7d32" stroke-width="2" stroke-dasharray="5 3"/>
+          <text x="200" y="74" fill="#2e7d32" font-size="10">両方ができる最もよい組み合わせ → 1000／全二重</text>
+          <text x="200" y="108" fill="#b25000" font-weight="700">片側だけ固定：相手の能力が分からない</text>
+          <rect x="10" y="116" width="90" height="36" rx="5" fill="#1f3a68"/><text x="55" y="132" fill="#fff" font-size="9.5">PC</text><text x="55" y="146" fill="#fff" font-size="9.5">100／全二重 固定</text>
+          <rect x="300" y="116" width="90" height="36" rx="5" fill="#1f3a68"/><text x="345" y="138" fill="#fff">SW（auto）</text>
+          <line x1="100" y1="134" x2="300" y2="134" stroke="#b25000" stroke-width="2"/>
+          <text x="200" y="128" fill="#7a3a00" font-size="9.5">FLP が来ない</text>
+          <text x="200" y="170" fill="#7a3a00" font-size="10">速度は信号から分かる（パラレル検出）→ 100</text>
+          <text x="200" y="188" fill="#c62828" font-size="10" font-weight="700">二重モードは分からない → 半二重 → 食い違い</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>PC の設定</th><th>スイッチ</th><th>結果</th></tr>
+        <tr><td class="t">auto</td><td>auto</td><td>1000／全二重</td></tr>
+        <tr><td class="t">100／全 固定</td><td>auto</td><td style="color:#c62828"><b>二重モードの不一致</b>（SW は 100／半）</td></tr>
+        <tr><td class="t">100／全 固定</td><td>100／全 固定</td><td>正しい手動設定</td></tr>
+        <tr><td class="t">100／全 固定</td><td>1000／全 固定</td><td style="color:#c62828"><b>リンクしない</b>（速度の不一致）</td></tr>
+        <tr><td class="t">10／半 固定</td><td>auto</td><td>10／半（FLP なし）</td></tr>
+        <tr><td class="t">1000／全 固定</td><td>auto</td><td>1000／全（1000 は全二重だけ）</td></tr>
+      </table>
+      <div class="point"><b>Cisco の勧め：</b>両側とも <b>auto</b>、または両側とも<b>同じ値に固定</b>。片側だけ固定しない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/switches/catalyst-6500-series-switches/17053-46.html">Cisco Doc 17053</a> 表 1 Autonegotiation Valid Configuration（defaults to half-duplex when operating at 10/100 Mbps／Neither side establishes link, due to speed mismatch）／<a class="src" href="https://www.cisco.com/en/US/docs/internetworking/troubleshooting/guide/tr1904.pdf">Handbook Ch.4</a>（fast link pulses … employed in the autonegotiation process to advertise a device's capabilities／parallel detection … when autonegotiation fails）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/switches/catalyst-6500-series-switches/12027-53.html">Doc 12027</a>（Always set both sides of the connection to auto-negotiate speed/duplex or set the speed/duplex manually on both sides）</div>
+</section>
+
+<section class="slide">
+  <h1>speed・duplex の設定と確かめ方</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">Switch(config)# interface gigabitethernet1/0/3
+Switch(config-if)# speed 100        <i>! 速度を固定</i>
+Switch(config-if)# duplex full      <i>! 二重モードを固定</i>
+<i>! 元に戻すなら</i>
+Switch(config-if)# speed auto
+Switch(config-if)# duplex auto</pre>
+      <table class="mx">
+        <tr><th style="width:36%">書き方</th><th>意味</th></tr>
+        <tr><td class="t">speed auto</td><td>自動交渉（既定）</td></tr>
+        <tr><td class="t">speed auto 100 1000</td><td>並べた速度の中でだけ交渉</td></tr>
+        <tr><td class="t">speed nonegotiate</td><td>SFP ポート用：交渉しない</td></tr>
+        <tr><td class="t">duplex half</td><td>10・100 Mbps のときだけ</td></tr>
+      </table>
+    </div>
+    <div>
+<pre class="cli small">Switch# show interfaces fa6/1 status
+Port   Name  Status     Vlan  Duplex  Speed  Type
+Fa6/1        connected  1     <b>a-full  a-100</b>  10/100BaseTX</pre>
+      <div class="point"><b>「a-」の意味：</b>auto の設定で決まった値。a がなければ手で固定した値。<b>「show interfaces」だけ</b>では、自動で決まったかどうか分からない。</div>
+      <div class="point warn"><b>落とし穴：</b>速度を固定すると、速度と二重モードの自動交渉が止まる（Doc 10561）。片側だけ速度を固定すると、もう片側の二重モードが半二重に落ちうる。</div>
+      <div class="mini">設定を変えると、インタフェースが一度落ちて上がることがある（9300 CG の Caution）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/int_hw/b_179_int_and_hw_9300_cg/configuring_interface_characteristics.html">9300 CG 17.9「Setting the Interface Speed and Duplex Parameters」</a>（If you specify a speed and also set the auto keyword, the port autonegotiates only at the specified speeds／The nonegotiate keyword is available only for SFP module ports／Enables half-duplex mode (for interfaces operating only at 10 or 100 Mb/s)／Changing the interface speed and duplex mode configuration might shut down and re-enable the interface）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/lan-switching/ethernet/10561-3.html">Doc 10561</a>（If you hard code the speed on a port, it disables all auto-negotiation functionality on the port for speed and duplex／Look for the a prefix）</div>
+</section>
+
+<section class="slide">
+  <h1>二重モードの不一致と速度の不一致</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="210" viewBox="0 0 400 210">
+        <g font-size="10.5" text-anchor="middle">
+          <text x="200" y="14" fill="#1f3a68" font-weight="700">二重モードの不一致：つながるが遅い</text>
+          <rect x="10" y="22" width="110" height="40" rx="5" fill="#1f3a68"/><text x="65" y="38" fill="#fff">全二重の側</text><text x="65" y="53" fill="#fff" font-size="9.5">待たずに送る</text>
+          <rect x="280" y="22" width="110" height="40" rx="5" fill="#b25000"/><text x="335" y="38" fill="#fff">半二重の側</text><text x="335" y="53" fill="#fff" font-size="9.5">衝突だと思う</text>
+          <line x1="120" y1="42" x2="280" y2="42" stroke="#2e7d32" stroke-width="3"/>
+          <text x="200" y="36" fill="#2e7d32" font-size="9.5">リンクは up/up</text>
+          <text x="65" y="80" fill="#1f3a68" font-size="10">ラントが増える</text>
+          <text x="335" y="80" fill="#7a3a00" font-size="10">レイトコリジョン</text>
+          <text x="335" y="95" fill="#7a3a00" font-size="10">FCS・アラインメント</text>
+          <text x="200" y="130" fill="#1f3a68" font-weight="700">速度の不一致：つながらない</text>
+          <rect x="10" y="140" width="110" height="40" rx="5" fill="#1f3a68"/><text x="65" y="164" fill="#fff">10 Mbps 固定</text>
+          <rect x="280" y="140" width="110" height="40" rx="5" fill="#1f3a68"/><text x="335" y="164" fill="#fff">100 Mbps 固定</text>
+          <line x1="120" y1="160" x2="280" y2="160" stroke="#9fb0cf" stroke-width="3" stroke-dasharray="6 4"/>
+          <text x="200" y="154" fill="#c62828" font-weight="700">✕</text>
+          <text x="200" y="198" fill="#c62828" font-size="10">どちらの側もリンクしない（notconnect）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:24%"></th><th>二重モード</th><th>速度</th></tr>
+        <tr><td class="t">リンク</td><td>上がる（connected）</td><td><b>上がらない</b></td></tr>
+        <tr><td class="t">症状</td><td>とても遅い・ときどき切れる</td><td>通信できない</td></tr>
+        <tr><td class="t">カウンタ</td><td>半二重側：レイトコリジョン・FCS／全二重側：ラント</td><td>―</td></tr>
+        <tr><td class="t">よくある原因</td><td>片側だけ固定</td><td>両側を違う速度に固定</td></tr>
+      </table>
+<pre class="cli small">%CDP-4-DUPLEX_MISMATCH: duplex mismatch discovered
+ on FastEthernet6/2 (not half duplex), with ... (half duplex).</pre>
+      <div class="point"><b>CDP は知らせるだけ：</b>隣の Cisco 機器と設定を比べて不一致を見つけるが、<b>直しはしない</b>。両側の設定をそろえる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/lan-switching/ethernet/10561-3.html">Doc 10561</a>（Another indication of a duplex mismatch is the rapid increase of FCS and alignment errors on the half-duplex side, and runts on the full-duplex port／CDP does not attempt to resolve the mismatch）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/switches/catalyst-6500-series-switches/12027-53.html">Doc 12027</a>（the late collision is seen on the half-duplex side … the full duplex side does not wait its turn）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/switches/catalyst-6500-series-switches/17053-46.html">Doc 17053</a>（Speed determination issues can result in no connectivity. However, issues with autonegotiation of duplex generally do not result in link establishment issues）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>インタフェースの状態とエラー</h1>
+  <p>show interfaces の数字から、原因を見分ける。</p>
+  <div class="foot"><span>CCNA #02 ケーブルとインタフェース</span><span>1.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>状態を見分ける</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">1 行目の読み方（Claude が作成）</div>
+      <svg width="400" height="220" viewBox="0 0 400 220">
+        <g font-size="10.5" text-anchor="middle">
+          <rect x="120" y="6" width="160" height="30" rx="6" fill="#1f3a68"/><text x="200" y="25" fill="#fff">show interfaces の 1 行目</text>
+          <line x1="200" y1="36" x2="200" y2="50" stroke="#1f3a68" stroke-width="1.5"/>
+          <rect x="100" y="50" width="200" height="28" rx="6" fill="#eef2f8" stroke="#5b80bf"/><text x="200" y="68" fill="#1f3a68">administratively down？</text>
+          <line x1="300" y1="64" x2="320" y2="64" stroke="#b25000" stroke-width="1.5"/>
+          <rect x="320" y="50" width="74" height="28" rx="5" fill="#b25000"/><text x="357" y="68" fill="#fff" font-size="9.5">no shutdown</text>
+          <line x1="200" y1="78" x2="200" y2="92" stroke="#1f3a68" stroke-width="1.5"/>
+          <rect x="100" y="92" width="200" height="28" rx="6" fill="#eef2f8" stroke="#5b80bf"/><text x="200" y="110" fill="#1f3a68">down/down（notconnect）？</text>
+          <line x1="300" y1="106" x2="320" y2="106" stroke="#b25000" stroke-width="1.5"/>
+          <rect x="320" y="92" width="74" height="28" rx="5" fill="#b25000"/><text x="357" y="104" fill="#fff" font-size="9">ケーブル・</text><text x="357" y="115" fill="#fff" font-size="9">相手・速度</text>
+          <line x1="200" y1="120" x2="200" y2="134" stroke="#1f3a68" stroke-width="1.5"/>
+          <rect x="100" y="134" width="200" height="28" rx="6" fill="#eef2f8" stroke="#5b80bf"/><text x="200" y="152" fill="#1f3a68">err-disabled？</text>
+          <line x1="300" y1="148" x2="320" y2="148" stroke="#b25000" stroke-width="1.5"/>
+          <rect x="320" y="134" width="74" height="28" rx="5" fill="#b25000"/><text x="357" y="152" fill="#fff" font-size="9.5">show logging</text>
+          <line x1="200" y1="162" x2="200" y2="176" stroke="#1f3a68" stroke-width="1.5"/>
+          <rect x="100" y="176" width="200" height="28" rx="6" fill="#2e7d32"/><text x="200" y="194" fill="#fff">up/up → カウンタを見る</text>
+          <text x="50" y="68" fill="#4a5a78" font-size="9.5">管理者が止めた</text>
+          <text x="50" y="110" fill="#4a5a78" font-size="9.5">物理でつながらない</text>
+          <text x="50" y="152" fill="#4a5a78" font-size="9.5">スイッチが止めた</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:42%">表示</th><th>意味</th></tr>
+        <tr><td class="t">up, line protocol is up</td><td>最初の up＝<b>物理層</b>、line protocol＝<b>データリンク層</b>（キープアライブを送受信できる）</td></tr>
+        <tr><td class="t">administratively down</td><td>管理者が <b>shutdown</b> で止めた。故障ではない</td></tr>
+        <tr><td class="t">down, down（notconnect）</td><td>ケーブルが抜けた・壊れた、相手が止まっている</td></tr>
+        <tr><td class="t">err-disabled</td><td>スイッチがエラーを見つけて<b>自動で</b>止めた（レイトコリジョンの多発など）</td></tr>
+      </table>
+      <div class="point warn"><b>落とし穴：</b>二重モードの不一致は <b>up/up のまま</b>起きる。up/up でもエラーのカウンタが増えていれば問題がある。</div>
+      <div class="mini">err-disabled の一覧は 「show interfaces status err-disabled」。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/switches/catalyst-6500-series-switches/12027-53.html">Cisco Doc 12027</a>（The first up refers to the physical layer status … The line protocol up message shows the data link layer status／down, line protocol is down (notconnect) … A cable is not properly connected … The connected cable is faulty … Other end of the cable is not connected to an active port／software processes inside the switch can shut down a port … errdisable／late collisions … can place the port in an errdisable status）／<a class="src" href="https://www.cisco.com/en/US/docs/internetworking/troubleshooting/guide/tr1915.pdf">Handbook Ch.15 表 15-9</a>（administratively down … taken down by an administrator）</div>
+</section>
+
+<section class="slide">
+  <h1>show interfaces のカウンタを読む</h1>
+  <div class="cols wide-r">
+    <div>
+<pre class="cli small">FastEthernet6/1 is up, line protocol is up
+  Full-duplex, 100Mb/s
+  <b>Total output drops: 0</b>
+  Received 1117035 broadcasts, <b>0 runts, 0 giants</b>
+  <b>0 input errors, 0 CRC</b>, 0 frame, 0 overrun
+  0 output errors, <b>0 collisions</b>, 2 interface resets
+  <b>0 late collision</b>, 0 deferred</pre>
+      <div class="mini">Doc 12027 の例を短くした。</div>
+      <div class="point"><b>全二重なら</b> CRC・ラント・衝突は<b>ほぼ 0</b>。増えたら二重の不一致かケーブル。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:24%">カウンタ</th><th>中身</th><th style="width:34%">よくある原因</th></tr>
+        <tr><td class="t">CRC</td><td>FCS が計算と合わない</td><td>ケーブル・NIC、衝突、二重の不一致</td></tr>
+        <tr><td class="t">runts</td><td><b>64 バイト未満</b>で CRC も不正</td><td>二重の不一致、ケーブル</td></tr>
+        <tr><td class="t">giants</td><td><b>1518 バイト超</b>で FCS も不正</td><td>NIC の故障</td></tr>
+        <tr><td class="t">input errors</td><td>受信エラーの合計（runts・giants・CRC など）</td><td>中身を見て分ける</td></tr>
+        <tr><td class="t">collisions</td><td>送信中の衝突</td><td>全二重で出たら不一致</td></tr>
+        <tr><td class="t">late collision</td><td>512 ビットの<b>あと</b>の衝突</td><td>二重の不一致、長すぎる線</td></tr>
+        <tr><td class="t">output drops</td><td>出力のキューがいっぱいで捨てた</td><td><b>速い→遅い</b>リンク</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/switches/catalyst-6500-series-switches/12027-53.html">Cisco Doc 12027</a> Table 1（CRC: the received CRC does not match／Giants: exceed the maximum IEEE 802.3 frame size (1518 bytes for non-jumbo Ethernet) and have a bad FCS／Input errors: This includes runts, giants, no buffer, CRC, frame, overrun, and ignored／Late-Col: a collision is detected … late in the transmission process. For a 10 Mbit/s port this is later than 512 bit-times／Runts: smaller than … 64 bytes … with a bad CRC／Total output drops … the output queue is full）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/switches/catalyst-6500-series-switches/17053-46.html">Doc 17053</a>（When operating at full-duplex, FCS, CRC, alignment errors, and runt counters are probably minimal）</div>
+</section>
+
+<section class="slide">
+  <h1>問われ方とまちがえやすい点</h1>
+  <table class="mx">
+    <tr><th style="width:40%">こう聞かれたら</th><th>答えの考え方</th></tr>
+    <tr><td class="t">10 km 先とつなぐ</td><td style="text-align:left"><b>シングルモード</b>＋ LX／LR。マルチモードは数百 m、銅線は 100 m</td></tr>
+    <tr><td class="t">Auto-MDIX なしでスイッチどうし</td><td style="text-align:left"><b>クロス</b>（同じ層）。PC ⇔ スイッチは<b>ストレート</b>（違う層）</td></tr>
+    <tr><td class="t">ハブに 6 台：コリジョンドメインは？</td><td style="text-align:left"><b>1 つ</b>（スイッチならポートごと）</td></tr>
+    <tr><td class="t">つながるが遅い、レイトコリジョン</td><td style="text-align:left"><b>二重モードの不一致</b>。レイトコリジョンが出るのは<b>半二重</b>の側</td></tr>
+    <tr><td class="t">リンクが上がらない（両側固定）</td><td style="text-align:left"><b>速度の不一致</b>（または光の規格が合わない・ケーブル）</td></tr>
+    <tr><td class="t">片側 auto・片側 100/full 固定</td><td style="text-align:left">auto 側は速度だけ合わせて<b>半二重</b> → 二重モードの不一致</td></tr>
+    <tr><td class="t">administratively down</td><td style="text-align:left"><b>no shutdown</b>。ケーブルの問題ではない</td></tr>
+    <tr><td class="t">output drops だけ増える</td><td style="text-align:left">混雑（速い→遅い）。CRC が 0 なら物理の問題ではない</td></tr>
+  </table>
+  <div class="point warn"><b>取り違えやすい組：</b>ラント（小さい）⇔ ジャイアント（大きい）／collision（ふつうの衝突）⇔ late collision（遅い衝突）／SX・SR（MMF）⇔ LX・LR（SMF）。</div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">銅線（1.3）<span>UTP は 100 m まで。1000BASE-T は 4 対。ストレート＝違う層、クロス＝同じ層、Auto-MDIX はどちらでも（既定で有効）</span></div>
+      <div class="box b2">光（1.3）<span>SMF＝細いコア・km 単位（LX・LR・ER）、MMF＝太いコア・数百 m（SX・SR）。両端の規格をそろえる。SFP／SFP+／Twinax</span></div>
+      <div class="box b3">共有とポイントツーポイント（1.3）<span>ハブ＝半二重・CSMA/CD・1 つのコリジョンドメイン。1 対 1＝全二重・衝突なし</span></div>
+      <div class="box b4">問題の見分け方（1.4）<span>速度の不一致＝つながらない、二重の不一致＝遅い＋レイトコリジョン。状態とカウンタで原因をしぼる</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:48%">数字</th><th>中身</th></tr>
+        <tr><td class="t">銅線の 1 区間</td><td><b>100 m</b></td></tr>
+        <tr><td class="t">SX（50 µm）／LX（SMF）</td><td><b>550 m／10 km</b></td></tr>
+        <tr><td class="t">SR（OM3／OM4）</td><td><b>300 m／400 m</b></td></tr>
+        <tr><td class="t">ラント／ジャイアント</td><td><b>64 未満／1518 超</b>（バイト）</td></tr>
+        <tr><td class="t">レイトコリジョン</td><td><b>512 ビット</b>のあと</td></tr>
+        <tr><td class="t">Excess-Col</td><td><b>16 回</b>続けて衝突</td></tr>
+      </table>
+      <div class="point"><b>次の分野：</b>#03 TCP・UDP と端末の IP 設定で、ポート番号と、PC の IP アドレス・ゲートウェイ・DNS の確かめ方を読む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

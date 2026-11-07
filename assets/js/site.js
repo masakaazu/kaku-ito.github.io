@@ -83,6 +83,10 @@
 
   const prepare = (catalog) => {
     const fieldByNo = new Map(catalog.fields.map((f) => [f.no, f]));
+    // 資格ごとの分野（topics に fields・groups があればそれを使う。なければ情報処理試験のシラバス）
+    const fieldsOf = (topic) => (catalog.topics[topic] && catalog.topics[topic].fields) || catalog.fields;
+    const groupsOf = (topic) => (catalog.topics[topic] && catalog.topics[topic].groups) || catalog.groups;
+    const fieldOf = (topic, no) => fieldsOf(topic).find((f) => f.no === no);
     const typeOrder = Object.keys(catalog.types);
     const items = [];
     Object.entries(catalog.materials).forEach(([topic, list]) => {
@@ -100,7 +104,7 @@
         });
       });
     });
-    return { ...catalog, fieldByNo, typeOrder, items };
+    return { ...catalog, fieldByNo, fieldsOf, groupsOf, fieldOf, typeOrder, items };
   };
 
   const itemsOf = (site, topic, filter = () => true) => site.items.filter((m) => m.topic === topic && filter(m));
@@ -126,7 +130,7 @@
 
     Object.entries(site.topics).forEach(([topic, info]) => {
       add(`${topic}/index.html`, info.short, "index.html");
-      site.fields.forEach((field) => add(fieldPath(topic, field.no), fieldLabel(field), `${topic}/index.html`));
+      site.fieldsOf(topic).forEach((field) => add(fieldPath(topic, field.no), fieldLabel(field), `${topic}/index.html`));
       add(`${topic}/notes/index.html`, "ノート一覧", `${topic}/index.html`);
       if (topic === "ap") add(`${topic}/exam.html`, "午前の模擬試験", `${topic}/index.html`);
 
@@ -544,9 +548,10 @@
     "field-map": (site, el) => {
       const topic = el.dataset.topic;
       const items = itemsOf(site, topic);
-      return site.groups
+      return site
+        .groupsOf(topic)
         .map((group) => {
-          const fields = site.fields.filter((f) => f.group === group.id);
+          const fields = site.fieldsOf(topic).filter((f) => f.group === group.id);
           const tiles = fields
             .map((field) => {
               const inField = items.filter((m) => m.fields.includes(field.no));
@@ -573,7 +578,7 @@
           return `
         <div class="field-group">
           <div class="field-group-title">
-            <h3>${escapeHtml(group.name)}</h3>
+            <h3>${escapeHtml(group.name)}${group.weight ? ` <small>出題 ${escapeHtml(group.weight)}</small>` : ""}</h3>
             <span>${filled} / ${fields.length} 分野</span>
           </div>
           <div class="field-grid">${tiles}</div>
@@ -585,7 +590,7 @@
     /* 中分類ページ：型ごとの教材 */
     field: (site, el) => {
       const topic = el.dataset.topic;
-      const field = site.fieldByNo.get(Number(query.get("f")));
+      const field = site.fieldOf(topic, Number(query.get("f")));
       if (!field) return `<p class="empty">分野が見つかりません。<a href="${url(`${topic}/index.html`)}">分野マップに戻る</a></p>`;
       const inField = itemsOf(site, topic, (m) => m.fields.includes(field.no));
       if (!inField.length) return `<p class="empty">この分野の教材はまだありません。</p>`;
@@ -618,7 +623,7 @@
       if (!list.length) return `<p class="empty">まだありません。</p>`;
       return `<div class="list">${list
         .map((m) => {
-          const field = site.fieldByNo.get(m.fields[0]);
+          const field = site.fieldOf(m.topic, m.fields[0]);
           return materialRow(site, m, `${site.types[m.type].label}${field ? `・${field.name}` : ""}`);
         })
         .join("")}</div>`;
@@ -660,6 +665,11 @@
         .join("")}</div>`,
   };
 
+  const pageTopic = () => {
+    const el = document.querySelector("[data-topic]");
+    return el ? el.dataset.topic : currentPath().split("/")[0];
+  };
+
   /* data-site-text="ap:exam" のように「資格:項目」で書く */
   const texts = {
     exam: (site, topic) => examText(site.topics[topic]),
@@ -671,16 +681,16 @@
     days: (site, topic) => `${Object.keys(site.topics[topic].days || {}).length}日分`,
     fields: (site, topic) => {
       const used = new Set(itemsOf(site, topic).flatMap((m) => m.fields));
-      return `${used.size} / ${site.fields.length} 分野`;
+      return `${used.size} / ${site.fieldsOf(topic).length} 分野`;
     },
     "field-name": (site) => {
-      const field = site.fieldByNo.get(Number(query.get("f")));
+      const field = site.fieldOf(pageTopic(), Number(query.get("f")));
       return field ? field.name : "分野";
     },
     "field-label": (site) => {
-      const field = site.fieldByNo.get(Number(query.get("f")));
+      const field = site.fieldOf(pageTopic(), Number(query.get("f")));
       if (!field) return "";
-      const group = site.groups.find((g) => g.id === field.group);
+      const group = site.groupsOf(pageTopic()).find((g) => g.id === field.group);
       return `${group.name}・${field.major}・No.${pad2(field.no)}`;
     },
     active: (site) => {
@@ -713,7 +723,7 @@
 
     // 中分類ページは、ページタイトルを分野名にする
     const fieldEl = document.querySelector('[data-site-list="field"]');
-    const field = site.fieldByNo.get(Number(query.get("f")));
+    const field = fieldEl && site.fieldOf(fieldEl.dataset.topic, Number(query.get("f")));
     if (fieldEl && field) document.title = `${field.name}｜${site.topics[fieldEl.dataset.topic].name}`;
   };
 

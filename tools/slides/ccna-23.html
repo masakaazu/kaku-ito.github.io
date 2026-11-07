@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CCNA #23 レイヤ2と無線のセキュリティ 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">CCNA（200-301 v1.1）　5.0 セキュリティの基礎　#23</div>
+  <h1>レイヤ2と無線のセキュリティ</h1>
+  <p>出題範囲 5.7・5.9・5.10 ― スイッチのポートで守る3つの機能（DHCP スヌーピング・DAI・ポートセキュリティ）と、WLC の画面で WPA2 PSK の無線 LAN を作る手順</p>
+  <div class="refs-legend">各ページの下に、根拠にしたCiscoの資料を書いた（青い文字を押すと開く）</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>5.7 Configure and verify Layer 2 security features／5.9・5.10 wireless security</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 DHCP スヌーピング<span>偽の DHCP サーバーを止める。信頼ポートと信頼しないポート、バインディングテーブル、レート制限</span></div>
+      <div class="box b2">2 DAI と IP ソースガード<span>ARP スプーフィングを止める。表との照合、ARP ACL、validate、15 pps</span></div>
+      <div class="box b3">3 ポートセキュリティ<span>ポートにつなげる MAC アドレスを制限。最大数、スティッキー、違反モード、err-disabled</span></div>
+      <div class="box b4">4 WPA2 PSK の WLAN<span>9800 の GUI で作る手順。Layer 2 Security Mode、AES、AKM、鍵の形式</span></div>
+    </div>
+    <div>
+      <div class="cap">3つの機能の関係</div>
+      <svg width="400" height="170" viewBox="0 0 400 170">
+        <defs><marker id="a0" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5b80bf"/></marker></defs>
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="10" y="10" width="150" height="44" rx="8" fill="#1f3a68"/><text x="85" y="30" fill="#fff">DHCP スヌーピング</text><text x="85" y="46" fill="#fff" font-size="10">DHCP を見て表を作る</text>
+          <rect x="200" y="10" width="190" height="44" rx="8" fill="#eef2f8" stroke="#5b80bf"/><text x="295" y="30" fill="#1f3a68">バインディングテーブル</text><text x="295" y="46" fill="#1f3a68" font-size="10">MAC・IP・VLAN・ポート</text>
+          <line x1="160" y1="32" x2="198" y2="32" stroke="#5b80bf" stroke-width="2" marker-end="url(#a0)"/>
+          <rect x="200" y="74" width="90" height="38" rx="8" fill="#5b80bf"/><text x="245" y="98" fill="#fff">DAI（ARP）</text>
+          <rect x="300" y="74" width="90" height="38" rx="8" fill="#5b80bf"/><text x="345" y="91" fill="#fff" font-size="10.5">IP ソース</text><text x="345" y="105" fill="#fff" font-size="10.5">ガード（IP）</text>
+          <line x1="245" y1="54" x2="245" y2="72" stroke="#5b80bf" stroke-width="2" marker-end="url(#a0)"/>
+          <line x1="345" y1="54" x2="345" y2="72" stroke="#5b80bf" stroke-width="2" marker-end="url(#a0)"/>
+          <rect x="10" y="120" width="150" height="40" rx="8" fill="#b25000"/><text x="85" y="138" fill="#fff">ポートセキュリティ</text><text x="85" y="152" fill="#fff" font-size="10">MAC の数と値だけを見る</text>
+          <text x="275" y="140" fill="#1f3a68" font-size="10.5">表を使う2つは DHCP スヌーピングが前提</text>
+        </g>
+      </svg>
+      <div class="point"><b>芯：</b>端末をつなぐポートは<b>信頼しない</b>、上流とサーバーのポートだけ<b>信頼する</b>。違反やレート超えでポートは <b>err-disabled</b> になる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco CCNA Exam v1.1 (200-301) Exam Topics</a>（5.7・5.9・5.10）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_dynamic_arp_inspection.html">Security CG 17.9（9300）「Dynamic ARP Inspection」</a>（Dynamic ARP inspection depends on the entries in the DHCP snooping binding database）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>DHCP スヌーピング</h1>
+  <p>DHCP のやり取りをのぞき見て、偽のサーバーを止め、正しい配布を記録する。</p>
+  <div class="foot"><span>CCNA #23 レイヤ2と無線のセキュリティ</span><span>5.7</span></div>
+</section>
+
+<section class="slide">
+  <h1>偽の DHCP サーバーと信頼ポート</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="400" height="300" viewBox="0 0 400 300">
+        <defs><marker id="a1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <rect x="140" y="10" width="120" height="36" rx="6" fill="#1f3a68"/><text x="200" y="26" fill="#fff">本物の DHCP</text><text x="200" y="40" fill="#fff" font-size="10">サーバー</text>
+          <rect x="130" y="110" width="140" height="40" rx="6" fill="#5b80bf"/><text x="200" y="135" fill="#fff">スイッチ</text>
+          <line x1="200" y1="46" x2="200" y2="110" stroke="#1f3a68" stroke-width="2.5"/>
+          <rect x="208" y="70" width="92" height="22" rx="4" fill="#eef2f8" stroke="#1f3a68"/><text x="254" y="85" fill="#1f3a68" font-size="10">信頼ポート</text>
+          <rect x="20" y="220" width="100" height="40" rx="6" fill="#eef2f8" stroke="#5b80bf"/><text x="70" y="244" fill="#1f3a68">利用者の PC</text>
+          <rect x="280" y="220" width="110" height="40" rx="6" fill="#b25000"/><text x="335" y="237" fill="#fff">攻撃者の PC</text><text x="335" y="252" fill="#fff" font-size="10">偽の DHCP サーバー</text>
+          <line x1="160" y1="150" x2="80" y2="220" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="240" y1="150" x2="320" y2="220" stroke="#5b80bf" stroke-width="2"/>
+          <text x="92" y="188" fill="#5b80bf" font-size="10">信頼しない</text>
+          <text x="312" y="188" fill="#5b80bf" font-size="10">信頼しない</text>
+          <text x="200" y="205" fill="#b25000" font-size="10.5" font-weight="700">✕ 攻撃者の DHCPOFFER を捨てる</text>
+          <text x="200" y="285" fill="#1f3a68" font-size="10.5">何も設定しないと、すべてのポートが「信頼しない」</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%"></th><th>信頼ポート</th><th>信頼しないポート</th></tr>
+        <tr><td class="t">つなぐもの</td><td>本物のサーバー・上流</td><td>利用者の端末</td></tr>
+        <tr><td class="t">既定</td><td>―</td><td><b>すべてのポート</b></td></tr>
+        <tr><td class="t">サーバーのメッセージ</td><td>通す</td><td><b>捨てる</b></td></tr>
+        <tr><td class="t">表への記録</td><td>しない</td><td>する</td></tr>
+      </table>
+      <div class="point"><b>偽の DHCP サーバー</b>はうその既定ゲートウェイや DNS を配って通信を横取りする。DHCP スヌーピングは、信頼しないポートに来た <b>DHCPOFFER・DHCPACK・DHCPNAK</b> を捨てて防ぐ。</div>
+      <div class="point warn"><b>落とし穴：</b>上流（サーバー側）を trust にし忘れると、<b>本物の応答まで捨てられて</b>誰もアドレスをもらえない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/ip/b_179_ip_9300_cg/configuring_dhcp.html">IP Addressing Services CG 17.9（9300）「Configuring DHCP」</a>（DHCP snooping acts like a firewall between untrusted hosts and DHCP servers／By default, the switch considers all interfaces untrusted／all DHCP servers must be connected to the switch through trusted interfaces）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/dynamic-host-configuration-protocol-dhcp-dhcpv6/217055-operate-and-troubleshoot-dhcp-snooping.html">Cisco Doc 217055</a>（This prevents a rogue DHCP server …）</div>
+</section>
+
+<section class="slide">
+  <h1>何を捨て、何を記録するか</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">信頼しないポートで捨てるもの</div>
+      <table class="mx">
+        <tr><th style="width:44%">パケット</th><th>防ぐもの</th></tr>
+        <tr><td class="t">サーバーが出すメッセージ（OFFER・ACK・NAK・LEASEQUERY）</td><td>偽の DHCP サーバー</td></tr>
+        <tr><td class="t">送信元 MAC ≠ クライアントのハードウェアアドレス（chaddr）</td><td>MAC を変えた大量の要求（DoS）</td></tr>
+        <tr><td class="t">表と<b>ちがうポート</b>から来た RELEASE・DECLINE</td><td>他人のアドレスを勝手に返す</td></tr>
+        <tr><td class="t">giaddr が 0.0.0.0 でない／オプション 82 付き</td><td>端末がリレーを装う</td></tr>
+      </table>
+      <div class="mini">MAC の照合は既定で有効。オプション 82 は、スイッチが「どのポートから来たか」を書き足す欄。</div>
+    </div>
+    <div>
+      <div class="cap">バインディングテーブル（Cisco の出力例）</div>
+<pre class="cli small">Switch# show ip dhcp snooping binding
+MacAddress         IpAddress  Lease(sec) Type          VLAN Interface
+00:A3:D1:44:20:46  10.0.0.3   85556      dhcp-snooping 10   Fo1/0/2</pre>
+      <table class="mx">
+        <tr><th style="width:34%">入るもの</th><td style="text-align:left">MAC・IP・リース時間・種類・VLAN・ポート</td></tr>
+        <tr><th>入らないもの</th><td style="text-align:left"><b>信頼ポートの先</b>の端末</td></tr>
+        <tr><th>消えるとき</th><td style="text-align:left">リースが切れたとき、RELEASE を受けたとき</td></tr>
+        <tr><th>使う機能</th><td style="text-align:left"><b>DAI・IP ソースガード</b></td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/ip/b_179_ip_9300_cg/configuring_dhcp.html">IP Addressing Services CG 17.9（9300）「Configuring DHCP」</a>（The switch drops a DHCP packet when one of these situations occurs …／The DHCP snooping binding database has the MAC address, the IP address, the lease time, the binding type, the VLAN number, and the interface information … It does not have information regarding hosts interconnected with a trusted interface）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/dynamic-host-configuration-protocol-dhcp-dhcpv6/217055-operate-and-troubleshoot-dhcp-snooping.html">Cisco Doc 217055</a>（出力例／DHCP Snooping removes the entry … when the IP address lease expires or the switch receives a DHCPRELEASE）</div>
+</section>
+
+<section class="slide">
+  <h1>設定と確認</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">Cisco の例（Catalyst 9000）</div>
+<pre class="cli small">ip dhcp snooping                <i>! 全体で有効</i>
+ip dhcp snooping vlan 10        <i>! VLAN ごとに有効</i>
+!
+interface Fo1/0/10              <i>! サーバーへの上流</i>
+ switchport mode trunk
+ ip dhcp snooping trust
+!
+interface Fo1/0/2               <i>! 利用者（信頼しない）</i>
+ switchport access vlan 10
+ switchport mode access
+ ip dhcp snooping limit rate 10 <i>! 1秒に10個まで</i></pre>
+      <div class="mini">全体（ip dhcp snooping）と VLAN（ip dhcp snooping vlan）の<b>両方</b>がないと働かない。</div>
+    </div>
+    <div>
+      <div class="cap">レート制限</div>
+      <table class="mx">
+        <tr><th style="width:36%"></th><th>DHCP スヌーピング</th></tr>
+        <tr><td class="t">既定</td><td>制限なし</td></tr>
+        <tr><td class="t">Cisco の勧め</td><td>信頼しないポートは <b>100 pps 以下</b></td></tr>
+        <tr><td class="t">超えたら</td><td>ポートが <b>err-disabled</b></td></tr>
+        <tr><td class="t">自動で戻す</td><td>errdisable recovery cause <b>dhcp-rate-limit</b></td></tr>
+      </table>
+      <div class="cap" style="margin-top:8px">確かめるコマンド</div>
+      <table class="mx">
+        <tr><td class="t" style="width:52%">show ip dhcp snooping</td><td>有効な VLAN、各ポートの信頼とレート</td></tr>
+        <tr><td class="t">show ip dhcp snooping binding</td><td>配られたアドレスの表</td></tr>
+        <tr><td class="t">show ip dhcp snooping statistics</td><td>捨てた数などの統計</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/dynamic-host-configuration-protocol-dhcp-dhcpv6/217055-operate-and-troubleshoot-dhcp-snooping.html">Cisco Doc 217055</a>（設定例）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3560/software/release/15-0_1_se/configuration/guide/scg3560/swdhcp82.html">Catalyst 3560 CG 15.0(1)SE「Configuring DHCP Features」</a>（By default, no rate limit is configured. We recommend an untrusted rate limit of not more than 100 packets per second）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst4500/XE3-11-0E/configuration/guide/xe-311-cg/dhcp.html">Catalyst 4500 CG IOS XE 3.11.0E「DHCP Snooping」</a>（the switch places the port in the errdisabled state／errdisable recovery cause dhcp-rate-limit）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/ip/b_179_ip_9300_cg/configuring_dhcp.html">IP Addressing Services CG 17.9（9300）</a>（Monitoring DHCP Snooping Information）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>DAI と IP ソースガード</h1>
+  <p>バインディングテーブルと比べて、なりすましの ARP と IP を止める。</p>
+  <div class="foot"><span>CCNA #23 レイヤ2と無線のセキュリティ</span><span>5.7</span></div>
+</section>
+
+<section class="slide">
+  <h1>ARP スプーフィング（ARP キャッシュポイズニング）</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="290" viewBox="0 0 420 290">
+        <defs><marker id="a2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <rect x="160" y="110" width="100" height="40" rx="6" fill="#5b80bf"/><text x="210" y="135" fill="#fff">スイッチ</text>
+          <rect x="10" y="20" width="120" height="56" rx="6" fill="#eef2f8" stroke="#5b80bf"/><text x="70" y="40" fill="#1f3a68">ホスト A</text><text x="70" y="56" fill="#1f3a68" font-size="10">IP＝IA　MAC＝MA</text>
+          <rect x="290" y="20" width="120" height="56" rx="6" fill="#eef2f8" stroke="#5b80bf"/><text x="350" y="40" fill="#1f3a68">ホスト B（ゲートウェイ）</text><text x="350" y="56" fill="#1f3a68" font-size="10">IP＝IB　MAC＝MB</text>
+          <rect x="150" y="210" width="120" height="56" rx="6" fill="#b25000"/><text x="210" y="230" fill="#fff">ホスト C（攻撃者）</text><text x="210" y="246" fill="#fff" font-size="10">MAC＝MC</text>
+          <line x1="110" y1="76" x2="180" y2="110" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="310" y1="76" x2="240" y2="110" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="210" y1="150" x2="210" y2="210" stroke="#5b80bf" stroke-width="2"/>
+          <path d="M150,230 C60,220 40,140 60,82" fill="none" stroke="#b25000" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#a2)"/>
+          <path d="M270,230 C360,220 380,140 360,82" fill="none" stroke="#b25000" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#a2)"/>
+          <text x="64" y="172" text-anchor="start" fill="#b25000" font-size="10">A へ「IB の MAC は MC」</text>
+          <text x="356" y="172" text-anchor="end" fill="#b25000" font-size="10">B へ「IA の MAC は MC」</text>
+          <text x="210" y="284" fill="#1f3a68" font-size="10.5">うその ARP 応答で、A と B の通信が C を通る（中間者攻撃）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="cap">なぜ成り立つか</div>
+      <div class="point">ARP は<b>頼んでいない応答（gratuitous ARP）</b>でも受け取って ARP キャッシュを書き換える。攻撃者がうその応答を流すと、ほかの機器はその IP の宛先 MAC を攻撃者のものと覚えてしまう。</div>
+      <div class="cap" style="margin-top:8px">DAI の考え方</div>
+      <ol class="steps">
+        <li>信頼しないポートの ARP（要求と応答）を<b>すべて受け止める</b></li>
+        <li>送信者の IP と MAC の組を<b>バインディングテーブル</b>と比べる</li>
+        <li>合えば転送、合わなければ<b>捨ててログに残す</b></li>
+      </ol>
+      <div class="mini">攻撃は同じブロードキャストドメイン（VLAN）の中で起きる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_dynamic_arp_inspection.html">Security CG 17.9（9300）「Dynamic ARP Inspection」</a>（ARP allows a gratuitous reply from a host even if an ARP request was not received …／Figure 1. ARP Cache Poisoning（Host C … broadcasting forged ARP responses with bindings for a host with an IP address of IA (or IB) and a MAC address of MC）／It intercepts, logs, and discards ARP packets with invalid IP-to-MAC address bindings）。図は Cisco の図をもとに Claude が書き直した</div>
+</section>
+
+<section class="slide">
+  <h1>DAI の設定と既定値</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">ip dhcp snooping
+ip dhcp snooping vlan 10
+ip arp inspection vlan 10                <i>! VLAN ごとに有効</i>
+ip arp inspection validate src-mac dst-mac ip
+!
+interface g1/0/1                         <i>! 隣のスイッチ</i>
+ ip arp inspection trust
+!
+arp access-list SRV                      <i>! 固定 IP の機器</i>
+ permit ip host 10.2.2.2 mac host 0018.bad8.3fbd
+ip arp inspection filter SRV vlan 10</pre>
+      <div class="mini">ARP ACL はバインディングテーブルより<b>先に</b>調べられる。ACL で deny なら、表に正しい組があっても捨てる。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:34%">項目</th><th>既定</th></tr>
+        <tr><td class="t">DAI</td><td>どの VLAN でも<b>無効</b></td></tr>
+        <tr><td class="t">ポートの信頼</td><td>すべて<b>信頼しない</b></td></tr>
+        <tr><td class="t">レート制限</td><td>信頼しない <b>15 pps</b>／信頼は制限なし。超えたら err-disabled</td></tr>
+        <tr><td class="t">validate</td><td>追加のチェックなし</td></tr>
+      </table>
+      <div class="cap" style="margin-top:8px">validate の3つ</div>
+      <table class="mx">
+        <tr><td class="t" style="width:24%">src-mac</td><td>ヘッダーの送信元 MAC ＝ ARP の送信者 MAC か</td></tr>
+        <tr><td class="t">dst-mac</td><td>（応答）ヘッダーの宛先 MAC ＝ ARP のターゲット MAC か</td></tr>
+        <tr><td class="t">ip</td><td>0.0.0.0・255.255.255.255・マルチキャストを捨てる</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_dynamic_arp_inspection.html">Security CG 17.9（9300）「Dynamic ARP Inspection」</a>（Default Dynamic ARP Inspection Configuration／ip arp inspection validate {[src-mac] [dst-mac] [ip]}／permit ip host 10.2.2.2 mac host 0018.bad8.3fbd／ARP ACLs take precedence over entries in the DHCP snooping binding database）</div>
+</section>
+
+<section class="slide">
+  <h1>3つの機能を比べる</h1>
+  <table class="mx">
+    <tr><th style="width:16%"></th><th>DHCP スヌーピング</th><th>DAI</th><th>IP ソースガード</th><th>ポートセキュリティ</th></tr>
+    <tr><td class="t">調べるもの</td><td>DHCP のメッセージ</td><td>ARP の要求と応答</td><td>ふつうの IP の送信元</td><td>送信元 MAC の数と値</td></tr>
+    <tr><td class="t">比べる相手</td><td>ポートの信頼・chaddr</td><td>バインディングテーブル・ARP ACL</td><td>バインディングテーブル・静的な登録</td><td>セキュア MAC アドレス</td></tr>
+    <tr><td class="t">防ぐもの</td><td>偽の DHCP サーバー</td><td>ARP スプーフィング（中間者）</td><td>隣の IP のなりすまし</td><td>許していない機器の接続</td></tr>
+    <tr><td class="t">有効にする単位</td><td>全体＋VLAN</td><td>VLAN</td><td>ポート（ip verify source）</td><td>ポート</td></tr>
+    <tr><td class="t">既定のポート</td><td>信頼しない</td><td>信頼しない</td><td>―</td><td>無効</td></tr>
+    <tr><td class="t">止まり方</td><td>レート超えで err-disabled</td><td>レート超え（15 pps）で err-disabled</td><td>合わないパケットを捨てる</td><td>違反モードしだい（既定 shutdown）</td></tr>
+  </table>
+  <div class="point" style="margin-top:10px"><b>IP ソースガード：</b>DAI が ARP を見るのに対し、IP ソースガードは<b>ふつうの IP パケット</b>を見る。有効にしたポートでは、DHCP スヌーピングが通す DHCP のほかは、<b>表に載った送信元 IP（mac-check を付ければ MAC も）</b>だけが通る。</div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/configuring_ip_source_guard.html">Security CG 17.9（9300）「IP Source Guard」</a>（prevent traffic attacks if a host tries to use the IP address of its neighbor … the switch blocks all IP traffic received on the interface except for DHCP packets allowed by DHCP snooping）／同 CG の Dynamic ARP Inspection・Port Security／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/ip/b_179_ip_9300_cg/configuring_dhcp.html">IP Addressing Services CG 17.9（9300）</a>。表は Claude がまとめた</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>ポートセキュリティ</h1>
+  <p>このポートで使ってよい MAC アドレスを決める。</p>
+  <div class="foot"><span>CCNA #23 レイヤ2と無線のセキュリティ</span><span>5.7</span></div>
+</section>
+
+<section class="slide">
+  <h1>ポートセキュリティの設定</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">interface g1/0/1
+ switchport mode access                 <i>! 先に固定する</i>
+ switchport port-security               <i>! 有効にする</i>
+ switchport port-security maximum 2
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky
+ switchport port-security aging time 120
+ switchport port-security aging type inactivity</pre>
+      <table class="mx" style="margin-top:6px">
+        <tr><th style="width:42%">既定</th><th>値</th></tr>
+        <tr><td class="t">ポートセキュリティ</td><td>無効</td></tr>
+        <tr><td class="t">最大数</td><td><b>1</b></td></tr>
+        <tr><td class="t">違反モード</td><td><b>shutdown</b></td></tr>
+        <tr><td class="t">スティッキー学習・エージング</td><td>無効</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">セキュア MAC アドレスの3種類</div>
+      <table class="mx">
+        <tr><th style="width:24%">種類</th><th>覚え方</th><th>running-config</th><th>再起動後</th></tr>
+        <tr><td class="t">静的</td><td>手で書く</td><td>入る</td><td>保存すれば残る</td></tr>
+        <tr><td class="t">動的</td><td>自動</td><td>入らない</td><td>消える</td></tr>
+        <tr><td class="t">スティッキー</td><td>自動（手でも可）</td><td><b>入る</b></td><td><b>保存すれば残る</b></td></tr>
+      </table>
+      <div class="point warn"><b>前提：</b>既定の <b>dynamic auto</b> のポートには設定できない（アクセスかトランクに固定）。EtherChannel のポートでは使えない。</div>
+      <div class="mini">IP 電話の先に PC をつなぐポートは最大数 2（電話1・PC1）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/port_security.html">Security CG 17.9（9300）「Port Security」</a>（Types of Secure MAC Addresses／Default Port Security Configuration／an interface in the default mode (dynamic auto) cannot be configured as a secure port／Port Security is not supported on EtherChanel interfaces／set the maximum allowed secure addresses on the port to two／The sticky secure MAC addresses do not automatically become part of the configuration file）</div>
+</section>
+
+<section class="slide">
+  <h1>違反モードと err-disabled</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">違反になるとき</div>
+      <ol class="steps">
+        <li>最大数まで覚えたあと、<b>知らない MAC</b> の機器が来た</li>
+        <li>あるセキュアポートで覚えた MAC が、<b>同じ VLAN の別のセキュアポート</b>に現れた</li>
+      </ol>
+      <table class="mx" style="margin-top:6px">
+        <tr><th style="width:24%">モード</th><th>知らない送信元</th><th>知らせる</th><th>カウンター</th><th>ポート</th></tr>
+        <tr><td class="t">protect</td><td>捨てる</td><td>×</td><td>×</td><td>動く</td></tr>
+        <tr><td class="t">restrict</td><td>捨てる</td><td>syslog・トラップ</td><td>○</td><td>動く</td></tr>
+        <tr><td class="t">shutdown</td><td>全部止まる</td><td>―</td><td>○</td><td><b>err-disabled</b></td></tr>
+        <tr><td class="t">shutdown vlan</td><td>その VLAN が止まる</td><td>―</td><td>○</td><td>VLAN だけ</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">err-disabled からの戻し方</div>
+<pre class="cli small">interface g1/0/1
+ shutdown
+ no shutdown                <i>! 手で戻す</i>
+!
+errdisable recovery cause psecure-violation  <i>! 自動で戻す</i></pre>
+      <table class="mx">
+        <tr><th style="width:44%">原因</th><th>自動復旧の cause</th></tr>
+        <tr><td class="t">ポートセキュリティの違反</td><td>psecure-violation</td></tr>
+        <tr><td class="t">DHCP のレート超え</td><td>dhcp-rate-limit</td></tr>
+      </table>
+      <div class="point"><b>見分け方：</b>気づけないのは <b>protect</b>。知らせるがポートを止めないのは <b>restrict</b>。止めるのが <b>shutdown（既定）</b>。</div>
+      <div class="mini">確かめる：show port-security interface g1/0/1（最大数・今の数・違反の回数・違反モード）</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sec/b_179_sec_9300_cg/port_security.html">Security CG 17.9（9300）「Port Security」</a>（Security Violations／Security Violation Mode Actions の表／errdisable recovery cause psecure-violation … or … shutdown and no shut down／Monitoring Port Security）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst4500/XE3-11-0E/configuration/guide/xe-311-cg/dhcp.html">Catalyst 4500 CG IOS XE 3.11.0E</a>（errdisable recovery cause dhcp-rate-limit）。「知らせる」の列の「―」は、Cisco の表と手順の説明で書き方が分かれているので空けた</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>WPA2 PSK の無線 LAN</h1>
+  <p>Catalyst 9800 の GUI で作る（無線のしくみは #10）。</p>
+  <div class="foot"><span>CCNA #23 レイヤ2と無線のセキュリティ</span><span>5.9・5.10</span></div>
+</section>
+
+<section class="slide">
+  <h1>9800 の GUI で WPA2 PSK の WLAN を作る</h1>
+  <div class="cols">
+    <div>
+      <ol class="steps">
+        <li><b>Configuration > Tags &amp; Profiles > WLANs</b> で <b>Add</b></li>
+        <li><b>General</b> タブ：Profile Name・SSID・WLAN ID を入れ、Status を有効にする</li>
+        <li><b>Security > Layer2</b> タブ：Layer 2 Security Mode ＝ <b>WPA + WPA2</b>、<b>WPA2 Policy</b> にチェック、暗号は <b>AES</b></li>
+        <li>同じタブの認証キーの管理（AKM）：<b>802.1X を外し、PSK</b> にチェック。PSK Format（ASCII／Hex）と鍵を入れる</li>
+        <li><b>Apply to Device</b> で反映（端末に出すには、ポリシータグで AP に付ける：#10）</li>
+      </ol>
+      <div class="point warn"><b>落とし穴：</b>WPA・WPA2 の既定の AKM は <b>802.1X</b>。PSK に変え忘れると RADIUS を探しに行き、鍵を入れてもつながらない。</div>
+    </div>
+    <div>
+      <div class="cap">同じ設定を CLI で（Cisco の例をもとに）</div>
+<pre class="cli small">wlan SHOP 1 SHOP
+ no security wpa akm dot1x
+ security wpa wpa2
+ security wpa wpa2 ciphers aes
+ security wpa akm psk
+ security wpa psk set-key ascii 0 Cisco123
+ no shutdown</pre>
+      <table class="mx">
+        <tr><th style="width:36%">項目</th><th>決まり</th></tr>
+        <tr><td class="t">鍵（ASCII）</td><td><b>8〜63 文字</b>（% は避ける）</td></tr>
+        <tr><td class="t">鍵（Hex）</td><td><b>64 けた</b></td></tr>
+        <tr><td class="t">SSID</td><td>32 文字まで</td></tr>
+        <tr><td class="t">鍵の使われ方</td><td>端末との間の <b>PMK</b> になる</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_wlan_security_9800.html">Catalyst 9800 CG 17.9「WLAN Security」</a>（click Security > Layer2. From Layer 2 Security Mode drop-down menu, select WPA + WPA2／By default, both WPA1 and WPA2 use the 802.1X for authenticated key management／This key is used as the Pairwise Master Key (PMK)／WPA preshared keys must contain 8 to 63 ASCII text characters or 64 hexadecimal characters）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_wlan_9800.html">同「WLANs」</a>（Configuration > Tags &amp; Profiles > WLANs page, click Add／A valid SSID can be up to 32 characters）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_wpa3.html">同「WPA3」</a>（no security wpa akm dot1x／security wpa wpa2 ciphers aes／security wpa psk set-key ascii 0 Cisco123）。CLI の並びは Claude が WPA2 PSK だけに組み直した</div>
+</section>
+
+<section class="slide">
+  <h1>WPA・WPA2・WPA3 をおさらい<small>くわしくは #10 無線LAN</small></h1>
+  <table class="mx">
+    <tr><th style="width:14%"></th><th>暗号化（既定）</th><th>個人向け（Personal）</th><th>会社向け（Enterprise）</th><th>9800 の Layer 2 Security Mode</th></tr>
+    <tr><td class="t">WPA</td><td>TKIP（古い）</td><td>PSK</td><td>802.1X</td><td>WPA + WPA2 の中の WPA Policy</td></tr>
+    <tr><td class="t">WPA2</td><td><b>AES-CCMP</b></td><td><b>PSK</b></td><td>802.1X（RADIUS）</td><td><b>WPA + WPA2</b> の中の WPA2 Policy</td></tr>
+    <tr><td class="t">WPA3</td><td>AES（CCMP・GCMP）</td><td><b>SAE</b></td><td>802.1X（SHA256 など）</td><td>WPA3 か WPA2 + WPA3</td></tr>
+  </table>
+  <div class="cols" style="margin-top:10px">
+    <div class="point"><b>WPA2 Personal と Enterprise：</b>Personal（PSK）は全員で同じ鍵を使い、利用者を区別できない。Enterprise（802.1X）は利用者ごとに RADIUS で認証する。会社では Enterprise。</div>
+    <div class="point warn"><b>WPA3 の決まり：</b>WPA3 では <b>PMF（管理フレームの保護）が必須</b>。WPA2 と WPA3 を同じ WLAN で出す（SAE と PSK を両方）ときは PMF は任意だが、無効にはできない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_wlan_security_9800.html">Catalyst 9800 CG 17.9「WLAN Security」</a>（WPA1 using TKIP and WPA2 using AES-CCMP … support multiple authentication options including 802.1X, PSK）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_wpa3.html">同「WPA3」</a>（For WPA3, PMF is mandatory／If both WPA2 and WPA3 are supported (SAE and PSK together), it is optional to configure PMF. However, you cannot disable PMF／Layer 2 Security Mode … WPA2+WPA3 or WPA3）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/17-9/config-guide/b_wl_17_9_cg/m_wlan_9800.html">同「WLANs」</a>（WPA3 + GCMP256 cipher …）</div>
+</section>
+
+<section class="slide">
+  <h1>よくあるひっかけ</h1>
+  <table class="mx">
+    <tr><th style="width:44%">よくある思い込み</th><th>正しくは</th></tr>
+    <tr><td class="t">DHCP スヌーピングでは端末のポートを trust にする</td><td style="text-align:left">trust にするのは<b>サーバー側・上流</b>。端末は既定の信頼しないまま</td></tr>
+    <tr><td class="t">ip dhcp snooping だけで働く</td><td style="text-align:left"><b>ip dhcp snooping vlan</b> も要る</td></tr>
+    <tr><td class="t">DAI は MAC アドレステーブルと比べる</td><td style="text-align:left"><b>DHCP スヌーピングのバインディングテーブル</b>（固定 IP は ARP ACL）</td></tr>
+    <tr><td class="t">DAI のレート制限の既定は制限なし</td><td style="text-align:left">信頼しないポートは <b>15 pps</b>。信頼ポートが制限なし</td></tr>
+    <tr><td class="t">ポートセキュリティの違反モードの既定は restrict</td><td style="text-align:left">既定は <b>shutdown</b>（最大数は 1）</td></tr>
+    <tr><td class="t">protect でも違反カウンターは増える</td><td style="text-align:left">protect は<b>何も知らせず、カウンターも増えない</b></td></tr>
+    <tr><td class="t">スティッキーは自動で startup-config に残る</td><td style="text-align:left">running-config だけ。<b>保存しないと再起動で消える</b></td></tr>
+    <tr><td class="t">err-disabled は時間がたてば自動で戻る</td><td style="text-align:left">自動復旧は既定で無効。<b>shutdown → no shutdown</b> か errdisable recovery</td></tr>
+    <tr><td class="t">WPA2 の WLAN は作れば PSK になる</td><td style="text-align:left">既定の AKM は <b>802.1X</b>。PSK に変える</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">DHCP スヌーピング<span>全体＋VLAN で有効。サーバー側だけ trust。信頼しないポートでサーバーのメッセージを捨て、バインディングテーブルを作る。レート超えで err-disabled</span></div>
+      <div class="box b2">DAI と IP ソースガード<span>表（固定 IP は ARP ACL）と比べてなりすましを捨てる。DAI は VLAN ごと、信頼しないポートは 15 pps</span></div>
+      <div class="box b3">ポートセキュリティ<span>アクセスかトランクに固定して有効に。既定は最大数 1・shutdown。protect／restrict／shutdown、スティッキー、エージング</span></div>
+      <div class="box b4">WPA2 PSK の WLAN<span>WLANs > Add → General → Security > Layer2（WPA + WPA2・WPA2 Policy・AES・PSK）→ Apply to Device</span></div>
+    </div>
+    <div>
+      <div class="cap">確かめるコマンド</div>
+<pre class="cli small">show ip dhcp snooping
+show ip dhcp snooping binding
+show ip arp inspection interfaces
+show ip arp inspection vlan 10
+show port-security interface g1/0/1
+show interfaces status</pre>
+      <div class="point"><b>次の分野：</b>#24 自動化と SDN で、コントローラーを使ったネットワークと、従来の管理との違いを読む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

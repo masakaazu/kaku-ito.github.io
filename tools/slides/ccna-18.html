@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CCNA #18 SNMP・syslog・TFTP/FTP 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">CCNA（200-301 v1.1）　4.0 IPサービス　#18</div>
+  <h1>SNMP・syslog・TFTP/FTP</h1>
+  <p>出題範囲 4.4・4.5・4.9 ― 機器の値を集めて通知を受ける SNMP、ログを集める syslog、ファイルを運ぶ TFTP と FTP</p>
+  <div class="refs-legend">各ページの下に、根拠にしたCiscoの資料・RFCを書いた（青い文字を押すと開く）</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>4.4 Explain the function of SNMP／4.5 Describe the use of syslog features including facilities and levels／4.9 Describe the capabilities and functions of TFTP/FTP</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 SNMP<span>マネージャー・エージェント・MIB、get／set・trap／inform、UDP 161／162、v2c と v3</span></div>
+      <div class="box b2">2 syslog<span>重大度 0〜7・ファシリティ・ログの形・送り先（console・monitor・buffer・server）</span></div>
+      <div class="box b3">3 TFTP と FTP<span>UDP 69 と TCP 21／20、認証の有無、アクティブとパッシブ、copy・SCP</span></div>
+    </div>
+    <div>
+      <div class="cap">CCNAでの問われ方</div>
+      <table>
+        <tr><td style="width:26%">Explain・Describe</td><td>設定の細部より<b>役割・違い・番号</b>。「trap と inform の違い」「レベル 4 の名前」「TFTP に認証はあるか」「どのポートか」</td></tr>
+      </table>
+      <div class="point"><b>覚え方の芯：</b>SNMP は「<b>値</b>を読み書きして通知」、syslog は「<b>文章のログ</b>」、TFTP／FTP は「<b>ファイル</b>」。数字は SNMP 161／162、syslog 514、TFTP 69、FTP 21／20。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco CCNA Exam v1.1 (200-301) Exam Topics</a>（4.4・4.5・4.9）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>SNMP</h1>
+  <p>マネージャーが機器の値を読み書きし、機器は異変を自分から知らせる。</p>
+  <div class="foot"><span>CCNA #18 SNMP・syslog・TFTP/FTP</span><span>4.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>登場人物：マネージャー・エージェント・MIB</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="270" viewBox="0 0 420 270">
+        <g font-size="12" text-anchor="middle">
+          <defs><marker id="a1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker><marker id="a2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker></defs>
+          <rect x="10" y="90" width="130" height="70" rx="10" fill="#1f3a68"/><text x="75" y="118" fill="#fff" font-weight="700">マネージャー</text><text x="75" y="136" fill="#fff" font-size="10.5">NMS（管理ソフト）</text><text x="75" y="150" fill="#fff" font-size="10.5">UDP 162 で待つ</text>
+          <rect x="270" y="60" width="140" height="150" rx="10" fill="#eef2f8" stroke="#5b80bf"/>
+          <text x="340" y="82" fill="#1f3a68" font-weight="700">ルーター・スイッチ</text>
+          <rect x="285" y="92" width="110" height="40" rx="6" fill="#5b80bf"/><text x="340" y="110" fill="#fff" font-weight="700">エージェント</text><text x="340" y="125" fill="#fff" font-size="10">UDP 161 で待つ</text>
+          <rect x="285" y="145" width="110" height="52" rx="6" fill="#fff" stroke="#5b80bf"/><text x="340" y="164" fill="#1f3a68" font-weight="700">MIB</text><text x="340" y="180" fill="#1f3a68" font-size="10">sysName・ifInOctets…</text><text x="340" y="192" fill="#1f3a68" font-size="10">（OID で指す）</text>
+          <line x1="140" y1="105" x2="283" y2="105" stroke="#1f3a68" stroke-width="2.5" marker-end="url(#a1)"/><text x="210" y="97" fill="#1f3a68" font-size="11">get・set（→161）</text>
+          <line x1="283" y1="122" x2="142" y2="122" stroke="#1f3a68" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#a1)"/><text x="210" y="138" fill="#1f3a68" font-size="11">response</text>
+          <path d="M285 200 C230 240 120 230 90 162" fill="none" stroke="#b25000" stroke-width="2.5" marker-end="url(#a2)"/><text x="190" y="252" fill="#b25000" font-size="11">trap・inform（→162）自分から</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">名前</th><th>役目</th></tr>
+        <tr><td class="t">マネージャー</td><td style="text-align:left">機器に問い合わせて値を集め、グラフや警告にする（NMS）</td></tr>
+        <tr><td class="t">エージェント</td><td style="text-align:left">機器の中で動き、MIB の値で答える・値を変える・通知を送る</td></tr>
+        <tr><td class="t">MIB</td><td style="text-align:left">管理できる情報の一覧。木の形で、各変数を <b>OID</b>（例 1.3.6.1.2.1.1.5＝sysName）で指す</td></tr>
+      </table>
+      <div class="point warn"><b>初期値：</b>Cisco の機器では SNMP エージェントは<b>無効</b>。snmp-server community・host・user などを1つ入れると有効になり、UDP 161・162 が開く。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/nmgmt/b_179_nmgmt_9300_cg/configuring_simple_network_management_protocol.html">Network Management CG IOS XE 17.9（Catalyst 9300）「Configuring SNMP」</a>（The SNMP system consists of an SNMP manager, an SNMP agent, and a MIB／Default SNMP Configuration：SNMP agent Disabled／one of the following … to open SNMP UDP ports 161 and 162）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc3417">RFC 3417</a>（3.2：UDP port 161・162）。図はClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>操作と通知：だれが、どちらへ</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">操作</th><th style="width:22%">向き</th><th>何をするか</th></tr>
+        <tr><td class="t">get-request</td><td>M → A</td><td style="text-align:left">指定した変数の値を読む</td></tr>
+        <tr><td class="t">get-next-request</td><td>M → A</td><td style="text-align:left">次の変数を読む（名前を知らなくても順にたどれる）</td></tr>
+        <tr><td class="t">get-bulk-request</td><td>M → A</td><td style="text-align:left">表などをまとめて読む。<b>v2c 以降</b></td></tr>
+        <tr><td class="t">set-request</td><td>M → A</td><td style="text-align:left">値を<b>書き換える</b>（RW が要る）</td></tr>
+        <tr><td class="t">response</td><td>A → M</td><td style="text-align:left">get・set への答え</td></tr>
+        <tr><td class="t">trap</td><td>A → M</td><td style="text-align:left">異変を自分から知らせる。<b>返事なし</b></td></tr>
+        <tr><td class="t">inform</td><td>A → M</td><td style="text-align:left">異変を知らせ、<b>マネージャーが返事</b>。v2c 以降</td></tr>
+      </table>
+      <div class="ex" style="margin-top:6px"><span class="lbl">略</span>M＝マネージャー、A＝エージェント</div>
+    </div>
+    <div>
+      <div class="cap">trap と inform</div>
+      <table class="mx">
+        <tr><th style="width:34%"></th><th>trap</th><th>inform</th></tr>
+        <tr><td class="t">受け取った返事</td><td>なし</td><td><b>あり</b>（response）</td></tr>
+        <tr><td class="t">届かなかったら</td><td>わからない</td><td>送り直す</td></tr>
+        <tr><td class="t">機器の負荷</td><td>小さい</td><td>大きい（返事までメモリに残る）</td></tr>
+        <tr><td class="t">SNMPv1</td><td>ある</td><td><b>ない</b></td></tr>
+      </table>
+      <div class="point"><b>通知の例：</b>ポートのアップ・ダウン、スパニングツリーの変化、認証の失敗、再起動。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/nmgmt/b_179_nmgmt_9300_cg/configuring_simple_network_management_protocol.html">IOS XE 17.9「Configuring SNMP」</a>SNMP Manager Functions・SNMP Notifications（get-request … get-next-request … get-bulk-request … set-request … trap／The get-bulk command only works with SNMPv2 or later／informs are more likely than traps to reach … consume more resources／SNMPv1 does not support informs）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc3416">RFC 3416</a></div>
+</section>
+
+<section class="slide">
+  <h1>バージョンとセキュリティ：v2c はコミュニティ名、v3 はユーザー</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:18%">版</th><th style="width:26%">レベル</th><th>認証</th><th>暗号化</th></tr>
+        <tr><td class="t">v1</td><td>noAuthNoPriv</td><td>コミュニティ名</td><td>なし</td></tr>
+        <tr><td class="t">v2c</td><td>noAuthNoPriv</td><td>コミュニティ名</td><td>なし</td></tr>
+        <tr><td class="t">v3</td><td>noAuthNoPriv</td><td>ユーザー名だけ</td><td>なし</td></tr>
+        <tr><td class="t">v3</td><td>authNoPriv</td><td>HMAC-SHA など</td><td>なし</td></tr>
+        <tr><td class="t">v3</td><td><b>authPriv</b></td><td>HMAC-SHA など</td><td><b>AES など</b></td></tr>
+      </table>
+      <div class="ex" style="margin-top:8px"><span class="lbl">語</span>auth＝authentication（認証）、priv＝privacy（中身を隠す＝暗号化）</div>
+    </div>
+    <div>
+      <div class="cap">コミュニティ名（v1・v2c）</div>
+<pre class="cli small">snmp-server community <b>MyRO123</b> <span class="hl">RO</span>   <i>! 読むだけ</i>
+snmp-server community <b>MyRW456</b> <span class="hl">RW</span>   <i>! 読み書き</i></pre>
+      <ul class="anno">
+        <li>コミュニティ名は<b>合言葉</b>。マネージャーと同じ文字列ならアクセスできる</li>
+        <li><b>暗号化されずに流れる</b>ので、のぞかれると読まれる。public・private のような初期値の名前は使わない</li>
+        <li>v2c の c は community。v1 に get-bulk・inform・細かいエラーを加えた版</li>
+        <li>安全にしたいなら <b>v3 の authPriv</b></li>
+      </ul>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/nmgmt/b_179_nmgmt_9300_cg/configuring_simple_network_management_protocol.html">IOS XE 17.9「Configuring SNMP」</a>（SNMP Versions の表：noAuthNoPriv・authNoPriv・authPriv／community strings … function as embedded passwords／Read-only (RO)・Read-write (RW)）／<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/simple-network-management-protocol-snmp/7282-12.html">Cisco「Configure SNMP Community Strings」</a>（snmp-server community public RO／private RW）</div>
+</section>
+
+<section class="slide">
+  <h1>SNMP の設定例</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small"><i>! v2c：読むだけのコミュニティと通知の宛先</i>
+R1(config)#<b>snmp-server community MyRO123 RO</b>
+R1(config)#<b>snmp-server location Tokyo-DC1 Rack3</b>
+R1(config)#<b>snmp-server contact noc@example.com</b>
+R1(config)#<b>snmp-server enable traps</b>
+R1(config)#<b>snmp-server host 10.1.99.20 version 2c MyRO123</b>
+
+<i>! v3：authPriv のグループとユーザー</i>
+R1(config)#<b>snmp-server group ADMIN v3 priv</b>
+R1(config)#<b>snmp-server user nms1 ADMIN v3 auth sha AuthPass1 priv aes 128 PrivPass1</b></pre>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><td style="width:44%">snmp-server community</td><td>v1・v2c の合言葉と RO／RW</td></tr>
+        <tr><td>snmp-server location／contact</td><td>機器の場所と連絡先（MIB の値になる）</td></tr>
+        <tr><td>snmp-server enable traps</td><td>送る通知の種類を有効にする</td></tr>
+        <tr><td>snmp-server host</td><td>通知の宛先・版・コミュニティ名（ポートを省略すると <b>162</b>）</td></tr>
+        <tr><td>snmp-server group … v3 priv</td><td>v3 の authPriv のグループ</td></tr>
+      </table>
+      <div class="point"><b>読み方のコツ：</b>「community＝v2c の合言葉」「host＝通知の宛先」「enable traps＝何を送るか」の3つに分ける。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/nmgmt/b_179_nmgmt_9300_cg/configuring_simple_network_management_protocol.html">IOS XE 17.9「Configuring SNMP」</a>（snmp-server contact・location／snmp-server enable traps／snmp-server host 192.180.1.27 version 2c public／udp-port … The default is 162／snmp-server group … v3 … priv／snmp-server user）。設定はClaudeが作った例</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>syslog</h1>
+  <p>機器のログを、重大度とファシリティを付けて、画面・メモリ・サーバーへ送る。</p>
+  <div class="foot"><span>CCNA #18 SNMP・syslog・TFTP/FTP</span><span>4.5</span></div>
+</section>
+
+<section class="slide">
+  <h1>重大度レベル 0〜7：数字が小さいほど重大</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:12%">#</th><th style="width:34%">キーワード</th><th>意味</th></tr>
+        <tr><td class="t">0</td><td>emergencies</td><td style="text-align:left">機器が使えない</td></tr>
+        <tr><td class="t">1</td><td>alerts</td><td style="text-align:left">すぐ対処が要る</td></tr>
+        <tr><td class="t">2</td><td>critical</td><td style="text-align:left">重大な状態</td></tr>
+        <tr><td class="t">3</td><td>errors</td><td style="text-align:left">エラー</td></tr>
+        <tr><td class="t">4</td><td>warnings</td><td style="text-align:left">警告</td></tr>
+        <tr><td class="t">5</td><td>notifications</td><td style="text-align:left">正常だが大事なこと</td></tr>
+        <tr><td class="t">6</td><td>informational</td><td style="text-align:left">情報</td></tr>
+        <tr><td class="t">7</td><td>debugging</td><td style="text-align:left">デバッグ</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">logging trap 4 で送られる範囲</div>
+      <svg width="400" height="90" viewBox="0 0 400 90">
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="20" width="230" height="34" rx="4" fill="#1f3a68"/><text x="125" y="42" fill="#fff" font-weight="700">0 1 2 3 4 → 送る</text>
+          <rect x="245" y="20" width="145" height="34" rx="4" fill="#e5e5ea"/><text x="317" y="42" fill="#6e6e73">5 6 7 → 送らない</text>
+          <text x="200" y="78" fill="#6e6e73" font-size="11">指定したレベルと、それより重大（数字が小さい）なもの</text>
+        </g>
+      </svg>
+      <table class="mini">
+        <tr><td style="width:46%">コンソール・vty の初期値</td><td><b>debugging</b>（7 まで全部）</td></tr>
+        <tr><td>syslog サーバーの初期値</td><td><b>informational</b>（6 まで）</td></tr>
+        <tr><td>サーバーへのファシリティ</td><td>local7</td></tr>
+      </table>
+      <div class="point warn"><b>名前で書いても数字でも同じ：</b>logging trap warnings ＝ logging trap 4。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc5424">RFC 5424</a>（Table 2 Syslog Message Severities：0 Emergency … 7 Debug）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sys_mgmt/b_179_sys_mgmt_9300_cg/configuring_system_message_logs.html">System Management CG IOS XE 17.9「Configuring System Message Logs」</a>（Console severity Debugging／Server facility Local7／Server severity Informational／numerically lower levels）</div>
+</section>
+
+<section class="slide">
+  <h1>ログの形を読む：%ファシリティ-レベル-ニーモニック</h1>
+<pre class="cli">000123: *Nov  7 10:15:03.158: %<span class="hl">LINEPROTO</span>-<span class="hl">5</span>-<span class="hl">UPDOWN</span>: Line protocol on Interface GigabitEthernet0/1, changed state to down</pre>
+  <div class="cols" style="margin-top:8px">
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">部分</th><th>意味</th><th style="width:32%">付ける設定</th></tr>
+        <tr><td class="t">000123</td><td style="text-align:left">連番</td><td>service sequence-numbers</td></tr>
+        <tr><td class="t">*Nov 7 10:15:03.158</td><td style="text-align:left">時刻（* は時計が NTP で合っていない印）</td><td>service timestamps</td></tr>
+        <tr><td class="t">LINEPROTO</td><td style="text-align:left"><b>ファシリティ</b>：何に関するログか</td><td>―</td></tr>
+        <tr><td class="t">5</td><td style="text-align:left"><b>重大度</b>（notifications）</td><td>―</td></tr>
+        <tr><td class="t">UPDOWN</td><td style="text-align:left"><b>ニーモニック</b>：メッセージの短い名前</td><td>―</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">よく見るログ</div>
+      <table class="mini">
+        <tr><td style="width:52%">%LINK-3-UPDOWN</td><td>物理リンクの up／down（errors）</td></tr>
+        <tr><td>%LINEPROTO-5-UPDOWN</td><td>回線プロトコルの up／down</td></tr>
+        <tr><td>%SYS-5-CONFIG_I</td><td>だれかが設定を変えた</td></tr>
+      </table>
+      <div class="point"><b>2つの軸：</b>ファシリティ＝<b>何の</b>ログか、重大度＝<b>どれだけ</b>重大か。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sys_mgmt/b_179_sys_mgmt_9300_cg/configuring_system_message_logs.html">IOS XE 17.9「Configuring System Message Logs」</a>System Log Message Format（seq no:timestamp: %facility-severity-MNEMONIC:description／%LINK-3-UPDOWN・%LINEPROTO-5-UPDOWN・%SYS-5-CONFIG_I の例）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/bsm/command/bsm-cr-book/bsm-cr-n1.html">Basic System Management CR</a>（show clock：* Time is not authoritative）。ログはその形式にそろえてClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>送り先と設定：画面・メモリ・サーバー</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:24%">送り先</th><th style="width:34%">レベルを決める</th><th>ポイント</th></tr>
+        <tr><td class="t">コンソール</td><td>logging console</td><td style="text-align:left">初期値で出る（debugging）</td></tr>
+        <tr><td class="t">Telnet・SSH</td><td>logging monitor</td><td style="text-align:left">見るには <b>terminal monitor</b>（セッションごと）</td></tr>
+        <tr><td class="t">メモリ</td><td>logging buffered</td><td style="text-align:left">show logging で見る。<b>再起動で消える</b></td></tr>
+        <tr><td class="t">syslog サーバー</td><td>logging trap</td><td style="text-align:left">宛先は logging host。<b>UDP 514</b>。初期値 informational</td></tr>
+      </table>
+    </div>
+    <div>
+<pre class="cli small">R1(config)#<b>service timestamps log datetime msec</b>
+R1(config)#<b>logging buffered 16384</b>
+R1(config)#<b>logging host 10.1.99.30</b>
+R1(config)#<b>logging trap warnings</b>
+R1(config)#line console 0
+R1(config-line)#<b>logging synchronous</b>
+R1#<b>terminal monitor</b></pre>
+      <ul class="anno">
+        <li><b>logging trap</b> は syslog サーバーへのレベル。SNMP の trap とは別物</li>
+        <li><b>logging synchronous</b>：ログが出ても打ちかけのコマンドを出し直す</li>
+        <li>時刻をそろえるには NTP（#16）も要る</li>
+      </ul>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sys_mgmt/b_179_sys_mgmt_9300_cg/configuring_system_message_logs.html">IOS XE 17.9「Configuring System Message Logs」</a>（logging buffered … default 102400 bytes … lost unless … saved to flash／logging host … UNIX syslog server／terminal monitor … for each session／logging console・monitor・trap の初期値／logging synchronous）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc3164">RFC 3164</a>（UDP port … 514）。設定はClaudeが作った例</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>TFTP と FTP</h1>
+  <p>設定や OS のファイルを運ぶ。簡単な TFTP と、ログインして操作する FTP。</p>
+  <div class="foot"><span>CCNA #18 SNMP・syslog・TFTP/FTP</span><span>4.9</span></div>
+</section>
+
+<section class="slide">
+  <h1>TFTP と FTP を比べる</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">項目</th><th>TFTP</th><th>FTP</th></tr>
+        <tr><td class="t">運ぶもの</td><td><b>UDP 69</b></td><td><b>TCP 21</b>（制御）＋データ</td></tr>
+        <tr><td class="t">認証</td><td><b>なし</b></td><td>ユーザー名・パスワード</td></tr>
+        <tr><td class="t">暗号化</td><td>なし</td><td>なし（パスワードも平文）</td></tr>
+        <tr><td class="t">できること</td><td>読む・書くだけ</td><td>一覧・削除・名前の変更なども</td></tr>
+        <tr><td class="t">抜けの直し方</td><td>512 バイトごとに ACK</td><td>TCP にまかせる</td></tr>
+        <tr><td class="t">向く用途</td><td>小さなファイル・機器の設定の保存</td><td>大きなファイル・いろいろな操作</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">TFTP の lock step（Claudeが作った例）</div>
+      <svg width="400" height="200" viewBox="0 0 400 200">
+        <g font-size="11.5" text-anchor="middle">
+          <defs><marker id="a3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1d1d1f"/></marker></defs>
+          <rect x="10" y="4" width="100" height="28" rx="6" fill="#5b80bf"/><text x="60" y="23" fill="#fff">機器</text>
+          <rect x="290" y="4" width="100" height="28" rx="6" fill="#1f3a68"/><text x="340" y="23" fill="#fff">TFTP サーバー</text>
+          <line x1="60" y1="32" x2="60" y2="196" stroke="#c7c7cc" stroke-width="2"/><line x1="340" y1="32" x2="340" y2="196" stroke="#c7c7cc" stroke-width="2"/>
+          <line x1="62" y1="52" x2="336" y2="52" stroke="#1d1d1f" stroke-width="2" marker-end="url(#a3)"/><text x="200" y="47">読みたい（宛先 UDP 69）</text>
+          <line x1="338" y1="82" x2="64" y2="82" stroke="#b25000" stroke-width="2" marker-end="url(#a3)"/><text x="200" y="77" fill="#b25000">DATA 1（512 バイト）</text>
+          <line x1="62" y1="108" x2="336" y2="108" stroke="#1d1d1f" stroke-width="2" marker-end="url(#a3)"/><text x="200" y="103">ACK 1</text>
+          <line x1="338" y1="138" x2="64" y2="138" stroke="#b25000" stroke-width="2" marker-end="url(#a3)"/><text x="200" y="133" fill="#b25000">DATA 2（512 バイト未満＝最後）</text>
+          <line x1="62" y1="164" x2="336" y2="164" stroke="#1d1d1f" stroke-width="2" marker-end="url(#a3)"/><text x="200" y="159">ACK 2</text>
+          <text x="200" y="190" fill="#6e6e73">ACK が来なければ送り直す</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc1350">RFC 1350</a>（It cannot list directories, and currently has no provisions for user authentication／fixed length blocks of 512 bytes … must be acknowledged … before the next packet／A data packet of less than 512 bytes signals termination／TID 69）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc959">RFC 959</a>（port 21）</div>
+</section>
+
+<section class="slide">
+  <h1>FTP は2本のコネクション：アクティブとパッシブ</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="250" viewBox="0 0 420 250">
+        <g font-size="11.5" text-anchor="middle">
+          <defs><marker id="a4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker><marker id="a5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker></defs>
+          <text x="210" y="16" fill="#1f3a68" font-weight="700">アクティブ</text>
+          <rect x="10" y="26" width="100" height="70" rx="8" fill="#5b80bf"/><text x="60" y="65" fill="#fff">クライアント</text>
+          <rect x="310" y="26" width="100" height="70" rx="8" fill="#1f3a68"/><text x="360" y="65" fill="#fff">FTP サーバー</text>
+          <line x1="110" y1="44" x2="308" y2="44" stroke="#1f3a68" stroke-width="2" marker-end="url(#a4)"/><text x="210" y="39" fill="#1f3a68">制御 → TCP 21</text>
+          <line x1="310" y1="80" x2="112" y2="80" stroke="#b25000" stroke-width="2.5" marker-end="url(#a5)"/><text x="210" y="96" fill="#b25000">データ：サーバー（20 番）から張る</text>
+          <text x="210" y="136" fill="#1f3a68" font-weight="700">パッシブ（PASV）</text>
+          <rect x="10" y="146" width="100" height="70" rx="8" fill="#5b80bf"/><text x="60" y="185" fill="#fff">クライアント</text>
+          <rect x="310" y="146" width="100" height="70" rx="8" fill="#1f3a68"/><text x="360" y="185" fill="#fff">FTP サーバー</text>
+          <line x1="110" y1="164" x2="308" y2="164" stroke="#1f3a68" stroke-width="2" marker-end="url(#a4)"/><text x="210" y="159" fill="#1f3a68">制御 → TCP 21</text>
+          <line x1="110" y1="200" x2="308" y2="200" stroke="#b25000" stroke-width="2.5" marker-end="url(#a5)"/><text x="210" y="216" fill="#b25000">データ：クライアントから張る</text>
+          <text x="210" y="244" fill="#6e6e73">（サーバーが待ち受けるポートへ）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <ul class="anno">
+        <li><b>制御</b>のコネクション（TCP 21）でログインやコマンドをやりとりし、つないだまま</li>
+        <li><b>データ</b>のコネクションで、ファイルや一覧を運ぶ。運ぶたびに張る</li>
+        <li>アクティブは<b>サーバーから</b>張るので、クライアント側のファイアウォールや NAT で止められやすい</li>
+        <li>パッシブは<b>いつもクライアントから</b>張るので、越えやすい</li>
+      </ul>
+      <div class="point warn"><b>症状で見分ける：</b>ログインはできるのに一覧や転送だけ失敗する ― データのコネクションが止められている。パッシブにすると直ることが多い。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc959">RFC 959</a>（3.2：server-process default data port … L-1／4.1.2：PASSIVE (PASV) … "listen" on a data port … wait for a connection rather than initiate one／5.2：The server … shall "listen" on Port L／service port 21）。図はClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>機器でファイルを運ぶ：copy 元 先</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small"><i>! 今の設定を TFTP サーバーへ保存</i>
+R1#<b>copy running-config tftp://10.1.99.40/r1-confg</b>
+
+<i>! OS を FTP サーバーからフラッシュへ</i>
+R1#<b>copy ftp://admin:Pass1@10.1.99.40/c9300.bin flash:</b>
+
+<i>! 同じことを SCP で（認証＋暗号化）</i>
+R1#<b>copy scp://admin@10.1.99.40/c9300.bin flash:</b></pre>
+      <table class="mini">
+        <tr><td style="width:28%">tftp:</td><td>tftp://場所/ファイル（ユーザー名なし）</td></tr>
+        <tr><td>ftp:</td><td>ftp://ユーザー:パスワード@場所/ファイル</td></tr>
+        <tr><td>scp:</td><td>scp://ユーザー@場所/ファイル（SSH の上）</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">3つを比べる</div>
+      <table class="mx">
+        <tr><th style="width:24%"></th><th>認証</th><th>暗号化</th></tr>
+        <tr><td class="t">TFTP</td><td>なし</td><td>なし</td></tr>
+        <tr><td class="t">FTP</td><td>あり</td><td>なし</td></tr>
+        <tr><td class="t">SCP</td><td>あり</td><td><b>あり</b></td></tr>
+      </table>
+      <div class="point"><b>順番：</b>copy は「<b>元 → 先</b>」。copy tftp: running-config は逆向き（サーバーの設定を読み込む）。</div>
+      <div class="ex" style="margin-top:8px"><span class="lbl">関連</span>SCP には SSH の設定が要る（#11）</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/sys_mgmt/b_179_sys_mgmt_9300_cg/working_with_the_flash_file_system.html">System Management CG IOS XE 17.9「Working with the Flash File System」</a>Copying Files（copy source-url destination-url／FTP—ftp:[[//username [:password]@location]/directory]/filename／TFTP—tftp:[[//location]/directory]/filename／SCP—scp:…）。設定はClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>よくあるひっかけ</h1>
+  <table class="mx">
+    <tr><th style="width:42%">よくある思い込み</th><th>正しくは</th></tr>
+    <tr><td class="t">trap はマネージャーからエージェントへ送る</td><td style="text-align:left"><b>エージェント → マネージャー</b>。返事なし</td></tr>
+    <tr><td class="t">trap と inform は同じ</td><td style="text-align:left">inform は<b>返事あり・送り直しあり</b>。v1 にはない</td></tr>
+    <tr><td class="t">SNMP は TCP 161／162</td><td style="text-align:left"><b>UDP</b>。問い合わせ 161、通知 162</td></tr>
+    <tr><td class="t">v2c のコミュニティ名は暗号化される</td><td style="text-align:left">平文。暗号化は <b>v3 の authPriv</b></td></tr>
+    <tr><td class="t">syslog のレベルは数字が大きいほど重大</td><td style="text-align:left"><b>小さい</b>ほど重大。0 emergencies、7 debugging</td></tr>
+    <tr><td class="t">logging trap 4 は 4〜7 を送る</td><td style="text-align:left"><b>0〜4</b> を送る</td></tr>
+    <tr><td class="t">SSH で入れば自動でログが流れる</td><td style="text-align:left"><b>terminal monitor</b> が要る</td></tr>
+    <tr><td class="t">TFTP はユーザー名とパスワードで認証する</td><td style="text-align:left">TFTP は<b>認証なし</b>・UDP 69。認証するのは FTP</td></tr>
+    <tr><td class="t">FTP は暗号化して安全</td><td style="text-align:left">FTP は平文。安全に運ぶなら <b>SCP</b>（や SFTP）</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">SNMP<span>マネージャー・エージェント・MIB（OID）・get／set（UDP 161）・trap／inform（UDP 162）・v2c は合言葉、v3 authPriv</span></div>
+      <div class="box b2">syslog<span>0 emergencies 〜 7 debugging・%ファシリティ-レベル-ニーモニック・console／monitor／buffered／host・UDP 514</span></div>
+      <div class="box b3">TFTP と FTP<span>TFTP＝UDP 69・認証なし／FTP＝TCP 21＋データ・認証あり・平文／SCP＝SSH で安全</span></div>
+    </div>
+    <div>
+      <div class="cap">設定のまとめ</div>
+<pre class="cli small">snmp-server community MyRO123 RO
+snmp-server enable traps
+snmp-server host 10.1.99.20 version 2c MyRO123
+service timestamps log datetime msec
+logging host 10.1.99.30
+logging trap warnings
+copy running-config tftp://10.1.99.40/r1-confg</pre>
+      <div class="point"><b>確かめる：</b><code>show logging</code>（バッファーと設定）／<code>show snmp</code>／<code>terminal monitor</code></div>
+      <div class="point"><b>次の分野：</b>#19 QoS で、混んだときにどのパケットを先に送るかを読む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

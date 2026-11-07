@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CCNA #13 スタティックルート 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">CCNA（200-301 v1.1）　3.0 IPコネクティビティ　#13</div>
+  <h1>スタティックルート</h1>
+  <p>出題範囲 3.3 ― ip route と ipv6 route で経路を手で書き、予備の経路（フローティングスタティック）まで組み立てる</p>
+  <div class="refs-legend">各ページの下に、根拠にしたCiscoの資料を書いた（青い文字を押すと開く）</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>出題範囲 3.3 の4項目を、3章で読む</small></h1>
+  <div class="cols">
+    <div>
+      <div class="cap">3.3 Configure and verify IPv4 and IPv6 static routing</div>
+      <table class="mx">
+        <tr><th style="width:12%"></th><th style="width:30%">項目</th><th>このPDFでは</th></tr>
+        <tr><td class="t">a</td><td>Default route</td><td style="text-align:left">0.0.0.0 0.0.0.0／::/0（第1・2章）</td></tr>
+        <tr><td class="t">b</td><td>Network route</td><td style="text-align:left">サブネット全体への経路（第1章）</td></tr>
+        <tr><td class="t">c</td><td>Host route</td><td style="text-align:left">/32・/128 の1台だけの経路（第1・2章）</td></tr>
+        <tr><td class="t">d</td><td>Floating static</td><td style="text-align:left">AD を大きくした予備の経路（第3章）</td></tr>
+      </table>
+    </div>
+    <div class="stack">
+      <div class="box b1">1 IPv4 のスタティックルート<span>ip route の形・行き先の3つの書き方・入る条件と消える条件</span></div>
+      <div class="box b2">2 IPv6 のスタティックルート<span>ipv6 unicast-routing・::/0・/128・リンクローカルのネクストホップ</span></div>
+      <div class="box b3">3 フローティングスタティックとトラブル<span>AD の決め方・255 のわな・再帰で切り替わらない事例</span></div>
+      <div class="point"><b>Configure and verify：</b>設定を選ぶ問題と、show ip route を見て「なぜ入らないか」「なぜ切り替わらないか」を答える問題が出る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco CCNA Exam v1.1 (200-301) Exam Topics</a>（3.3 a〜d）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>IPv4 のスタティックルート</h1>
+  <p>「宛先・マスク・行き先」の3つを書けば1本の経路になる。行き先の書き方で動きが変わる。</p>
+  <div class="foot"><span>CCNA #13 スタティックルート</span><span>3.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>ip route の形：宛先・マスク・行き先・（AD）</h1>
+  <svg width="856" height="130" viewBox="0 0 856 130">
+    <g font-family="DejaVu Sans Mono, IPAGothic, monospace" font-size="20">
+      <rect x="0" y="30" width="856" height="46" rx="8" fill="#1d1d1f"/>
+      <text x="16" y="60" fill="#c7c7cc">R1(config)#</text>
+      <text x="160" y="60" fill="#fff">ip route</text>
+      <text x="268" y="60" fill="#9fd0ff">10.1.40.0</text>
+      <text x="392" y="60" fill="#ffd479">255.255.255.0</text>
+      <text x="566" y="60" fill="#b5f0b5">10.1.12.2</text>
+      <text x="690" y="60" fill="#ffb3a7">[115]</text>
+    </g>
+    <g font-size="13" text-anchor="middle" fill="#1d1d1f">
+      <line x1="320" y1="76" x2="320" y2="96" stroke="#1f3a68" stroke-width="2"/><text x="320" y="114">① 宛先のネットワーク</text>
+      <line x1="470" y1="76" x2="470" y2="96" stroke="#b25000" stroke-width="2"/><text x="470" y="114">② マスク（/24 ではなく）</text>
+      <line x1="625" y1="76" x2="625" y2="96" stroke="#3a7d44" stroke-width="2"/><text x="625" y="114">③ 行き先</text>
+      <line x1="720" y1="76" x2="720" y2="96" stroke="#b23a2c" stroke-width="2"/><text x="760" y="114">④ AD（省略すると 1）</text>
+      <text x="428" y="18" fill="#6e6e73">グローバル設定モードで入れる。消すときは no ip route …</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <table class="mx">
+      <tr><th style="width:24%">部分</th><th>書き方</th></tr>
+      <tr><td class="t">① 宛先</td><td style="text-align:left">ネットワークのアドレス（ホスト部が 0）</td></tr>
+      <tr><td class="t">② マスク</td><td style="text-align:left">255.255.255.0 の形。<b>0.0.0.255（ワイルドカード）ではない</b></td></tr>
+      <tr><td class="t">③ 行き先</td><td style="text-align:left">ネクストホップのアドレス／出口のインタフェース／その両方</td></tr>
+      <tr><td class="t">④ AD</td><td style="text-align:left">1〜255。大きくすると予備（第3章）</td></tr>
+    </table>
+    <div>
+      <div class="cap">ほかのオプション</div>
+      <table class="mini">
+        <tr><td style="width:28%"><code>permanent</code></td><td>出口が down になっても経路を消さない</td></tr>
+        <tr><td><code>name 名前</code></td><td>経路に説明を付ける。動きは変わらない</td></tr>
+        <tr><td><code>track 番号</code></td><td>監視の結果に合わせて経路を出し入れする（CCNA では名前だけ）</td></tr>
+      </table>
+      <div class="point warn" style="margin-top:6px"><b>IPv6 との違い：</b>ipv6 route は <code>2001:DB8:40::/64</code> のように<b>長さ</b>で書く。ip route は<b>マスク</b>で書く。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_pi/command/iri-cr-book/iri-cr-a1.html">IP Routing: Protocol-Independent Command Reference「ip route」</a>（Syntax Description：distance 1 to 255・default 1・name・permanent・track）</div>
+</section>
+
+<section class="slide">
+  <h1>デフォルト・ネットワーク・ホスト：宛先の長さが違うだけ</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="380" height="300" viewBox="0 0 380 300">
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="10" width="360" height="280" rx="14" fill="#eef2f8" stroke="#5b80bf"/>
+          <text x="190" y="32" fill="#1f3a68" font-weight="700">0.0.0.0/0　デフォルト（全部）</text>
+          <rect x="60" y="60" width="260" height="190" rx="12" fill="#d7e3f4" stroke="#1f3a68"/>
+          <text x="190" y="82" fill="#1f3a68" font-weight="700">10.1.40.0/24　ネットワーク（256個）</text>
+          <circle cx="190" cy="168" r="52" fill="#b25000"/>
+          <text x="190" y="164" fill="#fff" font-weight="700" font-size="11.5">10.1.40.10/32</text>
+          <text x="190" y="182" fill="#fff" font-size="11">ホスト（1個）</text>
+          <text x="190" y="276" fill="#6e6e73" font-size="11">内側ほど長い＝最長一致で優先される</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:20%">種類</th><th>設定</th><th style="width:22%">テーブル</th></tr>
+        <tr><td class="t">デフォルト</td><td style="text-align:left"><code>ip route 0.0.0.0 0.0.0.0 203.0.113.1</code></td><td>S* 0.0.0.0/0</td></tr>
+        <tr><td class="t">ネットワーク</td><td style="text-align:left"><code>ip route 10.1.40.0 255.255.255.0 10.1.12.2</code></td><td>S 10.1.40.0/24</td></tr>
+        <tr><td class="t">ホスト</td><td style="text-align:left"><code>ip route 10.1.40.10 255.255.255.255 10.1.13.3</code></td><td>S 10.1.40.10/32</td></tr>
+      </table>
+      <div class="point"><b>使い分け：</b>宛先 10.1.40.10 は 3本すべてに当てはまるが、送るときは<b>いちばん長い /32</b>。だからホストルートを足すと、その1台だけ別の道に通せる。</div>
+      <div class="point warn"><b>マスクの取り違え：</b>デフォルトは 0.0.0.0 <b>0.0.0.0</b>。0.0.0.0 255.255.255.255 は「0.0.0.0 という1つのアドレス」へのホストルートになる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9500/software/release/17-13/configuration_guide/rtng/b_1713_rtng_9500_cg/protocol_independent_features.html">IP Routing Configuration Guide IOS XE 17.13（Catalyst 9500）</a>（Static Unicast Routes・Default Routes and Networks：static route to the network 0.0.0.0）／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/enhanced-interior-gateway-routing-protocol-eigrp/8651-21.html">Route Selection in Cisco Routers</a>（最長一致）</div>
+</section>
+
+<section class="slide">
+  <h1>書いてみる：3台のルーターで、行きと戻りの両方を書く</h1>
+  <svg width="856" height="150" viewBox="0 0 856 150">
+    <g font-size="12" text-anchor="middle">
+      <ellipse cx="70" cy="75" rx="62" ry="30" fill="#eef2f8" stroke="#5b80bf"/><text x="70" y="79" fill="#1f3a68">10.1.10.0/24</text>
+      <rect x="170" y="45" width="100" height="60" rx="10" fill="#1f3a68"/><text x="220" y="80" fill="#fff" font-weight="700">R1</text>
+      <rect x="378" y="45" width="100" height="60" rx="10" fill="#1f3a68"/><text x="428" y="80" fill="#fff" font-weight="700">R2</text>
+      <rect x="586" y="45" width="100" height="60" rx="10" fill="#1f3a68"/><text x="636" y="80" fill="#fff" font-weight="700">R3</text>
+      <ellipse cx="786" cy="75" rx="62" ry="30" fill="#eef2f8" stroke="#5b80bf"/><text x="786" y="79" fill="#1f3a68">10.1.40.0/24</text>
+      <line x1="132" y1="75" x2="170" y2="75" stroke="#5b80bf" stroke-width="3"/><line x1="270" y1="75" x2="378" y2="75" stroke="#1d1d1f" stroke-width="3"/><line x1="478" y1="75" x2="586" y2="75" stroke="#1d1d1f" stroke-width="3"/><line x1="686" y1="75" x2="724" y2="75" stroke="#5b80bf" stroke-width="3"/>
+      <text x="324" y="64" fill="#1d1d1f">10.1.12.0/24</text><text x="284" y="96" fill="#6e6e73" font-size="11">.1</text><text x="364" y="96" fill="#6e6e73" font-size="11">.2</text>
+      <text x="532" y="64" fill="#1d1d1f">10.1.23.0/24</text><text x="492" y="96" fill="#6e6e73" font-size="11">.2</text><text x="572" y="96" fill="#6e6e73" font-size="11">.3</text>
+      <text x="428" y="136" fill="#b23a2c">R2 は真ん中なので、両側への経路が要る</text>
+    </g>
+  </svg>
+  <div class="cols3">
+    <div>
+      <div class="cap">R1（端）</div>
+<pre class="cli small">ip route 0.0.0.0 0.0.0.0 10.1.12.2</pre>
+      <div class="ex"><span class="lbl">理由</span>出口が R2 だけ。デフォルトルート1本で足りる</div>
+    </div>
+    <div>
+      <div class="cap">R2（真ん中）</div>
+<pre class="cli small">ip route 10.1.10.0 255.255.255.0 10.1.12.1
+ip route 10.1.40.0 255.255.255.0 10.1.23.3</pre>
+      <div class="ex"><span class="lbl">理由</span>左右の両方へ。デフォルト1本では片方しか書けない</div>
+    </div>
+    <div>
+      <div class="cap">R3（端）</div>
+<pre class="cli small">ip route 0.0.0.0 0.0.0.0 10.1.23.2</pre>
+      <div class="ex"><span class="lbl">理由</span>これがないと 10.1.10.0 からの ping の<b>返事</b>が戻れない</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/ip-version-6-ipv6/113361-ipv6-static-routes.html">Implement Static Routes for IPv6 Configuration Example</a>（3台の各ルーターに相手側への経路を書く構成）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_pi/command/iri-cr-book/iri-cr-a1.html">ip route</a>。アドレスと設定はClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>行き先の3つの書き方：ネクストホップ・出口・両方</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="200" viewBox="0 0 410 200">
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="70" width="90" height="56" rx="10" fill="#1f3a68"/><text x="55" y="96" fill="#fff" font-weight="700">R1</text><text x="55" y="113" fill="#fff" font-size="10.5">Gi0/0 .1</text>
+          <rect x="140" y="80" width="80" height="36" rx="6" fill="#6e6e73"/><text x="180" y="103" fill="#fff">スイッチ</text>
+          <line x1="100" y1="98" x2="140" y2="98" stroke="#1d1d1f" stroke-width="3"/>
+          <rect x="290" y="14" width="110" height="46" rx="10" fill="#3a7d44"/><text x="345" y="34" fill="#fff" font-weight="700">R2</text><text x="345" y="51" fill="#fff" font-size="10.5">10.1.1.2</text>
+          <rect x="290" y="136" width="110" height="46" rx="10" fill="#b25000"/><text x="345" y="156" fill="#fff" font-weight="700">R3</text><text x="345" y="173" fill="#fff" font-size="10.5">10.1.1.3</text>
+          <line x1="220" y1="92" x2="290" y2="40" stroke="#1d1d1f" stroke-width="3"/><line x1="220" y1="104" x2="290" y2="158" stroke="#1d1d1f" stroke-width="3"/>
+          <text x="180" y="140" fill="#6e6e73" font-size="11">10.1.1.0/24（マルチアクセス）</text>
+          <text x="345" y="80" fill="#3a7d44" font-size="11">10.9.0.0/16 はこの先</text>
+        </g>
+      </svg>
+      <div class="point warn"><b>出口だけ（Gi0/0）だと：</b>R2 と R3 のどちらに渡すか決まらない。宛先を全部「直接つながっている」とみなし、宛先ごとに ARP を出す。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:22%">書き方</th><th>例</th><th style="width:34%">動き</th></tr>
+        <tr><td class="t">ネクストホップ</td><td style="text-align:left"><code>… 10.1.1.2</code></td><td style="text-align:left">再帰検索で出口を決める。出口が down でも、別の経路でネクストホップに届けば残る</td></tr>
+        <tr><td class="t">出口</td><td style="text-align:left"><code>… Serial0/1/0</code></td><td style="text-align:left">is directly connected と表示。<b>ポイントツーポイント向け</b></td></tr>
+        <tr><td class="t">両方（完全指定）</td><td style="text-align:left"><code>… Gi0/0 10.1.1.2</code></td><td style="text-align:left">出口が down なら消える。相手もはっきり。<b>イーサネットで勧められる</b></td></tr>
+      </table>
+<pre class="cli small" style="margin-top:8px">ip route 10.9.0.0 255.255.0.0 GigabitEthernet0/0 10.1.1.2</pre>
+      <div class="ex"><span class="lbl">順番</span>インタフェースが先、ネクストホップが後</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/dial-access/floating-static-route/118263-technote-nexthop-00.html">Configure a Next Hop IP Address for Static Routes</a>（Static Route to Interface without Next Hop IP Address・If the outbound interface is an Ethernet interface, then configure both）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_pi/command/iri-cr-book/iri-cr-a1.html">ip route</a> Usage Guidelines</div>
+</section>
+
+<section class="slide">
+  <h1>テーブルに入る条件・消える条件</h1>
+  <table class="mx">
+    <tr><th style="width:22%">書き方</th><th>テーブルに入る条件</th><th>消えるとき</th></tr>
+    <tr><td class="t">ネクストホップだけ</td><td style="text-align:left">ネクストホップへ行く経路がテーブルにある（再帰検索で出口が決まる）</td><td style="text-align:left">ネクストホップへ行く経路がなくなったとき</td></tr>
+    <tr><td class="t">出口だけ</td><td style="text-align:left">出口のインタフェースが up</td><td style="text-align:left">出口が down になったとき</td></tr>
+    <tr><td class="t">両方</td><td style="text-align:left">出口が up</td><td style="text-align:left">出口が down になったとき</td></tr>
+    <tr><td class="t">どれでも</td><td style="text-align:left">同じ宛先・同じ長さで、もっと AD の小さい経路がない／AD が 255 でない</td><td style="text-align:left">no ip route で消したとき（設定は消すまで残る）</td></tr>
+  </table>
+  <div class="cols" style="margin-top:10px">
+    <div class="point"><b>permanent を付けると：</b>出口が down になっても消えない。予備の経路に切り替えたい設計では付けない。</div>
+    <div class="point warn"><b>設定とテーブルは別：</b>running-config に ip route があっても、条件を満たさなければ show ip route には出ない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9500/software/release/17-13/configuration_guide/rtng/b_1713_rtng_9500_cg/protocol_independent_features.html">IP Routing Configuration Guide IOS XE 17.13</a>（When an interface goes down, all static routes through that interface are removed／can no longer find a valid next hop … removed／The switch retains static routes until you remove them）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_pi/command/iri-cr-book/iri-cr-a1.html">ip route</a>（permanent）</div>
+</section>
+
+<section class="slide">
+  <h1>確かめ方：設定・テーブル・1つの宛先</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">R1#<b>show running-config | include ip route</b>
+ip route 0.0.0.0 0.0.0.0 203.0.113.1
+ip route 10.1.40.0 255.255.255.0 10.1.12.2
+ip route 10.1.40.0 255.255.255.0 10.1.99.2 115
+
+R1#<b>show ip route static</b>
+Gateway of last resort is 203.0.113.1 to network 0.0.0.0
+S*    0.0.0.0/0 [1/0] via 203.0.113.1
+      10.0.0.0/8 is variably subnetted, ...
+S        10.1.40.0/24 [1/0] via 10.1.12.2
+
+R1#<b>show ip route 10.1.40.0</b>
+Routing entry for 10.1.40.0/24
+  Known via "static", distance 1, metric 0
+  Routing Descriptor Blocks:
+  * 10.1.12.2</pre>
+    </div>
+    <div>
+      <ul class="anno">
+        <li><b>設定は3行</b>あるのに、テーブルの 10.1.40.0/24 は<b>1本</b>。AD 115 の行は予備なので出ない</li>
+        <li><code>show ip route static</code>：S の行だけ。S* はデフォルトルート</li>
+        <li><code>show ip route 宛先</code>：その経路の詳しい情報。<b>Known via "static", distance 1</b> で出どころと AD が分かる</li>
+        <li>予備に切り替わったあとは distance 115 と表示される</li>
+      </ul>
+      <div class="point"><b>テーブルに出ないときの順番：</b>① ネクストホップに届く経路があるか（show ip route ネクストホップ）② 出口が up か ③ AD の小さい経路がないか ④ AD 255 にしていないか。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/dial-access/floating-static-route/118263-technote-nexthop-00.html">Configure a Next Hop IP Address for Static Routes</a>（show ip route 172.31.10.0 の出力：Routing entry for … Known via "static", distance 1, metric 0）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_pi/command/iri-cr-book/iri-cr-s1.html">show ip route</a>。出力はその形式にそろえてClaudeが作った例</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>IPv6 のスタティックルート</h1>
+  <p>考え方は IPv4 と同じ。違うのは「転送を有効にする」「長さで書く」「リンクローカルには出口が要る」の3点。</p>
+  <div class="foot"><span>CCNA #13 スタティックルート</span><span>3.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>IPv4 と IPv6 を並べて覚える</h1>
+  <div class="cols wide-r">
+    <div>
+      <table class="mx">
+        <tr><th style="width:26%">項目</th><th>IPv4</th><th>IPv6</th></tr>
+        <tr><td class="t">転送を有効に</td><td>初めから有効</td><td><b>ipv6 unicast-routing</b></td></tr>
+        <tr><td class="t">コマンド</td><td>ip route</td><td>ipv6 route</td></tr>
+        <tr><td class="t">宛先の書き方</td><td>10.1.40.0 255.255.255.0</td><td>2001:DB8:40::/64</td></tr>
+        <tr><td class="t">デフォルト</td><td>0.0.0.0 0.0.0.0</td><td>::/0</td></tr>
+        <tr><td class="t">ホスト</td><td>255.255.255.255（/32）</td><td>/128</td></tr>
+        <tr><td class="t">AD の初期値</td><td colspan="2">どちらも 1。最後に数字を書けば変えられる</td></tr>
+        <tr><td class="t">確かめる</td><td>show ip route static</td><td>show ipv6 route static</td></tr>
+      </table>
+    </div>
+    <div>
+<pre class="cli small">R1(config)#<b>ipv6 unicast-routing</b>
+R1(config)#ipv6 route 2001:DB8:40::/64 2001:DB8:12::2
+R1(config)#ipv6 route 2001:DB8:40::10/128 2001:DB8:13::3
+R1(config)#ipv6 route ::/0 2001:DB8:FFFF::1</pre>
+      <div class="point warn"><b>忘れやすい：</b>ipv6 unicast-routing がないと、ルーターは IPv6 のパケットを転送しない。インタフェースの <code>ipv6 enable</code> とは別のコマンド。</div>
+      <div class="ex"><span class="lbl">形</span><code>ipv6 route 宛先/長さ { ネクストホップ | 出口 [ネクストホップ] } [AD]</code></div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/ip-version-6-ipv6/113361-ipv6-static-routes.html">Implement Static Routes for IPv6 Configuration Example</a>（you must enable the forwarding of IPv6 packets with the ipv6 unicast-routing command・/128 の例）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_pi/configuration/xe-16-10/iri-xe-16-10-book/ip6-route-static-xe.html">IPv6 Routing: Static Routing（IOS XE 16.10）</a>（ipv6 route ::/0）</div>
+</section>
+
+<section class="slide">
+  <h1>リンクローカルのネクストホップには、出口が必ず要る</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="230" viewBox="0 0 410 230">
+        <g font-size="12" text-anchor="middle">
+          <rect x="150" y="85" width="110" height="60" rx="10" fill="#1f3a68"/><text x="205" y="120" fill="#fff" font-weight="700">R1</text>
+          <rect x="10" y="10" width="120" height="50" rx="8" fill="#5b80bf"/><text x="70" y="32" fill="#fff">R2</text><text x="70" y="49" fill="#fff" font-size="11">FE80::1</text>
+          <rect x="280" y="10" width="120" height="50" rx="8" fill="#5b80bf"/><text x="340" y="32" fill="#fff">R3</text><text x="340" y="49" fill="#fff" font-size="11">FE80::1</text>
+          <line x1="110" y1="60" x2="165" y2="88" stroke="#1d1d1f" stroke-width="3"/><line x1="300" y1="60" x2="245" y2="88" stroke="#1d1d1f" stroke-width="3"/>
+          <text x="110" y="92" fill="#6e6e73" font-size="11">Gi0/0</text><text x="300" y="92" fill="#6e6e73" font-size="11">Gi0/1</text>
+          <rect x="40" y="170" width="330" height="50" rx="8" fill="#fff4e8" stroke="#b25000"/>
+          <text x="205" y="191" fill="#b25000" font-weight="700">「FE80::1 へ」だけでは、どちらの線か分からない</text>
+          <text x="205" y="209" fill="#1d1d1f" font-size="11">リンクローカルはリンクごとの範囲。同じ値が両側にあり得る</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="cap">エラーになる書き方と正しい書き方</div>
+<pre class="cli small">R1(config)#ipv6 route ::/0 FE80::1          <i>← 出口がない</i>
+R1(config)#ipv6 route ::/0 GigabitEthernet0/0 FE80::1  <i>← 正しい</i></pre>
+      <ul class="anno">
+        <li>リンクローカルのネクストホップは<b>隣のルーター</b>でなければならない</li>
+        <li>出口とネクストホップを両方書く＝<b>完全指定</b>の形になる</li>
+        <li>グローバルアドレス（2001:DB8:…）のネクストホップなら、出口は省略できる（再帰で決まる）</li>
+      </ul>
+      <div class="point">リンクローカルを使うと、相手のグローバルアドレスを変えても経路を書き直さなくてよい。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst2960l/software/15-2_7_e/configuration_guide/rtng/b_1527e_routing_2960l/m_rt_ipv6_unicast_routing.pdf">Catalyst 2960-L Routing Configuration Guide「Configuring Static Routing for IPv6」</a>（You must specify an interface-id when using a link-local address as the next hop (the link-local next hop must also be an adjacent router)）。最後の point はClaudeの補足</div>
+</section>
+
+<section class="slide">
+  <h1>IPv6 のスタティックルートの3種類と、show の読み方</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:26%">Cisco の呼び名</th><th>書くもの</th><th style="width:36%">有効になる条件</th></tr>
+        <tr><td class="t">Directly attached</td><td>出口だけ</td><td style="text-align:left">出口が up で IPv6 が有効</td></tr>
+        <tr><td class="t">Recursive</td><td>ネクストホップだけ</td><td style="text-align:left">ネクストホップが、たどって有効な出口に行き着く</td></tr>
+        <tr><td class="t">Fully specified</td><td>出口とネクストホップ</td><td style="text-align:left">出口が up で IPv6 が有効。ネクストホップは出口に直結</td></tr>
+      </table>
+      <div class="point" style="margin-top:8px"><b>どれでもフローティングにできる：</b>最後に AD を付ければよい（例 <code>ipv6 route 2001:DB8::/32 Gi1/0/0 2001:DB8:3000::1 210</code>）。</div>
+    </div>
+    <div>
+<pre class="cli small">R1#<b>show ipv6 route static</b>
+IPv6 Routing Table - 7 entries
+Codes: C - Connected, L - Local, S - Static, ...
+S   ::/0 [1/0]
+     via FE80::1, GigabitEthernet0/0
+S   2001:DB8:40::/64 [1/0]
+     via 2001:DB8:12::2
+S   2001:DB8:40::10/128 [1/0]
+     via 2001:DB8:13::3</pre>
+      <ul class="anno">
+        <li>IPv6 は <b>2行で1本</b>：1行目に宛先と [AD/メトリック]、2行目に via</li>
+        <li>IPv4 のような Gateway of last resort の行はない。::/0 の行を見る</li>
+      </ul>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_pi/configuration/xe-16-10/iri-xe-16-10-book/ip6-route-static-xe.html">IPv6 Routing: Static Routing（IOS XE 16.10）</a>（Directly Attached／Recursive／Fully Specified／Floating Static Routes・show ipv6 route static の例）／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/ip-version-6-ipv6/113361-ipv6-static-routes.html">Doc 113361</a>。出力はその形式にそろえてClaudeが作った例</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>フローティングスタティックとトラブル</h1>
+  <p>AD を「本物より少し大きく」すると、ふだんは隠れて、本物が消えたときだけ現れる予備になる。</p>
+  <div class="foot"><span>CCNA #13 スタティックルート</span><span>3.3.d</span></div>
+</section>
+
+<section class="slide">
+  <h1>フローティングスタティックのしくみ：ふだんは浮いていて、切れたら降りてくる</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">ふだん（OSPF の経路が生きている）</div>
+      <svg width="410" height="120" viewBox="0 0 410 120">
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="40" width="80" height="44" rx="8" fill="#1f3a68"/><text x="50" y="67" fill="#fff" font-weight="700">R1</text>
+          <ellipse cx="350" cy="62" rx="52" ry="26" fill="#eef2f8" stroke="#5b80bf"/><text x="350" y="66" fill="#1f3a68" font-size="11">10.1.40.0/24</text>
+          <path d="M90 52 L298 52" stroke="#3a7d44" stroke-width="5"/><text x="195" y="42" fill="#3a7d44">本線 OSPF [110/…]　使う</text>
+          <path d="M90 76 Q195 116 298 76" stroke="#b25000" stroke-width="2" stroke-dasharray="6 4" fill="none"/><text x="195" y="114" fill="#b25000" font-size="11">予備 S AD 115　テーブルに出ない</text>
+        </g>
+      </svg>
+      <div class="cap">本線が切れたあと</div>
+      <svg width="410" height="110" viewBox="0 0 410 110">
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="30" width="80" height="44" rx="8" fill="#1f3a68"/><text x="50" y="57" fill="#fff" font-weight="700">R1</text>
+          <ellipse cx="350" cy="52" rx="52" ry="26" fill="#eef2f8" stroke="#5b80bf"/><text x="350" y="56" fill="#1f3a68" font-size="11">10.1.40.0/24</text>
+          <path d="M90 42 L180 42" stroke="#b23a2c" stroke-width="3"/><text x="195" y="47" fill="#b23a2c" font-weight="700">✕</text><path d="M210 42 L298 42" stroke="#b23a2c" stroke-width="3"/>
+          <path d="M90 66 Q195 106 298 66" stroke="#b25000" stroke-width="5" fill="none"/><text x="195" y="104" fill="#b25000" font-size="11">S 10.1.40.0/24 [115/0]　テーブルに入る</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+<pre class="cli small">ip route 10.1.40.0 255.255.255.0 10.1.99.2 <span class="hl">115</span></pre>
+      <ol class="steps">
+        <li>同じ宛先・同じ長さの経路が2つ。AD 110 の OSPF が勝ち、テーブルに入る</li>
+        <li>AD 115 のスタティックは<b>予備として待つ</b>（running-config にはある）</li>
+        <li>OSPF の経路が消えると、次に小さい AD 115 のスタティックが入る</li>
+        <li>OSPF の経路が戻ると、スタティックはまた隠れる</li>
+      </ol>
+      <div class="point">IPv4・IPv6 のどちらでも、3種類のどの書き方でもフローティングにできる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/dial-access/floating-static-route/118263-technote-nexthop-00.html">Configure a Next Hop IP Address for Static Routes</a>（A static route with a high administrative distance is called a floating static route. It is installed in the routing table only when the dynamically learned route disappears）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_pi/configuration/xe-16-10/iri-xe-16-10-book/ip6-route-static-xe.html">IPv6 Routing: Static Routing</a>（Floating Static Routes）</div>
+</section>
+
+<section class="slide">
+  <h1>計算手順：フローティングスタティックの AD を決める</h1>
+  <div class="cols">
+    <div>
+      <ol class="steps">
+        <li>守る相手（本線）の出どころを確かめる。show ip route のコードと [AD/…]</li>
+        <li>その AD <b>より大きい</b>値を選ぶ</li>
+        <li><b>255 より小さい</b>ことを確かめる（255 は入らない）</li>
+        <li>外部 EIGRP（170）などにも負けたいなら、それより大きくする</li>
+      </ol>
+      <div class="ex"><span class="lbl">例</span>本線が D EX [170/…] → 予備は <b>171〜254</b>。資料の例では 170 より大きい値を勧めている</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>守る本線</th><th>本線の AD</th><th>予備の AD</th></tr>
+        <tr><td class="t">スタティック</td><td>1</td><td>2〜254</td></tr>
+        <tr><td class="t">EIGRP（内部）</td><td>90</td><td>91〜254</td></tr>
+        <tr><td class="t">OSPF</td><td>110</td><td>111〜254</td></tr>
+        <tr><td class="t">RIP</td><td>120</td><td>121〜254</td></tr>
+        <tr><td class="t">EIGRP（外部）</td><td>170</td><td>171〜254</td></tr>
+        <tr><td class="t" style="color:#b23a2c">（どれでも）</td><td>―</td><td class="x">255 は ✕</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="point warn"><b>よくある誤り：</b>「いちばん弱くしたいから 255」→ テーブルに一度も入らず、予備にならない。逆に、本線より小さい AD（例 OSPF に 100）だと、ふだんから予備の道を使ってしまう。</div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/dial-access/floating-static-route/118263-technote-nexthop-00.html">Configure a Next Hop IP Address for Static Routes</a>（EIGRP … 170 for external routes … specify an administrative distance that is greater than 170／An administrative distance of 255 is considered unreachable）／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/border-gateway-protocol-bgp/15986-admin-distance.html">What Is Administrative Distance?</a>（各 AD）。表の範囲はClaudeがその規則で出した</div>
+</section>
+
+<section class="slide">
+  <h1>Cisco の事例：本線のリンクを切っても、予備に切り替わらない</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="380" height="260" viewBox="0 0 380 260">
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="20" y="90" width="90" height="60" rx="10" fill="#1f3a68"/><text x="65" y="125" fill="#fff" font-weight="700">R1</text>
+          <rect x="250" y="90" width="90" height="60" rx="10" fill="#1f3a68"/><text x="295" y="125" fill="#fff" font-weight="700">R2</text>
+          <line x1="110" y1="100" x2="250" y2="100" stroke="#b23a2c" stroke-width="3"/><text x="180" y="80" fill="#b23a2c">S1/0 10.10.10.0/30</text><text x="180" y="94" fill="#b23a2c">（本線）✕ shutdown</text>
+          <line x1="110" y1="140" x2="250" y2="140" stroke="#b25000" stroke-width="3" stroke-dasharray="6 4"/><text x="180" y="160" fill="#b25000">S2/0 10.10.20.0/30（予備）</text>
+          <ellipse cx="295" cy="225" rx="70" ry="24" fill="#eef2f8" stroke="#5b80bf"/><text x="295" y="229" fill="#1f3a68">LAN 172.31.10.0/24</text>
+          <line x1="295" y1="150" x2="295" y2="201" stroke="#5b80bf" stroke-width="2"/>
+          <rect x="10" y="10" width="140" height="40" rx="8" fill="#6e6e73"/><text x="80" y="28" fill="#fff">S3/0 → 192.168.10.2</text><text x="80" y="43" fill="#fff">（インターネット側）</text>
+          <line x1="65" y1="50" x2="65" y2="90" stroke="#6e6e73" stroke-width="2"/>
+        </g>
+      </svg>
+    </div>
+    <div>
+<pre class="cli small">ip route 10.0.0.0 255.0.0.0 192.168.10.2
+ip route 172.31.10.0 255.255.255.0 10.10.10.2      <i>(本線)</i>
+ip route 172.31.10.0 255.255.255.0 10.10.20.2 250  <i>(予備)</i></pre>
+      <ol class="steps">
+        <li>S1/0 を落とすと C 10.10.10.0/30 が消える</li>
+        <li>でも本線のネクストホップ 10.10.10.2 は <b>10.0.0.0/8 の中</b>。再帰検索で 192.168.10.2 経由で「届く」とみなされる</li>
+        <li>本線（AD 1）がテーブルに残るので、予備（AD 250）は入らない</li>
+        <li>パケットはインターネット側へ出て行き、LAN に届かない</li>
+      </ol>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/dial-access/floating-static-route/118263-technote-nexthop-00.html">Configure a Next Hop IP Address for Static Routes</a>（Floating Static Route Example：The next hop IP address 10.10.10.2 is successfully recursed to (to 192.168.10.2) through the static route 10.0.0.0/8）。図は資料の構成をClaudeが描き直した</div>
+</section>
+
+<section class="slide">
+  <h1>直し方：本線に出口のインタフェースを書く</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">R1(config)#no ip route 172.31.10.0 255.255.255.0 10.10.10.2
+R1(config)#ip route 172.31.10.0 255.255.255.0 Serial1/0
+
+R1#show ip route
+...
+      172.31.0.0/24 is subnetted, 1 subnets
+S        172.31.10.0 <span class="hl">[250/0]</span> via 10.10.20.2
+
+R1#show ip route 172.31.10.0
+Routing entry for 172.31.10.0/24
+  Known via "static", <span class="hl">distance 250</span>, metric 0 (connected)</pre>
+    </div>
+    <div>
+      <ul class="anno">
+        <li>本線を<b>出口つき</b>にすると、再帰でほかの経路を使わない。S1/0 が down なら本線はすぐ消える</li>
+        <li>予備（AD 250）がテーブルに入り、[250/0] で表示される</li>
+        <li>シリアルはポイントツーポイントなので出口だけでよい。<b>イーサネットなら出口とネクストホップの両方</b>を書く</li>
+      </ul>
+      <div class="point"><b>教訓：</b>予備に切り替えたい本線は「出口が落ちたら消える」書き方（出口つき）にする。ネクストホップだけの経路は、もっと大きな経路で生き残ることがある。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/dial-access/floating-static-route/118263-technote-nexthop-00.html">Configure a Next Hop IP Address for Static Routes</a>（Solution：Cisco recommends to configure both the outbound interface and the next hop IP address… For a serial interface, the specification of the outbound interface is sufficient・修正後の出力 S 172.31.10.0 [250/0] via 10.10.20.2）</div>
+</section>
+
+<section class="slide">
+  <h1>トラブルの見分け方：「入らない」「切り替わらない」「返事がない」</h1>
+  <table class="mx">
+    <tr><th style="width:24%">症状</th><th style="width:36%">確かめるもの</th><th>よくある原因と直し方</th></tr>
+    <tr><td class="t">設定したのにテーブルに出ない</td><td style="text-align:left"><code>show ip route ネクストホップ</code>・<code>show ip interface brief</code></td><td style="text-align:left">ネクストホップに届かない／出口が down／AD 255／もっと小さい AD の経路がある</td></tr>
+    <tr><td class="t">本線が切れても予備に切り替わらない</td><td style="text-align:left"><code>show ip route 宛先</code>で本線が残っているか</td><td style="text-align:left">ネクストホップだけの本線が別の経路で再帰して残る → 出口つきにする／permanent を外す</td></tr>
+    <tr><td class="t">ふだんから予備の道を通る</td><td style="text-align:left">[AD/…] の値</td><td style="text-align:left">予備の AD が本線より小さい → 本線より大きくする</td></tr>
+    <tr><td class="t">行きは届くが ping が失敗</td><td style="text-align:left">相手側のルーターのテーブル</td><td style="text-align:left">戻りの経路がない → 相手にも経路を書く</td></tr>
+    <tr><td class="t">ARP 表が大きく CPU が高い</td><td style="text-align:left"><code>show ip arp</code></td><td style="text-align:left">イーサネットに出口だけのデフォルトルート → ネクストホップも書く</td></tr>
+    <tr><td class="t">IPv6 で経路を入れられない</td><td style="text-align:left">入力したコマンド</td><td style="text-align:left">リンクローカルのネクストホップに出口がない／ipv6 unicast-routing がない</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/support/docs/dial-access/floating-static-route/118263-technote-nexthop-00.html">Doc 118263</a>／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_pi/command/iri-cr-book/iri-cr-a1.html">ip route</a> Usage Guidelines／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9500/software/release/17-13/configuration_guide/rtng/b_1713_rtng_9500_cg/protocol_independent_features.html">IOS XE 17.13 Static Unicast Routes</a>／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst2960l/software/15-2_7_e/configuration_guide/rtng/b_1527e_routing_2960l/m_rt_ipv6_unicast_routing.pdf">2960-L IPv6 Static Routing</a>。表はClaudeがまとめた</div>
+</section>
+
+<section class="slide">
+  <h1>よくあるひっかけ</h1>
+  <table class="mx">
+    <tr><th style="width:38%">よくある思い込み</th><th>正しくは</th></tr>
+    <tr><td class="t">ip route 10.1.40.0/24 10.1.12.2</td><td style="text-align:left">IPv4 はマスクで書く：ip route 10.1.40.0 <b>255.255.255.0</b> 10.1.12.2</td></tr>
+    <tr><td class="t">デフォルトは 0.0.0.0 255.255.255.255</td><td style="text-align:left">0.0.0.0 <b>0.0.0.0</b>（IPv6 は ::/0）</td></tr>
+    <tr><td class="t">予備は AD 255 にする</td><td style="text-align:left">255 はテーブルに入らない。本線より大きく <b>254 以下</b></td></tr>
+    <tr><td class="t">OSPF の予備は AD 100</td><td style="text-align:left">110 より小さいので OSPF に勝ち、ふだんから予備を使う</td></tr>
+    <tr><td class="t">出口だけ書けばイーサネットでも同じ</td><td style="text-align:left">宛先ごとに ARP を出す。イーサネットはネクストホップも書く</td></tr>
+    <tr><td class="t">ネクストホップだけの本線は、線が切れれば必ず消える</td><td style="text-align:left">別の経路でネクストホップに届くと残る（Doc 118263 の事例）</td></tr>
+    <tr><td class="t">ipv6 route ::/0 FE80::1 で書ける</td><td style="text-align:left">リンクローカルには<b>出口</b>が必要：ipv6 route ::/0 Gi0/0 FE80::1</td></tr>
+    <tr><td class="t">1台に経路を書けば往復できる</td><td style="text-align:left">戻りの経路も相手側に要る</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">書き方</div>
+      <table class="mini">
+        <tr><td style="width:28%">IPv4</td><td><code>ip route 宛先 マスク 行き先 [AD]</code></td></tr>
+        <tr><td>IPv6</td><td><code>ipv6 unicast-routing</code> のあと <code>ipv6 route 宛先/長さ 行き先 [AD]</code></td></tr>
+        <tr><td>デフォルト</td><td>0.0.0.0 0.0.0.0／::/0</td></tr>
+        <tr><td>ホスト</td><td>255.255.255.255（/32）／/128</td></tr>
+        <tr><td>行き先</td><td>ネクストホップ（再帰）／出口（P2P 向け）／両方（イーサネット・リンクローカル）</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">フローティングスタティック</div>
+      <div class="stack">
+        <div class="box b1">本線の AD ＜ 予備の AD ＜ 255<span>OSPF なら 111〜254、内部 EIGRP なら 91〜254</span></div>
+        <div class="box b3">本線は「切れたら消える」書き方に<span>出口つきにしないと、再帰で生き残って切り替わらないことがある</span></div>
+      </div>
+      <div class="point"><b>次の分野：</b>#14 OSPF で、ダイナミックルーティングの設定と DR/BDR を読む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

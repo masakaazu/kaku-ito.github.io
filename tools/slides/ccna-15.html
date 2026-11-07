@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CCNA #15 FHRP 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">CCNA（200-301 v1.1）　3.0 IPコネクティビティ　#15</div>
+  <h1>FHRP</h1>
+  <p>出題範囲 3.5 ― デフォルトゲートウェイを何台かで冗長にする HSRP・VRRP・GLBP の目的としくみ</p>
+  <div class="refs-legend">各ページの下に、根拠にしたCiscoの資料・RFCを書いた（青い文字を押すと開く）</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>3.5 Describe the purpose, functions, and concepts of first hop redundancy protocols</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 FHRP の目的<span>ゲートウェイが1つだと止まる → 仮想 IP・仮想 MAC を共有する</span></div>
+      <div class="box b2">2 HSRP<span>アクティブとスタンバイ・優先度・プリエンプト・track・タイマー・仮想 MAC</span></div>
+      <div class="box b3">3 VRRP と GLBP<span>標準の VRRP、1グループで負荷分散できる GLBP、3つの比較</span></div>
+    </div>
+    <div>
+      <div class="cap">CCNAでの問われ方</div>
+      <table>
+        <tr><td style="width:22%">Describe</td><td>設定の細部より、<b>目的・役割の名前・既定値・違い</b>が問われる。「アクティブ／スタンバイ」「マスター／バックアップ」「AVG／AVF」の対応、プリエンプトの初期値、仮想 MAC の形</td></tr>
+      </table>
+      <div class="point"><b>覚え方の芯：</b>PC はゲートウェイを<b>1つしか持てず、自分で切り替えられない</b>。だからルーター側で「同じアドレスを引き継ぐ」しくみを作る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco CCNA Exam v1.1 (200-301) Exam Topics</a>（3.5）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>FHRP の目的</h1>
+  <p>何台かのルーターが1台の「仮想ルーター」を演じ、落ちたら別の1台が同じアドレスを引き継ぐ。</p>
+  <div class="foot"><span>CCNA #15 FHRP</span><span>3.5</span></div>
+</section>
+
+<section class="slide">
+  <h1>困りごと：ゲートウェイのルーターが1台落ちると、PC は外へ出られない</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="250" viewBox="0 0 410 250">
+        <g font-size="12" text-anchor="middle">
+          <ellipse cx="205" cy="30" rx="80" ry="22" fill="#eef2f8" stroke="#5b80bf"/><text x="205" y="34" fill="#1f3a68">外のネットワーク</text>
+          <rect x="60" y="80" width="100" height="50" rx="8" fill="#6e6e73"/><text x="110" y="102" fill="#fff" font-weight="700">R1 ✕</text><text x="110" y="118" fill="#fff" font-size="11">10.1.10.2</text>
+          <rect x="250" y="80" width="100" height="50" rx="8" fill="#1f3a68"/><text x="300" y="102" fill="#fff" font-weight="700">R2</text><text x="300" y="118" fill="#fff" font-size="11">10.1.10.3</text>
+          <line x1="110" y1="80" x2="170" y2="50" stroke="#c7c7cc" stroke-width="3"/><line x1="300" y1="80" x2="240" y2="50" stroke="#1d1d1f" stroke-width="3"/>
+          <rect x="150" y="160" width="110" height="30" rx="6" fill="#6e6e73"/><text x="205" y="180" fill="#fff">スイッチ</text>
+          <line x1="110" y1="130" x2="180" y2="160" stroke="#c7c7cc" stroke-width="3"/><line x1="300" y1="130" x2="230" y2="160" stroke="#1d1d1f" stroke-width="3"/>
+          <rect x="150" y="210" width="110" height="34" rx="6" fill="#5b80bf"/><text x="205" y="225" fill="#fff" font-size="11">PC</text><text x="205" y="239" fill="#fff" font-size="10.5">GW＝10.1.10.2</text>
+          <line x1="205" y1="190" x2="205" y2="210" stroke="#1d1d1f" stroke-width="2"/>
+          <text x="360" y="215" fill="#b23a2c" font-size="11">R2 は生きているのに</text><text x="360" y="231" fill="#b23a2c" font-size="11">PC は使えない</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>PC に書けるデフォルトゲートウェイは <b>1つのアドレス</b></li>
+        <li>PC は、ゲートウェイが落ちても<b>自分で別のルーターに切り替えない</b></li>
+        <li>ルーターを2台置いても、PC が R1 のアドレスを書いていれば R1 と一緒に止まる</li>
+      </ol>
+      <div class="point"><b>FHRP の答え：</b>R1 と R2 で<b>仮想 IP（例 10.1.10.1）と仮想 MAC</b>を共有し、PC のゲートウェイは仮想 IP にする。転送役が落ちたら、もう1台が同じ仮想 IP・仮想 MAC を引き継ぐ。</div>
+      <div class="ex"><span class="lbl">語</span>FHRP＝First Hop Redundancy Protocol（最初のホップ＝ゲートウェイの冗長のプロトコル）</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/ip/b_179_ip_9300_cg/configuring___hsrp.html">IP Addressing Services Configuration Guide IOS XE 17.9（Catalyst 9300）「Configuring HSRP」</a>（HSRP is useful for hosts that do not support a router discovery protocol and cannot switch to a new router when their selected router reloads or loses power）。図はClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>仮想ルーター：実アドレス n 組 ＋ 仮想 1 組</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="380" height="260" viewBox="0 0 380 260">
+        <g font-size="12" text-anchor="middle">
+          <rect x="20" y="20" width="130" height="64" rx="10" fill="#1f3a68"/><text x="85" y="44" fill="#fff" font-weight="700">R1（アクティブ）</text><text x="85" y="60" fill="#fff" font-size="10.5">10.1.10.2</text><text x="85" y="74" fill="#fff" font-size="10.5">実 MAC aaaa.aaaa.aaaa</text>
+          <rect x="230" y="20" width="130" height="64" rx="10" fill="#5b80bf"/><text x="295" y="44" fill="#fff" font-weight="700">R2（スタンバイ）</text><text x="295" y="60" fill="#fff" font-size="10.5">10.1.10.3</text><text x="295" y="74" fill="#fff" font-size="10.5">実 MAC bbbb.bbbb.bbbb</text>
+          <rect x="90" y="120" width="200" height="60" rx="30" fill="#fff4e8" stroke="#b25000" stroke-width="2" stroke-dasharray="6 4"/>
+          <text x="190" y="144" fill="#b25000" font-weight="700">仮想ルーター</text><text x="190" y="162" fill="#b25000" font-size="11">10.1.10.1／0000.0c07.ac01</text>
+          <line x1="85" y1="84" x2="140" y2="120" stroke="#b25000" stroke-width="3"/><line x1="295" y1="84" x2="240" y2="120" stroke="#c7c7cc" stroke-width="2" stroke-dasharray="4 3"/>
+          <rect x="130" y="210" width="120" height="40" rx="6" fill="#6e6e73"/><text x="190" y="227" fill="#fff" font-size="11">PC</text><text x="190" y="242" fill="#fff" font-size="10.5">GW＝10.1.10.1</text>
+          <line x1="190" y1="180" x2="190" y2="210" stroke="#1d1d1f" stroke-width="2"/>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">アドレス</th><th>だれのもの</th><th style="width:34%">使い道</th></tr>
+        <tr><td class="t">10.1.10.2</td><td>R1 の実アドレス</td><td style="text-align:left">R1 の管理・HSRP の Hello</td></tr>
+        <tr><td class="t">10.1.10.3</td><td>R2 の実アドレス</td><td style="text-align:left">R2 の管理・HSRP の Hello</td></tr>
+        <tr><td class="t">10.1.10.1</td><td><b>仮想</b>（グループ）</td><td style="text-align:left">PC のゲートウェイ</td></tr>
+      </table>
+      <ol class="steps" style="margin-top:8px">
+        <li>PC が 10.1.10.1 の ARP を出す → アクティブが<b>仮想 MAC</b>で答える</li>
+        <li>PC は仮想 MAC 宛てに送る → アクティブが転送</li>
+        <li>アクティブが落ちる → スタンバイが同じ仮想 IP・仮想 MAC を引き継ぐ。<b>PC は何も変えない</b></li>
+      </ol>
+      <div class="ex"><span class="lbl">数</span>n 台で組むと IP と MAC は n＋1 組（2台なら3組）</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/ip/b_179_ip_9300_cg/configuring___hsrp.html">IOS XE 17.9「HSRP Overview」</a>（provides a virtual MAC address and an IP address that is shared among a group・For n routers running HSRP, there are n +1 IP and MAC addresses assigned）。アドレスはClaudeが作った例</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>HSRP</h1>
+  <p>Cisco の FHRP。転送するアクティブ1台と、待つスタンバイ1台。優先度とプリエンプトで、どちらが転送するかを決める。</p>
+  <div class="foot"><span>CCNA #15 FHRP</span><span>3.5</span></div>
+</section>
+
+<section class="slide">
+  <h1>HSRP の基本の値</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:36%">項目</th><th>値</th></tr>
+        <tr><td class="t">役割</td><td>アクティブ1台・スタンバイ1台・残りは Listen</td></tr>
+        <tr><td class="t">優先度</td><td>1〜255、<b>初期値 100</b>、大きいほうが勝ち</td></tr>
+        <tr><td class="t">同点のとき</td><td>インタフェースの IP アドレスが大きいほう</td></tr>
+        <tr><td class="t">プリエンプト</td><td><b>初期値は無効</b></td></tr>
+        <tr><td class="t">Hello／Hold</td><td><b>3 秒／10 秒</b></td></tr>
+        <tr><td class="t">バージョン</td><td>初期値 v1（v2 と混ぜられない）</td></tr>
+        <tr><td class="t">v1 の宛先</td><td>224.0.0.2・UDP 1985</td></tr>
+        <tr><td class="t">v2 の宛先</td><td>224.0.0.102（IPv6 は v2 が必要）</td></tr>
+        <tr><td class="t">v1 の仮想 MAC</td><td>0000.0c07.acXX（XX＝グループ番号の16進数）</td></tr>
+        <tr><td class="t">v1 のグループ番号</td><td>0〜255（初期値 0）</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">設定の例（スイッチの SVI）</div>
+<pre class="cli small">SW1(config)#interface vlan 10
+SW1(config-if)#ip address 10.1.10.2 255.255.255.0
+SW1(config-if)#standby 1 ip 10.1.10.1
+SW1(config-if)#standby 1 priority 110
+SW1(config-if)#standby 1 preempt</pre>
+      <ul class="anno">
+        <li><code>standby グループ ip 仮想IP</code> で HSRP が動き出す</li>
+        <li>設定できるのは<b>レイヤ3 のインタフェース</b>（SVI・ルーテッドポート・L3 の port-channel）</li>
+        <li>仮想 MAC の計算：グループ 10 → 10 は16進数で 0a → <b>0000.0c07.ac0a</b></li>
+      </ul>
+      <div class="point warn"><b>タイマーの取り違え：</b>HSRP は 3／10、OSPF は 10／40、STP の Hello は 2。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/ip/b_179_ip_9300_cg/configuring___hsrp.html">IOS XE 17.9「Configuring HSRP」</a>（Default HSRP Configuration・HSRP Versions・HSRP Configuration Guidelines・Enabling HSRP）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/routers/ios/config/17-x/ntw-servs/b-network-services/m_fhp-hsrp-0.html">Network Services Configuration Guide IOS XE 17.x「HSRP Addressing」</a>（224.0.0.2 … UDP port 1985・0000.0C07.ACxy … in hexadecimal）</div>
+</section>
+
+<section class="slide">
+  <h1>計算手順：どちらがアクティブになるか</h1>
+  <div class="cols">
+    <div>
+      <ol class="steps">
+        <li><b>今アクティブがいるか</b>を見る。いなければ（同時に起動）③へ</li>
+        <li>いるなら、<b>優先度が今のアクティブより大きく、かつ preempt が有効</b>なルーターだけが交代させられる。それ以外は今のまま</li>
+        <li>選出：優先度が大きいほう → 同じなら<b>IP アドレスが大きい</b>ほう</li>
+        <li>2番目がスタンバイ。残りは Listen</li>
+      </ol>
+      <div class="point warn"><b>同点・IP 大でも交代しない：</b>優先度が同じで IP アドレスが大きいだけでは、preempt があってもアクティブを奪わない。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>場面</th><th>R1</th><th>R2</th><th>アクティブ</th></tr>
+        <tr><td class="t">同時に起動</td><td>100／.2</td><td>100／.3</td><td>R2（IP が大）</td></tr>
+        <tr><td class="t">同時に起動</td><td>110／.2</td><td>100／.3</td><td>R1（優先度）</td></tr>
+        <tr><td class="t">R2 が先、R1 があとから</td><td>110・preempt なし</td><td>100</td><td>R2 のまま</td></tr>
+        <tr><td class="t">R2 が先、R1 があとから</td><td>110・preempt あり</td><td>100</td><td>R1 に交代</td></tr>
+        <tr><td class="t">R1 が先、R2 があとから</td><td>100／.2</td><td>100／.3・preempt</td><td>R1 のまま</td></tr>
+      </table>
+      <div class="ex"><span class="lbl">表</span>「100／.2」＝優先度 100、アドレス 10.1.10.2</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/routers/ios/config/17-x/ntw-servs/b-network-services/m_fhp-hsrp-0.html">IOS XE 17.x「HSRP Priority and Preemption」</a>（Priority is determined first by the configured priority value, and then by the IP address … If you do not use the standby preempt … will not become the active router … A standby router with equal priority but a higher IP address will not preempt）。表はClaudeが作った練習</div>
+</section>
+
+<section class="slide">
+  <h1>プリエンプトと track：WAN が切れたら交代させる</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="210" viewBox="0 0 410 210">
+        <g font-size="12" text-anchor="middle">
+          <ellipse cx="205" cy="26" rx="80" ry="20" fill="#eef2f8" stroke="#5b80bf"/><text x="205" y="30" fill="#1f3a68">WAN</text>
+          <rect x="40" y="80" width="130" height="56" rx="10" fill="#1f3a68"/><text x="105" y="102" fill="#fff" font-weight="700">R1 アクティブ</text><text x="105" y="120" fill="#fff" font-size="11">優先度 110 → 100</text>
+          <rect x="240" y="80" width="130" height="56" rx="10" fill="#5b80bf"/><text x="305" y="102" fill="#fff" font-weight="700">R2 → アクティブ</text><text x="305" y="120" fill="#fff" font-size="11">優先度 105・preempt</text>
+          <line x1="105" y1="80" x2="160" y2="40" stroke="#b23a2c" stroke-width="3"/><text x="118" y="56" fill="#b23a2c" font-weight="700">✕ Gi0/0</text>
+          <line x1="305" y1="80" x2="250" y2="40" stroke="#1d1d1f" stroke-width="3"/>
+          <rect x="150" y="170" width="110" height="30" rx="6" fill="#6e6e73"/><text x="205" y="190" fill="#fff">PC の LAN</text>
+          <line x1="105" y1="136" x2="170" y2="170" stroke="#1d1d1f" stroke-width="2"/><line x1="305" y1="136" x2="240" y2="170" stroke="#1d1d1f" stroke-width="2"/>
+        </g>
+      </svg>
+<pre class="cli small">R1(config-if)#standby 1 priority 110
+R1(config-if)#standby 1 track GigabitEthernet0/0 10
+R2(config-if)#standby 1 priority 105
+R2(config-if)#standby 1 preempt</pre>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>R1 の WAN 側 Gi0/0 が切れる。LAN 側は生きているので、HSRP だけなら R1 がアクティブのまま</li>
+        <li>track が働き、R1 の優先度が <b>10 下がる</b>（110→100）</li>
+        <li>R2（105）のほうが大きくなり、<b>R2 の preempt</b> でアクティブを奪う</li>
+        <li>Gi0/0 が戻ると R1 は 110 に戻る。R1 にも preempt があれば R1 に戻る</li>
+      </ol>
+      <div class="point"><b>preempt を入れるのは「奪う側」：</b>交代させたいルーター（ここでは R2）に入れる。track の初期の下げ幅は 10。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/ip/b_179_ip_9300_cg/configuring___hsrp.html">IOS XE 17.9「Configuring HSRP Priority」</a>（When a tracked interface fails, the hot standby priority … decreases by 10・If preemption is enabled, the router with the highest priority becomes the active router）。構成と値はClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>show standby を読む・HSRP の状態</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">SW1#<b>show standby</b>
+Vlan10 - Group 1
+  <span class="hl">State is Active</span>
+  Virtual IP address is 10.1.10.1
+  Active virtual MAC address is <span class="hl">0000.0c07.ac01</span>
+  Hello time 3 sec, hold time 10 sec
+  <span class="hl">Preemption enabled</span>
+  Active router is local
+  Standby router is 10.1.10.3, priority 100
+  Priority 110 (configured 110)
+
+SW1#<b>show standby brief</b>
+Interface Grp Pri P State   Active  Standby    Virtual IP
+Vl10      1   110 P Active  local   10.1.10.3  10.1.10.1</pre>
+    </div>
+    <div>
+      <ul class="anno">
+        <li><b>State</b>：自分の状態。Active なら自分が転送している</li>
+        <li><b>Active router is local</b>：自分がアクティブ。スタンバイは 10.1.10.3</li>
+        <li><b>Preemption enabled</b>：preempt が有効。brief では <b>P</b></li>
+        <li><b>Priority 110 (configured 110)</b>：今の優先度（track で下がると左だけ変わる）</li>
+      </ul>
+      <div class="cap">状態の流れ</div>
+      <table class="mini">
+        <tr><td style="width:24%">Init</td><td>まだ参加できない（インタフェース down など）</td></tr>
+        <tr><td>Learn</td><td>仮想 IP をまだ知らない</td></tr>
+        <tr><td>Listen</td><td>Hello を聞いて待つ（3台目以降はここ）</td></tr>
+        <tr><td>Speak</td><td>Hello を送って選出に参加</td></tr>
+        <tr><td>Standby → Active</td><td>予備 → 転送役</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/routers/ios/config/17-x/ntw-servs/b-network-services/m_fhp-hsrp-0.html">IOS XE 17.x「Configuring HSRP」</a>（show standby・show standby brief の出力例・HSRP の状態 Init/Learn/Listen/Speak/Standby/Active）。出力はその形式にそろえてClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>HSRP で両方のルーターを使う：グループを VLAN ごとに分ける</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="200" viewBox="0 0 410 200">
+        <g font-size="12" text-anchor="middle">
+          <rect x="30" y="20" width="140" height="64" rx="10" fill="#1f3a68"/><text x="100" y="42" fill="#fff" font-weight="700">SW1</text><text x="100" y="60" fill="#fff" font-size="11">VLAN10：Active(110)</text><text x="100" y="75" fill="#fff" font-size="11">VLAN20：Standby(100)</text>
+          <rect x="240" y="20" width="140" height="64" rx="10" fill="#b25000"/><text x="310" y="42" fill="#fff" font-weight="700">SW2</text><text x="310" y="60" fill="#fff" font-size="11">VLAN10：Standby(100)</text><text x="310" y="75" fill="#fff" font-size="11">VLAN20：Active(110)</text>
+          <rect x="40" y="140" width="130" height="44" rx="6" fill="#5b80bf"/><text x="105" y="158" fill="#fff">VLAN 10 の PC</text><text x="105" y="174" fill="#fff" font-size="10.5">GW 10.1.10.1</text>
+          <rect x="240" y="140" width="130" height="44" rx="6" fill="#e8a33d"/><text x="305" y="158" fill="#fff">VLAN 20 の PC</text><text x="305" y="174" fill="#fff" font-size="10.5">GW 10.1.20.1</text>
+          <line x1="105" y1="140" x2="100" y2="84" stroke="#1f3a68" stroke-width="4"/><line x1="305" y1="140" x2="310" y2="84" stroke="#b25000" stroke-width="4"/>
+          <line x1="120" y1="140" x2="280" y2="84" stroke="#c7c7cc" stroke-width="2" stroke-dasharray="4 3"/><line x1="290" y1="140" x2="130" y2="84" stroke="#c7c7cc" stroke-width="2" stroke-dasharray="4 3"/>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <ul class="anno">
+        <li>HSRP は<b>1グループで1台しか転送しない</b>。スタンバイの帯域は使われない</li>
+        <li>VLAN 10 はグループ 10、VLAN 20 はグループ 20 にし、<b>アクティブを別のスイッチ</b>にする</li>
+        <li>PC のゲートウェイは VLAN ごとに違う仮想 IP</li>
+        <li>両方に <b>preempt</b> を入れる。落ちて戻ったとき、元の分担に戻すため</li>
+      </ul>
+      <div class="point"><b>STP と合わせる：</b>VLAN 10 のルートブリッジも SW1 にそろえると、PC からの通り道がまっすぐになる（#09 のスパニングツリーと同じ考え方）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/ip/b_179_ip_9300_cg/configuring___hsrp.html">IOS XE 17.9「Multiple HSRP」</a>（allows load sharing between two or more HSRP groups・you need to enter the standby preempt … so that … preemption restores load sharing）。STP と合わせる point はClaudeの補足</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>VRRP と GLBP</h1>
+  <p>VRRP は HSRP とほぼ同じ考え方の標準。GLBP は1つのゲートウェイのアドレスのまま何台にも転送を分ける。</p>
+  <div class="foot"><span>CCNA #15 FHRP</span><span>3.5</span></div>
+</section>
+
+<section class="slide">
+  <h1>VRRP：標準の FHRP。呼び名とプリエンプトの初期値が違う</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:32%">項目</th><th>HSRP</th><th>VRRP</th></tr>
+        <tr><td class="t">決めたところ</td><td>Cisco 独自</td><td><b>IETF 標準</b>（RFC 5798）</td></tr>
+        <tr><td class="t">転送する役</td><td>アクティブ</td><td><b>マスター</b></td></tr>
+        <tr><td class="t">待つ役</td><td>スタンバイ</td><td><b>バックアップ</b></td></tr>
+        <tr><td class="t">優先度の初期値</td><td>100</td><td>100</td></tr>
+        <tr><td class="t">プリエンプト</td><td>初期値 無効</td><td><b>初期値 有効</b></td></tr>
+        <tr><td class="t">宛先</td><td>224.0.0.2（v1）</td><td><b>224.0.0.18</b>（IP プロトコル 112）</td></tr>
+        <tr><td class="t">仮想 MAC</td><td>0000.0c07.acXX</td><td><b>0000.5e00.01XX</b>（XX＝VRID）</td></tr>
+        <tr><td class="t">仮想 IP</td><td>実アドレスと別</td><td>実アドレスと同じにもできる</td></tr>
+      </table>
+    </div>
+    <div>
+      <dl class="def">
+        <dt>アドレスの持ち主（優先度 255）</dt>
+        <dd>VRRP では、仮想 IP を自分の実アドレスとして持つルーターは優先度 255 で、必ずマスターになる</dd>
+        <dt>優先度 0</dt>
+        <dd>マスターが VRRP をやめるときに知らせる特別な値。バックアップはすぐ引き継げる</dd>
+        <dt>標準の利点</dt>
+        <dd>Cisco 以外の機器とも組める</dd>
+      </dl>
+      <div class="ex"><span class="lbl">MAC</span>0000.5e00.0114 → VRRP の VRID 0x14＝<b>20</b></div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc5798">RFC 5798 VRRP Version 3</a>（Master・Backup／5.1.1.2 224.0.0.18／5.1.1.4 protocol number 112／5.2.4 Priority：255 for the owner・0 special meaning・default 100／6.1 Preempt_Mode Default is True／7.3 00-00-5E-00-01-{VRID}）</div>
+</section>
+
+<section class="slide">
+  <h1>GLBP：1つのゲートウェイのまま、何台にも転送を分ける</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="250" viewBox="0 0 410 250">
+        <g font-size="12" text-anchor="middle">
+          <rect x="20" y="20" width="160" height="64" rx="10" fill="#1f3a68"/><text x="100" y="42" fill="#fff" font-weight="700">R1（AVG ＋ AVF）</text><text x="100" y="60" fill="#fff" font-size="10.5">仮想 IP 10.21.8.10</text><text x="100" y="75" fill="#fff" font-size="10.5">AVF：0007.b400.0101</text>
+          <rect x="230" y="20" width="160" height="64" rx="10" fill="#b25000"/><text x="310" y="42" fill="#fff" font-weight="700">R2（AVF）</text><text x="310" y="60" fill="#fff" font-size="10.5">　</text><text x="310" y="75" fill="#fff" font-size="10.5">AVF：0007.b400.0102</text>
+          <rect x="30" y="180" width="140" height="56" rx="6" fill="#5b80bf"/><text x="100" y="200" fill="#fff">PC1</text><text x="100" y="216" fill="#fff" font-size="10.5">GW 10.21.8.10</text><text x="100" y="230" fill="#fff" font-size="10.5">→ MAC …0101</text>
+          <rect x="240" y="180" width="140" height="56" rx="6" fill="#e8a33d"/><text x="310" y="200" fill="#fff">PC2</text><text x="310" y="216" fill="#fff" font-size="10.5">GW 10.21.8.10</text><text x="310" y="230" fill="#fff" font-size="10.5">→ MAC …0102</text>
+          <line x1="100" y1="180" x2="100" y2="84" stroke="#1f3a68" stroke-width="4"/><line x1="310" y1="180" x2="310" y2="84" stroke="#b25000" stroke-width="4"/>
+          <path d="M120 180 Q160 130 120 90" stroke="#3a7d44" stroke-width="2" fill="none" stroke-dasharray="4 3"/>
+          <path d="M290 180 Q200 130 150 90" stroke="#3a7d44" stroke-width="2" fill="none" stroke-dasharray="4 3"/>
+          <text x="205" y="130" fill="#3a7d44" font-size="11">ARP は AVG が答える</text><text x="205" y="146" fill="#3a7d44" font-size="11">PC ごとに違う MAC</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <dl class="def">
+        <dt>AVG（Active Virtual Gateway）</dt>
+        <dd>グループに1台のまとめ役。メンバーに仮想 MAC を割り当て、<b>仮想 IP の ARP に答える</b>。PC ごとに違う仮想 MAC を返して負荷を分ける</dd>
+        <dt>AVF（Active Virtual Forwarder）</dt>
+        <dd>割り当てられた仮想 MAC 宛てのパケットを転送する役。<b>1グループに最大4台</b>。AVG も AVF を兼ねる</dd>
+        <dt>1台落ちたら</dt>
+        <dd>残りの AVF が落ちた AVF の仮想 MAC も引き受ける。AVG が落ちたら別のメンバーが AVG になる</dd>
+      </dl>
+      <div class="ex"><span class="lbl">値</span>Hello 3 秒・224.0.0.102・UDP 3222／仮想 MAC 0007.b400.XXYY</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/routers/ios/config/17-x/ntw-servs/b-network-services/m_fhp-glbp-0.html">Network Services Configuration Guide IOS XE 17.x「Configuring GLBP」</a>（GLBP Overview：single virtual IP address and multiple virtual MAC addresses・224.0.0.102, UDP port 3222／GLBP Active Virtual Gateway：Router A … 0007.b400.0101、Router B … 0007.b400.0102／up to four virtual MAC addresses per group）</div>
+</section>
+
+<section class="slide">
+  <h1>3つを比べる：本番の選択肢はここから作られる</h1>
+  <table class="mx">
+    <tr><th style="width:22%">項目</th><th>HSRP</th><th>VRRP</th><th>GLBP</th></tr>
+    <tr><td class="t">決めたところ</td><td>Cisco 独自</td><td class="a">標準（RFC 5798）</td><td>Cisco 独自</td></tr>
+    <tr><td class="t">転送する役</td><td>アクティブ 1台</td><td>マスター 1台</td><td class="a">AVF 最大 4台</td></tr>
+    <tr><td class="t">待つ役・まとめ役</td><td>スタンバイ</td><td>バックアップ</td><td>AVG（ARP に答える）</td></tr>
+    <tr><td class="t">1グループで負荷分散</td><td class="x">できない</td><td class="x">できない</td><td class="a">できる</td></tr>
+    <tr><td class="t">優先度の初期値</td><td>100</td><td>100</td><td>100</td></tr>
+    <tr><td class="t">プリエンプトの初期値</td><td>無効</td><td class="a">有効</td><td>AVG は無効（AVF は有効）</td></tr>
+    <tr><td class="t">Hello の間隔</td><td>3 秒（Hold 10）</td><td>1 秒</td><td>3 秒</td></tr>
+    <tr><td class="t">宛先</td><td>224.0.0.2／.102</td><td>224.0.0.18</td><td>224.0.0.102</td></tr>
+    <tr><td class="t">仮想 MAC</td><td>0000.0c07.acXX</td><td>0000.5e00.01XX</td><td>0007.b400.XXYY</td></tr>
+  </table>
+  <div class="point"><b>見分けの鍵：</b>「標準」→ VRRP、「1つの仮想 IP で負荷分散」→ GLBP、「アクティブ／スタンバイ」「0000.0c07.ac」→ HSRP。</div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/ip/b_179_ip_9300_cg/configuring___hsrp.html">IOS XE 17.9 Configuring HSRP</a>／ <a class="src" href="https://www.rfc-editor.org/rfc/rfc5798">RFC 5798</a>（Advertisement_Interval default 100 centiseconds）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/routers/ios/config/17-x/ntw-servs/b-network-services/m_fhp-glbp-0.html">IOS XE 17.x Configuring GLBP</a>（AVG preemptive scheme is disabled・forwarder preemptive scheme is enabled）。表はClaudeがまとめた</div>
+</section>
+
+<section class="slide">
+  <h1>よくあるひっかけ</h1>
+  <table class="mx">
+    <tr><th style="width:40%">よくある思い込み</th><th>正しくは</th></tr>
+    <tr><td class="t">PC のゲートウェイはアクティブの実アドレス</td><td style="text-align:left"><b>仮想 IP</b>を書く</td></tr>
+    <tr><td class="t">優先度を上げれば HSRP はすぐ交代する</td><td style="text-align:left">HSRP は preempt が<b>初期値で無効</b>。入れないと交代しない</td></tr>
+    <tr><td class="t">優先度が同じで IP が大きければ preempt で奪える</td><td style="text-align:left">奪えない。preempt は優先度が<b>大きい</b>ときだけ</td></tr>
+    <tr><td class="t">HSRP の Hello は 10 秒</td><td style="text-align:left">3 秒（Hold 10 秒）。10／40 は OSPF</td></tr>
+    <tr><td class="t">グループ 10 の MAC は 0000.0c07.ac10</td><td style="text-align:left">16進数にする：<b>0000.0c07.ac0a</b></td></tr>
+    <tr><td class="t">HSRP は1グループで2台とも転送する</td><td style="text-align:left">アクティブ1台だけ。両方使うならグループを分ける</td></tr>
+    <tr><td class="t">VRRP の役はアクティブとスタンバイ</td><td style="text-align:left"><b>マスター</b>と<b>バックアップ</b></td></tr>
+    <tr><td class="t">FHRP は3つとも Cisco 独自</td><td style="text-align:left">VRRP は標準</td></tr>
+    <tr><td class="t">GLBP の AVG が全部を転送する</td><td style="text-align:left">AVG は ARP に答えて MAC を割り振る。転送は AVF（最大4台）</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">目的<span>PC のゲートウェイ（1つ・自分で切り替えない）を、仮想 IP と仮想 MAC の共有で冗長にする</span></div>
+      <div class="box b2">HSRP（Cisco）<span>アクティブ／スタンバイ・優先度 100・preempt 無効・Hello 3／Hold 10・0000.0c07.acXX</span></div>
+      <div class="box b3">VRRP（標準）<span>マスター／バックアップ・preempt 有効・224.0.0.18・0000.5e00.01XX</span></div>
+      <div class="box b4">GLBP（Cisco）<span>AVG が ARP で MAC を割り振り、AVF 最大4台で負荷分散</span></div>
+    </div>
+    <div>
+      <div class="cap">HSRP の設定</div>
+<pre class="cli small">interface vlan 10
+ ip address 10.1.10.2 255.255.255.0
+ standby 1 ip 10.1.10.1
+ standby 1 priority 110
+ standby 1 preempt
+ standby 1 track GigabitEthernet0/0 10</pre>
+      <div class="point"><b>確かめる：</b><code>show standby</code>（State・Active router・Preemption・Priority）／<code>show standby brief</code></div>
+      <div class="point"><b>次の分野：</b>#16 NAT と NTP で、アドレスの変換と時刻合わせを読む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CCNA #24 自動化とSDN 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">CCNA（200-301 v1.1）　6.0 自動化とプログラマビリティ　#24</div>
+  <h1>自動化と SDN</h1>
+  <p>出題範囲 6.1〜6.4 ― 自動化で管理がどう変わるか、従来型とコントローラー型の違い、SDN のしくみ（プレーン・API・ファブリック）、ネットワーク運用での AI と機械学習</p>
+  <div class="refs-legend">各ページの下に、根拠にしたCiscoの資料やRFCを書いた（青い文字を押すと開く）</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>6.1〜6.4 は Explain・Compare・Describe（説明と比較）。設定の暗記は求められない</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 自動化とネットワーク管理（6.1）<span>手作業の限界、効率・ミスの削減・一貫性、インテントベース、ゼロタッチ（PnP）、テンプレート</span></div>
+      <div class="box b2">2 従来型とコントローラー型（6.2・6.3.a）<span>コントロール・データ・マネジメントの3つのプレーン、1台ずつの管理と集中管理、SDN</span></div>
+      <div class="box b3">3 API とファブリック（6.3）<span>ノースバウンドとサウスバウンド、アンダーレイ・オーバーレイ・ファブリック（SD-Access：LISP・VXLAN）</span></div>
+      <div class="box b4">4 AI と機械学習（6.4）<span>予測 AI と生成 AI、教師あり・なし学習、学習と推論、ベースラインと異常検知、AIOps</span></div>
+    </div>
+    <div>
+      <div class="cap">コントローラー型ネットワークの3つの層</div>
+      <svg width="400" height="200" viewBox="0 0 400 200">
+        <defs><marker id="a0" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5b80bf"/></marker></defs>
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="60" y="6" width="280" height="38" rx="8" fill="#eef2f8" stroke="#5b80bf"/><text x="200" y="30" fill="#1f3a68">アプリケーション・スクリプト</text>
+          <line x1="200" y1="46" x2="200" y2="76" stroke="#5b80bf" stroke-width="2" marker-end="url(#a0)"/><text x="292" y="66" fill="#5b80bf" font-size="10.5">ノースバウンド API（REST）</text>
+          <rect x="60" y="80" width="280" height="38" rx="8" fill="#1f3a68"/><text x="200" y="104" fill="#fff">コントローラー（Catalyst Center など）</text>
+          <line x1="200" y1="120" x2="200" y2="150" stroke="#5b80bf" stroke-width="2" marker-end="url(#a0)"/><text x="300" y="140" fill="#5b80bf" font-size="10.5">サウスバウンド（NETCONF など）</text>
+          <rect x="20" y="154" width="100" height="36" rx="6" fill="#5b80bf"/><text x="70" y="177" fill="#fff">スイッチ</text>
+          <rect x="150" y="154" width="100" height="36" rx="6" fill="#5b80bf"/><text x="200" y="177" fill="#fff">ルーター</text>
+          <rect x="280" y="154" width="100" height="36" rx="6" fill="#5b80bf"/><text x="330" y="177" fill="#fff">WLC・AP</text>
+        </g>
+      </svg>
+      <div class="point"><b>芯：</b>「何をしたいか」は<b>上（アプリ）</b>から、「どう動かすか」はコントローラーが<b>下（機器）</b>へ配る。パケットの転送は今までどおり<b>各機器</b>が行う。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco CCNA Exam v1.1 (200-301) Exam Topics</a>（6.1〜6.4）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc7426">RFC 7426</a>（SDN controllers … provide a northbound interface for applications）／<a class="src" href="https://blogs.cisco.com/learning/understanding-the-updated-ccna-v1-1-with-ai-machine-learning-and-more">Cisco Blogs「Inside the CCNA v1.1 exam update」</a></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>自動化とネットワーク管理</h1>
+  <p>1台ずつの手作業から、ソフトウェアでまとめて扱う管理へ。</p>
+  <div class="foot"><span>CCNA #24 自動化と SDN</span><span>6.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>手作業の管理と自動化した管理</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="400" height="300" viewBox="0 0 400 300">
+        <defs><marker id="a1" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <text x="100" y="16" fill="#b25000" font-weight="700">手作業（1台ずつ）</text>
+          <rect x="50" y="26" width="100" height="32" rx="6" fill="#b25000"/><text x="100" y="46" fill="#fff">管理者が CLI</text>
+          <line x1="80" y1="58" x2="30" y2="100" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#a1)"/>
+          <line x1="100" y1="58" x2="100" y2="100" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#a1)"/>
+          <line x1="120" y1="58" x2="170" y2="100" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#a1)"/>
+          <rect x="6" y="104" width="50" height="26" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="31" y="121" fill="#1f3a68" font-size="10">SW1</text>
+          <rect x="75" y="104" width="50" height="26" rx="4" fill="#fde9d9" stroke="#b25000"/><text x="100" y="121" fill="#b25000" font-size="10">SW2 ✕</text>
+          <rect x="145" y="104" width="50" height="26" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="170" y="121" fill="#1f3a68" font-size="10">SW3</text>
+          <text x="100" y="152" fill="#b25000" font-size="10">1台だけ打ち間違い → ばらつき</text>
+          <text x="300" y="16" fill="#1f3a68" font-weight="700">自動化（まとめて）</text>
+          <rect x="240" y="26" width="120" height="32" rx="6" fill="#1f3a68"/><text x="300" y="46" fill="#fff">コントローラー</text>
+          <line x1="280" y1="58" x2="230" y2="100" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#a1)"/>
+          <line x1="300" y1="58" x2="300" y2="100" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#a1)"/>
+          <line x1="320" y1="58" x2="370" y2="100" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#a1)"/>
+          <rect x="206" y="104" width="50" height="26" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="231" y="121" fill="#1f3a68" font-size="10">SW1</text>
+          <rect x="275" y="104" width="50" height="26" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="300" y="121" fill="#1f3a68" font-size="10">SW2</text>
+          <rect x="345" y="104" width="50" height="26" rx="4" fill="#eef2f8" stroke="#5b80bf"/><text x="370" y="121" fill="#1f3a68" font-size="10">SW3</text>
+          <text x="300" y="152" fill="#1f3a68" font-size="10">同じひな形から同じ設定</text>
+          <rect x="20" y="180" width="360" height="104" rx="8" fill="#eef2f8"/>
+          <text x="200" y="206" fill="#1f3a68" font-size="12" font-weight="700">Cisco の説明</text>
+          <text x="200" y="230" fill="#1f3a68">ネットワークの変更の<tspan font-weight="700">最大 95％</tspan>が今も手作業</text>
+          <text x="200" y="252" fill="#1f3a68">→ 設定ミスとネットワーク内のばらつきが起きる</text>
+          <text x="200" y="274" fill="#1f3a68">→ 運用の費用が 2〜3 倍に</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:26%"></th><th>手作業</th><th>自動化</th></tr>
+        <tr><td class="t">設定</td><td>1台ずつ CLI</td><td>テンプレート・ポリシーから<b>まとめて</b></td></tr>
+        <tr><td class="t">間違い</td><td>打ち間違い・ばらつき</td><td><b>一貫性</b>がある</td></tr>
+        <tr><td class="t">規模</td><td>人手と時間が足りない</td><td>台数が増えても回る</td></tr>
+        <tr><td class="t">新しい機器</td><td>1台ずつ初期設定</td><td><b>ゼロタッチ</b>（PnP）</td></tr>
+      </table>
+      <div class="point"><b>自動化の効果（Cisco）：</b>効率が上がる・<b>人のミスが減る</b>・運用の費用（opex）が下がる。設定・管理・テスト・導入・運用をソフトウェアで行う。</div>
+      <div class="point warn"><b>落とし穴：</b>自動化しても、機器が<b>パケットを転送する</b>ことや、ルーティングプロトコルが要ることは変わらない。変わるのは<b>管理のしかた</b>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/site/us/en/learn/topics/networking/what-is-network-automation.html">Cisco「What Is Network Automation?」</a>（Network automation is the process of automating the configuring, managing, testing, deploying, and operating of physical and virtual devices／improve efficiency, reduce human error, and lower operating expenses／Up to 95 percent of network changes today are done manually … operational costs 2 to 3 times higher／Manual changes lead to configuration errors and inconsistencies）</div>
+</section>
+
+<section class="slide">
+  <h1>インテントベース・ゼロタッチ・テンプレート</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">インテントベースネットワーキング（IBN）の流れ</div>
+      <svg width="400" height="210" viewBox="0 0 400 210">
+        <defs><marker id="a2" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5b80bf"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <rect x="10" y="10" width="380" height="40" rx="8" fill="#eef2f8" stroke="#5b80bf"/><text x="200" y="28" fill="#1f3a68" font-weight="700">意図（インテント）</text><text x="200" y="43" fill="#1f3a68" font-size="10">例：「来客は社内のサーバーに入れない」</text>
+          <line x1="200" y1="50" x2="200" y2="70" stroke="#5b80bf" stroke-width="2" marker-end="url(#a2)"/>
+          <rect x="10" y="74" width="380" height="40" rx="8" fill="#1f3a68"/><text x="200" y="92" fill="#fff" font-weight="700">コントローラーがポリシーを設定に変える</text><text x="200" y="107" fill="#fff" font-size="10">ネットワーク用・機器ごとの設定を作って入れる</text>
+          <line x1="200" y1="114" x2="200" y2="134" stroke="#5b80bf" stroke-width="2" marker-end="url(#a2)"/>
+          <rect x="10" y="138" width="380" height="40" rx="8" fill="#5b80bf"/><text x="200" y="156" fill="#fff" font-weight="700">見張る（Assurance）</text><text x="200" y="171" fill="#fff" font-size="10">意図どおりに動いているかを確かめ続ける</text>
+          <text x="200" y="200" fill="#1f3a68" font-size="10.5">管理者は「どう設定するか」でなく「どうなってほしいか」を決める</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">しくみ</th><th>何をするか</th></tr>
+        <tr><td class="t">ゼロタッチ（PnP）</td><td style="text-align:left">箱から出した機器をつなぐだけで、コントローラーから<b>設定とソフトウェア</b>を受け取る。現地に技術者がいなくてよい</td></tr>
+        <tr><td class="t">テンプレート</td><td style="text-align:left">変わる部分を<b>変数</b>にしたひな形。機器ごとの値を入れて設定を作る</td></tr>
+        <tr><td class="t">ポリシー</td><td style="text-align:left">業務の意図を、有線・無線で<b>同じように</b>当てはめる</td></tr>
+      </table>
+<pre class="cli small">hostname {{ name }}
+ntp server {{ ntp_server }}
+snmp-server location {{ site }}</pre>
+      <div class="mini">ひな形の例（Claude が作成）。{{ }} の中に機器ごとの値が入る。</div>
+      <div class="point"><b>ポイント：</b>同じひな形・同じポリシーから作るので、機器どうしの設定が<b>そろう</b>（一貫性）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/products/collateral/networking/catalyst-center-3-3-1-ds.html">Cisco「Catalyst Center 3.3.1 Data Sheet」</a>（Defines policies based on business intent … Polices are translated into network-specific and device-specific configurations／push configuration using CLI templates）／<a class="src" href="https://www.cisco.com/site/us/en/learn/topics/networking/what-is-network-automation.html">Cisco「What Is Network Automation?」</a>（Plug-and-play provisioning … Zero-touch provisioning of off-the-shelf devices／Easy control of device configurations for consistency and accuracy）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>従来型とコントローラー型</h1>
+  <p>機器の働きを3つのプレーンに分けて、どこが集中するのかを見る。</p>
+  <div class="foot"><span>CCNA #24 自動化と SDN</span><span>6.2・6.3.a</span></div>
+</section>
+
+<section class="slide">
+  <h1>3つのプレーン</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="400" height="290" viewBox="0 0 400 290">
+        <g font-size="11" text-anchor="middle">
+          <rect x="10" y="6" width="380" height="270" rx="10" fill="none" stroke="#1f3a68" stroke-width="1.5" stroke-dasharray="5 4"/>
+          <text x="200" y="24" fill="#1f3a68" font-weight="700">1台のルーター（従来型）</text>
+          <rect x="30" y="36" width="340" height="62" rx="8" fill="#b25000"/><text x="200" y="58" fill="#fff" font-weight="700">マネジメントプレーン</text><text x="200" y="76" fill="#fff" font-size="10.5">SSH・SNMP・NETCONF：見張る・設定する・保守する</text><text x="200" y="90" fill="#fff" font-size="10">例：管理者が SSH でログインして設定</text>
+          <rect x="30" y="108" width="340" height="62" rx="8" fill="#1f3a68"/><text x="200" y="130" fill="#fff" font-weight="700">コントロールプレーン</text><text x="200" y="148" fill="#fff" font-size="10.5">どう処理し、どこへ送るかを決める（表を作る）</text><text x="200" y="162" fill="#fff" font-size="10">例：OSPF・STP・ARP でルーティングテーブルなど</text>
+          <rect x="30" y="180" width="340" height="62" rx="8" fill="#5b80bf"/><text x="200" y="202" fill="#fff" font-weight="700">データプレーン（フォワーディングプレーン）</text><text x="200" y="220" fill="#fff" font-size="10.5">表を引いて、パケットを実際に転送する</text><text x="200" y="234" fill="#fff" font-size="10">例：宛先を引いて出口のインタフェースへ</text>
+          <text x="40" y="266" fill="#1f3a68" font-size="10" text-anchor="start">入るパケット →</text><text x="360" y="266" fill="#1f3a68" font-size="10" text-anchor="end">→ 出るパケット</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">プレーン</th><th>RFC 7426 の定義（要約）</th></tr>
+        <tr><td class="t">コントロール</td><td style="text-align:left">機器に、パケットの<b>処理と転送のしかたを指示</b>する働き</td></tr>
+        <tr><td class="t">データ（転送）</td><td style="text-align:left">全機器の中で<b>トラフィックを転送</b>する資源</td></tr>
+        <tr><td class="t">マネジメント</td><td style="text-align:left">機器を<b>見張り・設定し・保守</b>する働き</td></tr>
+      </table>
+      <div class="point"><b>見分け方：</b>「表を<b>作る</b>」→コントロール、「表を<b>使って送る</b>」→データ、「人やツールが<b>機器を管理</b>する」→マネジメント。</div>
+      <div class="point warn"><b>落とし穴：</b>SNMP や SSH はルーティングの話ではないので、コントロールではなく<b>マネジメント</b>プレーン。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc7426">RFC 7426</a> 2. Terminology（Forwarding Plane (FP) - The collection of resources across all network devices responsible for forwarding traffic／Control Plane (CP) - … CP instructs network devices with respect to how to process and forward packets／Management Plane (MP) - The collection of functions responsible for monitoring, configuring, and maintaining one or more network devices）。プレーンの例は Claude が書いた</div>
+</section>
+
+<section class="slide">
+  <h1>従来型とコントローラー型を比べる</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="230" viewBox="0 0 400 230">
+        <g font-size="10.5" text-anchor="middle">
+          <text x="95" y="14" fill="#1f3a68" font-weight="700" font-size="11.5">従来型（分散）</text>
+          <rect x="10" y="26" width="52" height="64" rx="5" fill="#eef2f8" stroke="#5b80bf"/><rect x="16" y="32" width="40" height="16" fill="#b25000"/><rect x="16" y="50" width="40" height="16" fill="#1f3a68"/><rect x="16" y="68" width="40" height="16" fill="#5b80bf"/>
+          <rect x="70" y="26" width="52" height="64" rx="5" fill="#eef2f8" stroke="#5b80bf"/><rect x="76" y="32" width="40" height="16" fill="#b25000"/><rect x="76" y="50" width="40" height="16" fill="#1f3a68"/><rect x="76" y="68" width="40" height="16" fill="#5b80bf"/>
+          <rect x="130" y="26" width="52" height="64" rx="5" fill="#eef2f8" stroke="#5b80bf"/><rect x="136" y="32" width="40" height="16" fill="#b25000"/><rect x="136" y="50" width="40" height="16" fill="#1f3a68"/><rect x="136" y="68" width="40" height="16" fill="#5b80bf"/>
+          <text x="95" y="108" fill="#1f3a68">各機器が3つとも持つ</text>
+          <text x="95" y="124" fill="#1f3a68">管理者は1台ずつ設定</text>
+          <text x="300" y="14" fill="#1f3a68" font-weight="700" font-size="11.5">コントローラー型（集中）</text>
+          <rect x="220" y="24" width="160" height="40" rx="6" fill="#1f3a68"/><text x="300" y="42" fill="#fff">コントローラー</text><text x="300" y="56" fill="#fff" font-size="9.5">管理・制御をまとめる</text>
+          <line x1="246" y1="64" x2="246" y2="80" stroke="#1f3a68" stroke-width="1.5"/><line x1="300" y1="64" x2="300" y2="80" stroke="#1f3a68" stroke-width="1.5"/><line x1="354" y1="64" x2="354" y2="80" stroke="#1f3a68" stroke-width="1.5"/>
+          <rect x="222" y="80" width="48" height="30" rx="5" fill="#eef2f8" stroke="#5b80bf"/><rect x="228" y="88" width="36" height="16" fill="#5b80bf"/>
+          <rect x="276" y="80" width="48" height="30" rx="5" fill="#eef2f8" stroke="#5b80bf"/><rect x="282" y="88" width="36" height="16" fill="#5b80bf"/>
+          <rect x="330" y="80" width="48" height="30" rx="5" fill="#eef2f8" stroke="#5b80bf"/><rect x="336" y="88" width="36" height="16" fill="#5b80bf"/>
+          <text x="300" y="128" fill="#1f3a68">転送（データプレーン）は各機器に残る</text>
+          <rect x="20" y="150" width="14" height="12" fill="#b25000"/><text x="80" y="160" fill="#1f3a68">マネジメント</text>
+          <rect x="140" y="150" width="14" height="12" fill="#1f3a68"/><text x="200" y="160" fill="#1f3a68">コントロール</text>
+          <rect x="260" y="150" width="14" height="12" fill="#5b80bf"/><text x="312" y="160" fill="#1f3a68">データ</text>
+          <text x="200" y="190" fill="#1f3a68" font-size="10">コントローラー型の図は考え方を示したもの（Claude が作成）。製品によっては</text>
+          <text x="200" y="206" fill="#1f3a68" font-size="10">機器にもコントロールの働きが残る（例：SD-Access のアンダーレイの IS-IS）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:28%"></th><th>従来型</th><th>コントローラー型</th></tr>
+        <tr><td class="t">設定</td><td>1台ずつ（box-by-box）</td><td>コントローラーから<b>まとめて</b></td></tr>
+        <tr><td class="t">制御</td><td>各機器が自分で（<b>分散</b>）</td><td>コントローラーで<b>集中</b></td></tr>
+        <tr><td class="t">転送</td><td>各機器</td><td><b>各機器</b>（変わらない）</td></tr>
+        <tr><td class="t">全体の見え方</td><td>機器ごと</td><td><b>1か所で全体</b></td></tr>
+        <tr><td class="t">外とのつなぎ</td><td>CLI・SNMP</td><td>ノースバウンド API・サウスバウンド</td></tr>
+        <tr><td class="t">ポリシー</td><td>機器ごとに入れる</td><td>有線・無線で<b>一貫</b></td></tr>
+      </table>
+      <div class="point"><b>Cisco の製品：</b>企業のキャンパスのコントローラーは <b>Catalyst Center</b>（旧 DNA Center）。SD-Access ではマネジメントプレーンを受け持つ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc7426">RFC 7426</a>（Forwarding Plane … across all network devices）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/cisco-sda-design-guide.html">Cisco「Software-Defined Access Solution Design Guide」</a>（Consistent, centrally defined policy for both wired and wireless users and devices／In Cisco SD-Access the management plane is enabled and powered by Cisco Catalyst Center／LAN Automation … IS-IS）</div>
+</section>
+
+<section class="slide">
+  <h1>SDN の考え方<small>Software-Defined Networking</small></h1>
+  <div class="cols wide-r">
+    <div>
+      <div class="cap">RFC 7426 の層（簡略化）</div>
+      <svg width="400" height="270" viewBox="0 0 400 270">
+        <g font-size="11" text-anchor="middle">
+          <rect x="20" y="6" width="360" height="40" rx="8" fill="#eef2f8" stroke="#5b80bf"/><text x="200" y="24" fill="#1f3a68" font-weight="700">アプリケーションプレーン</text><text x="200" y="39" fill="#1f3a68" font-size="10">ネットワークの動きを決めるアプリ・サービス</text>
+          <rect x="120" y="52" width="160" height="22" rx="4" fill="#fff" stroke="#5b80bf"/><text x="200" y="67" fill="#5b80bf" font-size="10.5">ノースバウンドのインタフェース</text>
+          <rect x="20" y="80" width="360" height="56" rx="8" fill="#1f3a68"/><text x="200" y="102" fill="#fff" font-weight="700">SDN コントローラー</text><text x="200" y="120" fill="#fff" font-size="10">制御（コントロール）と管理（マネジメント）の働きをまとめる</text>
+          <rect x="40" y="142" width="150" height="22" rx="4" fill="#fff" stroke="#5b80bf"/><text x="115" y="157" fill="#5b80bf" font-size="10">制御用（例：OpenFlow）</text>
+          <rect x="210" y="142" width="150" height="22" rx="4" fill="#fff" stroke="#5b80bf"/><text x="285" y="157" fill="#5b80bf" font-size="10">管理用（例：NETCONF・SNMP）</text>
+          <text x="200" y="182" fill="#5b80bf" font-size="10.5">↑ どちらもサウスバウンド ↑</text>
+          <rect x="20" y="190" width="360" height="56" rx="8" fill="#5b80bf"/><text x="200" y="212" fill="#fff" font-weight="700">ネットワーク機器</text><text x="200" y="230" fill="#fff" font-size="10">転送（データプレーン）＋ 動作の状態を持つ</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="point"><b>SDN の鍵（RFC 7426）：</b>転送とコントロールの間に<b>抽象化</b>を入れて<b>切り離し</b>、アプリが<b>プログラムで</b>ネットワークを制御できるようにする。</div>
+      <table class="mx">
+        <tr><th style="width:34%">言葉</th><th>意味</th></tr>
+        <tr><td class="t">SDN</td><td style="text-align:left">ソフトウェアでネットワークを定義・制御する考え方</td></tr>
+        <tr><td class="t">SDN コントローラー</td><td style="text-align:left">アプリと機器の間に立つソフトウェア。上にノースバウンド、下にサウスバウンド</td></tr>
+        <tr><td class="t">抽象化</td><td style="text-align:left">機器ごとの細かい違いを隠し、アプリから同じように扱えるようにすること</td></tr>
+      </table>
+      <div class="point warn"><b>落とし穴：</b>SDN でも転送は機器が行う。「コントローラーが全パケットを転送する」は誤り。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc7426">RFC 7426</a>（A key element in SDN is the introduction of an abstraction between the (traditional) forwarding and control planes in order to separate them and provide applications with the means necessary to programmatically control the network／SDN controllers … implement a CPSI … and provide a northbound interface for applications／the SDN southbound interface should encompass both CPSI and MPSI／OpenFlow and NETCONF … refer to control and management）。図は RFC 7426 の Figure 1 を Claude が簡略化した</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>API とファブリック</h1>
+  <p>コントローラーの上と下のつなぎ方と、物理の網の上に作る仮想の網。</p>
+  <div class="foot"><span>CCNA #24 自動化と SDN</span><span>6.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>ノースバウンド API とサウスバウンド API</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="250" viewBox="0 0 400 250">
+        <defs><marker id="a3" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <rect x="90" y="6" width="220" height="34" rx="6" fill="#eef2f8" stroke="#5b80bf"/><text x="200" y="27" fill="#1f3a68">Python スクリプト・ITSM など</text>
+          <line x1="200" y1="40" x2="200" y2="74" stroke="#1f3a68" stroke-width="2" marker-end="url(#a3)"/>
+          <text x="210" y="54" fill="#1f3a68" font-size="10" text-anchor="start">北（上）向き：ノースバウンド</text><text x="210" y="68" fill="#1f3a68" font-size="10" text-anchor="start">REST・HTTPS・JSON</text>
+          <rect x="90" y="78" width="220" height="40" rx="6" fill="#1f3a68"/><text x="200" y="102" fill="#fff">Catalyst Center</text>
+          <rect x="6" y="84" width="70" height="28" rx="4" fill="#fff" stroke="#5b80bf"/><text x="41" y="98" fill="#5b80bf" font-size="9.5">ITSM などと</text><text x="41" y="109" fill="#5b80bf" font-size="9.5">連携（西向き）</text>
+          <line x1="78" y1="98" x2="88" y2="98" stroke="#5b80bf" stroke-width="1.5"/>
+          <line x1="200" y1="118" x2="200" y2="152" stroke="#1f3a68" stroke-width="2" marker-end="url(#a3)"/>
+          <text x="210" y="132" fill="#1f3a68" font-size="10" text-anchor="start">南（下）向き：サウスバウンド</text><text x="210" y="146" fill="#1f3a68" font-size="10" text-anchor="start">CLI(SSH)・SNMP・NETCONF</text>
+          <rect x="20" y="156" width="110" height="34" rx="6" fill="#5b80bf"/><text x="75" y="177" fill="#fff">スイッチ</text>
+          <rect x="145" y="156" width="110" height="34" rx="6" fill="#5b80bf"/><text x="200" y="177" fill="#fff">ルーター</text>
+          <rect x="270" y="156" width="110" height="34" rx="6" fill="#5b80bf"/><text x="325" y="177" fill="#fff">9800 WLC</text>
+          <text x="200" y="216" fill="#1f3a68" font-size="10.5">図では、コントローラーより上が「北」、下が「南」</text>
+          <text x="200" y="236" fill="#1f3a68" font-size="10">西向き（westbound）は Catalyst Center の資料での呼び方</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:24%"></th><th>ノースバウンド</th><th>サウスバウンド</th></tr>
+        <tr><td class="t">どこの間</td><td>アプリ ⇔ コントローラー</td><td>コントローラー ⇔ 機器</td></tr>
+        <tr><td class="t">例</td><td><b>Intent API</b>（REST）</td><td><b>NETCONF</b>・SNMP・CLI・OpenFlow</td></tr>
+        <tr><td class="t">使う人</td><td>開発者・運用ツール</td><td>コントローラー自身</td></tr>
+      </table>
+      <div class="point"><b>Intent API：</b>Catalyst Center の<b>ノースバウンドの REST API</b>。HTTPS で GET・POST・PUT・DELETE を使い、<b>JSON</b> でやり取り。使う前に<b>認証</b>が要り、RBAC に従う。</div>
+      <div class="mini">Catalyst Center が機器を見つけて管理するときの資格情報は CLI（SSH・特権レベル 15）・SNMPv2c／v3・HTTP(S)・NETCONF（既定ポート 830）。REST・JSON のくわしい話は #25。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/cloud-systems-management/network-automation-and-management/Catalyst-Center-Platform-Documentation/2-3-7/user-guide/b-cisco-catalyst-center-platform-ug-2-3-7/b-dnac-platform-ug-2-3-7-chapter-01.html">Catalyst Center Platform UG 2.3.7「About Catalyst Center Platform」</a>（The intent APIs are northbound REST APIs／GET, POST, PUT, and DELETE operations through HTTPS／JSON／users must authenticate successfully before using the API／Integration capabilities are part of westbound interfaces）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/cloud-systems-management/network-automation-and-management/catalyst-center/2-3-7/user_guide/b_cisco_catalyst_center_user_guide_237/b_cisco_dna_center_ug_2_3_7_chapter_010.html">Catalyst Center UG 2.3.7「Discover Your Network」</a>（CLI, SNMPv2c, SNMPv3, HTTP(S), NETCONF credentials）</div>
+</section>
+
+<section class="slide">
+  <h1>アンダーレイ・オーバーレイ・ファブリック</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="400" height="300" viewBox="0 0 400 300">
+        <g font-size="11" text-anchor="middle">
+          <text x="200" y="16" fill="#1f3a68" font-weight="700">オーバーレイ（仮想のネットワーク）</text>
+          <polygon points="60,30 380,30 340,90 20,90" fill="#eef2f8" stroke="#5b80bf"/>
+          <text x="120" y="56" fill="#1f3a68" font-size="10.5">VN「社員」</text><text x="260" y="56" fill="#b25000" font-size="10.5">VN「来客」</text>
+          <text x="200" y="78" fill="#1f3a68" font-size="10">カプセル化（VXLAN）のトンネルでつなぐ</text>
+          <line x1="80" y1="90" x2="80" y2="180" stroke="#5b80bf" stroke-dasharray="4 3"/><line x1="320" y1="90" x2="320" y2="180" stroke="#5b80bf" stroke-dasharray="4 3"/>
+          <text x="200" y="120" fill="#1f3a68" font-weight="700">ファブリック ＝ オーバーレイ</text>
+          <text x="200" y="138" fill="#1f3a68" font-size="10">（Cisco SD-Access の説明）</text>
+          <text x="200" y="166" fill="#1f3a68" font-weight="700">アンダーレイ（物理のネットワーク）</text>
+          <polygon points="60,176 380,176 340,250 20,250" fill="#5b80bf"/>
+          <rect x="60" y="196" width="60" height="26" rx="4" fill="#1f3a68"/><text x="90" y="213" fill="#fff" font-size="10">エッジ</text>
+          <rect x="170" y="196" width="60" height="26" rx="4" fill="#1f3a68"/><text x="200" y="213" fill="#fff" font-size="10">中間</text>
+          <rect x="280" y="196" width="60" height="26" rx="4" fill="#1f3a68"/><text x="310" y="213" fill="#fff" font-size="10">ボーダー</text>
+          <line x1="120" y1="209" x2="170" y2="209" stroke="#fff" stroke-width="2"/><line x1="230" y1="209" x2="280" y2="209" stroke="#fff" stroke-width="2"/>
+          <text x="200" y="240" fill="#fff" font-size="10">ルーティングプロトコルで IP でつながる（レイヤ3）</text>
+          <text x="200" y="278" fill="#1f3a68" font-size="10.5">利用者の端末とサブネットはアンダーレイには入らない</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:26%"></th><th>アンダーレイ</th><th>オーバーレイ</th></tr>
+        <tr><td class="t">何か</td><td><b>物理</b>のスイッチ・ルーターと IP の経路</td><td>その上に<b>カプセル化</b>で作る仮想の網</td></tr>
+        <tr><td class="t">数</td><td>1つ</td><td>上に<b>いくつも</b>作れる（VN）</td></tr>
+        <tr><td class="t">中身</td><td>機器どうしの IP</td><td>利用者の端末・サブネット</td></tr>
+        <tr><td class="t">SD-Access</td><td>レイヤ3のルーテッドアクセス。LAN Automation なら IS-IS</td><td>VN ごとに <b>VRF</b> で分ける</td></tr>
+      </table>
+      <div class="point"><b>ファブリック：</b>Cisco は「ファブリックとは、要するに<b>オーバーレイ</b>」と説明する。全機器を論理的にフルメッシュでつなぐトンネルの網で、有線と無線に<b>同じポリシー</b>を当てられる。</div>
+      <div class="point warn"><b>落とし穴：</b>「物理の配線＝ファブリック」ではない。物理の網は<b>アンダーレイ</b>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/cisco-sda-design-guide.html">Cisco「Software-Defined Access Solution Design Guide」</a>（A fabric is simply an overlay network. Overlays are created through encapsulation／The underlay network is defined by the physical switches and routers … All network elements of the underlay must establish IP connectivity via the use of a routing protocol … End-user subnets and endpoints are not part of the underlay network／permitting a physical network to host one or more logical networks）</div>
+</section>
+
+<section class="slide">
+  <h1>SD-Access のプレーンと VXLAN・LISP</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:40%">SD-Access のプレーン</th><th>技術</th></tr>
+        <tr><td class="t">マネジメント</td><td><b>Catalyst Center</b></td></tr>
+        <tr><td class="t">コントロール（オーバーレイ）</td><td><b>LISP</b></td></tr>
+        <tr><td class="t">データ</td><td><b>VXLAN</b></td></tr>
+        <tr><td class="t">ポリシー</td><td><b>Cisco TrustSec</b>（SGT）</td></tr>
+      </table>
+      <div class="cap" style="margin-top:8px">VXLAN で包んだパケット（RFC 7348）</div>
+      <svg width="400" height="96" viewBox="0 0 400 96">
+        <g font-size="10" text-anchor="middle">
+          <rect x="2" y="8" width="70" height="40" fill="#1f3a68"/><text x="37" y="25" fill="#fff">外側</text><text x="37" y="39" fill="#fff">Ethernet</text>
+          <rect x="72" y="8" width="62" height="40" fill="#1f3a68" stroke="#fff"/><text x="103" y="25" fill="#fff">外側 IP</text><text x="103" y="39" fill="#fff" font-size="9">RLOC</text>
+          <rect x="134" y="8" width="62" height="40" fill="#1f3a68" stroke="#fff"/><text x="165" y="25" fill="#fff">UDP</text><text x="165" y="39" fill="#fff" font-size="9">宛先 4789</text>
+          <rect x="196" y="8" width="70" height="40" fill="#b25000"/><text x="231" y="25" fill="#fff">VXLAN</text><text x="231" y="39" fill="#fff" font-size="9">VNI 24 ビット</text>
+          <rect x="266" y="8" width="130" height="40" fill="#5b80bf"/><text x="331" y="25" fill="#fff">元のイーサネット</text><text x="331" y="39" fill="#fff">フレーム</text>
+          <text x="134" y="66" fill="#1f3a68">← 包むと少なくとも 50 バイト増える →</text>
+          <text x="200" y="86" fill="#1f3a68">MAC-in-IP。VNI で約 1600 万のセグメント（VLAN は 4094）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="point"><b>LISP：</b>端末の「誰か」（<b>EID</b>）と「どこにいるか」（<b>RLOC</b>＝つながっているエッジノード）を分ける。エッジノードは宛先の RLOC を<b>コントロールプレーンノードに問い合わせて</b>から VXLAN で送る。</div>
+      <table class="mx">
+        <tr><th style="width:36%">ファブリックの役割</th><th>何をするか</th></tr>
+        <tr><td class="t">エッジノード</td><td style="text-align:left">従来の<b>アクセススイッチ</b>にあたる。端末を見つけて map-register で登録</td></tr>
+        <tr><td class="t">コントロールプレーンノード</td><td style="text-align:left">LISP の map-server／map-resolver。<b>端末とエッジの対応表</b>を持つ</td></tr>
+        <tr><td class="t">ボーダーノード</td><td style="text-align:left">ファブリックと<b>外のネットワーク</b>をつなぐ出入口</td></tr>
+      </table>
+      <div class="mini">50 バイトぶん大きくなるので、SD-Access では MTU を 9100 にそろえることがすすめられている。SGT は ISE が割り当てる 16 ビットの値。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/cisco-sda-design-guide.html">Cisco「SD-Access Solution Design Guide」</a>（the control plane is based on LISP … the data plane is based on VXLAN … the policy plane is based on Cisco TrustSec／VXLAN adds 50 bytes to the original packet／recommended MTU value … is 9100／fabric edge nodes are the equivalent of an access layer switch … issues a LISP map-register message／control plane node … combining both the map-server and map-resolver roles／border nodes serve as the gateway between the SD-Access fabric site and the networks external to the fabric）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc7348">RFC 7348</a>（24-bit … VNI … up to 16 M VXLAN segments／Destination Port: IANA has assigned the value 4789）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>AI と機械学習</h1>
+  <p>ネットワーク運用で、予測する AI と、作る AI をどう使うか。</p>
+  <div class="foot"><span>CCNA #24 自動化と SDN</span><span>6.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>予測 AI と生成 AI</h1>
+  <table class="mx">
+    <tr><th style="width:16%"></th><th>予測 AI（predictive AI）</th><th>生成 AI（generative AI）</th></tr>
+    <tr><td class="t">すること</td><td>データの<b>パターン認識</b>で推論し、異常やこれから起きることを<b>予測</b>する</td><td>頼まれた内容に合わせて、文章・画像・コードなどの<b>新しい中身を作る</b></td></tr>
+    <tr><td class="t">ネットワークでの例</td><td>ベースラインから外れた<b>異常の検知</b>、Wi-Fi の干渉や接続の遅れの増加を<b>前もって予測</b></td><td>Catalyst Center の <b>AI Assistant</b>：「今日再起動したスイッチを見せて」と<b>自然な文</b>で聞ける。手順の説明・文書づくり</td></tr>
+    <tr><td class="t">中身</td><td>機械学習（教師なし学習など）</td><td>深層学習のモデル（大規模言語モデル＝LLM など）</td></tr>
+    <tr><td class="t">気をつけること</td><td>学習データが足りないと誤った判断</td><td>もっともらしい誤り（<b>ハルシネーション</b>）。答えは確かめて使う</td></tr>
+  </table>
+  <div class="cols" style="margin-top:10px">
+    <div class="point"><b>Cisco の説明：</b>予測 AI は「パターン認識で推論を引き出すもの」、生成 AI は「データを使って文章・画像・動画などの新しい中身を作るもの」。</div>
+    <div class="point warn"><b>落とし穴：</b>「異常を見つける」「将来を予測する」は<b>予測 AI</b>。「質問に文で答える」「文書を書く」は<b>生成 AI</b>。逆にしない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://blogs.cisco.com/networking/why-2024-is-the-year-of-ai-for-networking">Cisco Blogs「Why 2024 is the Year of AI for Networking」</a>（predictive and generative AI – the former is about drawing inferences through pattern recognition, while the latter is about using data to create original content in the form of text, images, and videos）／<a class="src" href="https://www.cisco.com/c/en/us/products/collateral/networking/catalyst-center-3-3-1-ds.html">Catalyst Center 3.3.1 Data Sheet</a>（Use AI Assistant to interact with your network using natural language／AI-driven predictive analytics … predicting increases in Wi-Fi interference, onboarding delays）／<a class="src" href="https://www.cisco.com/site/us/en/learn/topics/artificial-intelligence/what-is-generative-ai-genai.html">Cisco「What is Generative AI?」</a>（generate original content in response to a user request）</div>
+</section>
+
+<section class="slide">
+  <h1>機械学習の学び方と、学習・推論</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:26%">学び方</th><th>学ぶもの</th><th>向いている仕事</th></tr>
+        <tr><td class="t">教師あり学習</td><td><b>正解（ラベル）付き</b>のデータ</td><td>分類・予測</td></tr>
+        <tr><td class="t">教師なし学習</td><td>ラベルなしのデータの<b>隠れたパターン</b></td><td>グループ分け・<b>異常検知</b></td></tr>
+        <tr><td class="t">強化学習</td><td>試してみて、<b>報酬と罰</b>から</td><td>資源の割り当て・ロボット</td></tr>
+      </table>
+      <div class="point"><b>機械学習と機械推論：</b>機械学習は<b>データからパターン</b>を学ぶ。機械推論は<b>知識から筋道を立てて</b>結論（原因など）を出す。Catalyst Center は両方を使って原因を分析する。</div>
+    </div>
+    <div>
+      <div class="cap">学習と推論</div>
+      <svg width="400" height="170" viewBox="0 0 400 170">
+        <defs><marker id="a4" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <rect x="6" y="20" width="110" height="44" rx="6" fill="#eef2f8" stroke="#5b80bf"/><text x="61" y="38" fill="#1f3a68">過去のデータ</text><text x="61" y="54" fill="#1f3a68" font-size="10">大量に</text>
+          <line x1="116" y1="42" x2="146" y2="42" stroke="#1f3a68" stroke-width="2" marker-end="url(#a4)"/>
+          <rect x="150" y="14" width="100" height="56" rx="6" fill="#1f3a68"/><text x="200" y="36" fill="#fff" font-weight="700">学習</text><text x="200" y="54" fill="#fff" font-size="9.5">パラメーターを調整</text>
+          <line x1="250" y1="42" x2="280" y2="42" stroke="#1f3a68" stroke-width="2" marker-end="url(#a4)"/>
+          <rect x="284" y="20" width="110" height="44" rx="6" fill="#5b80bf"/><text x="339" y="46" fill="#fff">学習ずみモデル</text>
+          <rect x="6" y="104" width="110" height="44" rx="6" fill="#eef2f8" stroke="#5b80bf"/><text x="61" y="122" fill="#1f3a68">新しいデータ</text><text x="61" y="138" fill="#1f3a68" font-size="10">今の値</text>
+          <line x1="116" y1="126" x2="146" y2="126" stroke="#1f3a68" stroke-width="2" marker-end="url(#a4)"/>
+          <rect x="150" y="98" width="100" height="56" rx="6" fill="#b25000"/><text x="200" y="120" fill="#fff" font-weight="700">推論</text><text x="200" y="138" fill="#fff" font-size="9.5">本番で判断する</text>
+          <line x1="339" y1="64" x2="250" y2="112" stroke="#5b80bf" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <line x1="250" y1="126" x2="280" y2="126" stroke="#1f3a68" stroke-width="2" marker-end="url(#a4)"/>
+          <rect x="284" y="104" width="110" height="44" rx="6" fill="#eef2f8" stroke="#5b80bf"/><text x="339" y="122" fill="#1f3a68">結果</text><text x="339" y="138" fill="#1f3a68" font-size="10">異常かどうか など</text>
+        </g>
+      </svg>
+      <div class="point"><b>学習</b>は計算力とデータが多く要る。<b>推論</b>はできたモデルを使うだけ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/site/us/en/learn/topics/artificial-intelligence/what-is-ai-computing.html">Cisco「What Is AI Computing?」</a>（Supervised learning: The most common form of AI, where models are trained on labeled datasets／Unsupervised learning … finds hidden patterns … clustering … anomaly detection／Reinforcement learning … rewards and penalties／Inference is the stage where the trained model is put into production to analyze new, "unseen" data）／<a class="src" href="https://www.cisco.com/c/en/us/products/collateral/networking/catalyst-center-3-3-1-ds.html">Catalyst Center 3.3.1 Data Sheet</a>（machine-reasoning engine）</div>
+</section>
+
+<section class="slide">
+  <h1>ベースラインと異常検知・AIOps</h1>
+  <div class="cols wide-r">
+    <div>
+      <div class="cap">AI によるベースライン（考え方の図・Claude が作成）</div>
+      <svg width="400" height="230" viewBox="0 0 400 230">
+        <g font-size="10.5">
+          <line x1="40" y1="190" x2="390" y2="190" stroke="#1f3a68"/><line x1="40" y1="20" x2="40" y2="190" stroke="#1f3a68"/>
+          <text x="214" y="212" fill="#1f3a68" text-anchor="middle">時刻（月〜金）</text>
+          <text x="14" y="110" fill="#1f3a68" text-anchor="middle" transform="rotate(-90 14 110)">接続にかかる時間</text>
+          <path d="M40,150 C80,110 100,110 130,150 C160,110 180,110 210,150 C240,110 260,110 290,150 C320,110 340,110 370,150 L370,170 C340,140 320,140 290,170 C260,140 240,140 210,170 C180,140 160,140 130,170 C100,140 80,140 40,170 Z" fill="#dbe6f5"/>
+          <polyline points="40,160 60,140 85,128 110,140 130,160 150,140 170,128 190,138 210,158 230,142 250,58 270,138 290,160 310,140 330,128 350,140 370,160" fill="none" stroke="#1f3a68" stroke-width="2"/>
+          <line x1="40" y1="96" x2="390" y2="96" stroke="#b25000" stroke-dasharray="5 4"/>
+          <text x="388" y="90" fill="#b25000" text-anchor="end" font-size="10">固定のしきい値</text>
+          <circle cx="250" cy="58" r="7" fill="none" stroke="#b25000" stroke-width="2.5"/>
+          <text x="262" y="48" fill="#b25000" font-weight="700">異常</text>
+          <text x="100" y="40" fill="#1f3a68" font-size="10">青い帯＝学んだ「ふだん」の幅</text>
+        </g>
+      </svg>
+      <div class="mini">ベースラインはネットワークや場所ごとに作られ、環境が変わると学び直す。</div>
+    </div>
+    <div>
+      <div class="point"><b>ベースライン：</b>ネットワークの動きを分析して取り出した<b>ふだん（正常）の振る舞い</b>。Cisco AI Network Analytics は機械学習でこれを作り、実際の値と比べる。</div>
+      <div class="point"><b>異常検知：</b>ベースラインから大きく外れたものだけを知らせる。<b>害のない異常は無視</b>して通知の雑音を減らす。</div>
+      <table class="mx">
+        <tr><th style="width:30%">言葉</th><th>意味</th></tr>
+        <tr><td class="t">AIOps</td><td style="text-align:left">IT 運用に AI・機械学習を使う。Gartner：<b>イベントの関連づけ・異常検知・原因の特定</b>を自動化</td></tr>
+        <tr><td class="t">ハルシネーション</td><td style="text-align:left">生成 AI のもっともらしい誤り。<b>RAG</b>（答える前に最新の社内データを取り込む）で減らす</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/cloud-systems-management/network-automation-and-management/catalyst-center-assurance/2-3-7/b_cisco_catalyst_assurance_2_3_7_ug/b_cisco_catalyst_assurance_2_3_6_ug_chapter_010.html">Catalyst Assurance UG 2.3.7「Cisco AI Network Analytics Overview」</a>（Baselining is a method used to analyze network dynamics to extract behavioral patterns that help define what is the normal (baseline) behavior／These baselines learn and adapt as the network environments change）／<a class="src" href="https://www.cisco.com/c/en/us/products/collateral/networking/catalyst-center-3-3-1-ds.html">Catalyst Center 3.3.1 Data Sheet</a>（ignore harmless network anomalies to reduce noise）／<a class="src" href="https://www.cisco.com/site/us/en/learn/topics/artificial-intelligence/what-is-aiops.html">Cisco「What Is AIOps?」</a>（event correlation, anomaly detection, and causality determination）／<a class="src" href="https://www.cisco.com/site/us/en/learn/topics/artificial-intelligence/what-is-ai-computing.html">Cisco「What Is AI Computing?」</a>（reduces the likelihood of "hallucinations"）</div>
+</section>
+
+<section class="slide">
+  <h1>よくあるひっかけ</h1>
+  <table class="mx">
+    <tr><th style="width:44%">よくある思い込み</th><th>正しくは</th></tr>
+    <tr><td class="t">SDN ではコントローラーがパケットを転送する</td><td style="text-align:left">転送（<b>データプレーン</b>）は各機器に残る</td></tr>
+    <tr><td class="t">SNMP・SSH はコントロールプレーン</td><td style="text-align:left">機器を管理する通信は<b>マネジメントプレーン</b></td></tr>
+    <tr><td class="t">REST の Intent API はサウスバウンド</td><td style="text-align:left">アプリ ⇔ コントローラーなので<b>ノースバウンド</b></td></tr>
+    <tr><td class="t">NETCONF はノースバウンド</td><td style="text-align:left">コントローラー ⇔ 機器なので<b>サウスバウンド</b></td></tr>
+    <tr><td class="t">ファブリック＝物理の網</td><td style="text-align:left">物理は<b>アンダーレイ</b>。ファブリックは<b>オーバーレイ</b></td></tr>
+    <tr><td class="t">SD-Access のコントロールは VXLAN、データは LISP</td><td style="text-align:left">逆。コントロール＝<b>LISP</b>、データ＝<b>VXLAN</b>、ポリシー＝TrustSec</td></tr>
+    <tr><td class="t">VXLAN の VNI は 12 ビット</td><td style="text-align:left"><b>24 ビット</b>（約 1600 万）。12 ビットは VLAN ID</td></tr>
+    <tr><td class="t">異常検知・予測は生成 AI</td><td style="text-align:left"><b>予測 AI</b>。生成 AI は文章などを<b>作る</b></td></tr>
+    <tr><td class="t">ラベル付きのデータで学ぶのは教師なし学習</td><td style="text-align:left"><b>教師あり学習</b>。教師なしはラベルなしでパターンを探す</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">自動化（6.1）<span>手作業の変更はミスとばらつきのもと。自動化で効率・正確さ・一貫性。IBN、ゼロタッチ（PnP）、テンプレート</span></div>
+      <div class="box b2">従来型とコントローラー型（6.2・6.3.a）<span>3つのプレーン。従来型は各機器が制御（分散）、コントローラー型は集中。転送は各機器</span></div>
+      <div class="box b3">API とファブリック（6.3）<span>ノース＝アプリ側（REST）、サウス＝機器側（NETCONF など）。アンダーレイの上にオーバーレイ＝ファブリック（LISP・VXLAN・TrustSec）</span></div>
+      <div class="box b4">AI（6.4）<span>予測 AI＝パターンで予測・異常検知、生成 AI＝自然な文で答える。教師あり／なし、学習と推論、ベースライン、AIOps</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:40%">数字・名前</th><th>中身</th></tr>
+        <tr><td class="t">VXLAN の UDP</td><td><b>4789</b></td></tr>
+        <tr><td class="t">VNI</td><td><b>24 ビット</b></td></tr>
+        <tr><td class="t">VXLAN の増分</td><td><b>50 バイト</b></td></tr>
+        <tr><td class="t">NETCONF</td><td>既定のポート <b>830</b></td></tr>
+        <tr><td class="t">Catalyst Center</td><td>旧 <b>DNA Center</b></td></tr>
+      </table>
+      <div class="point"><b>次の分野：</b>#25 REST API・構成管理・JSON で、ノースバウンド API の中身（CRUD・HTTP の動詞・認証）と、Ansible・Terraform、JSON の読み方を読む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

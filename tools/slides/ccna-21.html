@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CCNA #21 VPN 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">CCNA（200-301 v1.1）　5.0 セキュリティの基礎　#21</div>
+  <h1>VPN</h1>
+  <p>出題範囲 5.5 ― インターネットの上に暗号化したトンネルを作る。拠点どうしをつなぐサイト間 VPN と、1台の端末をつなぐリモートアクセス VPN、それを支える IPsec</p>
+  <div class="refs-legend">各ページの下に、根拠にしたCiscoの資料・RFCを書いた（青い文字を押すと開く）</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>5.5 Describe IPsec remote access and site-to-site VPNs</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 VPN の基本<span>サイト間とリモートアクセス、トンネル、トポロジー、スプリットトンネル</span></div>
+      <div class="box b2">2 IPsec のしくみ<span>4つの働き、ESP（50）と AH（51）、SA、IKE（UDP 500／4500）、トンネルモードとトランスポートモード</span></div>
+      <div class="box b3">3 ルーターでの組み方<span>クリプトマップ、VTI、GRE over IPsec、DMVPN</span></div>
+      <div class="box b4">4 リモートアクセス VPN<span>SSL/TLS VPN（クライアントあり・クライアントレス）と IPsec IKEv2、ポスチャ、認証</span></div>
+    </div>
+    <div>
+      <div class="cap">CCNAでの問われ方</div>
+      <table>
+        <tr><td style="width:26%">Describe</td><td>設定の暗記より<b>違いと役割</b>。「サイト間とリモートアクセスの違い」「暗号化するのは ESP か AH か」「IKE の役目」「GRE と IPsec を組み合わせる理由」</td></tr>
+      </table>
+      <div class="point"><b>芯：</b>VPN＝<b>包んで（トンネル）、暗号化して</b>インターネットを通す。拠点の機器どうしならサイト間、端末からならリモートアクセス。IPsec では <b>IKE が鍵を決め、ESP がデータを守る</b>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco CCNA Exam v1.1 (200-301) Exam Topics</a>（5.5）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>VPN の基本</h1>
+  <p>ネットワークどうしか、端末とネットワークか。</p>
+  <div class="foot"><span>CCNA #21 VPN</span><span>5.5</span></div>
+</section>
+
+<section class="slide">
+  <h1>サイト間 VPN とリモートアクセス VPN</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="260" viewBox="0 0 420 260">
+        <g font-size="11.5" text-anchor="middle">
+          <text x="10" y="16" text-anchor="start" fill="#1f3a68" font-weight="700">サイト間：ネットワーク ⇔ ネットワーク</text>
+          <rect x="10" y="28" width="90" height="70" rx="8" fill="#eef2f8" stroke="#5b80bf"/><text x="55" y="48" fill="#1f3a68">支社 LAN</text><text x="55" y="66" fill="#1f3a68" font-size="10">PC は何も</text><text x="55" y="80" fill="#1f3a68" font-size="10">しない</text>
+          <rect x="110" y="48" width="50" height="30" rx="6" fill="#1f3a68"/><text x="135" y="68" fill="#fff">R2</text>
+          <rect x="260" y="48" width="50" height="30" rx="6" fill="#1f3a68"/><text x="285" y="68" fill="#fff">R1</text>
+          <rect x="320" y="28" width="90" height="70" rx="8" fill="#eef2f8" stroke="#5b80bf"/><text x="365" y="66" fill="#1f3a68">本社 LAN</text>
+          <ellipse cx="210" cy="63" rx="45" ry="26" fill="#fff" stroke="#5b80bf" stroke-dasharray="4 3"/><text x="210" y="98" fill="#5b80bf" font-size="10">インターネット</text>
+          <rect x="160" y="57" width="100" height="12" rx="6" fill="#b25000"/><text x="210" y="67" fill="#fff" font-size="9.5">IPsec トンネル</text>
+          <text x="10" y="146" text-anchor="start" fill="#1f3a68" font-weight="700">リモートアクセス：端末 ⇔ ネットワーク</text>
+          <rect x="10" y="168" width="100" height="60" rx="8" fill="#5b80bf"/><text x="60" y="192" fill="#fff">ノート PC</text><text x="60" y="210" fill="#fff" font-size="10">VPN クライアント</text>
+          <rect x="250" y="180" width="60" height="36" rx="6" fill="#1f3a68"/><text x="280" y="202" fill="#fff" font-size="10.5">VPN 機器</text>
+          <rect x="320" y="163" width="90" height="70" rx="8" fill="#eef2f8" stroke="#5b80bf"/><text x="365" y="202" fill="#1f3a68">本社 LAN</text>
+          <ellipse cx="180" cy="198" rx="45" ry="26" fill="#fff" stroke="#5b80bf" stroke-dasharray="4 3"/>
+          <rect x="110" y="192" width="140" height="12" rx="6" fill="#b25000"/><text x="180" y="202" fill="#fff" font-size="9.5">SSL/TLS か IPsec</text>
+          <text x="180" y="245" fill="#1f3a68" font-size="10.5">利用者がそのつど接続する</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:26%"></th><th>サイト間</th><th>リモートアクセス</th></tr>
+        <tr><td class="t">つなぐもの</td><td>拠点の網どうし</td><td>1台の端末と網</td></tr>
+        <tr><td class="t">トンネルを作る</td><td>両側の<b>専用の機器</b></td><td>端末の<b>クライアント</b>と VPN 機器</td></tr>
+        <tr><td class="t">PC の操作</td><td>要らない</td><td>接続する</td></tr>
+        <tr><td class="t">方式</td><td><b>IPsec</b>（IKEv1／v2）</td><td><b>SSL/TLS</b> か IPsec（IKEv2）</td></tr>
+      </table>
+      <div class="point">Cisco の言い方：サイト間は「<b>network to network</b>」、リモートアクセスは「<b>computer to network</b>」。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en_uk/products/security/vpn-endpoint-security-clients/what-is-vpn.html">Cisco「What Is a VPN?」</a>（Think of remote access as computer to network／Dedicated equipment is used … Think of site-to-site access as network to network）／<a class="src" href="https://cisco.com/c/en/us/td/docs/security/cdo/cloud-delivered-firewall-management-center-in-cdo/managing-firewall-threat-defense-services-with-cisco-defense-orchestrator/vpn-overview.html">Cisco Security Cloud Control「Secure Connections Overview」</a>（Remote Access VPNs over SSL or IPsec IKEv2／Site-to-site … IPsec … IKEv1 or IKEv2）。図はClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>トンネル・トポロジー・スプリットトンネル</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">トンネル＝包んで運ぶ</div>
+      <svg width="420" height="110" viewBox="0 0 420 110">
+        <g font-size="11" text-anchor="middle">
+          <rect x="10" y="10" width="400" height="44" rx="4" fill="#eef2f8" stroke="#1f3a68"/>
+          <rect x="16" y="18" width="110" height="28" fill="#1f3a68"/><text x="71" y="36" fill="#fff">外側 IP（R2→R1）</text>
+          <rect x="132" y="18" width="272" height="28" fill="#b25000"/><text x="268" y="36" fill="#fff">元のパケット（10.2.0.5→10.1.0.9）＋データ　暗号化</text>
+          <text x="210" y="78" fill="#1f3a68">インターネットから見えるのは<tspan font-weight="700">外側のアドレスだけ</tspan></text>
+          <text x="210" y="98" fill="#1f3a68" font-size="10">（IPsec のトンネルモードの例。アドレスは Claude が作った例）</text>
+        </g>
+      </svg>
+      <div class="cap" style="margin-top:6px">スプリットトンネル（リモートアクセス）</div>
+      <table class="mini">
+        <tr><td style="width:30%"><b>スプリット</b></td><td>会社あてだけトンネル、ほかは直接インターネットへ。回線は楽だが、トンネルの外から端末をねらわれると会社へ入られるおそれ</td></tr>
+        <tr><td><b>フル</b></td><td>全部をトンネルに入れる</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">トポロジー（拠点のつなぎ方）</div>
+      <svg width="420" height="150" viewBox="0 0 420 150">
+        <g font-size="11" text-anchor="middle">
+          <text x="100" y="14" fill="#1f3a68" font-weight="700">ハブアンドスポーク</text>
+          <circle cx="100" cy="75" r="16" fill="#1f3a68"/><text x="100" y="79" fill="#fff" font-size="9.5">ハブ</text>
+          <g fill="#5b80bf"><circle cx="40" cy="35" r="11"/><circle cx="160" cy="35" r="11"/><circle cx="40" cy="120" r="11"/><circle cx="160" cy="120" r="11"/></g>
+          <g stroke="#b25000" stroke-width="2"><line x1="50" y1="42" x2="88" y2="66"/><line x1="150" y1="42" x2="112" y2="66"/><line x1="50" y1="113" x2="88" y2="85"/><line x1="150" y1="113" x2="112" y2="85"/></g>
+          <text x="100" y="145" fill="#1f3a68" font-size="10">支社どうしもハブを通る</text>
+          <text x="320" y="14" fill="#1f3a68" font-weight="700">フルメッシュ</text>
+          <g stroke="#b25000" stroke-width="2"><line x1="260" y1="35" x2="380" y2="35"/><line x1="260" y1="120" x2="380" y2="120"/><line x1="260" y1="35" x2="260" y2="120"/><line x1="380" y1="35" x2="380" y2="120"/><line x1="260" y1="35" x2="380" y2="120"/><line x1="380" y1="35" x2="260" y2="120"/></g>
+          <g fill="#5b80bf"><circle cx="260" cy="35" r="11"/><circle cx="380" cy="35" r="11"/><circle cx="260" cy="120" r="11"/><circle cx="380" cy="120" r="11"/></g>
+          <text x="320" y="145" fill="#1f3a68" font-size="10">n 拠点で n(n−1)/2 本</text>
+        </g>
+      </svg>
+      <div class="point">ハブアンドスポークは設定が少ない。フルメッシュは直接通れるがトンネルが多い。両方のよさを取るのが DMVPN（第3章）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/site/us/en/learn/topics/small-business/how-does-a-vpn-work.html">Cisco「How Does a VPN Work?」</a>（A "tunnel" is the encrypted connection … Split tunneling … can allow attackers on the shared network to compromise the remote computer／Types of VPN topologies：hub-and-spoke・point-to-point・full mesh）。図と本数の式はClaudeが作った</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>IPsec のしくみ</h1>
+  <p>IKE が相手を確かめて鍵を決め、ESP がデータを守る。</p>
+  <div class="foot"><span>CCNA #21 VPN</span><span>5.5</span></div>
+</section>
+
+<section class="slide">
+  <h1>IPsec の4つの働きと部品</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">4つの働き</div>
+      <table class="mx">
+        <tr><th style="width:30%">働き</th><th>意味</th></tr>
+        <tr><td class="t">機密性</td><td style="text-align:left">送る前に<b>暗号化</b>する</td></tr>
+        <tr><td class="t">完全性</td><td style="text-align:left">途中で<b>書き換えられていない</b>か確かめる</td></tr>
+        <tr><td class="t">送信元の認証</td><td style="text-align:left">本当に<b>その相手</b>から来たか確かめる</td></tr>
+        <tr><td class="t">リプレイ防止</td><td style="text-align:left">記録して<b>送り直された</b>パケットを捨てる</td></tr>
+      </table>
+      <div class="point">IPsec は1つのプロトコルではなく、<b>開かれた標準の集まり</b>。IP の層で守るので、アプリは変えなくてよい。</div>
+    </div>
+    <div>
+      <div class="cap">部品</div>
+      <table class="mx">
+        <tr><th style="width:26%">部品</th><th>役目</th></tr>
+        <tr><td class="t">IKE</td><td style="text-align:left">相手を<b>認証</b>し、アルゴリズムを話し合い、<b>鍵</b>を作って SA を作る（UDP 500）</td></tr>
+        <tr><td class="t">ESP</td><td style="text-align:left">データを<b>暗号化</b>＋完全性・認証・リプレイ防止（プロトコル 50）</td></tr>
+        <tr><td class="t">AH</td><td style="text-align:left">完全性・認証・リプレイ防止。<b>暗号化しない</b>（プロトコル 51）</td></tr>
+        <tr><td class="t">SA</td><td style="text-align:left">どのプロトコル・アルゴリズム・鍵で守るかの取り決め。<b>片方向</b></td></tr>
+        <tr><td class="t">トランスフォームセット</td><td style="text-align:left">ESP＋AES＋SHA などの組み合わせ。両側で同じものを選ぶ</td></tr>
+      </table>
+      <div class="ex" style="margin-top:6px"><span class="lbl">Cisco の勧め</span>DES・3DES・MD5・DH グループ 1／2／5 はやめ、AES・SHA・DH グループ 14 以上</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/sec_conn_vpnips/configuration/xe-16/sec-sec-for-vpns-w-ipsec-xe-16-book/sec-cfg-vpn-ipsec.html">Security for VPNs with IPsec CG（IOS XE）「Configuring Security for VPNs with IPsec」</a>（IPsec is a framework of open standards／Data confidentiality・Data integrity・Data origin authentication・Anti-replay／IKE provides authentication of IPsec peers, negotiates IPsec security associations, and establishes IPsec keys／SAs are unidirectional／A transform set represents a certain combination of security protocols and algorithms／Cisco no longer recommends using DES, 3DES, MD5 … and DH groups 1, 2 and 5）</div>
+</section>
+
+<section class="slide">
+  <h1>ESP と AH・トンネルモードとトランスポートモード</h1>
+  <svg width="856" height="190" viewBox="0 0 856 190">
+    <g font-size="11.5" text-anchor="middle">
+      <text x="10" y="16" text-anchor="start" fill="#1f3a68" font-weight="700">元のパケット</text>
+      <rect x="130" y="4" width="110" height="20" fill="#5b80bf"/><text x="185" y="18" fill="#fff">IP ヘッダー</text>
+      <rect x="240" y="4" width="200" height="20" fill="#eef2f8" stroke="#5b80bf"/><text x="340" y="18" fill="#1f3a68">TCP／UDP＋データ</text>
+      <text x="10" y="58" text-anchor="start" fill="#1f3a68" font-weight="700">ESP トンネルモード</text>
+      <rect x="130" y="44" width="110" height="22" fill="#1f3a68"/><text x="185" y="59" fill="#fff">新しい IP</text>
+      <rect x="240" y="44" width="60" height="22" fill="#888"/><text x="270" y="59" fill="#fff">ESP</text>
+      <rect x="300" y="44" width="110" height="22" fill="#b25000"/><text x="355" y="59" fill="#fff">元の IP</text>
+      <rect x="410" y="44" width="200" height="22" fill="#b25000"/><text x="510" y="59" fill="#fff">TCP／UDP＋データ</text>
+      <rect x="610" y="44" width="60" height="22" fill="#888"/><text x="640" y="59" fill="#fff">認証</text>
+      <path d="M300 72 v6 h310 v-6" fill="none" stroke="#b25000" stroke-width="2"/><text x="455" y="92" fill="#b25000">暗号化（元のヘッダーごと隠す）</text>
+      <text x="760" y="59" fill="#1f3a68" font-size="11">VPN 機器どうし</text>
+      <text x="10" y="128" text-anchor="start" fill="#1f3a68" font-weight="700">ESP トランスポートモード</text>
+      <rect x="130" y="114" width="110" height="22" fill="#5b80bf"/><text x="185" y="129" fill="#fff">元の IP</text>
+      <rect x="240" y="114" width="60" height="22" fill="#888"/><text x="270" y="129" fill="#fff">ESP</text>
+      <rect x="300" y="114" width="200" height="22" fill="#b25000"/><text x="400" y="129" fill="#fff">TCP／UDP＋データ</text>
+      <rect x="500" y="114" width="60" height="22" fill="#888"/><text x="530" y="129" fill="#fff">認証</text>
+      <path d="M300 142 v6 h200 v-6" fill="none" stroke="#b25000" stroke-width="2"/><text x="400" y="162" fill="#b25000">中身だけ暗号化</text>
+      <text x="760" y="129" fill="#1f3a68" font-size="11">ホストどうし・GRE を守る</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <table class="mx">
+      <tr><th style="width:30%"></th><th>ESP</th><th>AH</th></tr>
+      <tr><td class="t">プロトコル番号</td><td>50</td><td>51</td></tr>
+      <tr><td class="t">暗号化</td><td><b>する</b></td><td><b>しない</b></td></tr>
+      <tr><td class="t">NAT</td><td>NAT-T（UDP 4500）で通る</td><td>通らない</td></tr>
+    </table>
+    <div class="point warn"><b>AH と NAT：</b>AH は送信元・宛先の IP アドレスも検査に入れる。NAT がアドレスを書き換えると検査が合わない。ESP はアドレスを入れないのでこの問題はない。RFC 4301 も「たいていは ESP だけで足りる」。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc4301">RFC 4301</a> 3.2・4.1（most security requirements can be met through the use of ESP by itself／transport mode … between a pair of hosts／whenever either end … is a security gateway, the SA MUST be tunnel mode）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc4303">RFC 4303</a> 2.（50）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc4302">RFC 4302</a> 2.（51）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc3715">RFC 3715</a> 2.1（AH and NAT）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc3948">RFC 3948</a>。図はClaudeが作った（ESP の後ろの部分は簡単にした）</div>
+</section>
+
+<section class="slide">
+  <h1>IKE の流れ：鍵を決めてから ESP で送る</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="260" viewBox="0 0 420 260">
+        <defs><marker id="b1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker><marker id="b2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <rect x="20" y="5" width="70" height="26" rx="5" fill="#1f3a68"/><text x="55" y="22" fill="#fff">R2（支社）</text>
+          <rect x="330" y="5" width="70" height="26" rx="5" fill="#1f3a68"/><text x="365" y="22" fill="#fff">R1（本社）</text>
+          <line x1="55" y1="31" x2="55" y2="250" stroke="#1f3a68" stroke-dasharray="3 3"/><line x1="365" y1="31" x2="365" y2="250" stroke="#1f3a68" stroke-dasharray="3 3"/>
+          <line x1="55" y1="55" x2="363" y2="55" stroke="#1f3a68" stroke-width="1.6" marker-end="url(#b1)"/><line x1="365" y1="75" x2="57" y2="75" stroke="#1f3a68" stroke-width="1.6" marker-end="url(#b1)"/>
+          <text x="210" y="49" fill="#1f3a68" font-weight="700">IKE_SA_INIT</text><text x="210" y="90" fill="#1f3a68" font-size="10">アルゴリズムの話し合い＋Diffie-Hellman</text>
+          <line x1="55" y1="115" x2="363" y2="115" stroke="#1f3a68" stroke-width="1.6" marker-end="url(#b1)"/><line x1="365" y1="135" x2="57" y2="135" stroke="#1f3a68" stroke-width="1.6" marker-end="url(#b1)"/>
+          <text x="210" y="109" fill="#1f3a68" font-weight="700">IKE_AUTH（暗号化済み）</text><text x="210" y="150" fill="#1f3a68" font-size="10">相手の認証（事前共有鍵・証明書）＋最初の IPsec SA</text>
+          <rect x="20" y="162" width="380" height="16" fill="#eef2f8"/><text x="210" y="174" fill="#1f3a68" font-size="10">ここまでが IKEv1 の「フェーズ1」にあたる（UDP 500）</text>
+          <line x1="55" y1="200" x2="363" y2="200" stroke="#b25000" stroke-width="3" marker-end="url(#b2)"/><line x1="365" y1="225" x2="57" y2="225" stroke="#b25000" stroke-width="3" marker-end="url(#b2)"/>
+          <text x="210" y="194" fill="#b25000" font-weight="700">ESP（データ）SA 1：R2→R1</text><text x="210" y="243" fill="#b25000" font-weight="700">ESP（データ）SA 2：R1→R2</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><td style="width:36%"><b>Diffie-Hellman</b></td><td>鍵そのものを送らずに、2者で同じ秘密を作る</td></tr>
+        <tr><td><b>事前共有鍵</b></td><td>両側に同じ文字列を設定して認証。簡単</td></tr>
+        <tr><td><b>証明書</b></td><td>電子署名で認証。拠点が多いとき向き</td></tr>
+        <tr><td><b>CREATE_CHILD_SA</b></td><td>SA の追加や鍵の作り直し。IKEv1 のフェーズ2にあたる</td></tr>
+      </table>
+      <div class="cap" style="margin-top:8px">番号のまとめ</div>
+      <table class="mx">
+        <tr><th>もの</th><th>番号</th></tr>
+        <tr><td class="t">IKE</td><td>UDP 500</td></tr>
+        <tr><td class="t">NAT を越えるとき（NAT-T）</td><td>UDP 4500（ESP もここに包む）</td></tr>
+        <tr><td class="t">ESP／AH</td><td>IP プロトコル 50／51</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc7296">RFC 7296</a> 1.2（IKE_SA_INIT and IKE_AUTH exchanges (known in IKEv1 as Phase 1) … negotiate cryptographic algorithms, exchange nonces, and do a Diffie-Hellman exchange … authenticate … establish the first Child SA）・1.3（Phase 2 exchange in IKEv1）・2.（UDP port 500 … 4500）／RFC 3948／Cisco「Configuring Security for VPNs with IPsec」（Diffie-Hellman … establish a shared secret over an unsecure communications channel）。図はClaudeが作った</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>ルーターでの組み方</h1>
+  <p>ACL で選ぶクリプトマップ、インタフェースで送る VTI と GRE、多拠点向けの DMVPN。</p>
+  <div class="foot"><span>CCNA #21 VPN</span><span>5.5</span></div>
+</section>
+
+<section class="slide">
+  <h1>クリプトマップと VTI</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">クリプトマップ（ACL で選んだ通信を守る）</div>
+<pre class="cli small">crypto isakmp policy 10
+ encryption aes 256
+ authentication pre-share
+ group 14
+crypto isakmp key MyKey123 address 203.0.113.2
+crypto ipsec transform-set TS esp-aes 256 esp-sha-hmac
+access-list 120 permit ip 10.1.0.0 0.0.255.255 10.2.0.0 0.0.255.255
+crypto map VPN 10 ipsec-isakmp
+ set peer 203.0.113.2
+ set transform-set TS
+ <b>match address 120</b>       <i>! 守る通信</i>
+interface g0/0
+ <b>crypto map VPN</b>          <i>! 物理 IF に付ける</i></pre>
+      <div class="anno">相手側は送信元と宛先を入れかえた鏡写しの ACL にする</div>
+    </div>
+    <div>
+      <div class="cap">VTI（トンネルがインタフェースになる）</div>
+<pre class="cli small">crypto ipsec profile P1
+ set transform-set TS
+interface Tunnel1
+ ip address 172.16.0.1 255.255.255.252
+ tunnel source g0/0
+ tunnel destination 203.0.113.2
+ <b>tunnel mode ipsec ipv4</b>
+ <b>tunnel protection ipsec profile P1</b>
+ip route 10.2.0.0 255.255.0.0 Tunnel1</pre>
+      <table class="mx">
+        <tr><th style="width:30%"></th><th>クリプトマップ</th><th>VTI</th></tr>
+        <tr><td class="t">何を守る</td><td>ACL に合う通信</td><td>トンネルへ<b>ルーティング</b>した通信</td></tr>
+        <tr><td class="t">マルチキャスト</td><td>通らない</td><td><b>通る</b>（OSPF など）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：Cisco「Configuring Security for VPNs with IPsec」（Creating Crypto Access Lists：Specifies conditions to determine which IP packets are protected … "mirror image" crypto access lists／Example: Configuring AES-Based Static Crypto Map）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/sec_conn_vpnips/configuration/xe-16/sec-sec-for-vpns-w-ipsec-xe-16-book/sec-ipsec-virt-tunnl.html">「IPsec Virtual Tunnel Interfaces」</a>（routable interface type … support multicast … managed by the IP routing table／tunnel mode ipsec ipv4・tunnel protection）。設定はCiscoの例の書式でClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>GRE over IPsec：包むのは GRE、守るのは IPsec</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="170" viewBox="0 0 420 170">
+        <g font-size="11" text-anchor="middle">
+          <text x="10" y="16" text-anchor="start" fill="#1f3a68" font-weight="700">① GRE で包む（マルチキャストも包める）</text>
+          <rect x="10" y="24" width="80" height="24" fill="#1f3a68"/><text x="50" y="40" fill="#fff">外側 IP</text>
+          <rect x="90" y="24" width="50" height="24" fill="#5b80bf"/><text x="115" y="40" fill="#fff">GRE</text>
+          <rect x="140" y="24" width="200" height="24" fill="#eef2f8" stroke="#5b80bf"/><text x="240" y="40" fill="#1f3a68">OSPF Hello（224.0.0.5）など</text>
+          <text x="10" y="80" text-anchor="start" fill="#1f3a68" font-weight="700">② それを IPsec で暗号化（ユニキャストになったので守れる）</text>
+          <rect x="10" y="88" width="80" height="24" fill="#1f3a68"/><text x="50" y="104" fill="#fff">外側 IP</text>
+          <rect x="90" y="88" width="50" height="24" fill="#888"/><text x="115" y="104" fill="#fff">ESP</text>
+          <rect x="140" y="88" width="250" height="24" fill="#b25000"/><text x="265" y="104" fill="#fff">GRE＋中身（暗号化）</text>
+          <text x="210" y="140" fill="#1f3a68">GRE＝IP プロトコル 47。それ自体に暗号化・認証はない</text>
+          <text x="210" y="160" fill="#1f3a68" font-size="10">（図は Claude が簡単にしたもの）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:26%"></th><th>GRE</th><th>IPsec</th></tr>
+        <tr><td class="t">包めるもの</td><td>ユニキャスト・<b>マルチキャスト</b>・ブロードキャスト</td><td><b>IP パケットだけ</b></td></tr>
+        <tr><td class="t">暗号化・認証</td><td><b>なし</b></td><td><b>あり</b></td></tr>
+      </table>
+<pre class="cli small">interface Tunnel100
+ ip address 128.1.1.1 255.255.255.0
+ tunnel source 120.1.1.1
+ tunnel destination 120.1.1.2
+ <b>tunnel protection ipsec profile ipsec_prof</b></pre>
+      <div class="point">組み合わせると「ルーティングプロトコルも動く、暗号化されたトンネル」になる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/c9000/lyr3-fwd/gre/gre-configuration-guide/m-gre-over-ipsec.html">GRE Configuration Guide IOS XE 17「GRE over IPsec」</a>（encapsulates … unicast, multicast, broadcast … GRE does not itself provide data confidentiality or authentication … IPsec … can only secure IP packets／設定例 Tunnel100）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc2784">RFC 2784</a> 4.（IPv4 protocol 47）</div>
+</section>
+
+<section class="slide">
+  <h1>DMVPN：多くの拠点を少ない設定で</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="250" viewBox="0 0 420 250">
+        <defs><marker id="b3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <rect x="160" y="10" width="100" height="44" rx="8" fill="#1f3a68"/><text x="210" y="30" fill="#fff" font-weight="700">ハブ（本社）</text><text x="210" y="46" fill="#fff" font-size="10">NHRP サーバー</text>
+          <rect x="20" y="180" width="100" height="44" rx="8" fill="#5b80bf"/><text x="70" y="200" fill="#fff" font-weight="700">スポーク A</text><text x="70" y="216" fill="#fff" font-size="10">アドレスが変わってよい</text>
+          <rect x="300" y="180" width="100" height="44" rx="8" fill="#5b80bf"/><text x="350" y="206" fill="#fff" font-weight="700">スポーク B</text>
+          <line x1="80" y1="178" x2="175" y2="56" stroke="#1f3a68" stroke-width="2"/><line x1="340" y1="178" x2="245" y2="56" stroke="#1f3a68" stroke-width="2"/>
+          <text x="58" y="110" fill="#1f3a68" font-size="10.5">① 各スポークが起動時に</text><text x="58" y="124" fill="#1f3a68" font-size="10.5">自分のアドレスを登録</text>
+          <text x="362" y="110" fill="#1f3a68" font-size="10.5">② A が B の本当の</text><text x="362" y="124" fill="#1f3a68" font-size="10.5">アドレスを問い合わせ</text>
+          <line x1="122" y1="202" x2="298" y2="202" stroke="#b25000" stroke-width="3.5" stroke-dasharray="7 4"/>
+          <text x="210" y="194" fill="#b25000" font-weight="700">③ 直接の IPsec トンネル</text><text x="210" y="242" fill="#b25000" font-size="10.5">（必要なときに作る）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:24%">部品</th><th>役目</th></tr>
+        <tr><td class="t">mGRE</td><td style="text-align:left">1つのトンネルインタフェースで<b>多くの相手</b>。設定が増えない</td></tr>
+        <tr><td class="t">NHRP</td><td style="text-align:left">ハブがサーバー。スポークの<b>本当のアドレス</b>を覚えて答える</td></tr>
+        <tr><td class="t">IPsec</td><td style="text-align:left">トンネルを暗号化する</td></tr>
+      </table>
+      <div class="point"><b>よさ：</b>スポークを足してもハブの設定は変わらない。支社どうしはハブに聞いて<b>直接</b>つながる（ハブアンドスポークとフルメッシュのよいところ）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/sec_conn_dmvpn/configuration/xe-16/sec-conn-dmvpn-xe-16-book/sec-conn-dmvpn-dmvpn.html">Dynamic Multipoint VPN Configuration Guide（IOS XE）</a>（combining GRE tunnels, IPsec encryption, and NHRP／the size of the configuration on the hub router remains constant even if spoke routers are added／dynamic physical interface IP addresses／NHRP … the hub is the server … queries the NHRP database for real addresses of the destination spokes to build direct tunnels／mGRE tunnel interface）。図はClaudeが作った</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>リモートアクセス VPN</h1>
+  <p>SSL/TLS か IPsec（IKEv2）。端末の状態と、つなぐ人の認証が大事。</p>
+  <div class="foot"><span>CCNA #21 VPN</span><span>5.5</span></div>
+</section>
+
+<section class="slide">
+  <h1>SSL/TLS VPN と IPsec のリモートアクセス</h1>
+  <div class="cols wide-r">
+    <div>
+      <table class="mx">
+        <tr><th style="width:28%">方式</th><th>端末に要るもの</th><th>特徴</th></tr>
+        <tr><td class="t">SSL/TLS VPN（クライアント）</td><td>VPN クライアント（AnyConnect など）</td><td style="text-align:left">ネットワーク全体へ</td></tr>
+        <tr><td class="t">クライアントレス SSL VPN</td><td><b>ブラウザーだけ</b></td><td style="text-align:left">「web VPN」。Web 画面から届くものだけ</td></tr>
+        <tr><td class="t">IPsec（IKEv2）</td><td>IKEv2 対応のクライアント</td><td style="text-align:left">IPsec で守る</td></tr>
+      </table>
+      <div class="ex" style="margin-top:8px"><span class="lbl">Cisco の機器</span>Secure Firewall はリモートアクセスに SSL か IPsec IKEv2。AnyConnect は SSL と IPsec（IKEv2）の両方に対応</div>
+    </div>
+    <div>
+      <div class="cap">気をつけること</div>
+      <table class="mini">
+        <tr><td style="width:30%"><b>認証</b></td><td>VPN の強さは端末側の認証の強さで決まる。<b>二要素認証が最低限</b>（Cisco）</td></tr>
+        <tr><td><b>ポスチャ</b></td><td>ウイルス対策が古い端末は感染を持ち込む。つなぐ前に状態を確かめる</td></tr>
+        <tr><td><b>スプリットトンネル</b></td><td>トンネルの外から端末がねらわれるおそれ</td></tr>
+      </table>
+      <div class="point">サイト間 VPN では PC にクライアントは要らない。<b>クライアントが要るのはリモートアクセス</b>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/site/us/en/learn/topics/small-business/how-does-a-vpn-work.html">Cisco「How Does a VPN Work?」</a>（SSL VPN, IPsec, or both to deploy a remote-access VPN／"clientless VPN" or "web VPN"／Two-factor authentication is a minimum requirement／posture／Split tunneling）／Cisco Security Cloud Control「Secure Connections Overview」／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/security/secure-firewall/management-center/device-config/720/management-center-device-config-72/secure-connections-remote-access.html">Secure Firewall Management Center Device CG 7.2「Remote Access VPN」</a>（AnyConnect … SSL or IPSec (IKEv2) connections）</div>
+</section>
+
+<section class="slide">
+  <h1>よくあるひっかけ</h1>
+  <table class="mx">
+    <tr><th style="width:42%">よくある思い込み</th><th>正しくは</th></tr>
+    <tr><td class="t">サイト間 VPN では PC ごとにクライアントが要る</td><td style="text-align:left">要らない。<b>拠点の機器</b>がトンネルを作る</td></tr>
+    <tr><td class="t">AH で暗号化する</td><td style="text-align:left">AH は<b>暗号化しない</b>。暗号化は <b>ESP</b></td></tr>
+    <tr><td class="t">ESP は 51、AH は 50</td><td style="text-align:left"><b>ESP 50・AH 51</b>。GRE は 47</td></tr>
+    <tr><td class="t">IKE がデータを暗号化して運ぶ</td><td style="text-align:left">IKE は<b>鍵と SA を決める</b>（UDP 500）。データは ESP</td></tr>
+    <tr><td class="t">SA は両方向で1つ</td><td style="text-align:left"><b>片方向</b>。行きと帰りで別</td></tr>
+    <tr><td class="t">GRE で暗号化できる</td><td style="text-align:left">GRE は<b>包むだけ</b>。守るなら IPsec と組み合わせる</td></tr>
+    <tr><td class="t">クリプトマップで OSPF もそのまま通る</td><td style="text-align:left">マルチキャストは通らない。<b>GRE over IPsec か VTI</b></td></tr>
+    <tr><td class="t">AH は NAT を通れる</td><td style="text-align:left">アドレスを検査に入れるので<b>通れない</b>。ESP は NAT-T（UDP 4500）</td></tr>
+    <tr><td class="t">クライアントレス VPN は専用ソフトが要る</td><td style="text-align:left"><b>ブラウザーだけ</b>でよい</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">VPN の基本<span>サイト間＝網と網（機器がトンネル）、リモートアクセス＝端末と網（クライアント）。スプリットトンネル・トポロジー</span></div>
+      <div class="box b2">IPsec<span>機密性・完全性・送信元の認証・リプレイ防止。IKE（UDP 500／4500）が鍵と SA、ESP（50）が暗号化、AH（51）は暗号化なし。SA は片方向</span></div>
+      <div class="box b3">ルーターでの組み方<span>クリプトマップ（ACL）・VTI（ルーティング）・GRE over IPsec（マルチキャスト）・DMVPN（mGRE＋NHRP＋IPsec）</span></div>
+      <div class="box b4">リモートアクセス<span>SSL/TLS（クライアント・クライアントレス）と IPsec IKEv2。二要素認証・ポスチャ</span></div>
+    </div>
+    <div>
+      <div class="cap">確かめるコマンド（IOS）</div>
+<pre class="cli small">show crypto isakmp sa     <i>! IKE（IKEv1）の SA</i>
+show crypto ipsec sa      <i>! IPsec の SA と数</i>
+show crypto map
+show interfaces tunnel 1</pre>
+      <div class="point"><b>次の分野：</b>#22 ACL で、標準・拡張 ACL の書き方と置き場所を読む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

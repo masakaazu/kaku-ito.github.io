@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CCNA #17 DHCP と DNS 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">CCNA（200-301 v1.1）　4.0 IPサービス　#17</div>
+  <h1>DHCP と DNS</h1>
+  <p>出題範囲 4.3・4.6 ― 自分のアドレスをもらう DHCP（サーバー・リレー・クライアント）と、相手のアドレスを調べる DNS</p>
+  <div class="refs-legend">各ページの下に、根拠にしたCiscoの資料・RFCを書いた（青い文字を押すと開く）</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>4.3 Explain the role of DHCP and DNS within the network／4.6 Configure and verify DHCP client and relay</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 DHCP のしくみ<span>DISCOVER・OFFER・REQUEST・ACK（DORA）、ブロードキャストとユニキャスト、リース、UDP 67／68</span></div>
+      <div class="box b2">2 DHCP の設定<span>サーバー（ip dhcp pool）・リレー（ip helper-address・giaddr）・クライアント（ip address dhcp）と show</span></div>
+      <div class="box b3">3 DNS<span>役割・UDP／TCP 53・A／AAAA／CNAME／MX／PTR／NS、ルーターの ip name-server・ip domain lookup・ip host</span></div>
+    </div>
+    <div>
+      <div class="cap">CCNAでの問われ方</div>
+      <table>
+        <tr><td style="width:24%">Explain（4.3）</td><td>DHCP と DNS が<b>何をするか</b>、どのメッセージが<b>ブロードキャスト</b>か、どのレコードを使うか</td></tr>
+        <tr><td>Configure and verify（4.6）</td><td><b>ip helper-address をどのインタフェースに入れるか</b>、ip address dhcp、show ip dhcp binding の読み方</td></tr>
+      </table>
+      <div class="point"><b>覚え方の芯：</b>DHCP は「<b>自分の</b>アドレスをもらう」、DNS は「<b>相手の</b>アドレスを調べる」。ブロードキャストはルーターを越えないので、別のサブネットのサーバーには<b>リレー</b>が要る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco CCNA Exam v1.1 (200-301) Exam Topics</a>（4.3・4.6）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>DHCP のしくみ</h1>
+  <p>アドレスを知らないクライアントが、4つのメッセージでアドレスと設定を借りる。</p>
+  <div class="foot"><span>CCNA #17 DHCP と DNS</span><span>4.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>DORA：4つのメッセージでアドレスを借りる</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="290" viewBox="0 0 420 290">
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="6" width="120" height="40" rx="8" fill="#5b80bf"/><text x="70" y="24" fill="#fff" font-weight="700">クライアント</text><text x="70" y="39" fill="#fff" font-size="10.5">まだ 0.0.0.0</text>
+          <rect x="290" y="6" width="120" height="40" rx="8" fill="#1f3a68"/><text x="350" y="24" fill="#fff" font-weight="700">DHCP サーバー</text><text x="350" y="39" fill="#fff" font-size="10.5">プールを持つ</text>
+          <line x1="70" y1="46" x2="70" y2="285" stroke="#c7c7cc" stroke-width="2"/><line x1="350" y1="46" x2="350" y2="285" stroke="#c7c7cc" stroke-width="2"/>
+          <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1d1d1f"/></marker></defs>
+          <line x1="72" y1="80" x2="346" y2="80" stroke="#b25000" stroke-width="2.5" marker-end="url(#ar)"/><text x="210" y="72" fill="#b25000" font-weight="700">1 DISCOVER（ブロードキャスト）</text><text x="210" y="96" fill="#6e6e73" font-size="10.5">サーバーはどこ？</text>
+          <line x1="348" y1="135" x2="74" y2="135" stroke="#1f3a68" stroke-width="2.5" marker-end="url(#ar)"/><text x="210" y="127" fill="#1f3a68" font-weight="700">2 OFFER</text><text x="210" y="151" fill="#6e6e73" font-size="10.5">10.1.10.21 をどうぞ（まだ仮）</text>
+          <line x1="72" y1="190" x2="346" y2="190" stroke="#b25000" stroke-width="2.5" marker-end="url(#ar)"/><text x="210" y="182" fill="#b25000" font-weight="700">3 REQUEST（ブロードキャスト）</text><text x="210" y="206" fill="#6e6e73" font-size="10.5">それをください（ほかのサーバーにも伝わる）</text>
+          <line x1="348" y1="245" x2="74" y2="245" stroke="#1f3a68" stroke-width="2.5" marker-end="url(#ar)"/><text x="210" y="237" fill="#1f3a68" font-weight="700">4 ACK</text><text x="210" y="261" fill="#6e6e73" font-size="10.5">確定。リース1日</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">メッセージ</th><th>送り方と理由</th></tr>
+        <tr><td class="t">DISCOVER</td><td style="text-align:left"><b>ブロードキャスト</b>。サーバーの場所もアドレスも知らない</td></tr>
+        <tr><td class="t">OFFER</td><td style="text-align:left">Cisco の説明ではユニキャスト。まだ確定ではない</td></tr>
+        <tr><td class="t">REQUEST</td><td style="text-align:left"><b>ブロードキャスト</b>。選ばなかったサーバーも、申し出たアドレスを取り戻せる</td></tr>
+        <tr><td class="t">ACK</td><td style="text-align:left">Cisco の説明ではユニキャスト。ここで確定</td></tr>
+      </table>
+      <div class="ex" style="margin-top:8px"><span class="lbl">数</span>UDP。クライアント → サーバーは <b>67</b> 番、サーバー → クライアントは <b>68</b> 番</div>
+      <div class="point warn"><b>補足：</b>RFC 2131 では、クライアントが求めたときは OFFER・ACK もブロードキャストで返す。割り当てられないときは <b>DHCPNAK</b>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_dhcp/configuration/15-mt/dhcp-15-mt-book/dhcp-overview.html">DHCP Configuration Guide 15M&amp;T「DHCP Overview」</a>（DHCPDISCOVER broadcast … DHCPOFFER unicast … DHCPREQUEST broadcast … DHCPACK unicast … DHCPNAK）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc2131">RFC 2131</a>（4.1：'DHCP server' port (67)・'DHCP client' port (68)・broadcast bit）。図はClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>リースと衝突チェック：アドレスは「借りる」もの</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="130" viewBox="0 0 410 130">
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="20" y="50" width="370" height="24" rx="4" fill="#eef2f8" stroke="#5b80bf"/>
+          <rect x="20" y="50" width="185" height="24" rx="4" fill="#9db3dc"/>
+          <text x="20" y="40" fill="#1f3a68">ACK</text><text x="205" y="40" fill="#b25000" font-weight="700">50%：更新を頼み始める</text><text x="390" y="40" fill="#1f3a68">期限</text>
+          <line x1="205" y1="44" x2="205" y2="80" stroke="#b25000" stroke-width="2"/>
+          <text x="112" y="67" fill="#1f3a68">使ってよい</text><text x="298" y="67" fill="#1f3a68">更新できればまた延びる</text>
+          <text x="205" y="104" fill="#6e6e73">Cisco の DHCP サーバーのリース初期値＝1日</text>
+        </g>
+      </svg>
+<pre class="cli small">ip dhcp pool V10
+ <span class="hl">lease 7</span>          <i>! 7日</i>
+ lease 0 8        <i>! 0日8時間</i>
+ lease infinite   <i>! 無期限</i></pre>
+    </div>
+    <div>
+      <div class="cap">配る前の衝突チェック</div>
+      <ol class="steps">
+        <li>プールから空いているアドレスを選ぶ</li>
+        <li><b>ping</b> と <b>gratuitous ARP</b> で、だれも使っていないか確かめる</li>
+        <li>返事があれば<b>衝突</b>：そのアドレスはプールから外し、管理者が直すまで配らない</li>
+        <li>衝突の一覧は <b>show ip dhcp conflict</b></li>
+      </ol>
+      <div class="point"><b>なぜリースか：</b>持ち主がいなくなったアドレスは、期限が来れば自動でプールに戻る。期限の前に更新すれば同じアドレスを使い続けられる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_dhcp/configuration/15-mt/dhcp-15-mt-book/config-dhcp-server.html">DHCP Configuration Guide 15M&amp;T「Configuring the Cisco IOS DHCP Server」</a>（lease … The default is a one-day lease／DHCP checks for conflicts by using ping and gratuitous ARP … the address is removed from the pool）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc2131">RFC 2131</a>（T1 defaults to (0.5 * duration_of_lease)）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>DHCP の設定</h1>
+  <p>サーバーはプールを作る。リレーは ip helper-address。クライアントは ip address dhcp。</p>
+  <div class="foot"><span>CCNA #17 DHCP と DNS</span><span>4.6</span></div>
+</section>
+
+<section class="slide">
+  <h1>サーバーの設定：除外 → プール → 中身</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">R1(config)#<b>ip dhcp excluded-address 10.1.10.1 10.1.10.20</b>
+R1(config)#<b>ip dhcp pool V10</b>
+R1(dhcp-config)#<b>network 10.1.10.0 255.255.255.0</b>
+R1(dhcp-config)#<b>default-router 10.1.10.1</b>
+R1(dhcp-config)#<b>dns-server 10.1.99.53</b>
+R1(dhcp-config)#<b>domain-name example.com</b>
+R1(dhcp-config)#<b>lease 7</b></pre>
+      <table class="mini">
+        <tr><td style="width:34%">excluded-address</td><td><b>グローバル</b>で入れる。手で設定するアドレスを外す（最初 最後）</td></tr>
+        <tr><td>network</td><td>配るサブネット。<b>ネットワークアドレス</b>＋マスク（または /長さ）</td></tr>
+        <tr><td>default-router</td><td>PC のゲートウェイ。<b>同じサブネット</b>のアドレス（FHRP なら仮想 IP）</td></tr>
+        <tr><td>dns-server</td><td>PC に配る DNS サーバー（最大8個、優先順）</td></tr>
+      </table>
+    </div>
+    <div>
+      <ul class="anno">
+        <li>R1 自身のインタフェースのアドレスは<b>自動で除外</b>される。サーバー・プリンターなどほかに手で設定したアドレスは excluded-address が要る</li>
+        <li>VLAN ごとに<b>プールを1つずつ</b>作る（どのプールを使うかは、届いた VLAN か giaddr で決まる）</li>
+        <li>default-router を忘れると、PC は<b>同じサブネットの中だけ</b>通信できる</li>
+        <li>dns-server を忘れると、<b>IP アドレスなら届くが名前で届かない</b></li>
+      </ul>
+      <div class="point warn"><b>名前の似たコマンド：</b>ip default-gateway・ip name-server はルーター<b>自身</b>の設定。PC に配るのはプールの default-router・dns-server。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_dhcp/configuration/15-mt/dhcp-15-mt-book/config-dhcp-server.html">「Configuring the Cisco IOS DHCP Server」</a>（ip dhcp excluded-address low-address [high-address]／The IP address configured on a device interface is automatically excluded／network … domain-name … dns-server … up to eight … default-router … should be on the same subnet as the client）。設定はClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>リレー：ブロードキャストを、サーバーへのユニキャストに変えて届ける</h1>
+  <svg width="856" height="160" viewBox="0 0 856 160">
+    <g font-size="12" text-anchor="middle">
+      <defs><marker id="ar2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker></defs>
+      <rect x="10" y="50" width="130" height="50" rx="8" fill="#5b80bf"/><text x="75" y="72" fill="#fff" font-weight="700">PC</text><text x="75" y="88" fill="#fff" font-size="10.5">VLAN 10</text>
+      <rect x="330" y="40" width="190" height="70" rx="10" fill="#1f3a68"/><text x="425" y="62" fill="#fff" font-weight="700">R1（リレー）</text><text x="425" y="79" fill="#fff" font-size="10.5">G0/0 10.1.10.1</text><text x="425" y="95" fill="#ffd59e" font-size="10.5">ip helper-address 10.1.99.10</text>
+      <rect x="706" y="50" width="140" height="50" rx="8" fill="#b25000"/><text x="776" y="72" fill="#fff" font-weight="700">DHCP サーバー</text><text x="776" y="88" fill="#fff" font-size="10.5">10.1.99.10</text>
+      <line x1="140" y1="75" x2="330" y2="75" stroke="#1d1d1f" stroke-width="2"/><line x1="520" y1="75" x2="706" y2="75" stroke="#1d1d1f" stroke-width="2"/>
+      <text x="235" y="35" fill="#b25000" font-weight="700">① DISCOVER</text><text x="235" y="52" fill="#b25000" font-size="10.5">宛先 255.255.255.255</text>
+      <text x="613" y="35" fill="#b25000" font-weight="700">② 作り直して送る</text><text x="613" y="52" fill="#b25000" font-size="10.5">宛先 10.1.99.10・giaddr＝10.1.10.1</text>
+      <text x="425" y="140" fill="#6e6e73">③ サーバーは giaddr を見て 10.1.10.0/24 のプールから選び、返事を giaddr（R1）へ送る → ④ R1 が PC に届ける</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div>
+<pre class="cli small">R1(config)#interface GigabitEthernet0/0   <i>! PC 側</i>
+R1(config-if)#<b>ip helper-address 10.1.99.10</b></pre>
+      <div class="point warn"><b>入れる場所：</b>ブロードキャストを<b>受け取る側＝クライアントのいる側</b>（L3 スイッチなら VLAN の SVI）。サーバー側に入れても働かない。</div>
+    </div>
+    <div>
+      <ul class="anno">
+        <li>ルーターはブロードキャストを転送しないので、別のサブネットのサーバーには<b>そのままでは届かない</b></li>
+        <li><b>giaddr</b>＝helper-address を入れたインタフェースのアドレス。サーバーはこれで<b>どのサブネットのプールか</b>を決める</li>
+        <li>サーバーが何台かあれば、helper-address を<b>1台ずつ</b>書ける</li>
+      </ul>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/en/US/docs/ios/12_4t/ip_addr/configuration/guide/htdhcpre.html">IP Addressing Services Configuration Guide 12.4T「Configuring the Cisco IOS DHCP Relay Agent」</a>（the relay agent inserts the IP address of the interface containing the ip helper-address command into the gateway IP address (giaddr) field … sends the local broadcast, via IP unicast, to the DHCP server／you can configure one helper address for each server）。図はClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>L3 スイッチで VLAN ごとにリレーする</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">SW1(config)#interface vlan 10
+SW1(config-if)# ip address 10.1.10.1 255.255.255.0
+SW1(config-if)# <span class="hl">ip helper-address 10.1.99.10</span>
+SW1(config)#interface vlan 20
+SW1(config-if)# ip address 10.1.20.1 255.255.255.0
+SW1(config-if)# <span class="hl">ip helper-address 10.1.99.10</span>
+
+<i>! サーバー側（R9）：VLAN ごとにプール</i>
+R9(config)#ip dhcp pool V10
+R9(dhcp-config)# network 10.1.10.0 255.255.255.0
+R9(dhcp-config)# default-router 10.1.10.1
+R9(config)#ip dhcp pool V20
+R9(dhcp-config)# network 10.1.20.0 255.255.255.0
+R9(dhcp-config)# default-router 10.1.20.1</pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:36%">VLAN 20 の PC から</th><th>giaddr</th><th>選ばれるプール</th></tr>
+        <tr><td class="t">SVI vlan 20 で受ける</td><td>10.1.20.1</td><td>V20（10.1.20.0/24）</td></tr>
+      </table>
+      <div class="cap" style="margin-top:8px">よくある失敗</div>
+      <table class="mini">
+        <tr><td style="width:44%">SVI に helper-address がない</td><td>DISCOVER がサーバーに届かない</td></tr>
+        <tr><td>サーバーに V20 のプールがない</td><td>giaddr に合うプールがなく、配れない</td></tr>
+        <tr><td>サーバーから 10.1.20.1 への経路がない</td><td>返事がリレーに戻れない</td></tr>
+        <tr><td>default-router が別 VLAN のアドレス</td><td>PC がほかのサブネットへ出られない</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/en/US/docs/ios/12_4t/ip_addr/configuration/guide/htdhcpre.html">「Configuring the Cisco IOS DHCP Relay Agent」</a>（This IP address enables the DHCP server to determine which subnet should receive the offer）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc2131">RFC 2131</a>（the server sends any return messages to the 'DHCP server' port on the BOOTP relay agent whose address appears in 'giaddr'）。設定と失敗の例はClaudeがまとめた</div>
+</section>
+
+<section class="slide">
+  <h1>クライアントの設定と、確かめるコマンド</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">ルーターのインタフェースを DHCP クライアントにする</div>
+<pre class="cli small">R1(config)#interface GigabitEthernet0/1   <i>! ISP 側</i>
+R1(config-if)#<b>ip address dhcp</b>
+R1(config-if)#no shutdown
+
+R1#<b>show ip interface brief</b>
+Interface   IP-Address    OK? Method Status Protocol
+Gi0/1       198.51.100.23 YES <span class="hl">DHCP</span>   up     up</pre>
+      <ul class="anno">
+        <li>ip address アドレス マスク の<b>代わり</b>に入れる</li>
+        <li>Method 列が <b>DHCP</b> なら DHCP でもらったアドレス（手で書いたものは manual）</li>
+        <li>Cisco のルーターは、同時に DHCP サーバーにもクライアントにもなれる</li>
+      </ul>
+    </div>
+    <div>
+      <div class="cap">サーバー側で確かめる</div>
+<pre class="cli small">R1#<b>show ip dhcp binding</b>
+IP address    Client-ID/            Lease expiration      Type
+              Hardware address
+10.1.10.21    0100.5079.6668.00     Nov 08 2026 10:15 AM  Automatic</pre>
+      <table class="mini">
+        <tr><td style="width:40%">show ip dhcp binding</td><td>貸したアドレス・相手・<b>リースの期限</b></td></tr>
+        <tr><td>show ip dhcp pool</td><td>プールの範囲と使っている数（足りているか）</td></tr>
+        <tr><td>show ip dhcp conflict</td><td>衝突してプールから外したアドレス</td></tr>
+      </table>
+      <div class="point"><b>PC 側：</b>Windows なら ipconfig /all で、もらったアドレス・ゲートウェイ・DNS サーバー・リースを見る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_dhcp/configuration/15-mt/dhcp-15-mt-book/config-dhcp-client.html">DHCP Configuration Guide 15M&amp;T「DHCP Client」</a>（Your device can act as both the DHCP client and the DHCP server. Use the ip address dhcp command）／<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_dhcp/configuration/15-mt/dhcp-15-mt-book/config-dhcp-server.html">「Configuring the Cisco IOS DHCP Server」</a>（show ip dhcp pool／show ip dhcp binding … lease expiration／show ip dhcp conflict）。出力はその形式にそろえてClaudeが作った例</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>DNS</h1>
+  <p>名前で指定された相手の IP アドレスを、世界に分かれたデータベースから調べる。</p>
+  <div class="foot"><span>CCNA #17 DHCP と DNS</span><span>4.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>DNS の役割：名前から相手のアドレスを調べる</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="250" viewBox="0 0 420 250">
+        <g font-size="12" text-anchor="middle">
+          <defs><marker id="ar3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1d1d1f"/></marker></defs>
+          <rect x="10" y="100" width="110" height="50" rx="8" fill="#5b80bf"/><text x="65" y="122" fill="#fff" font-weight="700">PC</text><text x="65" y="138" fill="#fff" font-size="10.5">リゾルバー</text>
+          <rect x="160" y="100" width="120" height="50" rx="8" fill="#1f3a68"/><text x="220" y="120" fill="#fff" font-weight="700">社内 DNS</text><text x="220" y="136" fill="#fff" font-size="10.5">キャッシュあり</text>
+          <rect x="300" y="20" width="110" height="40" rx="8" fill="#6e6e73"/><text x="355" y="45" fill="#fff" font-size="11">ルート</text>
+          <rect x="300" y="105" width="110" height="40" rx="8" fill="#6e6e73"/><text x="355" y="130" fill="#fff" font-size="11">.com</text>
+          <rect x="300" y="190" width="110" height="40" rx="8" fill="#b25000"/><text x="355" y="208" fill="#fff" font-size="11">example.com</text><text x="355" y="222" fill="#fff" font-size="10">権威サーバー</text>
+          <line x1="120" y1="118" x2="158" y2="118" stroke="#1d1d1f" stroke-width="2" marker-end="url(#ar3)"/>
+          <line x1="158" y1="134" x2="122" y2="134" stroke="#1d1d1f" stroke-width="2" marker-end="url(#ar3)"/>
+          <line x1="280" y1="110" x2="300" y2="45" stroke="#c7c7cc" stroke-width="2"/><line x1="280" y1="125" x2="300" y2="125" stroke="#c7c7cc" stroke-width="2"/><line x1="280" y1="140" x2="300" y2="205" stroke="#c7c7cc" stroke-width="2"/>
+          <text x="140" y="94" fill="#1d1d1f" font-size="10.5">① www.example.com は？</text>
+          <text x="140" y="170" fill="#1d1d1f" font-size="10.5">④ 192.0.2.10</text>
+          <text x="220" y="240" fill="#6e6e73" font-size="10.5">②③ 上から順にたどる（答えは覚えておく）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">項目</th><th>内容</th></tr>
+        <tr><td class="t">役割</td><td style="text-align:left">ホスト名と IP アドレスなどの対応を持つ、<b>分散・階層型</b>のデータベース</td></tr>
+        <tr><td class="t">ポート</td><td style="text-align:left">ふつうの問い合わせは <b>UDP 53</b>。ゾーン転送などは <b>TCP 53</b></td></tr>
+        <tr><td class="t">権威サーバー</td><td style="text-align:left">そのゾーンの情報を<b>元から持つ</b>サーバー</td></tr>
+        <tr><td class="t">キャッシュ</td><td style="text-align:left">前の答えを覚えておき、同じ問い合わせを減らす</td></tr>
+      </table>
+      <div class="point"><b>DHCP との違い：</b>DHCP は<b>自分の</b>アドレス（と DNS サーバーのアドレス）をもらう。DNS はそれを使って<b>相手の</b>アドレスを調べる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_dns/configuration/15-sy/dns-15-sy-book/dns-config-dns.html">DNS Configuration Guide 15SY「Configuring DNS」</a>（distributed database … map hostnames to IP addresses／Name Servers・Cache・Name Resolvers・Authoritative Name Servers）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc1035">RFC 1035</a>（4.2：TCP … port 53 … UDP port 53／UDP is not acceptable for zone transfers）。図はClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>レコードの種類：何を引くかで使い分ける</h1>
+  <table class="mx">
+    <tr><th style="width:12%">レコード</th><th style="width:30%">中身</th><th>例（Claudeが作った例）</th><th style="width:26%">見分けの鍵</th></tr>
+    <tr><td class="t">A</td><td>名前 → <b>IPv4</b></td><td>www.example.com → 192.0.2.10</td><td>正引き（IPv4）</td></tr>
+    <tr><td class="t">AAAA</td><td>名前 → <b>IPv6</b></td><td>www.example.com → 2001:db8::10</td><td>128 ビット＝A の4倍</td></tr>
+    <tr><td class="t">CNAME</td><td>別名 → <b>正規名</b></td><td>web.example.com → www.example.com</td><td>アドレスは書かない</td></tr>
+    <tr><td class="t">MX</td><td>ドメイン → <b>メールサーバー</b></td><td>example.com → 10 mail.example.com</td><td>数が小さいほど優先</td></tr>
+    <tr><td class="t">PTR</td><td><b>IP アドレス → 名前</b></td><td>10.2.0.192.in-addr.arpa → www.example.com</td><td>逆引き。アドレスを逆順に</td></tr>
+    <tr><td class="t">NS</td><td>ゾーン → <b>権威ネームサーバー</b></td><td>example.com → ns1.example.com</td><td>だれが答える責任者か</td></tr>
+  </table>
+  <div class="cols" style="margin-top:10px">
+    <div class="point"><b>よく問われる組：</b>「IPv6 を引く」＝AAAA、「逆引き」＝PTR、「メール」＝MX、「別名」＝CNAME。</div>
+    <div class="point warn"><b>ひっかけ：</b>MX や CNAME はアドレスを直接持たない。最後は A・AAAA を引いてアドレスを得る。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.rfc-editor.org/rfc/rfc1035">RFC 1035</a>（3.2.2 TYPE values：A 1・NS 2・CNAME 5・PTR 12・MX 15／3.5 IN-ADDR.ARPA domain）／<a class="src" href="https://www.rfc-editor.org/rfc/rfc3596">RFC 3596</a>（2.1 AAAA record type … stores a single IPv6 address）</div>
+</section>
+
+<section class="slide">
+  <h1>ルーター自身の名前解決の設定</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">R1(config)#<b>ip domain name example.com</b>
+R1(config)#<b>ip name-server 10.1.99.53</b>
+R1(config)#<b>ip domain lookup</b>          <i>! 初期値で有効</i>
+R1(config)#<b>ip host R2 10.1.12.2</b>
+
+R1#ping server1
+<i>! → server1.example.com を 10.1.99.53 に問い合わせる</i>
+R1#ping R2
+<i>! → ip host の 10.1.12.2 を使う（DNS に聞かない）</i></pre>
+      <table class="mini">
+        <tr><td style="width:34%">ip name-server</td><td>ルーターが問い合わせる DNS サーバー（最大6台）</td></tr>
+        <tr><td>ip domain name</td><td>ドメインなしの名前の<b>後ろに付ける</b>ドメイン</td></tr>
+        <tr><td>ip domain lookup</td><td>DNS での名前解決を有効にする（初期値で有効）</td></tr>
+        <tr><td>ip host</td><td>名前とアドレスを<b>ルーターの中に固定</b>で登録</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="point warn"><b>打ち間違いで待たされる：</b>知らない単語（例 shwo）を打つと、ルーターはホスト名だと思って DNS で引こうとする。検証環境では <code>no ip domain lookup</code> を入れることが多い。</div>
+      <div class="cap">似た名前のコマンドを分ける</div>
+      <table class="mx">
+        <tr><th style="width:42%">コマンド</th><th>だれのための設定か</th></tr>
+        <tr><td class="t">ip name-server</td><td>ルーター<b>自身</b>が名前を引く</td></tr>
+        <tr><td class="t">dns-server（DHCP プール）</td><td>DHCP で <b>PC に配る</b></td></tr>
+        <tr><td class="t">ip helper-address</td><td>PC の DHCP を<b>リレー</b>する</td></tr>
+      </table>
+      <div class="ex" style="margin-top:8px"><span class="lbl">関連</span>SSH の鍵を作るには hostname と ip domain name が要る（#11）</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/ipaddr_dns/configuration/15-sy/dns-15-sy-book/dns-config-dns.html">DNS Configuration Guide 15SY「Configuring DNS」</a>（ip host … static hostname-to-address mapping／ip domain name … complete unqualified hostnames／ip name-server … up to six／ip domain lookup … DNS is enabled by default）。設定と ping の例はClaudeが作った例</div>
+</section>
+
+<section class="slide">
+  <h1>つなげて見る：PC が電源を入れて Web を開くまで</h1>
+  <div class="flow">
+    <div class="box b1">1 DHCP<span>DORA で自分の IP・ゲートウェイ・DNS サーバーをもらう</span></div>
+    <div class="to">→</div>
+    <div class="box b2">2 DNS<span>www.example.com の A／AAAA を DNS サーバーに聞く</span></div>
+    <div class="to">→</div>
+    <div class="box b3">3 ARP<span>相手が別サブネットならゲートウェイの MAC を調べる</span></div>
+    <div class="to">→</div>
+    <div class="box b4">4 TCP 443<span>相手の IP アドレスへ HTTPS で接続</span></div>
+  </div>
+  <table class="mx" style="margin-top:12px">
+    <tr><th style="width:30%">症状</th><th>まず疑う段</th><th style="width:36%">確かめ方</th></tr>
+    <tr><td class="t">169.254.x.x になる・アドレスがない</td><td style="text-align:left">1 DHCP（サーバー・リレー・プール）</td><td>ipconfig／show ip dhcp binding</td></tr>
+    <tr><td class="t">IP アドレスなら届くが名前で届かない</td><td style="text-align:left">2 DNS（dns-server の配布・DNS サーバー）</td><td>nslookup 名前</td></tr>
+    <tr><td class="t">同じサブネットだけ届く</td><td style="text-align:left">3 ゲートウェイ（default-router）</td><td>ping ゲートウェイ</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料。流れと症状の表はClaudeがまとめた（169.254.x.x は、DHCP でアドレスをもらえないとき Windows などが自分で付けるリンクローカルアドレス）</div>
+</section>
+
+<section class="slide">
+  <h1>よくあるひっかけ</h1>
+  <table class="mx">
+    <tr><th style="width:42%">よくある思い込み</th><th>正しくは</th></tr>
+    <tr><td class="t">DHCP の4つは全部ブロードキャスト</td><td style="text-align:left"><b>DISCOVER と REQUEST</b> はブロードキャスト。OFFER・ACK は Cisco の説明ではユニキャスト</td></tr>
+    <tr><td class="t">DHCP は TCP、DNS は UDP だけ</td><td style="text-align:left">DHCP は <b>UDP 67／68</b>。DNS は <b>UDP と TCP の 53</b></td></tr>
+    <tr><td class="t">ip helper-address はサーバー側のインタフェースに入れる</td><td style="text-align:left"><b>クライアント側</b>（ブロードキャストを受ける側）に入れる</td></tr>
+    <tr><td class="t">helper-address には DHCP サーバーの MAC を書く</td><td style="text-align:left">サーバーの <b>IP アドレス</b></td></tr>
+    <tr><td class="t">excluded-address はプールの中で入れる</td><td style="text-align:left"><b>グローバル設定</b>で入れる</td></tr>
+    <tr><td class="t">ルーターに DNS サーバーを教えるのは dns-server</td><td style="text-align:left">ルーター自身は <b>ip name-server</b>。dns-server は PC に配る設定</td></tr>
+    <tr><td class="t">リースの初期値は 8 日</td><td style="text-align:left">Cisco の DHCP サーバーは <b>1日</b></td></tr>
+    <tr><td class="t">逆引きは A レコード、IPv6 は A6</td><td style="text-align:left">逆引きは <b>PTR</b>、IPv6 は <b>AAAA</b></td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">DHCP のしくみ<span>DORA・DISCOVER と REQUEST はブロードキャスト・UDP 67／68・リース初期値1日</span></div>
+      <div class="box b2">DHCP の設定<span>サーバー＝excluded-address＋pool／リレー＝クライアント側に ip helper-address（giaddr でプールを選ぶ）／クライアント＝ip address dhcp</span></div>
+      <div class="box b3">DNS<span>名前 → アドレス・UDP／TCP 53・A／AAAA／CNAME／MX／PTR／NS・ルーターは ip name-server</span></div>
+    </div>
+    <div>
+      <div class="cap">リレーとクライアントの設定</div>
+<pre class="cli small">interface vlan 10
+ ip address 10.1.10.1 255.255.255.0
+ ip helper-address 10.1.99.10
+interface GigabitEthernet0/1
+ ip address dhcp
+ip name-server 10.1.99.53</pre>
+      <div class="point"><b>確かめる：</b><code>show ip dhcp binding</code>／<code>show ip dhcp pool</code>／<code>show ip dhcp conflict</code>／<code>show ip interface brief</code>（Method DHCP）</div>
+      <div class="point"><b>次の分野：</b>#18 で、SNMP・Syslog・TFTP／FTP を読む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

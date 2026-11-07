@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CCNA #08 CDP・LLDPとEtherChannel 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">CCNA（200-301 v1.1）　2.0 ネットワークアクセス　#08</div>
+  <h1>CDP・LLDPとEtherChannel</h1>
+  <p>出題範囲 2.3・2.4 ― 隣の機器を知る仕組みと、リンクを束ねる仕組み</p>
+  <div class="refs-legend">各ページの下に、根拠にしたCiscoの資料を書いた（青い文字を押すと開く）</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>出題範囲の2項目を、3章で読む</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 CDPとLLDP<span>2.3 Configure and verify Layer 2 discovery protocols<br>(Cisco Discovery Protocol and LLDP)</span></div>
+      <div class="box b2">2 EtherChannelとLACP・PAgP<span>2.4 Configure and verify (Layer 2/Layer 3) EtherChannel (LACP)<br>束ねる理由・モードの組み合わせ</span></div>
+      <div class="box b3">3 EtherChannelの設定と確認<span>レイヤ2／レイヤ3の設定・show etherchannel summary・負荷分散</span></div>
+    </div>
+    <div>
+      <div class="cap">CCNAでの問われ方</div>
+      <table>
+        <tr><td style="width:28%">CDP・LLDP</td><td><b>show cdp neighbors の列を読む</b>（自分のポートと隣のポート）、既定値（有効か・タイマー）、止める設定</td></tr>
+        <tr><td>EtherChannel</td><td><b>モードの組み合わせ</b>で束ねられるか、<b>show etherchannel summary</b> の印、そろえる設定</td></tr>
+        <tr><td>LACPの書き方</td><td>出題範囲に (LACP) と書かれている。標準のLACPが中心で、PAgPは比べる相手として出る</td></tr>
+      </table>
+      <div class="point"><b>この資料の読み方：</b>CDP・LLDPは「隣だけに自己紹介を配る」、EtherChannelは「何本かのケーブルを1本に見せる」。どちらも show の出力を読めることが大事。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco CCNA Exam v1.1 (200-301) Exam Topics</a>（2.3・2.4）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>CDPとLLDP</h1>
+  <p>直接つながった隣の機器に、自分の名前・機種・ポート・アドレスを定期的に知らせる。CDPはCisco独自、LLDPは標準。</p>
+  <div class="foot"><span>CCNA #08 CDP・LLDPとEtherChannel</span><span>2.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>CDP：隣の機器だけに、60秒ごとに自己紹介を送る</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="400" height="270" viewBox="0 0 400 270">
+        <defs><marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#e08a2c"/></marker></defs>
+        <rect x="10" y="100" width="100" height="56" rx="8" fill="#1f3a68"/><text x="60" y="125" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">R1</text><text x="60" y="143" font-size="10" fill="#fff" text-anchor="middle">Gi0/0/0</text>
+        <rect x="150" y="100" width="100" height="56" rx="8" fill="#2f5596"/><text x="200" y="125" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">SW1</text><text x="200" y="143" font-size="10" fill="#fff" text-anchor="middle">Gi1/0/48・1/0/24</text>
+        <rect x="290" y="100" width="100" height="56" rx="8" fill="#2f5596"/><text x="345" y="125" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">SW2</text><text x="345" y="143" font-size="10" fill="#fff" text-anchor="middle">Gi1/0/1</text>
+        <line x1="110" y1="128" x2="150" y2="128" stroke="#1f3a68" stroke-width="3"/>
+        <line x1="250" y1="128" x2="290" y2="128" stroke="#1f3a68" stroke-width="3"/>
+        <path d="M200 98 C 200 60, 120 60, 90 96" fill="none" stroke="#e08a2c" stroke-width="2" marker-end="url(#a1)"/>
+        <path d="M200 98 C 200 60, 290 60, 320 96" fill="none" stroke="#e08a2c" stroke-width="2" marker-end="url(#a1)"/>
+        <rect x="120" y="20" width="160" height="34" rx="6" fill="#fdf3ea" stroke="#e08a2c"/>
+        <text x="200" y="35" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">SW1の自己紹介（60秒ごと）</text>
+        <text x="200" y="49" font-size="10" text-anchor="middle" fill="#b25000">名前・機種・ポート・IP・機能…</text>
+        <rect x="10" y="180" width="380" height="76" rx="6" fill="#e8eef8"/>
+        <text x="200" y="200" font-size="11.5" text-anchor="middle" fill="#1f3a68" font-weight="700">R1はSW1を知る。SW2もSW1を知る。</text>
+        <text x="200" y="220" font-size="11.5" text-anchor="middle" fill="#1f3a68">でも R1 は SW2 を知らない（CDPは隣までしか届かない）</text>
+        <text x="200" y="242" font-size="10.5" text-anchor="middle" fill="#6e6e73">宛先 01-00-0C-CC-CC-CC のマルチキャスト・SNAP タイプ 0x2000</text>
+      </svg>
+    </div>
+    <div>
+      <dl class="def">
+        <dt>CDP（Cisco Discovery Protocol）</dt><dd>Cisco機器が、<b>直接つながった隣</b>の機器を知るための<b>レイヤ2</b>のプロトコル。Cisco独自。</dd>
+        <dt>IPがなくても動く</dt><dd>データリンク層で動くので、IPアドレスを設定していない機器どうしでも隣がわかる。配線の確認に便利。</dd>
+        <dt>送る中身（TLV）</dt><dd>機器名（Device ID）・送ったポート・IPアドレス・機能（ルータ／スイッチ）・IOSのバージョン・機種。CDPv2ではネイティブVLAN・デュプレックス・VTPドメイン名・音声VLANなども。</dd>
+        <dt>既定値（Catalyst 9300）</dt><dd>全体も全ポートも<b>有効</b>。送る間隔<b>60秒</b>、ホールドタイム<b>180秒</b>、v2で送る。</dd>
+      </dl>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/nmgmt/b_179_nmgmt_9300_cg/configuring_the_cisco_discovery_protocol.html">Cisco Network Management Configuration Guide 17.9.x「Configuring Cisco Discovery Protocol」</a>（Overview・Default Configuration）／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/switches/catalyst-6500-series-switches/24330-185.html">Cisco Best Practices for Catalyst 6500/4500</a>（CDP：SNAP type 2000・01-00-0c-cc-cc-cc・CDPv2 TLV）</div>
+</section>
+
+<section class="slide">
+  <h1>CDPとLLDP：目的は同じ。違いは「誰の規格か」と「最初から動くか」</h1>
+  <table class="vs">
+    <tr><th style="width:22%">比べる点</th><th>CDP</th><th>LLDP</th></tr>
+    <tr><td>規格</td><td><b>Cisco独自</b></td><td><b>IEEE 802.1AB</b>（標準。他社の機器とも話せる）</td></tr>
+    <tr><td>初期状態（Catalyst 9300）</td><td><b>有効</b>（全体・全ポート）</td><td><b>無効</b>（<code>lldp run</code> が必要）</td></tr>
+    <tr><td>送る間隔／ホールドタイム</td><td>60秒／180秒</td><td>30秒／120秒（初期化の遅延 2秒）</td></tr>
+    <tr><td>全体で止める・動かす</td><td><code>no cdp run</code>／<code>cdp run</code></td><td><code>no lldp run</code>／<code>lldp run</code></td></tr>
+    <tr><td>ポートで止める</td><td><code>no cdp enable</code>（送受信まとめて）</td><td><code>no lldp transmit</code>・<code>no lldp receive</code>（<b>送信と受信が別</b>）</td></tr>
+    <tr><td>隣を見る</td><td><code>show cdp neighbors [detail]</code></td><td><code>show lldp neighbors [detail]</code></td></tr>
+    <tr><td>電話向けの拡張</td><td>CDPで音声VLANを伝える</td><td><b>LLDP-MED</b>（ネットワークポリシーTLVでVLAN・CoSを伝える）</td></tr>
+  </table>
+  <div class="point warn"><b>数字の取り違えに注意：</b>CDP 60/180、LLDP 30/120。どちらも「ホールドタイムは送る間隔の数倍」（CDPは3倍、LLDPは4倍）で、通知が数回届かなかったら隣を消す考え方。</div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/nmgmt/b_179_nmgmt_9300_cg/configuring_the_cisco_discovery_protocol.html">Configuring Cisco Discovery Protocol</a> ／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/int_hw/b_179_int_and_hw_9300_cg/configuring_lldp__lldp_med__and_wired_location_service.html">Interface and Hardware Components Configuration Guide 17.9.x「Configuring LLDP, LLDP-MED, and Wired Location Service」</a>（Default LLDP Configuration・Enabling LLDP）</div>
+</section>
+
+<section class="slide">
+  <h1>show cdp neighbors：左の「Local Intrfce」が自分、右の「Port ID」が隣</h1>
+<pre class="cli small">SW1# show cdp neighbors
+Capability Codes: R - Router, T - Trans Bridge, B - Source Route Bridge
+                  S - Switch, H - Host, I - IGMP, r - Repeater
+
+Device ID    <span class="hl">Local Intrfce</span>   Holdtme   Capability  Platform    <span class="hl">Port ID</span>
+SW2          Gig 1/0/24      162       S I         C9300-24T   Gig 1/0/1
+R1           Gig 1/0/48      131       R           ISR4331     Gig 0/0/0</pre>
+  <div class="cols" style="margin-top:10px">
+    <div>
+      <svg width="420" height="120" viewBox="0 0 420 120">
+        <rect x="10" y="30" width="120" height="60" rx="8" fill="#2f5596"/><text x="70" y="58" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">SW1（自分）</text><text x="70" y="78" font-size="10.5" fill="#fff" text-anchor="middle">Gi1/0/24</text>
+        <rect x="290" y="30" width="120" height="60" rx="8" fill="#1f3a68"/><text x="350" y="58" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">SW2（隣）</text><text x="350" y="78" font-size="10.5" fill="#fff" text-anchor="middle">Gi1/0/1</text>
+        <line x1="130" y1="60" x2="290" y2="60" stroke="#1f3a68" stroke-width="3"/>
+        <text x="140" y="22" font-size="11" fill="#b25000" font-weight="700">Local Intrfce</text>
+        <text x="280" y="22" font-size="11" fill="#b25000" text-anchor="end" font-weight="700">Port ID</text>
+        <text x="210" y="110" font-size="11" text-anchor="middle" fill="#1d1d1f">SW1のGi1/0/24 ⇔ SW2のGi1/0/1</text>
+      </svg>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th>列</th><th>読み方</th></tr>
+        <tr><td>Device ID</td><td>隣のホスト名</td></tr>
+        <tr><td>Holdtme</td><td>あと何秒持つか（180から減り、通知のたびに戻る）</td></tr>
+        <tr><td>Capability</td><td>R ルータ／S スイッチ／H ホスト／I IGMP／<b>r リピータ</b>（小文字）。L3スイッチは R S I</td></tr>
+        <tr><td>Platform</td><td>隣の機種</td></tr>
+      </table>
+      <div class="point" style="margin-top:6px">IPアドレスとIOSのバージョンは出ない → <code>detail</code></div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/cdp/command/cdp-cr-book/cdp-cr-a1.html">Cisco Discovery Protocol Command Reference「show cdp neighbors」</a>（Field Descriptions）。出力はその書式に沿ってClaudeが書いた例</div>
+</section>
+
+<section class="slide">
+  <h1>show cdp neighbors detail で、隣のIPアドレスとバージョンまでわかる</h1>
+  <div class="cols wide-r">
+    <div>
+<pre class="cli small">SW1# show cdp neighbors detail
+-------------------------
+Device ID: SW2
+<span class="hl">Entry address(es):</span>
+  <span class="hl">IP address: 10.1.1.2</span>
+Platform: cisco C9300-24T,  Capabilities: Switch IGMP
+Interface: GigabitEthernet1/0/24,  Port ID (outgoing port): GigabitEthernet1/0/1
+Holdtime : 162 sec
+
+Version :
+Cisco IOS XE Software, Version 17.09.04
+...
+advertisement version: 2
+<span class="hl">Native VLAN: 99</span>
+<span class="hl">Duplex: full</span>
+VTP Management Domain: ''</pre>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th>行</th><th>使いどころ</th></tr>
+        <tr><td>Entry address</td><td><b>隣のIPアドレス</b>。ここに ssh で入りに行く</td></tr>
+        <tr><td>Interface／Port ID</td><td>自分のポート／隣のポート（一覧と同じ）</td></tr>
+        <tr><td>Version</td><td>隣のIOSのバージョン</td></tr>
+        <tr><td>advertisement version</td><td>CDPの版（2＝CDPv2）</td></tr>
+        <tr><td>Native VLAN・Duplex</td><td>CDPv2で増えた情報。自分の設定と比べて食い違いを探す</td></tr>
+      </table>
+      <div class="point"><b>同じくらい出るコマンド：</b><code>show cdp entry *</code>（* は全部の隣）。ほかに <code>show cdp interface</code>（CDPが動くポートとタイマー）、<code>show cdp traffic</code>（送受信の数）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/cdp/command/cdp-cr-book/cdp-cr-a1.html">Cisco Discovery Protocol Command Reference「show cdp neighbors」</a>（detail の Field Descriptions・Related Commands）。出力はその書式に沿ってClaudeが書いた例</div>
+</section>
+
+<section class="slide">
+  <h1>止める設定は「全体」と「ポート」の2段。LLDPは送信と受信が別</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">CDP</div>
+<pre class="cli">R1(config)# <b>no cdp run</b>            <i>! 全体で止める</i>
+R1(config)# interface g0/0/1
+R1(config-if)# <b>no cdp enable</b>       <i>! このポートだけ</i>
+R1(config)# cdp timer 30              <i>! 送る間隔（5〜254）</i>
+R1(config)# cdp holdtime 90           <i>! 保持時間（10〜255）</i></pre>
+      <div class="cap" style="margin-top:8px">LLDP</div>
+<pre class="cli">SW1(config)# <b>lldp run</b>             <i>! 全体で動かす</i>
+SW1(config)# interface g1/0/10
+SW1(config-if)# <b>no lldp transmit</b>   <i>! 送らない</i>
+SW1(config-if)# <b>no lldp receive</b>    <i>! 受け取らない</i></pre>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th>やりたいこと</th><th>コマンド</th></tr>
+        <tr><td>全部のポートでCDPを止める</td><td><code>no cdp run</code>（グローバル）</td></tr>
+        <tr><td>1ポートだけCDPを止める</td><td><code>no cdp enable</code>（インタフェース）</td></tr>
+        <tr><td>LLDPを使い始める</td><td><code>lldp run</code>（初期値は無効）</td></tr>
+        <tr><td>LLDPで自分を見せない</td><td><code>no lldp transmit</code>（受信は続く）</td></tr>
+      </table>
+      <div class="point warn"><b>なぜ止めるのか：</b>CDP・LLDPは機種・バージョン・IPアドレスを<b>暗号化せずに</b>送る。Ciscoの堅牢化ガイドは「信頼できないネットワークにつながるポートでは止める」としている。社内では切り分けに役立つので動かしておくのが普通。</div>
+      <div class="point"><b>書けない組み合わせ：</b>インタフェースで cdp run、グローバルで cdp enable は使えない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/nmgmt/b_179_nmgmt_9300_cg/configuring_the_cisco_discovery_protocol.html">Configuring Cisco Discovery Protocol</a>（Disabling … on an Interface・Characteristics）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/command_reference/b_179_9300_cr/interface_and_hardware_commands.html">Command Reference「lldp (interface configuration)」</a> ／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/access-lists/13608-21.html">Cisco Guide to Harden Cisco IOS Devices</a>（CDP・LLDP）</div>
+</section>
+
+<section class="slide">
+  <h1>LLDPの出力と LLDP-MED：他社の機器や電話とは LLDP で話す</h1>
+  <div class="cols">
+    <div>
+<pre class="cli small">SW1# show lldp neighbors
+Capability codes:
+ (R) Router, (B) Bridge, (T) Telephone, (C) DOCSIS Cable Device
+ (W) WLAN Access Point, (P) Repeater, (S) Station, (O) Other
+
+Device ID       Local Intf   Hold-time  Capability   Port ID
+PHONE-3F01      Gi1/0/5      115        B,T          port 1
+CORE-X          Gi1/0/48     101        B,R          ge-0/0/1</pre>
+      <ul class="anno">
+        <li>列の並びと読み方はCDPと同じ（Local Intf＝自分、Port ID＝隣）</li>
+        <li>記号はCDPと違う：<b>B＝ブリッジ（スイッチ）</b>、<b>T＝電話</b>、W＝無線AP、S＝ステーション</li>
+        <li>Device ID は20文字で切られる。全部見るなら detail</li>
+      </ul>
+    </div>
+    <div>
+      <div class="cap">LLDP-MED（Media Endpoint Devices）</div>
+      <table class="mini">
+        <tr><td style="width:36%">ネットワークポリシーTLV</td><td>音声の<b>VLAN・CoS・DSCP</b>を電話に伝える（Cisco以外の電話の音声VLAN）</td></tr>
+        <tr><td>電力管理TLV</td><td>PoEで必要な電力をやり取りする</td></tr>
+        <tr><td>在庫管理TLV</td><td>型番・シリアル番号・ソフトの版</td></tr>
+        <tr><td>位置TLV</td><td>住所や緊急通報用の位置</td></tr>
+      </table>
+      <div class="point"><b>動き方：</b>スイッチはふつうのLLDPを送り、相手からLLDP-MEDが届いたらMEDのTLVも送り始める。CDPとLLDPを両方使うポートでは、PoEの交渉にCDPを使うならLLDPの電力のTLVを止める（構成ガイドの制限）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/cether/command/ce-cr-book/ce-s1.html">Cisco Carrier Ethernet Command Reference「show lldp」</a>（Capability codes・Field Descriptions）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/int_hw/b_179_int_and_hw_9300_cg/configuring_lldp__lldp_med__and_wired_location_service.html">Configuring LLDP, LLDP-MED</a>（Restrictions・LLDP-MED Supported TLVs・Configuring LLDP-MED TLVs）。出力は書式に沿ってClaudeが書いた例</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>EtherChannelとLACP・PAgP</h1>
+  <p>何本かのイーサネットのリンクを、1本の論理的なリンクに束ねる。STPから見ても1本なので、全部のリンクを使える。</p>
+  <div class="foot"><span>CCNA #08 CDP・LLDPとEtherChannel</span><span>2.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>束ねないと1本はSTPでブロック。束ねると全部使える</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">束ねないとき</div>
+      <svg width="400" height="150" viewBox="0 0 400 150">
+        <rect x="10" y="45" width="100" height="60" rx="8" fill="#1f3a68"/><text x="60" y="80" font-size="13" fill="#fff" text-anchor="middle">SW1</text>
+        <rect x="290" y="45" width="100" height="60" rx="8" fill="#1f3a68"/><text x="340" y="80" font-size="13" fill="#fff" text-anchor="middle">SW2</text>
+        <line x1="110" y1="62" x2="290" y2="62" stroke="#1f3a68" stroke-width="4"/><text x="200" y="55" font-size="11" text-anchor="middle" fill="#1f3a68">1Gbps 転送</text>
+        <line x1="110" y1="88" x2="290" y2="88" stroke="#c7c7cc" stroke-width="4" stroke-dasharray="8 5"/><text x="200" y="110" font-size="11" text-anchor="middle" fill="#b25000" font-weight="700">1Gbps STPでブロック</text>
+        <text x="200" y="140" font-size="11" text-anchor="middle" fill="#1d1d1f">使えるのは1本分（1Gbps）</text>
+      </svg>
+    </div>
+    <div>
+      <div class="cap">EtherChannel（Po1）にしたとき</div>
+      <svg width="400" height="150" viewBox="0 0 400 150">
+        <rect x="10" y="45" width="100" height="60" rx="8" fill="#1f3a68"/><text x="60" y="80" font-size="13" fill="#fff" text-anchor="middle">SW1</text>
+        <rect x="290" y="45" width="100" height="60" rx="8" fill="#1f3a68"/><text x="340" y="80" font-size="13" fill="#fff" text-anchor="middle">SW2</text>
+        <rect x="140" y="50" width="120" height="50" rx="25" fill="#e8eef8" stroke="#5b80bf"/>
+        <line x1="110" y1="65" x2="290" y2="65" stroke="#1f3a68" stroke-width="4"/>
+        <line x1="110" y1="85" x2="290" y2="85" stroke="#1f3a68" stroke-width="4"/>
+        <text x="200" y="40" font-size="11" text-anchor="middle" fill="#1f3a68" font-weight="700">Po1（論理的に1本）</text>
+        <text x="200" y="140" font-size="11" text-anchor="middle" fill="#1d1d1f">2本とも転送（合計2Gbps）。1本切れても残りで続く</text>
+      </svg>
+    </div>
+  </div>
+  <div class="cols3" style="margin-top:8px">
+    <div class="ex"><span class="lbl">帯域</span>束ねた本数ぶん増える。ただし1つの通信は1本を通る（第3章の負荷分散）</div>
+    <div class="ex"><span class="lbl">冗長</span>1本切れたら残りのリンクへ自動で移る。管理者の操作はいらない</div>
+    <div class="ex"><span class="lbl">本数</span>1つのEtherChannelで動くのは<b>最大8本</b>。LACPは16本まで入れて8本を待機にできる</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/lyr2/b_179_lyr2_9300_cg/configuring_etherchannels.html">Cisco Layer 2 Configuration Guide 17.9.x (Catalyst 9300)「Configuring EtherChannels」</a>（EtherChannel Overview・LACP：adds the group to the spanning tree as a single device port）</div>
+</section>
+
+<section class="slide">
+  <h1>物理ポート → チャネルグループ → ポートチャネル（Po）</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="400" height="250" viewBox="0 0 400 250">
+        <g font-size="11" text-anchor="middle">
+          <rect x="10" y="20" width="110" height="34" rx="6" fill="#5b80bf"/><text x="65" y="42" fill="#fff">Gi1/0/1</text>
+          <rect x="10" y="64" width="110" height="34" rx="6" fill="#5b80bf"/><text x="65" y="86" fill="#fff">Gi1/0/2</text>
+          <rect x="10" y="108" width="110" height="34" rx="6" fill="#5b80bf"/><text x="65" y="130" fill="#fff">Gi1/0/3</text>
+          <rect x="10" y="152" width="110" height="34" rx="6" fill="#5b80bf"/><text x="65" y="174" fill="#fff">Gi1/0/4</text>
+          <rect x="150" y="20" width="110" height="166" rx="10" fill="#e8eef8" stroke="#5b80bf"/>
+          <text x="205" y="95" fill="#1f3a68" font-weight="700">チャネル</text><text x="205" y="112" fill="#1f3a68" font-weight="700">グループ 1</text>
+          <text x="205" y="132" fill="#1f3a68" font-size="10">channel-group 1</text>
+          <rect x="290" y="78" width="100" height="50" rx="8" fill="#1f3a68"/><text x="340" y="100" fill="#fff" font-weight="700">Po1</text><text x="340" y="117" fill="#fff" font-size="10">port-channel 1</text>
+          <line x1="120" y1="37" x2="150" y2="37" stroke="#5b80bf" stroke-width="2"/><line x1="120" y1="81" x2="150" y2="81" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="120" y1="125" x2="150" y2="125" stroke="#5b80bf" stroke-width="2"/><line x1="120" y1="169" x2="150" y2="169" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="260" y1="103" x2="290" y2="103" stroke="#1f3a68" stroke-width="3"/>
+          <text x="200" y="215" fill="#1d1d1f">Po1 に入れた設定 → 4本全部に反映される</text>
+          <text x="200" y="236" fill="#6e6e73" font-size="10.5">番号は 1〜128。show では Po1 と書かれる</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <dl class="def">
+        <dt>チャネルグループ</dt><dd>物理ポートで <code>channel-group 1 mode active</code> と書いて、どのPoに束ねるかを決める。1つのポートは<b>1つのグループだけ</b>。</dd>
+        <dt>ポートチャネル（Po）</dt><dd>EtherChannelを表す論理インタフェース。<b>レイヤ2</b>では channel-group を入れると<b>同じ番号のPoが自動で作られる</b>。</dd>
+        <dt>レイヤ3のとき</dt><dd><code>interface port-channel</code> を作って <code>no switchport</code> にし、そこにIPアドレスを付けるのが構成ガイドの手順。</dd>
+        <dt>設定の置き場所</dt><dd>トランク・許可VLAN・ネイティブVLANは <b>Po で設定</b>すると、全部の物理ポートにそろって入る。</dd>
+      </dl>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/lyr2/b_179_lyr2_9300_cg/configuring_etherchannels.html">Configuring EtherChannels</a>（Channel Groups and Port-Channel Interfaces・EtherChannel Configuration Guidelines）</div>
+</section>
+
+<section class="slide">
+  <h1>LACP と PAgP：どちらも「自動で束ねる」ための交渉のプロトコル</h1>
+  <table class="vs">
+    <tr><th style="width:24%">比べる点</th><th>LACP</th><th>PAgP</th></tr>
+    <tr><td>規格</td><td><b>IEEE 802.3ad</b>（標準。サーバや他社スイッチとも束ねられる）</td><td><b>Cisco独自</b></td></tr>
+    <tr><td>自分から持ちかける</td><td><b>active</b></td><td><b>desirable</b></td></tr>
+    <tr><td>来たら応じるだけ</td><td><b>passive</b></td><td><b>auto</b></td></tr>
+    <tr><td>入れられる本数</td><td>16本（動くのは8本、残り8本は待機＝ホットスタンバイ）</td><td>8本</td></tr>
+    <tr><td>パケットの宛先</td><td>01-80-C2-00-00-02（タイプ 0x8809）</td><td>01-00-0C-CC-CC-CC（CDPと同じアドレス）</td></tr>
+    <tr><td>確かめること</td><td colspan="2" style="text-align:center">速度・デュプレックス・ネイティブVLAN・VLANの範囲・トランクかどうか がそろっているか</td></tr>
+    <tr><td>そのほか</td><td>全二重のポートだけ。サイレントモードはない</td><td>auto／desirable にサイレントモード（non-silent を付けなければサイレント）</td></tr>
+  </table>
+  <div class="point warn"><b>混ぜられない：</b>1つのEtherChannelはLACPかPAgPのどちらか。active と desirable は話が通じない。<b>on</b> はどちらも使わない3つ目の方法（次のページ）。</div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/lyr2/b_179_lyr2_9300_cg/configuring_etherchannels.html">Configuring EtherChannels</a>（PAgP・LACP・Modes・Configuration Guidelines）／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/switches/catalyst-6500-series-switches/24330-185.html">Cisco Best Practices for Catalyst 6500/4500</a>（PAgP・LACP：アドレスとタイプ、全二重のみ）</div>
+</section>
+
+<section class="slide">
+  <h1>組み合わせ表：束ねられるのは「誰かが持ちかけ、プロトコルが同じ」とき</h1>
+  <div class="cols" style="grid-template-columns:1.15fr 0.85fr">
+    <div>
+      <table class="mx">
+        <tr><th>自分＼相手</th><th>active</th><th>passive</th><th>desirable</th><th>auto</th><th>on</th></tr>
+        <tr><th class="rowh">active</th><td class="t">○</td><td class="t">○</td><td class="a">×</td><td class="a">×</td><td class="a">×</td></tr>
+        <tr><th class="rowh">passive</th><td class="t">○</td><td class="x">×</td><td class="a">×</td><td class="a">×</td><td class="a">×</td></tr>
+        <tr><th class="rowh">desirable</th><td class="a">×</td><td class="a">×</td><td class="t">○</td><td class="t">○</td><td class="a">×</td></tr>
+        <tr><th class="rowh">auto</th><td class="a">×</td><td class="a">×</td><td class="t">○</td><td class="x">×</td><td class="a">×</td></tr>
+        <tr><th class="rowh">on</th><td class="a">×</td><td class="a">×</td><td class="a">×</td><td class="a">×</td><td class="t">○</td></tr>
+      </table>
+      <div style="font-size:11px;color:#6e6e73;margin-top:4px">オレンジ＝本番でよく狙われる「待つだけどうし」</div>
+    </div>
+    <div>
+      <ol class="steps">
+        <li><b>プロトコルが同じか</b>：LACP（active・passive）どうし、PAgP（desirable・auto）どうし</li>
+        <li><b>誰かが持ちかけるか</b>：passive＋passive、auto＋auto は誰も始めないので×</li>
+        <li><b>on は on とだけ</b>：on は交渉のパケットを送らない</li>
+      </ol>
+      <div class="point"><b>DTPと似ている：</b>dynamic desirable／dynamic auto（トランクの交渉）と同じ考え方。ただしDTPの auto＋auto はアクセスポートになり、PAgPの auto＋auto は「束ねない」。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/lyr2/b_179_lyr2_9300_cg/configuring_etherchannels.html">Configuring EtherChannels</a>（PAgP Modes・LACP Modes・EtherChannel On Mode）。表はその記述からClaudeが組み合わせた</div>
+</section>
+
+<section class="slide">
+  <h1>on モード：交渉しないぶん、間違いに気づけない</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">片側だけ on にしてしまったら</div>
+      <svg width="400" height="170" viewBox="0 0 400 170">
+        <rect x="10" y="50" width="110" height="64" rx="8" fill="#1f3a68"/><text x="65" y="78" font-size="13" fill="#fff" text-anchor="middle">SW1</text><text x="65" y="98" font-size="10" fill="#fff" text-anchor="middle">mode on → 束ねた</text>
+        <rect x="280" y="50" width="110" height="64" rx="8" fill="#1f3a68"/><text x="335" y="78" font-size="13" fill="#fff" text-anchor="middle">SW2</text><text x="335" y="98" font-size="10" fill="#fff" text-anchor="middle">設定なし → 2本別々</text>
+        <line x1="120" y1="70" x2="280" y2="70" stroke="#1f3a68" stroke-width="3"/>
+        <line x1="120" y1="94" x2="280" y2="94" stroke="#1f3a68" stroke-width="3"/>
+        <text x="200" y="140" font-size="11.5" text-anchor="middle" fill="#b25000" font-weight="700">SW1は1本、SW2は2本と思っている</text>
+        <text x="200" y="160" font-size="11" text-anchor="middle" fill="#1d1d1f">→ フレームの重複・ループ・消失が起こりうる</text>
+      </svg>
+    </div>
+    <div>
+      <ul class="anno" style="font-size:13px">
+        <li><b>on</b>：LACPもPAgPも使わず、強制的に束ねる。<b>相手も on</b> のときだけ使える</li>
+        <li>構成ガイドの注意：「両端を同じ設定にする。間違えるとパケットの消失やスパニングツリーのループが起こりうる」</li>
+        <li>on でも、速度やデュプレックスがそろわないポートは suspended（一時停止）になる</li>
+        <li>使いどころ：相手がLACPもPAgPも話せないとき</li>
+      </ul>
+      <div class="point"><b>おすすめ：</b>相手がLACPを話せるなら、両側 active。Best Practicesの推奨も「LACPなら両端 active」。交渉があれば、相手が束ねていないときに束ねずに済む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/lyr2/b_179_lyr2_9300_cg/configuring_etherchannels.html">Configuring EtherChannels</a>（EtherChannel On Mode・Caution）／ <a class="src" href="https://www.cisco.com/c/en/us/support/docs/switches/catalyst-6500-series-switches/24330-185.html">Cisco Best Practices for Catalyst 6500/4500</a>（LACP active on both ends）</div>
+</section>
+
+<section class="slide">
+  <h1>LACPのくわしい動き：待機・優先度・タイマー・本数</h1>
+  <table>
+    <tr><th style="width:22%">項目</th><th>中身</th><th style="width:28%">コマンドと初期値</th></tr>
+    <tr><td>ホットスタンバイ</td><td>8本を超えたポートは<b>待機</b>。動いているリンクが切れると代わりに入る。summary では <b>H</b></td><td>16本まで設定できる</td></tr>
+    <tr><td>システムプライオリティ</td><td>どちらのスイッチが「使うポート」を決めるか。<b>小さいほうが優先</b>。MACアドレスと合わせてシステムID</td><td><code>lacp system-priority</code>　32768</td></tr>
+    <tr><td>ポートプライオリティ</td><td>どのポートを束ね、どれを待機にするか。<b>小さいほうが優先</b>して束ねられる</td><td><code>lacp port-priority</code>（インタフェース）</td></tr>
+    <tr><td>lacp rate</td><td>LACPのパケットの間隔。fast＝1秒、normal＝30秒。タイムアウトはその<b>3倍</b>（3秒／90秒）</td><td><code>lacp rate fast</code>　normal</td></tr>
+    <tr><td>max-bundle</td><td>束ねる本数の上限。超えたポートは待機</td><td><code>lacp max-bundle 3</code></td></tr>
+    <tr><td>min-links</td><td>束ねた本数がこれより少ないと<b>Po全体を止める</b>（帯域不足のPoを使わせない）</td><td><code>port-channel min-links 2</code></td></tr>
+  </table>
+  <div class="point"><b>「小さいほうが勝つ」でそろえて覚える：</b>LACPのシステム／ポートプライオリティとSTPのブリッジプライオリティは小さいほうが優先。OSPFのDRの選出（プライオリティもルータIDも大きいほうが勝つ）は逆なので注意。</div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/lyr2/b_179_lyr2_9300_cg/configuring_etherchannels.html">Configuring EtherChannels</a>（LACP and Link Redundancy・Default EtherChannel Configuration・Configuring the LACP System Priority / Hot-Standby Ports）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/command_reference/b_179_9300_cr/layer_2_3_commands.html">Command Reference「lacp rate」「lacp port-priority」</a></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>EtherChannelの設定と確認</h1>
+  <p>レイヤ2ならスイッチポートのまま、レイヤ3なら no switchport にしてPoにIPアドレス。確認は show etherchannel summary。</p>
+  <div class="foot"><span>CCNA #08 CDP・LLDPとEtherChannel</span><span>2.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>レイヤ2 EtherChannel とレイヤ3 EtherChannel の設定</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">レイヤ2（トランクとして使う）</div>
+<pre class="cli">SW1(config)# interface range g1/0/1 - 2
+SW1(config-if-range)# <b>channel-group 1 mode active</b>
+<i>! Po1 が自動で作られる</i>
+SW1(config)# interface <b>port-channel 1</b>
+SW1(config-if)# switchport mode trunk
+SW1(config-if)# switchport trunk native vlan 99
+SW1(config-if)# switchport trunk allowed vlan 10,20,99</pre>
+      <ul class="anno">
+        <li>トランクの設定は Po に入れる → 全メンバーにそろう</li>
+        <li>束ねるポートは全部アクセス（同じVLAN）か全部トランク</li>
+      </ul>
+    </div>
+    <div>
+      <div class="cap">レイヤ3（ルーティングに使う）</div>
+<pre class="cli">L3SW(config)# interface <b>port-channel 10</b>
+L3SW(config-if)# <b>no switchport</b>
+L3SW(config-if)# <b>ip address 10.0.0.1 255.255.255.252</b>
+L3SW(config)# interface range g1/0/23 - 24
+L3SW(config-if-range)# <b>no switchport</b>
+L3SW(config-if-range)# no ip address
+L3SW(config-if-range)# <b>channel-group 10 mode active</b></pre>
+      <ul class="anno">
+        <li>IPアドレスは<b>Poに付ける</b>。物理ポートには付けない</li>
+        <li>物理ポートも <code>no switchport</code>（レイヤをそろえる）</li>
+        <li>show etherchannel summary で Po10(<b>RU</b>)：R＝レイヤ3</li>
+      </ul>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/lyr2/b_179_lyr2_9300_cg/configuring_etherchannels.html">Configuring EtherChannels</a>（Configuring Layer 2 EtherChannels・Configuring Layer 3 EtherChannels・Layer 3 EtherChannel Configuration Guidelines）</div>
+</section>
+
+<section class="slide">
+  <h1>束ねるには設定をそろえる。そろわないポートは外される</h1>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><th>そろえるもの</th><th>そろわないと</th></tr>
+        <tr><td>速度・デュプレックス</td><td>束ねられない（on でも suspended）</td></tr>
+        <tr><td>アクセスかトランクか</td><td>束ねられない</td></tr>
+        <tr><td>アクセスVLAN</td><td>違うVLANのポートは束ねられない</td></tr>
+        <tr><td>ネイティブVLAN</td><td>違うと束ねられない（構成ガイド）</td></tr>
+        <tr><td>許可VLANの範囲</td><td>違うと、PAgP・LACPでも束ねられない</td></tr>
+        <tr><td>レイヤ2かレイヤ3か</td><td>混ぜられない</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">ほかの決まりごと</div>
+      <ul class="anno" style="font-size:12.5px">
+        <li>1つのポートは1つのグループだけ</li>
+        <li>1つのグループで LACP と PAgP を混ぜない</li>
+        <li>STPのパスコストが違う<b>だけ</b>なら束ねられる</li>
+        <li>グループを作ったときは、最初に入れたポートの設定にそろう。あとで変えるなら全ポート（またはPo）で変える</li>
+        <li>メンバーを shutdown するとリンクの障害と同じ扱い。通信は残りのポートへ移る</li>
+        <li>Catalyst 9300 では1台（スタック）で最大128個のEtherChannel</li>
+      </ul>
+      <div class="point"><b>実務のコツ：</b>まず物理ポートを default interface で初期化してから束ね、細かい設定は Po で入れる。食い違いが起きにくい。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/lyr2/b_179_lyr2_9300_cg/configuring_etherchannels.html">Configuring EtherChannels</a>（Restrictions・EtherChannel Configuration Guidelines・Layer 2 EtherChannel Configuration Guidelines）。「実務のコツ」はClaudeの補足</div>
+</section>
+
+<section class="slide">
+  <h1>show etherchannel summary は「Poの印」と「ポートの印」を読む</h1>
+  <div class="cols wide-r">
+    <div>
+<pre class="cli small">SW1# show etherchannel summary
+Flags:  D - down        P - bundled in port-channel
+        I - stand-alone s - suspended
+        H - Hot-standby (LACP only)
+        R - Layer3      S - Layer2
+        U - in use      M - not in use, minimum links not met
+
+Group  Port-channel  Protocol    Ports
+------+-------------+-----------+------------------------
+1      Po1(<span class="hl">SU</span>)       LACP      Gi1/0/1(<span class="hl">P</span>)  Gi1/0/2(<span class="hl">P</span>)
+2      Po2(<span class="hl">SD</span>)       LACP      Gi1/0/3(<span class="hl">I</span>)  Gi1/0/4(<span class="hl">I</span>)
+3      Po3(<span class="hl">SU</span>)       PAgP      Gi1/0/5(P)  Gi1/0/6(<span class="hl">s</span>)
+10     Po10(<span class="hl">RU</span>)      LACP      Gi1/0/23(P) Gi1/0/24(P)</pre>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th>行</th><th>読み方</th></tr>
+        <tr><td>Po1(SU)</td><td>レイヤ2・使用中。2本とも束ねられて<b>正常</b></td></tr>
+        <tr><td>Po2(SD)</td><td>Poがダウン。2本とも<b>I（単独）</b>→ 相手にEtherChannelの設定がない、passive どうし など</td></tr>
+        <tr><td>Po3</td><td>Gi1/0/6 が <b>s（一時停止）</b>→ 速度・VLANなどの食い違い</td></tr>
+        <tr><td>Po10(RU)</td><td>レイヤ3・使用中</td></tr>
+      </table>
+      <div class="point"><b>次に見るもの：</b><code>show etherchannel port-channel</code>（Poのくわしい状態）、<code>show lacp neighbor</code>（相手のLACP）、<code>show interfaces trunk</code>（Po1 のトランク）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/lyr2/b_179_lyr2_9300_cg/configuring_etherchannels.html">Configuring EtherChannels</a>（Monitoring・Configuration Examples の show etherchannel summary の Flags）。出力の例はその書式に沿ってClaudeが書いた</div>
+</section>
+
+<section class="slide">
+  <h1>負荷分散：アドレスから計算して、通すリンクを決める</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="400" height="250" viewBox="0 0 400 250">
+        <g font-size="11" text-anchor="middle">
+          <rect x="10" y="20" width="90" height="30" rx="5" fill="#5b80bf"/><text x="55" y="40" fill="#fff">PC-A</text>
+          <rect x="10" y="70" width="90" height="30" rx="5" fill="#e08a2c"/><text x="55" y="90" fill="#fff">PC-B</text>
+          <rect x="10" y="120" width="90" height="30" rx="5" fill="#2f8f6b"/><text x="55" y="140" fill="#fff">PC-C</text>
+          <rect x="130" y="40" width="90" height="90" rx="8" fill="#1f3a68"/><text x="175" y="75" fill="#fff" font-weight="700">SW1</text><text x="175" y="95" fill="#fff" font-size="10">送信元MACで</text><text x="175" y="110" fill="#fff" font-size="10">計算（ハッシュ）</text>
+          <line x1="100" y1="35" x2="130" y2="70" stroke="#5b80bf" stroke-width="2"/><line x1="100" y1="85" x2="130" y2="85" stroke="#e08a2c" stroke-width="2"/><line x1="100" y1="135" x2="130" y2="100" stroke="#2f8f6b" stroke-width="2"/>
+          <line x1="220" y1="60" x2="310" y2="60" stroke="#5b80bf" stroke-width="4"/><text x="265" y="54" fill="#1f3a68" font-size="10">リンク1：A と C</text>
+          <line x1="220" y1="64" x2="310" y2="64" stroke="#2f8f6b" stroke-width="4"/>
+          <line x1="220" y1="110" x2="310" y2="110" stroke="#e08a2c" stroke-width="4"/><text x="265" y="128" fill="#b25000" font-size="10">リンク2：B</text>
+          <rect x="310" y="40" width="80" height="90" rx="8" fill="#2f5596"/><text x="350" y="90" fill="#fff" font-weight="700">SW2</text>
+          <rect x="10" y="170" width="380" height="68" rx="6" fill="#e8eef8"/>
+          <text x="200" y="192" fill="#1f3a68" font-weight="700">同じ送信元（同じ組み合わせ）は、いつも同じリンク</text>
+          <text x="200" y="212" fill="#1f3a68">→ フレームの順番が入れ替わらない</text>
+          <text x="200" y="230" fill="#1f3a68">→ 1つの通信は1本分の速さまで</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mini">
+        <tr><th>方式（例）</th><th>何で決めるか</th></tr>
+        <tr><td><code>src-mac</code></td><td>送信元MAC。<b>Catalyst 9300 の初期値</b></td></tr>
+        <tr><td><code>dst-mac</code></td><td>宛先MAC</td></tr>
+        <tr><td><code>src-dst-mac</code></td><td>送信元と宛先のMAC</td></tr>
+        <tr><td><code>src-ip</code>／<code>dst-ip</code>／<code>src-dst-ip</code></td><td>IPアドレス</td></tr>
+        <tr><td><code>src-dst-port</code> など</td><td>TCP・UDPのポート番号</td></tr>
+      </table>
+<pre class="cli" style="margin-top:8px">SW1(config)# <b>port-channel load-balance src-dst-ip</b>
+SW1# show etherchannel load-balance</pre>
+      <div class="point"><b>グローバル設定：</b>方式はその機器の<b>全部のEtherChannel</b>に効く。相手のスイッチと同じにする必要はない（それぞれが自分の送る向きを決める）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/lyr2/b_179_lyr2_9300_cg/configuring_etherchannels.html">Configuring EtherChannels</a>（Load-Balancing and Forwarding Methods・Default EtherChannel Configuration・Configuring EtherChannel Load-Balancing）／ Best Practices for Catalyst 6500/4500（no misordering of frames）</div>
+</section>
+
+<section class="slide">
+  <h1>負荷分散の選び方：「いろいろな値になるアドレス」で振り分ける</h1>
+  <div class="cols">
+    <div>
+      <svg width="400" height="230" viewBox="0 0 400 230">
+        <g font-size="11" text-anchor="middle">
+          <rect x="10" y="20" width="80" height="26" rx="5" fill="#5b80bf"/><text x="50" y="38" fill="#fff">PC 1〜100</text>
+          <rect x="110" y="10" width="90" height="70" rx="8" fill="#1f3a68"/><text x="155" y="40" fill="#fff" font-weight="700">SW</text><text x="155" y="58" fill="#fff" font-size="10">送信元で分散</text>
+          <line x1="90" y1="33" x2="110" y2="33" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="200" y1="36" x2="300" y2="36" stroke="#1f3a68" stroke-width="3"/><line x1="200" y1="54" x2="300" y2="54" stroke="#1f3a68" stroke-width="3"/>
+          <rect x="300" y="10" width="90" height="70" rx="8" fill="#2f5596"/><text x="345" y="40" fill="#fff" font-weight="700">ルータ</text><text x="345" y="58" fill="#fff" font-size="10">宛先で分散</text>
+          <text x="250" y="100" fill="#1d1d1f">ルータへ：宛先はルータのMAC 1つだけ</text>
+          <text x="250" y="118" fill="#1d1d1f">→ <tspan font-weight="700">送信元</tspan>（PCごとに違う）で振り分ける</text>
+          <text x="250" y="146" fill="#1d1d1f">ルータから：送信元はルータ1つだけ</text>
+          <text x="250" y="164" fill="#1d1d1f">→ <tspan font-weight="700">宛先</tspan>（PCごとに違う）で振り分ける</text>
+          <rect x="10" y="184" width="380" height="40" rx="6" fill="#fdf3ea"/>
+          <text x="200" y="208" fill="#b25000" font-weight="700">スイッチで dst-mac にすると、全部ルータ宛て＝全部同じリンク</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>その方向に流れる通信で、<b>値がばらつくアドレス</b>はどれか考える</li>
+        <li>宛先が1台に集まる → <b>送信元</b>で分ける</li>
+        <li>送信元が1台に集まる → <b>宛先</b>で分ける</li>
+        <li>どちらとも言えない → <b>送信元と宛先の両方</b>（src-dst-ip など）</li>
+        <li>端末どうしが1対1でも、TCP・UDPのポート番号まで使うと分かれやすい</li>
+      </ol>
+      <div class="point warn"><b>本番の引っかけ：</b>「EtherChannelにすれば1台のPCからの1つの転送も4倍速くなる」は誤り。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/lyr2/b_179_lyr2_9300_cg/configuring_etherchannels.html">Configuring EtherChannels</a>（Load-Balancing Advantages：ルータの例と「宛先が1つのMACなら dst-mac は常に同じリンク」）。図はその説明からClaudeが描いた</div>
+</section>
+
+<section class="slide">
+  <h1>EtherChannelができないときに確かめる順番</h1>
+  <div class="cols">
+    <div>
+      <ol class="steps">
+        <li><code>show etherchannel summary</code>：Po は U か D か、各ポートは P・I・s・H のどれか</li>
+        <li><b>相手側の設定</b>：channel-group が入っているか。モードの組み合わせ（passive＋passive、auto＋auto、on＋active、LACP＋PAgP）</li>
+        <li><b>ポートの設定</b>：速度・デュプレックス・アクセスVLAN・ネイティブVLAN・許可VLANがそろっているか（<code>show interfaces trunk</code>、<code>show running-config</code>）</li>
+        <li><b>物理</b>：リンクが up か。CDP・LLDPで、つながっている相手のポートが想定どおりか</li>
+        <li><b>相手から見て</b>：<code>show lacp neighbor</code> で相手のLACPが見えているか</li>
+      </ol>
+    </div>
+    <div>
+      <div class="cap">症状から逆引き</div>
+      <table class="mini">
+        <tr><th>症状</th><th>まず疑うところ</th></tr>
+        <tr><td>全ポートが I、Po が D</td><td>相手に設定がない、passive／auto どうし、プロトコル違い</td></tr>
+        <tr><td>1本だけ s</td><td>そのポートだけ速度・VLAN・トランクの設定が違う</td></tr>
+        <tr><td>9本目以降が H</td><td>正常（LACPの待機）</td></tr>
+        <tr><td>束ねたのに速くならない</td><td>負荷分散の方式（1つの通信は1本）</td></tr>
+        <tr><td>片側 on で通信が不安定</td><td>相手も on か確認。できれば両側 active</td></tr>
+        <tr><td>隣がCDPに出てこない</td><td>no cdp enable／no cdp run、相手がCisco以外（LLDPを使う）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：このページはここまでの各ページの根拠（Cisco Layer 2／Network Management／Interface and Hardware Configuration Guide 17.9.x、Command Reference）をClaudeが手順にまとめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>本番で迷いやすい比較10選</h1>
+  <table class="mini">
+    <tr><th style="width:4%">#</th><th style="width:30%">比べるもの</th><th>見分け方</th></tr>
+    <tr><td>1</td><td>CDP／LLDP</td><td>Cisco独自・初期で有効／IEEE 802.1AB・初期で無効（lldp run）</td></tr>
+    <tr><td>2</td><td>CDP 60/180／LLDP 30/120</td><td>送る間隔／ホールドタイム（秒）</td></tr>
+    <tr><td>3</td><td>Local Intrfce／Port ID</td><td>自分のポート／隣のポート</td></tr>
+    <tr><td>4</td><td>show cdp neighbors／… detail</td><td>一覧（IPなし）／IPアドレス・バージョン・ネイティブVLANまで</td></tr>
+    <tr><td>5</td><td>no cdp run／no cdp enable</td><td>全体（グローバル）／そのポートだけ（インタフェース）</td></tr>
+    <tr><td>6</td><td>LACP／PAgP</td><td>IEEE 802.3ad・active／passive／Cisco独自・desirable／auto</td></tr>
+    <tr><td>7</td><td>passive＋passive／active＋passive</td><td>束ねられない／束ねられる（auto＋auto も×）</td></tr>
+    <tr><td>8</td><td>P／I／s／H</td><td>束ね中／単独／一時停止（食い違い）／待機（LACP）</td></tr>
+    <tr><td>9</td><td>レイヤ2 EC／レイヤ3 EC</td><td>Po で switchport の設定／Po で no switchport＋IPアドレス</td></tr>
+    <tr><td>10</td><td>min-links／max-bundle</td><td>下回ったらPoを止める本数／束ねる上限（超えたら待機）</td></tr>
+  </table>
+  <div class="cite">出典：この資料の各ページ（Cisco Network Management・Interface and Hardware・Layer 2 Configuration Guide 17.9.x、Command Reference、CDP／LLDP Command Reference）</div>
+</section>
+
+<section class="slide">
+  <h1>出典</h1>
+  <div class="anno" style="font-size:12.5px; line-height:1.8">
+    <div>・<a class="src" href="https://learningcontent.cisco.com/documents/marketing/exam-topics/200-301-CCNA-v1.1.pdf">Cisco「CCNA Exam v1.1 (200-301) Exam Topics」</a>（2.3・2.4）</div>
+    <div>・<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/nmgmt/b_179_nmgmt_9300_cg/configuring_the_cisco_discovery_protocol.html">Cisco「Network Management Configuration Guide, Cisco IOS XE Cupertino 17.9.x (Catalyst 9300 Switches)」Configuring Cisco Discovery Protocol</a></div>
+    <div>・<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/int_hw/b_179_int_and_hw_9300_cg/configuring_lldp__lldp_med__and_wired_location_service.html">Cisco「Interface and Hardware Components Configuration Guide 17.9.x」Configuring LLDP, LLDP-MED, and Wired Location Service</a></div>
+    <div>・<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/configuration_guide/lyr2/b_179_lyr2_9300_cg/configuring_etherchannels.html">Cisco「Layer 2 Configuration Guide, Cisco IOS XE Cupertino 17.9.x (Catalyst 9300 Switches)」Configuring EtherChannels</a></div>
+    <div>・<a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/command_reference/b_179_9300_cr/layer_2_3_commands.html">Cisco「Command Reference 17.9.x (Catalyst 9300)」Layer 2/3 Commands</a>（channel-group・lacp rate・lacp port-priority）／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9300/software/release/17-9/command_reference/b_179_9300_cr/interface_and_hardware_commands.html">Interface and Hardware Commands</a>（lldp）</div>
+    <div>・<a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/cdp/command/cdp-cr-book/cdp-cr-a1.html">Cisco「Cisco Discovery Protocol Command Reference」show cdp neighbors</a> ／ <a class="src" href="https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/cether/command/ce-cr-book/ce-s1.html">Cisco「Carrier Ethernet Command Reference」show lldp</a></div>
+    <div>・<a class="src" href="https://www.cisco.com/c/en/us/support/docs/switches/catalyst-6500-series-switches/24330-185.html">Cisco「Best Practices for Catalyst 6500/6000 Series and Catalyst 4500/4000 Series Switches Running Cisco IOS Software」</a>（CDP・PAgP・LACP）</div>
+    <div>・<a class="src" href="https://www.cisco.com/c/en/us/support/docs/ip/access-lists/13608-21.html">Cisco「Cisco Guide to Harden Cisco IOS Devices」</a>（CDP・LLDP）</div>
+  </div>
+  <div class="point">Ciscoは本番の問題を公開していない。この資料の例と、用語集の問題演習30問はすべてClaudeのオリジナル。出力の例はコマンドリファレンスの書式に沿ってClaudeが書いた（2026-11-07）。</div>
+</section>
+
+</body>
+</html>
