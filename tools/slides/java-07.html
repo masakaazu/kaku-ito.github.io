@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Silver #07 繰り返し 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">Java Silver（SE 17・1Z0-825-JPN）　3 演算子と制御構造　#07</div>
+  <h1>繰り返し</h1>
+  <p>いつ条件を調べ、どこへ戻り、どこまで抜けるか ― while・do-while・for・拡張 for、break・continue・ラベル</p>
+  <div class="refs-legend">各ページの下に、根拠にした Oracle の資料（JLS 14 章・6.3）を書いた（青い文字を押すと開く）。コードは Claude が作り、JDK 17 で動かして確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>試験内容チェックリスト 3（while、do-while、for、拡張 for、break、continue）</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 while と do-while<span>先に調べるか、後で調べるか。到達できない文はコンパイルエラー</span></div>
+      <div class="box b2">2 for 文<span>初期化 → 条件 → 本体 → 更新 の順。変数のスコープは for の中</span></div>
+      <div class="box b3">3 拡張 for 文<span>配列と Iterable だけ。変数は要素のコピー</span></div>
+      <div class="box b4">4 break・continue・ラベル<span>ラベルなしはいちばん内側。ラベルで外側へ</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:28%"></th><th>条件を調べる時</th><th>最低の回数</th></tr>
+        <tr><td class="t">while</td><td>本体の前</td><td>0 回</td></tr>
+        <tr><td class="t">do-while</td><td>本体の後</td><td><b>1 回</b></td></tr>
+        <tr><td class="t">for</td><td>本体の前（更新の後）</td><td>0 回</td></tr>
+        <tr><td class="t">拡張 for</td><td>要素が残っているか</td><td>0 回（空なら）</td></tr>
+      </table>
+      <table class="mx" style="margin-top:8px">
+        <tr><th style="width:28%"></th><th>ラベルなし</th><th>ラベル付き</th></tr>
+        <tr><td class="t">break</td><td>内側の switch・ループを抜ける</td><td>ラベルの文を抜ける（if でも可）</td></tr>
+        <tr><td class="t">continue</td><td>内側のループの次の回</td><td>ラベルのループの次の回</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.oracle.com/jp/education/certification/javase-17-programmer-1/">Oracle「Java SE 17 Programmer I（1Z0-825-JPN）」試験内容チェックリスト</a>／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.12〜14.16</a></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>while 文と do-while 文</h1>
+  <p>先に調べれば 0 回もありうる。後で調べれば必ず 1 回。</p>
+  <div class="foot"><span>Java Silver #07 繰り返し</span><span>試験内容 3</span></div>
+</section>
+
+<section class="slide">
+  <h1>前判定と後判定</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">流れの図（Claude が作成）</div>
+      <svg width="420" height="250" viewBox="0 0 420 250">
+        <defs><marker id="a7" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5b80bf"/></marker></defs>
+        <g font-size="12" text-anchor="middle">
+          <text x="100" y="16" fill="#1f3a68" font-weight="700">while</text>
+          <rect x="30" y="30" width="140" height="34" rx="6" fill="#1f3a68"/><text x="100" y="52" fill="#fff">条件は true ?</text>
+          <line x1="100" y1="64" x2="100" y2="96" stroke="#5b80bf" stroke-width="2" marker-end="url(#a7)"/><text x="116" y="84" fill="#1f3a68" font-size="11">yes</text>
+          <rect x="30" y="100" width="140" height="34" rx="6" fill="#c9daf2"/><text x="100" y="122" fill="#1f3a68">本体</text>
+          <path d="M30,117 L12,117 L12,47 L26,47" fill="none" stroke="#5b80bf" stroke-width="2" marker-end="url(#a7)"/>
+          <line x1="170" y1="47" x2="196" y2="47" stroke="#b25000" stroke-width="2"/><text x="190" y="40" fill="#b25000" font-size="11">no</text>
+          <text x="100" y="160" fill="#b25000" font-size="11">最初から false なら</text>
+          <text x="100" y="176" fill="#b25000" font-size="11">本体は 0 回</text>
+
+          <text x="320" y="16" fill="#1f3a68" font-weight="700">do-while</text>
+          <rect x="250" y="30" width="140" height="34" rx="6" fill="#c9daf2"/><text x="320" y="52" fill="#1f3a68">本体</text>
+          <line x1="320" y1="64" x2="320" y2="96" stroke="#5b80bf" stroke-width="2" marker-end="url(#a7)"/>
+          <rect x="250" y="100" width="140" height="34" rx="6" fill="#1f3a68"/><text x="320" y="122" fill="#fff">条件は true ?</text>
+          <path d="M390,117 L408,117 L408,47 L394,47" fill="none" stroke="#5b80bf" stroke-width="2" marker-end="url(#a7)"/><text x="400" y="88" fill="#1f3a68" font-size="11">yes</text>
+          <line x1="320" y1="134" x2="320" y2="156" stroke="#b25000" stroke-width="2"/><text x="336" y="152" fill="#b25000" font-size="11">no</text>
+          <text x="320" y="176" fill="#b25000" font-size="11">条件が false でも本体は 1 回</text>
+        </g>
+        <g font-size="12" font-family="DejaVu Sans Mono, monospace" fill="#1f3a68">
+          <text x="20" y="214">while (cond) 文</text>
+          <text x="240" y="214">do 文 while (cond)<tspan fill="#b25000" font-weight="700">;</tspan></text>
+          <text x="240" y="236" fill="#b25000" font-family="IPAPGothic" font-size="11">最後の ; を忘れると ';' expected</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="cap">i = 5 のとき（Claude が作成）</div>
+<pre class="code small"><span class="k">int</span> i = <span class="s">5</span>;
+<span class="k">while</span> (i &lt; <span class="s">3</span>) {
+  System.out.print(<span class="s">"w "</span>);   <span class="c">// 0 回</span>
+}
+<span class="k">do</span> {
+  System.out.print(<span class="s">"d "</span>);   <span class="c">// 1 回</span>
+} <span class="k">while</span> (i &lt; <span class="s">3</span>);</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">d</span></pre>
+      <table class="mx" style="margin-top:8px">
+        <tr><th style="width:56%">コード（i は 0 から）</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>while (i++ &lt; 3) print(i);</code></td><td class="t">1 2 3、あとの i は 4</td></tr>
+        <tr><td class="l"><code>do print(i); while (++i &lt; 3);</code></td><td class="t">0 1 2、あとの i は 3</td></tr>
+      </table>
+      <div class="mini">i++ &lt; 3 は増やす前の値で比べる。比べた結果が false の回も i++ は実行されるので、最後に 1 つ多くなる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.12 The while Statement</a>（executes an Expression and a Statement repeatedly until the value of the Expression is false）・14.13 The do Statement（DoStatement: do Statement while ( Expression ) ;）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>範囲は { } で決まる ― 無限ループ</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">字下げにだまされる例（Claude が作成）</div>
+<pre class="code small"><span class="k">int</span> i = <span class="s">0</span>;
+<span class="k">while</span> (i &lt; <span class="s">3</span>)
+  System.out.print(i);
+  <span class="ng">i++;</span>          <span class="c">// ループの外！</span></pre>
+<pre class="sh" style="margin-top:4px"><span class="o">000000000000000000 …（止まらない）</span></pre>
+      <div class="cap" style="margin-top:8px">コンパイラから見た形</div>
+<pre class="code small"><span class="k">while</span> (i &lt; <span class="s">3</span>) { System.out.print(i); }
+i++;             <span class="c">// ここには来ない</span></pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">わざと終わらないループ</th><th>抜け方</th></tr>
+        <tr><td class="l"><code>while (true) { … }</code></td><td class="t">中で break・return</td></tr>
+        <tr><td class="l"><code>for (;;) { … }</code></td><td class="t">中で break・return</td></tr>
+        <tr><td class="l"><code>do { … } while (true);</code></td><td class="t">中で break・return</td></tr>
+      </table>
+      <div class="point"><b>無限ループもコンパイルはできる。</b>i &lt; 3 は定数式ではないので、コンパイラは「いつか false になるかもしれない」と扱う。問題では「無限ループになる」が答えの選択肢になる。</div>
+      <div class="point"><b>条件の型：</b>boolean か Boolean だけ。<code>while (1)</code> や <code>while (x = 1)</code>（x は int）はコンパイルエラー（#06 の if と同じ）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.12</a>（WhileStatement: while ( Expression ) Statement／The Expression must have type boolean or Boolean, or a compile-time error occurs）・14.14.1（If the Expression is not present … the contained Statement is executed）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>到達できない文はコンパイルエラー</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">コード</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>while (false) { x++; }</code></td><td class="x">unreachable statement</td></tr>
+        <tr><td class="l"><code>for (int i = 0; false; i++) { }</code></td><td class="x">unreachable statement</td></tr>
+        <tr><td class="l"><code>while (true) { }</code> のあとの文</td><td class="x">unreachable statement</td></tr>
+        <tr><td class="l">break; の直後の文</td><td class="x">unreachable statement</td></tr>
+        <tr><td class="l"><code>final boolean F = false; while (F)</code></td><td class="x">unreachable statement</td></tr>
+        <tr><td class="l"><code>if (false) { x++; }</code></td><td class="t">OK（if は例外）</td></tr>
+        <tr><td class="l"><code>boolean b = false; while (b)</code></td><td class="t">OK（b は定数でない）</td></tr>
+        <tr><td class="l"><code>for (int i = 0; i &lt; 0; i++)</code></td><td class="t">OK（0 回まわるだけ）</td></tr>
+        <tr><td class="l"><code>while (true) { if (…) break; }</code> のあと</td><td class="t">OK（break で抜けられる）</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="point"><b>判断に使うのは「定数式」だけ。</b>true・false のリテラルや、final で定数に初期化した変数の値を見る。ふつうの変数は値を追いかけない。</div>
+      <div class="point"><b>if (false) が許される理由：</b>JLS は「デバッグ用の切りかえ」に使えるよう、if だけはわざと到達できるものとして扱うと説明している。</div>
+<pre class="code small" style="margin-top:6px"><span class="k">static final boolean</span> DEBUG = <span class="k">false</span>;
+<span class="k">if</span> (DEBUG) { System.out.println(<span class="s">"x = "</span> + x); }  <span class="c">// OK</span></pre>
+      <div class="mini">「定数の true の while で、到達できる break がない」ときは、while 文そのものが正常に終わらないので、そのあとの文が到達不能になる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.22 Unreachable Statements</a>（It is a compile-time error if a statement cannot be executed because it is unreachable／The contained statement is reachable iff the while statement is reachable and the condition expression is not a constant expression whose value is false／if (false) { x=3; } does not result in a compile-time error）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.29 Constant Expressions</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>for 文</h1>
+  <p>初期化は 1 回、更新は本体のあと毎回。</p>
+  <div class="foot"><span>Java Silver #07 繰り返し</span><span>試験内容 3</span></div>
+</section>
+
+<section class="slide">
+  <h1>for 文の実行の順番</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">for (初期化; 条件; 更新) 本体（Claude が作成）</div>
+      <svg width="420" height="240" viewBox="0 0 420 240">
+        <defs><marker id="b7" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5b80bf"/></marker></defs>
+        <g font-size="12" text-anchor="middle">
+          <rect x="40" y="10" width="160" height="32" rx="6" fill="#f5f5f7" stroke="#1f3a68"/><text x="120" y="31" fill="#1f3a68">① 初期化（1 回だけ）</text>
+          <line x1="120" y1="42" x2="120" y2="64" stroke="#5b80bf" stroke-width="2" marker-end="url(#b7)"/>
+          <rect x="40" y="68" width="160" height="32" rx="6" fill="#1f3a68"/><text x="120" y="89" fill="#fff">② 条件は true ?</text>
+          <line x1="120" y1="100" x2="120" y2="122" stroke="#5b80bf" stroke-width="2" marker-end="url(#b7)"/><text x="136" y="116" fill="#1f3a68" font-size="11">yes</text>
+          <rect x="40" y="126" width="160" height="32" rx="6" fill="#c9daf2"/><text x="120" y="147" fill="#1f3a68">③ 本体</text>
+          <line x1="120" y1="158" x2="120" y2="180" stroke="#5b80bf" stroke-width="2" marker-end="url(#b7)"/>
+          <rect x="40" y="184" width="160" height="32" rx="6" fill="#c9daf2"/><text x="120" y="205" fill="#1f3a68">④ 更新</text>
+          <path d="M40,200 L18,200 L18,84 L36,84" fill="none" stroke="#5b80bf" stroke-width="2" marker-end="url(#b7)"/>
+          <line x1="200" y1="84" x2="250" y2="84" stroke="#b25000" stroke-width="2" marker-end="url(#b7)"/><text x="225" y="77" fill="#b25000" font-size="11">no</text>
+          <text x="320" y="88" fill="#b25000">for 文のあとへ</text>
+          <path d="M330,142 L210,142" fill="none" stroke="#b25000" stroke-width="2" stroke-dasharray="4 3"/>
+          <text x="330" y="138" fill="#b25000" font-size="11" text-anchor="start">continue は</text>
+          <text x="330" y="154" fill="#b25000" font-size="11" text-anchor="start">④ 更新へ進む</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="cap">順番を表示で確かめる（Claude が作成）</div>
+<pre class="code small"><span class="k">int</span> i = <span class="s">0</span>;
+<span class="k">for</span> (System.out.print(<span class="s">"init "</span>);
+     i &lt; <span class="s">2</span>;
+     System.out.print(<span class="s">"upd "</span>)) {
+  System.out.print(<span class="s">"body"</span> + i + <span class="s">" "</span>);
+  i++;
+}</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">init body0 upd body1 upd</span></pre>
+      <div class="point"><b>最後の本体のあとも更新は実行される。</b>そのあと条件で false になって終わる。だから「for の前で宣言した i」は、終わったとき条件が false になった値（例では 2）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.14.1.1 Initialization of for Statement</a>・14.14.1.2 Iteration of for Statement（If execution of the Statement completes normally, then … the ForUpdate … are evaluated in sequence from left to right … Second, another for iteration step is performed）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>初期化部と更新部に書けるもの</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:58%">for のかっこ</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>int i = 0, j = 10;</code></td><td class="t">OK（同じ型を複数）</td></tr>
+        <tr><td class="l"><code>int i = 0, long j = 0;</code></td><td class="x">コンパイルエラー</td></tr>
+        <tr><td class="l"><code>i = 0, j = 10;</code>（どちらも宣言済み）</td><td class="t">OK（式文を並べる）</td></tr>
+        <tr><td class="l">更新部 <code>i += 3, j -= 3</code></td><td class="t">OK</td></tr>
+        <tr><td class="l">初期化部 <code>System.out.print("x")</code></td><td class="t">OK（メソッド呼び出しも式文）</td></tr>
+        <tr><td class="l"><code>for (;;)</code></td><td class="t">OK（条件なし ＝ true）</td></tr>
+        <tr><td class="l"><code>for (int i = 0; i &lt; 3; )</code></td><td class="t">OK（更新は本体で）</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">2 つの変数を同時に動かす（Claude が作成）</div>
+<pre class="code small"><span class="k">for</span> (<span class="k">int</span> i = <span class="s">0</span>, j = <span class="s">10</span>; i &lt; j; i += <span class="s">3</span>, j -= <span class="s">3</span>) {
+  System.out.print(i + <span class="s">":"</span> + j + <span class="s">" "</span>);
+}</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">0:10 3:7</span></pre>
+      <table class="mx" style="margin-top:8px">
+        <tr><th>i</th><th>j</th><th>i &lt; j</th></tr>
+        <tr><td>0</td><td>10</td><td class="t">true → 表示</td></tr>
+        <tr><td>3</td><td>7</td><td class="t">true → 表示</td></tr>
+        <tr><td>6</td><td>4</td><td class="x">false → 終わり</td></tr>
+      </table>
+      <div class="mini">初期化部は「ローカル変数の宣言 1 つ」か「式文のカンマ区切り」のどちらか。宣言と式文をまぜることはできない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.14.1 The basic for Statement</a>（ForInit: StatementExpressionList | LocalVariableDeclaration／ForUpdate: StatementExpressionList）・14.4 Local Variable Declarations・14.8 Expression Statements／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>ループ変数のスコープと入れ子のループ</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:58%">コード</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>for (int i = 0; …) { }</code> のあと <code>println(i)</code></td><td class="x">cannot find symbol</td></tr>
+        <tr><td class="l"><code>int i; for (i = 0; i &lt; 3; i++) { }</code> のあと <code>println(i)</code></td><td class="t">3</td></tr>
+        <tr><td class="l"><code>int i = 0;</code> のあと <code>for (int i = 0; …)</code></td><td class="x">variable i is already defined</td></tr>
+        <tr><td class="l">for を 2 つ続け、どちらも <code>int i</code></td><td class="t">OK（スコープが別）</td></tr>
+      </table>
+      <div class="point"><b>スコープ：</b>初期化部で宣言した変数は、条件・更新・本体の中だけで使える。ループのあとで値を使いたいなら、for の前で宣言する。</div>
+    </div>
+    <div>
+      <div class="cap">内側は外側の 1 回ごとに最初から（Claude が作成）</div>
+<pre class="code small"><span class="k">int</span> count = <span class="s">0</span>;
+<span class="k">for</span> (<span class="k">int</span> i = <span class="s">0</span>; i &lt; <span class="s">4</span>; i++)
+  <span class="k">for</span> (<span class="k">int</span> j = i; j &lt; <span class="s">4</span>; j++)
+    count++;
+System.out.println(count);   <span class="c">// 10</span></pre>
+      <svg width="400" height="96" viewBox="0 0 400 96">
+        <g font-size="12" font-family="DejaVu Sans Mono, monospace">
+          <text x="0" y="16" fill="#1f3a68">i=0</text><g fill="#c9daf2"><rect x="44" y="4" width="22" height="16"/><rect x="70" y="4" width="22" height="16"/><rect x="96" y="4" width="22" height="16"/><rect x="122" y="4" width="22" height="16"/></g><text x="160" y="16" fill="#1f3a68">4 回</text>
+          <text x="0" y="38" fill="#1f3a68">i=1</text><g fill="#c9daf2"><rect x="70" y="26" width="22" height="16"/><rect x="96" y="26" width="22" height="16"/><rect x="122" y="26" width="22" height="16"/></g><text x="160" y="38" fill="#1f3a68">3 回</text>
+          <text x="0" y="60" fill="#1f3a68">i=2</text><g fill="#c9daf2"><rect x="96" y="48" width="22" height="16"/><rect x="122" y="48" width="22" height="16"/></g><text x="160" y="60" fill="#1f3a68">2 回</text>
+          <text x="0" y="82" fill="#1f3a68">i=3</text><g fill="#c9daf2"><rect x="122" y="70" width="22" height="16"/></g><text x="160" y="82" fill="#1f3a68">1 回</text>
+          <text x="230" y="50" fill="#b25000" font-family="IPAPGothic">合計 4+3+2+1 = 10</text>
+        </g>
+      </svg>
+      <div class="mini">{ } がなくても、内側の for 文全体が外側の本体（1 文）になる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-6.html">JLS 6.3 Scope of a Declaration</a>（The scope of a local variable declared in the ForInit part of a basic for statement includes … the Expression and ForUpdate parts …, and the contained Statement）・6.4（It is a compile-time error if the name of a local variable v is used to declare a new variable within the scope of v）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>拡張 for 文</h1>
+  <p>配列か Iterable を、先頭から 1 つずつ。</p>
+  <div class="foot"><span>Java Silver #07 繰り返し</span><span>試験内容 3</span></div>
+</section>
+
+<section class="slide">
+  <h1>拡張 for のしくみと使える型</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">配列の拡張 for は、次の基本の for と同じ意味（JLS 14.14.2 の説明を Claude が書き直した）</div>
+<pre class="code small"><span class="k">for</span> (<span class="k">int</span> x : a) { … }
+<span class="c">// ↓ と同じ</span>
+<span class="k">for</span> (<span class="k">int</span> #i = <span class="s">0</span>; #i &lt; a.length; #i++) {
+  <span class="k">int</span> x = a[#i];     <span class="c">// 要素のコピー</span>
+  …
+}</pre>
+      <div class="mini">#i はプログラムからは見えない名前。List なら iterator() の hasNext()・next() で同じことをする。</div>
+      <div class="point"><b>ループ変数は毎回新しく宣言される。</b>だから final や var を付けられる。代入しても元の配列やリストは変わらない（#04）。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">: の右</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l">配列 <code>int[]</code></td><td class="t">OK</td></tr>
+        <tr><td class="l"><code>List&lt;String&gt;</code>・<code>ArrayList&lt;Integer&gt;</code></td><td class="t">OK（Iterable）</td></tr>
+        <tr><td class="l"><code>String</code></td><td class="x">for-each not applicable to expression type</td></tr>
+        <tr><td class="l"><code>StringBuilder</code>・<code>int</code></td><td class="x">for-each not applicable</td></tr>
+        <tr><td class="l"><code>s.toCharArray()</code></td><td class="t">OK（char[]）</td></tr>
+      </table>
+      <table class="mx" style="margin-top:8px">
+        <tr><th style="width:56%">: の左</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>var x</code>・<code>final int x</code></td><td class="t">OK</td></tr>
+        <tr><td class="l"><code>int n</code>（List&lt;Integer&gt; から）</td><td class="t">OK（アンボクシング）</td></tr>
+        <tr><td class="l">宣言済みの <code>x</code> だけ</td><td class="x">bad initializer for for-loop</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.14.2 The enhanced for statement</a>（The type of the Expression must be an array type or a subtype of the raw type Iterable, or a compile-time error occurs）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Java SE 17 API java.lang.Iterable</a>（Implementing this interface allows an object to be the target of the enhanced for statement）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>break・continue・ラベル</h1>
+  <p>ラベルなしはいちばん内側。外へ行くならラベル。</p>
+  <div class="foot"><span>Java Silver #07 繰り返し</span><span>試験内容 3</span></div>
+</section>
+
+<section class="slide">
+  <h1>break と continue の行き先</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">飛ぶ先（Claude が作成）</div>
+      <svg width="420" height="230" viewBox="0 0 420 230">
+        <defs>
+          <marker id="c7" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker>
+          <marker id="d7" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker>
+        </defs>
+        <g font-size="12" font-family="DejaVu Sans Mono, monospace">
+          <rect x="10" y="10" width="300" height="190" rx="6" fill="#f5f5f7" stroke="#1f3a68"/>
+          <text x="20" y="30" fill="#1f3a68">for (i…; i++) {</text>
+          <rect x="30" y="44" width="260" height="120" rx="6" fill="#fff" stroke="#5b80bf"/>
+          <text x="40" y="64" fill="#1f3a68">for (j…; j++) {</text>
+          <text x="56" y="92" fill="#1f3a68">continue;</text>
+          <text x="56" y="120" fill="#b25000">break;</text>
+          <text x="40" y="154" fill="#1f3a68">}</text>
+          <text x="40" y="186" fill="#1f3a68">print("after j")</text>
+          <text x="20" y="196" fill="#1f3a68"></text>
+        </g>
+        <path d="M130,88 C200,88 200,60 140,60" fill="none" stroke="#1f3a68" stroke-width="2" marker-end="url(#d7)"/>
+        <path d="M110,116 C230,116 230,180 170,182" fill="none" stroke="#b25000" stroke-width="2" marker-end="url(#c7)"/>
+        <g font-size="11">
+          <text x="320" y="70" fill="#1f3a68">continue：</text>
+          <text x="320" y="86" fill="#1f3a68">内側の j++ へ</text>
+          <text x="320" y="140" fill="#b25000">break：</text>
+          <text x="320" y="156" fill="#b25000">内側を抜けて</text>
+          <text x="320" y="172" fill="#b25000">外側の続きへ</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+<pre class="code small"><span class="k">for</span> (<span class="k">int</span> i = <span class="s">0</span>; i &lt; <span class="s">5</span>; i++) {
+  <span class="k">if</span> (i == <span class="s">1</span>) <span class="k">continue</span>;   <span class="c">// 1 を飛ばす</span>
+  <span class="k">if</span> (i == <span class="s">3</span>) <span class="k">break</span>;      <span class="c">// 3 で抜ける</span>
+  System.out.print(i + <span class="s">" "</span>);
+}</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">0 2</span></pre>
+      <table class="mx" style="margin-top:8px">
+        <tr><th style="width:56%">こんなとき</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l">入れ子の内側で <code>break;</code></td><td class="t">内側だけ抜け、外側は続く</td></tr>
+        <tr><td class="l">ループの中の switch で <code>break;</code></td><td class="t">switch だけ抜ける</td></tr>
+        <tr><td class="l">while で更新が continue の後ろ</td><td class="x">無限ループになりうる</td></tr>
+        <tr><td class="l">break; の直後の文</td><td class="x">unreachable statement</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.15 The break Statement</a>（A break statement with no label attempts to transfer control to the innermost enclosing switch, while, do, or for statement）・14.16 The continue Statement（the continue target … immediately ends the current iteration and begins a new one）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>ラベル付き break と continue</h1>
+  <div class="cols">
+    <div>
+<pre class="code small">outer:
+<span class="k">for</span> (<span class="k">int</span> i = <span class="s">0</span>; i &lt; <span class="s">3</span>; i++) {
+  <span class="k">for</span> (<span class="k">int</span> j = <span class="s">0</span>; j &lt; <span class="s">3</span>; j++) {
+    <span class="k">if</span> (j == <span class="s">1</span>) <span class="k">continue</span> outer;
+    <span class="k">if</span> (i == <span class="s">2</span>) <span class="k">break</span> outer;
+    System.out.print(i + <span class="s">""</span> + j + <span class="s">" "</span>);
+  }
+}</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">00 10</span></pre>
+      <table class="mx" style="margin-top:6px">
+        <tr><th>i</th><th>j</th><th>起きること</th></tr>
+        <tr><td>0</td><td>0</td><td class="t">00 を表示</td></tr>
+        <tr><td>0</td><td>1</td><td class="l">continue outer → i++ へ</td></tr>
+        <tr><td>1</td><td>0</td><td class="t">10 を表示</td></tr>
+        <tr><td>1</td><td>1</td><td class="l">continue outer → i++ へ</td></tr>
+        <tr><td>2</td><td>0</td><td class="x">break outer → 全部を抜ける</td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:58%">コード</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>loop: if (true) { … break loop; }</code></td><td class="t">OK（if を抜ける）</td></tr>
+        <tr><td class="l"><code>loop: if (true) { continue loop; }</code></td><td class="x">not a loop label: loop</td></tr>
+        <tr><td class="l">ループの中の switch で <code>break a;</code>（a は for）</td><td class="t">for ごと抜ける</td></tr>
+      </table>
+      <div class="point"><b>break ラベル：</b>ラベルの付いた文を抜ける。その文はループでなくてもよい。<br><b>continue ラベル：</b>ラベルの付いたループの次の回へ。ラベルはループ（while・do・for）に付いていなければならない。</div>
+      <div class="mini">Java に goto はない。ラベルを使うのは break と continue だけ。ラベル名は変数名と同じでもよい。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.7 Labeled Statements</a>（Unlike C and C++, the Java programming language has no goto statement）・14.15（In this case, the break target need not be a switch, while, do, or for statement）・14.16（the continue target must be a while, do, or for statement, or a compile-time error occurs）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>問われ方とまちがえやすい点</h1>
+  <table class="mx">
+    <tr><th style="width:32%">こう聞かれたら</th><th>答えの考え方</th></tr>
+    <tr><td class="t">ループの表示結果</td><td class="l">変数の値を 1 回ずつ表に書く。条件で比べる値（i++ か ++i か）と、ループ後の値を分けて考える</td></tr>
+    <tr><td class="t">while と do-while の差</td><td class="l">最初から false なら while は 0 回、do-while は 1 回。do-while の最後の ;</td></tr>
+    <tr><td class="t">字下げした 2 行</td><td class="l">{ } がなければ 1 文目だけがループの中。無限ループの選択肢を疑う</td></tr>
+    <tr><td class="t">コンパイルできるか</td><td class="l">到達できない文（定数の false・true、break の直後）、for の宣言は 1 つの型、ループ変数のスコープ、拡張 for の右は配列か Iterable</td></tr>
+    <tr><td class="t">for の終わったときの値</td><td class="l">更新のあとに条件で終わるので、条件が false になった値</td></tr>
+    <tr><td class="t">break・continue の結果</td><td class="l">ラベルなしはいちばん内側（switch の中の break は switch だけ）。ラベル付きはそのラベルの文</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">while と do-while<span>前判定は 0 回もある。後判定は必ず 1 回。到達不能はエラー</span></div>
+      <div class="box b2">for 文<span>初期化 1 回 → 条件 → 本体 → 更新。変数は for の中だけ</span></div>
+      <div class="box b3">拡張 for 文<span>配列か Iterable。左はその場で宣言。変数はコピー</span></div>
+      <div class="box b4">break・continue<span>内側に効く。ラベルで外側へ。continue のラベルはループだけ</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">こんなとき</th><th>結果</th></tr>
+        <tr><td class="l"><code>do { } while (false)</code></td><td class="t">1 回実行</td></tr>
+        <tr><td class="l"><code>while (false) { … }</code></td><td class="x">コンパイルエラー</td></tr>
+        <tr><td class="l">for の i をループの後で使う</td><td class="x">cannot find symbol</td></tr>
+        <tr><td class="l"><code>for (char c : "abc")</code></td><td class="x">コンパイルエラー</td></tr>
+        <tr><td class="l">内側のループで <code>break;</code></td><td class="t">外側は続く</td></tr>
+      </table>
+      <div class="point"><b>次は #08 クラスとオブジェクト。</b>フィールド・メソッド・コンストラクタ、オーバーロードと this へ進む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
