@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS SAA #07 サーバーレス 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">AWS SAA（SAA-C03）　分野2 弾力性に優れたアーキテクチャの設計　#07</div>
+  <h1>サーバーレス</h1>
+  <p>サーバーを持たずに動かす。Lambda の設定と呼び出し方、API Gateway、Step Functions、Fargate の使い分け</p>
+  <div class="refs-legend">各ページの下に、根拠にした AWS の公式ドキュメント（Lambda・API Gateway・Step Functions・Amazon ECS）を書いた（青い文字を押すと開く）。「」の中はドキュメントの原文どおり（日本語版は機械翻訳のため、語順が不自然なところもそのまま）。会社名や構成の例は Claude が作った例</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>試験ガイド タスク 2.1</small></h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <defs><marker id="s1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="20" width="100" height="44" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="60" y="47" fill="#1f3a68" font-weight="700">スマホ</text>
+      <rect x="160" y="20" width="140" height="44" rx="8" fill="#b25000"/><text x="230" y="40" fill="#fff" font-weight="700">API Gateway</text><text x="230" y="56" fill="#fff" font-size="10.5">玄関（認可・キャッシュ）</text>
+      <rect x="350" y="20" width="120" height="44" rx="8" fill="#3a7d44"/><text x="410" y="40" fill="#fff" font-weight="700">Lambda</text><text x="410" y="56" fill="#fff" font-size="10.5">同期で呼ぶ</text>
+      <rect x="520" y="20" width="120" height="44" rx="8" fill="#e8f3ea" stroke="#3a7d44"/><text x="580" y="47" fill="#3a7d44" font-weight="700">DynamoDB</text>
+      <line x1="110" y1="42" x2="158" y2="42" stroke="#1f3a68" stroke-width="2" marker-end="url(#s1)"/>
+      <line x1="300" y1="42" x2="348" y2="42" stroke="#1f3a68" stroke-width="2" marker-end="url(#s1)"/>
+      <line x1="470" y1="42" x2="518" y2="42" stroke="#1f3a68" stroke-width="2" marker-end="url(#s1)"/>
+      <rect x="10" y="84" width="100" height="40" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="60" y="109" fill="#1f3a68" font-weight="700">S3</text>
+      <rect x="350" y="84" width="120" height="40" rx="8" fill="#3a7d44"/><text x="410" y="104" fill="#fff" font-weight="700">Lambda</text><text x="410" y="118" fill="#fff" font-size="10.5">非同期で呼ぶ</text>
+      <line x1="110" y1="104" x2="348" y2="104" stroke="#1f3a68" stroke-width="2" marker-end="url(#s1)"/><text x="230" y="98" font-size="11">ファイルが置かれた</text>
+      <rect x="10" y="144" width="100" height="40" rx="8" fill="#e8f3ea" stroke="#3a7d44"/><text x="60" y="169" fill="#3a7d44" font-weight="700">SQS</text>
+      <rect x="350" y="144" width="120" height="40" rx="8" fill="#3a7d44"/><text x="410" y="164" fill="#fff" font-weight="700">Lambda</text><text x="410" y="178" fill="#fff" font-size="10.5">取りに行く</text>
+      <line x1="348" y1="164" x2="112" y2="164" stroke="#1f3a68" stroke-width="2" marker-end="url(#s1)"/><text x="230" y="158" font-size="11">イベントソースマッピング</text>
+      <rect x="690" y="20" width="156" height="74" rx="8" fill="#4a5a78"/><text x="768" y="44" fill="#fff" font-weight="700">Step Functions</text><text x="768" y="62" fill="#fff" font-size="10.5">何ステップもの処理を</text><text x="768" y="78" fill="#fff" font-size="10.5">順番・分岐・再試行でつなぐ</text>
+      <rect x="690" y="112" width="156" height="72" rx="8" fill="#1f3a68"/><text x="768" y="136" fill="#fff" font-weight="700">Fargate</text><text x="768" y="154" fill="#fff" font-size="10.5">サーバー管理なしの</text><text x="768" y="170" fill="#fff" font-size="10.5">コンテナ（15 分超も可）</text>
+      <text x="560" y="150" font-size="10.5" fill="#6e6e73">図は Claude が作った模式図</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:64%">タスク 2.1 の知識・スキル（このPDFに関係する部分の要約）</th><th>このPDF</th></tr>
+    <tr><td class="l">サーバーレステクノロジーとパターン（AWS Fargate、AWS Lambda など）</td><td class="t">第1・2・4章</td></tr>
+    <tr><td class="l">API の作成と管理（Amazon API Gateway、REST API など）</td><td class="t">第3章</td></tr>
+    <tr><td class="l">ワークフローオーケストレーション（AWS Step Functions など）</td><td class="t">第4章</td></tr>
+    <tr><td class="l">マイクロサービスの設計原則（ステートレスとステートフル）</td><td class="t">第1・4章</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html">AWS「コンテンツ分野 2: 弾力性に優れたアーキテクチャの設計」</a>タスク 2.1</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>Lambda のしくみと設定</h1>
+  <p>関数は実行環境の中で動く。メモリ・時間・ディスク・依存関係・つなぎ方を決める。</p>
+  <div class="foot"><span>AWS SAA #07 サーバーレス</span><span>タスク 2.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>実行環境のライフサイクルとコールドスタート</h1>
+  <svg width="856" height="170" viewBox="0 0 856 170">
+    <g font-size="12" text-anchor="middle">
+      <text x="20" y="18" text-anchor="start" fill="#1f3a68" font-weight="700">1 つの実行環境の一生（Claude が作った模式図）</text>
+      <rect x="20" y="30" width="200" height="40" rx="6" fill="#b25000"/><text x="120" y="48" fill="#fff" font-weight="700">Init（初期化）</text><text x="120" y="63" fill="#fff" font-size="10.5">コード取得・ランタイム起動・初期化</text>
+      <rect x="226" y="30" width="120" height="40" rx="6" fill="#3a7d44"/><text x="286" y="55" fill="#fff" font-weight="700">Invoke 1 回目</text>
+      <rect x="352" y="30" width="80" height="40" rx="6" fill="#e3eefc" stroke="#1f3a68" stroke-dasharray="4 3"/><text x="392" y="55" fill="#1f3a68" font-size="11">フリーズ</text>
+      <rect x="438" y="30" width="120" height="40" rx="6" fill="#3a7d44"/><text x="498" y="55" fill="#fff" font-weight="700">Invoke 2 回目</text>
+      <rect x="564" y="30" width="120" height="40" rx="6" fill="#3a7d44"/><text x="624" y="55" fill="#fff" font-weight="700">Invoke 3 回目</text>
+      <rect x="690" y="30" width="146" height="40" rx="6" fill="#4a5a78"/><text x="763" y="55" fill="#fff" font-weight="700">Shutdown</text>
+      <path d="M20,78 L20,86 L220,86 L220,78" fill="none" stroke="#b25000" stroke-width="2"/><text x="120" y="102" fill="#b25000" font-weight="700">コールドスタート（遅い）</text>
+      <path d="M438,78 L438,86 L684,86 L684,78" fill="none" stroke="#3a7d44" stroke-width="2"/><text x="561" y="102" fill="#3a7d44" font-weight="700">ウォームスタート（Init なし）</text>
+      <rect x="20" y="118" width="400" height="42" rx="8" fill="#fff4e5" stroke="#b25000"/><text x="220" y="136" font-size="11.5">ハンドラーの外：SDK クライアント・DB 接続を作る</text><text x="220" y="152" font-size="11.5" fill="#b25000">→ 使い回されたら作り直さずに済む</text>
+      <rect x="436" y="118" width="400" height="42" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="636" y="136" font-size="11.5">ハンドラーの中：毎回の処理</text><text x="636" y="152" font-size="11.5" fill="#1f3a68">→ 状態は外（DynamoDB・S3）に置く</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>コールドスタートは少ない：</b>AWS によると呼び出しの 1% 未満。それでも困るなら、プロビジョニングされた同時実行か SnapStart（第2章）。</div>
+    <div class="point warn"><b>使い回しは保証されない：</b>次の呼び出しが同じ環境に来るとは限らない。ログインの状態などは関数の中に持たない（ステートレス）。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/lambda-runtime-environment.html">Lambda 実行環境のライフサイクルの概要</a>（「Init フェーズは 10 秒に制限されています。」「通常、コールドスタートは呼び出しの 1% 未満で発生します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/best-practices.html">AWS Lambda 関数を使用するためのベストプラクティス</a>（「関数ハンドラー外で SDK クライアントとデータベース接続を初期化し、静的なアセットを /tmp ディレクトリにローカルにキャッシュします。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Lambda の数字：これだけは覚える</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:38%">項目</th><th>値</th></tr>
+        <tr><td class="t">メモリ</td><td class="l">128 MB〜10,240 MB（1 MB 単位）</td></tr>
+        <tr><td class="t">タイムアウト</td><td class="l">デフォルト 3 秒・最大 <b>900 秒（15 分）</b></td></tr>
+        <tr><td class="t">/tmp</td><td class="l">512 MB〜10,240 MB（一時・共有しない）</td></tr>
+        <tr><td class="t">ペイロード</td><td class="l">同期 6 MB／非同期 1 MB</td></tr>
+        <tr><td class="t">.zip</td><td class="l">圧縮 50 MB・解凍後 250 MB（レイヤー込み）</td></tr>
+        <tr><td class="t">コンテナイメージ</td><td class="l">10 GB（非圧縮）</td></tr>
+        <tr><td class="t">レイヤー</td><td class="l">1 関数に 5 つまで</td></tr>
+        <tr><td class="t">環境変数</td><td class="l">全部で 4 KB</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">CPU はメモリについてくる</div>
+      <svg width="410" height="130" viewBox="0 0 410 130">
+        <g font-size="11" text-anchor="middle">
+          <line x1="40" y1="110" x2="400" y2="110" stroke="#1f3a68"/><line x1="40" y1="110" x2="40" y2="10" stroke="#1f3a68"/>
+          <line x1="40" y1="108" x2="390" y2="18" stroke="#3a7d44" stroke-width="3"/>
+          <text x="220" y="126">メモリ（128 MB → 10,240 MB）</text>
+          <text x="22" y="60" transform="rotate(-90 22 60)">CPU</text>
+          <circle cx="120" cy="88" r="4" fill="#b25000"/><text x="130" y="103" text-anchor="start" fill="#b25000">1,769 MB ≒ 1 vCPU</text>
+        </g>
+      </svg>
+      <div class="point"><b>CPU は直接決められない：</b>CPU が足りない（遅い）ならメモリを増やす。vCPU 数の設定はない。</div>
+      <div class="point warn"><b>15 分を超える処理：</b>Lambda は無理。Fargate・EC2・AWS Batch に移すか、小さく分けて Step Functions でつなぐ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/gettingstarted-limits.html">Lambda クォータ</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-memory.html">Lambda 関数のメモリを設定</a>（「Lambda は、設定されたメモリの量に比例して CPU パワーを割り当てます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-timeout.html">Lambda 関数のタイムアウトを設定する</a>（「この設定のデフォルト値は 3 秒ですが、最大値の 900 秒 (15 分) まで 1 秒単位で調整できます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>レイヤー・コンテナイメージ・バージョンとエイリアス</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">しくみ</th><th>何のため</th></tr>
+        <tr><td class="t">レイヤー</td><td class="l">共通ライブラリを .zip にまとめ、多くの関数で使い回す。コードと別に更新できる</td></tr>
+        <tr><td class="t">コンテナイメージ</td><td class="l">250 MB に入らない大きな依存関係（ECR に置く、最大 10 GB）。動きは Lambda のまま（15 分）</td></tr>
+        <tr><td class="t">バージョン</td><td class="l">発行した時点で固める（変更不可）。編集中は <code>$LATEST</code></td></tr>
+        <tr><td class="t">エイリアス</td><td class="l">バージョンを指す名前。付け替え・2 つのバージョンへの振り分け</td></tr>
+        <tr><td class="t">関数 URL</td><td class="l">関数専用の HTTPS の入口。認証は IAM かなし。API キーやキャッシュは API Gateway</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">エイリアスで新しいバージョンを少しだけ試す</div>
+      <svg width="410" height="170" viewBox="0 0 410 170">
+        <defs><marker id="s2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="4" y="60" width="96" height="44" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="52" y="80" fill="#1f3a68" font-weight="700">呼び出し元</text><text x="52" y="96" font-size="10.5">ARN は変えない</text>
+          <rect x="140" y="60" width="96" height="44" rx="8" fill="#b25000"/><text x="188" y="80" fill="#fff" font-weight="700">エイリアス</text><text x="188" y="96" fill="#fff" font-size="10.5">prod</text>
+          <rect x="290" y="14" width="116" height="44" rx="8" fill="#3a7d44"/><text x="348" y="34" fill="#fff" font-weight="700">バージョン 3</text><text x="348" y="50" fill="#fff" font-size="10.5">今の本番</text>
+          <rect x="290" y="106" width="116" height="44" rx="8" fill="#1f3a68"/><text x="348" y="126" fill="#fff" font-weight="700">バージョン 4</text><text x="348" y="142" fill="#fff" font-size="10.5">新しい版</text>
+          <line x1="100" y1="82" x2="138" y2="82" stroke="#1f3a68" stroke-width="2" marker-end="url(#s2)"/>
+          <line x1="236" y1="74" x2="288" y2="40" stroke="#3a7d44" stroke-width="3" marker-end="url(#s2)"/><text x="252" y="48" fill="#3a7d44" font-weight="700">90%</text>
+          <line x1="236" y1="90" x2="288" y2="124" stroke="#1f3a68" stroke-width="2" marker-end="url(#s2)"/><text x="252" y="126" fill="#1f3a68" font-weight="700">10%</text>
+          <text x="205" y="166" fill="#6e6e73" font-size="10.5">問題がなければ 100% に付け替える（Claude が作った例）</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/chapter-layers.html">レイヤーによる Lambda 依存関係の管理</a>（「Lambda レイヤーは、補助的なコードやデータを含む .zip ファイルアーカイブです。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-versions.html">Lambda 関数のバージョンを管理する</a>（「関数のバージョンを公開すると、そのコード、ランタイム、アーキテクチャ、メモリ、レイヤー、その他のほとんどの設定はイミュータブルになります。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-aliases.html">Lambda 関数のエイリアスの作成</a>（「Lambda のエイリアスとは、更新可能な関数のバージョンへのポインタです。」）</div>
+</section>
+
+<section class="slide">
+  <h1>VPC の中のリソースを使う Lambda</h1>
+  <svg width="856" height="210" viewBox="0 0 856 210">
+    <defs><marker id="s3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="10" width="620" height="190" rx="12" fill="#f5f5f7" stroke="#1f3a68"/><text x="60" y="30" fill="#1f3a68" font-weight="700">VPC</text>
+      <rect x="30" y="44" width="330" height="140" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="195" y="62" fill="#1f3a68" font-weight="700">プライベートサブネット</text>
+      <rect x="50" y="78" width="130" height="50" rx="8" fill="#3a7d44"/><text x="115" y="98" fill="#fff" font-weight="700">Lambda</text><text x="115" y="116" fill="#fff" font-size="10.5">Hyperplane ENI</text>
+      <rect x="220" y="78" width="120" height="50" rx="8" fill="#e8f3ea" stroke="#3a7d44"/><text x="280" y="108" fill="#3a7d44" font-weight="700">RDS</text>
+      <line x1="180" y1="103" x2="218" y2="103" stroke="#1f3a68" stroke-width="2" marker-end="url(#s3)"/>
+      <text x="250" y="160" font-size="11">ルート：0.0.0.0/0 → NAT ゲートウェイ</text>
+      <rect x="390" y="44" width="220" height="140" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="500" y="62" fill="#3a7d44" font-weight="700">パブリックサブネット</text>
+      <rect x="420" y="78" width="160" height="50" rx="8" fill="#b25000"/><text x="500" y="108" fill="#fff" font-weight="700">NAT ゲートウェイ</text>
+      <path d="M115,128 L115,172 L400,172 L400,103 L418,103" fill="none" stroke="#b25000" stroke-width="2" marker-end="url(#s3)"/>
+      <rect x="670" y="78" width="80" height="50" rx="8" fill="#1f3a68"/><text x="710" y="100" fill="#fff" font-size="11">インター</text><text x="710" y="116" fill="#fff" font-size="11">ネット GW</text>
+      <line x1="580" y1="103" x2="668" y2="103" stroke="#1f3a68" stroke-width="2" marker-end="url(#s3)"/>
+      <rect x="770" y="78" width="80" height="50" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="810" y="100" fill="#1f3a68" font-size="11">外部の</text><text x="810" y="116" fill="#1f3a68" font-size="11">決済 API</text>
+      <line x1="750" y1="103" x2="768" y2="103" stroke="#1f3a68" stroke-width="2" marker-end="url(#s3)"/>
+      <text x="740" y="160" font-size="10.5" fill="#6e6e73">図は Claude が作った例</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point warn"><b>ひっかけ：</b>関数をパブリックサブネットに接続しても、パブリック IP は付かず、インターネットにも出られない。Lambda に Elastic IP は付けられない。</div>
+    <div class="point"><b>正しい形：</b>関数はプライベートサブネット（2 つ以上の AZ）。インターネットへは NAT ゲートウェイ経由。AWS のサービスだけなら VPC エンドポイントでもよい。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-vpc.html">Lambda 関数に Amazon VPC 内のリソースへのアクセスを許可する</a>（「関数をパブリックサブネットに接続しても、インターネットアクセスやパブリック IP アドレスは提供されません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-vpc-internet.html">VPC に接続された Lambda 関数にインターネットアクセスを有効にする</a>（「プライベートサブネットは、NAT ゲートウェイ経由でインターネットにアクセスできます。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>呼び出しとスケーリング</h1>
+  <p>待つのか、任せるのか、取りに行くのか。失敗したときの動きと、同時に動く数の決め方。</p>
+  <div class="foot"><span>AWS SAA #07 サーバーレス</span><span>タスク 2.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>3つの呼び出し方</h1>
+  <svg width="856" height="180" viewBox="0 0 856 180">
+    <defs><marker id="s4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <text x="70" y="32" fill="#1f3a68" font-weight="700">同期</text>
+      <rect x="130" y="12" width="130" height="36" rx="6" fill="#e3eefc" stroke="#1f3a68"/><text x="195" y="35" fill="#1f3a68">API Gateway</text>
+      <rect x="440" y="12" width="110" height="36" rx="6" fill="#3a7d44"/><text x="495" y="35" fill="#fff" font-weight="700">関数</text>
+      <line x1="260" y1="24" x2="438" y2="24" stroke="#1f3a68" stroke-width="2" marker-end="url(#s4)"/><line x1="440" y1="38" x2="262" y2="38" stroke="#3a7d44" stroke-width="2" marker-end="url(#s4)"/>
+      <text x="350" y="56" font-size="11" fill="#3a7d44">結果を待って受け取る</text>
+      <text x="700" y="35" font-size="11.5" text-anchor="middle">再試行は呼び出し元しだい</text>
+      <text x="70" y="96" fill="#1f3a68" font-weight="700">非同期</text>
+      <rect x="130" y="76" width="130" height="36" rx="6" fill="#e3eefc" stroke="#1f3a68"/><text x="195" y="99" fill="#1f3a68">S3・SNS</text>
+      <rect x="300" y="76" width="110" height="36" rx="6" fill="#fff4e5" stroke="#b25000"/><text x="355" y="99" fill="#b25000">内部のキュー</text>
+      <rect x="440" y="76" width="110" height="36" rx="6" fill="#3a7d44"/><text x="495" y="99" fill="#fff" font-weight="700">関数</text>
+      <line x1="260" y1="94" x2="298" y2="94" stroke="#1f3a68" stroke-width="2" marker-end="url(#s4)"/><line x1="410" y1="94" x2="438" y2="94" stroke="#1f3a68" stroke-width="2" marker-end="url(#s4)"/>
+      <text x="280" y="124" font-size="11" fill="#b25000">すぐ「受け付けた」と返る</text>
+      <text x="700" y="99" font-size="11.5">関数エラーはさらに 2 回再試行</text>
+      <text x="70" y="160" fill="#1f3a68" font-weight="700">イベントソース</text><text x="70" y="174" fill="#1f3a68" font-weight="700">マッピング</text>
+      <rect x="130" y="140" width="130" height="36" rx="6" fill="#e8f3ea" stroke="#3a7d44"/><text x="195" y="163" fill="#3a7d44">SQS・Kinesis</text>
+      <rect x="300" y="140" width="110" height="36" rx="6" fill="#4a5a78"/><text x="355" y="163" fill="#fff">ポーラー</text>
+      <rect x="440" y="140" width="110" height="36" rx="6" fill="#3a7d44"/><text x="495" y="163" fill="#fff" font-weight="700">関数</text>
+      <line x1="298" y1="158" x2="262" y2="158" stroke="#1f3a68" stroke-width="2" marker-end="url(#s4)"/><line x1="410" y1="158" x2="438" y2="158" stroke="#1f3a68" stroke-width="2" marker-end="url(#s4)"/>
+      <text x="700" y="156" font-size="11.5">取りに行き、バッチで渡す</text><text x="700" y="172" font-size="11.5">失敗はキューの設定（可視性・DLQ）</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>見分け方：</b>呼び出し元が結果を必要とする（API の応答）→ 同期。「置かれたら」「通知が来たら」→ 非同期。キューやストリーム → イベントソースマッピング。</div>
+    <div class="point warn"><b>SQS は押してこない：</b>Lambda のポーラーがキューをポーリングする。関数の中で ReceiveMessage を回し続ける必要はない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/invocation-sync.html">Lambda 関数を同期的に呼び出す</a>（「関数を同期的に呼び出すと、Lambda は関数を実行し、レスポンスを待ちます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/invocation-async.html">Lambda 関数を非同期的に呼び出す</a>（「非同期呼び出しの場合、Lambda はリクエストをキューに入れ、追加情報のない成功のレスポンスを返します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/invocation-eventsourcemapping.html">Lambda がストリームおよびキューベースのイベントソースからのレコードを処理する方法</a>（「イベントソースマッピング内では、イベントポーラーと呼ばれるリソースが新しいメッセージをアクティブにポーリングし、関数を呼び出します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>非同期呼び出しが失敗したら</h1>
+  <svg width="856" height="120" viewBox="0 0 856 120">
+    <defs><marker id="s5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="20" width="110" height="40" rx="6" fill="#b23a2c"/><text x="65" y="45" fill="#fff">1 回目 失敗</text>
+      <text x="160" y="36" font-size="11">1 分</text><line x1="120" y1="40" x2="200" y2="40" stroke="#1f3a68" stroke-width="2" marker-end="url(#s5)"/>
+      <rect x="202" y="20" width="110" height="40" rx="6" fill="#b23a2c"/><text x="257" y="45" fill="#fff">2 回目 失敗</text>
+      <text x="352" y="36" font-size="11">2 分</text><line x1="312" y1="40" x2="392" y2="40" stroke="#1f3a68" stroke-width="2" marker-end="url(#s5)"/>
+      <rect x="394" y="20" width="110" height="40" rx="6" fill="#b23a2c"/><text x="449" y="45" fill="#fff">3 回目 失敗</text>
+      <line x1="504" y1="40" x2="560" y2="40" stroke="#1f3a68" stroke-width="2" marker-end="url(#s5)"/>
+      <rect x="562" y="10" width="284" height="28" rx="6" fill="#1f3a68"/><text x="704" y="29" fill="#fff" font-size="11.5">失敗時の送信先（詳細つきの記録）</text>
+      <rect x="562" y="44" width="284" height="28" rx="6" fill="#4a5a78"/><text x="704" y="63" fill="#fff" font-size="11.5">または DLQ（イベントの中身だけ）</text>
+      <text x="428" y="96" font-size="11.5" fill="#b25000">スロットリング（429）・システムエラー（500 番台）は、キューに戻して最大 6 時間試す</text>
+      <text x="428" y="114" font-size="10.5" fill="#6e6e73">同じイベントが 2 回届くこともあるので、関数はべき等に作る</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:18%"></th><th>送信先（Destinations）</th><th>デッドレターキュー（DLQ）</th></tr>
+    <tr><td class="t">送るとき</td><td class="l">成功時・失敗時を別々に設定できる</td><td class="l">失敗して捨てられるときだけ</td></tr>
+    <tr><td class="t">中身</td><td class="l">呼び出しの詳細（レスポンス・エラー）を含む JSON の記録</td><td class="x">イベントの中身だけ</td></tr>
+    <tr><td class="t">送り先</td><td class="l">標準 SQS・標準 SNS・Lambda・EventBridge・S3（失敗時のみ）</td><td class="l">標準 SQS・標準 SNS</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/invocation-async-error-handling.html">Lambda がエラーを処理し、非同期呼び出しで再試行する方法</a>（「その際、最初の 2 回の試行の間に 1 分間、2 回目と 3 回目の間に 2 分間の待機時間があります。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/invocation-async-retain-records.html">Lambda 非同期呼び出しのレコードのキャプチャ</a>（「デッドレターキューの場合、Lambda はイベントのコンテンツのみを送信し、レスポンスの詳細は送信しません。」）</div>
+</section>
+
+<section class="slide">
+  <h1>同時実行：取り合い・確保・温めておく</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">リージョンの同時実行 1,000 を全関数で分け合う（例）</div>
+      <svg width="410" height="96" viewBox="0 0 410 96">
+        <g font-size="11" text-anchor="middle">
+          <rect x="4" y="8" width="120" height="40" fill="#b25000"/><text x="64" y="26" fill="#fff" font-weight="700">決済 予約 300</text><text x="64" y="41" fill="#fff" font-size="10">ほかに取られない</text>
+          <rect x="124" y="8" width="282" height="40" fill="#e3eefc" stroke="#1f3a68"/><text x="265" y="26" fill="#1f3a68" font-weight="700">残り 700 をほかの関数で取り合う</text><text x="265" y="41" fill="#1f3a68" font-size="10">足りないとスロットリング</text>
+          <text x="205" y="70">同時実行 ＝ 1 秒あたりのリクエスト数 × 平均の実行時間（秒）</text>
+          <text x="205" y="88" fill="#3a7d44" font-weight="700">例：200 件/秒 × 0.5 秒 ＝ 100（Claude が作った例）</text>
+        </g>
+      </svg>
+      <div class="point warn"><b>上限にもなる：</b>予約済み同時実行は下限であり上限。古い DB に同時に 50 本までしかつなげないなら 50 に絞る。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%"></th><th>何をする</th><th style="width:20%">料金</th></tr>
+        <tr><td class="t">予約済み同時実行</td><td class="l">枠を確保し、上限にもする</td><td class="l">追加なし</td></tr>
+        <tr><td class="t">プロビジョニングされた同時実行</td><td class="l">初期化済みの環境を前もって用意（数十ミリ秒で応答）。バージョン・エイリアスに設定</td><td class="x">追加あり</td></tr>
+        <tr><td class="t">SnapStart</td><td class="l">初期化済みのスナップショットから再開。用意は不要（Java・Python・.NET）</td><td class="l">Java は追加なし。ほかはスナップショットの料金</td></tr>
+      </table>
+      <div class="mini">1 つの関数は 10 秒ごとに最大 1,000 の実行環境ずつ増やせる。1,000 は引き上げを申請できる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/lambda-concurrency.html">Lambda 関数のスケーリングについて</a>（「デフォルトで、アカウントの同時実行はリージョン内のすべての関数全体で 1,000 に制限されています。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-concurrency.html">関数に対する予約済み同時実行数の設定</a>（「予約済同時実行数は、下限と上限の両方の役割を果たします。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/snapstart.html">Lambda SnapStart による起動パフォーマンスの向上</a>（「アプリケーションに SnapStart で適切に対処できない厳格なコールドスタートレイテンシー要件がある場合は、プロビジョニングされた同時実行を使用します。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>API Gateway</h1>
+  <p>API の玄関。種類（REST・HTTP・WebSocket）と公開のしかたを選び、認可・スロットリング・キャッシュで守る。</p>
+  <div class="foot"><span>AWS SAA #07 サーバーレス</span><span>タスク 2.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>REST API・HTTP API・WebSocket API</h1>
+  <table class="mx">
+    <tr><th style="width:18%"></th><th>REST API</th><th>HTTP API</th><th>WebSocket API</th></tr>
+    <tr><td class="t">ひとことで</td><td class="l">機能が多い</td><td class="l">最小限の機能で低価格</td><td class="l">双方向・ステートフル</td></tr>
+    <tr><td class="t">REST だけの機能</td><td class="l">API キーと使用量プラン・キャッシュ・AWS WAF・リクエストの検証・Canary</td><td class="x">なし</td><td class="l">—</td></tr>
+    <tr><td class="t">認可</td><td class="l">IAM・Cognito・Lambda オーソライザー・リソースポリシー</td><td class="l">IAM・Lambda オーソライザー・JWT（Cognito・OIDC）</td><td class="l">—</td></tr>
+    <tr><td class="t">エンドポイント</td><td class="l">エッジ最適化・リージョン・プライベート</td><td class="x">リージョンだけ</td><td class="l">—</td></tr>
+    <tr><td class="t">向く場面</td><td class="l">取引先に API キーを配る／VPC 内だけで使う</td><td class="l">Lambda を呼ぶだけの安い API</td><td class="l">チャット・リアルタイム通知</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>エンドポイントタイプ：</b>エッジ最適化＝最寄りの CloudFront の POP 経由（世界中から）。リージョン＝同じリージョンから。プライベート＝インターフェイス VPC エンドポイント経由で VPC の中だけ。</div>
+    <div class="point warn"><b>ひっかけ：</b>「HTTP API をエッジ最適化に」「HTTP API に API キー・キャッシュ・WAF」はできない。要件に出たら REST API。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/http-api-vs-rest.html">REST API と HTTP API のどちらかを選択する</a>（「REST API は HTTP API よりも多くの機能をサポートしていますが、HTTP API は低価格で提供できるように最小限の機能で設計されています。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/api-gateway-api-endpoint-types.html">API Gateway での REST API の API エンドポイントタイプ</a>（「API エンドポイントタイプは、API トラフィックの大部分の発信元となっている場所に応じて、エッジ最適化、リージョン別、またはプライベートとすることができます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>リクエストが通る順番：守る・速くする</h1>
+  <svg width="856" height="120" viewBox="0 0 856 120">
+    <defs><marker id="s6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11.5" text-anchor="middle">
+      <rect x="4" y="20" width="96" height="50" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="52" y="49" fill="#1f3a68" font-weight="700">クライアント</text>
+      <rect x="130" y="20" width="130" height="50" rx="8" fill="#b25000"/><text x="195" y="40" fill="#fff" font-weight="700">スロットリング</text><text x="195" y="58" fill="#fff" font-size="10.5">超えたら 429</text>
+      <rect x="290" y="20" width="130" height="50" rx="8" fill="#1f3a68"/><text x="355" y="40" fill="#fff" font-weight="700">認可</text><text x="355" y="58" fill="#fff" font-size="10.5">IAM・Cognito・Lambda</text>
+      <rect x="450" y="20" width="130" height="50" rx="8" fill="#3a7d44"/><text x="515" y="40" fill="#fff" font-weight="700">キャッシュ</text><text x="515" y="58" fill="#fff" font-size="10.5">TTL 300 秒（〜3,600）</text>
+      <rect x="610" y="20" width="110" height="50" rx="8" fill="#4a5a78"/><text x="665" y="40" fill="#fff" font-weight="700">統合</text><text x="665" y="58" fill="#fff" font-size="10.5">29 秒で打ち切り</text>
+      <rect x="750" y="20" width="100" height="50" rx="8" fill="#e8f3ea" stroke="#3a7d44"/><text x="800" y="49" fill="#3a7d44" font-weight="700">Lambda</text>
+      <line x1="100" y1="45" x2="128" y2="45" stroke="#1f3a68" stroke-width="2" marker-end="url(#s6)"/><line x1="260" y1="45" x2="288" y2="45" stroke="#1f3a68" stroke-width="2" marker-end="url(#s6)"/><line x1="420" y1="45" x2="448" y2="45" stroke="#1f3a68" stroke-width="2" marker-end="url(#s6)"/><line x1="580" y1="45" x2="608" y2="45" stroke="#1f3a68" stroke-width="2" marker-end="url(#s6)"/><line x1="720" y1="45" x2="748" y2="45" stroke="#1f3a68" stroke-width="2" marker-end="url(#s6)"/>
+      <text x="428" y="96" font-size="11" fill="#4a5a78">アカウント単位：リージョンごと 10,000 リクエスト/秒（バースト 5,000）。ステージ・メソッド・使用量プランでさらに絞れる</text>
+      <text x="428" y="114" font-size="10.5" fill="#6e6e73">順番は Claude が作った模式図（キャッシュは REST API だけ）</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%">認可のしかた</th><th>使う場面</th></tr>
+    <tr><td class="t">IAM 認可</td><td class="l">AWS の認証情報で署名して呼ぶ（社内のシステム・ほかの AWS アカウント）</td></tr>
+    <tr><td class="t">Cognito オーソライザー</td><td class="l">Cognito のユーザープールでログインしたユーザーのトークンをそのまま検証</td></tr>
+    <tr><td class="t">Lambda オーソライザー</td><td class="l">独自のトークンやヘッダーを自分のコードで判断し、IAM ポリシーを返す</td></tr>
+    <tr><td class="t">API キー</td><td class="x">識別と使用量の管理用。認証・認可には使わない</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/api-gateway-caching.html">API Gateway での REST API のキャッシュ設定</a>（「API キャッシュのデフォルトの TTL 値は 300 秒です。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/api-gateway-execution-service-limits-table.html">API Gateway での REST API の設定および実行に関するクォータ</a>（「Lambda、Lambda プロキシ、HTTP、HTTP プロキシ、AWS 統合など、すべての統合タイプで 50 ミリ秒〜29 秒。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html">API Gateway Lambda オーソライザーを使用する</a>（「Lambda オーソライザーは、発信者の ID を入力として受け取り、IAM ポリシーを出力として返します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/api-gateway-api-usage-plans.html">API Gateway での REST API の使用量プランと API キー</a>（「API キーを、API へのアクセスを制御するための認証または認可に使用しないでください。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>Step Functions と Fargate</h1>
+  <p>何ステップもの処理は Step Functions でつなぐ。15 分を超えるものや常に動くものはコンテナを Fargate で。</p>
+  <div class="foot"><span>AWS SAA #07 サーバーレス</span><span>タスク 2.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>ステートマシンで注文処理を組む</h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <defs><marker id="s7" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="30" width="120" height="44" rx="8" fill="#1f3a68"/><text x="70" y="49" fill="#fff" font-weight="700">在庫の確保</text><text x="70" y="65" fill="#fff" font-size="10.5">Task（Lambda）</text>
+      <rect x="170" y="30" width="130" height="44" rx="8" fill="#1f3a68"/><text x="235" y="49" fill="#fff" font-weight="700">決済</text><text x="235" y="65" fill="#fff" font-size="10.5">Task＋Retry 3 回</text>
+      <rect x="340" y="30" width="140" height="44" rx="8" fill="#b25000"/><text x="410" y="49" fill="#fff" font-weight="700">上司の承認</text><text x="410" y="65" fill="#fff" font-size="10.5">.waitForTaskToken</text>
+      <rect x="520" y="30" width="110" height="44" rx="8" fill="#4a5a78"/><text x="575" y="49" fill="#fff" font-weight="700">承認された？</text><text x="575" y="65" fill="#fff" font-size="10.5">Choice</text>
+      <rect x="670" y="10" width="170" height="40" rx="8" fill="#3a7d44"/><text x="755" y="35" fill="#fff" font-weight="700">発送の指示 → Succeed</text>
+      <rect x="670" y="60" width="170" height="40" rx="8" fill="#fde7e4" stroke="#b23a2c"/><text x="755" y="85" fill="#b23a2c" font-weight="700">差し戻し → Fail</text>
+      <line x1="130" y1="52" x2="168" y2="52" stroke="#1f3a68" stroke-width="2" marker-end="url(#s7)"/><line x1="300" y1="52" x2="338" y2="52" stroke="#1f3a68" stroke-width="2" marker-end="url(#s7)"/><line x1="480" y1="52" x2="518" y2="52" stroke="#1f3a68" stroke-width="2" marker-end="url(#s7)"/>
+      <line x1="630" y1="46" x2="668" y2="32" stroke="#3a7d44" stroke-width="2" marker-end="url(#s7)"/><line x1="630" y1="58" x2="668" y2="76" stroke="#b23a2c" stroke-width="2" marker-end="url(#s7)"/>
+      <path d="M235,74 L235,140 L300,140" fill="none" stroke="#b23a2c" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#s7)"/><text x="196" y="112" fill="#b23a2c" font-size="11">Catch</text>
+      <rect x="302" y="122" width="170" height="38" rx="8" fill="#fde7e4" stroke="#b23a2c"/><text x="387" y="146" fill="#b23a2c" font-weight="700">在庫を戻して通知</text>
+      <text x="410" y="96" font-size="10.5" fill="#b25000">トークンが返るまで待つ（数日でも）</text>
+      <text x="660" y="146" font-size="11">全体は標準ワークフロー（最長 1 年・ちょうど 1 回）</text>
+      <text x="660" y="164" font-size="10.5" fill="#6e6e73">流れは Claude が作った例</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:18%">状態</th><th>何をする</th><th style="width:18%">状態</th><th>何をする</th></tr>
+    <tr><td class="t">Task</td><td class="l">仕事をする（Lambda・AWS のサービス）</td><td class="t">Map</td><td class="l">配列の各要素に同じ処理を並列で</td></tr>
+    <tr><td class="t">Choice</td><td class="l">条件で次の状態を選ぶ</td><td class="t">Wait</td><td class="l">決めた秒数・日時まで待つ</td></tr>
+    <tr><td class="t">Parallel</td><td class="l">決まった枝を並列に動かす</td><td class="t">Succeed・Fail</td><td class="l">成功・失敗で終わる</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/welcome.html">Step Functions とは</a>（「Step Functions では、ステートマシンはワークフローと呼ばれます。」「ワークフローの各ステップはステートと呼ばれます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/concepts-error-handling.html">Step Functions ワークフローでのエラー処理</a>（「状態に Retry と Catch フィールドの両方がある場合、Step Functions は最初に適切な Retrier を使用します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>標準と Express、待ち方、Map の 2 つのモード</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:26%"></th><th>標準</th><th>Express</th></tr>
+        <tr><td class="t">最長</td><td class="t">1 年</td><td class="t">5 分</td></tr>
+        <tr><td class="t">実行</td><td class="l">ちょうど 1 回</td><td class="l">非同期は少なくとも 1 回、同期は多くて 1 回</td></tr>
+        <tr><td class="t">料金</td><td class="l">状態遷移の回数</td><td class="l">回数・時間・メモリ</td></tr>
+        <tr><td class="t">向く処理</td><td class="l">承認待ち・決済・監査</td><td class="l">IoT・ストリーミングの大量の短い処理</td></tr>
+      </table>
+      <div class="lbl" style="margin-top:8px">Map 状態</div>
+      <table class="mx">
+        <tr><th style="width:26%"></th><th>インライン</th><th>分散</th></tr>
+        <tr><td class="t">並列</td><td class="l">最大 40</td><td class="l">最大 10,000（子ワークフロー）</td></tr>
+        <tr><td class="t">向く処理</td><td class="l">小さな配列</td><td class="l">S3 の大量のファイル・CSV</td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:36%">サービス統合パターン</th><th>どこまで待つ</th></tr>
+        <tr><td class="t">リクエストレスポンス</td><td class="l">呼んで応答を受けたらすぐ次へ</td></tr>
+        <tr><td class="t">ジョブの実行（.sync）</td><td class="l">Batch・ECS のタスクなどのジョブが終わるまで</td></tr>
+        <tr><td class="t">コールバック（.waitForTaskToken）</td><td class="l">渡したタスクトークンが返ってくるまで（人の承認・外部システム）</td></tr>
+      </table>
+      <div class="point warn"><b>Express ではできない：</b>.sync・.waitForTaskToken・分散 Map は標準ワークフローだけ。長い待ちがある時点で標準。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/choosing-workflow-type.html">Step Functions でワークフロータイプを選択する</a>（「Standard ワークフローは、長時間実行され (最長 1 年)、耐久性が高く、監査可能なワークフローに最適です。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/connect-to-resource.html">Step Functions でサービス統合パターンを検出する</a>（「ジョブの実行 (.sync) – サービスを呼び出し、ジョブが完了するまで Step Functions が待機するようにします。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/state-map.html">Map 状態のワークフロー</a>（「これにより、最大 10,000 件という高い並列性を持つの並列子ワークフロー実行が可能になります。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Lambda か Fargate か：どこで動かす</h1>
+  <table class="mx">
+    <tr><th style="width:18%"></th><th>Lambda</th><th>Fargate（ECS・EKS）</th><th>EC2</th></tr>
+    <tr><td class="t">動かすもの</td><td class="l">関数（.zip かコンテナイメージ）</td><td class="l">コンテナ</td><td class="l">何でも（OS から）</td></tr>
+    <tr><td class="t">サーバー管理</td><td class="t">不要</td><td class="t">不要</td><td class="x">必要（パッチ・台数）</td></tr>
+    <tr><td class="t">1 回の時間</td><td class="x">最大 15 分</td><td class="l">上限なし（常に動くサービスも）</td><td class="l">上限なし</td></tr>
+    <tr><td class="t">起動のきっかけ</td><td class="l">イベント・API</td><td class="l">タスク・サービスとして起動</td><td class="l">ずっと動く</td></tr>
+    <tr><td class="t">安くする</td><td class="l">メモリと時間を見直す</td><td class="l">Fargate Spot（中断の 2 分前に警告）</td><td class="l">リザーブド・スポット（#22）</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>Fargate の分離：</b>各タスクはカーネル・CPU・メモリ・ENI をほかのタスクと共有しない。CPU とメモリを決めるだけで、インスタンスの種類選びやクラスターのスケールはいらない。</div>
+    <div class="point warn"><b>ステートレスに作る：</b>Lambda も Fargate のタスクも、いつ増えて消えるか分からない。セッションやファイルは DynamoDB・ElastiCache・S3 に置けば、自由に台数を増やせる（水平スケーリング）。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/AWS_Fargate.html">Amazon ECS の AWS Fargate 用のアーキテクト</a>（「各Fargate タスクは、独自の分離境界を持ち、基盤となるカーネル、CPU リソース、メモリリソース、Elastic Network Interface を別のタスクと共有しません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/fargate-capacity-providers.html">Fargate 用の Amazon ECS クラスター</a>（「AWS がキャパシティを戻す必要がある場合、タスクは中断され、2 分間の警告が表示されます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>選び分け：この要件ならこれ</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:55%">要件</th><th>答え</th></tr>
+        <tr><td class="l">2 時間かかるバッチをサーバー管理なしで</td><td class="t">Fargate（Lambda は 15 分まで）</td></tr>
+        <tr><td class="l">Lambda の CPU が足りない</td><td class="t">メモリを増やす</td></tr>
+        <tr><td class="l">3 GB の依存ライブラリを Lambda で</td><td class="t">コンテナイメージ（10 GB まで）</td></tr>
+        <tr><td class="l">新しい版に 10% だけ流す</td><td class="t">エイリアスで振り分け</td></tr>
+        <tr><td class="l">VPC 内の Lambda から外部 API へ</td><td class="t">プライベートサブネット＋NAT ゲートウェイ</td></tr>
+        <tr><td class="l">非同期の失敗を詳細つきで残す</td><td class="t">失敗時の送信先</td></tr>
+        <tr><td class="l">重要な関数を取り合いから守る／DB への同時接続を絞る</td><td class="t">予約済み同時実行</td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:55%">要件</th><th>答え</th></tr>
+        <tr><td class="l">コールドスタートをなくす（追加料金 OK）</td><td class="t">プロビジョニングされた同時実行</td></tr>
+        <tr><td class="l">安くてシンプルな API（JWT）</td><td class="t">HTTP API</td></tr>
+        <tr><td class="l">API キー・使用量プラン・キャッシュ・WAF</td><td class="t">REST API</td></tr>
+        <tr><td class="l">VPC の中からだけ呼べる API</td><td class="t">プライベート REST API</td></tr>
+        <tr><td class="l">API の後ろの処理が 29 秒を超える</td><td class="t">受け付けだけ返して非同期に</td></tr>
+        <tr><td class="l">数日の承認待ちを含む業務</td><td class="t">標準ワークフロー＋.waitForTaskToken</td></tr>
+        <tr><td class="l">S3 の 100 万ファイルを並列処理</td><td class="t">分散 Map</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">Lambda の設定<span>メモリ＝CPU。最大 15 分・/tmp は一時。依存はレイヤーかイメージ。エイリアスで切り替え</span></div>
+      <div class="box b2">呼び出しと同時実行<span>同期・非同期（2 回再試行・送信先）・イベントソースマッピング。予約＝確保と上限、プロビジョニング＝温める</span></div>
+      <div class="box b3">API Gateway<span>REST＝多機能、HTTP＝安い、WebSocket＝双方向。キャッシュ 300 秒・統合 29 秒</span></div>
+      <div class="box b4">Step Functions と Fargate<span>標準＝長い・1 回、Express＝短い・大量。15 分を超えるコンテナは Fargate</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">ひっかけ</th><th>正しくは</th></tr>
+        <tr><td class="l">タイムアウトを 2 時間に</td><td class="x">最大 15 分</td></tr>
+        <tr><td class="l">パブリックサブネットで外へ</td><td class="x">NAT ゲートウェイ経由</td></tr>
+        <tr><td class="l">プロビジョニングで同時実行を絞る</td><td class="x">絞るのは予約済み</td></tr>
+        <tr><td class="l">API キーで認証</td><td class="x">識別用。認可は IAM など</td></tr>
+        <tr><td class="l">Express で数日待つ</td><td class="x">最長 5 分。標準を使う</td></tr>
+      </table>
+      <div class="point">次の #08 では、ECS・EKS・ECR などのコンテナを学ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
