@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Silver #13 例外処理 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">Java Silver（SE 17・1Z0-825-JPN）　6 例外処理　#13</div>
+  <h1>例外処理</h1>
+  <p>どの例外に処理が必要か。どの順に動き、何が最後に残るか</p>
+  <div class="refs-legend">各ページの下に、根拠にした Oracle の資料（JLS 11・14.18・14.20、Java SE 17 API Throwable・Exception・RuntimeException・Error・AutoCloseable、Java Tutorials）を書いた（青い文字を押すと開く）。コードは Claude が作り、JDK 17 で動かして確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>試験内容チェックリスト 6（例外処理）</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 例外の種類<span>チェック例外は処理が必須。RuntimeException 系と Error 系は不要</span></div>
+      <div class="box b2">2 throw・throws・カスタム例外<span>Exception を継承すればチェック、RuntimeException なら非チェック</span></div>
+      <div class="box b3">3 try-catch-finally<span>catch は上から 1 つだけ。finally は必ず。マルチキャッチは |</span></div>
+      <div class="box b4">4 try-with-resources<span>AutoCloseable を自動で close。逆順に閉じ、catch・finally はそのあと</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">チェックリストの項目</th><th>このPDFのページ</th></tr>
+        <tr><td class="l">チェック例外・非チェック例外・エラーの違い</td><td class="t">第1章</td></tr>
+        <tr><td class="l">カスタム例外の作成</td><td class="t">第1章</td></tr>
+        <tr><td class="l">try-catch 文による例外処理</td><td class="t">第2章</td></tr>
+        <tr><td class="l">multi-catch 句の使用</td><td class="t">第2章</td></tr>
+        <tr><td class="l">try-with-resources 文による例外処理</td><td class="t">第3章</td></tr>
+      </table>
+      <div class="point"><b>試験の多くは「コンパイルできるか」と「何が表示されるか」。</b>前者はチェック例外と catch の並び、後者は finally と close の順番で決まる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.oracle.com/jp/education/certification/javase-17-programmer-1/">Oracle「Java SE 17 Programmer I（1Z0-825-JPN）」試験内容チェックリスト</a>／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-11.html">JLS 11 Exceptions</a></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>例外の種類とカスタム例外</h1>
+  <p>どのクラスを継承しているかで、処理が必須かどうかが決まる。</p>
+  <div class="foot"><span>Java Silver #13 例外処理</span><span>試験内容 6</span></div>
+</section>
+
+<section class="slide">
+  <h1>例外クラスの階層</h1>
+  <div class="cols">
+    <div>
+      <svg width="420" height="250" viewBox="0 0 420 250">
+        <g font-size="11" text-anchor="middle">
+          <rect x="150" y="4" width="120" height="30" rx="6" fill="#1f3a68"/><text x="210" y="24" fill="#fff">Throwable</text>
+          <rect x="20" y="62" width="130" height="30" rx="6" fill="#fde8e8" stroke="#e2a3a3"/><text x="85" y="82" fill="#9b1c1c">Error（非チェック）</text>
+          <rect x="250" y="62" width="150" height="30" rx="6" fill="#5b80bf"/><text x="325" y="82" fill="#fff">Exception（チェック）</text>
+          <rect x="20" y="120" width="130" height="30" rx="6" fill="#f5f5f7" stroke="#d0d7e2"/><text x="85" y="140" fill="#1f3a68">StackOverflowError</text>
+          <rect x="180" y="120" width="120" height="30" rx="6" fill="#c9daf2"/><text x="240" y="140" fill="#1f3a68">RuntimeException</text>
+          <rect x="310" y="120" width="105" height="30" rx="6" fill="#5b80bf"/><text x="362" y="140" fill="#fff">IOException</text>
+          <rect x="140" y="182" width="170" height="56" rx="6" fill="#f5f5f7" stroke="#d0d7e2"/>
+          <text x="225" y="200" fill="#1f3a68">NullPointerException</text><text x="225" y="215" fill="#1f3a68">ArithmeticException</text><text x="225" y="230" fill="#1f3a68">IllegalArgumentException ほか</text>
+          <rect x="315" y="182" width="100" height="40" rx="6" fill="#5b80bf"/><text x="365" y="200" fill="#fff">FileNotFound</text><text x="365" y="214" fill="#fff">Exception</text>
+          <line x1="190" y1="36" x2="100" y2="60" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="230" y1="36" x2="315" y2="60" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="85" y1="94" x2="85" y2="118" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="300" y1="94" x2="250" y2="118" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="345" y1="94" x2="360" y2="118" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="240" y1="152" x2="230" y2="180" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="362" y1="152" x2="365" y2="180" stroke="#5b80bf" stroke-width="2"/>
+          <text x="240" y="170" fill="#b25000" font-size="10">ここから下は非チェック</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:46%">よく出る非チェック例外</th><th>起きる場面（JDK 17 で確認）</th></tr>
+        <tr><td class="l">ArithmeticException</td><td class="l">整数を 0 で割る（/ by zero）</td></tr>
+        <tr><td class="l">ArrayIndexOutOfBoundsException</td><td class="l">範囲外の添字（Index 1 out of bounds for length 1）</td></tr>
+        <tr><td class="l">NullPointerException</td><td class="l">null のメソッドを呼ぶ</td></tr>
+        <tr><td class="l">ClassCastException</td><td class="l">中身と合わない型へキャスト</td></tr>
+        <tr><td class="l">NumberFormatException</td><td class="l">Integer.parseInt("1a")</td></tr>
+        <tr><td class="l">StackOverflowError</td><td class="l">終わらない再帰（Error）</td></tr>
+      </table>
+      <div class="point"><b>Error は Exception の仲間ではない。</b>catch (Exception e) では StackOverflowError を受け取れない。catch (Error e) か catch (Throwable t) が必要。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-11.html">JLS 11.1.1</a>（the checked exception classes are Throwable and all its subclasses other than RuntimeException and its subclasses and Error and its subclasses）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Error.html">Java SE 17 API Error</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>チェック例外は「受け取るか、宣言するか」</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">static void</span> read() <span class="k">throws</span> IOException { … }
+<span class="c">// どちらかが必要</span>
+<span class="k">try</span> { read(); } <span class="k">catch</span> (IOException e) { … }   <span class="c">// ① 受け取る</span>
+<span class="k">void</span> main2() <span class="k">throws</span> IOException { read(); } <span class="c">// ② 宣言して呼び出し元へ</span>
+
+read();   <span class="c">// どちらもない</span></pre>
+<pre class="sh" style="margin-top:4px"><span class="e">error: unreported exception IOException;
+  must be caught or declared to be thrown</span></pre>
+      <div class="mini">… は省略（Claude が作成）。main に throws を書くと、例外は JVM まで伝わってプログラムが止まる。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">コード</th><th>JDK 17</th></tr>
+        <tr><td class="l">throws なしで <code>throw new Exception("x")</code></td><td class="x">unreported exception Exception; …</td></tr>
+        <tr><td class="l">throws なしで <code>throw new IllegalStateException()</code></td><td class="t">OK（非チェック）</td></tr>
+        <tr><td class="l">try で何も投げないのに <code>catch (IOException e)</code></td><td class="x">exception IOException is never thrown in body of corresponding try statement</td></tr>
+        <tr><td class="l">try で何も投げないのに <code>catch (Exception e)</code></td><td class="t">OK</td></tr>
+        <tr><td class="l"><code>throw …;</code> の直後に文</td><td class="x">unreachable statement</td></tr>
+      </table>
+      <div class="point"><b>catch (Exception e) は特別扱い。</b>RuntimeException も含むので、try で何も投げなくても書ける。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-11.html">JLS 11.2.3</a>（It is a compile-time error if a method or constructor body can throw some exception class E when E is a checked exception class and E is not a subclass of some class declared in the throws clause of the method or constructor）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>カスタム例外とメッセージ</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">class</span> InsufficientFundsException <span class="k">extends</span> Exception {
+  InsufficientFundsException(String msg) { <span class="k">super</span>(msg); }
+}
+<span class="k">static int</span> balance = <span class="s">100</span>;
+<span class="k">static void</span> withdraw(<span class="k">int</span> amount) <span class="k">throws</span> InsufficientFundsException {
+  <span class="k">if</span> (amount &gt; balance)
+    <span class="k">throw new</span> InsufficientFundsException(<span class="s">"short by "</span> + (amount - balance));
+  balance -= amount;
+}
+<span class="c">// withdraw(30); withdraw(100); → catch で表示</span></pre>
+<pre class="sh" style="margin-top:4px"><span class="o">short by 30 / 70 / InsufficientFundsException: short by 30</span></pre>
+      <div class="mini">表示は e.getMessage() + " / " + balance + " / " + e（Claude が作成）。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:42%">継承するクラス</th><th>投げるメソッドの throws</th></tr>
+        <tr><td class="l"><code>extends Exception</code></td><td class="x">必要（ないと unreported exception AppException）</td></tr>
+        <tr><td class="l"><code>extends RuntimeException</code></td><td class="t">不要</td></tr>
+      </table>
+      <table class="mx" style="margin-top:8px">
+        <tr><th style="width:42%">式</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>new Exception("x").getMessage()</code></td><td class="t">x</td></tr>
+        <tr><td class="l"><code>new Exception("x").toString()</code></td><td class="t">java.lang.Exception: x</td></tr>
+        <tr><td class="l"><code>new Exception().getMessage()</code></td><td class="t">null</td></tr>
+        <tr><td class="l"><code>new Exception().toString()</code></td><td class="t">java.lang.Exception</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html">Java SE 17 API Throwable.toString()</a>（The result is the concatenation of: the name of the class of this object ": " (a colon and a space) the result of invoking this object's getLocalizedMessage() method／If getLocalizedMessage returns null, then just the class name is returned）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Exception.html">Exception</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>try-catch-finally とマルチキャッチ</h1>
+  <p>catch は上から 1 つだけ。finally は何があっても最後に。</p>
+  <div class="foot"><span>Java Silver #13 例外処理</span><span>試験内容 6</span></div>
+</section>
+
+<section class="slide">
+  <h1>try-catch-finally の流れ</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">try</span> {
+  System.out.print(<span class="s">"A "</span>);
+  <span class="k">int</span> x = <span class="s">10</span> / <span class="s">0</span>;           <span class="c">// ArithmeticException</span>
+  System.out.print(<span class="s">"B "</span>);        <span class="c">// 飛ばされる</span>
+} <span class="k">catch</span> (ArithmeticException e) {
+  System.out.print(<span class="s">"C "</span>);
+} <span class="k">finally</span> {
+  System.out.print(<span class="s">"D "</span>);
+}
+System.out.println(<span class="s">"E"</span>);</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">A C D E</span></pre>
+      <div class="mini">10 / 0 の行を消すと A B D E（catch は動かず、finally は動く）。</div>
+    </div>
+    <div>
+      <svg width="420" height="180" viewBox="0 0 420 180">
+        <defs><marker id="a13" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5b80bf"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <rect x="0" y="6" width="120" height="30" rx="6" fill="#1f3a68"/><text x="60" y="26" fill="#fff">try</text>
+          <rect x="150" y="6" width="120" height="30" rx="6" fill="#5b80bf"/><text x="210" y="26" fill="#fff">catch（型が合う 1 つ）</text>
+          <rect x="300" y="6" width="120" height="30" rx="6" fill="#c9daf2"/><text x="360" y="26" fill="#1f3a68">finally</text>
+          <line x1="122" y1="21" x2="146" y2="21" stroke="#5b80bf" stroke-width="2" marker-end="url(#a13)"/>
+          <line x1="272" y1="21" x2="296" y2="21" stroke="#5b80bf" stroke-width="2" marker-end="url(#a13)"/>
+          <path d="M60,38 C60,70 360,70 360,40" fill="none" stroke="#5b80bf" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#a13)"/>
+          <text x="210" y="78" fill="#1f3a68">例外なし：catch を飛ばして finally へ</text>
+          <rect x="60" y="100" width="300" height="30" rx="6" fill="#f5f5f7" stroke="#d0d7e2"/><text x="210" y="120" fill="#1f3a68">受け取れた → try 文のあとへ続く</text>
+          <rect x="60" y="140" width="300" height="30" rx="6" fill="#fde8e8" stroke="#e2a3a3"/><text x="210" y="160" fill="#9b1c1c">どの catch とも合わない → finally のあと呼び出し元へ</text>
+        </g>
+      </svg>
+      <div class="point"><b>try のあとには catch か finally が必要。</b>try だけだと 'try' without 'catch', 'finally' or resource declarations。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.20</a>（TryStatement: try Block Catches／try Block [Catches] Finally／TryWithResourcesStatement）・14.20.2（If execution of the try block completes normally, then the finally block is executed）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>catch の順番とマルチキャッチ</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:54%">書き方</th><th>JDK 17</th></tr>
+        <tr><td class="l"><code>catch (Exception e)</code> → <code>catch (IOException e)</code></td><td class="x">exception IOException has already been caught</td></tr>
+        <tr><td class="l"><code>catch (IOException e)</code> → <code>catch (Exception e)</code></td><td class="t">OK（サブクラスが先）</td></tr>
+        <tr><td class="l"><code>catch (FileNotFoundException | IOException e)</code></td><td class="x">Alternatives in a multi-catch statement cannot be related by subclassing</td></tr>
+        <tr><td class="l">マルチキャッチの <code>e = …</code></td><td class="x">multi-catch parameter e may not be assigned</td></tr>
+        <tr><td class="l"><code>catch (RuntimeException e)</code> で Exception を受ける</td><td class="x">受け取れない（unreported exception Exception）</td></tr>
+      </table>
+    </div>
+    <div>
+<pre class="code small">String[] a = { <span class="s">"1"</span>, <span class="s">"x"</span> };
+<span class="k">for</span> (String s : a) {
+  <span class="k">try</span> {
+    <span class="k">int</span> n = Integer.parseInt(s);
+    System.out.print(<span class="s">10</span> / (n - <span class="s">1</span>) + <span class="s">" "</span>);
+  } <span class="k">catch</span> (NumberFormatException | ArithmeticException e) {
+    System.out.print(e.getClass().getSimpleName() + <span class="s">" "</span>);
+  }
+}</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">ArithmeticException NumberFormatException</span></pre>
+      <div class="point"><b>マルチキャッチの e は暗黙に final。</b>ふつうの catch の e には代入できる。並べた型は継承関係のないものだけ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-11.html">JLS 11.2.3</a>（a preceding catch clause of the immediately enclosing try statement can catch E1 or a superclass of E1）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.20</a>（An exception parameter of a multi-catch clause is implicitly declared final if it is not explicitly declared final）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>finally と return</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">static int</span> f1() {
+  <span class="k">try</span> { <span class="k">return</span> <span class="s">1</span>; } <span class="k">finally</span> { <span class="k">return</span> <span class="s">2</span>; }
+}                                   <span class="c">// → 2</span>
+<span class="k">static int</span> f2() {
+  <span class="k">int</span> x = <span class="s">1</span>;
+  <span class="k">try</span> { <span class="k">return</span> x; } <span class="k">finally</span> { x = <span class="s">5</span>; }
+}                                   <span class="c">// → 1</span>
+<span class="k">static</span> StringBuilder f3() {
+  StringBuilder sb = <span class="k">new</span> StringBuilder(<span class="s">"a"</span>);
+  <span class="k">try</span> { <span class="k">return</span> sb; } <span class="k">finally</span> { sb.append(<span class="s">"b"</span>); }
+}                                   <span class="c">// → ab</span></pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:36%">場合</th><th>結果のしくみ</th></tr>
+        <tr><td class="t">finally で return</td><td class="l">finally の値が返る。try の return や例外は捨てられる</td></tr>
+        <tr><td class="t">finally で基本型の変数を変える</td><td class="l">戻り値は return の時点で決まっているので変わらない</td></tr>
+        <tr><td class="t">finally で参照先を変える</td><td class="l">返るのは同じオブジェクトなので、変更が見える</td></tr>
+        <tr><td class="t">System.exit(0)</td><td class="l">JVM が止まるので finally は動かない</td></tr>
+      </table>
+      <div class="point"><b>呼び出しの順にも注意。</b><code>println(f("abc") + " " + f(null))</code> は、f が 2 回とも動いて（finally の表示も 2 回）から println が 1 回表示する。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.20.2</a>（If the finally block completes abruptly for reason S, then the try statement completes abruptly for reason S）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-11.html">JLS 11.3</a>（the reason for the abrupt completion of the try block is discarded and the new reason for abrupt completion is propagated from there）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>例外の伝播と finally</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">catch の中で別の例外（Claude が作成）</div>
+<pre class="code small"><span class="k">try</span> {
+  <span class="k">try</span> {
+    <span class="k">throw new</span> IllegalStateException(<span class="s">"1"</span>);
+  } <span class="k">catch</span> (IllegalStateException e) {
+    System.out.print(<span class="s">"catch1 "</span>);
+    <span class="k">throw new</span> IllegalArgumentException(<span class="s">"2"</span>);
+  } <span class="k">finally</span> {
+    System.out.print(<span class="s">"finally1 "</span>);
+  }
+} <span class="k">catch</span> (IllegalArgumentException e) {
+  System.out.println(<span class="s">"outer "</span> + e.getMessage());
+}</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">catch1 finally1 outer 2</span></pre>
+    </div>
+    <div>
+      <div class="cap">どこでも受け取られない</div>
+<pre class="code small"><span class="k">try</span> {
+  System.out.println(<span class="s">"try"</span>);
+  <span class="k">throw new</span> IllegalArgumentException(<span class="s">"boom"</span>);
+} <span class="k">finally</span> {
+  System.out.println(<span class="s">"finally"</span>);
+}</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">try
+finally</span>
+<span class="e">Exception in thread "main" java.lang.IllegalArgumentException: boom</span></pre>
+      <div class="point"><b>finally は、例外が外へ出ていく前に動く。</b>そのあと呼び出し元へさかのぼり、だれも受け取らなければ main が終わる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.20.2</a>（If the catch block completes abruptly for reason R, then the finally block is executed）・14.18（If no such try statement is found, then execution of the thread … that executed the throw is terminated）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>try-with-resources</h1>
+  <p>開いたものを、開いた逆の順に、自動で閉じる。</p>
+  <div class="foot"><span>Java Silver #13 例外処理</span><span>試験内容 6</span></div>
+</section>
+
+<section class="slide">
+  <h1>リソースが開いて閉じる順番</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">class</span> R <span class="k">implements</span> AutoCloseable {
+  String n;
+  R(String n) { <span class="k">this</span>.n = n; print(<span class="s">"open"</span> + n + <span class="s">" "</span>); }
+  <span class="k">public void</span> close() { print(<span class="s">"close"</span> + n + <span class="s">" "</span>); }
+}
+<span class="k">try</span> (R a = <span class="k">new</span> R(<span class="s">"A"</span>); R b = <span class="k">new</span> R(<span class="s">"B"</span>)) {
+  print(<span class="s">"body "</span>);
+  <span class="k">throw new</span> RuntimeException(<span class="s">"x"</span>);
+} <span class="k">catch</span> (RuntimeException e) {
+  print(<span class="s">"catch "</span>);
+} <span class="k">finally</span> {
+  print(<span class="s">"finally"</span>);
+}</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">openA openB body closeB closeA catch finally</span></pre>
+      <div class="mini">print は System.out.print の略として書いた。</div>
+    </div>
+    <div>
+      <svg width="420" height="110" viewBox="0 0 420 110">
+        <g font-size="11" text-anchor="middle">
+          <rect x="0" y="6" width="60" height="30" rx="5" fill="#1f3a68"/><text x="30" y="26" fill="#fff">open A</text>
+          <rect x="66" y="6" width="60" height="30" rx="5" fill="#1f3a68"/><text x="96" y="26" fill="#fff">open B</text>
+          <rect x="132" y="6" width="50" height="30" rx="5" fill="#5b80bf"/><text x="157" y="26" fill="#fff">body</text>
+          <rect x="188" y="6" width="60" height="30" rx="5" fill="#c9daf2"/><text x="218" y="26" fill="#1f3a68">close B</text>
+          <rect x="254" y="6" width="60" height="30" rx="5" fill="#c9daf2"/><text x="284" y="26" fill="#1f3a68">close A</text>
+          <rect x="320" y="6" width="44" height="30" rx="5" fill="#f5f5f7" stroke="#d0d7e2"/><text x="342" y="26" fill="#1f3a68">catch</text>
+          <rect x="368" y="6" width="52" height="30" rx="5" fill="#f5f5f7" stroke="#d0d7e2"/><text x="394" y="26" fill="#1f3a68">finally</text>
+          <text x="63" y="56" fill="#1f3a68">書いた順に開く</text>
+          <text x="251" y="56" fill="#b25000">逆の順に閉じる</text>
+          <text x="381" y="56" fill="#1f3a68">閉じたあと</text>
+          <text x="210" y="90" fill="#1f3a68" font-size="12">catch・finally の時点で、リソースはもう閉じている</text>
+        </g>
+      </svg>
+      <table class="mx">
+        <tr><th style="width:56%">場合</th><th>close() は</th></tr>
+        <tr><td class="l">本体が正常に終わる</td><td class="t">逆順に呼ばれる</td></tr>
+        <tr><td class="l">本体で例外</td><td class="t">逆順に呼ばれてから catch へ</td></tr>
+        <tr><td class="l"><code>try (R r = null)</code></td><td class="t">呼ばれない（例外にもならない）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.20.3</a>（Resources are closed in the reverse order from that in which they were initialized／A resource is closed only if it initialized to a non-null value）・14.20.3.2（all resources will have been closed (or attempted to be closed) by the time the finally block is executed）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>close() の例外と、抑制された例外</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">class</span> R <span class="k">implements</span> AutoCloseable {
+  <span class="k">public void</span> close() <span class="k">throws</span> Exception {
+    <span class="k">throw new</span> Exception(<span class="s">"close"</span>);
+  }
+}
+<span class="k">try</span> (R r = <span class="k">new</span> R()) {
+  <span class="k">throw new</span> IllegalStateException(<span class="s">"body"</span>);
+} <span class="k">catch</span> (Exception e) {
+  System.out.println(e.getMessage() + <span class="s">" "</span>
+    + e.getSuppressed().length + <span class="s">" "</span>
+    + e.getSuppressed()[<span class="s">0</span>].getMessage());
+}</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">body 1 close</span></pre>
+    </div>
+    <div>
+      <svg width="420" height="90" viewBox="0 0 420 90">
+        <g font-size="11" text-anchor="middle">
+          <rect x="0" y="6" width="190" height="34" rx="6" fill="#1f3a68"/><text x="95" y="28" fill="#fff">本体の例外 body（主役）</text>
+          <rect x="230" y="6" width="190" height="34" rx="6" fill="#c9daf2"/><text x="325" y="28" fill="#1f3a68">close の例外（抑制）</text>
+          <text x="210" y="62" fill="#1f3a68">catch に届くのは body。close の例外は</text>
+          <text x="210" y="80" fill="#1f3a68">body.getSuppressed() に入る</text>
+        </g>
+      </svg>
+      <table class="mx">
+        <tr><th style="width:56%">close() の宣言</th><th>呼び出し側（JDK 17）</th></tr>
+        <tr><td class="l"><code>close() throws Exception</code> で catch なし</td><td class="x">unreported exception Exception; …（exception thrown from implicit call to close() on resource variable 'r'）</td></tr>
+        <tr><td class="l"><code>close()</code>（throws なし）</td><td class="t">catch も throws も不要</td></tr>
+      </table>
+      <div class="mini">AutoCloseable の close() は throws Exception。実装するときに throws を外したり狭めたりできる（#11 のオーバーライドの決まり）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.20.3</a>（Such an exception is suppressed if an exception was thrown previously by an initializer, the try block, or the closing of a resource）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html">Throwable.getSuppressed()</a>／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html">AutoCloseable</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>リソースに書けるもの</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:54%">書き方</th><th>JDK 17</th></tr>
+        <tr><td class="l">AutoCloseable を実装しないクラス（close() はある）</td><td class="x">incompatible types: try-with-resources not applicable to variable type</td></tr>
+        <tr><td class="l">本体で <code>r = new R();</code></td><td class="x">auto-closeable resource r may not be assigned</td></tr>
+        <tr><td class="l"><code>R r = new R(); try (r) { … }</code></td><td class="t">OK（Java 9 から）</td></tr>
+        <tr><td class="l">r に 2 回代入してから <code>try (r)</code></td><td class="x">variable r used as a try-with-resources resource neither final nor effectively final</td></tr>
+        <tr><td class="l">catch も finally もない try-with-resources</td><td class="t">OK</td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:40%"></th><th>try-catch-finally</th><th>try-with-resources</th></tr>
+        <tr><td class="t">catch・finally</td><td class="l">どちらか必須</td><td class="l">なくてよい</td></tr>
+        <tr><td class="t">後片付け</td><td class="l">finally に自分で書く</td><td class="l">close() が自動</td></tr>
+        <tr><td class="t">片付けの例外</td><td class="l">本体の例外を上書きしうる</td><td class="l">抑制された例外として残る</td></tr>
+      </table>
+      <div class="point"><b>リソース変数は final 扱い。</b>( ) で宣言したものは暗黙に final、既存の変数は final か実質的に final でなければならない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.20.3</a>（must be a subtype of AutoCloseable, or a compile-time error occurs／A local variable declared in a resource specification is implicitly declared final if it is not explicitly declared final／An existing variable referred to in a resource specification must be a final or effectively final variable）／<a class="src" href="https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html">Java Tutorials</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>問われ方とまちがえやすい点</h1>
+  <table class="mx">
+    <tr><th style="width:32%">こう聞かれたら</th><th>答えの考え方</th></tr>
+    <tr><td class="t">コンパイルできるか（throw）</td><td class="l">チェック例外なら catch か throws。RuntimeException 系・Error 系は不要</td></tr>
+    <tr><td class="t">コンパイルできるか（catch）</td><td class="l">サブクラスが先。投げられないチェック例外は catch 不可。マルチキャッチに親子を並べない</td></tr>
+    <tr><td class="t">表示の順番</td><td class="l">例外のあとの try の文は飛ばす → catch 1 つ → finally → try 文のあと</td></tr>
+    <tr><td class="t">戻り値</td><td class="l">finally の return が勝つ。基本型の変更は戻り値に効かない</td></tr>
+    <tr><td class="t">try-with-resources の順番</td><td class="l">開く順 → 本体 → 逆順に close → catch → finally</td></tr>
+    <tr><td class="t">例外のメッセージ</td><td class="l">getMessage はメッセージだけ、toString は「パッケージ付きクラス名: メッセージ」</td></tr>
+    <tr><td class="t">カスタム例外</td><td class="l">Exception を継承→throws 必要。RuntimeException を継承→不要</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">例外の種類<span>Exception（RuntimeException 以外）はチェック例外</span></div>
+      <div class="box b2">throw・throws<span>チェック例外は受け取るか宣言する。カスタム例外は継承元で決まる</span></div>
+      <div class="box b3">try-catch-finally<span>catch はサブクラスから。finally は必ず。マルチキャッチの e は final</span></div>
+      <div class="box b4">try-with-resources<span>AutoCloseable。逆順に close。close の例外は抑制される</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:62%">こんなとき</th><th>結果</th></tr>
+        <tr><td class="l">throws なしで throw new Exception()</td><td class="x">コンパイルエラー</td></tr>
+        <tr><td class="l">catch (Exception) のあとに catch (IOException)</td><td class="x">コンパイルエラー</td></tr>
+        <tr><td class="l">try で return 1、finally で return 2</td><td class="t">2</td></tr>
+        <tr><td class="l">リソース A, B の close 順</td><td class="t">B → A</td></tr>
+        <tr><td class="l">catch (Exception) で StackOverflowError</td><td class="x">受け取れない</td></tr>
+      </table>
+      <div class="point"><b>Java Silver の 13 分野はこれで全部。</b>各分野の問題演習と、まちがえた問題の解き直しで仕上げる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
