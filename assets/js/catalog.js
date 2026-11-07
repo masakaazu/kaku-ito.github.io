@@ -144,6 +144,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/14.html", title: "OSPF 用語集", desc: "リンクステート・LSA・LSDB・SPF、network area とワイルドカード・ip ospf area・passive-interface・default-information originate、Hello/Dead とネイバーの状態（Init〜Full）・MTU、broadcast と point-to-point・DR/BDR の選び方・優先度、ルーター IDの決まり方の用語と、オリジナル問題30問（出題範囲 3.4）", fields: [14], pdf: "terms/14.pdf" },
       { type: "terms", file: "terms/15.html", title: "FHRP 用語集", desc: "デフォルトゲートウェイの冗長化と仮想IP・仮想MAC、HSRPのアクティブ/スタンバイ・優先度・プリエンプト・track・Hello/Hold・v1とv2、VRRPのマスター/バックアップ、GLBPのAVG・AVFと負荷分散、3つの比較の用語と、オリジナル問題30問（出題範囲 3.5）", fields: [15], pdf: "terms/15.pdf" },
       { type: "terms", file: "terms/16.html", title: "NAT と NTP 用語集", desc: "inside local・inside global・outside local・outside global、ip nat inside/outside、スタティックNAT・ダイナミックNAT（プールとACL）・PAT（overload）、show ip nat translations/statistics、NTPのストラタム・クライアントとサーバー（ntp server・ntp master・ntp peer）・show ntp associations/status・show clockの用語と、オリジナル問題30問（出題範囲 4.1・4.2）", fields: [16], pdf: "terms/16.pdf" },
+      { type: "terms", file: "terms/17.html", title: "DHCP と DNS 用語集", desc: "DHCPのDISCOVER・OFFER・REQUEST・ACKとリース、DHCPサーバーの設定（ip dhcp pool・default-router・dns-server・excluded-address）、リレー（ip helper-address・giaddr）とクライアント（ip address dhcp）、show ip dhcp binding、DNSの役割・ポート・A/AAAA/CNAME/MX/PTR/NSレコード、ip name-server・ip domain lookup・ip hostの用語と、オリジナル問題30問（出題範囲 4.3・4.6）", fields: [17], pdf: "terms/17.pdf" },
     ],
     ap: [
       { type: "note", file: "notes/apno1.html", title: "TCP/IPとHTTP", desc: "アプリケーション層とHTTPプロトコル", fields: [10] },
