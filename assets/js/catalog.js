@@ -142,6 +142,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/12.html", title: "ルーティングテーブル 用語集", desc: "show ip route の1行の読み方（コード・プレフィックス・AD・メトリック・ネクストホップ・出口）、コネクテッド/ローカル/スタティック/ダイナミック/デフォルトルート、ADとメトリックによる登録、最長一致による転送、ECMP・FIB・再帰検索の用語と、オリジナル問題30問（出題範囲 3.1・3.2）", fields: [12], pdf: "terms/12.pdf" },
       { type: "terms", file: "terms/13.html", title: "スタティックルート 用語集", desc: "ip route と ipv6 route の書き方（デフォルト・ネットワーク・ホストルート）、ネクストホップ・出口・完全指定の違い、リンクローカルのネクストホップ、フローティングスタティックとAD 255、再帰で予備に切り替わらないトラブルの用語と、オリジナル問題30問（出題範囲 3.3）", fields: [13], pdf: "terms/13.pdf" },
       { type: "terms", file: "terms/14.html", title: "OSPF 用語集", desc: "リンクステート・LSA・LSDB・SPF、network area とワイルドカード・ip ospf area・passive-interface・default-information originate、Hello/Dead とネイバーの状態（Init〜Full）・MTU、broadcast と point-to-point・DR/BDR の選び方・優先度、ルーター IDの決まり方の用語と、オリジナル問題30問（出題範囲 3.4）", fields: [14], pdf: "terms/14.pdf" },
+      { type: "terms", file: "terms/15.html", title: "FHRP 用語集", desc: "デフォルトゲートウェイの冗長化と仮想IP・仮想MAC、HSRPのアクティブ/スタンバイ・優先度・プリエンプト・track・Hello/Hold・v1とv2、VRRPのマスター/バックアップ、GLBPのAVG・AVFと負荷分散、3つの比較の用語と、オリジナル問題30問（出題範囲 3.5）", fields: [15], pdf: "terms/15.pdf" },
     ],
     ap: [
       { type: "note", file: "notes/apno1.html", title: "TCP/IPとHTTP", desc: "アプリケーション層とHTTPプロトコル", fields: [10] },
