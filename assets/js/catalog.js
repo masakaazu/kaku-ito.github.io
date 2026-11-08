@@ -277,6 +277,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/21.html", title: "データベース 用語集", desc: "参照制約・外部キー、外部結合・NOT EXISTS・GRANT・ビュー、ACID・デッドロック・2相コミット・ログと回復、レプリケーション・シャーディング。26語と問題20問（過去の午前Ⅱ 12問を含む）", fields: [21], pdf: "terms/21.pdf" },
       { type: "terms", file: "terms/22.html", title: "システム開発と運用 用語集", desc: "フェールソフト・品質特性・GoF、ファジング・分岐網羅・トップダウンテスト・形式手法、スクラム・TDD・SRE・カオスエンジニアリング、保守・著作権・GPL。30語と問題28問（過去の午前Ⅱ 22問を含む）", fields: [22], pdf: "terms/22.pdf" },
       { type: "terms", file: "terms/23.html", title: "サービスマネジメントとシステム監査 用語集", desc: "SLA・可用性の計算・問題管理・変更管理、内部統制とIT全般統制・業務処理統制、監査調書・リスクアプローチ・指摘事項。20語と問題25問（過去の午前Ⅱ 16問を含む）", fields: [23], pdf: "terms/23.pdf" },
+      { type: "terms", file: "terms/24.html", title: "科目B 事例演習 用語集", desc: "IPA サンプル問題と技能1〜4 の事例問題（台帳・Web診断・ログ分析・インシデント対応）。45語と問題27問（過去の午前Ⅱ 4問を含む）", fields: [24], pdf: "terms/24.pdf" },
     ],
     aws: [
       { type: "terms", file: "terms/01.html", title: "IAMとポリシー 用語集", desc: "ルートユーザー・IAM ユーザー・グループ・ロール・インスタンスプロファイル・STS の一時的な認証情報・アクセスキー・MFA、ID ベースとリソースベースのポリシー・AWS 管理／カスタマー管理／インライン・Effect・Action・NotAction・Resource・Principal・Condition とグローバル条件キー・ポリシー変数・ARN、暗黙的な拒否と明示的な拒否・アクセス許可の境界・セッションポリシー・クロスアカウントアクセス・外部 ID・iam:PassRole・IAM Access Analyzer・認証情報レポート。38語と問題30問（タスク 1.1）", fields: [1], pdf: "terms/01.pdf" },
