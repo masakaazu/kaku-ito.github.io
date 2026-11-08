@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>支援士 #11 ID連携とシングルサインオン 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">情報処理安全確保支援士試験　科目A-2　中分類25 情報セキュリティ対策　#11</div>
+  <h1>ID連携とシングルサインオン</h1>
+  <p>一度のログインで、たくさんのサービスへ。パスワードを渡さずに、認証の結果と権限を渡す</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（IPA の支援士試験シラバス案、RFC、OASIS の SAML 2.0、OpenID Connect Core 1.0 など）を書いた。過去問は IPA 公開の午前Ⅱ。例の場面は Claude が作った</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>シラバス案 中分類25 小分類4「利用者の認証・認可・ID 連携」</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 SSO と認証基盤<span>リバースプロキシ・エージェント・代理認証、Kerberos（KDC・TGT）、LDAP、IDaaS、SCIM</span></div>
+      <div class="box b2">2 SAML による ID 連携<span>IdP・SP・アサーション・XML 署名、SP-initiated</span></div>
+      <div class="box b3">3 OAuth 2.0 と OpenID Connect<span>認可サーバ・アクセストークン・リフレッシュトークン・PKCE・ID トークン・JWT</span></div>
+    </div>
+    <div>
+      <div class="lbl">過去の午前Ⅱでの出方（13回出題）</div>
+      <table class="mx">
+        <tr><th>テーマ</th><th style="width:40%">出た回</th></tr>
+        <tr><td class="l">OASIS が策定したのは（SAML）</td><td class="t">H31春・R4秋・R6春</td></tr>
+        <tr><td class="l">SAML 認証の特徴・流れ</td><td class="t">R3秋・R5春・R7春</td></tr>
+        <tr><td class="l">SAML の説明</td><td class="t">R4春・R5秋</td></tr>
+        <tr><td class="l">SSO の方式</td><td class="t">R4秋・R6秋</td></tr>
+        <tr><td class="l">OAuth 2.0 は認可か認証か</td><td class="t">R5秋・R7春</td></tr>
+        <tr><td class="l">OAuth 2.0 でトークンを発行するのは</td><td class="t">R6秋</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）Ver.0.1」中分類25 小分類4／IPA 午前Ⅱ 各回（このPDFの問題演習を参照）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>シングルサインオンと認証基盤</h1>
+  <p>どこで認証して、何を持ち回るか。</p>
+  <div class="foot"><span>支援士 #11 ID連携とシングルサインオン</span><span>25-4</span></div>
+</section>
+
+<section class="slide">
+  <h1>SSO の3つの古典的な方式</h1>
+  <div class="cols3">
+    <div>
+      <div class="lbl">リバースプロキシ方式</div>
+      <div class="stack">
+        <div class="box b5">利用者</div>
+        <div class="box b1">リバースプロキシ<span>ここで認証・中継</span></div>
+        <div class="box b2">Web サーバ群<span>改修不要</span></div>
+      </div>
+      <div class="point warn">全通信が集中 → <b>単一障害点</b>（R4秋・R6秋の正解）</div>
+    </div>
+    <div>
+      <div class="lbl">エージェント方式</div>
+      <div class="stack">
+        <div class="box b5">利用者</div>
+        <div class="box b2">Web サーバ＋<b>エージェント</b><span>認証サーバと連携</span></div>
+        <div class="box b1">認証サーバ<span>成功後は cookie</span></div>
+      </div>
+      <div class="point">エージェントは <b>Web サーバに</b>入れる。</div>
+    </div>
+    <div>
+      <div class="lbl">代理認証方式</div>
+      <div class="stack">
+        <div class="box b5">利用者の PC＋代行ソフト<span>ログイン画面を検知</span></div>
+        <div class="box b2">ID・パスワードを代行入力</div>
+        <div class="box b4">既存システム<span>改修不要</span></div>
+      </div>
+      <div class="point">クライアント側で動く。<b>サーバの改修は不要</b>。</div>
+    </div>
+  </div>
+  <div class="point warn" style="margin-top:10px">R6秋 問8 の誤りの選択肢は「エージェントがクライアント PC でログイン画面を監視」（＝代理認証の説明）、「代理認証は対象サーバの改修が必要」（逆）。</div>
+  <div class="cite">出典：IPA 午前Ⅱ 令和4年度秋期 問7・令和6年度秋期 問8</div>
+</section>
+
+<section class="slide">
+  <h1>Kerberos：パスワードを流さずにチケットで</h1>
+  <div class="cols">
+    <div>
+      <div class="flow" style="gap:4px;flex-direction:column;align-items:stretch">
+        <div class="box b5">① 利用者 → AS：ログイン<span>パスワードから作った鍵で応答を復号できるか</span></div>
+        <div class="box b1">② AS → 利用者：<b>TGT</b><span>チケットをもらうためのチケット</span></div>
+        <div class="box b2">③ 利用者 → TGS：TGT を示す<span>「ファイルサーバを使いたい」</span></div>
+        <div class="box b3">④ TGS → 利用者：<b>サービスチケット</b></div>
+        <div class="box b4">⑤ 利用者 → ファイルサーバ：サービスチケットを示す</div>
+      </div>
+    </div>
+    <div>
+      <div class="point">AS と TGS をまとめて <b>KDC</b>（AD ではドメインコントローラ）。</div>
+      <div class="point warn"><b>時刻のずれ</b>に弱い。チケットにタイムスタンプが入り、既定で5分程度を超えると失敗。</div>
+      <div class="point">KDC の鍵（krbtgt）が盗まれると TGT を偽造できる＝<b>ゴールデンチケット</b>（#02）。</div>
+      <div class="point">SSO の問題で「チケット」が出たら Kerberos、「アサーション」なら SAML。</div>
+    </div>
+  </div>
+  <div class="cite">出典：RFC 4120 The Kerberos Network Authentication Service (V5)／Microsoft Learn「Kerberos 認証の概要」</div>
+</section>
+
+<section class="slide">
+  <h1>LDAP・IDaaS・SCIM：ID を管理する仕組み</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">LDAP（ディレクトリへの問い合わせ）</div>
+      <div class="code small">dn: uid=tanaka,ou=sales,dc=example,dc=jp
+cn: 田中 一郎
+mail: tanaka@example.jp
+memberOf: cn=eigyo,ou=groups,...</div>
+      <table class="mx">
+        <tr><td class="t">LDAP</td><td class="l">TCP 389。平文のバインドは盗聴される</td></tr>
+        <tr><td class="t">LDAPS</td><td class="l">TCP 636。TLS で保護（StartTLS も）</td></tr>
+      </table>
+      <div class="point warn">入力をフィルタに直結 → <b>LDAP インジェクション</b>（#03）。認証は「バインドできるか」で。</div>
+    </div>
+    <div>
+      <div class="lbl">IDaaS を中心にした連携</div>
+      <div class="stack">
+        <div class="box b1">IDaaS（Entra ID・Okta など）<span>認証・MFA・SSO・ログ</span></div>
+        <div class="box b2">ログインのとき：SAML・OpenID Connect</div>
+        <div class="box b3">アカウントの作成・削除：<b>SCIM</b><span>REST＋JSON（RFC 7643・7644）</span></div>
+      </div>
+      <div class="point">退職者を IDaaS で止めれば、SCIM で各 SaaS のアカウントも消える（<b>デプロビジョニング</b>）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：RFC 4511・RFC 4513（LDAP）／RFC 7643・RFC 7644（SCIM 2.0）／IPA「支援士試験 シラバス（案）」用語例「LDAP サーバでの認証，IDaaS」</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>SAML によるアイデンティティ連携</h1>
+  <p>認証は IdP、検証は SP。</p>
+  <div class="foot"><span>支援士 #11 ID連携とシングルサインオン</span><span>25-4</span></div>
+</section>
+
+<section class="slide">
+  <h1>SAML 認証の流れ（SP-initiated）</h1>
+  <div class="flow" style="gap:4px">
+    <div class="box b5">① 利用者が SP にアクセス</div><div class="to">→</div>
+    <div class="box b4">② SP が認証要求を作り IdP へリダイレクト</div><div class="to">→</div>
+    <div class="box b1">③ IdP が<b>利用者認証</b><span>パスワード＋MFA</span></div><div class="to">→</div>
+    <div class="box b2">④ IdP が署名した<b>アサーション</b>をブラウザ経由で SP へ</div><div class="to">→</div>
+    <div class="box b3">⑤ SP が<b>検証</b>してログイン</div>
+  </div>
+  <div class="cols" style="margin-top:12px">
+    <div>
+      <div class="lbl">SP が確かめること</div>
+      <table class="mx">
+        <tr><td class="t">署名</td><td class="l">IdP の公開鍵で検証（改ざん・なりすまし）</td></tr>
+        <tr><td class="t">Audience</td><td class="l">自分宛てか（使い回し）</td></tr>
+        <tr><td class="t">有効期限</td><td class="l">古いものでないか（再利用）</td></tr>
+        <tr><td class="t">InResponseTo</td><td class="l">自分の要求への応答か</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="point warn">SP は<b>パスワードを受け取らない</b>。</div>
+      <div class="point"><b>XML 署名ラッピング：</b>署名済みの要素を残したまま、偽の要素を差し込み、検証とアプリの読む場所のずれを突く。</div>
+    </div>
+  </div>
+  <div class="cite">出典：OASIS「Profiles for the OASIS SAML V2.0」（Web Browser SSO Profile）／IPA 午前Ⅱ 令和7年度春期 問2／OWASP「SAML Security Cheat Sheet」</div>
+</section>
+
+<section class="slide">
+  <h1>SAML と並べて出る規格を見分ける</h1>
+  <table class="mx">
+    <tr><th style="width:20%">規格</th><th style="width:16%">策定</th><th>何のためのものか</th></tr>
+    <tr><td class="x">SAML</td><td class="t">OASIS</td><td class="l">組織（ドメイン）をまたいで<b>認証・属性・認可</b>の情報を XML で交換。SSO に使う</td></tr>
+    <tr><td class="t">SOAP</td><td class="t">W3C</td><td class="l">XML でメッセージを交換する Web サービスの通信</td></tr>
+    <tr><td class="t">XKMS</td><td class="t">W3C</td><td class="l">署名・暗号の<b>鍵情報</b>を Web サービスで管理</td></tr>
+    <tr><td class="t">XML Signature</td><td class="t">W3C</td><td class="l">XML 文書へのデジタル署名の書式</td></tr>
+    <tr><td class="t">UDDI</td><td class="t">OASIS</td><td class="l">Web サービスの情報を公開し、検索できるようにする</td></tr>
+    <tr><td class="t">OpenID 2.0</td><td class="t">OpenID Foundation</td><td class="l">URL か XRI を利用者 ID にしてログイン（古い方式）</td></tr>
+  </table>
+  <div class="point warn" style="margin-top:12px">R4春 問2・R5秋 問8 は「SAML の説明」を、UDDI・S/MIME・XKMS・OAuth・OpenID・XML の説明の中から選ばせた。<b>OASIS／異なるドメイン／XML／認証・属性・認可</b>が SAML の目印。</div>
+  <div class="cite">出典：IPA 午前Ⅱ 平成31年度春期 問3・令和4年度春期 問2・令和5年度秋期 問8・令和6年度春期 問4</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>OAuth 2.0 と OpenID Connect</h1>
+  <p>OAuth は「認可」。認証は OpenID Connect。</p>
+  <div class="foot"><span>支援士 #11 ID連携とシングルサインオン</span><span>25-4</span></div>
+</section>
+
+<section class="slide">
+  <h1>OAuth 2.0 の4つの役割（R6秋 問16）</h1>
+  <div class="cols">
+    <div>
+      <div class="stack">
+        <div class="box b5">リソースオーナー：利用者 A<span>「D に写真の読取りだけ許す」と同意</span></div>
+        <div class="box b1">認可サーバ：Web サービス C<span><b>アクセストークンを発行</b></span></div>
+        <div class="box b2">リソースサーバ：Web サービス C<span>リソース B を保管、トークンを確かめる</span></div>
+        <div class="box b3">クライアント：Web サービス D<span>トークンを受け取り、B にアクセス</span></div>
+      </div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>選択肢</th><th style="width:26%">判定</th></tr>
+        <tr><td class="l">C がアクセストークンを発行</td><td class="x">正解</td></tr>
+        <tr><td class="l">D がアクセストークンを発行</td><td class="t">D は受け取る側</td></tr>
+        <tr><td class="l">A のデジタル証明書を送る</td><td class="t">OAuth にない</td></tr>
+      </table>
+      <div class="point warn"><b>R5秋・R7春：</b>OAuth 2.0 は<b>認可</b>。認可サーバが、利用者の許可を得て、クライアントに権限を付与する。「本人であるかを確認する」は認証の説明で誤り。</div>
+    </div>
+  </div>
+  <div class="cite">出典：RFC 6749 The OAuth 2.0 Authorization Framework 1.1 Roles／IPA 午前Ⅱ 令和6年度秋期 問16・令和7年度春期 問16</div>
+</section>
+
+<section class="slide">
+  <h1>認可コードグラントと PKCE</h1>
+  <div class="flow" style="gap:4px">
+    <div class="box b3">① クライアントが code_verifier を作り<span>S256 ハッシュ＝code_challenge</span></div><div class="to">→</div>
+    <div class="box b1">② 認可要求に code_challenge を付ける<span>利用者が認可サーバで同意</span></div><div class="to">→</div>
+    <div class="box b2">③ 認可コードがリダイレクトで返る<span>ここで横取りされても…</span></div><div class="to">→</div>
+    <div class="box b4">④ コード＋<b>code_verifier</b>でトークンと交換<span>ハッシュが一致しなければ拒否</span></div>
+  </div>
+  <div class="cols" style="margin-top:12px">
+    <table class="mx">
+      <tr><th>グラント</th><th style="width:44%">RFC 9700（2025）</th></tr>
+      <tr><td class="l">認可コード＋PKCE</td><td class="t">推奨（全クライアントで PKCE）</td></tr>
+      <tr><td class="l">インプリシット（URL でトークン）</td><td class="x">使うべきでない</td></tr>
+      <tr><td class="l">パスワードをクライアントに渡す方式</td><td class="x">使ってはならない</td></tr>
+      <tr><td class="l">クライアントクレデンシャル</td><td class="t">サーバ同士（利用者なし）</td></tr>
+    </table>
+    <div class="point">PKCE はもともと、秘密の鍵を安全にもてない<b>スマホアプリなどのパブリッククライアント</b>のために作られた（RFC 7636）。</div>
+  </div>
+  <div class="cite">出典：RFC 7636 Proof Key for Code Exchange／RFC 9700 OAuth 2.0 Security Best Current Practice 2.1.1・2.1.2・2.4</div>
+</section>
+
+<section class="slide">
+  <h1>4つのトークンを見分ける</h1>
+  <table class="mx">
+    <tr><th style="width:18%">トークン</th><th style="width:16%">規格</th><th style="width:26%">だれがだれに見せる</th><th>何を表す・注意</th></tr>
+    <tr><td class="t">認可コード</td><td class="t">OAuth 2.0</td><td class="l">クライアント → 認可サーバ</td><td class="l">一回限りの引換券。PKCE で守る</td></tr>
+    <tr><td class="x">アクセストークン</td><td class="t">OAuth 2.0</td><td class="l">クライアント → リソースサーバ</td><td class="l">スコープと期限付きの許可。Bearer なので盗まれたら使われる → 短い期限</td></tr>
+    <tr><td class="t">リフレッシュトークン</td><td class="t">OAuth 2.0</td><td class="l">クライアント → 認可サーバ</td><td class="l">新しいアクセストークンをもらう。寿命が長い → ローテーション</td></tr>
+    <tr><td class="x">ID トークン</td><td class="t">OpenID Connect</td><td class="l">OP（IdP） → RP</td><td class="l">だれが・いつ・どう認証されたか。署名付き JWT</td></tr>
+  </table>
+  <div class="point warn" style="margin-top:12px"><b>OpenID Connect ＝ OAuth 2.0 ＋ 認証の層。</b>アクセストークンだけでログインさせると、別アプリ用のトークンで他人になりすませる。</div>
+  <div class="cite">出典：RFC 6749 1.4・1.5／RFC 6750 Bearer Token Usage／OpenID Connect Core 1.0 2 ID Token</div>
+</section>
+
+<section class="slide">
+  <h1>ID トークンと JWT の検証</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">JWT ＝ ヘッダ．ペイロード．署名（Base64URL）</div>
+      <div class="code small">{"alg":"RS256","kid":"k1"}
+.
+{"iss":"https://idp.example.jp",
+ "sub":"u12345", "aud":"rp-app-01",
+ "exp":1793500000, "iat":1793499700,
+ "nonce":"n-0S6_WzA2Mj"}
+.
+（IdP の秘密鍵による署名）</div>
+      <div class="point">JWS は改ざん検出、<b>中身は誰でも読める</b>。隠すなら JWE。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>確かめる</th><th>確かめないと</th></tr>
+        <tr><td class="t">署名と alg</td><td class="l">alg "none" の偽トークンが通る</td></tr>
+        <tr><td class="t">iss</td><td class="l">別の発行者のトークンを信じる</td></tr>
+        <tr><td class="x">aud</td><td class="l">他の RP 宛てを使い回される</td></tr>
+        <tr><td class="t">exp</td><td class="l">期限切れが使える</td></tr>
+        <tr><td class="t">nonce</td><td class="l">リプレイ・トークンの差し込み</td></tr>
+      </table>
+      <div class="point warn">受け入れるアルゴリズムは<b>サーバ側で固定</b>（RFC 8725）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：RFC 7519（JWT）・RFC 7515（JWS）・RFC 7516（JWE）・RFC 8725（JWT BCP）／OpenID Connect Core 1.0 3.1.3.7。JWT の例は Claude が作った</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ：本番での問われ方</h1>
+  <div class="cols">
+    <div>
+      <div class="point"><b>SSO の方式：</b>リバースプロキシ＝集中・単一障害点、エージェント＝Web サーバに導入、代理認証＝クライアントで代行入力・改修不要。</div>
+      <div class="point"><b>持ち回るもの：</b>Kerberos＝チケット、SAML＝アサーション、OAuth＝アクセストークン、OIDC＝ID トークン。</div>
+      <div class="point"><b>SAML の目印：</b>OASIS・異なるドメイン・XML・認証/属性/認可。認証は IdP、検証は SP。</div>
+    </div>
+    <div>
+      <div class="point warn"><b>OAuth 2.0 は認可：</b>利用者の許可のもと、認可サーバがクライアントにアクセストークンを発行。本人確認は OpenID Connect。</div>
+      <div class="point"><b>守り方：</b>PKCE（コードの横取り）、短いアクセストークン、リフレッシュトークンのローテーション、aud・alg の検証。</div>
+      <div class="point">IDaaS＋SCIM で、アカウントの削除まで一元化。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ（このPDFの問題演習）／IPA「支援士試験 シラバス（案）Ver.0.1」</div>
+</section>
+
+</body>
+</html>
