@@ -275,6 +275,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/19.html", title: "フォレンジックとセキュリティ評価 用語集", desc: "揮発性の順序・ハッシュ値・Chain of Custody、マルウェア解析、CVE・CWE・CVSS・SCAP・SBOM、ISO/IEC 15408・FIPS 140-3・CRYPTREC 暗号リスト。30語と問題22問（過去の午前Ⅱ 13問を含む）", fields: [19], pdf: "terms/19.pdf" },
       { type: "terms", file: "terms/20.html", title: "ネットワーク 用語集", desc: "STP・VRRP・VXLAN、サブネット計算と特殊なアドレス、IPv6・ICMP・OSPF、TCP・HTTP・ポート番号、PPPoE・IPsec・5G・LPWA。35語と問題39問（過去の午前Ⅱ 32問を含む）", fields: [20], pdf: "terms/20.pdf" },
       { type: "terms", file: "terms/21.html", title: "データベース 用語集", desc: "参照制約・外部キー、外部結合・NOT EXISTS・GRANT・ビュー、ACID・デッドロック・2相コミット・ログと回復、レプリケーション・シャーディング。26語と問題20問（過去の午前Ⅱ 12問を含む）", fields: [21], pdf: "terms/21.pdf" },
+      { type: "terms", file: "terms/22.html", title: "システム開発と運用 用語集", desc: "フェールソフト・品質特性・GoF、ファジング・分岐網羅・トップダウンテスト・形式手法、スクラム・TDD・SRE・カオスエンジニアリング、保守・著作権・GPL。30語と問題28問（過去の午前Ⅱ 22問を含む）", fields: [22], pdf: "terms/22.pdf" },
     ],
     aws: [
       { type: "terms", file: "terms/01.html", title: "IAMとポリシー 用語集", desc: "ルートユーザー・IAM ユーザー・グループ・ロール・インスタンスプロファイル・STS の一時的な認証情報・アクセスキー・MFA、ID ベースとリソースベースのポリシー・AWS 管理／カスタマー管理／インライン・Effect・Action・NotAction・Resource・Principal・Condition とグローバル条件キー・ポリシー変数・ARN、暗黙的な拒否と明示的な拒否・アクセス許可の境界・セッションポリシー・クロスアカウントアクセス・外部 ID・iam:PassRole・IAM Access Analyzer・認証情報レポート。38語と問題30問（タスク 1.1）", fields: [1], pdf: "terms/01.pdf" },
