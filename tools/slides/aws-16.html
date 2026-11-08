@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS SAA #16 DynamoDBとキャッシュ 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">AWS SAA（SAA-C03）　分野3 高パフォーマンス　#16</div>
+  <h1>DynamoDB とキャッシュ</h1>
+  <p>サーバーレスの NoSQL データベース DynamoDB のキーと容量、グローバルテーブルやバックアップなどの機能、DAX と ElastiCache によるキャッシュ</p>
+  <div class="refs-legend">各ページの下に、根拠にした AWS の公式ドキュメント（Amazon DynamoDB デベロッパーガイド・Amazon ElastiCache ユーザーガイド）を書いた（青い文字を押すと開く）。「」の中はドキュメントの原文どおり（日本語版は機械翻訳のため、語順が不自然なところもそのまま）。テーブル名・数値・リージョンは Claude が作った例。数字は 2026-11 時点のドキュメントによる</div>
+</section>
+
+<section class="slide">
+  <h1>全体像：DB の前と横<small>試験ガイド タスク 3.3</small></h1>
+  <svg width="856" height="190" viewBox="0 0 856 190">
+    <defs><marker id="d1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="70" width="120" height="50" rx="8" fill="#1f3a68"/><text x="70" y="92" fill="#fff" font-weight="700">アプリ</text><text x="70" y="108" fill="#fff">EC2・Lambda</text>
+      <rect x="200" y="10" width="190" height="56" rx="8" fill="#b25000"/><text x="295" y="32" fill="#fff" font-weight="700">DAX</text><text x="295" y="50" fill="#fff">DynamoDB 専用・マイクロ秒</text>
+      <rect x="470" y="10" width="190" height="56" rx="8" fill="#3a7d44"/><text x="565" y="32" fill="#fff" font-weight="700">DynamoDB</text><text x="565" y="50" fill="#fff">NoSQL・1 桁ミリ秒</text>
+      <rect x="200" y="124" width="190" height="56" rx="8" fill="#6a3d9a"/><text x="295" y="146" fill="#fff" font-weight="700">ElastiCache</text><text x="295" y="164" fill="#fff">Valkey・Redis OSS・Memcached</text>
+      <rect x="470" y="124" width="190" height="56" rx="8" fill="#1f5fa8"/><text x="565" y="146" fill="#fff" font-weight="700">RDS・Aurora（#15）</text><text x="565" y="164" fill="#fff">リレーショナル</text>
+      <g stroke="#1f3a68" stroke-width="2"><line x1="130" y1="85" x2="198" y2="44" marker-end="url(#d1)"/><line x1="390" y1="38" x2="468" y2="38" marker-end="url(#d1)"/><line x1="130" y1="105" x2="198" y2="146" marker-end="url(#d1)"/><line x1="390" y1="152" x2="468" y2="152" marker-end="url(#d1)"/></g>
+      <text x="429" y="30" fill="#1f3a68">ミス</text><text x="429" y="144" fill="#1f3a68">ミス</text>
+      <rect x="690" y="10" width="156" height="170" rx="10" fill="#fff" stroke="#4a5a78"/><text x="768" y="32" fill="#4a5a78" font-weight="700">キャッシュの効果</text><text x="768" y="58">同じデータを何度も読む</text><text x="768" y="78">→ DB の負荷が下がる</text><text x="768" y="104">応答が速くなる</text><text x="768" y="130">DB の読み込みの</text><text x="768" y="150">容量やコストを節約</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>DynamoDB の見分け方：</b>サーバーレスの NoSQL。キーと値・ドキュメント。JOIN なし。どんな規模でも 1 桁ミリ秒。問題文に「サーバーレス」「キーと値」「数百万リクエスト」「スキーマが柔軟」が出たら候補。</div>
+    <div class="point warn"><b>キャッシュの選び方：</b>DynamoDB の前ならコードの変更が少ない DAX。RDS などほかの DB の前や、セッション・順位表なら ElastiCache。CloudFront のキャッシュは #19。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/Introduction.html">Amazon DynamoDB とは</a>（「Amazon DynamoDB は、サーバーレスのフルマネージド分散 NoSQL データベースで、あらゆる規模で 1 桁ミリ秒のパフォーマンスを実現します。」「リレーショナルデータベースとは異なり、DynamoDB は JOIN 演算子をサポートしません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonElastiCache/latest/dg/WhatIs.html">Amazon ElastiCache とは</a>（「Amazon ElastiCache は Valkey、Memcached、および Redis OSS のエンジンで動作します。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>DynamoDB のしくみと容量</h1>
+  <p>パーティションキーとソートキー、GSI と LSI、オンデマンドとプロビジョンド、RCU と WCU の計算、結果整合性と強力な整合性、トランザクション、テーブルクラス。</p>
+  <div class="foot"><span>AWS SAA #16 DynamoDB とキャッシュ</span><span>タスク 3.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>テーブル・キー・インデックス</h1>
+  <svg width="856" height="170" viewBox="0 0 856 170">
+    <g font-size="11" text-anchor="middle">
+      <text x="200" y="16" fill="#1f3a68" font-weight="700">テーブル GameScores</text>
+      <rect x="10" y="24" width="120" height="26" fill="#1f3a68"/><text x="70" y="42" fill="#fff" font-weight="700">UserId（PK）</text>
+      <rect x="130" y="24" width="140" height="26" fill="#4a5a78"/><text x="200" y="42" fill="#fff" font-weight="700">GameTitle（SK）</text>
+      <rect x="270" y="24" width="120" height="26" fill="#8a96ab"/><text x="330" y="42" fill="#fff">TopScore</text>
+      <g fill="#fff" stroke="#c9d3e3"><rect x="10" y="50" width="380" height="26"/><rect x="10" y="76" width="380" height="26"/><rect x="10" y="102" width="380" height="26"/></g>
+      <text x="70" y="68">101</text><text x="200" y="68">Galaxy Invaders</text><text x="330" y="68">5842</text>
+      <text x="70" y="94">101</text><text x="200" y="94">Meteor Blasters</text><text x="330" y="94">1000</text>
+      <text x="70" y="120">102</text><text x="200" y="120">Meteor Blasters</text><text x="330" y="120">2400</text>
+      <text x="200" y="150" fill="#4a5a78">UserId で Query は速い。GameTitle だけでは Scan になる</text>
+      <rect x="440" y="20" width="406" height="64" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="643" y="40" fill="#3a7d44" font-weight="700">GSI：PK＝GameTitle、SK＝TopScore</text><text x="643" y="58">違うパーティションキーで引ける・あとから作れる</text><text x="643" y="76">結果整合性の読み込みだけ・既定で 20 個まで</text>
+      <rect x="440" y="96" width="406" height="64" rx="10" fill="#fdf0e2" stroke="#b25000"/><text x="643" y="116" fill="#b25000" font-weight="700">LSI：PK＝UserId のまま、SK＝別の属性</text><text x="643" y="134">同じパーティションの中で別の順に・作成時だけ</text><text x="643" y="152">強力な整合性の読み込みも使える</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>キーの決め方：</b>パーティションキーで置き場所が決まり、ソートキーで同じパーティションの中の順が決まる。項目は 1 つ 400 KB まで。JOIN がないので、よく使う問い合わせの形に合わせてキーとインデックスを設計する。</div>
+    <div class="point warn"><b>GSI と LSI のひっかけ：</b>「運用中のテーブルに新しい検索条件」→ GSI（LSI はあとから足せない）。「同じキーで別の並び順、強い整合性も」→ 作成時に LSI。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html">Amazon DynamoDB のコアコンポーネント</a>（「ローカルセカンダリインデックス – パーティションキーはテーブルと同じですが、ソートキーが異なるインデックスです。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/LSI.html">ローカルセカンダリインデックス</a>（「テーブルのローカルセカンダリインデックスは、テーブルが作成された時点で作成されます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/GSI.html">DynamoDB のグローバルセカンダリインデックスの使用</a>。テーブルの形は GSI のドキュメントの GameScores の例により、値は Claude が作った</div>
+</section>
+
+<section class="slide">
+  <h1>容量のモードと RCU・WCU</h1>
+  <table class="mx">
+    <tr><th style="width:18%">モード</th><th>しくみ</th><th style="width:26%">向く場面</th></tr>
+    <tr><td class="t">オンデマンド</td><td class="l">容量を計画しない。前に到達したトラフィックまで即座に受け入れ、使った分だけ払う。ほとんどの場合の既定</td><td class="l">予測できない・新しいアプリ・急なピーク</td></tr>
+    <tr><td class="t">プロビジョンド</td><td class="l">1 秒あたりの読み書き（RCU・WCU）を指定し、時間単位で払う。DynamoDB Auto Scaling で自動調整</td><td class="l">安定していて予測できる・コストを予測したい</td></tr>
+  </table>
+  <svg width="856" height="100" viewBox="0 0 856 100">
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="8" width="410" height="84" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="215" y="28" fill="#1f3a68" font-weight="700">RCU：4 KB までを 1 秒に 1 回（強力な整合性）</text>
+      <text x="215" y="50">3 KB の項目を 1 秒に 80 回読む</text><text x="215" y="68">3 ÷ 4 → 切り上げて 1 × 80 ＝ 80 RCU</text><text x="215" y="86" fill="#3a7d44">結果整合性なら半分の 40 RCU</text>
+      <rect x="436" y="8" width="410" height="84" rx="10" fill="#fdf0e2" stroke="#b25000"/><text x="641" y="28" fill="#b25000" font-weight="700">WCU：1 KB までを 1 秒に 1 回の書き込み</text>
+      <text x="641" y="50">512 バイトの項目を 1 秒に 100 回書く</text><text x="641" y="68">0.5 → 切り上げて 1 × 100 ＝ 100 WCU</text><text x="641" y="86" fill="#b25000">項目のサイズは単位ごとに切り上げる</text>
+    </g>
+  </svg>
+  <div class="point"><b>切り替え：</b>プロビジョンドからオンデマンドへは 24 時間に最大 4 回、オンデマンドからプロビジョンドへはいつでも。どちらも 1 桁ミリ秒のレイテンシーと同じ SLA。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/capacity-mode.html">DynamoDB のスループットキャパシティ</a>（「オンデマンドモードは、ほとんどの DynamoDB ワークロードで推奨されるデフォルトのスループットオプションです。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/provisioned-capacity-mode.html">DynamoDB プロビジョンドキャパシティモード</a>（「1 つの書き込みキャパシティユニット (WCU) は、最大サイズが 1 KB の項目の場合、1 秒あたり 1 回の書き込みを表します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/on-demand-capacity-mode.html">DynamoDB オンデマンドキャパシティモード</a>（「24 時間のローリングウィンドウで、テーブルをプロビジョンドキャパシティモードからオンデマンドモードに最大 4 回切り替えることができます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>整合性・トランザクション・テーブルクラス</h1>
+  <table class="mx">
+    <tr><th style="width:22%">機能</th><th>内容</th><th style="width:30%">ひっかけ</th></tr>
+    <tr><td class="t">結果整合性の読み込み</td><td class="l">既定。直前の書き込みが反映されていないことがある。強力な整合性の半分のコスト</td><td class="l">DAX がキャッシュするのはこちら</td></tr>
+    <tr><td class="t">強力な整合性の読み込み</td><td class="l">ConsistentRead＝true。成功した以前のすべての書き込みを反映</td><td class="l">テーブルと LSI だけ。GSI・Streams は不可</td></tr>
+    <tr><td class="t">トランザクション</td><td class="l">TransactWriteItems は最大 100 の書き込みをオールオアナッシングで。同じアカウント・リージョンの複数のテーブルにまたがれる</td><td class="l">「両方成功か両方なし」の合図</td></tr>
+    <tr><td class="t">DynamoDB Auto Scaling</td><td class="l">Application Auto Scaling で、プロビジョンドの容量をトラフィックに合わせて上下させる</td><td class="l">オンデマンドとは別。プロビジョンドのまま</td></tr>
+    <tr><td class="t">テーブルクラス 標準-IA</td><td class="l">ストレージが主なコストのテーブル向け。注文履歴・古い投稿・ログ。あとから変えられる</td><td class="l">データを消す TTL とは別。データは残る</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html">DynamoDB の読み取り整合性</a>（「結果整合性のある読み込みは、強力な整合性のある読み込みの半分のコストで済みます。」「グローバルセカンダリインデックスまたは DynamoDB ストリームからの強力な整合性のある読み込みはサポートされていません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/transaction-apis.html">Amazon DynamoDB Transactions: 仕組み</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/AutoScaling.html">DynamoDB Auto Scaling によるスループットキャパシティの自動管理</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/HowItWorks.TableClasses.html">DynamoDB テーブルクラス</a>（「DynamoDB Standard-Infrequent Access (DynamoDB 標準-IA) テーブルクラスは、ストレージが主要なコストとなるテーブル用に最適化されています。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>DynamoDB の機能と保護</h1>
+  <p>グローバルテーブル、DynamoDB Streams と Kinesis Data Streams、TTL、ポイントインタイムリカバリとオンデマンドバックアップ、S3 へのエクスポート、暗号化、DAX。</p>
+  <div class="foot"><span>AWS SAA #16 DynamoDB とキャッシュ</span><span>タスク 3.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>グローバルテーブル：どのリージョンでも書ける</h1>
+  <svg width="856" height="180" viewBox="0 0 856 180">
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="40" width="220" height="90" rx="12" fill="#e8f3ea" stroke="#3a7d44"/><text x="120" y="62" fill="#3a7d44" font-weight="700">東京のレプリカ</text><text x="120" y="84">読み書きできる</text><text x="120" y="104">日本の利用者</text>
+      <rect x="318" y="40" width="220" height="90" rx="12" fill="#e8f3ea" stroke="#3a7d44"/><text x="428" y="62" fill="#3a7d44" font-weight="700">バージニア北部のレプリカ</text><text x="428" y="84">読み書きできる</text><text x="428" y="104">米国の利用者</text>
+      <rect x="626" y="40" width="220" height="90" rx="12" fill="#e8f3ea" stroke="#3a7d44"/><text x="736" y="62" fill="#3a7d44" font-weight="700">アイルランドのレプリカ</text><text x="736" y="84">読み書きできる</text><text x="736" y="104">欧州の利用者</text>
+      <g stroke="#3a7d44" stroke-width="2"><line x1="230" y1="85" x2="318" y2="85"/><line x1="538" y1="85" x2="626" y2="85"/><path d="M120,130 L120,160 L736,160 L736,130" fill="none"/></g>
+      <text x="274" y="78" fill="#3a7d44">非同期</text><text x="582" y="78" fill="#3a7d44">非同期</text><text x="428" y="154" fill="#3a7d44">競合は最後の書き込みが優先（MREC の場合）</text>
+      <text x="428" y="24" fill="#1f3a68" font-weight="700">マルチアクティブ：すべてのリージョンが書き込みを受ける</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>Aurora Global Database との違い：</b>Aurora は書き込みが 1 つのプライマリリージョンだけ。DynamoDB のグローバルテーブルはすべてのレプリカで書ける。複製の仕組みを自分で作る必要がない。</div>
+    <div class="point warn"><b>整合性モード：</b>既定はマルチリージョンの結果整合性（MREC）。マルチリージョンの強力な整合性（MRSC）も選べる。作成後に変えられず、MRSC は同じアカウントだけ。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/GlobalTables.html">グローバルテーブル - マルチアクティブ、マルチリージョンレプリケーション</a>（「グローバルテーブルは、マルチリージョンの結果整合性 (MREC) およびマルチリージョンの強力な整合性 (MRSC) の 2 つの整合性モードをサポートしています。」「同一アカウントモデルとマルチアカウントモデルの両方で、マルチリージョン書き込み、非同期レプリケーション、最後の書き込み優先の競合解決、および同じ請求モデルがサポートされます。」）。リージョンの組み合わせは Claude が作った例</div>
+</section>
+
+<section class="slide">
+  <h1>変更を流す・古い項目を消す</h1>
+  <svg width="856" height="150" viewBox="0 0 856 150">
+    <defs><marker id="d2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="45" width="150" height="60" rx="8" fill="#3a7d44"/><text x="85" y="70" fill="#fff" font-weight="700">注文テーブル</text><text x="85" y="88" fill="#fff">作成・更新・削除</text>
+      <rect x="230" y="8" width="190" height="56" rx="8" fill="#1f3a68"/><text x="325" y="30" fill="#fff" font-weight="700">DynamoDB Streams</text><text x="325" y="48" fill="#fff">24 時間・変更の前後</text>
+      <rect x="490" y="8" width="150" height="56" rx="8" fill="#b25000"/><text x="565" y="40" fill="#fff" font-weight="700">Lambda</text>
+      <rect x="690" y="8" width="156" height="56" rx="8" fill="#fff" stroke="#b25000"/><text x="768" y="30" fill="#b25000">確認メール</text><text x="768" y="48" fill="#b25000">集計の更新</text>
+      <rect x="230" y="86" width="190" height="56" rx="8" fill="#6a3d9a"/><text x="325" y="108" fill="#fff" font-weight="700">Kinesis Data Streams</text><text x="325" y="126" fill="#fff">項目レベルの変更を複製</text>
+      <rect x="490" y="86" width="356" height="56" rx="8" fill="#fff" stroke="#6a3d9a"/><text x="668" y="108" fill="#6a3d9a">Data Firehose → S3</text><text x="668" y="126" fill="#6a3d9a">Managed Service for Apache Flink → ダッシュボード</text>
+      <g stroke="#1f3a68" stroke-width="2"><line x1="160" y1="65" x2="228" y2="40" marker-end="url(#d2)"/><line x1="160" y1="85" x2="228" y2="112" marker-end="url(#d2)"/><line x1="420" y1="36" x2="488" y2="36" marker-end="url(#d2)"/><line x1="640" y1="36" x2="688" y2="36" marker-end="url(#d2)"/><line x1="420" y1="114" x2="488" y2="114" marker-end="url(#d2)"/></g>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:20%">機能</th><th>内容</th><th style="width:32%">選ぶ合図</th></tr>
+    <tr><td class="t">DynamoDB Streams</td><td class="l">項目レベルの変更を時間順に最大 24 時間。各レコードは 1 回だけ、変更と同じ順</td><td class="l">「書き込まれたら Lambda で処理」</td></tr>
+    <tr><td class="t">Kinesis Data Streams</td><td class="l">変更を Kinesis Data Streams に複製し、Firehose や Flink につなぐ</td><td class="l">「Firehose・Flink で分析・保存」</td></tr>
+    <tr><td class="t">TTL</td><td class="l">項目ごとの有効期限（秒単位の UNIX エポック時間）を過ぎたら自動で削除。書き込みスループットを使わない。削除は数日以内</td><td class="l">「セッションを 24 時間で消す」「消すのに WCU を使わない」</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/Streams.html">DynamoDB Streams の変更データキャプチャ</a>（「DynamoDB Streams は、DynamoDB テーブル内の項目レベルの変更に関するシーケンスを時間順にキャプチャし、その情報を最大 24 時間ログに保存します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/kds.html">Kinesis Data Streams を使用して DynamoDB への変更をキャプチャする</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/TTL.html">DynamoDB での Time to Live (TTL) の使用</a>（「削除は、通常は有効期限が切れてから数日以内に行われます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>バックアップ・エクスポート・暗号化</h1>
+  <table class="mx">
+    <tr><th style="width:24%">機能</th><th>内容</th><th style="width:30%">選ぶ合図</th></tr>
+    <tr><td class="t">ポイントインタイムリカバリ（PITR）</td><td class="l">継続的に自動バックアップ。1〜35 日（既定 35）の任意の秒に復元。最新は通常、現在の 5 分前</td><td class="l">「誤った書き込みを数分前に戻す」</td></tr>
+    <tr><td class="t">オンデマンドバックアップ</td><td class="l">テーブル全体の完全なバックアップ。作った時点の状態に戻せる。本番に影響しない</td><td class="l">「何年も残す」「規制への対応」</td></tr>
+    <tr><td class="t">S3 へのエクスポート</td><td class="l">PITR の期間の任意の時点を S3 に。非同期で RCU を使わない。全体と増分。PITR の有効化が必要</td><td class="l">「Athena で分析」「本番に影響させない」</td></tr>
+    <tr><td class="t">保管時の暗号化</td><td class="l">すべてのユーザーデータが常に KMS で暗号化。キーの種類（AWS 所有・AWS マネージド・カスタマーマネージド）はいつでも変更できる</td><td class="l">「既定で暗号化されているか」→ される</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>RDS との違い：</b>RDS の PITR も最長 35 日だが、DynamoDB では保持期間を変えても PITR の料金は変わらない（テーブルとインデックスのサイズで決まる）。</div>
+    <div class="point warn"><b>Streams は復元に使わない：</b>変更の記録は 24 時間しか残らず、テーブルを戻す機能ではない。グローバルテーブルのレプリカも、誤った上書きまで複製される。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/PointInTimeRecovery_Howitworks.html">DynamoDB でポイントインタイムリカバリを有効にする</a>（「復旧期間を (35 日から 1 日などに) 変更しても、料金は削減されません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/Backup-and-Restore.html">DynamoDB のバックアップと復元</a>（「オンデマンドバックアップを使用すると、DynamoDB テーブル全体を、バックアップ作成時の正確な状態に復元できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/S3DataExport.HowItWorks.html">Amazon S3 への DynamoDB データのエクスポート: 仕組み</a>（「エクスポート機能を使用するには、テーブルで PITR を有効にする必要があります。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/EncryptionAtRest.html">保管時の DynamoDB 暗号化</a>（「キーの種類は、いつでも切り替えることができます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>DAX：DynamoDB の前のインメモリキャッシュ</h1>
+  <svg width="856" height="170" viewBox="0 0 856 170">
+    <defs><marker id="d3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="55" width="140" height="60" rx="8" fill="#1f3a68"/><text x="80" y="80" fill="#fff" font-weight="700">アプリ</text><text x="80" y="98" fill="#fff">DAX クライアント</text>
+      <rect x="230" y="15" width="300" height="140" rx="12" fill="#fdf0e2" stroke="#b25000"/><text x="380" y="35" fill="#b25000" font-weight="700" font-size="12">DAX クラスター（VPC の中）</text>
+      <g fill="#b25000"><rect x="250" y="50" width="80" height="34" rx="5"/><rect x="340" y="50" width="80" height="34" rx="5"/><rect x="430" y="50" width="80" height="34" rx="5"/></g><g fill="#fff"><text x="290" y="71">プライマリ</text><text x="380" y="71">レプリカ</text><text x="470" y="71">レプリカ</text></g>
+      <text x="380" y="108" fill="#3a7d44" font-weight="700">結果整合性の読み込み → キャッシュ（マイクロ秒）</text><text x="380" y="130" fill="#9a3030">強力な整合性の読み込み → そのまま DynamoDB へ</text>
+      <rect x="620" y="55" width="226" height="60" rx="8" fill="#3a7d44"/><text x="733" y="80" fill="#fff" font-weight="700">DynamoDB テーブル</text><text x="733" y="98" fill="#fff">1 桁ミリ秒</text>
+      <line x1="150" y1="85" x2="228" y2="85" stroke="#1f3a68" stroke-width="2" marker-end="url(#d3)"/><line x1="530" y1="85" x2="618" y2="85" stroke="#1f3a68" stroke-width="2" marker-end="url(#d3)"/><text x="574" y="77">ミス</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>向く：</b>マイクロ秒の応答が要る。同じキーを何度も読む。読み込みが多い・急に増えて RCU を節約したい。DynamoDB と API が互換なので、アプリの変更は最小限。</div>
+    <div class="point warn"><b>向かない：</b>強い整合性の読み込みが必要。書き込みが多い（ノード間の複製が増える）。同じ読み込みが少ない（キャッシュヒット率が 90% を超えると最もよく働く）。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/DAX.html">DynamoDB Accelerator (DAX) とインメモリアクセラレーション</a>（「DAX は、DynamoDB と互換性のあるキャッシュサービスで、条件の厳しいアプリケーションで高速なインメモリパフォーマンスを可能にします。」「DAX は、キャッシュヒットレートが 90% を超える場合に最適に動作します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/amazondynamodb/latest/developerguide/DAX.concepts.html">DAX: 仕組み</a>（「Amazon DynamoDB Accelerator (DAX) は、Amazon Virtual Private Cloud (Amazon VPC) 環境内で実行するように設計されています。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>ElastiCache とキャッシュ戦略</h1>
+  <p>サーバーレスとノードベース、Valkey・Redis OSS と Memcached、レプリケーションとマルチ AZ、グローバルデータストア、認証、遅延読み込み・書き込みスルー・TTL。</p>
+  <div class="foot"><span>AWS SAA #16 DynamoDB とキャッシュ</span><span>タスク 3.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>エンジンと形を選ぶ</h1>
+  <div class="cols">
+    <table class="mx">
+      <tr><th style="width:32%">機能</th><th>Memcached</th><th>Valkey・Redis OSS</th></tr>
+      <tr><td class="t">データ型</td><td>シンプル</td><td>複雑（ソート済みセットなど）</td></tr>
+      <tr><td class="t">マルチスレッド</td><td>できる</td><td style="color:#9a3030">できない</td></tr>
+      <tr><td class="t">複製・高可用性</td><td style="color:#9a3030">なし</td><td>できる</td></tr>
+      <tr><td class="t">自動フェイルオーバー</td><td style="color:#9a3030">なし</td><td>できる</td></tr>
+      <tr><td class="t">バックアップ</td><td>サーバーレスだけ</td><td>できる</td></tr>
+      <tr><td class="t">Pub/Sub</td><td style="color:#9a3030">なし</td><td>できる</td></tr>
+    </table>
+    <div>
+      <div class="point"><b>Memcached を選ぶ：</b>できるだけシンプル、複数のコアを持つ大きなノード、ノードの追加・削除でスケールアウト・イン、オブジェクトのキャッシュ。失っても DB から作り直せるデータ。</div>
+      <div class="point" style="margin-top:6px"><b>Valkey・Redis OSS を選ぶ：</b>複製と自動フェイルオーバー、バックアップ、Pub/Sub、順位表（ソート済みセット）、セッション。</div>
+      <div class="point warn" style="margin-top:6px"><b>サーバーレス：</b>ノードを設定せず 1 分未満で作れ、自動で垂直・水平にスケール。データは複数の AZ に複製され、99.99% の可用性 SLA。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonElastiCache/latest/dg/SelectEngine.html">Valkey、Memcached、および Redis OSS のノードベースのクラスターの比較</a>（「複数のコアまたはスレッドを持つ大きなノードを実行する必要がある。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonElastiCache/latest/dg/WhatIs.html">Amazon ElastiCache とは</a>（「ElastiCache サーバーレスでは、可用性の高いキャッシュを 1 分未満で作成でき、インスタンスをプロビジョニングしたり、ノードやクラスターを設定したりする必要がありません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonElastiCache/latest/dg/elasticache-use-cases.html">ElastiCache の一般的なユースケース</a>（「Valkey または Redis OSS のソート済みセットを使用すると、リーダーボードの計算の複雑性を、アプリケーションからクラスターに移すことができます。」）。表は英語の比較表を Claude が訳した</div>
+</section>
+
+<section class="slide">
+  <h1>可用性・リージョン間・認証</h1>
+  <svg width="856" height="160" viewBox="0 0 856 160">
+    <defs><marker id="d4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#6a3d9a"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="10" width="520" height="140" rx="12" fill="#f3eefa" stroke="#6a3d9a"/><text x="270" y="30" fill="#6a3d9a" font-weight="700" font-size="12">東京：レプリケーショングループ（マルチ AZ）</text>
+      <rect x="30" y="46" width="150" height="50" rx="6" fill="#6a3d9a"/><text x="105" y="68" fill="#fff" font-weight="700">プライマリ</text><text x="105" y="84" fill="#fff">AZ-a・書き込み</text>
+      <rect x="200" y="46" width="150" height="50" rx="6" fill="#fff" stroke="#6a3d9a"/><text x="275" y="68" fill="#6a3d9a" font-weight="700">レプリカ</text><text x="275" y="84" fill="#6a3d9a">AZ-c</text>
+      <rect x="370" y="46" width="150" height="50" rx="6" fill="#fff" stroke="#6a3d9a"/><text x="445" y="68" fill="#6a3d9a" font-weight="700">レプリカ</text><text x="445" y="84" fill="#6a3d9a">AZ-d</text>
+      <text x="270" y="118">非同期の複製・障害でレプリカに自動フェイルオーバー</text><text x="270" y="138">プライマリエンドポイントの DNS が更新される</text>
+      <rect x="626" y="40" width="220" height="80" rx="12" fill="#fff" stroke="#6a3d9a" stroke-width="2"/><text x="736" y="64" fill="#6a3d9a" font-weight="700">シンガポール</text><text x="736" y="84" fill="#6a3d9a">読み取り用のクラスター</text><text x="736" y="104" fill="#6a3d9a">低レイテンシー・DR</text>
+      <line x1="530" y1="80" x2="624" y2="80" stroke="#6a3d9a" stroke-width="2" marker-end="url(#d4)"/><text x="578" y="72" fill="#6a3d9a">グローバル</text><text x="578" y="100" fill="#6a3d9a">データストア</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%">機能</th><th>内容</th><th style="width:30%">ひっかけ</th></tr>
+    <tr><td class="t">マルチ AZ</td><td class="l">プライマリの障害でレプリカに自動で切り替える。単一ノードは止まると全データを失う</td><td class="l">非同期なので少し失うことがある</td></tr>
+    <tr><td class="t">グローバルデータストア</td><td class="l">Valkey・Redis OSS のクラスターをリージョン間で複製。ノードベースのクラスターだけ</td><td class="l">DynamoDB のグローバルテーブルとは別</td></tr>
+    <tr><td class="t">RBAC（旧 AUTH）</td><td class="l">ユーザーごとの認証。Secrets Manager でパスワードを自動ローテーション。サーバーレスでは必須</td><td class="l">セキュリティグループや暗号化とは別の層</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonElastiCache/latest/dg/Replication.html">レプリケーショングループを使用する高可用性</a>（「クラスターが何らかの理由で停止すると、クラスターのすべてのデータが失われます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonElastiCache/latest/dg/Redis-Global-Datastore.html">グローバルデータストアを使用した AWS リージョン間のレプリケーション</a>（「グローバルデータストアは現在、ノードベースのクラスターでのみ使用できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonElastiCache/latest/dg/auth.html">Valkey および Redis OSS AUTH コマンドによる認証</a>（「すべてのサーバーレスキャッシュでは、認証時に RBAC を使用する必要があります。」）</div>
+</section>
+
+<section class="slide">
+  <h1>キャッシュ戦略：遅延読み込みと書き込みスルー</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">遅延読み込み（ミスしたときだけ入れる）</div>
+      <svg width="410" height="140" viewBox="0 0 410 140">
+        <defs><marker id="d5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <rect x="5" y="50" width="90" height="40" rx="6" fill="#1f3a68"/><text x="50" y="74" fill="#fff">アプリ</text>
+          <rect x="160" y="5" width="100" height="40" rx="6" fill="#6a3d9a"/><text x="210" y="29" fill="#fff">キャッシュ</text>
+          <rect x="160" y="95" width="100" height="40" rx="6" fill="#1f5fa8"/><text x="210" y="119" fill="#fff">DB</text>
+          <line x1="95" y1="58" x2="158" y2="30" stroke="#1f3a68" stroke-width="2" marker-end="url(#d5)"/><text x="112" y="32">① 読む</text>
+          <line x1="95" y1="82" x2="158" y2="110" stroke="#1f3a68" stroke-width="2" marker-end="url(#d5)"/><text x="70" y="112">② ミスなら DB</text>
+          <path d="M260,115 L330,115 L330,25 L262,25" fill="none" stroke="#3a7d44" stroke-width="2" marker-end="url(#d5)"/><text x="370" y="74" fill="#3a7d44">③ 入れる</text>
+        </g>
+      </svg>
+      <div class="point">要求されたデータだけ。ノードが空になっても動く。ミスのとき 3 回の往復。DB が変わってもキャッシュは古いまま。</div>
+    </div>
+    <div>
+      <div class="lbl">書き込みスルー（DB に書くたびに入れる）</div>
+      <svg width="410" height="140" viewBox="0 0 410 140">
+        <defs><marker id="d6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <rect x="5" y="50" width="90" height="40" rx="6" fill="#1f3a68"/><text x="50" y="74" fill="#fff">アプリ</text>
+          <rect x="160" y="5" width="100" height="40" rx="6" fill="#6a3d9a"/><text x="210" y="29" fill="#fff">キャッシュ</text>
+          <rect x="160" y="95" width="100" height="40" rx="6" fill="#1f5fa8"/><text x="210" y="119" fill="#fff">DB</text>
+          <line x1="95" y1="58" x2="158" y2="30" stroke="#b25000" stroke-width="2" marker-end="url(#d6)"/><line x1="95" y1="82" x2="158" y2="110" stroke="#b25000" stroke-width="2" marker-end="url(#d6)"/>
+          <text x="330" y="60" fill="#b25000">書き込みのたびに</text><text x="330" y="78" fill="#b25000">両方を更新</text>
+        </g>
+      </svg>
+      <div class="point warn">古くならない。読まれないデータまで入ってむだ。新しいノードは DB が更新されるまで空。</div>
+    </div>
+  </div>
+  <div class="point" style="margin-top:8px"><b>TTL を足す：</b>それぞれの書き込みに有効期限（TTL）を付けて、遅延読み込みの「古いデータ」と書き込みスルーの「むだなデータ」を抑える。DynamoDB の TTL（項目の削除）とは別のもの。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonElastiCache/latest/dg/Strategies.html">Memcached のキャッシュ戦略</a>（「必要なときにのみキャッシュにデータを読み込むキャッシュ戦略です。」「書き込みスルー戦略では、データがデータベースに書き込まれると常にデータを追加するか、キャッシュのデータを更新します。」「有効期限 (TTL) は、キーの有効期限までの秒数を指定する整数値です。」）</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">DynamoDB の基本<span>PK・SK、GSI はあとから・結果整合性だけ、LSI は作成時・強い整合性も。オンデマンドが既定、安定ならプロビジョンド</span></div>
+      <div class="box b2">DynamoDB の機能<span>グローバルテーブル＝マルチアクティブ、Streams＝24 時間、TTL＝WCU なしで削除、PITR＝35 日、エクスポート＝RCU なし</span></div>
+      <div class="box b3">DAX<span>DynamoDB 専用・マイクロ秒・結果整合性の読み込みだけキャッシュ・コード変更は最小限</span></div>
+      <div class="box b4">ElastiCache<span>Valkey・Redis OSS＝複製・順位表、Memcached＝シンプル・マルチスレッド、遅延読み込みと書き込みスルーと TTL</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:54%">ひっかけ</th><th>正しくは</th></tr>
+        <tr><td class="l">運用中のテーブルに LSI を追加</td><td class="x">GSI</td></tr>
+        <tr><td class="l">GSI で強力な整合性の読み込み</td><td class="x">テーブルか LSI</td></tr>
+        <tr><td class="l">PITR で 7 年残す</td><td class="x">オンデマンドバックアップ</td></tr>
+        <tr><td class="l">DynamoDB を複数リージョンで書くのに Aurora Global</td><td class="x">グローバルテーブル</td></tr>
+        <tr><td class="l">書き込みが多く強い整合性に DAX</td><td class="x">DAX は向かない</td></tr>
+        <tr><td class="l">複製と自動フェイルオーバーに Memcached</td><td class="x">Valkey・Redis OSS</td></tr>
+      </table>
+      <div class="point">次の #17 では、VPC の基本を学ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
