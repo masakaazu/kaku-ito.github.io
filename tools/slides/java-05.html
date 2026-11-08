@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Silver #05 演算子 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">Java Silver（SE 17・1Z0-825-JPN）　3 演算子と制御構造　#05</div>
+  <h1>演算子</h1>
+  <p>組み方は優先順位で、計算は左から ― 割り算と余り、++ の前と後、複合代入、== の意味、短絡評価、三項演算子</p>
+  <div class="refs-legend">各ページの下に、根拠にした Oracle の資料（JLS 15 章・Java Tutorials）を書いた（青い文字を押すと開く）。コードは Claude が作り、JDK 17 で動かして確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>試験内容チェックリスト 3（演算子の使用（演算子の優先順位を含む））</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 算術演算子とインクリメント<span>整数の / は 0 方向に切り捨て。余りの符号は左。x++ は元の値</span></div>
+      <div class="box b2">2 代入と比較<span>代入式は値を持つ。複合代入はキャストつき。== は値か参照か</span></div>
+      <div class="box b3">3 論理演算子とビット演算子<span>&amp;&amp; と || は短絡する。&amp; と | はしない。^ は XOR</span></div>
+      <div class="box b4">4 優先順位と三項演算子<span>組み方は表で決まり、計算は左から。三項は右から組む</span></div>
+    </div>
+    <div>
+      <div class="cap">1 つの式を読む 2 つの決まり（Claude が作成）</div>
+      <table class="mx">
+        <tr><th style="width:30%">決まり</th><th>何を決めるか</th></tr>
+        <tr><td class="t">優先順位</td><td class="l">どの演算子とどのオペランドを<b>組にするか</b>（かっこの付け方）</td></tr>
+        <tr><td class="t">結合規則</td><td class="l">同じ優先順位が並んだとき、<b>左右どちらから</b>組にするか</td></tr>
+        <tr><td class="t">評価の順序</td><td class="l">組ができたあと、<b>どの順に計算するか</b>。二項演算子は左のオペランドが先</td></tr>
+      </table>
+<pre class="code small" style="margin-top:8px"><span class="k">int</span> i = <span class="s">1</span>;
+i = i++ + i++ * <span class="s">2</span>;   <span class="c">// 組：i++ + (i++ * 2)</span>
+                       <span class="c">// 計算：1 + (2 * 2) = 5</span></pre>
+      <div class="point"><b>芯：</b>優先順位は「組み方」だけ。* が先に組になっても、<b>左の i++ が先に計算</b>される。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.oracle.com/jp/education/certification/javase-17-programmer-1/">Oracle「Java SE 17 Programmer I（1Z0-825-JPN）」試験内容チェックリスト</a>／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.7.1 Evaluate Left-Hand Operand First</a>（The left-hand operand of a binary operator appears to be fully evaluated before any part of the right-hand operand is evaluated）／<a class="src" href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/operators.html">Java Tutorials「Operators」</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>算術演算子とインクリメント</h1>
+  <p>整数の割り算は 0 の方向へ。++ は前か後ろかで式の値が変わる。</p>
+  <div class="foot"><span>Java Silver #05 演算子</span><span>試験内容 3</span></div>
+</section>
+
+<section class="slide">
+  <h1>割り算と余り</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">整数の / は 0 の方向に切り捨てる（Claude が作成）</div>
+      <svg width="400" height="150" viewBox="0 0 400 150">
+        <defs><marker id="a5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker></defs>
+        <g font-size="12" text-anchor="middle">
+          <line x1="20" y1="60" x2="380" y2="60" stroke="#1f3a68" stroke-width="2"/>
+          <g fill="#1f3a68">
+            <line x1="50" y1="54" x2="50" y2="66" stroke="#1f3a68"/><text x="50" y="84">−4</text>
+            <line x1="110" y1="54" x2="110" y2="66" stroke="#1f3a68"/><text x="110" y="84">−3</text>
+            <line x1="200" y1="50" x2="200" y2="70" stroke="#1f3a68" stroke-width="2"/><text x="200" y="84" font-weight="700">0</text>
+            <line x1="290" y1="54" x2="290" y2="66" stroke="#1f3a68"/><text x="290" y="84">3</text>
+            <line x1="350" y1="54" x2="350" y2="66" stroke="#1f3a68"/><text x="350" y="84">4</text>
+          </g>
+          <circle cx="80" cy="60" r="6" fill="#e08a2c"/><text x="80" y="40" fill="#b25000">−3.5</text>
+          <circle cx="320" cy="60" r="6" fill="#e08a2c"/><text x="320" y="40" fill="#b25000">3.5</text>
+          <line x1="86" y1="60" x2="104" y2="60" stroke="#b25000" stroke-width="3" marker-end="url(#a5)"/>
+          <line x1="314" y1="60" x2="296" y2="60" stroke="#b25000" stroke-width="3" marker-end="url(#a5)"/>
+          <text x="110" y="112" fill="#1f3a68" font-family="DejaVu Sans Mono, monospace">-7 / 2 → -3</text>
+          <text x="290" y="112" fill="#1f3a68" font-family="DejaVu Sans Mono, monospace">7 / 2 → 3</text>
+          <text x="200" y="138" fill="#4a5a78" font-size="11">どちらも 0 に近いほうへ。−4 にはならない</text>
+        </g>
+      </svg>
+      <div class="point"><b>余りの決まり：</b>(a / b) * b + (a % b) が a に戻る。だから余りの符号は<b>左（割られる数）</b>と同じ。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:44%">式</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>-7 % 3</code>・<code>7 % -3</code></td><td class="t">−1・1</td></tr>
+        <tr><td class="l"><code>7.5 % 2</code></td><td class="t">1.5（double にも使える）</td></tr>
+        <tr><td class="l"><code>double d = 10 / 4;</code></td><td class="t">2.0（先に int で 2）</td></tr>
+        <tr><td class="l"><code>10 / 4.0</code></td><td class="t">2.5</td></tr>
+        <tr><td class="l"><code>5 / 0</code>・<code>5 % 0</code></td><td class="x">ArithmeticException: / by zero</td></tr>
+        <tr><td class="l"><code>5.0 / 0</code>・<code>-5.0 / 0</code></td><td class="t">Infinity・−Infinity</td></tr>
+        <tr><td class="l"><code>0.0 / 0</code>・<code>5 % 0.0</code></td><td class="t">NaN・NaN</td></tr>
+      </table>
+      <div class="point"><b>0 割りで例外になるのは整数だけ。</b>浮動小数点の割り算は例外を出さない。どちらもコンパイルは通る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.17.2 Division Operator /</a>（Integer division rounds toward 0／if the value of the divisor in an integer division is 0, then an ArithmeticException is thrown／evaluation of a floating-point division operator / never throws a run-time exception）・15.17.3 Remainder Operator %（(a/b)*b+(a%b) is equal to a）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>前置と後置 ― 式の値はどちらか</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">x = 5 のとき x++ + ++x を左から追う（Claude が作成）</div>
+      <table class="mx">
+        <tr><th style="width:26%">手順</th><th style="width:26%">部品</th><th>式の値</th><th>x の値</th></tr>
+        <tr><td class="t">1</td><td class="l"><code>x++</code></td><td class="t">5（元の値）</td><td>6</td></tr>
+        <tr><td class="t">2</td><td class="l"><code>++x</code></td><td class="t">7（増やした値）</td><td>7</td></tr>
+        <tr><td class="t">3</td><td class="l"><code>5 + 7</code></td><td class="t">12</td><td>7</td></tr>
+      </table>
+      <div class="point"><b>解き方：</b>表のように「式の値」と「x の今の値」を 2 列で書き出す。前置は先に変えて新しい値、後置は元の値を使ってから変える。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">コード</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>x = 5; x = x++;</code></td><td class="t">x は 5（元の値で上書き）</td></tr>
+        <tr><td class="l"><code>a = 3; b = a-- - --a;</code></td><td class="t">b は 2、a は 1</td></tr>
+        <tr><td class="l"><code>i = 1; i = i++ + i++ * 2;</code></td><td class="t">i は 5</td></tr>
+        <tr><td class="l"><code>char c = 'A'; c++;</code></td><td class="t">'B'（型は char のまま）</td></tr>
+        <tr><td class="l"><code>double d = 1.5; d++;</code></td><td class="t">2.5</td></tr>
+        <tr><td class="l"><code>final int x = 1; x++;</code></td><td class="x">cannot assign a value to final variable</td></tr>
+        <tr><td class="l"><code>5++</code>・<code>(a + b)++</code></td><td class="x">コンパイルエラー（変数でない）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.14.2 Postfix Increment Operator ++</a>（The value of the postfix increment expression is the value of the variable before the new value is stored／A variable that is declared final cannot be incremented）・15.15.1 Prefix Increment Operator ++（The value of the prefix increment expression is the value of the variable after the new value is stored）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>評価の順序 ― 左のオペランドが先</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">a[i] = i = 2;（i は 0）の計算（Claude が作成）</div>
+      <svg width="400" height="190" viewBox="0 0 400 190">
+        <g font-size="12.5" text-anchor="middle">
+          <rect x="20" y="20" width="110" height="40" rx="8" fill="#1f3a68"/><text x="75" y="38" fill="#fff" font-size="11">① 左を決める</text><text x="75" y="54" fill="#fff" font-family="DejaVu Sans Mono, monospace">a[0]</text>
+          <rect x="145" y="20" width="110" height="40" rx="8" fill="#2f5596"/><text x="200" y="38" fill="#fff" font-size="11">② 右を計算</text><text x="200" y="54" fill="#fff" font-family="DejaVu Sans Mono, monospace">i = 2 → 2</text>
+          <rect x="270" y="20" width="110" height="40" rx="8" fill="#5b80bf"/><text x="325" y="38" fill="#fff" font-size="11">③ 入れる</text><text x="325" y="54" fill="#fff" font-family="DejaVu Sans Mono, monospace">a[0] = 2</text>
+          <text x="200" y="92" fill="#1f3a68">結果：a[0] が 2、a[2] は 0、i は 2</text>
+          <rect x="20" y="112" width="360" height="62" rx="8" fill="#fde7cf"/>
+          <text x="200" y="134" fill="#7a3a00">x += x -= 3;（x は 10）</text>
+          <text x="200" y="156" fill="#7a3a00" font-size="11.5">左の x の値 10 を先に覚える → 右で x は 7 → 10 + 7 = 17</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:40%">場面</th><th>先に計算されるもの</th></tr>
+        <tr><td class="t">二項演算子</td><td class="l">左のオペランドを全部。そのあと右</td></tr>
+        <tr><td class="t">複合代入</td><td class="l">左の変数を決め、<b>今の値を覚えて</b>から右</td></tr>
+        <tr><td class="t">配列への代入</td><td class="l">配列と添字を先に決めてから右</td></tr>
+        <tr><td class="t">メソッドの引数</td><td class="l">左の引数から順に</td></tr>
+        <tr><td class="t">&amp;&amp;・||・? :</td><td class="l">左（条件）だけで決まれば、右は計算しない</td></tr>
+      </table>
+      <div class="point"><b>代入は右から組になるが、</b>左辺の変数（配列の添字など）は先に決まる。「右から計算」ではない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.7.1</a>（If the operator is a compound-assignment operator, then evaluation of the left-hand operand includes both remembering the variable … and fetching and saving that variable's value）・15.7.4 Argument Lists are Evaluated Left-to-Right・15.26.1（the array reference subexpression … then the index subexpression … are evaluated）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>代入と比較</h1>
+  <p>代入式も値を持つ。== は数なら値、参照ならオブジェクトを比べる。</p>
+  <div class="foot"><span>Java Silver #05 演算子</span><span>試験内容 3</span></div>
+</section>
+
+<section class="slide">
+  <h1>代入・複合代入と型</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">byte どうしの + の型（Claude が作成）</div>
+      <svg width="400" height="140" viewBox="0 0 400 140">
+        <defs><marker id="b5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5b80bf"/></marker></defs>
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="20" width="70" height="32" rx="6" fill="#c9daf2"/><text x="45" y="41" fill="#1f3a68">byte a</text>
+          <rect x="10" y="70" width="70" height="32" rx="6" fill="#c9daf2"/><text x="45" y="91" fill="#1f3a68">byte b</text>
+          <line x1="82" y1="36" x2="140" y2="56" stroke="#5b80bf" stroke-width="2" marker-end="url(#b5)"/>
+          <line x1="82" y1="86" x2="140" y2="66" stroke="#5b80bf" stroke-width="2" marker-end="url(#b5)"/>
+          <rect x="144" y="44" width="100" height="34" rx="6" fill="#1f3a68"/><text x="194" y="66" fill="#fff">a + b は int</text>
+          <line x1="246" y1="61" x2="282" y2="61" stroke="#5b80bf" stroke-width="2" marker-end="url(#b5)"/>
+          <rect x="286" y="44" width="104" height="34" rx="6" fill="#fde7cf" stroke="#b25000"/><text x="338" y="66" fill="#7a3a00">byte c に入らない</text>
+          <text x="200" y="118" fill="#4a5a78" font-size="11">int より小さい型は計算の前に int に昇格（#02）</text>
+        </g>
+      </svg>
+      <table class="mx">
+        <tr><th style="width:56%">コード</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>byte c = a + b;</code></td><td class="x">possible lossy conversion</td></tr>
+        <tr><td class="l">a・b が final で値 10・20</td><td class="t">OK（定数式 30）</td></tr>
+        <tr><td class="l"><code>byte f = 10 + 20;</code></td><td class="t">OK（定数式）</td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:50%">複合代入</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>short s = 10; s += 5.7;</code></td><td class="t">15（(short)15.7）</td></tr>
+        <tr><td class="l"><code>byte b = 10; b *= 30;</code></td><td class="t">44（(byte)300）</td></tr>
+        <tr><td class="l"><code>char c = 'a'; c += 1;</code></td><td class="t">'b'</td></tr>
+        <tr><td class="l"><code>int y = 2; y *= 3 + 4;</code></td><td class="t">14（右辺全体にかかる）</td></tr>
+        <tr><td class="l"><code>s = s + 1;</code>（s は short）</td><td class="x">possible lossy conversion</td></tr>
+      </table>
+      <div class="point"><b>E1 op= E2 は E1 = (T)((E1) op (E2))。</b>T は左辺の型。キャストが入るのでコンパイルは通るが、値は切り捨てや桁あふれで変わる。</div>
+      <div class="point"><b>代入式は値を持つ：</b><code>a = b = c = 7</code> は右から組み、3 つとも 7。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.26.2 Compound Assignment Operators</a>（E1 op= E2 is equivalent to E1 = (T) ((E1) op (E2)), where T is the type of E1）・15.26（the result of the assignment expression is the value of the variable after the assignment has occurred）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-5.html">JLS 5.2・5.6</a>（the value of the constant expression is representable in the type of the variable）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>== で比べるもの</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">式</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>10 == 10.0</code></td><td class="t">true（double にそろえる）</td></tr>
+        <tr><td class="l"><code>'a' == 97</code></td><td class="t">true（文字コード）</td></tr>
+        <tr><td class="l"><code>0.1 + 0.2 == 0.3</code></td><td class="x">false</td></tr>
+        <tr><td class="l"><code>0.1 + 0.2</code> の表示</td><td class="t">0.30000000000000004</td></tr>
+        <tr><td class="l"><code>Double.NaN == Double.NaN</code></td><td class="x">false（NaN はどれとも等しくない）</td></tr>
+        <tr><td class="l"><code>Integer a = 127, b = 127; a == b</code></td><td class="t">true（同じオブジェクト）</td></tr>
+        <tr><td class="l"><code>Integer e = 1000; int f = 1000; e == f</code></td><td class="t">true（アンボクシングして値）</td></tr>
+        <tr><td class="l"><code>e.equals(f)</code></td><td class="t">true（値で比べる）</td></tr>
+      </table>
+      <div class="mini">−128〜127 の int をボクシングすると必ず同じオブジェクト（JLS 5.1.7）。それ以外は保証がない（JDK 17 の標準設定では Integer 128 どうしの == は false）。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:36%">オペランド</th><th>== の意味</th></tr>
+        <tr><td class="t">数値どうし</td><td class="l">昇格してから<b>値</b>を比べる</td></tr>
+        <tr><td class="t">boolean どうし</td><td class="l">値を比べる</td></tr>
+        <tr><td class="t">参照どうし</td><td class="l"><b>同じオブジェクトか</b>（中身は equals）</td></tr>
+        <tr><td class="t">ラッパーと基本型</td><td class="l">アンボクシングして値</td></tr>
+        <tr><td class="t">int と boolean</td><td class="x">コンパイルエラー</td></tr>
+      </table>
+      <div class="lbl" style="margin-top:8px">条件は boolean だけ（C 言語とのちがい）</div>
+<pre class="code small"><span class="ng"><span class="k">if</span> (x = <span class="s">1</span>)</span>        <span class="c">// int → コンパイルエラー</span>
+<span class="k">boolean</span> b = <span class="k">false</span>;
+<span class="k">if</span> (b = <span class="k">true</span>)     <span class="c">// 代入。いつも true で通る</span></pre>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.21.1</a>（binary numeric promotion is performed on the operands／If either operand is NaN, then the result of == is false）・15.21.2・15.21.3 Reference Equality Operators／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-5.html">JLS 5.1.7 Boxing Conversion</a>（an integer in the range -128 to 127 inclusive … It is always the case that a == b）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.9</a>（must have type boolean or Boolean）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>論理演算子とビット演算子</h1>
+  <p>&amp;&amp; と || は左で決まれば右を見ない。&amp; と | は必ず両方を見る。</p>
+  <div class="foot"><span>Java Silver #05 演算子</span><span>試験内容 3</span></div>
+</section>
+
+<section class="slide">
+  <h1>短絡評価</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">右を計算するかどうか（Claude が作成）</div>
+      <svg width="400" height="180" viewBox="0 0 400 180">
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="14" width="90" height="34" rx="6" fill="#1f3a68"/><text x="55" y="36" fill="#fff" font-family="DejaVu Sans Mono, monospace">A &amp;&amp; B</text>
+          <rect x="130" y="14" width="120" height="34" rx="6" fill="#fde7cf"/><text x="190" y="36" fill="#7a3a00">A が false</text>
+          <text x="325" y="36" fill="#7a3a00">B は見ない → false</text>
+          <rect x="130" y="56" width="120" height="34" rx="6" fill="#c9daf2"/><text x="190" y="78" fill="#1f3a68">A が true</text>
+          <text x="325" y="78" fill="#1f3a68">B を計算</text>
+          <rect x="10" y="104" width="90" height="34" rx="6" fill="#1f3a68"/><text x="55" y="126" fill="#fff" font-family="DejaVu Sans Mono, monospace">A || B</text>
+          <rect x="130" y="104" width="120" height="34" rx="6" fill="#fde7cf"/><text x="190" y="126" fill="#7a3a00">A が true</text>
+          <text x="325" y="126" fill="#7a3a00">B は見ない → true</text>
+          <rect x="130" y="144" width="120" height="30" rx="6" fill="#c9daf2"/><text x="190" y="164" fill="#1f3a68">A が false</text>
+          <text x="325" y="164" fill="#1f3a68">B を計算</text>
+        </g>
+      </svg>
+<pre class="code small"><span class="k">if</span> (s != <span class="k">null</span> &amp;&amp; s.length() &gt; <span class="s">0</span>)  <span class="c">// null でも安全</span>
+<span class="ng"><span class="k">if</span> (s != <span class="k">null</span> &amp; s.length() &gt; <span class="s">0</span>)</span>   <span class="c">// null なら NPE</span></pre>
+    </div>
+    <div>
+      <div class="cap">x = 0 から順に実行（JDK 17 の結果）</div>
+      <table class="mx">
+        <tr><th style="width:52%">文</th><th>結果</th><th>x</th></tr>
+        <tr><td class="l"><code>r1 = (x &gt; 0) &amp;&amp; (++x &gt; 0);</code></td><td>false</td><td class="t">0（右を見ない）</td></tr>
+        <tr><td class="l"><code>r2 = (x &gt; 0) &amp; (++x &gt; 0);</code></td><td>false</td><td class="t">1（右も計算）</td></tr>
+        <tr><td class="l"><code>r3 = (x &gt; 0) || (++x &gt; 0);</code></td><td>true</td><td class="t">1（右を見ない）</td></tr>
+      </table>
+      <table class="mx" style="margin-top:8px">
+        <tr><th style="width:24%">演算子</th><th>true になるとき</th><th>短絡</th></tr>
+        <tr><td class="t">&amp;&amp;・&amp;</td><td>両方 true</td><td>&amp;&amp; だけ</td></tr>
+        <tr><td class="t">||・|</td><td>どちらかが true</td><td>|| だけ</td></tr>
+        <tr><td class="t">^</td><td>ちょうど一方が true</td><td>しない</td></tr>
+        <tr><td class="t">!</td><td>false のとき</td><td>単項</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.23 Conditional-And Operator &amp;&amp;</a>（evaluates its right-hand operand only if the value of its left-hand operand is true）・15.24 Conditional-Or Operator ||（only if the value of its left-hand operand is false）・15.22.2 Boolean Logical Operators &amp;, ^, and |（For ^, the result value is true if the operand values are different）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>&amp;&amp; は || より先に組になる</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">x &gt; 3 || x++ &gt; 0 &amp;&amp; x++ &gt; 0（x は 5）の組み方（Claude が作成）</div>
+      <svg width="400" height="190" viewBox="0 0 400 190">
+        <g font-size="12" text-anchor="middle">
+          <rect x="150" y="10" width="100" height="32" rx="6" fill="#1f3a68"/><text x="200" y="31" fill="#fff" font-family="DejaVu Sans Mono, monospace">||</text>
+          <line x1="180" y1="42" x2="90" y2="80" stroke="#1f3a68" stroke-width="2"/>
+          <line x1="220" y1="42" x2="300" y2="80" stroke="#1f3a68" stroke-width="2"/>
+          <rect x="30" y="80" width="120" height="32" rx="6" fill="#c9daf2"/><text x="90" y="101" fill="#1f3a68" font-family="DejaVu Sans Mono, monospace">x &gt; 3</text>
+          <text x="90" y="130" fill="#1f3a68" font-weight="700">true</text>
+          <rect x="250" y="80" width="100" height="32" rx="6" fill="#fde7cf" stroke="#b25000" stroke-dasharray="5 3"/><text x="300" y="101" fill="#7a3a00" font-family="DejaVu Sans Mono, monospace">&amp;&amp;</text>
+          <line x1="280" y1="112" x2="240" y2="140" stroke="#b25000" stroke-dasharray="4 3"/>
+          <line x1="320" y1="112" x2="360" y2="140" stroke="#b25000" stroke-dasharray="4 3"/>
+          <text x="236" y="156" fill="#7a3a00" font-size="11" font-family="DejaVu Sans Mono, monospace">x++ &gt; 0</text>
+          <text x="360" y="156" fill="#7a3a00" font-size="11" font-family="DejaVu Sans Mono, monospace">x++ &gt; 0</text>
+          <text x="300" y="182" fill="#b25000" font-size="11">右側まるごと計算しない → x は 5</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:50%">式</th><th>組み方と結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>a || b &amp;&amp; c</code></td><td class="l"><code>a || (b &amp;&amp; c)</code></td></tr>
+        <tr><td class="l"><code>!a == b</code></td><td class="l"><code>(!a) == b</code>（a=true, b=false で true）</td></tr>
+        <tr><td class="l"><code>!x &gt; 5</code>（x は int）</td><td class="x">bad operand type int for unary operator '!'</td></tr>
+        <tr><td class="l"><code>!(x &gt; 5)</code></td><td class="t">OK</td></tr>
+        <tr><td class="l"><code>x &gt; 1 == true</code></td><td class="l"><code>(x &gt; 1) == true</code>（OK）</td></tr>
+        <tr><td class="l"><code>a &amp; b | c</code></td><td class="l"><code>(a &amp; b) | c</code></td></tr>
+      </table>
+      <div class="point"><b>! は単項演算子なので強い。</b>! の後ろに比較を書くときはかっこで囲む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/operators.html">Java Tutorials Operator Precedence</a>（unary は relational・equality より上、logical AND は logical OR より上）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.15.6</a>（The type of the operand expression of the unary ! operator must be boolean or Boolean）・15.22（&amp; having the highest precedence and | the lowest）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>ビット演算とシフト</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">6 と 3 を 2 進数で（下 3 けた、Claude が作成）</div>
+      <table class="mx">
+        <tr><th style="width:34%"></th><th>4</th><th>2</th><th>1</th><th>10 進</th></tr>
+        <tr><td class="t">6</td><td>1</td><td>1</td><td>0</td><td>6</td></tr>
+        <tr><td class="t">3</td><td>0</td><td>1</td><td>1</td><td>3</td></tr>
+        <tr><td class="t">6 &amp; 3（両方 1）</td><td>0</td><td>1</td><td>0</td><td class="t">2</td></tr>
+        <tr><td class="t">6 | 3（どちらか 1）</td><td>1</td><td>1</td><td>1</td><td class="t">7</td></tr>
+        <tr><td class="t">6 ^ 3（ちがえば 1）</td><td>1</td><td>0</td><td>1</td><td class="t">5</td></tr>
+      </table>
+      <div class="point"><b>~x は全ビット反転で −x − 1。</b><code>~5</code> は −6。^ はべき乗ではない（<code>2 ^ 3</code> は 1）。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:36%">シフト</th><th>意味</th><th>例（JDK 17）</th></tr>
+        <tr><td class="t">&lt;&lt;</td><td class="l">左へずらす（×2 ずつ）</td><td class="l"><code>8 &lt;&lt; 2</code> → 32</td></tr>
+        <tr><td class="t">&gt;&gt;</td><td class="l">右へ。符号を保つ</td><td class="l"><code>-8 &gt;&gt; 1</code> → −4</td></tr>
+        <tr><td class="t">&gt;&gt;&gt;</td><td class="l">右へ。左は 0 で埋める</td><td class="l"><code>8 &gt;&gt;&gt; 1</code> → 4</td></tr>
+        <tr><td class="t">&gt;&gt;&gt;（負）</td><td class="l">大きな正の数になる</td><td class="l"><code>-1 &gt;&gt;&gt; 28</code> → 15</td></tr>
+      </table>
+      <div class="point"><b>同じ記号が 2 役：</b>&amp;・|・^ は、オペランドが boolean なら論理演算子（短絡しない）、整数ならビット演算子。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.22.1 Integer Bitwise Operators &amp;, ^, and |</a>・15.15.5 Bitwise Complement Operator ~（~x equals (-x)-1）・15.19 Shift Operators（n &gt;&gt; s … with sign-extension／n &gt;&gt;&gt; s … with zero-extension）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>優先順位と三項演算子</h1>
+  <p>迷ったらかっこ。三項演算子は値を選ぶ「式」。</p>
+  <div class="foot"><span>Java Silver #05 演算子</span><span>試験内容 3</span></div>
+</section>
+
+<section class="slide">
+  <h1>優先順位の表</h1>
+  <div class="cols">
+    <table class="mx">
+      <tr><th style="width:12%">順</th><th style="width:26%">種類</th><th>演算子</th></tr>
+      <tr><td class="t">1</td><td>後置</td><td class="l"><code>x++ x--</code></td></tr>
+      <tr><td class="t">2</td><td>単項</td><td class="l"><code>++x --x +x -x ~ !</code></td></tr>
+      <tr><td class="t">3</td><td>乗除</td><td class="l"><code>* / %</code></td></tr>
+      <tr><td class="t">4</td><td>加減</td><td class="l"><code>+ -</code></td></tr>
+      <tr><td class="t">5</td><td>シフト</td><td class="l"><code>&lt;&lt; &gt;&gt; &gt;&gt;&gt;</code></td></tr>
+      <tr><td class="t">6</td><td>関係</td><td class="l"><code>&lt; &gt; &lt;= &gt;= instanceof</code></td></tr>
+      <tr><td class="t">7</td><td>等価</td><td class="l"><code>== !=</code></td></tr>
+      <tr><td class="t">8〜10</td><td>ビット・論理</td><td class="l"><code>&amp;</code> → <code>^</code> → <code>|</code></td></tr>
+      <tr><td class="t">11〜12</td><td>条件</td><td class="l"><code>&amp;&amp;</code> → <code>||</code></td></tr>
+      <tr><td class="t">13</td><td>三項</td><td class="l"><code>? :</code></td></tr>
+      <tr><td class="t">14</td><td>代入</td><td class="l"><code>= += -= *= /= %=</code> など</td></tr>
+    </table>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">式</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>2 + 3 * 4 - 6 / 2 % 2</code></td><td class="t">13（2 + 12 − 1）</td></tr>
+        <tr><td class="l"><code>10 - 4 - 3</code></td><td class="t">3（左から）</td></tr>
+        <tr><td class="l"><code>2 * 3 % 4</code></td><td class="t">2（左から）</td></tr>
+        <tr><td class="l"><code>x++ + x++ + " " + x</code>（x は 1）</td><td class="t">"3 3"</td></tr>
+        <tr><td class="l"><code>"" + x++ + x++</code>（x は 3）</td><td class="t">"34"</td></tr>
+      </table>
+      <div class="point"><b>結合の向き：</b>代入以外の二項演算子は<b>左から</b>、代入演算子と三項演算子は<b>右から</b>組になる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/operators.html">Java Tutorials「Operators」Operator Precedence</a>（All binary operators except for the assignment operators are evaluated from left to right; assignment operators are evaluated right to left）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.17・15.18（syntactically left-associative）・15.25（right-associative）</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>三項演算子</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">int</span> x = <span class="s">7</span>;
+String s = x &gt; <span class="s">5</span> ? <span class="s">"big"</span> : x &gt; <span class="s">2</span> ? <span class="s">"mid"</span> : <span class="s">"small"</span>;
+<span class="c">// x &gt; 5 ? "big" : (x &gt; 2 ? "mid" : "small") → big</span>
+
+<span class="k">int</span> y = <span class="s">0</span>;
+<span class="k">int</span> z = <span class="k">true</span> ? y++ : y--;   <span class="c">// y-- は計算しない</span>
+<span class="c">// y は 1、z は 0</span></pre>
+      <div class="lbl" style="margin-top:8px">NG（JDK 17 の表示）</div>
+<pre class="code small"><span class="ng">x &gt; <span class="s">2</span> ? System.out.println(<span class="s">"a"</span>) : System.out.println(<span class="s">"b"</span>);</span>
+<span class="c">// not a statement</span>
+<span class="ng">String t = x &gt; <span class="s">2</span> ? <span class="s">"ok"</span> : <span class="s">5</span>;</span>
+<span class="c">// bad type in conditional expression</span></pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:48%">2 つの値の型</th><th>式全体の型（例と結果）</th></tr>
+        <tr><td class="l">同じ型</td><td class="l">その型</td></tr>
+        <tr><td class="l">int と double</td><td class="l">double：<code>true ? 1 : 2.0</code> → 1.0</td></tr>
+        <tr><td class="l">char と char に入る int の定数</td><td class="l">char：<code>false ? 'a' : 98</code> → b</td></tr>
+        <tr><td class="l">String と int</td><td class="l">Object などの参照型（String の変数には入らない）</td></tr>
+      </table>
+      <div class="point"><b>式なので値が必要。</b>単独の文にできず、void のメソッドも書けない。処理を分けるなら if 文。</div>
+      <div class="point"><b>選ばれなかった側は計算されない。</b>++ や メソッド呼び出しがあっても実行されない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.25 Conditional Operator ? :</a>（The conditional operator is syntactically right-associative／It is a compile-time error for either the second or the third operand expression to be an invocation of a void method／The operand expression not chosen is not evaluated）・15.25.2 Numeric Conditional Expressions／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>問われ方とまちがえやすい点</h1>
+  <table class="mx">
+    <tr><th style="width:32%">こう聞かれたら</th><th>答えの考え方</th></tr>
+    <tr><td class="t">割り算・余りの結果</td><td class="l">整数どうしは 0 方向に切り捨て。余りの符号は左。0 割りは整数だけ例外</td></tr>
+    <tr><td class="t">++ と -- がまざった式</td><td class="l">左から「式の値」と「変数の値」を書き出す。後置は元の値。<code>x = x++</code> は変わらない</td></tr>
+    <tr><td class="t">複合代入の結果</td><td class="l">左の値を先に覚える。左辺の型へのキャストつき。右辺全体にかかる</td></tr>
+    <tr><td class="t">コンパイルできるか</td><td class="l">byte + byte は int。条件は boolean だけ。! は boolean だけ。三項演算子は単独の文にならない</td></tr>
+    <tr><td class="t">== の結果</td><td class="l">数は昇格して値。参照は同じオブジェクトか。浮動小数点と NaN に注意</td></tr>
+    <tr><td class="t">&amp;&amp;・|| と ++ の組合せ</td><td class="l">左で決まれば右は実行されない。&amp; と | は両方実行。&amp;&amp; が || より先に組む</td></tr>
+    <tr><td class="t">三項演算子の表示</td><td class="l">右から組む。式全体の型（1.0 や文字）に注意</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">算術とインクリメント<span>0 方向に切り捨て・余りは左の符号。後置は元の値</span></div>
+      <div class="box b2">代入と比較<span>複合代入はキャストつき。== は値か参照か</span></div>
+      <div class="box b3">論理とビット<span>&amp;&amp; と || だけ短絡。^ は XOR。~x は −x−1</span></div>
+      <div class="box b4">優先順位と三項<span>組み方は表、計算は左から。三項は右から組む式</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">式</th><th>結果</th></tr>
+        <tr><td class="l"><code>-7 / 2</code>・<code>-7 % 3</code></td><td class="t">−3・−1</td></tr>
+        <tr><td class="l"><code>x++ + ++x</code>（x は 5）</td><td class="t">12（x は 7）</td></tr>
+        <tr><td class="l"><code>b *= 30</code>（byte b は 10）</td><td class="t">44</td></tr>
+        <tr><td class="l"><code>(0 &gt; 0) &amp;&amp; (++x &gt; 0)</code></td><td class="t">false（x は増えない）</td></tr>
+        <tr><td class="l"><code>true ? 1 : 2.0</code></td><td class="t">1.0</td></tr>
+      </table>
+      <div class="point"><b>次は #06 分岐と switch。</b>if 文、switch 文と switch 式（アロー・yield）へ進む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

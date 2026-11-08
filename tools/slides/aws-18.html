@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS SAA #18 VPCとオンプレミスの接続 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">AWS SAA（SAA-C03）　分野3 高パフォーマンス　#18</div>
+  <h1>VPC とオンプレミスの接続</h1>
+  <p>Site-to-Site VPN と Client VPN、Direct Connect の接続・仮想インターフェイス・Direct Connect ゲートウェイ・回復性と暗号化、Transit Gateway のルートテーブルとピアリング、Route 53 Resolver エンドポイントによるハイブリッド DNS</p>
+  <div class="refs-legend">各ページの下に、根拠にした AWS の公式ドキュメント（Site-to-Site VPN ユーザーガイド・Client VPN 管理者ガイド・Direct Connect ユーザーガイド・Amazon VPC Transit Gateway・Route 53 デベロッパーガイド）を書いた（青い文字を押すと開く）。「」の中はドキュメントの原文どおり（日本語版は機械翻訳のため、語順が不自然なところもそのまま）。アドレス・拠点名は Claude が作った例。数字は 2026-11 時点のドキュメントによる</div>
+</section>
+
+<section class="slide">
+  <h1>全体像：社内と AWS をつなぐ 3 つの道<small>試験ガイド タスク 3.4</small></h1>
+  <svg width="856" height="230" viewBox="0 0 856 230">
+    <defs><marker id="b1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="20" width="170" height="130" rx="10" fill="#f6f8fb" stroke="#4a5a78"/><text x="95" y="40" fill="#4a5a78" font-weight="700">本社・データセンター</text>
+      <rect x="30" y="54" width="130" height="34" rx="6" fill="#4a5a78"/><text x="95" y="76" fill="#fff">VPN ルーター</text>
+      <rect x="30" y="100" width="130" height="34" rx="6" fill="#4a5a78"/><text x="95" y="122" fill="#fff">専用線のルーター</text>
+      <rect x="10" y="168" width="170" height="52" rx="10" fill="#f6f8fb" stroke="#4a5a78"/><text x="95" y="190" fill="#4a5a78" font-weight="700">在宅の社員</text><text x="95" y="208" fill="#4a5a78">VPN クライアント</text>
+      <rect x="270" y="40" width="200" height="40" rx="8" fill="#b25000"/><text x="370" y="58" fill="#fff" font-weight="700">Site-to-Site VPN</text><text x="370" y="73" fill="#fff">インターネット上の IPsec</text>
+      <rect x="270" y="98" width="200" height="40" rx="8" fill="#1f3a68"/><text x="370" y="116" fill="#fff" font-weight="700">Direct Connect</text><text x="370" y="131" fill="#fff">ロケーション経由の専用線</text>
+      <rect x="270" y="174" width="200" height="40" rx="8" fill="#6a3d9a"/><text x="370" y="192" fill="#fff" font-weight="700">Client VPN</text><text x="370" y="207" fill="#fff">端末から TLS（OpenVPN）</text>
+      <g stroke="#1f3a68" stroke-width="2"><line x1="160" y1="71" x2="268" y2="60" marker-end="url(#b1)"/><line x1="160" y1="117" x2="268" y2="118" marker-end="url(#b1)"/><line x1="180" y1="194" x2="268" y2="194" marker-end="url(#b1)"/></g>
+      <rect x="540" y="30" width="140" height="110" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="610" y="54" fill="#3a7d44" font-weight="700">AWS 側の入口</text><text x="610" y="78">仮想プライベート GW</text><text x="610" y="98">Transit Gateway</text><text x="610" y="118">Direct Connect GW</text>
+      <rect x="540" y="168" width="140" height="52" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="610" y="190" fill="#3a7d44" font-weight="700">Client VPN</text><text x="610" y="208" fill="#3a7d44">エンドポイント</text>
+      <g stroke="#1f3a68" stroke-width="2"><line x1="470" y1="60" x2="538" y2="70" marker-end="url(#b1)"/><line x1="470" y1="118" x2="538" y2="108" marker-end="url(#b1)"/><line x1="470" y1="194" x2="538" y2="194" marker-end="url(#b1)"/></g>
+      <rect x="730" y="30" width="116" height="190" rx="10" fill="#e3eefc" stroke="#1f5fa8"/><text x="788" y="54" fill="#1f5fa8" font-weight="700">VPC</text><text x="788" y="80">EC2・RDS</text><text x="788" y="104">（プライベート）</text><text x="788" y="150" fill="#1f5fa8" font-weight="700">ほかの VPC</text><text x="788" y="170" fill="#1f5fa8">Transit Gateway</text><text x="788" y="188" fill="#1f5fa8">の先</text>
+      <line x1="680" y1="86" x2="728" y2="86" stroke="#3a7d44" stroke-width="2" marker-end="url(#b1)"/><line x1="680" y1="194" x2="728" y2="194" stroke="#3a7d44" stroke-width="2" marker-end="url(#b1)"/>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>見分け方：</b>「すぐ・安く・暗号化」→ Site-to-Site VPN。「安定した帯域・大量のデータ・インターネットを通らない」→ Direct Connect。「社員の端末から」→ Client VPN。「多くの VPC と拠点をまとめる」→ Transit Gateway。</div>
+    <div class="point warn"><b>組み合わせ：</b>Direct Connect は既定で暗号化しないので、IPsec が要るなら上に VPN を張る。Direct Connect の予備に、安い VPN を足す構成もよく出る。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpn/latest/s2svpn/VPC_VPN.html">AWS Site-to-Site VPN とは?</a>（「Site-to-Site VPN ではインターネットプロトコルセキュリティ (IPsec) VPN 接続がサポートされています。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/directconnect/latest/UserGuide/Welcome.html">Direct Connect とは</a>（「Direct Connect は、標準イーサネット光ファイバケーブルを介して内部ネットワークを Direct Connect ロケーションにリンクします。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpn/latest/clientvpn-admin/what-is.html">AWS Client VPN とは</a>（「クライアント VPN を使用すると、OpenVPN ベースの VPN クライアントを使用して、どこからでもリソースにアクセスできます。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>Site-to-Site VPN と Client VPN</h1>
+  <p>2 本のトンネル、仮想プライベートゲートウェイとカスタマーゲートウェイ、冗長化と帯域、静的と動的のルーティング、ルートの優先順位、VPN CloudHub、Client VPN と分割トンネル。</p>
+  <div class="foot"><span>AWS SAA #18 VPC とオンプレミスの接続</span><span>タスク 3.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>Site-to-Site VPN の部品</h1>
+  <svg width="856" height="170" viewBox="0 0 856 170">
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="20" width="200" height="130" rx="10" fill="#f6f8fb" stroke="#4a5a78"/><text x="110" y="40" fill="#4a5a78" font-weight="700">オンプレミス</text>
+      <rect x="30" y="58" width="160" height="50" rx="6" fill="#4a5a78"/><text x="110" y="78" fill="#fff" font-weight="700">カスタマーゲートウェイ</text><text x="110" y="96" fill="#fff">デバイス（ルーターなど）</text>
+      <text x="110" y="132" fill="#4a5a78">AWS には「カスタマーゲートウェイ」</text><text x="110" y="146" fill="#4a5a78">として登録</text>
+      <line x1="190" y1="72" x2="560" y2="52" stroke="#b25000" stroke-width="3"/><line x1="190" y1="94" x2="560" y2="118" stroke="#b25000" stroke-width="3"/>
+      <text x="375" y="52" fill="#b25000" font-weight="700">トンネル 1（AZ-a で終わる）</text><text x="375" y="126" fill="#b25000" font-weight="700">トンネル 2（AZ-c で終わる）</text>
+      <text x="375" y="88" fill="#4a5a78">インターネット上の IPsec・各 1.25 Gbps</text>
+      <rect x="560" y="20" width="286" height="130" rx="10" fill="#e3eefc" stroke="#1f5fa8"/><text x="703" y="40" fill="#1f5fa8" font-weight="700">AWS 側（ターゲットゲートウェイ）</text>
+      <rect x="580" y="54" width="120" height="76" rx="6" fill="#1f5fa8"/><text x="640" y="80" fill="#fff" font-weight="700">仮想プライベート</text><text x="640" y="96" fill="#fff" font-weight="700">ゲートウェイ</text><text x="640" y="114" fill="#fff">1 つの VPC 専用</text>
+      <rect x="712" y="54" width="120" height="76" rx="6" fill="#3a7d44"/><text x="772" y="80" fill="#fff" font-weight="700">Transit</text><text x="772" y="96" fill="#fff" font-weight="700">Gateway</text><text x="772" y="114" fill="#fff">多くの VPC のハブ</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%">しくみ</th><th>決まり</th><th style="width:34%">本番で狙われる点</th></tr>
+    <tr><td class="t">VPN トンネル</td><td class="l">1 つの VPN 接続に 2 本。それぞれ固有のパブリック IP</td><td class="l">両方を設定しておく（冗長性）</td></tr>
+    <tr><td class="t">仮想プライベート GW</td><td class="l">1 つの VPC にアタッチ。既定の ASN は 64512</td><td class="l">VPN の IPv6・高速 VPN・広帯域幅トンネルは使えない</td></tr>
+    <tr><td class="t">Transit Gateway</td><td class="l">複数の VPC とオンプレミスをつなぐハブとして VPN を終端</td><td class="l">IPv6・高速 VPN・広帯域幅トンネル（5 Gbps）が使える</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpn/latest/s2svpn/VPNTunnels.html">AWS Site-to-Site VPN 接続用のトンネルオプション</a>（「冗長性を確保するために両方のトンネルを設定することが重要です。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpn/latest/s2svpn/how_it_works.html">AWS Site-to-Site VPN の仕組み</a>（「VPN 接続は、仮想プライベートゲートウェイまたは AWS 側のトランジットゲートウェイと、オンプレミス側のカスタマーゲートウェイの間に 2 つの VPN トンネルを提供します。」「仮想プライベートゲートウェイは Site-to-Site VPN 接続で IPv6 をサポートしません。」）</div>
+</section>
+
+<section class="slide">
+  <h1>VPN の冗長化・帯域・高速化</h1>
+  <table class="mx">
+    <tr><th style="width:22%">困りごと</th><th>やり方</th><th style="width:34%">ひっかけ</th></tr>
+    <tr><td class="t">AWS 側の故障</td><td class="l">1 つの VPN 接続の 2 本のトンネルを両方設定（別々の AZ で終わる）</td><td class="l">トンネル 2 本ではオンプレミスのルーターの故障は防げない</td></tr>
+    <tr><td class="t">自社ルーターの故障・保守</td><td class="l">2 台目のカスタマーゲートウェイデバイスで、同じ VGW へ 2 つ目の VPN 接続。BGP で切り替え</td><td class="l">両方のデバイスが同じ IP 範囲を広告する</td></tr>
+    <tr><td class="t">トンネルの帯域</td><td class="l">スタンダード 1.25 Gbps → 広帯域幅トンネル 5 Gbps（Transit Gateway か Cloud WAN）</td><td class="l">VGW には「大きなサイズ」はない</td></tr>
+    <tr><td class="t">さらに帯域</td><td class="l">複数の VPN 接続で ECMP。広帯域幅の VPN 接続 2 つ（4 トンネル）で 20 Gbps</td><td class="l">ECMP は Transit Gateway の VPN アタッチメントで有効にする</td></tr>
+    <tr><td class="t">経路が不安定</td><td class="l">高速 VPN 接続：Global Accelerator で最寄りのエッジから AWS のネットワークへ</td><td class="l">TGW だけ。VGW 不可・既存の接続で有効化不可・DX パブリック VIF 不可</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpn/latest/s2svpn/vpn-redundant-connection.html">フェイルオーバー用の冗長 AWS Site-to-Site VPN 接続</a>（「冗長な VPN 接続とカスタマーゲートウェイデバイスを使用すれば、1 つのデバイスでメンテナンスを実行しながら、2 番目の VPN 接続を通してトラフィックの送信を継続することができます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpn/latest/s2svpn/VPNTunnels.html">AWS Site-to-Site VPN 接続用のトンネルオプション</a>（「トンネルあたり 5 Gbps を超える帯域幅が必要な場合は、複数の VPN 接続にまたがって ECMP を使用できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpn/latest/s2svpn/accelerated-vpn.html">高速 AWS Site-to-Site VPN 接続</a>（「仮想プライベートゲートウェイは、高速化 VPN 接続をサポートしません。」）</div>
+</section>
+
+<section class="slide">
+  <h1>VPN のルーティングと優先順位</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">静的ルーティング<span>オンプレミスの IP プレフィックスを手で指定する</span></div>
+      <div class="box b2">動的ルーティング（BGP）<span>カスタマーゲートウェイと経路を自動で交換。冗長な VPN 接続や VPN CloudHub で使う</span></div>
+      <div class="box b3">ルート伝達<span>VPN 接続が UP のとき、VPN のルートを VPC のルートテーブルに自動で入れる。これを忘れると、トンネルが UP でも届かない</span></div>
+      <div class="box b4">ローカルルートが最優先<span>VPN や Direct Connect から伝わったルートがより具体的でも、VPC のローカルルートと重なればローカルが勝つ</span></div>
+    </div>
+    <div>
+      <svg width="410" height="230" viewBox="0 0 410 230">
+        <defs><marker id="b2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <text x="205" y="16" fill="#1f3a68" font-weight="700">VGW の経路の選び方（同じプレフィックスのとき）</text>
+          <rect x="30" y="28" width="350" height="40" rx="8" fill="#1f3a68"/><text x="205" y="44" fill="#fff" font-weight="700">① Direct Connect から BGP で伝わったルート</text><text x="205" y="60" fill="#fff">→ 普段は専用線を使う</text>
+          <rect x="30" y="86" width="350" height="34" rx="8" fill="#b25000"/><text x="205" y="108" fill="#fff" font-weight="700">② VPN 接続に手で追加した静的ルート</text>
+          <rect x="30" y="138" width="350" height="34" rx="8" fill="#b25000" opacity="0.8"/><text x="205" y="160" fill="#fff" font-weight="700">③ VPN 接続から BGP で伝わったルート</text>
+          <rect x="30" y="190" width="350" height="34" rx="8" fill="#8a96ab"/><text x="205" y="212" fill="#fff">④ BGP 同士なら AS PATH が短いほう</text>
+          <g stroke="#1f3a68" stroke-width="2"><line x1="205" y1="68" x2="205" y2="84" marker-end="url(#b2)"/><line x1="205" y1="120" x2="205" y2="136" marker-end="url(#b2)"/><line x1="205" y1="172" x2="205" y2="188" marker-end="url(#b2)"/></g>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpn/latest/s2svpn/vpn-route-priority.html">ルートテーブルと AWS Site-to-Site VPN ルーティングの優先度</a>（「Site-to-Site VPN 接続または Direct Connect 接続から伝達されるルートが VPC のローカルルートと重複する場合は、伝達されたルートがより詳細であっても、ローカルルートが最優先されます。」「Direct Connect 接続から BGP で伝播されたルート」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpn/latest/s2svpn/SetUpVPNConnections.html">AWS Site-to-Site VPN の開始方法</a>（「ルートテーブルのルート伝播を有効にして、Site-to-Site VPN ルートを自動的に伝播することができます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>VPN CloudHub と Client VPN</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="190" viewBox="0 0 410 190">
+        <g font-size="11" text-anchor="middle">
+          <text x="205" y="16" fill="#1f3a68" font-weight="700">VPN CloudHub（拠点どうしもつながる）</text>
+          <rect x="145" y="80" width="120" height="44" rx="8" fill="#1f5fa8"/><text x="205" y="100" fill="#fff" font-weight="700">VGW（1 つ）</text><text x="205" y="116" fill="#fff">ハブ</text>
+          <rect x="20" y="30" width="100" height="36" rx="6" fill="#4a5a78"/><text x="70" y="52" fill="#fff">東京 ASN 65001</text>
+          <rect x="290" y="30" width="100" height="36" rx="6" fill="#4a5a78"/><text x="340" y="52" fill="#fff">大阪 ASN 65002</text>
+          <rect x="155" y="146" width="100" height="36" rx="6" fill="#4a5a78"/><text x="205" y="168" fill="#fff">福岡 ASN 65003</text>
+          <g stroke="#b25000" stroke-width="2"><line x1="110" y1="66" x2="160" y2="80"/><line x1="300" y1="66" x2="250" y2="80"/><line x1="205" y1="124" x2="205" y2="146"/></g>
+          <path d="M120,48 Q205,22 290,48" fill="none" stroke="#b25000" stroke-width="1.5" stroke-dasharray="5 4"/><text x="205" y="60" fill="#b25000">拠点の間も VGW 経由</text>
+        </g>
+      </svg>
+      <div class="point">各拠点は一意の ASN で、動的ルーティングの VPN 接続を作る。拠点の IP 範囲は重ねない。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:34%">Client VPN</th><th>内容</th></tr>
+        <tr><td class="t">何か</td><td class="l">個人の端末からの、マネージドのリモートアクセス VPN（OpenVPN ベース・TLS）</td></tr>
+        <tr><td class="t">認証</td><td class="l">Active Directory・フェデレーション・証明書</td></tr>
+        <tr><td class="t">規模</td><td class="l">利用者の数に合わせて自動でスケール</td></tr>
+        <tr><td class="t">既定</td><td class="l">フルトンネル：端末のすべての通信が VPN を通る</td></tr>
+        <tr><td class="t">分割トンネル</td><td class="l">エンドポイントのルートに合う通信だけ VPN へ。AWS からの送信が減り、データ転送のコストが下がる</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpn/latest/s2svpn/VPN_CloudHub.html">VPN CloudHub を使用した AWS Site-to-Site VPN 接続間の安全な通信</a>（「サイト間で IP 範囲が重複することは許可されません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpn/latest/clientvpn-admin/what-is.html">AWS Client VPN とは</a>（「AWS Client VPN は、オンプレミスネットワーク内の AWS リソースに安全にアクセスできるようにする、クライアントベースのマネージド VPN サービスです。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpn/latest/clientvpn-admin/split-tunnel-vpn.html">AWS Client VPN エンドポイントの分割トンネル</a>（「AWSからの送信トラフィックの量を減らして、データ転送コストを削減できます。」）。拠点名と ASN は Claude が作った例</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>Direct Connect</h1>
+  <p>専用接続とホスト接続、LAG、プライベート・パブリック・トランジットの仮想インターフェイス、Direct Connect ゲートウェイ、回復性のモデル、暗号化（VPN との組み合わせと MACsec）。</p>
+  <div class="foot"><span>AWS SAA #18 VPC とオンプレミスの接続</span><span>タスク 3.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>Direct Connect のしくみと接続の種類</h1>
+  <svg width="856" height="140" viewBox="0 0 856 140">
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="30" width="170" height="80" rx="10" fill="#f6f8fb" stroke="#4a5a78"/><text x="95" y="56" fill="#4a5a78" font-weight="700">データセンター</text><text x="95" y="76">お客様のルーター</text><text x="95" y="94">BGP・802.1Q VLAN</text>
+      <rect x="290" y="20" width="250" height="100" rx="10" fill="#fdf0e2" stroke="#b25000"/><text x="415" y="40" fill="#b25000" font-weight="700">Direct Connect ロケーション</text>
+      <rect x="306" y="54" width="100" height="44" rx="6" fill="#4a5a78"/><text x="356" y="74" fill="#fff">お客様か</text><text x="356" y="90" fill="#fff">パートナーの機器</text>
+      <rect x="424" y="54" width="100" height="44" rx="6" fill="#b25000"/><text x="474" y="74" fill="#fff" font-weight="700">Direct Connect</text><text x="474" y="90" fill="#fff">ルーター</text>
+      <line x1="406" y1="76" x2="424" y2="76" stroke="#1f3a68" stroke-width="3"/>
+      <rect x="650" y="30" width="196" height="80" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="748" y="56" fill="#3a7d44" font-weight="700">AWS リージョン</text><text x="748" y="76">VPC（プライベート VIF）</text><text x="748" y="94">S3 など（パブリック VIF）</text>
+      <line x1="180" y1="70" x2="304" y2="76" stroke="#1f3a68" stroke-width="3"/><line x1="524" y1="76" x2="648" y2="70" stroke="#1f3a68" stroke-width="3"/>
+      <text x="242" y="62" fill="#1f3a68">光ファイバー</text><text x="586" y="62" fill="#1f3a68">AWS の網</text>
+      <text x="415" y="136" fill="#4a5a78">インターネットのプロバイダーを通らない。既定では暗号化しない</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:18%">接続</th><th>速度</th><th>だれが作る</th><th style="width:30%">向く場面</th></tr>
+    <tr><td class="t">専用接続</td><td class="l">1・10・100・400 Gbps</td><td class="l">AWS に申し込み、ロケーションで物理ポートを使う</td><td class="l">大きな帯域・LAG で束ねる</td></tr>
+    <tr><td class="t">ホスト接続</td><td class="l">50 Mbps 〜 25 Gbps</td><td class="l">Direct Connect パートナーが作り、利用者が受け入れる</td><td class="l">1 Gbps 未満の小さな拠点</td></tr>
+    <tr><td class="t">LAG</td><td class="l">100 Gbps 未満は 4 本まで、100・400 Gbps は 2 本まで</td><td class="l">同じエンドポイントの同じ速度の専用接続を束ねる</td><td class="l">帯域を増やし 1 つとして管理</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/directconnect/latest/UserGuide/Welcome.html">Direct Connect とは</a>（「この接続を使用すると、パブリック AWS サービス (Amazon S3 など) または Amazon VPC への仮想インターフェイスを直接作成し、ネットワークパス内のインターネットサービスプロバイダーをバイパスできます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/directconnect/latest/UserGuide/dedicated_connection.html">専用 Direct Connect 接続</a>（「指定できる値は 1 Gbps、10 Gbps、100 Gbps、および 400 Gbps です。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/directconnect/latest/UserGuide/lags.html">Direct Connect リンク集約グループ (LAGs)</a>（「LAG のすべての接続では、同じ帯域幅を使用する必要があります。」）</div>
+</section>
+
+<section class="slide">
+  <h1>仮想インターフェイスと Direct Connect ゲートウェイ</h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <defs><marker id="b3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="70" width="130" height="56" rx="8" fill="#4a5a78"/><text x="75" y="94" fill="#fff" font-weight="700">Direct Connect</text><text x="75" y="112" fill="#fff">接続（1 本）</text>
+      <rect x="200" y="14" width="170" height="40" rx="6" fill="#1f5fa8"/><text x="285" y="32" fill="#fff" font-weight="700">プライベート VIF</text><text x="285" y="47" fill="#fff">プライベート IP</text>
+      <rect x="200" y="78" width="170" height="40" rx="6" fill="#3a7d44"/><text x="285" y="96" fill="#fff" font-weight="700">パブリック VIF</text><text x="285" y="111" fill="#fff">パブリック IP</text>
+      <rect x="200" y="142" width="170" height="40" rx="6" fill="#6a3d9a"/><text x="285" y="160" fill="#fff" font-weight="700">トランジット VIF</text><text x="285" y="175" fill="#fff">Transit Gateway 用</text>
+      <rect x="430" y="14" width="150" height="40" rx="6" fill="#b25000"/><text x="505" y="32" fill="#fff" font-weight="700">Direct Connect GW</text><text x="505" y="47" fill="#fff">グローバル</text>
+      <rect x="430" y="142" width="150" height="40" rx="6" fill="#b25000"/><text x="505" y="160" fill="#fff" font-weight="700">Direct Connect GW</text><text x="505" y="175" fill="#fff">TGW に関連付け</text>
+      <rect x="640" y="4" width="206" height="28" rx="6" fill="#e3eefc" stroke="#1f5fa8"/><text x="743" y="23">VGW → 東京の VPC</text>
+      <rect x="640" y="38" width="206" height="28" rx="6" fill="#e3eefc" stroke="#1f5fa8"/><text x="743" y="57">VGW → バージニアの VPC</text>
+      <rect x="640" y="82" width="206" height="32" rx="6" fill="#e8f3ea" stroke="#3a7d44"/><text x="743" y="103">S3 などのパブリックなサービス</text>
+      <rect x="640" y="140" width="206" height="44" rx="6" fill="#f0e8f7" stroke="#6a3d9a"/><text x="743" y="158">Transit Gateway</text><text x="743" y="175">→ 多くの VPC</text>
+      <g stroke="#1f3a68" stroke-width="2"><line x1="140" y1="86" x2="198" y2="36" marker-end="url(#b3)"/><line x1="140" y1="98" x2="198" y2="98" marker-end="url(#b3)"/><line x1="140" y1="110" x2="198" y2="160" marker-end="url(#b3)"/><line x1="370" y1="34" x2="428" y2="34" marker-end="url(#b3)"/><line x1="370" y1="98" x2="638" y2="98" marker-end="url(#b3)"/><line x1="370" y1="162" x2="428" y2="162" marker-end="url(#b3)"/><line x1="580" y1="28" x2="638" y2="18" marker-end="url(#b3)"/><line x1="580" y1="40" x2="638" y2="52" marker-end="url(#b3)"/><line x1="580" y1="162" x2="638" y2="162" marker-end="url(#b3)"/></g>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>選び方：</b>VPC へ → プライベート VIF（VGW か Direct Connect ゲートウェイ）。S3 などのパブリックなエンドポイントへ → パブリック VIF。Transit Gateway の先の多くの VPC へ → トランジット VIF。</div>
+    <div class="point warn"><b>Direct Connect ゲートウェイ：</b>グローバルなリソースで、1 本の接続から世界のリージョンの VPC に届く。ただし、同じ Direct Connect ゲートウェイにつながった VPC どうしは、ここを通って通信できない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/directconnect/latest/UserGuide/WorkingWithVirtualInterfaces.html">Direct Connect 仮想インターフェイスとホスト仮想インターフェイス</a>（「プライベート仮想インターフェイス: プライベート IP アドレスを使って Amazon VPC にアクセスするには、プライベート仮想インターフェイスを使用する必要があります。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/directconnect/latest/UserGuide/direct-connect-gateways-intro.html">Direct Connect ゲートウェイ</a>（「Direct Connect ゲートウェイはグローバルに利用可能なリソースです。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Direct Connect の回復性モデル</h1>
+  <svg width="856" height="180" viewBox="0 0 856 180">
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="8" width="270" height="164" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="145" y="28" fill="#3a7d44" font-weight="700">最大回復性（99.99%）</text>
+      <rect x="24" y="40" width="116" height="60" rx="6" fill="#fff" stroke="#3a7d44"/><text x="82" y="56" fill="#3a7d44">ロケーション A</text><rect x="34" y="64" width="44" height="26" rx="4" fill="#3a7d44"/><text x="56" y="81" fill="#fff">機器1</text><rect x="86" y="64" width="44" height="26" rx="4" fill="#3a7d44"/><text x="108" y="81" fill="#fff">機器2</text>
+      <rect x="150" y="40" width="116" height="60" rx="6" fill="#fff" stroke="#3a7d44"/><text x="208" y="56" fill="#3a7d44">ロケーション B</text><rect x="160" y="64" width="44" height="26" rx="4" fill="#3a7d44"/><text x="182" y="81" fill="#fff">機器3</text><rect x="212" y="64" width="44" height="26" rx="4" fill="#3a7d44"/><text x="234" y="81" fill="#fff">機器4</text>
+      <text x="145" y="126">複数のロケーション ×</text><text x="145" y="144">別々の機器で別々の接続</text><text x="145" y="162" fill="#3a7d44" font-weight="700">重要なワークロード</text>
+      <rect x="293" y="8" width="270" height="164" rx="10" fill="#e3eefc" stroke="#1f5fa8"/><text x="428" y="28" fill="#1f5fa8" font-weight="700">高い回復性（99.9%）</text>
+      <rect x="307" y="40" width="116" height="60" rx="6" fill="#fff" stroke="#1f5fa8"/><text x="365" y="56" fill="#1f5fa8">ロケーション A</text><rect x="343" y="64" width="44" height="26" rx="4" fill="#1f5fa8"/><text x="365" y="81" fill="#fff">機器1</text>
+      <rect x="433" y="40" width="116" height="60" rx="6" fill="#fff" stroke="#1f5fa8"/><text x="491" y="56" fill="#1f5fa8">ロケーション B</text><rect x="469" y="64" width="44" height="26" rx="4" fill="#1f5fa8"/><text x="491" y="81" fill="#fff">機器2</text>
+      <text x="428" y="126">複数のロケーションへ</text><text x="428" y="144">2 つの単一の接続</text><text x="428" y="162" fill="#1f5fa8" font-weight="700">重要なワークロード</text>
+      <rect x="576" y="8" width="270" height="164" rx="10" fill="#f6f8fb" stroke="#8a96ab"/><text x="711" y="28" fill="#4a5a78" font-weight="700">開発とテスト</text>
+      <rect x="653" y="40" width="116" height="60" rx="6" fill="#fff" stroke="#8a96ab"/><text x="711" y="56" fill="#4a5a78">ロケーション A</text><rect x="663" y="64" width="44" height="26" rx="4" fill="#8a96ab"/><text x="685" y="81" fill="#fff">機器1</text><rect x="715" y="64" width="44" height="26" rx="4" fill="#8a96ab"/><text x="737" y="81" fill="#fff">機器2</text>
+      <text x="711" y="126">1 つのロケーションで</text><text x="711" y="144">別々の機器に別々の接続</text><text x="711" y="162" fill="#4a5a78" font-weight="700">重要でないワークロード</text>
+    </g>
+  </svg>
+  <div class="point warn"><b>ひっかけ：</b>LAG は帯域を増やすもので、同じ機器・同じロケーションで終わる接続を束ねる。ロケーションの障害への備えにはならない。「ロケーション全体の障害にも耐える・最も高い可用性」→ 最大回復性。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/directconnect/latest/UserGuide/resiliency_toolkit.html">AWS Direct Connect レジリエンシーツールキット</a>（「最大回復性: このモデルは、99.99％ の SLA を達成するための専用接続をリクエストする方法を提供します。」「高い回復性: このモデルは、99.9％ の SLA を達成するための専用接続をリクエストする方法を提供します。」「開発とテスト: このモデルでは、1 つの場所にある個別のデバイスを終端とする別々の接続を使用して、クリティカルでないワークロードの開発とテストの回復性を実現できます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Direct Connect の暗号化と予備の経路</h1>
+  <table class="mx">
+    <tr><th style="width:22%">方法</th><th>しくみ</th><th style="width:34%">使いどころ</th></tr>
+    <tr><td class="t">何もしない</td><td class="l">Direct Connect は既定で転送中の通信を暗号化しない</td><td class="l">アプリ側で TLS などを使う前提</td></tr>
+    <tr><td class="t">Direct Connect＋Site-to-Site VPN</td><td class="l">専用接続の上に VPN を張り、IPsec で暗号化したプライベートな接続にする</td><td class="l">「VPC までを IPsec で暗号化」</td></tr>
+    <tr><td class="t">MACsec</td><td class="l">IEEE の標準。ルーターと Direct Connect ロケーションの間を、レイヤー 2 のポイントツーポイントで暗号化</td><td class="l">回線の区間の暗号化。エンドツーエンドではない</td></tr>
+    <tr><td class="t">VPN を予備に</td><td class="l">同じ VGW に、インターネット経由の VPN 接続を作る。DX のルートが優先され、止まると VPN へ</td><td class="l">「専用線の予備をコストを抑えて」</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/directconnect/latest/UserGuide/encryption-in-transit.html">AWS Direct Connect での暗号化</a>（「AWS Direct Connect は、デフォルトで転送中のトラフィックを暗号化しません。」「この組み合わせにより、IPsec で暗号化されたプライベート接続が提供されます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/directconnect/latest/UserGuide/MACsec.html">Direct Connect での MAC セキュリティ</a>（「MACsec は、イーサネットリンク上でポイントツーポイントのセキュリティを提供します。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>Transit Gateway とハイブリッド DNS</h1>
+  <p>ハブとアタッチメント、ルートテーブルの関連付けと伝達、AZ の指定、ECMP、Transit Gateway ピアリング、一元的な発信、RAM での共有、Route 53 Resolver のインバウンドとアウトバウンドのエンドポイント。</p>
+  <div class="foot"><span>AWS SAA #18 VPC とオンプレミスの接続</span><span>タスク 3.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>Transit Gateway：網目からハブへ</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="200" viewBox="0 0 410 200">
+        <g font-size="11" text-anchor="middle">
+          <text x="100" y="16" fill="#c0392b" font-weight="700">ピアリングの網目</text>
+          <g fill="#1f5fa8"><circle cx="40" cy="50" r="16"/><circle cx="160" cy="50" r="16"/><circle cx="40" cy="160" r="16"/><circle cx="160" cy="160" r="16"/><circle cx="100" cy="105" r="16"/></g>
+          <g stroke="#c0392b" stroke-width="1.5"><line x1="40" y1="50" x2="160" y2="50"/><line x1="40" y1="50" x2="40" y2="160"/><line x1="40" y1="50" x2="160" y2="160"/><line x1="40" y1="50" x2="100" y2="105"/><line x1="160" y1="50" x2="40" y2="160"/><line x1="160" y1="50" x2="160" y2="160"/><line x1="160" y1="50" x2="100" y2="105"/><line x1="40" y1="160" x2="160" y2="160"/><line x1="40" y1="160" x2="100" y2="105"/><line x1="160" y1="160" x2="100" y2="105"/></g>
+          <text x="100" y="192" fill="#c0392b">5 個で 10 本・50 個で 1,225 本</text>
+          <text x="310" y="16" fill="#3a7d44" font-weight="700">Transit Gateway</text>
+          <rect x="270" y="88" width="80" height="34" rx="8" fill="#3a7d44"/><text x="310" y="109" fill="#fff" font-weight="700">TGW</text>
+          <g fill="#1f5fa8"><circle cx="250" cy="44" r="16"/><circle cx="370" cy="44" r="16"/><circle cx="250" cy="166" r="16"/></g><rect x="350" y="150" width="50" height="30" rx="5" fill="#4a5a78"/><text x="375" y="169" fill="#fff">VPN</text>
+          <g stroke="#3a7d44" stroke-width="2"><line x1="250" y1="44" x2="290" y2="88"/><line x1="370" y1="44" x2="330" y2="88"/><line x1="250" y1="166" x2="290" y2="122"/><line x1="370" y1="150" x2="330" y2="122"/></g>
+          <text x="310" y="192" fill="#3a7d44">アタッチメントは 1 つずつ</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:34%">項目</th><th>内容</th></tr>
+        <tr><td class="t">アタッチメント</td><td class="l">VPC・VPN 接続・Direct Connect ゲートウェイ・ほかの TGW とのピアリング・Connect（SD-WAN）など</td></tr>
+        <tr><td class="t">VPC アタッチメント</td><td class="l">AZ ごとにサブネットを 1 つ指定。複数の AZ を有効にする</td></tr>
+        <tr><td class="t">ECMP</td><td class="l">同じ条件の複数の経路に通信を分ける。VPN では TGW の設定で有効に</td></tr>
+        <tr><td class="t">共有</td><td class="l">AWS RAM でほかのアカウントと共有</td></tr>
+        <tr><td class="t">料金</td><td class="l">アタッチメントごとの時間＋処理したデータ量</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/tgw/what-is-transit-gateway.html">Amazon VPC の AWS Transit Gateway とは</a>（「AWS Transit Gateway は、仮想プライベートクラウド (VPCs) とオンプレミスネットワークを相互接続するために使用されるネットワークトランジットハブです。」「Transit Gateway 上のアタッチメントごとに時間単位で課金され、Transit Gateway で処理されたトラフィック量に対して課金されます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/tgw/how-transit-gateways-work.html">AWS Transit Gateway の仕組み</a>（「高可用性を確保するために、複数のアベイラビリティーゾーンを有効にすることをお勧めします。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Transit Gateway のルートテーブルで分ける</h1>
+  <svg width="856" height="180" viewBox="0 0 856 180">
+    <defs><marker id="b4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#3a7d44"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="14" width="150" height="40" rx="6" fill="#c0392b"/><text x="85" y="38" fill="#fff" font-weight="700">本番 VPC</text>
+      <rect x="10" y="70" width="150" height="40" rx="6" fill="#1f5fa8"/><text x="85" y="94" fill="#fff" font-weight="700">開発 VPC</text>
+      <rect x="10" y="126" width="150" height="40" rx="6" fill="#3a7d44"/><text x="85" y="150" fill="#fff" font-weight="700">共有サービス VPC</text>
+      <rect x="260" y="20" width="270" height="70" rx="8" fill="#fdf0e2" stroke="#b25000"/><text x="395" y="40" fill="#b25000" font-weight="700">ルートテーブル「業務用」</text><text x="395" y="58">関連付け：本番・開発</text><text x="395" y="76">伝達されたルート：共有サービスだけ</text>
+      <rect x="260" y="104" width="270" height="70" rx="8" fill="#e8f3ea" stroke="#3a7d44"/><text x="395" y="124" fill="#3a7d44" font-weight="700">ルートテーブル「共有」</text><text x="395" y="142">関連付け：共有サービス</text><text x="395" y="160">伝達されたルート：本番・開発</text>
+      <g stroke="#4a5a78" stroke-width="1.5" stroke-dasharray="4 3"><line x1="160" y1="34" x2="258" y2="48"/><line x1="160" y1="90" x2="258" y2="62"/><line x1="160" y1="146" x2="258" y2="140"/></g>
+      <rect x="600" y="20" width="246" height="154" rx="10" fill="#fff" stroke="#4a5a78"/><text x="723" y="42" fill="#4a5a78" font-weight="700">結果</text>
+      <text x="723" y="70" fill="#3a7d44">本番 ⇄ 共有サービス ○</text><text x="723" y="94" fill="#3a7d44">開発 ⇄ 共有サービス ○</text><text x="723" y="118" fill="#c0392b" font-weight="700">本番 ⇄ 開発 ✕</text>
+      <text x="723" y="146" fill="#4a5a78">業務用の表に開発・本番の</text><text x="723" y="162" fill="#4a5a78">ルートがないので届かない</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>関連付けと伝達：</b>各アタッチメントは、ちょうど 1 つのルートテーブルに<b>関連付け</b>る（どの表を見て送るか）。アタッチメントのルートは 1 つ以上の表に<b>伝達</b>する（どの表に自分を載せるか）。ブラックホールルートで通信を捨てることもできる。</div>
+    <div class="point warn"><b>忘れやすい設定：</b>VPC 側のサブネットのルートテーブルにも、Transit Gateway へのルートを書く。TGW の表だけでは、VPC から出ていかない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/tgw/how-transit-gateways-work.html">AWS Transit Gateway の仕組み</a>（「アタッチメントごとに 1 つのルートテーブルに関連付けることができます。アタッチメントでそのルートを 1 つ以上のルートテーブルに伝播できます。」「ルートに一致するトラフィックを破棄する Transit Gateway ルートテーブルでは、ブラックホールルートを作成できます。」）。ルートテーブルの名前は Claude が作った例</div>
+</section>
+
+<section class="slide">
+  <h1>Transit Gateway ピアリングと一元的な発信</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="170" viewBox="0 0 410 170">
+        <g font-size="11" text-anchor="middle">
+          <text x="205" y="16" fill="#1f3a68" font-weight="700">ピアリングアタッチメント</text>
+          <rect x="10" y="30" width="170" height="120" rx="10" fill="#e3eefc" stroke="#1f5fa8"/><text x="95" y="50" fill="#1f5fa8" font-weight="700">東京</text><rect x="45" y="64" width="100" height="34" rx="6" fill="#3a7d44"/><text x="95" y="86" fill="#fff" font-weight="700">TGW</text><text x="95" y="124">VPC が 20 個</text>
+          <rect x="230" y="30" width="170" height="120" rx="10" fill="#e3eefc" stroke="#1f5fa8"/><text x="315" y="50" fill="#1f5fa8" font-weight="700">フランクフルト</text><rect x="265" y="64" width="100" height="34" rx="6" fill="#3a7d44"/><text x="315" y="86" fill="#fff" font-weight="700">TGW</text><text x="315" y="124">VPC が 15 個</text>
+          <line x1="145" y1="81" x2="265" y2="81" stroke="#b25000" stroke-width="3"/><text x="205" y="74" fill="#b25000" font-weight="700">AES-256</text>
+          <text x="205" y="166" fill="#b25000">相手が承諾＋静的ルートを追加</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <svg width="410" height="170" viewBox="0 0 410 170">
+        <defs><marker id="b5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#3a7d44"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <text x="205" y="16" fill="#1f3a68" font-weight="700">一元的な発信（出口を 1 か所に）</text>
+          <rect x="10" y="30" width="90" height="30" rx="5" fill="#1f5fa8"/><text x="55" y="50" fill="#fff">VPC A（IGW なし）</text>
+          <rect x="10" y="70" width="90" height="30" rx="5" fill="#1f5fa8"/><text x="55" y="90" fill="#fff">VPC B（IGW なし）</text>
+          <rect x="10" y="110" width="90" height="30" rx="5" fill="#1f5fa8"/><text x="55" y="130" fill="#fff">VPC C（IGW なし）</text>
+          <rect x="140" y="68" width="70" height="34" rx="8" fill="#3a7d44"/><text x="175" y="90" fill="#fff" font-weight="700">TGW</text>
+          <rect x="250" y="40" width="150" height="90" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="325" y="62" fill="#3a7d44" font-weight="700">出口の VPC</text><text x="325" y="86">NAT ゲートウェイ</text><text x="325" y="106">インターネット GW</text>
+          <g stroke="#3a7d44" stroke-width="2"><line x1="100" y1="45" x2="140" y2="78"/><line x1="100" y1="85" x2="140" y2="85"/><line x1="100" y1="125" x2="140" y2="92"/><line x1="210" y1="85" x2="248" y2="85" marker-end="url(#b5)"/></g>
+          <text x="205" y="160" fill="#3a7d44">NAT GW を VPC ごとに置かない</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="point warn"><b>ピアリングとの違い：</b>VPC ピアリングでは相手の VPC の NAT デバイスを使えない（#17）。Transit Gateway なら、出口の VPC に通信を中継できる。Transit Gateway ピアリングの経路は、伝達ではなく静的ルートで作る。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/tgw/tgw-peering.html">AWS Transit Gateway の Transit Gateway ピアリングアタッチメント</a>（「Transit Gateway 間でトラフィックをルーティングするには、Transit Gateway のピアリングアタッチメントをポイントする静的ルートをTransit Gateway のルートテーブルに追加します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/tgw/how-transit-gateways-work.html">AWS Transit Gateway の仕組み</a>（「インターネットゲートウェイがない VPC からのアウトバウンドインターネットトラフィックを、NAT ゲートウェイとインターネットゲートウェイを含む VPC にルーティングするように、トランジットゲートウェイを設定できます。」）。VPC の数は Claude が作った例</div>
+</section>
+
+<section class="slide">
+  <h1>ハイブリッド DNS：Resolver エンドポイント</h1>
+  <svg width="856" height="180" viewBox="0 0 856 180">
+    <defs><marker id="b6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker><marker id="b7" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="20" width="220" height="140" rx="10" fill="#f6f8fb" stroke="#4a5a78"/><text x="120" y="42" fill="#4a5a78" font-weight="700">社内</text>
+      <rect x="40" y="60" width="160" height="40" rx="6" fill="#4a5a78"/><text x="120" y="78" fill="#fff" font-weight="700">社内の DNS サーバー</text><text x="120" y="94" fill="#fff">corp.example.com</text>
+      <rect x="40" y="112" width="160" height="34" rx="6" fill="#8a96ab"/><text x="120" y="134" fill="#fff">社内のパソコン</text>
+      <rect x="626" y="20" width="220" height="140" rx="10" fill="#e3eefc" stroke="#1f5fa8"/><text x="736" y="42" fill="#1f5fa8" font-weight="700">VPC</text>
+      <rect x="656" y="60" width="160" height="40" rx="6" fill="#1f5fa8"/><text x="736" y="78" fill="#fff" font-weight="700">Route 53 VPC Resolver</text><text x="736" y="94" fill="#fff">プライベートホストゾーン</text>
+      <rect x="656" y="112" width="160" height="34" rx="6" fill="#6a3d9a"/><text x="736" y="134" fill="#fff">EC2</text>
+      <rect x="330" y="30" width="200" height="40" rx="6" fill="#1f3a68"/><text x="430" y="48" fill="#fff" font-weight="700">インバウンドエンドポイント</text><text x="430" y="63" fill="#fff">社内 → VPC の名前</text>
+      <rect x="330" y="110" width="200" height="40" rx="6" fill="#b25000"/><text x="430" y="128" fill="#fff" font-weight="700">アウトバウンドエンドポイント</text><text x="430" y="143" fill="#fff">＋転送ルール：VPC → 社内の名前</text>
+      <line x1="200" y1="70" x2="328" y2="50" stroke="#1f3a68" stroke-width="2" marker-end="url(#b6)"/><line x1="530" y1="50" x2="654" y2="74" stroke="#1f3a68" stroke-width="2" marker-end="url(#b6)"/>
+      <line x1="656" y1="129" x2="532" y2="129" stroke="#b25000" stroke-width="2" marker-end="url(#b7)"/><line x1="330" y1="129" x2="202" y2="92" stroke="#b25000" stroke-width="2" marker-end="url(#b7)"/>
+      <text x="430" y="94" fill="#4a5a78">VPN か Direct Connect でつながっている</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>向きで選ぶ：</b>社内から VPC の名前（プライベートホストゾーン）を引く → インバウンド。VPC の EC2 から社内の名前を引く → アウトバウンドと転送ルール（ドメインごとに 1 つ、VPC に関連付ける）。</div>
+    <div class="point warn"><b>ひっかけ：</b>社内の DNS から VPC の「CIDR＋2」に直接転送する方法はサポートされず、結果が不安定になる。インバウンドエンドポイントを使う。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/resolver.html">Route 53 VPC Resolver とは</a>（「インバウンド Resolver エンドポイントを使用すると、VPC に、オンプレミスネットワークまたは別の VPC から DNS クエリが可能になります。」「アウトバウンド Resolver エンドポイントを使用すると、VPC から、オンプレミスネットワークまたは別の VPC に DNS クエリが可能になります。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/resolver-overview-DSN-queries-to-vpc.html">VPC とネットワークの間における DNS クエリの解決</a>（「代わりに、Resolver のインバウンドエンドポイントの使用をお勧めします。」）</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">Site-to-Site VPN<span>IPsec・2 トンネル・1.25 Gbps（TGW なら 5 Gbps と ECMP）。ルーターの故障には 2 つ目の VPN 接続。高速 VPN は TGW だけ</span></div>
+      <div class="box b2">Client VPN<span>個人の端末から。OpenVPN・TLS。分割トンネルで AWS 宛てだけ VPN に</span></div>
+      <div class="box b3">Direct Connect<span>専用線・暗号化なし。専用接続 1〜400 Gbps、ホスト接続 50 Mbps〜。VIF はプライベート・パブリック・トランジット</span></div>
+      <div class="box b4">Transit Gateway と DNS<span>ハブ・ルートテーブルで分離・ピアリングは静的ルート。DNS は向きでインバウンドかアウトバウンド</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:54%">ひっかけ</th><th>正しくは</th></tr>
+        <tr><td class="l">Direct Connect は既定で暗号化される</td><td class="x">されない。VPN を上に</td></tr>
+        <tr><td class="l">VGW の VPN で高速化を有効に</td><td class="x">TGW で作り直す</td></tr>
+        <tr><td class="l">ロケーションの障害に LAG</td><td class="x">最大回復性モデル</td></tr>
+        <tr><td class="l">S3 へ専用線でプライベート VIF</td><td class="x">パブリック VIF</td></tr>
+        <tr><td class="l">TGW ピアリングでルート伝達</td><td class="x">静的ルートを追加</td></tr>
+        <tr><td class="l">社内 DNS から CIDR＋2 へ転送</td><td class="x">インバウンドエンドポイント</td></tr>
+      </table>
+      <div class="point">次の #19 では、CloudFront と Global Accelerator を学ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

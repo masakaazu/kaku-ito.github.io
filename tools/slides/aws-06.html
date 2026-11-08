@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS SAA #06 メッセージングと疎結合 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">AWS SAA（SAA-C03）　分野2 弾力性に優れたアーキテクチャの設計　#06</div>
+  <h1>メッセージングと疎結合</h1>
+  <p>あいだにキューやトピックをはさめば、片方が止まっても全体は止まらない。SQS・SNS・EventBridge・Amazon MQ の使い分け</p>
+  <div class="refs-legend">各ページの下に、根拠にした AWS の公式ドキュメント（SQS・SNS・EventBridge・Amazon MQ・EC2 Auto Scaling・Lambda）を書いた（青い文字を押すと開く）。「」の中はドキュメントの原文どおり（日本語版は機械翻訳のため、語順が不自然なところもそのまま）。会社名や構成の例は Claude が作った例</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>試験ガイド タスク 2.1</small></h1>
+  <svg width="856" height="170" viewBox="0 0 856 170">
+    <defs><marker id="g1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <text x="200" y="20" fill="#b23a2c" font-weight="700">密結合（直接呼ぶ）</text>
+      <rect x="20" y="36" width="130" height="50" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="85" y="66" fill="#1f3a68" font-weight="700">注文受付</text>
+      <rect x="250" y="36" width="130" height="50" rx="8" fill="#fde7e4" stroke="#b23a2c"/><text x="315" y="58" fill="#b23a2c" font-weight="700">在庫処理</text><text x="315" y="76" fill="#b23a2c" font-size="11">止まっている</text>
+      <line x1="150" y1="61" x2="248" y2="61" stroke="#b23a2c" stroke-width="2" marker-end="url(#g1)"/><text x="200" y="54" fill="#b23a2c" font-size="11">エラー</text>
+      <text x="200" y="112" font-size="11" fill="#b23a2c">相手が止まると受付もエラー</text><text x="200" y="128" font-size="11" fill="#b23a2c">相手の速さに引きずられる</text>
+      <line x1="428" y1="10" x2="428" y2="160" stroke="#d2d2d7"/>
+      <text x="640" y="20" fill="#3a7d44" font-weight="700">疎結合（キューをはさむ）</text>
+      <rect x="450" y="36" width="110" height="50" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="505" y="66" fill="#1f3a68" font-weight="700">注文受付</text>
+      <rect x="590" y="36" width="100" height="50" rx="8" fill="#3a7d44"/><text x="640" y="58" fill="#fff" font-weight="700">SQS</text><text x="640" y="76" fill="#fff" font-size="11">ためる</text>
+      <rect x="720" y="36" width="126" height="50" rx="8" fill="#fde7e4" stroke="#b23a2c"/><text x="783" y="58" fill="#b23a2c" font-weight="700">在庫処理</text><text x="783" y="76" fill="#b23a2c" font-size="11">止まっていても</text>
+      <line x1="560" y1="61" x2="588" y2="61" stroke="#1f3a68" stroke-width="2" marker-end="url(#g1)"/>
+      <line x1="690" y1="61" x2="718" y2="61" stroke="#1f3a68" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#g1)"/>
+      <text x="640" y="112" font-size="11" fill="#3a7d44">受付は続く。復旧したらたまった分を処理</text><text x="640" y="128" font-size="11" fill="#3a7d44">受付と処理を別々にスケールできる</text>
+      <text x="428" y="158" font-size="10.5" fill="#6e6e73">図は Claude が作った模式図</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:64%">タスク 2.1 の知識・スキル（このPDFに関係する部分の要約）</th><th>このPDF</th></tr>
+    <tr><td class="l">キューイングとメッセージングの概念（パブリッシュ/サブスクライブなど）</td><td class="t">第1・3章</td></tr>
+    <tr><td class="l">イベント駆動型アーキテクチャ</td><td class="t">第3章</td></tr>
+    <tr><td class="l">疎結合を実現するために必要な AWS のサービスを決定する</td><td class="t">全体</td></tr>
+    <tr><td class="l">コンポーネントのスケーリング戦略を決定する</td><td class="t">第2章（キューの長さで増減）</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html">AWS「コンテンツ分野 2: 弾力性に優れたアーキテクチャの設計」</a>タスク 2.1</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>疎結合と SQS のキュー</h1>
+  <p>送る側はキューに入れるだけ。受け手は自分の都合で取りに行き、処理したら消す。</p>
+  <div class="foot"><span>AWS SAA #06 メッセージングと疎結合</span><span>タスク 2.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>SQS のメッセージの一生</h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <defs><marker id="g2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="60" width="130" height="60" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="75" y="86" fill="#1f3a68" font-weight="700">送る側</text><text x="75" y="104" font-size="11">プロデューサー</text>
+      <rect x="230" y="30" width="330" height="120" rx="12" fill="#e8f3ea" stroke="#3a7d44"/>
+      <text x="395" y="52" fill="#3a7d44" font-weight="700">SQS キュー（複数の AZ に保存）</text>
+      <rect x="250" y="66" width="60" height="34" rx="5" fill="#3a7d44"/><text x="280" y="88" fill="#fff" font-size="11">msg</text>
+      <rect x="320" y="66" width="60" height="34" rx="5" fill="#3a7d44"/><text x="350" y="88" fill="#fff" font-size="11">msg</text>
+      <rect x="390" y="66" width="60" height="34" rx="5" fill="#fff" stroke="#3a7d44" stroke-dasharray="4 3"/><text x="420" y="82" fill="#3a7d44" font-size="10">隠れ中</text><text x="420" y="95" fill="#3a7d44" font-size="10">（処理中）</text>
+      <rect x="460" y="66" width="80" height="34" rx="5" fill="#fff4e5" stroke="#b25000"/><text x="500" y="88" fill="#b25000" font-size="11">遅延中</text>
+      <text x="395" y="124" font-size="11">保持期間：デフォルト 4 日（1 分～14 日）</text><text x="395" y="140" font-size="11">1 件の最大 1 MiB</text>
+      <rect x="680" y="60" width="166" height="60" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="763" y="86" fill="#1f3a68" font-weight="700">受け手</text><text x="763" y="104" font-size="11">コンシューマー</text>
+      <line x1="140" y1="90" x2="228" y2="90" stroke="#1f3a68" stroke-width="2" marker-end="url(#g2)"/><text x="184" y="82" font-size="11">① Send</text>
+      <line x1="678" y1="76" x2="562" y2="76" stroke="#1f3a68" stroke-width="2" marker-end="url(#g2)"/><text x="620" y="68" font-size="11">② Receive</text>
+      <text x="620" y="100" font-size="10.5" fill="#4a5a78">（取りに行く）</text>
+      <line x1="678" y1="112" x2="562" y2="112" stroke="#b23a2c" stroke-width="2" marker-end="url(#g2)"/><text x="620" y="130" font-size="11" fill="#b23a2c">④ Delete</text>
+      <text x="763" y="146" font-size="11">③ 処理する</text>
+      <text x="428" y="184" font-size="10.5" fill="#6e6e73">②で受け取ったメッセージは可視性タイムアウトのあいだ隠れる。④で消さないと、タイムアウト後にキューに戻る。図は模式図</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>SQS は「取りに行く」：</b>受け手が ReceiveMessage で取りに行く（ポーリング）。押し出してくれる SNS とはここが違う。</div>
+    <div class="point warn"><b>消すまでが仕事：</b>処理が終わったら DeleteMessage で消す。消さなければ、また誰かに配られる。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html">Amazon SQS とは</a>（「メッセージの安全性のため、Amazon SQS は複数のサーバーにメッセージを保存します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html">Amazon SQS の可視性タイムアウト</a>（「タイムアウトが期限切れになるメッセージを削除しなかった場合、メッセージはキューに再表示されて、別のコンシューマーが取得できるようになります。」）</div>
+</section>
+
+<section class="slide">
+  <h1>標準キューと FIFO キュー</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:24%"></th><th>標準キュー</th><th>FIFO キュー</th></tr>
+        <tr><td class="t">スループット</td><td class="t">ほぼ無制限</td><td class="l">300 API コール/秒（バッチで 3,000 件/秒）。高スループットモードで最大 30,000 TPS</td></tr>
+        <tr><td class="t">配信</td><td class="l">少なくとも 1 回（重複あり）</td><td class="t">1 回のみの処理</td></tr>
+        <tr><td class="t">順序</td><td class="l">ベストエフォート</td><td class="t">メッセージグループの中で送った順</td></tr>
+        <tr><td class="t">重複排除</td><td class="x">なし（受け手をべき等に）</td><td class="t">5 分間の重複排除の間隔</td></tr>
+      </table>
+      <div class="point"><b>選び方：</b>「順序が大事」「二重処理は困る」→ FIFO。「とにかく大量・速く」「順序は気にしない」→ 標準（重複はべき等で吸収）。</div>
+    </div>
+    <div>
+      <div class="lbl">メッセージグループで並列にする</div>
+      <svg width="410" height="170" viewBox="0 0 410 170">
+        <g font-size="11" text-anchor="middle">
+          <rect x="4" y="6" width="402" height="158" rx="10" fill="#f5f5f7" stroke="#1f3a68"/><text x="205" y="24" fill="#1f3a68" font-weight="700">FIFO キュー</text>
+          <text x="40" y="54">口座 A</text><rect x="70" y="38" width="50" height="26" rx="4" fill="#1f3a68"/><text x="95" y="56" fill="#fff">A1</text><rect x="126" y="38" width="50" height="26" rx="4" fill="#1f3a68"/><text x="151" y="56" fill="#fff">A2</text><rect x="182" y="38" width="50" height="26" rx="4" fill="#1f3a68"/><text x="207" y="56" fill="#fff">A3</text>
+          <text x="40" y="94">口座 B</text><rect x="70" y="78" width="50" height="26" rx="4" fill="#3a7d44"/><text x="95" y="96" fill="#fff">B1</text><rect x="126" y="78" width="50" height="26" rx="4" fill="#3a7d44"/><text x="151" y="96" fill="#fff">B2</text>
+          <text x="40" y="134">口座 C</text><rect x="70" y="118" width="50" height="26" rx="4" fill="#b25000"/><text x="95" y="136" fill="#fff">C1</text>
+          <text x="320" y="56">→ 受け手 1</text><text x="320" y="96">→ 受け手 2</text><text x="320" y="136">→ 受け手 3</text>
+          <text x="205" y="158" fill="#4a5a78" font-size="10.5">グループの中は順番どおり、グループどうしは並列（Claude が作った例）</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-queue-types.html">Amazon SQS キュータイプ</a>（「つまり、すべてのメッセージは少なくとも 1 回配信されますが、再試行やネットワーク遅延が原因で 2 回以上配信される場合もあります。」「FIFO キューでは、各メッセージグループ内のメッセージを送信した順序どおりに取り出します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-exactly-once-processing.html">Amazon SQS の 1 回のみ処理</a></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>SQS の動きを調整する</h1>
+  <p>隠す・遅らせる・待つ・あきらめる。4つのつまみと、キューの長さでのスケール。</p>
+  <div class="foot"><span>AWS SAA #06 メッセージングと疎結合</span><span>タスク 2.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>可視性タイムアウトとデッドレターキュー</h1>
+  <svg width="856" height="170" viewBox="0 0 856 170">
+    <g font-size="12" text-anchor="middle">
+      <text x="20" y="20" text-anchor="start" fill="#1f3a68" font-weight="700">処理に 3 分かかるのに、可視性タイムアウトが 30 秒のまま（Claude が作った例）</text>
+      <line x1="40" y1="60" x2="820" y2="60" stroke="#d2d2d7" stroke-width="2"/>
+      <rect x="40" y="44" width="120" height="32" rx="5" fill="#1f3a68"/><text x="100" y="65" fill="#fff" font-size="11">受け手1 が受信</text>
+      <rect x="160" y="44" width="120" height="32" rx="5" fill="#fff" stroke="#1f3a68" stroke-dasharray="4 3"/><text x="220" y="65" fill="#1f3a68" font-size="11">30 秒隠れる</text>
+      <rect x="280" y="44" width="140" height="32" rx="5" fill="#b23a2c"/><text x="350" y="65" fill="#fff" font-size="11">キューに戻る</text>
+      <rect x="420" y="44" width="160" height="32" rx="5" fill="#b23a2c"/><text x="500" y="65" fill="#fff" font-size="11">受け手2 も受信 → 二重</text>
+      <text x="700" y="65" fill="#b23a2c" font-size="11">← 処理時間より長くする</text>
+      <text x="20" y="108" text-anchor="start" fill="#3a7d44" font-weight="700">何度やっても失敗するメッセージ</text>
+      <rect x="40" y="120" width="170" height="36" rx="6" fill="#e8f3ea" stroke="#3a7d44"/><text x="125" y="143" fill="#3a7d44">ソースキュー</text>
+      <text x="300" y="134" font-size="11">受信 1・2・3 回目も失敗</text><text x="300" y="150" font-size="11">（maxReceiveCount = 3）</text>
+      <line x1="210" y1="138" x2="408" y2="138" stroke="#3a7d44" stroke-width="2"/>
+      <rect x="410" y="120" width="190" height="36" rx="6" fill="#4a5a78"/><text x="505" y="143" fill="#fff" font-weight="700">デッドレターキュー</text>
+      <text x="720" y="134" font-size="11">ログで原因を調べ、</text><text x="720" y="150" font-size="11">直したらリドライブで戻す</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:22%"></th><th>可視性タイムアウト</th><th>デッドレターキュー</th></tr>
+    <tr><td class="t">値</td><td class="l">デフォルト 30 秒・0 秒～12 時間。<code>ChangeMessageVisibility</code> で途中で延ばせる</td><td class="l">再処理ポリシーの <code>maxReceiveCount</code> で、何回受け取られたら移すかを決める</td></tr>
+    <tr><td class="t">決まり</td><td class="l">処理と削除にかかる時間に合わせる</td><td class="l">ソースキューと同じアカウント・同じリージョン。保持期間は元のキューより長く</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html">Amazon SQS の可視性タイムアウト</a>（「キューのデフォルトの可視性タイムアウトは 30 秒ですが、アプリケーションがメッセージを処理および削除するために必要な時間に合わせて調整できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html">Amazon SQS でのデッドレターキューの使用</a>（「デッドレターキューは、ソースキューと同じ AWS アカウント およびリージョンにある必要があります。」）</div>
+</section>
+
+<section class="slide">
+  <h1>待つ・遅らせる・残す</h1>
+  <table class="mx">
+    <tr><th style="width:18%">つまみ</th><th>何をする</th><th style="width:20%">値</th><th style="width:30%">本番の言い回し</th></tr>
+    <tr><td class="t">ロングポーリング</td><td class="l">すべてのサーバーを調べ、メッセージが来るか待ち時間が切れるまで待って応答（<code>WaitTimeSeconds</code>）。デフォルトはショートポーリング</td><td class="l">待ち時間を設定</td><td class="l">「空の応答が多くコストがかさむ」</td></tr>
+    <tr><td class="t">遅延キュー</td><td class="l">送ったメッセージを、決めた時間だけ受け手から見えなくする</td><td class="l">0 秒～15 分</td><td class="l">「送ってから数分は処理させない」</td></tr>
+    <tr><td class="t">保持期間</td><td class="l">消えるまでの時間</td><td class="l">デフォルト 4 日・1 分～14 日</td><td class="l">「受け手が数日止まってもなくさない」</td></tr>
+    <tr><td class="t">可視性タイムアウト</td><td class="l">受け取ったあと、ほかの受け手から隠す時間</td><td class="l">30 秒・0 秒～12 時間</td><td class="l">「二重に処理される」</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>遅延と可視性の違い：</b>遅延キューは「受け取る前」、可視性タイムアウトは「受け取った後」に見えなくする。</div>
+    <div class="point warn"><b>15 分より先の予定：</b>SQS の遅延は最大 15 分。何時間・何日も先の実行は EventBridge スケジューラ（第3章）。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-short-and-long-polling.html">Amazon SQSショートポーリングとロングポーリング</a>（「このオプションを使用すると、空のレスポンスの数が減少し、コストが削減される可能性があります。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html">Amazon SQS のメッセージキュー（クォータ）</a>（「デフォルトでは、メッセージは4日間保持されます。最小の期間は60秒(1分) です。最大は1,209,600秒(14日)です。」）</div>
+</section>
+
+<section class="slide">
+  <h1>受け手を増やす：キューの長さで Auto Scaling</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="190" viewBox="0 0 410 190">
+        <defs><marker id="g3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="4" y="20" width="130" height="60" rx="8" fill="#3a7d44"/><text x="69" y="44" fill="#fff" font-weight="700">SQS</text><text x="69" y="62" fill="#fff" font-size="11">1,500 件たまっている</text>
+          <rect x="190" y="10" width="216" height="80" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="298" y="30" fill="#1f3a68" font-weight="700">Auto Scaling グループ</text>
+          <rect x="204" y="42" width="54" height="34" rx="5" fill="#1f3a68"/><text x="231" y="64" fill="#fff" font-size="10.5">EC2</text>
+          <rect x="268" y="42" width="54" height="34" rx="5" fill="#1f3a68"/><text x="295" y="64" fill="#fff" font-size="10.5">EC2</text>
+          <rect x="332" y="42" width="54" height="34" rx="5" fill="#1f3a68"/><text x="359" y="64" fill="#fff" font-size="10.5">EC2</text>
+          <line x1="134" y1="50" x2="188" y2="50" stroke="#1f3a68" stroke-width="2" marker-end="url(#g3)"/>
+          <text x="205" y="118">インスタンスあたりのバックログ ＝ 1,500 ÷ 3 ＝ 500</text>
+          <text x="205" y="140">目標（許容できるバックログ）＝ 150 なら</text>
+          <text x="205" y="162" fill="#b25000" font-weight="700">→ 10 台に増やす（1,500 ÷ 150）</text>
+          <text x="205" y="184" fill="#6e6e73" font-size="10.5">数字は Claude が作った例</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:36%">用語</th><th>決め方</th></tr>
+        <tr><td class="t">インスタンスあたりのバックログ</td><td class="l"><code>ApproximateNumberOfMessages</code> ÷ 動いているインスタンス数（カスタムメトリクスにする）</td></tr>
+        <tr><td class="t">許容できるバックログ（目標値）</td><td class="l">許容できる待ち時間 ÷ 1 件の平均処理時間</td></tr>
+      </table>
+      <div class="point"><b>なぜ CPU ではなく：</b>キューにたまった仕事の量に比例して増減できる。CPU が低くても仕事がたまっていることがある。</div>
+      <div class="mini">サーバーを持たずに処理するなら Lambda のイベントソースマッピング（Lambda がキューをポーリングし、バッチで関数に渡す）。一部だけ失敗したら、部分的なバッチレスポンスで失敗分だけ再試行させる（#07）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/as-using-sqs-queue.html">Amazon SQS に基づくスケーリングポリシー</a>（「ターゲット値を、維持する*インスタンスごとに許容されるバックログ*に設定します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/with-sqs.html">Amazon SQS での Lambda の使用</a></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>SNS・EventBridge・Amazon MQ</h1>
+  <p>配るなら SNS、条件で振り分けるなら EventBridge、昔のブローカーをそのまま持ってくるなら Amazon MQ。</p>
+  <div class="foot"><span>AWS SAA #06 メッセージングと疎結合</span><span>タスク 2.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>SNS のファンアウトとフィルタリング</h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <defs><marker id="g4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="74" width="140" height="56" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="80" y="98" fill="#1f3a68" font-weight="700">注文サービス</text><text x="80" y="116" font-size="11">「注文確定」を送る</text>
+      <rect x="200" y="64" width="150" height="76" rx="10" fill="#b25000"/><text x="275" y="96" fill="#fff" font-weight="700">SNS トピック</text><text x="275" y="116" fill="#fff" font-size="11">押し出す（1対多）</text>
+      <line x1="150" y1="102" x2="198" y2="102" stroke="#1f3a68" stroke-width="2" marker-end="url(#g4)"/>
+      <rect x="440" y="10" width="150" height="44" rx="8" fill="#3a7d44"/><text x="515" y="37" fill="#fff" font-weight="700">SQS（在庫）</text>
+      <rect x="440" y="78" width="150" height="44" rx="8" fill="#3a7d44"/><text x="515" y="105" fill="#fff" font-weight="700">SQS（請求）</text>
+      <rect x="440" y="146" width="150" height="44" rx="8" fill="#3a7d44"/><text x="515" y="166" fill="#fff" font-weight="700">SQS（海外向け）</text><text x="515" y="182" fill="#fff" font-size="10">フィルターポリシー付き</text>
+      <line x1="350" y1="90" x2="438" y2="34" stroke="#1f3a68" stroke-width="2" marker-end="url(#g4)"/>
+      <line x1="350" y1="102" x2="438" y2="100" stroke="#1f3a68" stroke-width="2" marker-end="url(#g4)"/>
+      <line x1="350" y1="114" x2="438" y2="166" stroke="#1f3a68" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#g4)"/>
+      <rect x="640" y="10" width="206" height="44" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="743" y="37" fill="#1f3a68">在庫システム（自分のペース）</text>
+      <rect x="640" y="78" width="206" height="44" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="743" y="105" fill="#1f3a68">請求システム（止まっても OK）</text>
+      <rect x="640" y="146" width="206" height="44" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="743" y="173" fill="#1f3a68">海外の注文だけ届く</text>
+      <line x1="590" y1="32" x2="638" y2="32" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#g4)"/>
+      <line x1="590" y1="100" x2="638" y2="100" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#g4)"/>
+      <line x1="590" y1="168" x2="638" y2="168" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#g4)"/>
+      <text x="275" y="178" font-size="10.5" fill="#6e6e73">構成は Claude が作った例</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>受け手の種類：</b>SQS・Lambda・HTTP/HTTPS・メール・SMS・モバイルプッシュ・Data Firehose など。アプリどうし（A2A）にも人への通知（A2P）にも。</div>
+    <div class="point"><b>順序も守るなら：</b>SNS FIFO トピック ＋ SQS FIFO キュー。厳密な順序と重複排除のままファンアウト。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/sns/latest/dg/welcome.html">Amazon SNS とは</a>（「トピックは論理アクセスポイントとして機能し、メッセージがさまざまなプラットフォームにある複数のサブスクライバーに配信されるようにします。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/sns/latest/dg/sns-message-filtering.html">Amazon SNS メッセージフィルター処理</a>（「デフォルトでは、Amazon SNS トピックの受信者は、トピックに対して発行されたすべてのメッセージを受信します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>EventBridge：バス・パイプ・スケジューラ</h1>
+  <svg width="856" height="180" viewBox="0 0 856 180">
+    <defs><marker id="g5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="10" width="150" height="36" rx="6" fill="#f5f5f7" stroke="#d2d2d7"/><text x="85" y="33" font-size="11">AWS のサービス</text>
+      <rect x="10" y="54" width="150" height="36" rx="6" fill="#f5f5f7" stroke="#d2d2d7"/><text x="85" y="77" font-size="11">自社のアプリ</text>
+      <rect x="10" y="98" width="150" height="36" rx="6" fill="#f5f5f7" stroke="#d2d2d7"/><text x="85" y="121" font-size="11">SaaS（パートナー）</text>
+      <rect x="220" y="20" width="190" height="104" rx="10" fill="#1f3a68"/><text x="315" y="50" fill="#fff" font-weight="700">イベントバス</text>
+      <rect x="236" y="62" width="158" height="48" rx="6" fill="#fff"/><text x="315" y="82" fill="#1f3a68" font-size="11">ルール（イベントパターン）</text><text x="315" y="100" fill="#1f3a68" font-size="11">で振り分け</text>
+      <line x1="160" y1="28" x2="218" y2="50" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#g5)"/>
+      <line x1="160" y1="72" x2="218" y2="72" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#g5)"/>
+      <line x1="160" y1="116" x2="218" y2="96" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#g5)"/>
+      <rect x="470" y="10" width="130" height="30" rx="6" fill="#3a7d44"/><text x="535" y="30" fill="#fff" font-size="11">Lambda</text>
+      <rect x="470" y="56" width="130" height="30" rx="6" fill="#3a7d44"/><text x="535" y="76" fill="#fff" font-size="11">Step Functions</text>
+      <rect x="470" y="102" width="130" height="30" rx="6" fill="#3a7d44"/><text x="535" y="122" fill="#fff" font-size="11">SQS・SNS など</text>
+      <line x1="410" y1="50" x2="468" y2="25" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#g5)"/>
+      <line x1="410" y1="72" x2="468" y2="71" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#g5)"/>
+      <line x1="410" y1="96" x2="468" y2="117" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#g5)"/>
+      <text x="315" y="146" font-size="10.5" fill="#4a5a78">多くのソース → 多くのターゲット。1つのルールで複数のターゲットに並行して送れる</text>
+      <rect x="650" y="10" width="196" height="70" rx="10" fill="#fff4e5" stroke="#b25000"/><text x="748" y="34" fill="#b25000" font-weight="700">パイプ（Pipes）</text><text x="748" y="54" font-size="11">1つのソース → 絞る・変える</text><text x="748" y="70" font-size="11">→ 1つのターゲット</text>
+      <rect x="650" y="92" width="196" height="70" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="748" y="116" fill="#3a7d44" font-weight="700">スケジューラ</text><text x="748" y="136" font-size="11">cron・レート式のくり返し</text><text x="748" y="152" font-size="11">と1回限りの予定</text>
+      <text x="315" y="172" font-size="10.5" fill="#6e6e73">図は Claude が作った模式図</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%">聞かれ方</th><th>答え</th></tr>
+    <tr><td class="l">EC2 が停止したら Lambda を実行</td><td class="t">デフォルトのイベントバスのルール（AWS のサービスのイベントは自動で届く）</td></tr>
+    <tr><td class="l">SaaS のイベントを条件で振り分け</td><td class="t">EventBridge のイベントバス</td></tr>
+    <tr><td class="l">毎月 1 日 9 時に実行／30 日後に1回だけ</td><td class="t">EventBridge スケジューラ</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/eb-what-is.html">Amazon EventBridge とは</a>（「EventBridge は、イベントを使用してアプリケーションコンポーネント同士を接続するサーバーレスサービスです。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/eb-rules.html">Amazon EventBridge のルール</a>（「1 つのルールで複数のターゲットにイベントを送信し、並行して実行することができます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/eventbridge/latest/userguide/using-eventbridge-scheduler.html">Amazon EventBridge スケジューラ</a></div>
+</section>
+
+<section class="slide">
+  <h1>4つのサービスの使い分け</h1>
+  <table class="mx">
+    <tr><th style="width:15%"></th><th>SQS</th><th>SNS</th><th>EventBridge</th><th>Amazon MQ</th></tr>
+    <tr><td class="t">形</td><td class="l">キュー</td><td class="l">トピック（パブリッシュ/サブスクライブ）</td><td class="l">イベントバス＋ルール</td><td class="l">ActiveMQ・RabbitMQ のブローカー</td></tr>
+    <tr><td class="t">届け方</td><td class="l">受け手が取りに行く（ポーリング）</td><td class="l">押し出す（プッシュ）</td><td class="l">ルールに合えばターゲットへ</td><td class="l">業界標準のプロトコル</td></tr>
+    <tr><td class="t">受け手</td><td class="l">1つのメッセージは1つの受け手</td><td class="l">登録したすべての受け手</td><td class="l">条件に合うターゲット</td><td class="l">ブローカーの使い方しだい</td></tr>
+    <tr><td class="t">ためる</td><td class="t">最大 14 日</td><td class="x">ためない（受け手に SQS を付ける）</td><td class="l">ためるより振り分け</td><td class="l">ブローカーがためる</td></tr>
+    <tr><td class="t">選ぶ決め手</td><td class="l">受け手の都合で処理・負荷の平準化</td><td class="l">同じ通知を多くの受け手に</td><td class="l">AWS・SaaS のイベントを条件で</td><td class="l">既存のブローカーからコードを変えずに</td></tr>
+  </table>
+  <div class="point warn" style="margin-top:8px"><b>本番のひっかけ：</b>「オンプレミスの ActiveMQ / RabbitMQ をコードを変えずに移したい」で SQS を選ばない。SQS・SNS は新しく作るときの第一候補、移行なら Amazon MQ。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/amazon-mq/latest/developer-guide/welcome.html">Amazon MQ とは</a>（「既存のメッセージブローカーからメッセージングコードを書き換えずに Amazon MQ に移行することもできます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/sns/latest/dg/sns-sqs-as-subscriber.html">Amazon SNS 通知の Amazon SQS キューへのファンアウトと非同期処理</a>（「Amazon SQS は、分散アプリケーションがポーリングモデルを介してメッセージを交換するために使用するメッセージキューサービスです。」）</div>
+</section>
+
+<section class="slide">
+  <h1>選び分け：この要件ならこれ</h1>
+  <table class="mx">
+    <tr><th style="width:62%">要件</th><th>答え</th></tr>
+    <tr><td class="l">受け側が止まっても受付を止めない</td><td class="t">SQS で切り離す</td></tr>
+    <tr><td class="l">順序どおりに1回だけ処理</td><td class="t">FIFO キュー（グループで並列）</td></tr>
+    <tr><td class="l">同じメッセージが2回処理される（処理が長い）</td><td class="t">可視性タイムアウトを延ばす</td></tr>
+    <tr><td class="l">何度も失敗するメッセージを分ける</td><td class="t">デッドレターキュー</td></tr>
+    <tr><td class="l">空の受信が多くて高い</td><td class="t">ロングポーリング</td></tr>
+    <tr><td class="l">1 MiB を超えるデータを渡す</td><td class="t">S3 に置いて参照を送る（拡張クライアント）</td></tr>
+    <tr><td class="l">たまった仕事に合わせて EC2 を増減</td><td class="t">インスタンスあたりのバックログで Auto Scaling</td></tr>
+    <tr><td class="l">同じ通知を複数のシステムに確実に</td><td class="t">SNS → 複数の SQS（ファンアウト）</td></tr>
+    <tr><td class="l">受け手ごとに欲しいメッセージだけ</td><td class="t">SNS のフィルターポリシー</td></tr>
+    <tr><td class="l">AWS や SaaS のイベントを条件で振り分け</td><td class="t">EventBridge</td></tr>
+    <tr><td class="l">既存の RabbitMQ をコードを変えずに移す</td><td class="t">Amazon MQ</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">疎結合<span>あいだにキューやトピックをはさむ。止まっても全体は止まらず、別々にスケール</span></div>
+      <div class="box b2">SQS<span>標準＝速い・重複あり・順序なし。FIFO＝順序・1回だけ。保持 4 日（～14 日）、1 MiB まで</span></div>
+      <div class="box b3">SQS のつまみ<span>可視性 30 秒（～12 時間）・遅延 ～15 分・ロングポーリング・DLQ（maxReceiveCount）</span></div>
+      <div class="box b4">SNS・EventBridge・MQ<span>配る＝SNS（ファンアウト・フィルター）、振り分ける＝EventBridge、移す＝Amazon MQ</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">ひっかけ</th><th>正しくは</th></tr>
+        <tr><td class="l">標準キューは順序を保証</td><td class="x">ベストエフォート</td></tr>
+        <tr><td class="l">SNS がメッセージを数日ためる</td><td class="x">ためるのは SQS</td></tr>
+        <tr><td class="l">1つの SQS で3システムに配る</td><td class="x">1件は1つの受け手。SNS で配る</td></tr>
+        <tr><td class="l">遅延キューで 1 日後に実行</td><td class="x">最大 15 分。スケジューラ</td></tr>
+        <tr><td class="l">DLQ を別リージョンに</td><td class="x">同じアカウント・リージョン</td></tr>
+      </table>
+      <div class="point">次の #07 では、Lambda・API Gateway・Step Functions・Fargate などのサーバーレスを学ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

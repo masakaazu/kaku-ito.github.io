@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS SAA #09 ロードバランサーとAuto Scaling 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">AWS SAA（SAA-C03）　分野2・3 弾力性／高パフォーマンス　#09</div>
+  <h1>ロードバランサーと Auto Scaling</h1>
+  <p>リクエストを複数のサーバーに分け（ELB）、サーバーの台数を負荷に合わせて増減し、壊れたら置き換える（EC2 Auto Scaling）。種類の選び方と設定の決め方</p>
+  <div class="refs-legend">各ページの下に、根拠にした AWS の公式ドキュメント（Elastic Load Balancing・Application／Network／Gateway Load Balancer・Amazon EC2 Auto Scaling）を書いた（青い文字を押すと開く）。「」の中はドキュメントの原文どおり（日本語版は機械翻訳のため、語順が不自然なところもそのまま）。会社名や構成の例は Claude が作った例</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>試験ガイド タスク 2.1・2.2・3.2</small></h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <defs><marker id="a1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="75" width="100" height="50" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="60" y="97" fill="#1f3a68" font-weight="700">利用者</text><text x="60" y="114" font-size="10.5">ブラウザ・API</text>
+      <rect x="160" y="60" width="150" height="80" rx="10" fill="#b25000"/><text x="235" y="88" fill="#fff" font-weight="700">ロードバランサー</text><text x="235" y="106" fill="#fff" font-size="10.5">ALB・NLB・GWLB</text><text x="235" y="122" fill="#fff" font-size="10.5">正常なターゲットへ</text>
+      <line x1="110" y1="100" x2="158" y2="100" stroke="#1f3a68" stroke-width="2" marker-end="url(#a1)"/>
+      <rect x="360" y="10" width="330" height="180" rx="12" fill="#e8f3ea" stroke="#3a7d44" stroke-dasharray="6 4"/><text x="525" y="30" fill="#3a7d44" font-weight="700">Auto Scaling グループ（最小 2・希望 4・最大 8）</text>
+      <rect x="375" y="42" width="145" height="138" rx="8" fill="#fff" stroke="#4a5a78"/><text x="447" y="60" fill="#4a5a78" font-weight="700">AZ a</text>
+      <rect x="530" y="42" width="145" height="138" rx="8" fill="#fff" stroke="#4a5a78"/><text x="602" y="60" fill="#4a5a78" font-weight="700">AZ b</text>
+      <rect x="390" y="72" width="115" height="42" rx="6" fill="#3a7d44"/><text x="447" y="98" fill="#fff">EC2</text>
+      <rect x="390" y="124" width="115" height="42" rx="6" fill="#3a7d44"/><text x="447" y="150" fill="#fff">EC2</text>
+      <rect x="545" y="72" width="115" height="42" rx="6" fill="#3a7d44"/><text x="602" y="98" fill="#fff">EC2</text>
+      <rect x="545" y="124" width="115" height="42" rx="6" fill="#fff" stroke="#3a7d44" stroke-dasharray="4 3"/><text x="602" y="143" fill="#3a7d44" font-size="11">故障したら</text><text x="602" y="158" fill="#3a7d44" font-size="11">置き換える</text>
+      <line x1="310" y1="90" x2="388" y2="93" stroke="#1f3a68" stroke-width="2" marker-end="url(#a1)"/><line x1="310" y1="110" x2="388" y2="145" stroke="#1f3a68" stroke-width="2" marker-end="url(#a1)"/>
+      <rect x="720" y="40" width="126" height="56" rx="8" fill="#1f3a68"/><text x="783" y="63" fill="#fff" font-weight="700">CloudWatch</text><text x="783" y="81" fill="#fff" font-size="10.5">CPU 50% を超えた</text>
+      <rect x="720" y="114" width="126" height="56" rx="8" fill="#4a5a78"/><text x="783" y="137" fill="#fff" font-weight="700">スケーリング</text><text x="783" y="155" fill="#fff" font-size="10.5">ポリシーで増減</text>
+      <line x1="783" y1="96" x2="783" y2="112" stroke="#1f3a68" stroke-width="2" marker-end="url(#a1)"/><line x1="718" y1="142" x2="692" y2="142" stroke="#1f3a68" stroke-width="2" marker-end="url(#a1)"/>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>ELB の役目：</b>複数の AZ のターゲットに分け、ヘルスチェックで正常なものにだけ送る。ロードバランサー自体もトラフィックに合わせて自動でスケールする。</div>
+    <div class="point"><b>Auto Scaling の役目：</b>負荷に合わせて台数を増減する（弾力性）＋故障したインスタンスを置き換えて希望の数を保つ（耐障害性）。ELB に自動で登録・登録解除する。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/userguide/what-is-load-balancing.html">Elastic Load Balancing とは?</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html">Amazon EC2 Auto Scaling とは</a>（「Amazon EC2 Auto Scaling は、EC2 ヘルスチェックを使用してインスタンスのヘルスと可用性を自動的にモニタリングし、終了したインスタンスまたは障害が発生したインスタンスを置き換えて、希望するキャパシティを維持します。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>ロードバランサーの種類</h1>
+  <p>何を見て分けるか（第 7 層か第 4 層か）、固定 IP が要るか、アプライアンスを挟むか。種類の選び方がまず問われる。</p>
+  <div class="foot"><span>AWS SAA #09 ロードバランサーと Auto Scaling</span><span>タスク 2.1・3.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>4 つの種類を見分ける</h1>
+  <table class="mx">
+    <tr><th style="width:16%">項目</th><th>ALB</th><th>NLB</th><th>GWLB</th><th style="width:16%">CLB</th></tr>
+    <tr><td class="t">層</td><td>第 7 層（HTTP・HTTPS）</td><td>第 4 層（TCP・UDP・TLS）</td><td>第 3 層（GENEVE 6081）</td><td>前世代</td></tr>
+    <tr><td class="t">何で分ける</td><td class="l">パス・ホスト・ヘッダー・メソッド・クエリ・送信元 IP</td><td class="l">接続（フロー）ごと</td><td class="l">通信を丸ごとアプライアンスへ</td><td class="l">—</td></tr>
+    <tr><td class="t">ターゲット</td><td>instance・ip・lambda</td><td>instance・ip・alb</td><td>仮想アプライアンス</td><td>—</td></tr>
+    <tr><td class="t">固定 IP</td><td>なし（DNS 名で使う）</td><td>AZ ごとに 1 つ・Elastic IP 可</td><td>—</td><td>—</td></tr>
+    <tr><td class="t">クロスゾーン</td><td>常に有効</td><td>デフォルト無効</td><td>デフォルト無効</td><td>—</td></tr>
+    <tr><td class="t">本番の言い回し</td><td class="l">「URL のパスで」「ホスト名で」「Lambda を後ろに」</td><td class="l">「固定 IP」「UDP」「毎秒数百万」「超低レイテンシー」</td><td class="l">「サードパーティのファイアウォール」「IDS/IPS を透過的に」</td><td class="l">移行元。HTTP→ALB、TCP→NLB</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>覚え方：</b>中身（URL）を見るなら 7 層の ALB。中身を見ずに速さと固定 IP なら 4 層の NLB。検査装置に通すなら 3 層の GWLB。</div>
+    <div class="point warn"><b>ひっかけ：</b>「ALB に Elastic IP を付ける」はできない。固定 IP と ALB の機能を両方ほしいなら、NLB のターゲットに ALB を登録する。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/introduction.html">Application Load Balancer とは?</a>（「Application Load Balancer は、開放型システム間相互接続 (OSI) モデルの第 7 層であるアプリケーションレイヤーで機能します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/network/introduction.html">Network Load Balancer とは?</a>（「Network Load Balancer は、開放型システム間相互接続 (OSI) モデルの第 4 層で機能します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/gateway/introduction.html">Gateway Load Balancer とは？</a>（「ゲートウェイロードバランサーは、開放型システム間相互接続 (OSI) モデルの第 3 層（ネットワークレイヤー）で機能します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>スキーム：インターネット向けと内部向け</h1>
+  <svg width="856" height="190" viewBox="0 0 856 190">
+    <defs><marker id="a2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="70" width="100" height="50" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="60" y="92" fill="#1f3a68" font-weight="700">インターネット</text><text x="60" y="109" font-size="10.5">利用者</text>
+      <rect x="140" y="10" width="706" height="170" rx="12" fill="#f5f5f7" stroke="#1f3a68"/><text x="180" y="30" fill="#1f3a68" font-weight="700">VPC</text>
+      <rect x="160" y="55" width="140" height="80" rx="8" fill="#b25000"/><text x="230" y="80" fill="#fff" font-weight="700">ALB</text><text x="230" y="98" fill="#fff" font-size="10.5">インターネット向け</text><text x="230" y="114" fill="#fff" font-size="10.5">パブリック IP</text>
+      <rect x="340" y="55" width="130" height="80" rx="8" fill="#3a7d44"/><text x="405" y="90" fill="#fff" font-weight="700">Web 層</text><text x="405" y="108" fill="#fff" font-size="10.5">EC2 × n</text>
+      <rect x="510" y="55" width="140" height="80" rx="8" fill="#4a5a78"/><text x="580" y="80" fill="#fff" font-weight="700">内部 ALB</text><text x="580" y="98" fill="#fff" font-size="10.5">internal</text><text x="580" y="114" fill="#fff" font-size="10.5">プライベート IP だけ</text>
+      <rect x="690" y="55" width="140" height="80" rx="8" fill="#3a7d44"/><text x="760" y="90" fill="#fff" font-weight="700">アプリ層</text><text x="760" y="108" fill="#fff" font-size="10.5">EC2 × n</text>
+      <line x1="110" y1="95" x2="158" y2="95" stroke="#1f3a68" stroke-width="2" marker-end="url(#a2)"/><line x1="300" y1="95" x2="338" y2="95" stroke="#1f3a68" stroke-width="2" marker-end="url(#a2)"/><line x1="470" y1="95" x2="508" y2="95" stroke="#1f3a68" stroke-width="2" marker-end="url(#a2)"/><line x1="650" y1="95" x2="688" y2="95" stroke="#1f3a68" stroke-width="2" marker-end="url(#a2)"/>
+      <text x="580" y="162" fill="#4a5a78" font-size="11">インターネットからは届かない</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>作るときに決める：</b>インターネット向けはノードにパブリック IP があり、DNS 名がパブリックに解決される。内部向けはプライベート IP だけで、VPC の中（や VPN・Direct Connect でつながった先）から使う。</div>
+    <div class="point warn"><b>本番の言い回し：</b>「アプリ層は Web 層からだけ受ける」→ 内部向けのロードバランサー。インターネット向けにしてセキュリティグループで絞るより筋がよい。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html">Elastic Load Balancing の仕組み</a>（「ロードバランサーを作成するとき、ロードバランサーを内部向けにするかインターネット向けにするか選択する必要があります。」「インターネット向けロードバランサーのノードにはパブリック IP アドレスが必要です。」）</div>
+</section>
+
+<section class="slide">
+  <h1>クロスゾーン負荷分散：AZ ごとの台数の差</h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <g font-size="12" text-anchor="middle">
+      <text x="210" y="18" fill="#b25000" font-weight="700">無効（NLB・GWLB のデフォルト）</text>
+      <rect x="20" y="30" width="120" height="160" rx="8" fill="#fff" stroke="#4a5a78"/><text x="80" y="48" fill="#4a5a78" font-weight="700">AZ a（50%）</text>
+      <rect x="35" y="60" width="90" height="56" rx="6" fill="#b25000"/><text x="80" y="85" fill="#fff" font-weight="700">25%</text><text x="80" y="102" fill="#fff" font-size="10.5">重い</text>
+      <rect x="35" y="124" width="90" height="56" rx="6" fill="#b25000"/><text x="80" y="149" fill="#fff" font-weight="700">25%</text><text x="80" y="166" fill="#fff" font-size="10.5">重い</text>
+      <rect x="150" y="30" width="270" height="160" rx="8" fill="#fff" stroke="#4a5a78"/><text x="285" y="48" fill="#4a5a78" font-weight="700">AZ b（50%）</text>
+      <g fill="#e3eefc" stroke="#1f3a68"><rect x="162" y="60" width="56" height="56" rx="6"/><rect x="224" y="60" width="56" height="56" rx="6"/><rect x="286" y="60" width="56" height="56" rx="6"/><rect x="348" y="60" width="56" height="56" rx="6"/><rect x="162" y="124" width="56" height="56" rx="6"/><rect x="224" y="124" width="56" height="56" rx="6"/><rect x="286" y="124" width="56" height="56" rx="6"/><rect x="348" y="124" width="56" height="56" rx="6"/></g>
+      <g fill="#1f3a68" font-size="11"><text x="190" y="92">6.25%</text><text x="252" y="92">6.25%</text><text x="314" y="92">6.25%</text><text x="376" y="92">6.25%</text><text x="190" y="156">6.25%</text><text x="252" y="156">6.25%</text><text x="314" y="156">6.25%</text><text x="376" y="156">6.25%</text></g>
+      <text x="646" y="18" fill="#3a7d44" font-weight="700">有効（ALB は常に有効）</text>
+      <rect x="450" y="30" width="120" height="160" rx="8" fill="#fff" stroke="#4a5a78"/><text x="510" y="48" fill="#4a5a78" font-weight="700">AZ a</text>
+      <g fill="#e8f3ea" stroke="#3a7d44"><rect x="465" y="60" width="90" height="56" rx="6"/><rect x="465" y="124" width="90" height="56" rx="6"/></g>
+      <g fill="#3a7d44" font-weight="700"><text x="510" y="92">10%</text><text x="510" y="156">10%</text></g>
+      <rect x="580" y="30" width="270" height="160" rx="8" fill="#fff" stroke="#4a5a78"/><text x="715" y="48" fill="#4a5a78" font-weight="700">AZ b</text>
+      <g fill="#e8f3ea" stroke="#3a7d44"><rect x="592" y="60" width="56" height="56" rx="6"/><rect x="654" y="60" width="56" height="56" rx="6"/><rect x="716" y="60" width="56" height="56" rx="6"/><rect x="778" y="60" width="56" height="56" rx="6"/><rect x="592" y="124" width="56" height="56" rx="6"/><rect x="654" y="124" width="56" height="56" rx="6"/><rect x="716" y="124" width="56" height="56" rx="6"/><rect x="778" y="124" width="56" height="56" rx="6"/></g>
+      <g fill="#3a7d44" font-size="11"><text x="620" y="92">10%</text><text x="682" y="92">10%</text><text x="744" y="92">10%</text><text x="806" y="92">10%</text><text x="620" y="156">10%</text><text x="682" y="156">10%</text><text x="744" y="156">10%</text><text x="806" y="156">10%</text></g>
+    </g>
+  </svg>
+  <div class="mini">2 つの AZ のノードにトラフィックが半分ずつ来るとした計算（Claude が作った例）。無効だと各ノードは自分の AZ のターゲットにだけ送るので、台数の少ない AZ a の 1 台が 25% を受け持つ。</div>
+  <div class="cols">
+    <div class="point"><b>答え方：</b>「NLB の後ろで一部の AZ のインスタンスだけ負荷が高い」→ クロスゾーン負荷分散を有効にする（または AZ ごとの台数をそろえる）。</div>
+    <div class="point warn"><b>AZ の数：</b>ALB は少なくとも 2 つの AZ を有効にする必要がある。1 つの AZ だけのロードバランサーは作れない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html">Elastic Load Balancing の仕組み</a>（「Network Load Balancer と Gateway Load Balancer では、クロスゾーン負荷分散はデフォルトで無効になっています。」「Application Load Balancer では、クロスゾーン負荷分散がロードバランサーレベルで常に有効になっています。」「ただし、Application Load Balancer では、少なくとも 2 つ以上のアベイラビリティーゾーンを有効にする必要があります。」）</div>
+</section>
+
+<section class="slide">
+  <h1>GWLB：検査装置を透過的に挟む</h1>
+  <svg width="856" height="190" viewBox="0 0 856 190">
+    <defs><marker id="a3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="20" width="360" height="160" rx="12" fill="#f5f5f7" stroke="#1f3a68"/><text x="190" y="40" fill="#1f3a68" font-weight="700">アプリの VPC（利用する側）</text>
+      <rect x="25" y="60" width="100" height="50" rx="6" fill="#e3eefc" stroke="#1f3a68"/><text x="75" y="82" fill="#1f3a68" font-size="11">インターネット</text><text x="75" y="98" fill="#1f3a68" font-size="11">ゲートウェイ</text>
+      <rect x="145" y="60" width="100" height="50" rx="6" fill="#b25000"/><text x="195" y="82" fill="#fff" font-size="11" font-weight="700">GWLB</text><text x="195" y="98" fill="#fff" font-size="11">エンドポイント</text>
+      <rect x="265" y="60" width="90" height="50" rx="6" fill="#3a7d44"/><text x="310" y="90" fill="#fff">アプリ</text>
+      <line x1="125" y1="85" x2="143" y2="85" stroke="#1f3a68" stroke-width="2" marker-end="url(#a3)"/><line x1="245" y1="85" x2="263" y2="85" stroke="#1f3a68" stroke-width="2" marker-end="url(#a3)"/>
+      <text x="190" y="140" font-size="11" fill="#4a5a78">ルートテーブルで、出入りの通信を</text><text x="190" y="156" font-size="11" fill="#4a5a78">エンドポイントに向ける</text>
+      <rect x="470" y="20" width="376" height="160" rx="12" fill="#fff4e5" stroke="#b25000"/><text x="658" y="40" fill="#b25000" font-weight="700">セキュリティの VPC（提供する側）</text>
+      <rect x="490" y="60" width="110" height="100" rx="8" fill="#b25000"/><text x="545" y="98" fill="#fff" font-weight="700">GWLB</text><text x="545" y="116" fill="#fff" font-size="10.5">第 3 層</text>
+      <g fill="#4a5a78"><rect x="660" y="52" width="170" height="32" rx="6"/><rect x="660" y="94" width="170" height="32" rx="6"/><rect x="660" y="136" width="170" height="32" rx="6"/></g>
+      <g fill="#fff" font-size="11"><text x="745" y="73">ファイアウォール</text><text x="745" y="115">IDS／IPS</text><text x="745" y="157">パケット検査</text></g>
+      <line x1="600" y1="100" x2="658" y2="70" stroke="#1f3a68" stroke-width="2" marker-end="url(#a3)"/><line x1="600" y1="110" x2="658" y2="110" stroke="#1f3a68" stroke-width="2" marker-end="url(#a3)"/><line x1="600" y1="120" x2="658" y2="150" stroke="#1f3a68" stroke-width="2" marker-end="url(#a3)"/>
+      <text x="630" y="178" font-size="10.5" fill="#b25000">GENEVE（6081）</text>
+      <polyline points="195,58 195,50 440,50 486,72" fill="none" stroke="#b25000" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#a3)"/><text x="330" y="45" font-size="10.5" fill="#b25000">PrivateLink</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>何をする：</b>ファイアウォール・侵入検知と防止・ディープパケットインスペクションなどの仮想アプライアンスをまとめて置き、台数を増減し、正常なものにだけ通す。通信は検査して元の流れに戻る（透過的）。</div>
+    <div class="point warn"><b>ほかとの違い：</b>AWS WAF は ALB・CloudFront などの HTTP のリクエストを調べる。Network Firewall は AWS のマネージドのファイアウォール。「サードパーティのアプライアンス」なら GWLB。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/gateway/introduction.html">Gateway Load Balancer とは？</a>（「ゲートウェイロードバランサ― を使用すると、ファイアウォール、侵入検知および防止システム、ディープパケットインスペクションシステムなどの仮想アプライアンスをデプロイ、スケーリング、管理できます。」「Gateway Load Balancer エンドポイントとの間で送受信されるトラフィックは、ルートテーブルを使用して設定されます。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>ALB と NLB の設定</h1>
+  <p>入口（リスナー）で何を見て、どのターゲットグループに送るか。外すとき・入れるとき・同じ人をどう扱うか。</p>
+  <div class="foot"><span>AWS SAA #09 ロードバランサーと Auto Scaling</span><span>タスク 2.1・2.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>リスナー → ルール → ターゲットグループ</h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <defs><marker id="a4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="20" width="150" height="70" rx="8" fill="#4a5a78"/><text x="85" y="46" fill="#fff" font-weight="700">リスナー HTTP:80</text><text x="85" y="66" fill="#fff" font-size="10.5">→ 443 へリダイレクト</text>
+      <rect x="10" y="110" width="150" height="70" rx="8" fill="#b25000"/><text x="85" y="136" fill="#fff" font-weight="700">リスナー HTTPS:443</text><text x="85" y="156" fill="#fff" font-size="10.5">ACM の証明書</text>
+      <line x1="85" y1="90" x2="85" y2="108" stroke="#1f3a68" stroke-width="2" marker-end="url(#a4)"/>
+      <rect x="200" y="10" width="330" height="180" rx="10" fill="#f5f5f7" stroke="#1f3a68"/><text x="365" y="28" fill="#1f3a68" font-weight="700">ルール（優先順位の高い順に評価）</text>
+      <rect x="215" y="40" width="300" height="32" rx="6" fill="#fff" stroke="#1f3a68"/><text x="365" y="61" font-size="11">1：ホストが api.example.com → 転送</text>
+      <rect x="215" y="80" width="300" height="32" rx="6" fill="#fff" stroke="#1f3a68"/><text x="365" y="101" font-size="11">2：パスが /images/* → 転送</text>
+      <rect x="215" y="120" width="300" height="32" rx="6" fill="#fff" stroke="#1f3a68"/><text x="365" y="141" font-size="11">3：パスが /admin/* → 認証してから転送</text>
+      <rect x="215" y="160" width="300" height="24" rx="6" fill="#fff" stroke="#4a5a78" stroke-dasharray="4 3"/><text x="365" y="177" font-size="11">デフォルト → Web</text>
+      <line x1="160" y1="145" x2="198" y2="120" stroke="#1f3a68" stroke-width="2" marker-end="url(#a4)"/>
+      <g fill="#3a7d44"><rect x="590" y="36" width="250" height="36" rx="6"/><rect x="590" y="80" width="250" height="36" rx="6"/><rect x="590" y="124" width="250" height="36" rx="6"/><rect x="590" y="166" width="250" height="26" rx="6"/></g>
+      <g fill="#fff" font-size="11"><text x="715" y="58">TG-api（Lambda）</text><text x="715" y="102">TG-images（instance）</text><text x="715" y="146">TG-admin（ip）</text><text x="715" y="183">TG-web（instance）</text></g>
+      <g stroke="#1f3a68" stroke-width="2"><line x1="515" y1="56" x2="588" y2="54" marker-end="url(#a4)"/><line x1="515" y1="96" x2="588" y2="98" marker-end="url(#a4)"/><line x1="515" y1="136" x2="588" y2="142" marker-end="url(#a4)"/><line x1="515" y1="172" x2="588" y2="179" marker-end="url(#a4)"/></g>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%">条件（何を見る）</th><th>アクション（何をする）</th></tr>
+    <tr><td class="l">ホスト・パス・HTTP ヘッダー・メソッド・クエリ文字列・送信元 IP</td><td class="l">転送（forward）／リダイレクト（http→https など）／固定レスポンス／ユーザー認証（authenticate-cognito・authenticate-oidc）</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/introduction.html">Application Load Balancer とは?</a>（「リスナールールを構成し、アプリケーショントラフィックのコンテンツに基づいて異なるターゲットグループにリクエストをルーティングできます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/rule-condition-types.html">リスナールールの条件の種類</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/rule-action-types.html">リスナールールのアクションタイプ</a>（「1 つの URL から別の URL にリクエストをリダイレクトします。」）</div>
+</section>
+
+<section class="slide">
+  <h1>ターゲットグループとターゲットタイプ</h1>
+  <table class="mx">
+    <tr><th style="width:15%">タイプ</th><th>登録するもの</th><th style="width:34%">こんなとき</th></tr>
+    <tr><td class="t">instance</td><td class="l">EC2 インスタンスの ID</td><td class="l">ふつうの EC2・Auto Scaling グループ</td></tr>
+    <tr><td class="t">ip</td><td class="l">IP アドレス（VPC の CIDR、ピアリング先、Direct Connect・Site-to-Site VPN でつながったオンプレミス）</td><td class="l">Fargate のタスク（awsvpc）、オンプレミスのサーバー、移行の途中</td></tr>
+    <tr><td class="t">lambda</td><td class="l">Lambda 関数 1 つ（ALB だけ）</td><td class="l">サーバーなしで HTTP に応える</td></tr>
+    <tr><td class="t">alb</td><td class="l">Application Load Balancer（NLB だけ）</td><td class="l">固定 IP（NLB）＋パスの振り分け（ALB）</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div>
+      <div class="lbl">移行の途中で、同じ ALB からオンプレミスと AWS に分ける（例）</div>
+      <svg width="410" height="120" viewBox="0 0 410 120">
+        <defs><marker id="a5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <rect x="5" y="40" width="90" height="40" rx="6" fill="#b25000"/><text x="50" y="65" fill="#fff" font-weight="700">ALB</text>
+          <rect x="150" y="8" width="120" height="40" rx="6" fill="#3a7d44"/><text x="210" y="32" fill="#fff">EC2（ip で登録）</text>
+          <rect x="150" y="72" width="120" height="40" rx="6" fill="#3a7d44"/><text x="210" y="96" fill="#fff">10.10.0.5（ip）</text>
+          <rect x="295" y="72" width="110" height="40" rx="6" fill="#fff" stroke="#4a5a78"/><text x="350" y="89" fill="#4a5a78">オンプレミス</text><text x="350" y="104" fill="#4a5a78" font-size="10">Direct Connect</text>
+          <line x1="95" y1="55" x2="148" y2="30" stroke="#1f3a68" stroke-width="2" marker-end="url(#a5)"/><line x1="95" y1="66" x2="148" y2="90" stroke="#1f3a68" stroke-width="2" marker-end="url(#a5)"/>
+          <line x1="270" y1="92" x2="293" y2="92" stroke="#4a5a78" stroke-width="2" stroke-dasharray="4 3"/>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="point warn"><b>作ったあとは変えられない：</b>ターゲットタイプはターゲットグループを作るときに決め、あとで変更できない。変えるならターゲットグループを作り直す。</div>
+      <div class="point" style="margin-top:6px"><b>1 つのターゲットグループの中身はそろえる：</b>同じアプリの同じ役割のものをまとめ、ヘルスチェックや振り分けの設定もターゲットグループごとに決める。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/load-balancer-target-groups.html">Application Load Balancer のターゲットグループ</a>（「ターゲットの種類が ip の場合、次のいずれかの CIDR ブロックから IP アドレスを指定できます。」「ターゲットグループを作成した後で、ターゲットタイプを変更することはできません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/network/load-balancer-target-groups.html">Network Load Balancers のターゲットグループ</a></div>
+</section>
+
+<section class="slide">
+  <h1>ヘルスチェックと登録解除の遅延</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">ヘルスチェックの状態</div>
+      <table class="mx">
+        <tr><th style="width:30%">状態</th><th>意味</th></tr>
+        <tr><td class="t">initial</td><td class="l">登録中か、最初のヘルスチェック中。1 回合格すると正常になる</td></tr>
+        <tr><td class="t">healthy</td><td class="l">正常。リクエストを送る</td></tr>
+        <tr><td class="t">unhealthy</td><td class="l">応答しないか不合格。送らない</td></tr>
+        <tr><td class="t">draining</td><td class="l">登録解除中。新しいリクエストは送らず、処理中のものが終わるのを待つ</td></tr>
+      </table>
+      <div class="point warn" style="margin-top:6px"><b>フェイルオープン：</b>全ターゲットが異常になったら、ALB は状態にかかわらず全ターゲットに送る。設定ミスで全滅してもサービス全体は止めないため。</div>
+    </div>
+    <div>
+      <div class="lbl">登録解除の遅延（デフォルト 300 秒）</div>
+      <svg width="410" height="150" viewBox="0 0 410 150">
+        <g font-size="11" text-anchor="middle">
+          <line x1="20" y1="120" x2="400" y2="120" stroke="#4a5a78" stroke-width="2"/>
+          <rect x="20" y="30" width="110" height="34" rx="6" fill="#3a7d44"/><text x="75" y="52" fill="#fff">healthy</text>
+          <rect x="130" y="30" width="200" height="34" rx="6" fill="#b25000"/><text x="230" y="52" fill="#fff">draining（処理中の分だけ続ける）</text>
+          <rect x="330" y="30" width="70" height="34" rx="6" fill="#4a5a78"/><text x="365" y="52" fill="#fff">外れる</text>
+          <line x1="130" y1="70" x2="130" y2="120" stroke="#1f3a68" stroke-dasharray="4 3"/><text x="130" y="138" fill="#1f3a68">登録解除の開始</text>
+          <line x1="330" y1="70" x2="330" y2="120" stroke="#1f3a68" stroke-dasharray="4 3"/><text x="330" y="138" fill="#1f3a68">遅延の終わり</text>
+          <text x="230" y="98" fill="#b25000" font-size="10.5">新しいリクエストは送らない</text>
+        </g>
+      </svg>
+      <div class="mini">処理中のリクエストもつながった接続もなくなれば、遅延の終わりを待たずにすぐ外れる。</div>
+      <div class="point" style="margin-top:6px"><b>答え方：</b>「スケールインやデプロイで処理中のリクエストがエラーになる」→ 登録解除の遅延を処理時間より長く。逆に「外れるのが遅くデプロイに時間がかかる」→ 短く。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/target-group-health-checks.html">Application Load Balancer ターゲットグループのヘルスチェック</a>（「ターゲットは、登録後に正常と見なされるためには、1 つのヘルスチェックに合格する必要があります。」「ターゲットグループに異常な登録済みターゲットのみが含まれている場合、そのヘルスステータスにかかわらず、ロードバランサーはそれらすべてのターゲットにリクエストをルーティングします。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/edit-target-group-attributes.html">Application Load Balancer のターゲットグループ属性を編集する</a>（「デフォルトでは、Elastic Load Balancing 登録解除プロセスを完了する前に 300 秒待って、ターゲットへ処理中のリクエストが完了するのを助けることができます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>同じ人・空いている所・新入り：ターゲットグループの属性</h1>
+  <table class="mx">
+    <tr><th style="width:22%">属性</th><th>何をする</th><th style="width:30%">本番の言い回し</th></tr>
+    <tr><td class="t">スティッキーセッション</td><td class="l">Cookie で同じクライアントを同じターゲットへ。期間ベース（ALB の Cookie）とアプリケーションベース（アプリの Cookie）。クライアントが Cookie に対応している必要がある</td><td class="l">「サーバーのメモリにセッション」「コードを変えずにログインを保つ」</td></tr>
+    <tr><td class="t">ラウンドロビン</td><td class="l">順番に均等に送る。デフォルト</td><td class="l">—</td></tr>
+    <tr><td class="t">最小の未処理のリクエスト</td><td class="l">処理中のリクエストが最も少ないターゲットへ</td><td class="l">「重い処理と軽い処理が混ざる」「処理時間がまちまち」</td></tr>
+    <tr><td class="t">加重ランダム</td><td class="l">ランダムな順で均等に送る</td><td class="l">—</td></tr>
+    <tr><td class="t">スロースタートモード</td><td class="l">追加したターゲットへのリクエスト数を直線的に増やす。最小の未処理のリクエスト・加重ランダムとは一緒に使えない</td><td class="l">「起動直後はキャッシュが空で遅い」「ウォームアップが要る」</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point warn"><b>スティッキーの弱点：</b>負荷が偏り、そのターゲットが落ちるとセッションも消える。長い目では、セッションを DynamoDB や ElastiCache に置いてステートレスにする（どのターゲットでも同じ）。</div>
+    <div class="point"><b>まぎらわしい組：</b>「外すときに待つ」＝登録解除の遅延。「入れたときに少しずつ」＝スロースタート。「同じ人を同じ所へ」＝スティッキー。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/edit-target-group-attributes.html">Application Load Balancer のターゲットグループ属性を編集する</a>（「スティッキーセッションを使用するには、クライアントが Cookie をサポートする必要があります。」「最も未処理のリクエストのルーティングアルゴリズムは、進行中のリクエストの数が最も少ないターゲットにリクエストをルーティングします。」「ロードバランサーは、スロースタートモードのターゲットに送信できるリクエスト数を直線的に増加させます。」「最小の未処理のリクエストのルーティングアルゴリズムは、スロースタートモードでは使用できません。」）</div>
+</section>
+
+<section class="slide">
+  <h1>HTTPS の終端・X-Forwarded-For・ユーザー認証</h1>
+  <svg width="856" height="170" viewBox="0 0 856 170">
+    <defs><marker id="a6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="55" width="130" height="60" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="75" y="80" fill="#1f3a68" font-weight="700">利用者</text><text x="75" y="98" font-size="10.5">203.0.113.7</text>
+      <rect x="290" y="30" width="200" height="110" rx="10" fill="#b25000"/><text x="390" y="54" fill="#fff" font-weight="700">ALB</text><text x="390" y="76" fill="#fff" font-size="10.5">① ACM の証明書で TLS を終わらせ復号</text><text x="390" y="96" fill="#fff" font-size="10.5">② 必要なら IdP でログインさせる</text><text x="390" y="116" fill="#fff" font-size="10.5">③ X-Forwarded-For を付ける</text>
+      <line x1="140" y1="85" x2="288" y2="85" stroke="#1f3a68" stroke-width="2" marker-end="url(#a6)"/><text x="214" y="76" font-size="10.5">HTTPS（暗号化）</text>
+      <rect x="640" y="40" width="206" height="90" rx="8" fill="#3a7d44"/><text x="743" y="64" fill="#fff" font-weight="700">ターゲット</text><text x="743" y="84" fill="#fff" font-size="10.5">送信元＝ALB の IP</text><text x="743" y="102" fill="#fff" font-size="10.5">X-Forwarded-For:</text><text x="743" y="118" fill="#fff" font-size="10.5">203.0.113.7</text>
+      <line x1="490" y1="85" x2="638" y2="85" stroke="#1f3a68" stroke-width="2" marker-end="url(#a6)"/><text x="564" y="76" font-size="10.5">HTTP（または HTTPS）</text>
+      <text x="564" y="160" font-size="10.5" fill="#4a5a78">復号の負荷がターゲットから外れる</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%">機能</th><th>要点</th><th style="width:30%">本番の言い回し</th></tr>
+    <tr><td class="t">HTTPS リスナー</td><td class="l">証明書を少なくとも 1 つ。ACM なら無料で自動更新。複数の証明書を SNI で使い分ける</td><td class="l">「暗号化の負荷を EC2 から外す」「証明書の更新の手間」</td></tr>
+    <tr><td class="t">X-Forwarded-For</td><td class="l">元のクライアントの IP。ほかに X-Forwarded-Proto・X-Forwarded-Port</td><td class="l">「ログの送信元がすべて ALB の IP」</td></tr>
+    <tr><td class="t">ユーザー認証</td><td class="l">authenticate-oidc（OIDC の IdP）・authenticate-cognito（Cognito のユーザープール）</td><td class="l">「アプリを変えずにログイン」</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/create-https-listener.html">Application Load Balancer 用の HTTPS リスナーを作成する</a>（「ロードバランサーはサーバー証明書を使用してフロントエンド接続を終了してから、ターゲットにリクエストを送信する前に、クライアントからのリクエストを復号します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/x-forwarded-headers.html">HTTP ヘッダーと Application Load Balancer</a>（「X-Forwarded-For リクエストヘッダーは、HTTP または HTTPS ロードバランサーを使用する場合に、クライアントの IP アドレスを識別するのに役立ちます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/listener-authenticate-users.html">Application Load Balancer を使用してユーザーを認証する</a></div>
+</section>
+
+<section class="slide">
+  <h1>NLB の固定 IP と「NLB の後ろに ALB」</h1>
+  <svg width="856" height="180" viewBox="0 0 856 180">
+    <defs><marker id="a7" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="60" width="140" height="60" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="80" y="84" fill="#1f3a68" font-weight="700">取引先</text><text x="80" y="102" font-size="10.5">FW で 2 つの IP を許可</text>
+      <rect x="210" y="20" width="200" height="140" rx="10" fill="#4a5a78"/><text x="310" y="44" fill="#fff" font-weight="700">NLB（第 4 層）</text>
+      <rect x="225" y="58" width="170" height="36" rx="6" fill="#fff"/><text x="310" y="81" fill="#4a5a78" font-size="11">AZ a：Elastic IP 1</text>
+      <rect x="225" y="104" width="170" height="36" rx="6" fill="#fff"/><text x="310" y="127" fill="#4a5a78" font-size="11">AZ b：Elastic IP 2</text>
+      <line x1="150" y1="90" x2="208" y2="90" stroke="#1f3a68" stroke-width="2" marker-end="url(#a7)"/>
+      <rect x="470" y="50" width="150" height="80" rx="10" fill="#b25000"/><text x="545" y="78" fill="#fff" font-weight="700">ALB</text><text x="545" y="96" fill="#fff" font-size="10.5">ターゲットタイプ alb</text><text x="545" y="112" fill="#fff" font-size="10.5">パス・ホストで分ける</text>
+      <line x1="410" y1="90" x2="468" y2="90" stroke="#1f3a68" stroke-width="2" marker-end="url(#a7)"/>
+      <g fill="#3a7d44"><rect x="680" y="30" width="166" height="36" rx="6"/><rect x="680" y="114" width="166" height="36" rx="6"/></g>
+      <g fill="#fff" font-size="11"><text x="763" y="53">/api/* のターゲット</text><text x="763" y="137">/* のターゲット</text></g>
+      <line x1="620" y1="80" x2="678" y2="50" stroke="#1f3a68" stroke-width="2" marker-end="url(#a7)"/><line x1="620" y1="100" x2="678" y2="130" stroke="#1f3a68" stroke-width="2" marker-end="url(#a7)"/>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>NLB の IP：</b>AZ ごとのノードが固定の IP アドレスを持つ。インターネット向けなら、サブネットごとに Elastic IP を 1 つ付けられる。ALB の IP は変わるので、IP を登録してもらう相手には向かない。</div>
+    <div class="point warn"><b>世界中から固定 IP：</b>複数のリージョンをまたいで固定の IP で入り口を作るなら Global Accelerator（#19 で学ぶ）。1 つのリージョンなら NLB で足りる。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/network/introduction.html">Network Load Balancer とは?</a>（「インターネット向けのロードバランサーを作成する場合は、必要に応じて 1 つの Elastic IP アドレスをサブネットごとに関連付けることができます。」「1 秒あたり数百万のリクエストを処理できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/network/load-balancer-target-groups.html">Network Load Balancers のターゲットグループ</a></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>EC2 Auto Scaling</h1>
+  <p>台数の枠（最小・希望・最大）を決め、何を見て増減するかを選ぶ。起動・終了の途中に処理をはさみ、起動の遅さを補う。</p>
+  <div class="foot"><span>AWS SAA #09 ロードバランサーと Auto Scaling</span><span>タスク 2.1・2.2・3.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>Auto Scaling グループと 2 つのスケーリング</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">最小・希望・最大（最小 2・希望 4・最大 8 の例）</div>
+      <svg width="410" height="150" viewBox="0 0 410 150">
+        <g font-size="11" text-anchor="middle">
+          <g fill="#3a7d44"><rect x="10" y="40" width="42" height="42" rx="6"/><rect x="58" y="40" width="42" height="42" rx="6"/></g>
+          <g fill="#7fb38a"><rect x="106" y="40" width="42" height="42" rx="6"/><rect x="154" y="40" width="42" height="42" rx="6"/></g>
+          <g fill="#fff" stroke="#3a7d44" stroke-dasharray="4 3"><rect x="202" y="40" width="42" height="42" rx="6"/><rect x="250" y="40" width="42" height="42" rx="6"/><rect x="298" y="40" width="42" height="42" rx="6"/><rect x="346" y="40" width="42" height="42" rx="6"/></g>
+          <line x1="10" y1="96" x2="100" y2="96" stroke="#3a7d44" stroke-width="3"/><text x="10" y="112" text-anchor="start" fill="#3a7d44">最小（これより減らない）</text>
+          <line x1="10" y1="22" x2="196" y2="22" stroke="#1f3a68" stroke-width="3"/><text x="10" y="16" text-anchor="start" fill="#1f3a68">希望（今の目標の台数）</text>
+          <line x1="10" y1="128" x2="388" y2="128" stroke="#b25000" stroke-width="3"/><text x="295" y="145" fill="#b25000">最大（これより増えない）</text>
+        </g>
+      </svg>
+      <div class="mini">ポリシーは最小と最大のあいだで「希望」を動かす。ポリシーがなくても、故障したら置き換えて希望の台数を保つ。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:24%"></th><th>水平（台数）</th><th>垂直（大きさ）</th></tr>
+        <tr><td class="t">言葉</td><td>スケールアウト／イン</td><td>スケールアップ／ダウン</td></tr>
+        <tr><td class="t">上限</td><td class="l">高い</td><td class="l">最大のタイプまで</td></tr>
+        <tr><td class="t">障害</td><td class="l">1 台落ちても続く</td><td class="l">1 台なら止まる</td></tr>
+        <tr><td class="t">変え方</td><td class="l">Auto Scaling で自動</td><td class="l">止めてタイプ変更が多い</td></tr>
+        <tr><td class="t">前提</td><td class="l">ステートレスに作る</td><td class="l">—</td></tr>
+      </table>
+      <div class="point" style="margin-top:6px"><b>AZ のバランス：</b>複数の AZ のサブネットを指定すると、AZ のあいだで台数をそろえる。1 つの AZ が落ちても残りで続けられる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html">Amazon EC2 Auto Scaling とは</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/asg-capacity-limits.html">Auto Scaling グループのスケーリング制限を設定する</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/auto-scaling-groups.html">「Auto Scaling グループ」</a></div>
+</section>
+
+<section class="slide">
+  <h1>起動テンプレート・ヘルスチェック・猶予期間</h1>
+  <table class="mx">
+    <tr><th style="width:20%">設定</th><th>要点</th><th style="width:32%">本番の言い回し → 答え</th></tr>
+    <tr><td class="t">起動テンプレート</td><td class="l">AMI・インスタンスタイプ・セキュリティグループ・ユーザーデータなど。起動設定と違い、複数のバージョンを持てる。複数のタイプやスポットの組み合わせもこちら</td><td class="l">「AMI を新しくしたい」→ 新しいバージョン＋インスタンスの更新</td></tr>
+    <tr><td class="t">EC2 のヘルスチェック</td><td class="l">デフォルト。インスタンスが動いているか（ステータスチェック）だけを見る</td><td class="l">「アプリが固まっても置き換わらない」→ これだけでは足りない</td></tr>
+    <tr><td class="t">ELB のヘルスチェック</td><td class="l">有効にすると、ロードバランサーが異常と報告したインスタンスも置き換える</td><td class="l">「ALB では異常なのに置き換わらない」→ 有効にする</td></tr>
+    <tr><td class="t">猶予期間</td><td class="l">起動直後、異常でも終了しない最小の時間。コンソールのデフォルト 300 秒</td><td class="l">「準備中に終了と起動をくり返す」→ 準備時間より長く</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point warn"><b>くり返しのわな：</b>猶予期間が短いと、起動 → 準備中にヘルスチェック不合格 → 終了 → また起動、がずっと続く。ELB のヘルスチェックを外すのは答えにならない（固まったときに置き換わらなくなる）。</div>
+    <div class="point"><b>デフォルトのインスタンスウォームアップ：</b>新しいインスタンスのメトリクスが落ち着くまで集計に入れない時間。ターゲット追跡・ステップでの増やしすぎを防ぐ。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/launch-templates.html">Auto Scaling 起動テンプレート</a>（「ただし、起動設定の代わりに起動テンプレートを定義すると、複数のバージョンの起動テンプレートを使用することができます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/health-checks-overview.html">Auto Scaling グループのヘルスチェックについて</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/health-check-grace-period.html">Auto Scaling グループにヘルスチェックの猶予期間を設定する</a>（「コンソールでは、Auto Scaling グループを作成するときのヘルスチェックの猶予期間がデフォルトで 300 秒になっています。」）</div>
+</section>
+
+<section class="slide">
+  <h1>スケーリングポリシーを選ぶ</h1>
+  <table class="mx">
+    <tr><th style="width:18%">方法</th><th>決め方</th><th style="width:34%">本番の言い回し</th></tr>
+    <tr><td class="t">ターゲット追跡</td><td class="l">メトリクスと目標値だけ。サーモスタットのように保つ。アラームは自動で作られる</td><td class="l">「CPU を 50% くらいに保つ」「最も簡単に」</td></tr>
+    <tr><td class="t">ステップ</td><td class="l">アラームのしきい値をどれだけ超えたかで、増減する数を段階的に</td><td class="l">「大きく超えたら一気に増やす」</td></tr>
+    <tr><td class="t">シンプル</td><td class="l">アラーム 1 つで決めた数。1 回動くとクールダウンが終わるまで待つ</td><td class="l">AWS は使わないことを勧める</td></tr>
+    <tr><td class="t">スケジュール</td><td class="l">日時（cron とタイムゾーン）で最小・希望・最大を設定</td><td class="l">「毎週月曜の朝」「年度末」「セールの前」</td></tr>
+    <tr><td class="t">予測</td><td class="l">過去の負荷から日次・週次のパターンを見つけ、前もって増やす</td><td class="l">「毎日くり返す山」「起動が遅く、山の前に準備」</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>反応か予定か：</b>ターゲット追跡・ステップ・シンプルは「負荷が来てから」の動的スケーリング。スケジュールは人が日時を決める。予測は AWS が過去から学ぶ。</div>
+    <div class="point warn"><b>ひっかけ：</b>年に 1 回の決まった日の山は、予測（日次・週次のくり返し）よりスケジュール。「希望を最大にしておく」は常に最大でコストのむだ。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/as-scaling-target-tracking.html">Amazon EC2 Auto Scaling のターゲットトラッキングスケーリングポリシー</a>（「例として、これはサーモスタットがターゲット温度を維持する仕組みと似ています。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/as-scaling-simple-step.html">Amazon EC2 Auto Scaling のステップおよび簡易スケーリングポリシー</a>（「ベストプラクティスとして、シンプルスケーリングポリシーとスケーリングクールダウンを使用しないことをお勧めします。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html">スケジュールされたスケーリング</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/ec2-auto-scaling-predictive-scaling.html">予測スケーリング</a>（「予測スケーリングは、負荷の履歴データを分析して、トラフィックフローの日ごとまたは週ごとのパターンを検出することで機能します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>ターゲット追跡の動き（CPU 50% を目標にした例）</h1>
+  <svg width="856" height="210" viewBox="0 0 856 210">
+    <g font-size="11" text-anchor="middle">
+      <line x1="60" y1="180" x2="840" y2="180" stroke="#4a5a78" stroke-width="1.5"/><line x1="60" y1="20" x2="60" y2="180" stroke="#4a5a78" stroke-width="1.5"/>
+      <text x="40" y="104" fill="#1f3a68">50%</text><line x1="60" y1="100" x2="840" y2="100" stroke="#1f3a68" stroke-dasharray="6 4"/>
+      <text x="40" y="44" fill="#4a5a78">80%</text><text x="40" y="164" fill="#4a5a78">20%</text>
+      <polyline points="60,110 140,104 220,60 260,44 300,66 340,92 400,100 480,98 560,104 620,136 660,150 700,120 760,104 840,100" fill="none" stroke="#b25000" stroke-width="3"/>
+      <text x="440" y="80" text-anchor="start" fill="#b25000">CPU の平均使用率</text>
+      <g fill="#3a7d44"><rect x="250" y="186" width="70" height="20" rx="4"/><rect x="630" y="186" width="70" height="20" rx="4"/></g>
+      <text x="285" y="200" fill="#fff">4 → 7 台</text><text x="665" y="200" fill="#fff">7 → 5 台</text>
+      <text x="270" y="34" fill="#b25000">アクセスが増えた</text><text x="640" y="166" fill="#b25000">減った</text>
+    </g>
+  </svg>
+  <div class="mini">数値は Claude が作った例。台数は目標に近づくよう AWS が計算する。</div>
+  <div class="cols">
+    <div class="point"><b>使えるメトリクス：</b>CPU の平均使用率・ネットワークの入出力・ALB のターゲットあたりのリクエスト数など。メトリクスの値は、台数に比例して増減するものを選ぶ。</div>
+    <div class="point warn"><b>メッセージの数で：</b>SQS のキューの深さで増減するなら、「インスタンスあたりのバックログ」を自分で計算したメトリクスを目標にする（#06）。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/as-scaling-target-tracking.html">Amazon EC2 Auto Scaling のターゲットトラッキングスケーリングポリシー</a>（「このニーズを満たすには、50% の平均 CPU 使用率をターゲットとする、ターゲット追跡スケーリングポリシーを作成します。」「次に、CPU が 50% を超えると、Auto Scaling グループがスケールアウトして (キャパシティを増やして) 負荷の増加に対応します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>ライフサイクルフックとウォームプール</h1>
+  <svg width="856" height="170" viewBox="0 0 856 170">
+    <defs><marker id="a8" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <text x="20" y="22" text-anchor="start" fill="#1f3a68" font-weight="700" font-size="12">スケールアウト</text>
+      <rect x="20" y="32" width="120" height="36" rx="6" fill="#4a5a78"/><text x="80" y="55" fill="#fff">起動</text>
+      <rect x="180" y="32" width="200" height="36" rx="6" fill="#b25000"/><text x="280" y="49" fill="#fff">待機状態</text><text x="280" y="63" fill="#fff" font-size="10">ソフトを入れる・設定する</text>
+      <rect x="420" y="32" width="120" height="36" rx="6" fill="#3a7d44"/><text x="480" y="55" fill="#fff">使用中</text>
+      <line x1="140" y1="50" x2="178" y2="50" stroke="#1f3a68" stroke-width="2" marker-end="url(#a8)"/><line x1="380" y1="50" x2="418" y2="50" stroke="#1f3a68" stroke-width="2" marker-end="url(#a8)"/>
+      <text x="20" y="102" text-anchor="start" fill="#1f3a68" font-weight="700" font-size="12">スケールイン</text>
+      <rect x="20" y="112" width="120" height="36" rx="6" fill="#3a7d44"/><text x="80" y="135" fill="#fff">使用中</text>
+      <rect x="180" y="112" width="200" height="36" rx="6" fill="#b25000"/><text x="280" y="129" fill="#fff">待機状態</text><text x="280" y="143" fill="#fff" font-size="10">ログ・データを退避する</text>
+      <rect x="420" y="112" width="120" height="36" rx="6" fill="#4a5a78"/><text x="480" y="135" fill="#fff">終了</text>
+      <line x1="140" y1="130" x2="178" y2="130" stroke="#1f3a68" stroke-width="2" marker-end="url(#a8)"/><line x1="380" y1="130" x2="418" y2="130" stroke="#1f3a68" stroke-width="2" marker-end="url(#a8)"/>
+      <rect x="590" y="20" width="256" height="140" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="718" y="42" fill="#3a7d44" font-weight="700" font-size="12">ウォームプール</text>
+      <g fill="#fff" stroke="#3a7d44" stroke-dasharray="4 3"><rect x="605" y="56" width="70" height="40" rx="6"/><rect x="683" y="56" width="70" height="40" rx="6"/><rect x="761" y="56" width="70" height="40" rx="6"/></g>
+      <g fill="#3a7d44" font-size="10"><text x="640" y="80">停止中</text><text x="718" y="80">停止中</text><text x="796" y="80">停止中</text></g>
+      <text x="718" y="118" fill="#3a7d44">初期化を済ませて待つ</text><text x="718" y="136" fill="#3a7d44">→ スケールアウトですぐ使う</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>ライフサイクルフック：</b>次の状態に移る前に待たせる。待つ時間のデフォルトは 1 時間。EventBridge で通知し、Lambda を呼んだり、インスタンスに入って作業したりする。「終了前にログを S3 へ」「準備が終わってからトラフィックを受ける」。</div>
+    <div class="point warn"><b>ウォームプール：</b>大量のデータを書き込むなど起動が非常に遅いアプリ向け。いつも余分に動かしておく（過剰なプロビジョニング）より安い。起動が速いアプリでは要らない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/lifecycle-hooks.html">Amazon EC2 Auto Scaling のライフサイクルフック</a>（「ライフサイクルフックのデフォルトタイムアウトは 1 時間です (ハートビートタイムアウト)。」「スケールイン イベントが発生すると、ライフサイクルフックによってインスタンスが終了される前に一時停止され、Amazon EventBridge を使用して通知が送信されます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/ec2-auto-scaling-warm-pools.html">ウォームプールを使用してブート時間が長いアプリケーションのレイテンシーを低減する</a>（「ウォームプールを使用すると、インスタンスが大量のデータをディスクに書き込む必要があるなど、起動時間が非常に長いアプリケーションのレイテンシーを低減できます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>どれを終了するか・何で動かすか・どう入れ替えるか</h1>
+  <table class="mx">
+    <tr><th style="width:22%">機能</th><th>要点</th><th style="width:30%">本番の言い回し</th></tr>
+    <tr><td class="t">終了ポリシー</td><td class="l">スケールインでどれを先に終了するか。まず AZ のあいだのバランスを保つ（多い AZ から減らす）。デフォルトは古い設定（古い起動設定・古いテンプレートのバージョン）のものから</td><td class="l">「どのインスタンスが終了されるか」</td></tr>
+    <tr><td class="t">複数のインスタンスタイプと購入オプション</td><td class="l">1 つのグループでオンデマンドとスポット、複数のタイプを組み合わせる。キャパシティの再調整で、中断されそうなスポットを前もって置き換える</td><td class="l">「最低限はオンデマンド、増える分はスポット」</td></tr>
+    <tr><td class="t">インスタンスの更新</td><td class="l">新しい起動テンプレートのバージョンで、最小正常率と最大正常率に基づき、バッチごとに順に置き換える</td><td class="l">「新しい AMI に、止めずに全台入れ替え」</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>オンデマンドとスポットの組み合わせ（例）：</b>オンデマンドの基本の台数 2・それを超える分はオンデマンド 30%・スポット 70%、タイプは m7i・m6i・m7a から（Claude が作った例）。タイプを増やすほどスポットを確保しやすい。</div>
+    <div class="point warn"><b>ひっかけ：</b>「希望を 0 にしてから戻す」「全台を手で終了」はサービスが止まる。「リザーブドをスポットに変換」という機能はない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/ec2-auto-scaling-termination-policies.html">Amazon EC2 Auto Scaling の終了ポリシーを設定する</a>（「デフォルトでは、Amazon EC2 Auto Scaling は、古い設定を使用しているインスタンスを最初に終了するように設計された終了ポリシーを使用します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/ec2-auto-scaling-mixed-instances-groups.html">複数のインスタンスタイプと購入オプションを使用する Auto Scaling グループ</a>（「1 つの Auto Scaling グループ内で、オンデマンドインスタンスとスポットインスタンスのフリートを起動してオートスケールできます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/instance-refresh-overview.html">Auto Scaling グループでのインスタンスの更新の仕組み</a>（「最小正常率および最大正常率に基づいて、バッチ内のインスタンスを置き換えます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">種類<span>7 層で中身を見るなら ALB、4 層で固定 IP・UDP・超大量なら NLB、検査装置を挟むなら GWLB。CLB は前世代</span></div>
+      <div class="box b2">ALB と NLB の設定<span>ルール（ホスト・パス）→ ターゲットグループ（instance・ip・lambda・alb）。登録解除の遅延・スティッキー・最小の未処理・スロースタート</span></div>
+      <div class="box b3">Auto Scaling の枠<span>最小・希望・最大。起動テンプレート。ELB のヘルスチェックと猶予期間</span></div>
+      <div class="box b4">増やし方と運用<span>まずターゲット追跡。日時ならスケジュール、くり返しなら予測。フック・ウォームプール・更新</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">ひっかけ</th><th>正しくは</th></tr>
+        <tr><td class="l">ALB に Elastic IP</td><td class="x">NLB（後ろに ALB）</td></tr>
+        <tr><td class="l">NLB で AZ の偏り</td><td class="x">クロスゾーンを有効に</td></tr>
+        <tr><td class="l">全ターゲット異常で全部 503</td><td class="x">全ターゲットに送る</td></tr>
+        <tr><td class="l">固まったのに置き換わらない</td><td class="x">ELB のヘルスチェック</td></tr>
+        <tr><td class="l">年 1 回の山に予測スケーリング</td><td class="x">スケジュール</td></tr>
+        <tr><td class="l">ログの送信元が ALB</td><td class="x">X-Forwarded-For</td></tr>
+      </table>
+      <div class="point">次の #10 では、高可用性と災害対策を学ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

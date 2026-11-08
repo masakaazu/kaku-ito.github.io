@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS SAA #14 ブロックとファイルのストレージ 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">AWS SAA（SAA-C03）　分野3 高パフォーマンス　#14</div>
+  <h1>ブロックとファイルのストレージ</h1>
+  <p>1 台のサーバーのディスク（EBS）と、みんなで使うファイル共有（EFS・FSx）。ボリュームタイプの選び方、スナップショット、EFS の設定、FSx の 4 つの種類</p>
+  <div class="refs-legend">各ページの下に、根拠にした AWS の公式ドキュメント（Amazon EBS ユーザーガイド・Amazon EFS ユーザーガイド・Amazon FSx の各ユーザーガイド）を書いた（青い文字を押すと開く）。「」の中はドキュメントの原文どおり（日本語版は機械翻訳のため、語順が不自然なところもそのまま）。容量・台数・構成は Claude が作った例。数字は 2026-11 時点のドキュメントによる</div>
+</section>
+
+<section class="slide">
+  <h1>全体像：ブロック・ファイル・オブジェクト<small>試験ガイド タスク 3.1</small></h1>
+  <svg width="856" height="170" viewBox="0 0 856 170">
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="10" width="270" height="150" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="145" y="32" fill="#1f3a68" font-weight="700" font-size="13">ブロック：Amazon EBS</text>
+      <rect x="40" y="48" width="90" height="40" rx="6" fill="#1f3a68"/><text x="85" y="72" fill="#fff">EC2</text>
+      <rect x="160" y="48" width="90" height="40" rx="6" fill="#4a5a78"/><text x="205" y="64" fill="#fff">ボリューム</text><text x="205" y="80" fill="#fff">（ディスク）</text>
+      <line x1="130" y1="68" x2="160" y2="68" stroke="#1f3a68" stroke-width="3"/>
+      <text x="145" y="114">ふつうは 1 台にアタッチ・同じ AZ</text><text x="145" y="134">OS やDB のディスク</text>
+      <rect x="293" y="10" width="270" height="150" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="428" y="32" fill="#3a7d44" font-weight="700" font-size="13">ファイル：Amazon EFS・FSx</text>
+      <rect x="310" y="48" width="60" height="30" rx="5" fill="#1f3a68"/><text x="340" y="68" fill="#fff">EC2</text><rect x="310" y="86" width="60" height="30" rx="5" fill="#1f3a68"/><text x="340" y="106" fill="#fff">EC2</text>
+      <rect x="440" y="56" width="110" height="52" rx="6" fill="#3a7d44"/><text x="495" y="78" fill="#fff">共有の</text><text x="495" y="94" fill="#fff">ファイルシステム</text>
+      <line x1="370" y1="63" x2="440" y2="76" stroke="#3a7d44" stroke-width="2"/><line x1="370" y1="101" x2="440" y2="90" stroke="#3a7d44" stroke-width="2"/>
+      <text x="428" y="134">多数から同時にマウント（NFS・SMB）</text>
+      <rect x="576" y="10" width="270" height="150" rx="10" fill="#fdf0e2" stroke="#b25000"/><text x="711" y="32" fill="#b25000" font-weight="700" font-size="13">オブジェクト：Amazon S3（#13）</text>
+      <rect x="606" y="52" width="210" height="44" rx="6" fill="#b25000"/><text x="711" y="72" fill="#fff">バケット＋キー</text><text x="711" y="88" fill="#fff">HTTP の API で読み書き</text>
+      <text x="711" y="124">容量は無制限・マウントしない</text><text x="711" y="142">画像・ログ・バックアップ・データレイク</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>選び方の最初の分かれ道：</b>1 台のサーバーのディスクなら EBS。複数のサーバーで同じファイルを使うならファイルストレージ（Linux なら EFS、Windows なら FSx for Windows File Server、HPC なら FSx for Lustre）。アプリが API で読み書きするなら S3。</div>
+    <div class="point warn"><b>この PDF の範囲外：</b>インスタンスストアは #12、AWS Backup は #10、オンプレミスとつなぐ Storage Gateway と DataSync は #21 で学ぶ。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/what-is-ebs.html">Amazon Elastic Block Store とは？</a>（「Amazon Elastic Block Store (Amazon EBS) は、Amazon Elastic Compute Cloud (Amazon EC2) インスタンスで使用できるスケーラブルな高性能ブロックストレージリソースを提供します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/efs/latest/ug/whatisefs.html">Amazon Elastic File System とは</a>（「Amazon Elastic File System (Amazon EFS) は、サーバーレスで伸縮自在なファイルストレージを提供するため、ストレージ容量およびパフォーマンスのプロビジョニングや管理を行わずにファイルデータを共有できます。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>Amazon EBS</h1>
+  <p>AZ に属するボリューム。SSD の gp3・gp2・io2 と HDD の st1・sc1 の選び方、マルチアタッチ、止めずに変える Elastic Volumes、暗号化、スナップショットとその周りの機能。</p>
+  <div class="foot"><span>AWS SAA #14 ブロックとファイルのストレージ</span><span>タスク 3.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>EBS ボリュームは AZ に属する</h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <defs><marker id="b1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="10" width="300" height="180" rx="12" fill="#e3eefc" stroke="#1f3a68"/><text x="160" y="30" fill="#1f3a68" font-weight="700" font-size="12">AZ-a</text>
+      <rect x="30" y="44" width="110" height="44" rx="6" fill="#1f3a68"/><text x="85" y="70" fill="#fff">EC2</text>
+      <rect x="170" y="44" width="120" height="44" rx="6" fill="#4a5a78"/><text x="230" y="64" fill="#fff" font-weight="700">EBS ボリューム</text><text x="230" y="80" fill="#fff">gp3 200 GiB</text>
+      <line x1="140" y1="66" x2="170" y2="66" stroke="#1f3a68" stroke-width="3"/>
+      <g fill="#fff" stroke="#4a5a78"><rect x="170" y="104" width="36" height="24" rx="3"/><rect x="212" y="104" width="36" height="24" rx="3"/><rect x="254" y="104" width="36" height="24" rx="3"/></g>
+      <text x="230" y="146" fill="#4a5a78">AZ の中の複数のサーバーに自動で複製</text><text x="160" y="176" fill="#1f3a68">止めてもデータは残る（インスタンスストアとの違い）</text>
+      <rect x="350" y="60" width="200" height="80" rx="10" fill="#b25000"/><text x="450" y="84" fill="#fff" font-weight="700" font-size="12">スナップショット</text><text x="450" y="104" fill="#fff">S3 に保存（直接は見えない）</text><text x="450" y="122" fill="#fff">リージョンの全 AZ に複製</text>
+      <line x1="290" y1="88" x2="348" y2="100" stroke="#b25000" stroke-width="2" marker-end="url(#b1)"/>
+      <rect x="590" y="10" width="256" height="180" rx="12" fill="#e8f3ea" stroke="#3a7d44"/><text x="718" y="30" fill="#3a7d44" font-weight="700" font-size="12">AZ-c</text>
+      <rect x="650" y="60" width="140" height="44" rx="6" fill="#3a7d44"/><text x="720" y="80" fill="#fff" font-weight="700">新しいボリューム</text><text x="720" y="96" fill="#fff">別の AZ で作り直す</text>
+      <line x1="550" y1="100" x2="648" y2="84" stroke="#3a7d44" stroke-width="2" marker-end="url(#b1)"/>
+      <text x="718" y="140">ほかのリージョン・アカウントへも</text><text x="718" y="158">スナップショットをコピーできる</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>本番の場面：</b>「別の AZ のインスタンスに、このボリュームのデータを移したい」→ スナップショットを取り、その AZ でボリュームを作る。ボリュームを直接ほかの AZ のインスタンスにはアタッチできない。</div>
+    <div class="point warn"><b>自動では守られない：</b>AWS は EBS のデータを自動でバックアップしない。スナップショットを定期的に取るか、Data Lifecycle Manager や AWS Backup で自動化する。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/what-is-ebs.html">Amazon Elastic Block Store とは？</a>（「さらに、ボリュームのデータは、1 つのアベイラビリティーゾーンの複数サーバー間で自動的にレプリケートされ、1 つのコンポーネントに障害が発生したときにデータが失われることを防ぎます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/ebs-snapshots.html">Amazon EBS スナップショット</a>（「スナップショットデータは、リージョン内のすべてのアベイラビリティーゾーンで自動的にレプリケートされます。」「AWS は、EBS ボリュームに保存されているデータを自動的にバックアップしません。」）</div>
+</section>
+
+<section class="slide">
+  <h1>ボリュームタイプ：SSD は IOPS、HDD はスループット</h1>
+  <table class="mx">
+    <tr><th style="width:17%">タイプ</th><th style="width:18%">種類</th><th>向く用途</th><th style="width:11%">最大 IOPS</th><th style="width:13%">最大スループット</th><th style="width:9%">ブート</th></tr>
+    <tr><td class="t">gp3</td><td>汎用 SSD</td><td class="l">ほとんどの用途・ブート・開発・中規模の DB</td><td>80,000</td><td>2,000 MiB/秒</td><td>できる</td></tr>
+    <tr><td class="t">gp2</td><td>汎用 SSD（前の世代）</td><td class="l">同上。容量でベースラインが決まる</td><td>16,000</td><td>250 MiB/秒</td><td>できる</td></tr>
+    <tr><td class="t">io2 Block Express</td><td>プロビジョンド IOPS SSD</td><td class="l">重要な DB・1 ミリ秒未満・耐久性 99.999%</td><td>256,000</td><td>4,000 MiB/秒</td><td>できる</td></tr>
+    <tr><td class="t">st1</td><td>スループット最適化 HDD</td><td class="l">EMR・ETL・DWH・ログ処理（大きな順次）</td><td>500</td><td>500 MiB/秒</td><td style="color:#9a3030">できない</td></tr>
+    <tr><td class="t">sc1</td><td>Cold HDD</td><td class="l">アクセスの少ないデータを最も安く</td><td>250</td><td>250 MiB/秒</td><td style="color:#9a3030">できない</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>読み方：</b>小さな I/O をたくさん（DB・トランザクション）→ SSD。大きなファイルを順に読む（ログ・ETL）→ HDD。HDD はブートボリュームにできない。耐久性は io2 Block Express が 99.999%、ほかは 99.8〜99.9%。</div>
+    <div class="point warn"><b>インスタンス側の上限：</b>st1・sc1 のスループットは、ボリュームとインスタンスの上限の小さいほうで決まる。EBS 最適化インスタンスを選ぶのが勧められている。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/ebs-volume-types.html">Amazon EBS ボリュームの種類</a>（「SSD-backed のボリュームは、主要なパフォーマンス属性は IOPS である I/O サイズの小さい頻繁な読み取り/書き込み操作を伴うトランザクションワークロード用に最適化されています。」「HDD-backed のボリュームはパフォーマンスの主要な属性がスループットである大規模なストリーミングワークロード用に最適化されています。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/hdd-vols.html">Amazon EBS スループット最適化 HDD ボリュームと Cold HDD ボリューム</a>（「ネットワークボトルネックを回避するには、すべての Amazon EBS ボリュームで、EBS 最適化 EC2 インスタンスを選択することをお勧めします。」）</div>
+</section>
+
+<section class="slide">
+  <h1>gp3 と gp2：IOPS を容量と切り離す</h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <g font-size="11">
+      <line x1="70" y1="170" x2="520" y2="170" stroke="#4a5a78"/><line x1="70" y1="20" x2="70" y2="170" stroke="#4a5a78"/>
+      <text x="520" y="188" text-anchor="end" fill="#4a5a78">ボリュームの容量（GiB）</text><text x="64" y="24" text-anchor="end" fill="#4a5a78">IOPS</text>
+      <text x="64" y="134" text-anchor="end" fill="#4a5a78">3,000</text><line x1="70" y1="130" x2="520" y2="130" stroke="#eee"/>
+      <text x="64" y="44" text-anchor="end" fill="#4a5a78">10,000</text><line x1="70" y1="40" x2="520" y2="40" stroke="#eee"/>
+      <line x1="70" y1="130" x2="520" y2="130" stroke="#3a7d44" stroke-width="3"/><text x="240" y="150" fill="#3a7d44" font-weight="700">gp3：容量にかかわらず 3,000 IOPS が含まれる</text>
+      <line x1="200" y1="130" x2="200" y2="40" stroke="#3a7d44" stroke-width="2" stroke-dasharray="5 4"/><circle cx="200" cy="40" r="5" fill="#3a7d44"/><text x="208" y="36" fill="#3a7d44">200 GiB でも 10,000 IOPS を追加で買える</text>
+      <polyline points="70,168 520,52" fill="none" stroke="#1f3a68" stroke-width="3"/><text x="345" y="72" text-anchor="end" fill="#1f3a68" font-weight="700">gp2：GiB × 3 IOPS</text><text x="345" y="88" text-anchor="end" fill="#1f3a68">（10,000 なら約 3,334 GiB）</text>
+    </g>
+    <g font-size="11" text-anchor="middle">
+      <rect x="560" y="10" width="286" height="84" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="703" y="32" fill="#3a7d44" font-weight="700" font-size="12">gp3</text><text x="703" y="52">ベースライン 3,000 IOPS・125 MiB/秒</text><text x="703" y="70">追加で最大 80,000 IOPS・2,000 MiB/秒</text><text x="703" y="88">バーストなし・gp2 より GiB 単価 20% 安い</text>
+      <rect x="560" y="106" width="286" height="84" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="703" y="128" fill="#1f3a68" font-weight="700" font-size="12">gp2</text><text x="703" y="148">GiB あたり 3 IOPS（100〜16,000）</text><text x="703" y="166">小さいボリュームは I/O クレジットで</text><text x="703" y="184">最大 3,000 IOPS までバースト</text>
+    </g>
+  </svg>
+  <div class="point"><b>本番の場面：</b>「IOPS のためだけに gp2 を大きくしている」→ gp3 に変えて、容量は必要な分だけ、IOPS は別に買う。変更は Elastic Volumes で、インスタンスを止めずにできる。グラフの線の形は Claude が描いた模式図。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/general-purpose.html">Amazon EBS 汎用 SSD ボリューム</a>（「gp3 ボリュームは、ストレージの料金に含まれている 3,000 IOPS の一貫したベースライン IOPS パフォーマンスを提供します。」「gp3 ボリュームはバーストパフォーマンスを使用しません。」「ベースライン IOPS パフォーマンスは、最小 100 から最大 16,000 の間で、ボリュームサイズの GiB あたり 3 IOPS のレートで直線的にスケールします。」）</div>
+</section>
+
+<section class="slide">
+  <h1>io2 Block Express とマルチアタッチ</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">io2 Block Express（最高性能）</div>
+      <table class="mx">
+        <tr><th style="width:40%">項目</th><th>値</th></tr>
+        <tr><td class="t">最大 IOPS</td><td>256,000（Nitro）</td></tr>
+        <tr><td class="t">最大スループット</td><td>4,000 MiB/秒</td></tr>
+        <tr><td class="t">最大サイズ</td><td>64 TiB</td></tr>
+        <tr><td class="t">レイテンシー</td><td>16 KiB で平均 500 マイクロ秒未満</td></tr>
+        <tr><td class="t">耐久性</td><td>99.999%（年間故障率 0.001%）</td></tr>
+      </table>
+      <div class="point" style="margin-top:6px">ミッションクリティカルな DB など、IOPS・スループット・低レイテンシーのすべてが要るときに選ぶ。</div>
+    </div>
+    <div>
+      <div class="lbl">マルチアタッチ（io1・io2 だけ）</div>
+      <svg width="410" height="150" viewBox="0 0 410 150">
+        <g font-size="11" text-anchor="middle">
+          <rect x="5" y="5" width="270" height="140" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="140" y="22" fill="#1f3a68" font-weight="700">AZ-a</text>
+          <rect x="20" y="34" width="80" height="34" rx="5" fill="#1f3a68"/><text x="60" y="56" fill="#fff">EC2 1</text>
+          <rect x="20" y="96" width="80" height="34" rx="5" fill="#1f3a68"/><text x="60" y="118" fill="#fff">EC2 2</text>
+          <rect x="160" y="60" width="100" height="44" rx="6" fill="#b25000"/><text x="210" y="80" fill="#fff" font-weight="700">io2</text><text x="210" y="96" fill="#fff">最大 16 台</text>
+          <line x1="100" y1="51" x2="160" y2="74" stroke="#b25000" stroke-width="2"/><line x1="100" y1="113" x2="160" y2="90" stroke="#b25000" stroke-width="2"/>
+          <rect x="290" y="40" width="115" height="70" rx="8" fill="#fff" stroke="#9a3030" stroke-dasharray="4 3"/><text x="347" y="62" fill="#9a3030" font-weight="700">AZ-c の EC2</text><text x="347" y="80" fill="#9a3030">アタッチできない</text><text x="347" y="96" fill="#9a3030">→ 共有なら EFS</text>
+        </g>
+      </svg>
+      <div class="point warn">同時の書き込みを整えるクラスター対応のファイルシステムやアプリが要る。gp3・gp2・HDD はマルチアタッチできない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/provisioned-iops.html">Amazon EBS プロビジョンド IOPS SSD ボリューム</a>（「これらは、IOPS が高く、スループットが大量で、低レイテンシーを必要とする、重要なワークロード向けに設計された、最高パフォーマンスの Amazon EBS ストレージボリュームです。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/ebs-volumes-multi.html">マルチアタッチを使用して EBS ボリュームを複数の EC2 インスタンスへアタッチ</a>（「マルチアタッチが有効なボリュームは、同じアベイラビリティーゾーンにある「Nitro System」に構築された最大 16 のインスタンスにアタッチできます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Elastic Volumes と EBS 暗号化</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">Elastic Volumes（止めずに変える）</div>
+      <svg width="410" height="110" viewBox="0 0 410 110">
+        <defs><marker id="b2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <rect x="10" y="20" width="150" height="60" rx="8" fill="#4a5a78"/><text x="85" y="44" fill="#fff" font-weight="700">gp2 500 GiB</text><text x="85" y="62" fill="#fff">使用中のまま</text>
+          <rect x="250" y="20" width="150" height="60" rx="8" fill="#3a7d44"/><text x="325" y="44" fill="#fff" font-weight="700">gp3 1 TiB</text><text x="325" y="62" fill="#fff">IOPS も変更</text>
+          <line x1="160" y1="50" x2="248" y2="50" stroke="#1f3a68" stroke-width="2" marker-end="url(#b2)"/><text x="204" y="42">サイズ・タイプ</text><text x="204" y="98" fill="#4a5a78">デタッチ・再起動なし</text>
+        </g>
+      </svg>
+      <div class="point">次の変更は、前の変更が終わるまで待つ（ローリング 24 時間で最大 4 回など）。変更は数分〜数時間かかる。</div>
+    </div>
+    <div>
+      <div class="lbl">EBS 暗号化（KMS キー）</div>
+      <table class="mx">
+        <tr><th style="width:40%">項目</th><th>内容</th></tr>
+        <tr><td class="t">どこで暗号化</td><td class="l">インスタンスのホストのサーバー</td></tr>
+        <tr><td class="t">守るもの</td><td class="l">保存時のデータと、インスタンスとの間の転送中のデータ</td></tr>
+        <tr><td class="t">自動にする</td><td class="l">デフォルトでの暗号化を有効にする</td></tr>
+        <tr><td class="t">キーの変更</td><td class="l">既存は変えられない。スナップショットのコピーで別のキーにできる</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="point warn" style="margin-top:8px"><b>暗号化されていないボリュームを暗号化したい：</b>スナップショットを取り、暗号化を指定してコピーし、そこから新しいボリュームを作る。既存のボリュームをその場で暗号化するのではない。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/ebs-modify-volume.html">Elastic Volumes オペレーションを使用して Amazon EBS ボリュームを変更する</a>（「Amazon EBS Elastic Volumes では、EBS ボリュームのボリュームサイズの増加、ボリュームタイプの変更、パフォーマンスの調整を行うことができます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/ebs-encryption.html">Amazon EBS 暗号化</a>（「既存のスナップショットまたはボリュームに関連付けられている KMS キー を変更することはできません。」「ただし、スナップショットコピーオペレーション中に別の KMS キー を関連付けて、コピーしたスナップショットを新しい KMS キー で暗号化できます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>スナップショットと、その周りの 4 つの機能</h1>
+  <svg width="856" height="110" viewBox="0 0 856 110">
+    <g font-size="11" text-anchor="middle">
+      <text x="60" y="30" fill="#1f3a68" font-weight="700">1 回目</text><g fill="#1f3a68"><rect x="110" y="14" width="40" height="24" rx="3"/><rect x="154" y="14" width="40" height="24" rx="3"/><rect x="198" y="14" width="40" height="24" rx="3"/><rect x="242" y="14" width="40" height="24" rx="3"/></g><text x="380" y="30" text-anchor="start">全部のブロック</text>
+      <text x="60" y="66" fill="#b25000" font-weight="700">2 回目</text><g fill="#fff" stroke="#ccc"><rect x="110" y="50" width="40" height="24" rx="3"/><rect x="198" y="50" width="40" height="24" rx="3"/><rect x="242" y="50" width="40" height="24" rx="3"/></g><rect x="154" y="50" width="40" height="24" rx="3" fill="#b25000"/><text x="380" y="66" text-anchor="start">変わったブロックだけ（増分）</text>
+      <text x="60" y="100" fill="#3a7d44" font-weight="700">アーカイブ</text><g fill="#3a7d44"><rect x="110" y="84" width="40" height="24" rx="3"/><rect x="154" y="84" width="40" height="24" rx="3"/><rect x="198" y="84" width="40" height="24" rx="3"/><rect x="242" y="84" width="40" height="24" rx="3"/></g><text x="380" y="100" text-anchor="start">フルスナップショットに変わって、安い階層へ</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:26%">機能</th><th>何をする</th><th style="width:34%">選ぶ合図</th></tr>
+    <tr><td class="t">Data Lifecycle Manager</td><td class="l">スナップショットと EBS-backed AMI の作成・保持・削除を自動化</td><td class="l">「毎日取って、古いのは自動で消す」</td></tr>
+    <tr><td class="t">高速スナップショット復元</td><td class="l">作った時点で完全に初期化されたボリュームにする（AZ ごと・時間課金）</td><td class="l">「復元した直後から全性能」</td></tr>
+    <tr><td class="t">スナップショットのアーカイブ</td><td class="l">90 日以上残すものの保存コストを最大 75% 下げる</td><td class="l">「めったに使わないが何年も残す」</td></tr>
+    <tr><td class="t">ごみ箱</td><td class="l">削除したボリューム・スナップショット・AMI を保持期間のあいだ戻せる</td><td class="l">「誤って消したものを戻したい」</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/ebs-snapshots.html">Amazon EBS スナップショット</a>（「スナップショットは増分バックアップです。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/snapshot-lifecycle.html">Amazon Data Lifecycle Manager でバックアップを自動化</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/ebs-fast-snapshot-restore.html">Amazon EBS 高速スナップショット復元</a>（「これにより、ブロックの初回アクセス時における I/O オペレーションのレイテンシーがなくなります。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/snapshot-archive.html">Amazon EBS スナップショットのアーカイブ</a>（「スナップショットをアーカイブすると、増分スナップショットはフルスナップショットに変換され、標準階層から Amazon EBS Snapshots Archive 階層 (アーカイブ階層) に移動します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/recycle-bin.html">削除した EBS ボリューム、EBS スナップショット、EBS-backed AMIs をごみ箱で復元する</a></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>Amazon EFS</h1>
+  <p>Linux 向けのサーバーレスな共有ファイルシステム。マウントターゲット、リージョンと 1 ゾーン、ストレージクラスとライフサイクル、スループットモードとパフォーマンスモード、アクセスポイントとレプリケーション。</p>
+  <div class="foot"><span>AWS SAA #14 ブロックとファイルのストレージ</span><span>タスク 3.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>EFS のしくみ：AZ ごとのマウントターゲット</h1>
+  <svg width="856" height="210" viewBox="0 0 856 210">
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="10" width="640" height="190" rx="12" fill="#f5f5f7" stroke="#4a5a78"/><text x="330" y="28" fill="#4a5a78" font-weight="700" font-size="12">VPC（リージョンのファイルシステム）</text>
+      <rect x="25" y="40" width="195" height="100" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="122" y="56" fill="#1f3a68">AZ-a</text>
+      <rect x="235" y="40" width="195" height="100" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="332" y="56" fill="#1f3a68">AZ-c</text>
+      <rect x="445" y="40" width="195" height="100" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="542" y="56" fill="#1f3a68">AZ-d</text>
+      <g fill="#1f3a68"><rect x="40" y="66" width="70" height="28" rx="4"/><rect x="250" y="66" width="70" height="28" rx="4"/><rect x="460" y="66" width="70" height="28" rx="4"/></g>
+      <text x="75" y="84" fill="#fff">EC2</text><text x="285" y="84" fill="#fff">Lambda</text><text x="495" y="84" fill="#fff">ECS</text>
+      <g fill="#3a7d44"><rect x="112" y="100" width="104" height="30" rx="4"/><rect x="322" y="100" width="104" height="30" rx="4"/><rect x="532" y="100" width="104" height="30" rx="4"/></g>
+      <text x="164" y="119" fill="#fff">マウントターゲット</text><text x="374" y="119" fill="#fff">マウントターゲット</text><text x="584" y="119" fill="#fff">マウントターゲット</text>
+      <g stroke="#3a7d44" stroke-width="2"><line x1="110" y1="88" x2="135" y2="100"/><line x1="320" y1="88" x2="345" y2="100"/><line x1="530" y1="88" x2="555" y2="100"/></g>
+      <rect x="125" y="152" width="505" height="38" rx="8" fill="#3a7d44"/><text x="377" y="176" fill="#fff" font-weight="700">EFS ファイルシステム（データは複数の AZ に冗長に保存・自動で伸び縮み）</text>
+      <g stroke="#3a7d44" stroke-width="2"><line x1="167" y1="130" x2="167" y2="152"/><line x1="377" y1="130" x2="377" y2="152"/><line x1="587" y1="130" x2="587" y2="152"/></g>
+      <rect x="680" y="60" width="166" height="90" rx="10" fill="#fff" stroke="#4a5a78" stroke-dasharray="5 4"/><text x="763" y="84" fill="#4a5a78" font-weight="700">オンプレミスのサーバー</text><text x="763" y="104">Direct Connect・VPN</text><text x="763" y="122">経由でマウントできる</text>
+      <line x1="680" y1="120" x2="630" y2="165" stroke="#4a5a78" stroke-width="2" stroke-dasharray="5 4"/>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>マウントターゲット：</b>NFSv4 のエンドポイントの IP アドレス。AZ ごとに 1 つ作れ、インスタンスは同じ AZ のマウントターゲットにつながる。EC2・ECS・EKS・Lambda・Fargate から使える。</div>
+    <div class="point warn"><b>Windows は不可：</b>Windows の EC2 での EFS の利用はサポートされない。Windows の共有なら FSx for Windows File Server。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/efs/latest/ug/how-it-works.html">Amazon EFS の仕組み</a>（「マウントターゲットは、EFS ファイルシステムをマウントできる NFSv4 エンドポイントの IP アドレスを提供します。」「AWS リージョンのアベイラビリティーゾーンごとに 1 つのマウントターゲットを作成できます。」「Microsoft Windows ベースの Amazon EFS インスタンスでの Amazon EC2 の使用はサポートされていません。」）</div>
+</section>
+
+<section class="slide">
+  <h1>EFS の 4 つの設定</h1>
+  <table class="mx">
+    <tr><th style="width:20%">設定</th><th>選べるもの</th><th style="width:36%">選ぶ合図</th></tr>
+    <tr><td class="t">ファイルシステムタイプ</td><td class="l"><b>リージョン</b>（推奨・複数の AZ に冗長に保存）／<b>1 ゾーン</b>（1 つの AZ・AWS Backup で自動バックアップ）</td><td class="l">本番はリージョン。AZ の障害で失ってもよい開発用なら 1 ゾーンで安く</td></tr>
+    <tr><td class="t">ストレージクラス</td><td class="l"><b>EFS 標準</b>（SSD）／<b>EFS 低頻度アクセス</b>（四半期に数回）／<b>EFS アーカイブ</b>（年に数回）</td><td class="l">ライフサイクル管理で、アクセスのない日数に応じて自動で移す</td></tr>
+    <tr><td class="t">スループットモード</td><td class="l"><b>エラスティック</b>（推奨・既定）／<b>プロビジョニング</b>／<b>バースト</b>（容量に比例・クレジット）</td><td class="l">予測できない → エラスティック。容量は小さいが決まった高いスループット → プロビジョニング</td></tr>
+    <tr><td class="t">パフォーマンスモード</td><td class="l"><b>汎用</b>（推奨・低レイテンシー）／<b>最大 I/O</b>（前の世代・高い並列性、レイテンシーは高い）</td><td class="l">ふつうは汎用。最大 I/O は 1 ゾーン・エラスティックでは使えない</td></tr>
+  </table>
+  <div class="point" style="margin-top:8px"><b>ひっかけ：</b>「スループットが足りない」にパフォーマンスモードを答えさせる、「レイテンシーを下げたい」に最大 I/O を答えさせる選択肢に注意。スループット＝スループットモード、レイテンシー＝汎用モード。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/efs/latest/ug/features.html">Amazon EFS の機能</a>（「新しいファイルシステムデータは、最初に EFS 標準ストレージクラスに書き込まれ、次にライフサイクル管理を使用して EFS 低頻度アクセスストレージクラスおよび EFS アーカイブストレージクラスに階層化できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/efs/latest/ug/performance.html">Amazon EFS のパフォーマンス仕様</a>（「Amazon EFS には、エラスティック、プロビジョニングされた、バーストの 3 つのスループットモードがあります。」「最大 I/O パフォーマンスモードは、汎用パフォーマンスモードよりもオペレーションごとのレイテンシーが高くなります。」）</div>
+</section>
+
+<section class="slide">
+  <h1>EFS のアクセスポイントとレプリケーション</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">EFS アクセスポイント（アプリごとの入口）</div>
+      <svg width="410" height="150" viewBox="0 0 410 150">
+        <g font-size="11" text-anchor="middle">
+          <rect x="10" y="14" width="100" height="34" rx="5" fill="#1f3a68"/><text x="60" y="36" fill="#fff">アプリ A</text>
+          <rect x="10" y="96" width="100" height="34" rx="5" fill="#1f3a68"/><text x="60" y="118" fill="#fff">アプリ B</text>
+          <rect x="140" y="10" width="120" height="42" rx="5" fill="#b25000"/><text x="200" y="28" fill="#fff">アクセスポイント A</text><text x="200" y="44" fill="#fff">uid 1001・/app-a</text>
+          <rect x="140" y="92" width="120" height="42" rx="5" fill="#b25000"/><text x="200" y="110" fill="#fff">アクセスポイント B</text><text x="200" y="126" fill="#fff">uid 1002・/app-b</text>
+          <rect x="290" y="30" width="110" height="90" rx="8" fill="#3a7d44"/><text x="345" y="60" fill="#fff" font-weight="700">EFS</text><text x="345" y="80" fill="#fff">/app-a</text><text x="345" y="98" fill="#fff">/app-b</text>
+          <g stroke="#1f3a68" stroke-width="2"><line x1="110" y1="31" x2="140" y2="31"/><line x1="110" y1="113" x2="140" y2="113"/><line x1="260" y1="31" x2="290" y2="60"/><line x1="260" y1="113" x2="290" y2="94"/></g>
+        </g>
+      </svg>
+      <div class="point">決まった POSIX のユーザーと、別のルートディレクトリを当てはめる。IAM ポリシーで、アプリに決まったアクセスポイントを使わせる。</div>
+    </div>
+    <div>
+      <div class="lbl">EFS レプリケーション（別の場所に同期）</div>
+      <svg width="410" height="150" viewBox="0 0 410 150">
+        <defs><marker id="b3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#3a7d44"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <rect x="10" y="40" width="150" height="70" rx="8" fill="#3a7d44"/><text x="85" y="66" fill="#fff" font-weight="700">東京の EFS</text><text x="85" y="84" fill="#fff">ソース</text>
+          <rect x="250" y="40" width="150" height="70" rx="8" fill="#fff" stroke="#3a7d44" stroke-width="2"/><text x="325" y="66" fill="#3a7d44" font-weight="700">大阪の EFS</text><text x="325" y="84" fill="#3a7d44">デスティネーション</text>
+          <line x1="160" y1="75" x2="248" y2="75" stroke="#3a7d44" stroke-width="2" marker-end="url(#b3)"/><text x="204" y="66" fill="#3a7d44">自動で同期</text>
+          <text x="205" y="136">データとメタデータを透過的に複製</text>
+        </g>
+      </svg>
+      <div class="point">レプリケーション設定を作れば、同期は自動で保たれる。災害のときはコピー先に切り替える。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/efs/latest/ug/efs-access-points.html">アクセスポイントの使用</a>（「EFS アクセスポイントは、EFS ファイルシステムへのアプリケーション固有のエントリポイントです。」「また、ファイルシステムに対して別のルートディレクトリを適用し、このディレクトリまたはそのサブディレクトリ内のデータに対してのみ、クライアントにアクセスを許可することもできます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/efs/latest/ug/efs-replication.html">EFS ファイルシステムのレプリケート</a>（「レプリケーション設定を作成した後は、Amazon EFS により、ソースファイルシステムとデスティネーションファイルシステムの同期が自動的に維持されます。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>Amazon FSx</h1>
+  <p>よく使われるファイルシステムを、そのままフルマネージドで。Windows File Server・Lustre・NetApp ONTAP・OpenZFS の 4 つを、プロトコルと用途で見分ける。</p>
+  <div class="foot"><span>AWS SAA #14 ブロックとファイルのストレージ</span><span>タスク 3.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>FSx の 4 つの種類を見分ける</h1>
+  <table class="mx">
+    <tr><th style="width:24%">サービス</th><th style="width:20%">プロトコル</th><th>中身と特徴</th><th style="width:26%">選ぶ合図</th></tr>
+    <tr><td class="t">FSx for Windows File Server</td><td>SMB</td><td class="l">ネイティブの Windows ファイルシステム。Active Directory と連携。シングル AZ／マルチ AZ</td><td class="l">Windows・AD・SMB・NTFS の権限</td></tr>
+    <tr><td class="t">FSx for Lustre</td><td>Lustre（POSIX・Linux）</td><td class="l">ML・HPC・動画処理など速さが重要な処理。S3 にリンクしてファイルとして見せ、書き戻せる。スクラッチ／永続</td><td class="l">HPC・機械学習・S3 のデータを高速に</td></tr>
+    <tr><td class="t">FSx for NetApp ONTAP</td><td>NFS・SMB・iSCSI・NVMe</td><td class="l">NetApp ONTAP。Linux・Windows・macOS から。スナップショット・クローン・レプリケーション・自動の階層化</td><td class="l">マルチプロトコル・オンプレの NetApp から移行</td></tr>
+    <tr><td class="t">FSx for OpenZFS</td><td>NFS（v3〜v4.2）</td><td class="l">OpenZFS。Linux・Windows・macOS から</td><td class="l">オンプレの ZFS・Linux ファイルサーバーから移行</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>EFS との違い：</b>EFS は AWS 独自のサーバーレスな NFS。FSx は「Windows」「Lustre」「ONTAP」「ZFS」というよく知られたファイルシステムを、その機能のまま使う。問題文にこれらの名前や SMB・iSCSI が出たら FSx。</div>
+    <div class="point warn"><b>出典の注意：</b>FSx for OpenZFS は日本語のドキュメントが無いので、英語版（What is Amazon FSx for OpenZFS?）で確かめた。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/fsx/latest/WindowsGuide/what-is.html">FSx for Windows ファイルサーバーとは？</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/fsx/latest/LustreGuide/what-is.html">Amazon FSx for Lustre とは何ですか？</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/fsx/latest/ONTAPGuide/what-is-fsx-ontap.html">Amazon FSx for NetApp ONTAP とは何ですか?</a>（「FSx for ONTAP は、 AWS またはオンプレミスで実行されている Linux、Windows、macOS コンピューティングインスタンスから幅広くアクセスできる、機能豊富で高速、柔軟な共有ファイルストレージを提供します。」）／<a class="src" href="https://docs.aws.amazon.com/fsx/latest/OpenZFSGuide/what-is-fsx.html">What is Amazon FSx for OpenZFS?</a></div>
+</section>
+
+<section class="slide">
+  <h1>FSx for Windows File Server とマルチ AZ</h1>
+  <svg width="856" height="190" viewBox="0 0 856 190">
+    <defs><marker id="b4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="20" width="160" height="60" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="90" y="44" fill="#1f3a68" font-weight="700">Windows の PC・EC2</text><text x="90" y="62">\\fs.example.com\share</text>
+      <rect x="10" y="110" width="160" height="60" rx="8" fill="#fff" stroke="#4a5a78"/><text x="90" y="134" fill="#4a5a78" font-weight="700">Active Directory</text><text x="90" y="152">ユーザー認証・権限</text>
+      <rect x="230" y="10" width="610" height="170" rx="12" fill="#f5f5f7" stroke="#4a5a78"/><text x="535" y="28" fill="#4a5a78" font-weight="700" font-size="12">FSx for Windows File Server（マルチ AZ・障害時は自動でスタンバイに切替）</text>
+      <rect x="260" y="42" width="250" height="120" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="385" y="62" fill="#3a7d44" font-weight="700">優先 AZ</text><rect x="290" y="74" width="190" height="34" rx="5" fill="#3a7d44"/><text x="385" y="96" fill="#fff">アクティブなファイルサーバー</text><rect x="290" y="116" width="190" height="34" rx="5" fill="#fff" stroke="#3a7d44"/><text x="385" y="138">ストレージ</text>
+      <rect x="560" y="42" width="250" height="120" rx="10" fill="#fff" stroke="#3a7d44" stroke-dasharray="5 4"/><text x="685" y="62" fill="#3a7d44" font-weight="700">スタンバイ AZ</text><rect x="590" y="74" width="190" height="34" rx="5" fill="#fff" stroke="#3a7d44"/><text x="685" y="96">スタンバイのファイルサーバー</text><rect x="590" y="116" width="190" height="34" rx="5" fill="#fff" stroke="#3a7d44"/><text x="685" y="138">ストレージ（複製）</text>
+      <line x1="480" y1="133" x2="588" y2="133" stroke="#3a7d44" stroke-width="2" marker-end="url(#b4)"/><text x="535" y="126" fill="#3a7d44">複製</text>
+      <line x1="480" y1="91" x2="588" y2="91" stroke="#b25000" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#b4)"/><text x="535" y="84" fill="#b25000">切替</text>
+      <line x1="170" y1="50" x2="288" y2="86" stroke="#1f3a68" stroke-width="2" marker-end="url(#b4)"/><text x="225" y="58" fill="#1f3a68">SMB</text>
+      <line x1="170" y1="140" x2="258" y2="120" stroke="#4a5a78" stroke-width="1.5" stroke-dasharray="4 3"/>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>移しやすさ：</b>Windows の開発者や管理者が使っているコード・アプリ・ツールを変えずに使える。Windows ソフトウェアの更新、ハードウェアの障害の対応、バックアップは AWS が行う。</div>
+    <div class="point warn"><b>マルチ AZ：</b>WSFC で 2 つの AZ に置き、障害やメンテナンスで自動でフェイルオーバーする。本番のほとんどに勧められる。SQL Server の高可用性にはマルチ AZ の CA 共有が要る。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/fsx/latest/WindowsGuide/what-is.html">FSx for Windows ファイルサーバーとは？</a>（「Amazon FSx のファイルストレージを使用すると、Windows のデベロッパーや管理者が今日使用しているコード、アプリケーション、およびツールを変更することなく引き続き使用できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/fsx/latest/WindowsGuide/high-availability-multiAZ.html">可用性および耐久性:　シングル AZ およびマルチ AZ のファイルシステム</a>（「高い可用性と耐久性モデルを備えたマルチ AZ ファイルシステムは、ほとんどのプロダクションワークロードで使用することをお勧めします。」）</div>
+</section>
+
+<section class="slide">
+  <h1>FSx for Lustre：S3 とつないで高速に処理</h1>
+  <svg width="856" height="170" viewBox="0 0 856 170">
+    <defs><marker id="b5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="40" width="200" height="90" rx="10" fill="#fdf0e2" stroke="#b25000"/><text x="110" y="64" fill="#b25000" font-weight="700" font-size="12">S3 バケット</text><text x="110" y="84">学習データ・入力</text><text x="110" y="102">（データリポジトリ）</text>
+      <rect x="310" y="30" width="230" height="110" rx="10" fill="#b25000"/><text x="425" y="56" fill="#fff" font-weight="700" font-size="13">FSx for Lustre</text><text x="425" y="78" fill="#fff">S3 のオブジェクトをファイルとして見せる</text><text x="425" y="96" fill="#fff">POSIX・Linux のアプリをそのまま</text><text x="425" y="114" fill="#fff">結果を S3 に書き戻す</text>
+      <line x1="210" y1="70" x2="308" y2="70" stroke="#b25000" stroke-width="2" marker-end="url(#b5)"/><text x="259" y="62" fill="#b25000">インポート</text>
+      <line x1="308" y1="104" x2="212" y2="104" stroke="#b25000" stroke-width="2" marker-end="url(#b5)"/><text x="259" y="122" fill="#b25000">書き戻し</text>
+      <rect x="640" y="20" width="200" height="130" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="740" y="42" fill="#1f3a68" font-weight="700">計算ノード</text>
+      <g fill="#1f3a68"><rect x="660" y="54" width="70" height="26" rx="4"/><rect x="750" y="54" width="70" height="26" rx="4"/><rect x="660" y="90" width="70" height="26" rx="4"/><rect x="750" y="90" width="70" height="26" rx="4"/></g>
+      <text x="695" y="71" fill="#fff">GPU</text><text x="785" y="71" fill="#fff">GPU</text><text x="695" y="107" fill="#fff">HPC</text><text x="785" y="107" fill="#fff">HPC</text><text x="740" y="138" fill="#1f3a68">並列に高速アクセス</text>
+      <line x1="540" y1="85" x2="638" y2="85" stroke="#1f3a68" stroke-width="3"/>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:20%">デプロイ</th><th>データ</th><th style="width:36%">向く使い方</th></tr>
+    <tr><td class="t">スクラッチ</td><td class="l">複製されない。ファイルサーバーの障害でデータは残らない</td><td class="l">一時的な保存・短期の処理（結果は S3 へ）</td></tr>
+    <tr><td class="t">永続</td><td class="l">複製され、障害のときはファイルサーバーが置き換えられる</td><td class="l">長期の保存・スループット重視の処理</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/fsx/latest/LustreGuide/what-is.html">Amazon FSx for Lustre とは何ですか？</a>（「Simple Storage Service (Amazon S3) バケットにリンクすると、FSx for Lustre ファイルシステムは S3 オブジェクトをファイルとして透過的に表示します。」「スクラッチファイルシステムは、テンポラリストレージと短期間のデータ処理に最適です。」「データはレプリケーションされず、ファイルサーバに障害が発生しても保持されません。」「永続ファイルシステムでは、データがレプリケーションされ、障害が発生した場合はファイルサーバーが置き換えられます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>FSx for NetApp ONTAP と FSx for OpenZFS</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">FSx for NetApp ONTAP（マルチプロトコル）</div>
+      <svg width="410" height="150" viewBox="0 0 410 150">
+        <g font-size="11" text-anchor="middle">
+          <rect x="10" y="8" width="110" height="28" rx="4" fill="#1f3a68"/><text x="65" y="27" fill="#fff">Linux（NFS）</text>
+          <rect x="10" y="44" width="110" height="28" rx="4" fill="#1f3a68"/><text x="65" y="63" fill="#fff">Windows（SMB）</text>
+          <rect x="10" y="80" width="110" height="28" rx="4" fill="#1f3a68"/><text x="65" y="99" fill="#fff">DB（iSCSI）</text>
+          <rect x="10" y="116" width="110" height="28" rx="4" fill="#1f3a68"/><text x="65" y="135" fill="#fff">macOS</text>
+          <rect x="180" y="30" width="130" height="90" rx="8" fill="#3a7d44"/><text x="245" y="58" fill="#fff" font-weight="700">ONTAP</text><text x="245" y="78" fill="#fff">SSD の層</text><text x="245" y="96" fill="#fff">スナップショット</text>
+          <rect x="330" y="50" width="75" height="50" rx="6" fill="#fff" stroke="#3a7d44"/><text x="367" y="72" fill="#3a7d44">安い層</text><text x="367" y="88" fill="#3a7d44">自動で階層化</text>
+          <g stroke="#3a7d44" stroke-width="1.5"><line x1="120" y1="22" x2="180" y2="55"/><line x1="120" y1="58" x2="180" y2="70"/><line x1="120" y1="94" x2="180" y2="85"/><line x1="120" y1="130" x2="180" y2="100"/><line x1="310" y1="75" x2="330" y2="75"/></g>
+        </g>
+      </svg>
+      <div class="point">オンプレミスで ONTAP を使っている会社が、アプリやデータの管理方法を変えずに移す・バックアップする・バーストするのに向く。</div>
+    </div>
+    <div>
+      <div class="lbl">FSx for OpenZFS（ZFS・Linux のファイルサーバーから）</div>
+      <svg width="410" height="150" viewBox="0 0 410 150">
+        <defs><marker id="b6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <rect x="10" y="40" width="150" height="70" rx="8" fill="#fff" stroke="#4a5a78" stroke-dasharray="5 4"/><text x="85" y="66" fill="#4a5a78" font-weight="700">オンプレミス</text><text x="85" y="84" fill="#4a5a78">ZFS のファイルサーバー</text>
+          <rect x="250" y="40" width="150" height="70" rx="8" fill="#6a3d9a"/><text x="325" y="66" fill="#fff" font-weight="700">FSx for OpenZFS</text><text x="325" y="84" fill="#fff">NFS v3〜v4.2</text>
+          <line x1="160" y1="75" x2="248" y2="75" stroke="#1f3a68" stroke-width="2" marker-end="url(#b6)"/><text x="204" y="66">そのまま移す</text>
+          <text x="205" y="136">Linux・Windows・macOS から NFS で使う</text>
+        </g>
+      </svg>
+      <div class="point">アプリのコードやデータの管理方法を変えずに、オンプレミスの ZFS や Linux のファイルサーバーから移すのに向く（英語版のドキュメントによる）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/fsx/latest/ONTAPGuide/what-is-fsx-ontap.html">Amazon FSx for NetApp ONTAP とは何ですか?</a>（「さらに FSx for ONTAP では、データを低コストで伸縮性のあるストレージに自動的に階層化することで、容量のプロビジョニングや管理の必要性を軽減します。」）／<a class="src" href="https://docs.aws.amazon.com/fsx/latest/OpenZFSGuide/what-is-fsx.html">What is Amazon FSx for OpenZFS?</a>（「Amazon FSx for OpenZFS is a fully managed file storage service that makes it easy to move data to AWS from on-premises ZFS or other Linux-based file servers.」）</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">EBS<span>AZ に属するディスク。gp3 が基本、io2 は最高性能、st1・sc1 は HDD でブート不可。マルチアタッチは io1・io2・同じ AZ</span></div>
+      <div class="box b2">スナップショット<span>増分・リージョンの全 AZ。DLM で自動、FSR で速く、アーカイブで安く、ごみ箱で戻す</span></div>
+      <div class="box b3">EFS<span>Linux の NFS・サーバーレス。マウントターゲットは AZ ごと。エラスティックスループットと汎用モードが推奨</span></div>
+      <div class="box b4">FSx<span>Windows＝SMB と AD、Lustre＝HPC と S3、ONTAP＝マルチプロトコル、OpenZFS＝ZFS からの移行</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">ひっかけ</th><th>正しくは</th></tr>
+        <tr><td class="l">IOPS のために gp2 を大きく</td><td class="x">gp3 で IOPS を別に</td></tr>
+        <tr><td class="l">gp3 を複数台にマルチアタッチ</td><td class="x">io1・io2 だけ</td></tr>
+        <tr><td class="l">st1 をブートボリュームに</td><td class="x">SSD にする</td></tr>
+        <tr><td class="l">Windows の共有に EFS</td><td class="x">FSx for Windows</td></tr>
+        <tr><td class="l">EFS のスループット不足に最大 I/O</td><td class="x">スループットモード</td></tr>
+        <tr><td class="l">短期の HPC に Lustre の永続</td><td class="x">スクラッチ</td></tr>
+      </table>
+      <div class="point">次の #15 では、RDS と Aurora を学ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

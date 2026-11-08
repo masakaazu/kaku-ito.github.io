@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Silver #02 変数とデータ型 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">Java Silver（SE 17・1Z0-825-JPN）　2 Javaの基本データ型と文字列の操作　#02</div>
+  <h1>変数とデータ型</h1>
+  <p>8 つの基本データ型と初期値、リテラルと識別子、ローカル変数の初期化とスコープ、拡大・縮小変換とキャスト、ラッパークラス、var（ローカル変数型推論）</p>
+  <div class="refs-legend">各ページの下に、根拠にした Oracle の資料（JLS・API）を書いた（青い文字を押すと開く）。コードは Claude が作り、JDK 17 で動かして確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>試験内容チェックリスト 2（変数・var）</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 基本データ型<span>8 つの型の大きさと範囲、初期値、オーバーフロー</span></div>
+      <div class="box b2">2 リテラルと識別子<span>L・F・0x・0・0b・アンダースコア、名前の決まり、予約語と文脈キーワード</span></div>
+      <div class="box b3">3 宣言・初期化・スコープ<span>ローカル変数は初期値なし、ブロックの範囲、同じ名前の宣言</span></div>
+      <div class="box b4">4 型変換とラッパークラス<span>拡大・縮小、キャスト、定数の特別ルール、+=、ボクシング</span></div>
+      <div class="box b5">5 var<span>初期化の式から型が 1 つに決まる。使えない書き方</span></div>
+    </div>
+    <div>
+      <div class="cap">変数は「型の付いた箱」（Claude が作成）</div>
+      <svg width="400" height="210" viewBox="0 0 400 210">
+        <g font-size="12" text-anchor="middle">
+          <rect x="20" y="20" width="160" height="70" rx="8" fill="#eef2f8" stroke="#1f3a68"/>
+          <text x="100" y="44" fill="#1f3a68" font-weight="700">int n = 10;</text>
+          <rect x="70" y="54" width="60" height="28" fill="#fff" stroke="#5b80bf"/><text x="100" y="73" fill="#1d1d1f" font-family="DejaVu Sans Mono, monospace">10</text>
+          <text x="100" y="110" fill="#4a5a78" font-size="10.5">基本データ型：値そのものが入る</text>
+          <rect x="220" y="20" width="160" height="70" rx="8" fill="#eef2f8" stroke="#1f3a68"/>
+          <text x="300" y="44" fill="#1f3a68" font-weight="700">String s = "hi";</text>
+          <rect x="270" y="54" width="60" height="28" fill="#fff" stroke="#5b80bf"/><text x="300" y="73" fill="#1d1d1f" font-size="11">参照 →</text>
+          <rect x="250" y="130" width="100" height="34" rx="6" fill="#c9daf2"/><text x="300" y="152" fill="#1f3a68" font-family="DejaVu Sans Mono, monospace">"hi"</text>
+          <line x1="300" y1="84" x2="300" y2="128" stroke="#5b80bf" stroke-width="2"/>
+          <text x="300" y="190" fill="#4a5a78" font-size="10.5">参照型：オブジェクトの場所が入る</text>
+        </g>
+      </svg>
+      <div class="point"><b>芯：</b>型は<b>コンパイルのとき</b>に決まり、入る値の範囲と変換のしかたを決める。var でも同じ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.oracle.com/jp/education/certification/javase-17-programmer-1/">Oracle「Java SE 17 Programmer I（1Z0-825-JPN）」試験内容チェックリスト</a>（変数の宣言、初期化とスコープ／ローカル変数型推論の使用）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-4.html">JLS（Java SE 17）4.1</a>（There are two kinds of types in the Java programming language: primitive types and reference types）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>基本データ型</h1>
+  <p>8 つの型。大きさと、範囲をこえたときの動きを覚える。</p>
+  <div class="foot"><span>Java Silver #02 変数とデータ型</span><span>試験内容 2</span></div>
+</section>
+
+<section class="slide">
+  <h1>8 つの型の大きさと範囲</h1>
+  <div class="cols wide-r">
+    <div>
+      <div class="cap">ビット数（Claude が作成）</div>
+      <svg width="380" height="270" viewBox="0 0 380 270">
+        <g font-size="12">
+          <text x="8" y="30" fill="#1d1d1f" font-weight="700">byte</text><rect x="70" y="16" width="36" height="20" fill="#5b80bf"/><text x="112" y="31" fill="#4a5a78">8</text>
+          <text x="8" y="60" fill="#1d1d1f" font-weight="700">short</text><rect x="70" y="46" width="72" height="20" fill="#5b80bf"/><text x="148" y="61" fill="#4a5a78">16</text>
+          <text x="8" y="90" fill="#1d1d1f" font-weight="700">char</text><rect x="70" y="76" width="72" height="20" fill="#e08a2c"/><text x="148" y="91" fill="#4a5a78">16（符号なし）</text>
+          <text x="8" y="120" fill="#1d1d1f" font-weight="700">int</text><rect x="70" y="106" width="144" height="20" fill="#2f5596"/><text x="220" y="121" fill="#4a5a78">32</text>
+          <text x="8" y="150" fill="#1d1d1f" font-weight="700">long</text><rect x="70" y="136" width="288" height="20" fill="#1f3a68"/><text x="300" y="151" fill="#fff">64</text>
+          <text x="8" y="186" fill="#1d1d1f" font-weight="700">float</text><rect x="70" y="172" width="144" height="20" fill="#8a9bb8"/><text x="220" y="187" fill="#4a5a78">32（IEEE 754）</text>
+          <text x="8" y="216" fill="#1d1d1f" font-weight="700">double</text><rect x="70" y="202" width="288" height="20" fill="#6b7d9c"/><text x="300" y="217" fill="#fff">64</text>
+          <text x="8" y="252" fill="#1d1d1f" font-weight="700">boolean</text><text x="70" y="252" fill="#4a5a78">true と false だけ（数とは変換できない）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:22%">型</th><th>範囲</th><th style="width:22%">初期値</th></tr>
+        <tr><td class="t">byte</td><td>-128 〜 127</td><td>0</td></tr>
+        <tr><td class="t">short</td><td>-32768 〜 32767</td><td>0</td></tr>
+        <tr><td class="t">char</td><td>0 〜 65535（符号なし）</td><td><code>'\u0000'</code></td></tr>
+        <tr><td class="t">int</td><td>約 ±21 億（2<sup>31</sup>）</td><td>0</td></tr>
+        <tr><td class="t">long</td><td>約 ±922 京（2<sup>63</sup>）</td><td>0L</td></tr>
+        <tr><td class="t">float・double</td><td>小数</td><td>0.0</td></tr>
+        <tr><td class="t">boolean</td><td>true・false</td><td>false</td></tr>
+        <tr><td class="t">参照型</td><td>参照か null</td><td>null</td></tr>
+      </table>
+      <div class="point"><b>まちがえやすい：</b>char と short はどちらも 16 ビットだが、<b>char は符号なし</b>（負の数なし）、short は符号あり。だから char ⇔ short はキャストが要る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-4.html">JLS 4.2</a>（byte, short, int, and long, whose values are 8-bit, 16-bit, 32-bit and 64-bit signed two's-complement integers, respectively, and char, whose values are 16-bit unsigned integers／float … 32-bit IEEE 754 … double … 64-bit）／4.2.1（For byte, from -128 to 127, inclusive）／4.12.5（default value）</div>
+</section>
+
+<section class="slide">
+  <h1>初期値があるのはフィールドと配列だけ</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">フィールドと配列（Claude が作成）</div>
+<pre class="code small"><span class="k">public class</span> Main {
+  <span class="k">int</span> x;            <span class="c">// フィールド</span>
+  String s;
+  <span class="k">public static void</span> main(String[] args) {
+    Main m = <span class="k">new</span> Main();
+    <span class="k">int</span>[] a = <span class="k">new int</span>[2];
+    System.out.println(m.x + <span class="s">" "</span> + m.s + <span class="s">" "</span> + a[1]);
+  }
+}</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">0 null 0</span></pre>
+      <div class="lbl" style="margin-top:10px">ローカル変数</div>
+<pre class="code small"><span class="k">int</span> x;
+<span class="k">if</span> (args.length > 0) x = 1;
+System.out.println(x);</pre>
+<pre class="sh" style="margin-top:4px"><span class="e">error: variable x might not have been initialized</span></pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:38%">変数</th><th>使う前の値</th></tr>
+        <tr><td class="t">フィールド</td><td class="l">型の初期値（0・false・null など）</td></tr>
+        <tr><td class="t">配列の要素</td><td class="l">型の初期値</td></tr>
+        <tr><td class="t">メソッドの引数</td><td class="l">呼んだ側が渡した値</td></tr>
+        <tr><td class="t">ローカル変数</td><td class="l"><b>なし</b>。使う前に代入が必要</td></tr>
+      </table>
+      <div class="point"><b>確実な代入：</b>コンパイラは「どの道すじでも値が入るか」を調べる。if だけで代入すると、条件が false の道で値がないのでエラー。<b>if と else の両方</b>で代入すれば OK。</div>
+      <div class="point"><b>宣言だけならエラーにならない：</b><code>int x;</code> だけでは何も起きない。エラーは<b>読んだ所</b>で出る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-4.html">JLS 4.12.5 Initial Values of Variables</a>（Each class variable, instance variable, or array component is initialized with a default value when it is created／A local variable … must be explicitly given a value before it is used … using the rules for definite assignment）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-16.html">JLS 16 Definite Assignment</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>範囲をこえると回りこむ（オーバーフロー）</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">int の数直線は輪になっている（Claude が作成）</div>
+      <svg width="400" height="210" viewBox="0 0 400 210">
+        <g font-size="11.5" text-anchor="middle">
+          <circle cx="200" cy="105" r="78" fill="none" stroke="#c9daf2" stroke-width="14"/>
+          <circle cx="200" cy="27" r="6" fill="#1f3a68"/>
+          <text x="200" y="14" fill="#1f3a68" font-weight="700">0</text>
+          <circle cx="200" cy="183" r="6" fill="#b25000"/>
+          <text x="104" y="200" fill="#1f3a68" font-family="DejaVu Sans Mono, monospace">2147483647</text>
+          <text x="300" y="200" fill="#b25000" font-family="DejaVu Sans Mono, monospace">-2147483648</text>
+          <text x="200" y="110" fill="#4a5a78">＋1 で</text><text x="200" y="126" fill="#4a5a78">最大 → 最小</text>
+          <text x="330" y="70" fill="#4a5a78">負の数</text><text x="70" y="70" fill="#4a5a78">正の数</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+<pre class="code small"><span class="k">int</span> x = 2147483647;
+<span class="k">long</span> y = x + 1;     <span class="c">// int で計算してから long へ</span>
+<span class="k">long</span> z = x + 1L;    <span class="c">// long で計算</span>
+System.out.println(y + <span class="s">" "</span> + z);</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">-2147483648 2147483648</span></pre>
+      <div class="point"><b>エラーにも例外にもならない。</b>整数の計算が範囲をこえると、静かに反対の端へ回りこむ。</div>
+      <div class="point warn"><b>代入先は関係ない：</b>計算の型は右辺の式で決まる。<code>x + 1</code> は int どうしなので int で回りこみ、そのあと long に広がる。片方を <code>1L</code> にすれば long で計算される。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-5.html">JLS 5.6 Numeric Contexts</a>（if any expression is of type long, then the promoted type is long … Otherwise … the promoted type is int）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-4.html">JLS 4.2.2</a>（The integer operators do not indicate overflow or underflow in any way）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>リテラルと識別子</h1>
+  <p>書いた値の型は、書き方で決まる。名前には決まりがある。</p>
+  <div class="foot"><span>Java Silver #02 変数とデータ型</span><span>試験内容 2</span></div>
+</section>
+
+<section class="slide">
+  <h1>整数リテラルと小数リテラル</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:34%">書き方</th><th style="width:20%">型</th><th>値・注意</th></tr>
+        <tr><td class="l"><code>100</code></td><td class="t">int</td><td class="l">何も付けなければ int</td></tr>
+        <tr><td class="l"><code>2147483648L</code></td><td class="t">long</td><td class="l">L（l）で long。L なしは integer number too large</td></tr>
+        <tr><td class="l"><code>0x1F</code></td><td class="t">int</td><td class="l">16 進 → 31</td></tr>
+        <tr><td class="l"><code>017</code></td><td class="t">int</td><td class="l">0 始まりは 8 進 → 15。<code>09</code> はエラー</td></tr>
+        <tr><td class="l"><code>0b101</code></td><td class="t">int</td><td class="l">2 進 → 5</td></tr>
+        <tr><td class="l"><code>1.5</code>・<code>1.5D</code></td><td class="t">double</td><td class="l">小数は何も付けなければ double</td></tr>
+        <tr><td class="l"><code>1.5F</code></td><td class="t">float</td><td class="l">F（f）で float</td></tr>
+        <tr><td class="l"><code>'A'</code>・<code>'A'</code></td><td class="t">char</td><td class="l">1 文字。<code>"A"</code> は String</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">JDK 17 の結果</div>
+<pre class="code small"><span class="ng"><span class="k">long</span> a = 2147483648;</span>  <span class="c">// integer number too large</span>
+<span class="ng"><span class="k">float</span> f = 1.5;</span>        <span class="c">// lossy conversion from double</span>
+<span class="ok"><span class="k">float</span> g = 10;</span>         <span class="c">// OK（int → float）→ 10.0</span>
+<span class="ng"><span class="k">long</span> l = 1.0;</span>         <span class="c">// lossy conversion from double</span>
+<span class="ng"><span class="k">boolean</span> b = 0;</span>       <span class="c">// int cannot be converted to boolean</span>
+<span class="ok"><span class="k">char</span> c = 65;</span>          <span class="c">// OK → 'A'</span></pre>
+      <div class="point"><b>代入先ではなく、リテラル自体の型を見る。</b><code>long a = 2147483648;</code> は、右辺がまず int として読まれるのでエラー。</div>
+      <div class="point"><b>8 進の計算：</b>017 ＝ 1×8＋7 ＝ 15。<b>16 進：</b>0x1F ＝ 1×16＋15 ＝ 31。<b>2 進：</b>0b101 ＝ 4＋1 ＝ 5。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-3.html">JLS 3.10.1 Integer Literals</a>（An integer literal is of type long if it is suffixed with an ASCII letter L or l; otherwise it is of type int／An octal numeral consists of an ASCII digit 0 followed by one or more of the ASCII digits 0 through 7）／3.10.2（of type float if it is suffixed with an ASCII letter F or f; otherwise its type is double）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>アンダースコアの置き場所</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:42%">書き方</th><th style="width:16%">結果</th><th>理由</th></tr>
+        <tr><td class="l"><code>1_000_000</code></td><td class="t">OK</td><td class="l">数字と数字の間</td></tr>
+        <tr><td class="l"><code>1__0</code></td><td class="t">OK</td><td class="l">続けて 2 つも可（値は 10）</td></tr>
+        <tr><td class="l"><code>0_17</code></td><td class="t">OK</td><td class="l">8 進の 0 も数字なので、その後ろは可（15）</td></tr>
+        <tr><td class="l"><code>1_000.5_0</code></td><td class="t">OK</td><td class="l">小数部分の数字の間も可</td></tr>
+        <tr><td class="l"><code>100_</code></td><td class="x">エラー</td><td class="l">最後の数字のあと</td></tr>
+        <tr><td class="l"><code>0x_1F</code></td><td class="x">エラー</td><td class="l">0x・0b の直後</td></tr>
+        <tr><td class="l"><code>1._5</code>・<code>1_.5</code></td><td class="x">エラー</td><td class="l">小数点の前後</td></tr>
+        <tr><td class="l"><code>10_L</code>・<code>1.5_F</code></td><td class="x">エラー</td><td class="l">L・F の直前</td></tr>
+        <tr><td class="l"><code>_100</code></td><td class="x">エラー</td><td class="l">数ではなく<b>変数名</b>と読まれ、cannot find symbol</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">置けるのは「数字と数字の間」だけ（Claude が作成）</div>
+      <svg width="400" height="120" viewBox="0 0 400 120">
+        <g font-family="DejaVu Sans Mono, monospace" font-size="26" text-anchor="middle">
+          <text x="40" y="60" fill="#1d1d1f">0</text><text x="70" y="60" fill="#1d1d1f">x</text>
+          <text x="110" y="60" fill="#1d1d1f">1</text><text x="150" y="60" fill="#1d1d1f">F</text>
+          <text x="190" y="60" fill="#1d1d1f">F</text><text x="230" y="60" fill="#1d1d1f">F</text>
+        </g>
+        <g font-size="16" text-anchor="middle" font-weight="700">
+          <text x="90" y="92" fill="#b25000">×</text><text x="130" y="92" fill="#1f3a68">○</text><text x="170" y="92" fill="#1f3a68">○</text><text x="210" y="92" fill="#1f3a68">○</text><text x="250" y="92" fill="#b25000">×</text>
+        </g>
+        <text x="320" y="64" font-size="11.5" fill="#4a5a78" text-anchor="middle">0x の直後と</text>
+        <text x="320" y="80" font-size="11.5" fill="#4a5a78" text-anchor="middle">最後は ×</text>
+      </svg>
+      <div class="point"><b>値は変わらない。</b>1_000_000 は 1000000。読みやすくするためだけの記号。</div>
+      <div class="point"><b>エラーの表示：</b>置き場所がまちがっていると <code>illegal underscore</code>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-3.html">JLS 3.10.1</a>（Underscores are allowed as separators between digits that denote the integer／underscores may not appear immediately after 0x or 0b, or after the last digit in the numeral／Underscores may appear after the initial 0 in an octal numeral）／結果は JDK 17 で確かめたもの（1_.5・10_L・1.5_F も illegal underscore）</div>
+</section>
+
+<section class="slide">
+  <h1>識別子・予約語・文脈キーワード</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:44%">名前</th><th style="width:16%">結果</th><th>理由</th></tr>
+        <tr><td class="l"><code>$a</code>・<code>_b</code>・<code>c3</code>・<code>名前</code></td><td class="t">OK</td><td class="l">文字・数字・$・_。日本語も文字</td></tr>
+        <tr><td class="l"><code>3c</code></td><td class="x">エラー</td><td class="l">先頭に数字は不可</td></tr>
+        <tr><td class="l"><code>my-var</code></td><td class="x">エラー</td><td class="l">- は引き算の記号</td></tr>
+        <tr><td class="l"><code>_</code></td><td class="x">エラー</td><td class="l">Java 9 から予約語</td></tr>
+        <tr><td class="l"><code>goto</code>・<code>const</code></td><td class="x">エラー</td><td class="l">使っていないが予約語</td></tr>
+        <tr><td class="l"><code>null</code>・<code>true</code></td><td class="x">エラー</td><td class="l">リテラル</td></tr>
+        <tr><td class="l"><code>int var = 3;</code></td><td class="t">OK</td><td class="l">var は文脈キーワード</td></tr>
+        <tr><td class="l"><code>class var {}</code></td><td class="x">エラー</td><td class="l">型の名前には使えない</td></tr>
+        <tr><td class="l"><code>int Main, String;</code></td><td class="t">OK</td><td class="l">クラス名と同じ名前の変数も可（読みにくい）</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="point" style="margin-top:0"><b>予約語（51 個）：</b>int・class・if など、名前にできない語。<b>goto と const</b> は使っていないのに予約されている。<b>_</b> 1 文字も予約語。</div>
+      <div class="point"><b>文脈キーワード：</b>var・record・sealed・permits・yield などは、決まった場所でだけキーワード。<b>変数名には使える</b>が、<b>型（クラス）の名前には使えない</b>。</div>
+      <div class="point"><b>true・false・null</b> はキーワードではなく<b>リテラル</b>。それでも名前にはできない。</div>
+      <div class="point"><b>大文字と小文字は別：</b><code>count</code> と <code>Count</code> は別の名前。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-3.html">JLS 3.8 Identifiers</a>（the first of which must be a Java letter／the ASCII dollar sign ($) and underscore (_)／TypeIdentifier: Identifier but not permits, record, sealed, var, or yield）／3.9 Keywords（51 character sequences … are reserved／The keywords const and goto are reserved／true and false are not keywords, but rather boolean literals）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>宣言・初期化・スコープ</h1>
+  <p>ローカル変数の命は、宣言した所からブロックの終わりまで。</p>
+  <div class="foot"><span>Java Silver #02 変数とデータ型</span><span>試験内容 2</span></div>
+</section>
+
+<section class="slide">
+  <h1>スコープはブロックで決まる</h1>
+  <div class="cols wide-r">
+    <div>
+      <div class="cap">変数が使える範囲（Claude が作成）</div>
+      <svg width="380" height="280" viewBox="0 0 380 280">
+        <g font-family="DejaVu Sans Mono, monospace" font-size="12" fill="#1d1d1f">
+          <text x="20" y="24">void main(…) {</text>
+          <text x="36" y="48">int x = 10;</text>
+          <text x="36" y="72">if (x &gt; 5) {</text>
+          <text x="52" y="96">int y = x * 2;</text>
+          <text x="52" y="120">…</text>
+          <text x="36" y="144">}</text>
+          <text x="36" y="168">for (int i = 0; …) {</text>
+          <text x="52" y="192">…</text>
+          <text x="36" y="216">}</text>
+          <text x="36" y="240">int y = 1;  <tspan fill="#1f3a68">// OK</tspan></text>
+          <text x="20" y="264">}</text>
+        </g>
+        <rect x="262" y="36" width="14" height="236" rx="4" fill="#1f3a68"/><text x="284" y="160" font-size="11" fill="#1f3a68">x</text>
+        <rect x="300" y="84" width="14" height="62" rx="4" fill="#5b80bf"/><text x="320" y="118" font-size="11" fill="#2f5596">y（1つ目）</text>
+        <rect x="300" y="156" width="14" height="62" rx="4" fill="#e08a2c"/><text x="320" y="190" font-size="11" fill="#7a3a00">i</text>
+        <rect x="300" y="228" width="14" height="44" rx="4" fill="#8a9bb8"/><text x="320" y="254" font-size="11" fill="#4a5a78">y（2つ目）</text>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:34%">変数</th><th>スコープ</th></tr>
+        <tr><td class="t">ブロックの変数</td><td class="l">宣言した所から<b>そのブロックの } まで</b></td></tr>
+        <tr><td class="t">for の ( ) の変数</td><td class="l">その for 文の中だけ。ループのあとは cannot find symbol</td></tr>
+        <tr><td class="t">拡張 for の変数</td><td class="l">ループの本体だけ</td></tr>
+        <tr><td class="t">メソッドの引数</td><td class="l">メソッドの中全体</td></tr>
+      </table>
+      <div class="point"><b>ブロックが終われば名前は空く。</b>if の中の y が終わったあとで、もう一度 <code>int y</code> を宣言してよい。2 つの for 文に同じ <code>int i</code> を書けるのも同じ理由。</div>
+      <div class="point"><b>1 つの宣言文の中：</b><code>int a = 1, b = a + 1;</code> のように、左の変数は右の初期化で使える。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-6.html">JLS 6.3 Scope of a Declaration</a>（The scope of a local variable declared in a block … is the rest of the block, starting with the declaration's own initializer and including any further declarators to the right／The scope of a local variable declared in the ForInit part of a basic for statement includes … The contained Statement）</div>
+</section>
+
+<section class="slide">
+  <h1>同じ名前を宣言できるとき・できないとき</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">NG：スコープの中でもう一度宣言</div>
+<pre class="code small"><span class="k">int</span> x = 10;
+{
+  <span class="ng"><span class="k">int</span> x = 20;</span>
+}</pre>
+<pre class="sh" style="margin:4px 0 10px"><span class="e">error: variable x is already defined in method main(String[])</span></pre>
+      <div class="lbl">OK：ブロックが終わったあとで宣言</div>
+<pre class="code small">{
+  <span class="k">int</span> y = 20;
+}
+<span class="ok"><span class="k">int</span> y = 1;</span></pre>
+      <div class="lbl" style="margin-top:10px">OK：フィールドと同じ名前のローカル変数</div>
+<pre class="code small"><span class="k">static int</span> x = 5;   <span class="c">// フィールド</span>
+… main の中 …
+<span class="k">int</span> x = 10;          <span class="c">// フィールドを隠す</span>
+System.out.println(x + Main.x);   <span class="c">// 15</span></pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">組み合わせ</th><th>結果</th></tr>
+        <tr><td class="l">ローカル変数 → 内側のブロックで同じ名前</td><td class="x">エラー</td></tr>
+        <tr><td class="l">内側のブロックの変数 → 外で後から同じ名前</td><td class="t">OK</td></tr>
+        <tr><td class="l">メソッドの引数と同じ名前のローカル変数</td><td class="x">エラー</td></tr>
+        <tr><td class="l">フィールドと同じ名前のローカル変数</td><td class="t">OK（隠す）</td></tr>
+      </table>
+      <div class="point"><b>隠す（シャドウイング）が許されるのは、種類がちがうとき。</b>ローカル変数どうし（引数を含む）はエラー。フィールドは <code>Main.x</code>（static）や <code>this.x</code> で読める（#08・#09）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-6.html">JLS 6.4 Shadowing and Obscuring</a>（It is a compile-time error if the name of a local variable v is used to declare a new variable within the scope of v）／6.4.1 Shadowing／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>宣言文の書き方と final</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">書き方</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>int a = 1, b = a + 1, c;</code></td><td class="t">OK。b は 2</td></tr>
+        <tr><td class="l"><code>int a, b = 3;</code> → a を表示</td><td class="x">a might not have been initialized</td></tr>
+        <tr><td class="l"><code>int a = 1, int b = 2;</code></td><td class="x">&lt;identifier&gt; expected</td></tr>
+        <tr><td class="l"><code>int y = x = 5;</code></td><td class="t">OK。x も y も 5</td></tr>
+        <tr><td class="l"><code>a = b = c = 7;</code></td><td class="t">OK。右から順に代入</td></tr>
+      </table>
+      <div class="point"><b><code>int a, b = 3;</code> の = 3 は b だけ</b>にかかる。a には何も入らない。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">final のローカル変数</th><th>結果</th></tr>
+        <tr><td class="l"><code>final int a = 1;</code></td><td class="t">OK</td></tr>
+        <tr><td class="l"><code>final int a; a = 1;</code></td><td class="t">OK（あとで 1 回）</td></tr>
+        <tr><td class="l"><code>final int a = 1; a = 2;</code></td><td class="x">cannot assign a value to final variable a</td></tr>
+        <tr><td class="l"><code>final int a; a = 1; a = 2;</code></td><td class="x">might already have been assigned</td></tr>
+      </table>
+      <div class="point"><b>final は「1 回だけ代入できる」。</b>宣言のときに値がなくてもよい。final の付いた定数で初期化した int は「定数」として、byte への代入などで特別扱いされる（第4章）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.4 Local Variable Declarations</a>（VariableDeclaratorList: VariableDeclarator {, VariableDeclarator}）／14.4.2（the declarators are processed in order from left to right）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-4.html">JLS 4.12.4 final Variables</a>／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>型変換とラッパークラス</h1>
+  <p>広げるのは自動、縮めるのはキャスト。例外は「定数」と「+=」。</p>
+  <div class="foot"><span>Java Silver #02 変数とデータ型</span><span>試験内容 2</span></div>
+</section>
+
+<section class="slide">
+  <h1>拡大変換 ― 自動で広がる向き</h1>
+  <svg width="856" height="150" viewBox="0 0 856 150">
+    <defs><marker id="ar3" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#5b80bf"/></marker></defs>
+    <g font-size="15" text-anchor="middle" font-weight="700">
+      <rect x="10" y="20" width="100" height="44" rx="8" fill="#c9daf2"/><text x="60" y="48" fill="#1f3a68">byte</text>
+      <rect x="150" y="20" width="100" height="44" rx="8" fill="#c9daf2"/><text x="200" y="48" fill="#1f3a68">short</text>
+      <rect x="290" y="56" width="100" height="44" rx="8" fill="#5b80bf"/><text x="340" y="84" fill="#fff">int</text>
+      <rect x="430" y="56" width="100" height="44" rx="8" fill="#2f5596"/><text x="480" y="84" fill="#fff">long</text>
+      <rect x="570" y="56" width="100" height="44" rx="8" fill="#6b7d9c"/><text x="620" y="84" fill="#fff">float</text>
+      <rect x="710" y="56" width="120" height="44" rx="8" fill="#1f3a68"/><text x="770" y="84" fill="#fff">double</text>
+      <rect x="150" y="92" width="100" height="44" rx="8" fill="#fde7cf"/><text x="200" y="120" fill="#7a3a00">char</text>
+    </g>
+    <g stroke="#5b80bf" stroke-width="2.5" fill="none">
+      <line x1="112" y1="42" x2="146" y2="42" marker-end="url(#ar3)"/>
+      <path d="M252,42 L270,42 L270,70 L286,70" marker-end="url(#ar3)"/>
+      <path d="M252,114 L270,114 L270,86 L286,86" marker-end="url(#ar3)"/>
+      <line x1="392" y1="78" x2="426" y2="78" marker-end="url(#ar3)"/>
+      <line x1="532" y1="78" x2="566" y2="78" marker-end="url(#ar3)"/>
+      <line x1="672" y1="78" x2="706" y2="78" marker-end="url(#ar3)"/>
+    </g>
+    <g font-size="12" fill="#b25000" text-anchor="middle"><text x="130" y="140">byte・short → char は ×</text><text x="200" y="10">char → short は ×</text></g>
+  </svg>
+  <div class="cols" style="margin-top:4px">
+    <table class="mx">
+      <tr><th style="width:50%">代入（キャストなし）</th><th>結果</th></tr>
+      <tr><td class="l"><code>long l = i;</code>（i は int）</td><td class="t">OK</td></tr>
+      <tr><td class="l"><code>float f = l;</code>（l は long）</td><td class="t">OK（精度が落ちることあり）</td></tr>
+      <tr><td class="l"><code>int n = 'A';</code></td><td class="t">OK → 65</td></tr>
+      <tr><td class="l"><code>char c = b;</code>（b は byte の変数）</td><td class="x">lossy conversion from byte to char</td></tr>
+      <tr><td class="l"><code>char c = s;</code>（s は short の変数）</td><td class="x">lossy conversion from short to char</td></tr>
+    </table>
+    <div class="point" style="margin-top:0"><b>矢印の向きなら、代入するだけで変わる。</b>float は 32 ビットだが、long（64 ビット）からも矢印がある（範囲が広いので）。ただし int・long → float、long → double は<b>下の桁が丸められる</b>ことがある。例外にはならない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-5.html">JLS 5.1.2 Widening Primitive Conversion</a>（byte to short, int, long, float, or double／short to int, long, float, or double／char to int, long, float, or double／int to long, float, or double／long to float or double／float to double／may result in loss of precision／never results in a run-time exception）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>縮小変換とキャスト</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">(byte) 200 が -56 になるわけ（Claude が作成）</div>
+      <svg width="400" height="150" viewBox="0 0 400 150">
+        <g font-family="DejaVu Sans Mono, monospace" font-size="13" text-anchor="middle">
+          <text x="200" y="22" fill="#4a5a78" font-size="11.5" font-family="IPAPGothic, sans-serif">int の 200（32 ビット）</text>
+          <rect x="10" y="32" width="230" height="30" fill="#eef2f8" stroke="#8a9bb8"/><text x="125" y="52" fill="#8a9bb8">0000 … 0000 0000</text>
+          <rect x="240" y="32" width="150" height="30" fill="#c9daf2" stroke="#1f3a68"/><text x="315" y="52" fill="#1f3a68">1100 1000</text>
+          <text x="125" y="82" fill="#b25000" font-size="11.5" font-family="IPAPGothic, sans-serif">上位 24 ビットを捨てる</text>
+          <rect x="240" y="96" width="150" height="30" fill="#fde7cf" stroke="#b25000"/><text x="315" y="116" fill="#7a3a00">1100 1000</text>
+          <text x="125" y="116" fill="#1f3a68" font-size="12" font-family="IPAPGothic, sans-serif">byte では先頭 1 ＝ 負 → 200−256 ＝ -56</text>
+        </g>
+      </svg>
+<pre class="code small">System.out.println((<span class="k">byte</span>) 200 + <span class="s">" "</span> + (<span class="k">int</span>) 3.99
+                   + <span class="s">" "</span> + (<span class="k">int</span>) -3.99);</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">-56 3 -3</span></pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:40%">縮める変換</th><th>動き</th></tr>
+        <tr><td class="t">整数 → 小さい整数</td><td class="l">下位のビットだけ残す（符号が変わることも）</td></tr>
+        <tr><td class="t">小数 → 整数</td><td class="l">小数部分を捨てる（<b>0 の方向へ</b>）。3.99 → 3、-3.99 → -3。四捨五入ではない</td></tr>
+        <tr><td class="t">double → float</td><td class="l">近い float に丸める</td></tr>
+      </table>
+      <div class="point"><b>キャストなしの縮小はコンパイルエラー</b>（possible lossy conversion）。キャストを書けばコンパイルは通り、範囲外の値は<b>黙って変わる</b>（例外にはならない）。</div>
+      <div class="point"><b>特別ルール：</b><code>byte b = 10;</code> のように、<b>範囲内の int の定数</b>は byte・short・char にキャストなしで入る。<code>final int i = 10; byte b = i;</code> も OK。<code>int i = 10; byte b = i;</code> は NG。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-5.html">JLS 5.1.3 Narrowing Primitive Conversion</a>（simply discards all but the n lowest order bits／the floating-point value is rounded to an integer value V using the round toward zero rounding policy）／5.2 Assignment Contexts（if the expression is a constant expression of type byte, short, char, or int: A narrowing primitive conversion may be used … byte theAnswer = 42; is allowed）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>計算の型と複合代入</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">計算の前に型をそろえる（数値の昇格）</div>
+      <table class="mx">
+        <tr><th style="width:48%">式に含まれる型</th><th>計算する型</th></tr>
+        <tr><td class="l">double があれば</td><td class="t">double</td></tr>
+        <tr><td class="l">なければ float があれば</td><td class="t">float</td></tr>
+        <tr><td class="l">なければ long があれば</td><td class="t">long</td></tr>
+        <tr><td class="l">それ以外（byte・short・char・int）</td><td class="t">int</td></tr>
+      </table>
+      <div class="point"><b>byte + byte も int。</b>char + char も int（'A' + 'B' は 131）。だから <code>b = b + 1;</code>（b は byte）は int を byte に入れることになり、エラー。</div>
+    </div>
+    <div>
+<pre class="code small"><span class="k">byte</span> b = 10;
+<span class="ng">b = b + 1;</span>       <span class="c">// lossy conversion from int to byte</span>
+<span class="ok">b += 1;</span>          <span class="c">// OK：b = (byte)(b + 1) と同じ</span>
+<span class="ok">b++;</span>             <span class="c">// OK</span>
+System.out.println(b);    <span class="c">// 12</span>
+<span class="k">byte</span> c = 127;
+c += 1;
+System.out.println(c);    <span class="c">// -128（回りこむ）</span></pre>
+      <div class="point"><b>複合代入（+= -= *= /= など）</b>は、左辺の型への<b>キャストが自動で入る</b>。<code>E1 op= E2</code> は <code>E1 = (T)((E1) op (E2))</code>。</div>
+      <div class="point"><b>整数どうしの割り算</b>は整数（5 / 2 は 2）。くわしくは #05 演算子。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-5.html">JLS 5.6 Numeric Contexts</a>（If any expression is of type double, then the promoted type is double … In a numeric arithmetic context … the promoted type is int）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.26.2 Compound Assignment Operators</a>（E1 op= E2 is equivalent to E1 = (T) ((E1) op (E2)), where T is the type of E1）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>ラッパークラスとボクシング</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>基本データ型</th><th>ラッパークラス</th></tr>
+        <tr><td class="t">int</td><td><b>Integer</b>（名前がちがう）</td></tr>
+        <tr><td class="t">char</td><td><b>Character</b>（名前がちがう）</td></tr>
+        <tr><td class="t">ほかの 6 つ</td><td>頭を大文字に：Byte・Short・Long・Float・Double・Boolean</td></tr>
+      </table>
+      <div class="point"><b>ボクシング：</b>基本データ型 → 対応するラッパー（自動）。<b>アンボクシング：</b>その逆。中身が <b>null</b> だと <b>NullPointerException</b>。</div>
+      <div class="point"><b>文字列から数へ：</b><code>Integer.parseInt("30")</code> は int、<code>Integer.valueOf("20")</code> は Integer。読めない文字列は NumberFormatException。</div>
+      <div class="point warn"><b>「広げてから包む」はできない。</b>int の 10 は Integer にしか包めない。Long にしたいなら <code>10L</code>。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">代入</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>Integer a = 10;</code></td><td class="t">OK（ボクシング）</td></tr>
+        <tr><td class="l"><code>int b = a;</code></td><td class="t">OK（アンボクシング）</td></tr>
+        <tr><td class="l"><code>long g = Integer.valueOf(5);</code></td><td class="t">OK（取り出して広げる）</td></tr>
+        <tr><td class="l"><code>Long f = 10;</code></td><td class="x">int cannot be … Long</td></tr>
+        <tr><td class="l"><code>Double h = 1;</code></td><td class="x">int cannot be … Double</td></tr>
+        <tr><td class="l"><code>Integer x = 10L;</code></td><td class="x">long cannot be … Integer</td></tr>
+        <tr><td class="l"><code>Short s = 10;</code><br><code>Character c = 65;</code></td><td class="t">OK（範囲内の int の定数）</td></tr>
+        <tr><td class="l"><code>Integer x = null; int y = x;</code></td><td class="x">実行時 NullPointerException</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-5.html">JLS 5.1.7 Boxing Conversion</a>（From type int to type Integer）／5.1.8（If r is null, unboxing conversion throws a NullPointerException）／5.2（an unboxing conversion followed by a widening primitive conversion／A narrowing primitive conversion followed by a boxing conversion may be used if the variable is of type Byte, Short, or Character）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Java SE 17 API Integer</a>（parseInt … NumberFormatException - if the String does not contain a parsable int）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第5章</div>
+  <h1>var（ローカル変数型推論）</h1>
+  <p>型を書かないだけで、型はある。初期化の式から 1 つに決まる。</p>
+  <div class="foot"><span>Java Silver #02 変数とデータ型</span><span>試験内容 2</span></div>
+</section>
+
+<section class="slide">
+  <h1>var の決まり</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:46%">書き方</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>var a = 1;</code></td><td class="t">int（Integer ではない）</td></tr>
+        <tr><td class="l"><code>var x = (String) null;</code></td><td class="t">String</td></tr>
+        <tr><td class="l"><code>for (var i = 0; …)</code>・<code>for (var s : args)</code></td><td class="t">OK</td></tr>
+        <tr><td class="l"><code>var a;</code>・<code>var a = null;</code></td><td class="x">cannot infer type</td></tr>
+        <tr><td class="l"><code>var a = {1, 2};</code>・<code>var f = () -&gt; "hello";</code></td><td class="x">cannot infer type</td></tr>
+        <tr><td class="l"><code>var a = 1, b = 2;</code></td><td class="x">not allowed in a compound declaration</td></tr>
+        <tr><td class="l"><code>var a[] = new int[2];</code></td><td class="x">not allowed as an element type of an array</td></tr>
+        <tr><td class="l">フィールド・引数・戻り値の型</td><td class="x">'var' is not allowed here</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">型はあとから変わらない</div>
+<pre class="code small"><span class="k">var</span> a = 1;        <span class="c">// int に決まる</span>
+<span class="ok">a = 'A';</span>          <span class="c">// char → int は OK。a は 65</span>
+<span class="ng">a = 2.5;</span>          <span class="c">// lossy conversion from double to int</span>
+<span class="k">var</span> z = <span class="s">'a'</span> + 1;  <span class="c">// int の 98</span>
+<span class="k">var</span> var = <span class="s">"var"</span>;  <span class="c">// OK（var は変数名に使える）</span></pre>
+      <div class="point"><b>使える場所：</b>ローカル変数だけ（for・拡張 for・try-with-resources を含む）。<b>初期化が 1 つ</b>あり、その式だけで型が決まることが条件。</div>
+      <div class="point"><b>動的な型ではない：</b>コンパイルのときに型が決まり、型を書いたのと同じになる。JavaScript の var とはちがう。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-14.html">JLS 14.4</a>（It is a compile-time error if the LocalVariableType is var and any of the following are true: More than one VariableDeclarator is listed／The VariableDeclaratorId has one or more bracket pairs／The VariableDeclarator lacks an initializer／The initializer … is an ArrayInitializer）／14.4.1（It is a compile-time error if T is the null type／an error occurs if it is a lambda expression）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>問われ方とまちがえやすい点</h1>
+  <table class="mx">
+    <tr><th style="width:34%">こう聞かれたら</th><th>答えの考え方</th></tr>
+    <tr><td class="t">何が表示されるか（初期値）</td><td class="l">フィールド・配列は 0・false・null・0.0。<b>ローカル変数は値なし</b>でコンパイルエラー</td></tr>
+    <tr><td class="t">コンパイルできる代入は</td><td class="l">拡大はそのまま、縮小はキャスト。<b>範囲内の int の定数</b>は byte・short・char に入る。byte → char は不可</td></tr>
+    <tr><td class="t">リテラルの型</td><td class="l">整数は int（L で long）、小数は double（F で float）。0x・0・0b の値</td></tr>
+    <tr><td class="t">アンダースコア</td><td class="l">数字と数字の間だけ。先頭の _ は変数名になる</td></tr>
+    <tr><td class="t">変数名として正しいのは</td><td class="l">先頭に数字なし、$ と _ と日本語は可、_ 1 文字・goto・null は不可、var は可</td></tr>
+    <tr><td class="t">スコープ</td><td class="l">ブロックの } まで。for の i はループの外で使えない。ローカル変数どうしの重複はエラー</td></tr>
+    <tr><td class="t">計算結果</td><td class="l">byte・short・char は int で計算。int のまま回りこむ。<code>+=</code> は自動キャスト</td></tr>
+    <tr><td class="t">var</td><td class="l">初期化 1 つ・null 不可・{ } 不可・ローカルだけ。型は int など基本データ型のまま</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">基本データ型<span>byte 8・short 16・char 16（符号なし）・int 32・long 64・float 32・double 64・boolean</span></div>
+      <div class="box b2">リテラルと名前<span>L・F・0x・0・0b・_、先頭に数字なし、予約語と文脈キーワード</span></div>
+      <div class="box b3">宣言とスコープ<span>ローカル変数は初期値なし。ブロックの終わりまで。重複はエラー</span></div>
+      <div class="box b4">型変換・ラッパー・var<span>広げるのは自動、縮めるのはキャスト。int ↔ Integer。var は 1 つの型に決まる</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">エラーの表示</th><th>原因</th></tr>
+        <tr><td class="t">might not have been initialized</td><td class="l">ローカル変数に値がない</td></tr>
+        <tr><td class="t">possible lossy conversion</td><td class="l">キャストなしの縮小変換</td></tr>
+        <tr><td class="t">integer number too large</td><td class="l">int の範囲をこえるリテラル（L がない）</td></tr>
+        <tr><td class="t">illegal underscore</td><td class="l">_ の置き場所</td></tr>
+        <tr><td class="t">is already defined</td><td class="l">スコープの中で同じ名前を宣言</td></tr>
+        <tr><td class="t">cannot infer type</td><td class="l">var の型が決まらない</td></tr>
+      </table>
+      <div class="point"><b>次は #03 文字列。</b>String の不変性・メソッド・StringBuilder・テキストブロックへ進む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

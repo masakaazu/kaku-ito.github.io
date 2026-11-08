@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS SAA #22 料金と購入オプション 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">AWS SAA（SAA-C03）　分野4 コスト最適化　#22</div>
+  <h1>料金と購入オプション</h1>
+  <p>オンデマンド・Savings Plans（Compute・EC2 Instance・Database）・リザーブドインスタンス（スタンダードとコンバーティブル、リージョンとゾーン）・スポット・専有ホスト・ハードウェア専有インスタンス・キャパシティ予約、スポットの中断と再調整の推奨、混合インスタンスグループと配分戦略、Fargate Spot、Compute Optimizer、T インスタンスと CPU クレジット、Lambda の arm64、リザーブド DB インスタンス、Aurora serverless</p>
+  <div class="refs-legend">各ページの下に、根拠にした AWS の公式ドキュメント（EC2・Savings Plans・EC2 Auto Scaling・ECS・Compute Optimizer・Lambda・RDS・Aurora の各ガイド）を書いた（青い文字を押すと開く）。「」の中はドキュメントの原文どおり（日本語版は機械翻訳のため、語順が不自然なところもそのまま）。台数・場面は Claude が作った例。割引率などの数字は 2026-11 時点のドキュメントによる</div>
+</section>
+
+<section class="slide">
+  <h1>全体像：何を約束して、いくら安くなるか<small>試験ガイド タスク 4.2・4.3</small></h1>
+  <svg width="856" height="232" viewBox="0 0 856 232">
+    <defs><marker id="a1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <line x1="40" y1="200" x2="830" y2="200" stroke="#1f3a68" stroke-width="2" marker-end="url(#a1)"/>
+      <text x="760" y="222" fill="#1f3a68" font-weight="700">割引が大きい →</text><text x="90" y="222" fill="#4a5a78">割引なし</text>
+      <rect x="40" y="120" width="140" height="66" rx="8" fill="#4a5a78"/><text x="110" y="144" fill="#fff" font-weight="700">オンデマンド</text><text x="110" y="162" fill="#fff">秒単位・約束なし</text><text x="110" y="178" fill="#fff">止めてよい</text>
+      <rect x="200" y="120" width="180" height="66" rx="8" fill="#1f5fa8"/><text x="290" y="144" fill="#fff" font-weight="700">Compute Savings Plans</text><text x="290" y="162" fill="#fff">最大 66%・使う額を約束</text><text x="290" y="178" fill="#fff">ファミリー・リージョン自由</text>
+      <rect x="400" y="120" width="190" height="66" rx="8" fill="#1f3a68"/><text x="495" y="144" fill="#fff" font-weight="700">EC2 Instance SP・RI</text><text x="495" y="162" fill="#fff">EC2 Instance SP は最大 72%</text><text x="495" y="178" fill="#fff">ファミリーや設定を約束</text>
+      <rect x="610" y="120" width="220" height="66" rx="8" fill="#b25000"/><text x="720" y="144" fill="#fff" font-weight="700">スポット</text><text x="720" y="162" fill="#fff">空いているキャパシティ</text><text x="720" y="178" fill="#fff">大幅割引・中断がある</text>
+      <rect x="40" y="16" width="250" height="84" rx="8" fill="#e8f3ea" stroke="#3a7d44"/><text x="165" y="38" fill="#3a7d44" font-weight="700">キャパシティを押さえる</text><text x="165" y="60">キャパシティ予約（AZ・約束なし）</text><text x="165" y="80">ゾーン RI（AZ・1〜3 年）</text>
+      <rect x="310" y="16" width="250" height="84" rx="8" fill="#fde7cf" stroke="#b25000"/><text x="435" y="38" fill="#b25000" font-weight="700">ハードウェアを専用にする</text><text x="435" y="60">専有ホスト（ホストごと・BYOL）</text><text x="435" y="80">ハードウェア専有インスタンス</text>
+      <rect x="580" y="16" width="250" height="84" rx="8" fill="#e3eefc" stroke="#1f5fa8"/><text x="705" y="38" fill="#1f5fa8" font-weight="700">EC2 以外</text><text x="705" y="60">Fargate Spot・Lambda arm64</text><text x="705" y="80">リザーブド DB・Database SP</text>
+    </g>
+  </svg>
+  <div class="point"><b>見分け方：</b>「短期・読めない」→ オンデマンド。「長く使うが、タイプや Fargate への移行もある」→ Compute Savings Plans。「同じファミリーで長く」→ EC2 Instance Savings Plans か RI。「止まってもよい」→ スポット。「この AZ で確実に起動」→ キャパシティ予約。「ライセンスをコア単位で持ち込む」→ 専有ホスト。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/instance-purchasing-options.html">Amazon EC2 の請求および購入オプション</a>（「特定のインスタンス設定を確約できないものの、使用量を確約できる場合はSavings Plans を購入するとオンデマンドインスタンスのコストを削減できます。」「キャパシティ予約が必要な場合は特定のアベイラビリティーゾーンのリザーブドインスタンスまたはキャパシティ予約を購入します。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>EC2 の購入オプション</h1>
+  <p>オンデマンド・Savings Plans・RI・スポットの違い。Savings Plans の 3 つのタイプ、RI のクラスとスコープ、専有ホストとハードウェア専有インスタンス、キャパシティ予約の料金。</p>
+  <div class="foot"><span>AWS SAA #22 料金と購入オプション</span><span>タスク 4.2・4.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>4 つの基本の買い方</h1>
+  <table class="mx">
+    <tr><th style="width:16%"></th><th>オンデマンド</th><th>Savings Plans</th><th>リザーブドインスタンス</th><th>スポット</th></tr>
+    <tr><td class="t">約束</td><td>なし</td><td>1〜3 年、1 時間あたり USD の使用額</td><td>1〜3 年、インスタンスの設定（タイプ・リージョンなど）</td><td>なし</td></tr>
+    <tr><td class="t">払い方</td><td>起動した分を秒単位</td><td>全額前払い・一部前払い・前払いなし</td><td>すべて前払い・一部前払い・前払いなし</td><td>そのときのスポット料金</td></tr>
+    <tr><td class="t">割引</td><td>なし</td><td>最大 72%</td><td>大きい（スタンダード＞コンバーティブル）</td><td>大幅（需要と供給で変わる）</td></tr>
+    <tr><td class="t">中断</td><td>なし</td><td>なし（割引のしくみ）</td><td>なし（割引のしくみ）</td><td>AWS がキャパシティを取り戻すとき</td></tr>
+    <tr><td class="t">キャパシティ</td><td>保証なし</td><td>予約しない</td><td>ゾーン RI だけ予約する</td><td>空いていれば使える</td></tr>
+    <tr><td class="t">向く場面</td><td class="l">短期・負荷が読めない・止められない</td><td class="l">使う額は読めるが、構成は変わる</td><td class="l">同じ構成で長く動かす</td><td class="l">バッチ・分析など、時間に柔軟</td></tr>
+  </table>
+  <div class="point warn"><b>ひっかけ：</b>前払いなしでも「約束」は約束。一部前払い・前払いなしの RI は、使ったかどうかにかかわらず期間中ずっと請求される。RI は物理インスタンスではなく、条件が合うオンデマンドの使用に付く請求の割引。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/instance-purchasing-options.html">Amazon EC2 の請求および購入オプション</a>（「起動したインスタンスに対して秒単位でお支払いいただきます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/ec2-reserved-instances.html">Amazon EC2 のリザーブドインスタンスの概要</a>（「リザーブドインスタンスは物理インスタンスではありませんが、請求の割引はアカウントでのオンデマンドインスタンスの使用に適用されます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/savingsplans/latest/userguide/what-is-savings-plans.html">Savings Plans とは</a>（「AWS コンピューティングワークロードを最大 72% 削減できます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Savings Plans の 3 つのタイプ</h1>
+  <svg width="856" height="150" viewBox="0 0 856 150">
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="8" width="520" height="134" rx="10" fill="#e3eefc" stroke="#1f5fa8"/><text x="100" y="28" fill="#1f5fa8" font-weight="700">Compute Savings Plans</text><text x="100" y="44" fill="#1f5fa8">最大 66%</text>
+      <text x="440" y="28" fill="#1f5fa8">リージョン・ファミリー自由</text>
+      <rect x="390" y="52" width="120" height="34" rx="6" fill="#1f5fa8"/><text x="450" y="73" fill="#fff">Fargate</text>
+      <rect x="390" y="96" width="120" height="34" rx="6" fill="#1f5fa8"/><text x="450" y="117" fill="#fff">Lambda</text>
+      <rect x="30" y="56" width="340" height="76" rx="8" fill="#fff" stroke="#1f3a68" stroke-width="2"/><text x="200" y="76" fill="#1f3a68" font-weight="700">EC2 Instance Savings Plans（最大 72%）</text>
+      <text x="200" y="96">1 つのリージョンの、1 つのインスタンスファミリー</text><text x="200" y="116">（サイズ・OS・テナンシーは自由）</text>
+      <rect x="560" y="8" width="286" height="134" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="703" y="28" fill="#3a7d44" font-weight="700">Database Savings Plans（最大 35%）</text>
+      <text x="703" y="56">Aurora・RDS・DynamoDB・ElastiCache</text><text x="703" y="76">DocumentDB・Neptune・Keyspaces など</text><text x="703" y="104">エンジン・ファミリー・サイズ・</text><text x="703" y="122">AZ・リージョンに関係なく</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%"></th><th>Compute</th><th>EC2 Instance</th><th>Database</th></tr>
+    <tr><td class="t">変えても割引が続く</td><td>ファミリー・サイズ・リージョン・OS・テナンシー、EC2 → Fargate</td><td>ファミリーの中のサイズ・OS・テナンシー</td><td>エンジン・ファミリー・サイズ・AZ・リージョン</td></tr>
+    <tr><td class="t">同じくらいの RI</td><td>コンバーティブル RI</td><td>スタンダード RI</td><td>—</td></tr>
+  </table>
+  <div class="point warn"><b>ひっかけ：</b>約束の条件は購入後に変えられない。キャパシティは予約しない（ODCR を割り当てれば ODCR に割引が付く）。スポットの使用や、RI でカバーされた使用には適用されない。おすすめの約束額は Cost Explorer で見る。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/savingsplans/latest/userguide/plan-types.html">Savings Plans のタイプ</a>（「Compute Savings Plans は、最も柔軟性が高く、オンデマンド料金から最大 66% オフの料金を提供します。」「コミットメント条件は、購入後に変更することはできません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/savingsplans/latest/userguide/sp-ris.html">Compute Savings Plans とリザーブドインスタンス</a>（「Savings Plans は、スポットでの使用や、RI でカバーされる使用には適用されません。」）</div>
+</section>
+
+<section class="slide">
+  <h1>RI のクラス：スタンダードとコンバーティブル</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:26%"></th><th style="width:26%">スタンダード</th><th>コンバーティブル</th></tr>
+        <tr><td class="t">割引</td><td>大きい</td><td>スタンダードより小さい</td></tr>
+        <tr><td class="t">交換</td><td>できない</td><td>ファミリー・タイプ・プラットフォーム・スコープ・テナンシーの違う RI に</td></tr>
+        <tr><td class="t">変更</td><td>できる</td><td>できる</td></tr>
+        <tr><td class="t">Marketplace で売る</td><td>できる</td><td>できない</td></tr>
+        <tr><td class="t">Marketplace で買う</td><td>できる</td><td>できない</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">支払いオプション（RI）</div>
+      <table class="mx">
+        <tr><th style="width:30%"></th><th>払い方</th></tr>
+        <tr><td class="t">すべて前払い</td><td class="l">開始時に全額。残りの期間に追加の時間料金はない</td></tr>
+        <tr><td class="t">一部前払い</td><td class="l">一部を前払いし、残りの時間は使ったかどうかにかかわらず割引の時間料金</td></tr>
+        <tr><td class="t">前払いなし</td><td class="l">使ったかどうかにかかわらず、全期間の時間を割引の時間料金で</td></tr>
+      </table>
+      <div class="mini">一般に、前払いを多くするほど節約できる。</div>
+    </div>
+  </div>
+  <div class="point"><b>決め方：</b>「3 年同じ構成」→ スタンダード（余ったら Marketplace で売れる）。「途中で新しい世代に移る」→ コンバーティブル。交換できるかどうかはクラスで決まり、スコープ（リージョンかゾーンか）では決まらない。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/reserved-instances-types.html">リザーブドインスタンス のタイプ (提供しているクラス)</a>（「スタンダード リザーブドインスタンス はコンバーチブル リザーブドインスタンス よりも大幅な割引が受けられますが、スタンダード リザーブドインスタンス を交換することはできません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/ec2-reserved-instances.html">Amazon EC2 のリザーブドインスタンスの概要</a>（「一般的にはリザーブドインスタンス の前払い額を高く設定するほど、より多くの費用を節約できます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>RI のスコープ：リージョンとゾーン</h1>
+  <svg width="856" height="160" viewBox="0 0 856 160">
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="8" width="410" height="144" rx="10" fill="#e3eefc" stroke="#1f5fa8"/><text x="215" y="28" fill="#1f5fa8" font-weight="700">リージョン RI：リージョンのどの AZ にも割引</text>
+      <rect x="30" y="42" width="116" height="96" rx="6" fill="#fff" stroke="#4a5a78"/><text x="88" y="60" fill="#4a5a78">AZ a</text><rect x="48" y="70" width="80" height="22" rx="4" fill="#1f5fa8"/><text x="88" y="85" fill="#fff">m5.large</text>
+      <rect x="157" y="42" width="116" height="96" rx="6" fill="#fff" stroke="#4a5a78"/><text x="215" y="60" fill="#4a5a78">AZ c</text><rect x="167" y="70" width="96" height="22" rx="4" fill="#1f5fa8"/><text x="215" y="85" fill="#fff">m5.xlarge</text>
+      <rect x="284" y="42" width="116" height="96" rx="6" fill="#fff" stroke="#4a5a78"/><text x="342" y="60" fill="#4a5a78">AZ d</text><text x="342" y="100" fill="#4a5a78">キャパシティは</text><text x="342" y="116" fill="#4a5a78">予約しない</text>
+      <rect x="436" y="8" width="410" height="144" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="641" y="28" fill="#3a7d44" font-weight="700">ゾーン RI：指定した AZ だけ・キャパシティも</text>
+      <rect x="456" y="42" width="180" height="96" rx="6" fill="#fff" stroke="#3a7d44" stroke-width="2"/><text x="546" y="60" fill="#3a7d44" font-weight="700">AZ a（指定）</text><rect x="476" y="70" width="140" height="22" rx="4" fill="#3a7d44"/><text x="546" y="85" fill="#fff">m5.large　割引＋予約</text>
+      <rect x="650" y="42" width="180" height="96" rx="6" fill="#fff" stroke="#4a5a78"/><text x="740" y="60" fill="#4a5a78">AZ c</text><text x="740" y="100" fill="#4a5a78">割引は付かない</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%"></th><th>リージョン RI</th><th>ゾーン RI</th></tr>
+    <tr><td class="t">キャパシティの予約</td><td>しない</td><td>指定した AZ でする</td></tr>
+    <tr><td class="t">AZ の柔軟性</td><td>リージョンのすべての AZ に割引</td><td>なし（指定した AZ だけ）</td></tr>
+    <tr><td class="t">サイズの柔軟性</td><td>ファミリーの中でサイズを問わず（Linux／Unix・デフォルトのテナンシー）</td><td>なし</td></tr>
+    <tr><td class="t">購入をキューに入れる</td><td>できる</td><td>できない</td></tr>
+  </table>
+  <div class="point warn"><b>ひっかけ：</b>スコープで料金は変わらない。リージョンをまたぐ柔軟性はどちらの RI にもない（それが要るなら Compute Savings Plans）。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/reserved-instances-scope.html">リージョンおよびゾーン リザーブドインスタンス (スコープ)</a>（「リージョンの リザーブドインスタンス ではキャパシティーは予約されません。」「ゾーンの リザーブドインスタンス では指定されたアベイラビリティーゾーンでキャパシティーが予約されます。」「範囲は料金には影響しません。」）</div>
+</section>
+
+<section class="slide">
+  <h1>専有ホストとハードウェア専有インスタンス</h1>
+  <svg width="856" height="150" viewBox="0 0 856 150">
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="8" width="270" height="134" rx="10" fill="#f6f8fb" stroke="#4a5a78"/><text x="145" y="28" fill="#4a5a78" font-weight="700">共有テナンシー（デフォルト）</text>
+      <rect x="30" y="42" width="230" height="86" rx="6" fill="#fff" stroke="#4a5a78"/><text x="145" y="58" fill="#4a5a78">物理サーバー</text>
+      <rect x="40" y="70" width="64" height="44" rx="4" fill="#1f5fa8"/><text x="72" y="96" fill="#fff">自社</text><rect x="113" y="70" width="64" height="44" rx="4" fill="#4a5a78"/><text x="145" y="96" fill="#fff">A 社</text><rect x="186" y="70" width="64" height="44" rx="4" fill="#4a5a78"/><text x="218" y="96" fill="#fff">B 社</text>
+      <rect x="293" y="8" width="270" height="134" rx="10" fill="#e3eefc" stroke="#1f5fa8"/><text x="428" y="28" fill="#1f5fa8" font-weight="700">ハードウェア専有インスタンス</text>
+      <rect x="313" y="42" width="230" height="86" rx="6" fill="#fff" stroke="#1f5fa8"/><text x="428" y="58" fill="#1f5fa8">自分のアカウント専用（どれかは見えない）</text>
+      <rect x="323" y="70" width="64" height="44" rx="4" fill="#1f5fa8"/><text x="355" y="96" fill="#fff">自社</text><rect x="396" y="70" width="64" height="44" rx="4" fill="#1f5fa8"/><text x="428" y="96" fill="#fff">自社</text><text x="501" y="96" fill="#4a5a78">請求は台ごと</text>
+      <rect x="576" y="8" width="270" height="134" rx="10" fill="#fde7cf" stroke="#b25000"/><text x="711" y="28" fill="#b25000" font-weight="700">専有ホスト</text>
+      <rect x="596" y="42" width="230" height="86" rx="6" fill="#fff" stroke="#b25000" stroke-width="2"/><text x="711" y="58" fill="#b25000">ホスト ID・ソケット・コアが見える</text>
+      <rect x="606" y="70" width="64" height="44" rx="4" fill="#b25000"/><text x="638" y="96" fill="#fff">自社</text><rect x="679" y="70" width="64" height="44" rx="4" fill="#b25000"/><text x="711" y="96" fill="#fff">自社</text><text x="784" y="90" fill="#b25000">請求は</text><text x="784" y="106" fill="#b25000">ホストごと</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:26%"></th><th>専有ホスト</th><th>ハードウェア専有インスタンス</th></tr>
+    <tr><td class="t">請求</td><td>ホストごと</td><td>インスタンスごと</td></tr>
+    <tr><td class="t">ソケット・コアの数</td><td>見える</td><td>見えない</td></tr>
+    <tr><td class="t">配置の制御・ホストアフィニティ</td><td>できる</td><td>できない（停止・起動で別のホストになることがある）</td></tr>
+    <tr><td class="t">ライセンスの持ち込み</td><td>ソケット・コア・VM 単位の BYOL</td><td>—</td></tr>
+    <tr><td class="t">容量をほかのアカウントと共有</td><td>できる</td><td>できない</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/dedicated-hosts-overview.html">Amazon EC2 専有ホスト</a>（「Amazon EC2 Dedicated Host は完全にお客様専用の物理サーバーです。」「専有ホストは、包括的な Bring-Your-Own-License (BYOL) サポートを提供します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/dedicated-instance.html">Amazon EC2 ハードウェア専有インスタンス</a>（「ハードウェア専有インスタンスを停止して起動すると、同じホストで実行されない場合があります。」）</div>
+</section>
+
+<section class="slide">
+  <h1>キャパシティ予約：割引ではなく「確保」</h1>
+  <svg width="856" height="130" viewBox="0 0 856 130">
+    <g font-size="11" text-anchor="middle">
+      <text x="140" y="20" fill="#1f3a68" font-weight="700">AZ a に m5.large を 20 台分予約（Claude の例）</text>
+      <g fill="#1f5fa8">
+        <rect x="20" y="32" width="40" height="30" rx="4"/><rect x="66" y="32" width="40" height="30" rx="4"/><rect x="112" y="32" width="40" height="30" rx="4"/><rect x="158" y="32" width="40" height="30" rx="4"/><rect x="204" y="32" width="40" height="30" rx="4"/>
+        <rect x="250" y="32" width="40" height="30" rx="4"/><rect x="296" y="32" width="40" height="30" rx="4"/><rect x="342" y="32" width="40" height="30" rx="4"/><rect x="388" y="32" width="40" height="30" rx="4"/><rect x="434" y="32" width="40" height="30" rx="4"/>
+        <rect x="20" y="70" width="40" height="30" rx="4"/><rect x="66" y="70" width="40" height="30" rx="4"/><rect x="112" y="70" width="40" height="30" rx="4"/><rect x="158" y="70" width="40" height="30" rx="4"/><rect x="204" y="70" width="40" height="30" rx="4"/>
+      </g>
+      <g fill="#fff" stroke="#1f5fa8" stroke-dasharray="4 3">
+        <rect x="250" y="70" width="40" height="30" rx="4"/><rect x="296" y="70" width="40" height="30" rx="4"/><rect x="342" y="70" width="40" height="30" rx="4"/><rect x="388" y="70" width="40" height="30" rx="4"/><rect x="434" y="70" width="40" height="30" rx="4"/>
+      </g>
+      <text x="130" y="120" fill="#1f5fa8">実行中 15 台</text><text x="360" y="120" fill="#1f5fa8">空き 5 台</text>
+      <rect x="500" y="30" width="346" height="72" rx="8" fill="#fde7cf" stroke="#b25000"/><text x="673" y="54" fill="#b25000" font-weight="700">20 台分、オンデマンドと同じ料金</text><text x="673" y="74">空いている 5 台分も払う</text><text x="673" y="92">（秒単位・最小 60 秒）</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:30%">割引</th><th>キャパシティ予約に付くか</th></tr>
+    <tr><td class="t">Savings Plans</td><td>付く</td></tr>
+    <tr><td class="t">リージョン RI</td><td>付く</td></tr>
+    <tr><td class="t">ゾーン RI</td><td>付かない</td></tr>
+  </table>
+  <div class="point"><b>使い分け：</b>すぐに使える予約は期間の約束がなく、いつでも取り消して請求を止められる。将来の日付の予約は、使い始める日と維持する期間を約束する。割引がほしいときは、Savings Plans かリージョン RI と組み合わせる。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/capacity-reservations-pricing-billing.html">キャパシティ予約の料金と請求</a>（「インスタンスをリザーブドキャパシティで実行しているかどうかにかかわらず、キャパシティ予約にはオンデマンドと同等の料金 (ハードウェア専有インスタンスの地域別追加料金が適用される場合はこの料金を含む) が請求されます。」「ゾーンリザーブドインスタンスの請求割引はキャパシティ予約には適用されません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html">EC2 オンデマンドキャパシティ予約を使用してコンピューティングキャパシティを予約</a>（「また、いつでもキャンセルしてリザーブドキャパシティを解放することで請求の発生を停止できます。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>スポットインスタンスと組み合わせ</h1>
+  <p>中断の理由・通知・再調整の推奨・中断動作。向くワークロードとベストプラクティス。混合インスタンスグループのベースと割合、配分戦略。Fargate Spot。</p>
+  <div class="foot"><span>AWS SAA #22 料金と購入オプション</span><span>タスク 4.2・4.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>スポットの中断：いつ、何が届くか</h1>
+  <svg width="856" height="170" viewBox="0 0 856 170">
+    <defs><marker id="a2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <line x1="20" y1="90" x2="836" y2="90" stroke="#1f3a68" stroke-width="2" marker-end="url(#a2)"/><text x="810" y="110" fill="#1f3a68">時間</text>
+      <circle cx="120" cy="90" r="7" fill="#3a7d44"/><text x="120" y="70" fill="#3a7d44" font-weight="700">ふつうに動く</text>
+      <circle cx="330" cy="90" r="9" fill="#1f5fa8"/><rect x="230" y="18" width="200" height="40" rx="6" fill="#1f5fa8"/><text x="330" y="35" fill="#fff" font-weight="700">再調整に関する推奨事項</text><text x="330" y="51" fill="#fff">中断のリスクが高まった</text>
+      <circle cx="560" cy="90" r="9" fill="#b25000"/><rect x="470" y="18" width="180" height="40" rx="6" fill="#b25000"/><text x="560" y="35" fill="#fff" font-weight="700">中断通知</text><text x="560" y="51" fill="#fff">停止・終了の 2 分前</text>
+      <circle cx="740" cy="90" r="9" fill="#1f3a68"/><rect x="670" y="18" width="140" height="40" rx="6" fill="#1f3a68"/><text x="740" y="35" fill="#fff" font-weight="700">中断</text><text x="740" y="51" fill="#fff">終了（デフォルト）</text>
+      <text x="650" y="108" fill="#b25000">← 2 分 →</text>
+      <text x="330" y="124">別のスポットへ先に移す</text><text x="560" y="124">途中経過を S3 に保存</text><text x="740" y="124">停止・休止も選べる</text>
+      <text x="428" y="156" fill="#4a5a78">どちらのシグナルも EventBridge のルールで受け取り、処理につなげられる</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>中断の理由：</b>主にキャパシティの回収。ホストのメンテナンスやハードウェアの使用停止のこともある。上限料金を決めた場合は、スポット料金がそれを超えたとき。</div>
+    <div class="point warn"><b>ひっかけ：</b>中断動作を休止にすると、通知は出るがすぐに休止が始まり、2 分の猶予はない。上限料金を決めると、決めないときより中断が増える。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/spot-instance-termination-notices.html">スポットインスタンスの中断通知</a>（「スポットインスタンスの中断通知はAmazon EC2 がスポットインスタンスを停止または終了する 2 分前に発行される警告です。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/interruption-behavior.html">スポットインスタンスの中断の動作</a>（「デフォルトの動作ではAmazon EC2 は中断時にスポットインスタンスを終了します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/spot-interruptions.html">スポットインスタンスの中断</a>（「ただし、上限料金を指定すると、指定しなかった場合に比べ、インスタンスの中断が増えます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>スポットに向くもの・ベストプラクティス</h1>
+  <table class="mx">
+    <tr><th style="width:50%">向く</th><th>向かない</th></tr>
+    <tr><td class="l">ステートレス（状態を持たない）</td><td class="l">ステートフル（状態を持つ）</td></tr>
+    <tr><td class="l">障害に強い（フォールトトレラント）</td><td class="l">障害に弱い（フォールトイントレラント）</td></tr>
+    <tr><td class="l">時間に柔軟：データ分析・バッチ・バックグラウンド処理</td><td class="l">柔軟でない・ノードどうしが密に結合している</td></tr>
+  </table>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">タイプと AZ を広く<span>ワークロードごとに少なくとも 10 種類のインスタンスタイプが目安。属性ベースの選択も使える</span></div>
+      <div class="box b2">中断に備える<span>再調整の推奨と中断通知を受けて、チェックポイントを取る</span></div>
+      <div class="box b3">まとめて管理する<span>Auto Scaling グループや EC2 フリートで総容量を決める</span></div>
+    </div>
+    <div class="stack">
+      <div class="box b4">配分戦略<span>price-capacity-optimized（価格とキャパシティの両方）</span></div>
+      <div class="box b1">場所を探す<span>スポットプレースメントスコアで、確保しやすいリージョンと AZ を見つける</span></div>
+      <div class="box b2">時間に柔軟なら<span>中断で終了ではなく、停止や休止にする</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/spot-best-practices.html">Amazon EC2 スポットのベストプラクティス</a>（「スポットインスタンス はステートレスかつフォールトトレラントで、柔軟性の高いアプリケーションに適しています。」「一般的に、ワークロードごとに少なくとも 10 種類のインスタンスタイプに柔軟に対応できれば十分です。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/using-spot-instances.html">スポットインスタンス</a>（「スポットインスタンス はアプリケーションを実行する時間に柔軟性がある場合や、アプリケーションを中断できる場合に、費用効率の高い選択肢です。」）</div>
+</section>
+
+<section class="slide">
+  <h1>混合インスタンスグループ：ベースと割合</h1>
+  <svg width="856" height="150" viewBox="0 0 856 150">
+    <g font-size="11" text-anchor="middle">
+      <text x="300" y="18" fill="#1f3a68" font-weight="700">ベース 2 台・ベースを超える分のオンデマンドの割合 30%（Claude の例）で 12 台にしたとき</text>
+      <g fill="#1f3a68"><rect x="20" y="32" width="54" height="40" rx="4"/><rect x="80" y="32" width="54" height="40" rx="4"/></g>
+      <text x="77" y="92" fill="#1f3a68" font-weight="700">ベース 2 台</text><text x="77" y="108" fill="#1f3a68">先に起動</text>
+      <g fill="#1f5fa8"><rect x="160" y="32" width="54" height="40" rx="4"/><rect x="220" y="32" width="54" height="40" rx="4"/><rect x="280" y="32" width="54" height="40" rx="4"/></g>
+      <text x="247" y="92" fill="#1f5fa8">オンデマンド 3 台</text><text x="247" y="108" fill="#1f5fa8">（10 台の 30%）</text>
+      <g fill="#b25000"><rect x="350" y="32" width="54" height="40" rx="4"/><rect x="410" y="32" width="54" height="40" rx="4"/><rect x="470" y="32" width="54" height="40" rx="4"/><rect x="530" y="32" width="54" height="40" rx="4"/><rect x="590" y="32" width="54" height="40" rx="4"/><rect x="650" y="32" width="54" height="40" rx="4"/><rect x="710" y="32" width="54" height="40" rx="4"/></g>
+      <text x="557" y="92" fill="#b25000">スポット 7 台（10 台の 70%）</text>
+      <line x1="150" y1="26" x2="150" y2="116" stroke="#4a5a78" stroke-dasharray="4 3"/>
+      <text x="428" y="138" fill="#4a5a78">オンデマンドの部分には RI や Savings Plans の割引も付く</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:30%">スポットの配分戦略</th><th>どう選ぶか</th></tr>
+    <tr><td class="t">price-capacity-optimized</td><td class="l">価格とキャパシティの両方を見て、中断されにくく、できるだけ安いプール。使い始めのおすすめ</td></tr>
+    <tr><td class="t">capacity-optimized</td><td class="l">起動するインスタンスの数に対して、最適なキャパシティを持つプール</td></tr>
+    <tr><td class="t">capacity-optimized-prioritized</td><td class="l">キャパシティを優先しつつ、インスタンスタイプの優先順位をできるだけ守る</td></tr>
+    <tr><td class="t">lowest-price</td><td class="l">最も安いプール。中断のリスクが非常に高く、勧められていない（AWS CLI でだけ使える）</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/mixed-instances-groups-set-up-overview.html">混合インスタンスグループを作成するための設定の概要</a>（「ベースキャパシティーを超える場合、オンデマンドインスタンスの割合を使用して、起動するオンデマンドインスタンスとスポットインスタンスの数が決まります。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/autoscaling/ec2/userguide/allocation-strategies.html">複数のインスタンスタイプの配分戦略</a>（「使用を開始する際には、この戦略をお勧めします。」「スポットインスタンスの中断リスクが非常に高いため、lowest-price 戦略はお勧めしません。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Fargate Spot</h1>
+  <svg width="856" height="140" viewBox="0 0 856 140">
+    <defs><marker id="a3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="20" width="200" height="100" rx="10" fill="#f6f8fb" stroke="#4a5a78"/><text x="110" y="42" fill="#4a5a78" font-weight="700">ECS サービス・タスク</text><text x="110" y="70">キャパシティプロバイダー戦略</text><text x="110" y="92">（ベースとウェイト）</text>
+      <rect x="300" y="14" width="230" height="50" rx="8" fill="#1f5fa8"/><text x="415" y="36" fill="#fff" font-weight="700">FARGATE</text><text x="415" y="52" fill="#fff">ふつうの料金・中断なし</text>
+      <rect x="300" y="78" width="230" height="50" rx="8" fill="#b25000"/><text x="415" y="100" fill="#fff" font-weight="700">FARGATE_SPOT</text><text x="415" y="116" fill="#fff">予備のキャパシティ・割引</text>
+      <line x1="210" y1="60" x2="298" y2="40" stroke="#1f3a68" stroke-width="2" marker-end="url(#a3)"/><line x1="210" y1="80" x2="298" y2="102" stroke="#1f3a68" stroke-width="2" marker-end="url(#a3)"/>
+      <rect x="610" y="78" width="236" height="50" rx="8" fill="#fde7cf" stroke="#b25000"/><text x="728" y="100" fill="#b25000" font-weight="700">2 分間の警告 → タスク停止</text><text x="728" y="116">状態の変化は EventBridge へ</text>
+      <line x1="530" y1="103" x2="608" y2="103" stroke="#1f3a68" stroke-width="2" marker-end="url(#a3)"/>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>使いどころ：</b>中断してもやり直せる ECS タスク（バッチ・集計など）を、サーバーを管理せずに安く動かす。サービスのうち一部だけを Fargate Spot にすることもできる。</div>
+    <div class="point warn"><b>ひっかけ：</b>EC2 Instance Savings Plans や RI は Fargate には付かない。Fargate に付く約束の割引は Compute Savings Plans。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/fargate-capacity-providers.html">Fargate 用の Amazon ECS クラスター</a>（「Fargate Spot を使用すると、割り込み許容のある Amazon ECS タスクを、Fargate 料金と比較して割引料金で実行できます。」「AWS がキャパシティを戻す必要がある場合、タスクは中断され、2 分間の警告が表示されます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/savingsplans/latest/userguide/plan-types.html">Savings Plans のタイプ</a>（「また、Fargate と Lambda の使用にも適用されます。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>適切なサイズとサーバーレス・データベースのコスト</h1>
+  <p>Compute Optimizer で大きすぎるリソースを見つける。T インスタンスと CPU クレジット、Lambda の arm64、リザーブド DB インスタンス、Aurora serverless。</p>
+  <div class="foot"><span>AWS SAA #22 料金と購入オプション</span><span>タスク 4.2・4.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>AWS Compute Optimizer：適切なサイズを推奨する</h1>
+  <svg width="856" height="150" viewBox="0 0 856 150">
+    <defs><marker id="a4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="20" width="220" height="110" rx="10" fill="#f6f8fb" stroke="#4a5a78"/><text x="120" y="42" fill="#4a5a78" font-weight="700">使用率のメトリクス</text><text x="120" y="68">CPU 使用率 5%（Claude の例）</text><text x="120" y="90">m5.2xlarge</text><text x="120" y="112">設定と使用率を分析</text>
+      <rect x="320" y="40" width="200" height="70" rx="8" fill="#1f3a68"/><text x="420" y="66" fill="#fff" font-weight="700">Compute Optimizer</text><text x="420" y="86" fill="#fff">オプトインして使う</text>
+      <rect x="610" y="20" width="236" height="50" rx="8" fill="#3a7d44"/><text x="728" y="42" fill="#fff" font-weight="700">適切なサイズの推奨</text><text x="728" y="58" fill="#fff">小さいサイズへ（ライトサイジング）</text>
+      <rect x="610" y="80" width="236" height="50" rx="8" fill="#b25000"/><text x="728" y="102" fill="#fff" font-weight="700">アイドル状態のリソース</text><text x="728" y="118" fill="#fff">使っていないものを見つける</text>
+      <line x1="230" y1="75" x2="318" y2="75" stroke="#1f3a68" stroke-width="2" marker-end="url(#a4)"/><line x1="520" y1="68" x2="608" y2="46" stroke="#1f3a68" stroke-width="2" marker-end="url(#a4)"/><line x1="520" y1="84" x2="608" y2="104" stroke="#1f3a68" stroke-width="2" marker-end="url(#a4)"/>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:30%">推奨の対象</th><th>例</th></tr>
+    <tr><td class="t">コンピューティング</td><td class="l">EC2 インスタンス・EC2 Auto Scaling グループ・Lambda 関数・Fargate の ECS サービス</td></tr>
+    <tr><td class="t">ストレージ・データベース</td><td class="l">EBS ボリューム・Aurora と RDS のデータベース</td></tr>
+    <tr><td class="t">そのほか</td><td class="l">商用ソフトウェアのライセンス</td></tr>
+  </table>
+  <div class="point warn"><b>ひっかけ：</b>「サイズが大きすぎないか」は Compute Optimizer。「Savings Plans をいくら約束するか」は Cost Explorer のレコメンデーション（#23）。組織の管理アカウントでオプトインすると、複数のアカウントの結果も見られる。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/compute-optimizer/latest/ug/what-is-compute-optimizer.html">AWS Compute Optimizer とは</a>（「AWS Compute Optimizerは、リソースの設定と使用率のAWSメトリクスを分析して、適切なサイズのレコメンデーションを提供し、アイドル状態のリソースを特定するサービスです。」「Compute Optimizer でAWSリソースを分析するには、オプトインする必要があります。」）</div>
+</section>
+
+<section class="slide">
+  <h1>T インスタンスと CPU クレジット</h1>
+  <svg width="856" height="160" viewBox="0 0 856 160">
+    <g font-size="11" text-anchor="middle">
+      <line x1="40" y1="140" x2="820" y2="140" stroke="#4a5a78"/><line x1="40" y1="20" x2="40" y2="140" stroke="#4a5a78"/>
+      <text x="30" y="24" text-anchor="end" fill="#4a5a78">CPU</text>
+      <line x1="40" y1="98" x2="820" y2="98" stroke="#3a7d44" stroke-width="2" stroke-dasharray="6 4"/><text x="790" y="92" fill="#3a7d44" font-weight="700">ベースライン</text>
+      <path d="M40,124 L140,122 L200,126 L240,40 L300,36 L330,124 L460,120 L520,128 L560,44 L610,40 L640,122 L760,124 L820,120" fill="none" stroke="#1f5fa8" stroke-width="2.5"/>
+      <rect x="60" y="104" width="130" height="18" rx="4" fill="#e8f3ea"/><text x="125" y="117" fill="#3a7d44">下回る → クレジットを貯める</text>
+      <rect x="196" y="16" width="150" height="18" rx="4" fill="#fde7cf"/><text x="271" y="29" fill="#b25000">上回る → クレジットを使う</text>
+      <text x="585" y="30" fill="#4a5a78">始業時だけ高い（Claude の例）</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%">クレジットがなくなったら</th><th>スタンダードモード</th><th>Unlimited モード</th></tr>
+    <tr><td class="t">CPU</td><td>徐々にベースラインまで下がる</td><td>余剰クレジットでバーストを続ける</td></tr>
+    <tr><td class="t">料金</td><td>増えない</td><td>24 時間の平均がベースラインを超えた分に、vCPU 時間あたりの追加料金</td></tr>
+  </table>
+  <div class="point"><b>目安：</b>t3.large のベースラインは 30%。24 時間の平均が 40% なら、超えた 10% 分に追加料金。T3 が 100% で動き続けると、同じサイズの M5 の約 1.5 倍の料金になるので、ずっと高い CPU を使うなら固定性能のインスタンスにする。T4g・T3a・T3 がある（T2 は旧世代）。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/burstable-credits-baseline-concepts.html">バーストパフォーマンスインスタンスに関する主要な概念</a>（「蓄積されたクレジットに残額がない場合、インスタンスは CPU 使用率を徐々にベースラインまで低下させ、より多くのクレジットが蓄積されるまで、ベースラインを超えてバーストすることはできなくなります。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/burstable-performance-instances-unlimited-mode-concepts.html">バーストインスタンスの無制限モードの概念</a>（「T3 インスタンスが 100% CPU で継続的にバーストする場合、同等サイズの M5 インスタンスの約 1.5 倍の価格を支払うことになります。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Lambda の arm64 とリザーブド DB インスタンス</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">Lambda の命令セットアーキテクチャ</div>
+      <table class="mx">
+        <tr><th style="width:30%"></th><th>arm64</th><th>x86_64</th></tr>
+        <tr><td class="t">プロセッサ</td><td>AWS Graviton2</td><td>x86 ベース</td></tr>
+        <tr><td class="t">料金と性能</td><td>大幅によい</td><td>—</td></tr>
+        <tr><td class="t">条件</td><td>コードと依存ライブラリが arm64 で動く</td><td>—</td></tr>
+      </table>
+      <div class="mini">ほとんどのリージョンで使える。Lambda の約束の割引は Compute Savings Plans（RI や EC2 Instance Savings Plans は付かない）。</div>
+    </div>
+    <div>
+      <div class="lbl">サイズ柔軟なリザーブド DB インスタンス</div>
+      <svg width="410" height="110" viewBox="0 0 410 110">
+        <g font-size="11" text-anchor="middle">
+          <rect x="10" y="20" width="150" height="60" rx="6" fill="#1f3a68"/><text x="85" y="46" fill="#fff" font-weight="700">large × 1</text><text x="85" y="64" fill="#fff">単位 4</text>
+          <text x="200" y="56" fill="#1f3a68" font-weight="700">＝</text>
+          <rect x="240" y="20" width="76" height="60" rx="6" fill="#1f5fa8"/><text x="278" y="46" fill="#fff">medium</text><text x="278" y="64" fill="#fff">単位 2</text>
+          <rect x="324" y="20" width="76" height="60" rx="6" fill="#1f5fa8"/><text x="362" y="46" fill="#fff">medium</text><text x="362" y="64" fill="#fff">単位 2</text>
+          <text x="205" y="100" fill="#4a5a78">同じインスタンスクラスタイプの中だけ</text>
+        </g>
+      </svg>
+      <div class="mini">1 年か 3 年の予約。リージョン・DB エンジン・インスタンスのタイプが同じ DB インスタンスに割引（エンジンのバージョンは違ってよい）。マルチ AZ にもシングル AZ にも付く。SQL Server と Oracle のライセンス込みはサイズの柔軟性なし。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/foundation-arch.html">Lambda 関数の命令セットアーキテクチャの選択と設定</a>（「arm64 アーキテクチャ (AWS Graviton2 プロセッサ) を使用するLambda 関数は、x86_64 アーキテクチャで実行される同等の関数よりも大幅に優れた料金とパフォーマンスを実現します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/USER_WorkingWithReservedDBInstances.html">Amazon RDS 向けリザーブド DB インスタンス</a>（「リザーブド DB インスタンスの利点はマルチ AZ およびシングル AZ の両設定に適用されます。」「サイズの柔軟性は、RDS for SQL Server および RDS for Oracle ライセンス込みには適用されません。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Aurora serverless と Database Savings Plans</h1>
+  <svg width="856" height="150" viewBox="0 0 856 150">
+    <g font-size="11" text-anchor="middle">
+      <line x1="50" y1="130" x2="830" y2="130" stroke="#4a5a78"/><line x1="50" y1="14" x2="50" y2="130" stroke="#4a5a78"/>
+      <text x="44" y="20" text-anchor="end" fill="#4a5a78">ACU</text><text x="44" y="134" text-anchor="end" fill="#4a5a78">0</text>
+      <path d="M50,130 L150,130 L170,90 L210,60 L250,40 L300,70 L340,96 L380,130 L520,130 L540,100 L580,74 L620,56 L660,90 L700,130 L830,130" fill="#e3eefc" stroke="#1f5fa8" stroke-width="2.5"/>
+      <text x="100" y="120" fill="#b25000">夜：0 ACU</text><text x="450" y="120" fill="#b25000">夜：0 ACU</text><text x="765" y="120" fill="#b25000">週末：0 ACU</text>
+      <text x="250" y="30" fill="#1f5fa8">日中：負荷に合わせて増減</text><text x="620" y="46" fill="#1f5fa8">0.5 ACU 単位で細かく</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>Aurora serverless：</b>最小と最大の容量（ACU）を決めると、その範囲で自動で増減する。0 ACU から 256 ACU まで。最小を 0 ACU にすると、ワークロードがないときは 0 まで下がる。負荷の差が大きい・読めない・開発やテストに向く。安定した負荷はプロビジョン済みのクラスター。</div>
+    <div class="point"><b>Database Savings Plans：</b>Aurora・RDS・DynamoDB・ElastiCache などをまとめて最大 35% 割り引く。エンジン・ファミリー・サイズ・AZ・リージョンに関係なく適用され、RDS for Oracle から Aurora PostgreSQL 互換エディションへ移しても続く。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.how-it-works.html">Aurora serverless の仕組み</a>（「Aurora serverless は、0 ACU から 256 ACU までの容量を提供します。」「最小容量が 0 ACU の場合、ワークロードが実行されていないときは、クラスターは 0 にスケールされます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/savingsplans/latest/userguide/plan-types.html">Savings Plans のタイプ</a>（「Database Savings Plans は、Aurora、RDS、DynamoDB、ElastiCache、DocumentDB、Timestream、Neptune、Keyspaces、DMS、Amazon OpenSearch Service のコストを最大 35% 削減しながら、 AWS データベースサービスを使用する柔軟性を提供します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">約束して割り引く<span>Savings Plans（Compute 66%・EC2 Instance 72%・Database 35%）、RI（スタンダード・コンバーティブル、リージョン・ゾーン）、リザーブド DB インスタンス</span></div>
+      <div class="box b2">空きを安く使う<span>スポット（2 分前の通知・再調整の推奨・終了がデフォルト）、混合インスタンスグループ、price-capacity-optimized、Fargate Spot</span></div>
+      <div class="box b3">押さえる・専用にする<span>キャパシティ予約（オンデマンドと同じ料金）、ゾーン RI、専有ホスト（BYOL）、ハードウェア専有インスタンス</span></div>
+      <div class="box b4">ちょうどよくする<span>Compute Optimizer、T インスタンス、Lambda の arm64、Aurora serverless（0 ACU）</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:54%">ひっかけ</th><th>正しくは</th></tr>
+        <tr><td class="l">Savings Plans で AZ のキャパシティを予約</td><td class="x">ゾーン RI・キャパシティ予約</td></tr>
+        <tr><td class="l">スタンダード RI を交換する</td><td class="x">Marketplace で売る</td></tr>
+        <tr><td class="l">Fargate に EC2 Instance SP</td><td class="x">Compute SP</td></tr>
+        <tr><td class="l">スポットの配分を lowest-price</td><td class="x">price-capacity-optimized</td></tr>
+        <tr><td class="l">ゾーン RI の割引をキャパシティ予約に</td><td class="x">リージョン RI・SP</td></tr>
+        <tr><td class="l">コア単位のライセンスにハードウェア専有</td><td class="x">専有ホスト</td></tr>
+      </table>
+      <div class="point">次の #23 では、コストの見える化と管理（Cost Explorer・Budgets・タグなど）を学ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

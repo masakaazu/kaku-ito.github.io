@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Silver #01 プログラムの実行とパッケージ 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">Java Silver（SE 17・1Z0-825-JPN）　1 Java の概要と簡単なJavaプログラムの作成　#01</div>
+  <h1>プログラムの実行とパッケージ</h1>
+  <p>.java から .class へ、JVM で動くまで ― main メソッドとコマンドライン引数、javac と java の打ち方、クラスパス、ソースファイルモード、パッケージ宣言とインポート</p>
+  <div class="refs-legend">各ページの下に、根拠にした Oracle・OpenJDK の資料を書いた（青い文字を押すと開く）。コードは Claude が作り、JDK 17 で動かして確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>試験内容チェックリスト 1</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 Java のしくみ<span>ソースファイル・javac・クラスファイル・バイトコード・JVM・JDK</span></div>
+      <div class="box b2">2 main メソッドとコマンドライン引数<span>public static void main(String[] args)、起動できない形、args の中身</span></div>
+      <div class="box b3">3 コンパイルと実行<span>javac・java、-d、クラスパス（-cp）、完全修飾名、ソースファイルモード</span></div>
+      <div class="box b4">4 パッケージとソースファイルの決まり<span>package 宣言、並び順、public クラスとファイル名</span></div>
+      <div class="box b5">5 インポート<span>単一型・オンデマンド・static、java.lang の自動インポート、名前のぶつかり</span></div>
+    </div>
+    <div>
+      <div class="cap">Hello が表示されるまで（Claude が作成）</div>
+      <svg width="400" height="232" viewBox="0 0 400 232">
+        <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5b80bf"/></marker></defs>
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="14" width="110" height="56" rx="8" fill="#eef2f8" stroke="#1f3a68"/>
+          <text x="65" y="38" fill="#1f3a68" font-weight="700">Hello.java</text>
+          <text x="65" y="56" fill="#4a5a78" font-size="10.5">人が書く</text>
+          <line x1="122" y1="42" x2="270" y2="42" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/>
+          <text x="196" y="34" fill="#1f3a68" font-weight="700">javac Hello.java</text>
+          <text x="196" y="60" fill="#4a5a78" font-size="10.5">コンパイル（文法・型を検査）</text>
+          <rect x="278" y="14" width="112" height="56" rx="8" fill="#1f3a68"/>
+          <text x="334" y="38" fill="#fff" font-weight="700">Hello.class</text>
+          <text x="334" y="56" fill="#dfe7f3" font-size="10.5">バイトコード</text>
+          <line x1="334" y1="72" x2="334" y2="116" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar)"/>
+          <text x="262" y="100" fill="#1f3a68" font-weight="700">java Hello</text>
+          <rect x="10" y="124" width="380" height="56" rx="8" fill="#5b80bf"/>
+          <text x="200" y="148" fill="#fff" font-weight="700">JVM が読み込み、main を呼ぶ</text>
+          <text x="200" y="166" fill="#eef2f8" font-size="10.5">同じ .class が Windows でも Linux でも macOS でも動く</text>
+          <text x="200" y="208" fill="#4a5a78" font-size="11">JDK 11 からは java Hello.java で 1 回にまとめられる（第3章）</text>
+        </g>
+      </svg>
+      <div class="point"><b>芯：</b>javac には<b>ファイル名</b>、java には<b>クラス名</b>を渡す。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.oracle.com/jp/education/certification/javase-17-programmer-1/">Oracle「Java SE 17 Programmer I（1Z0-825-JPN）」試験内容チェックリスト</a>（mainメソッドを持つ実行可能なJavaプログラムの作成／コマンドラインでのJavaプログラムのコンパイルと実行／パッケージの使用）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javac.html">javac ドキュメント（JDK 17）</a>（compiles them into class files that run on the Java Virtual Machine）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>Java のしくみ</h1>
+  <p>CPU ではなく、JVM のために翻訳する。</p>
+  <div class="foot"><span>Java Silver #01 プログラムの実行とパッケージ</span><span>試験内容 1</span></div>
+</section>
+
+<section class="slide">
+  <h1>ソース・クラスファイル・JVM・JDK</h1>
+  <div class="cols wide-r">
+    <div>
+      <div class="cap">道具とファイルの関係（Claude が作成）</div>
+      <svg width="380" height="262" viewBox="0 0 380 262">
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="6" y="6" width="368" height="250" rx="10" fill="#fff" stroke="#1f3a68" stroke-dasharray="5 4"/>
+          <text x="190" y="26" fill="#1f3a68" font-weight="700">JDK（開発の道具一式）</text>
+          <rect x="22" y="40" width="150" height="52" rx="8" fill="#1f3a68"/>
+          <text x="97" y="62" fill="#fff" font-weight="700">javac</text>
+          <text x="97" y="79" fill="#dfe7f3" font-size="10">.java → .class</text>
+          <rect x="208" y="40" width="150" height="52" rx="8" fill="#2f5596"/>
+          <text x="283" y="62" fill="#fff" font-weight="700">java（ランチャー）</text>
+          <text x="283" y="79" fill="#dfe7f3" font-size="10">JVM を起動して main を呼ぶ</text>
+          <rect x="22" y="110" width="336" height="64" rx="8" fill="#c9daf2"/>
+          <text x="190" y="134" fill="#1f3a68" font-weight="700">JVM（Java 仮想マシン）</text>
+          <text x="190" y="152" fill="#1f3a68" font-size="10.5">知っているのはクラスファイルの形式だけ</text>
+          <text x="190" y="166" fill="#1f3a68" font-size="10.5">（Java 言語の文法は知らない）</text>
+          <rect x="22" y="190" width="336" height="50" rx="8" fill="#e8eef8" stroke="#c9daf2"/>
+          <text x="190" y="211" fill="#1f3a68" font-weight="700">JRE ＝ 動かすだけの部分（JDK の一部）</text>
+          <text x="190" y="228" fill="#4a5a78" font-size="10.5">コンパイルはできない。OpenJDK・Oracle はもう別に配らない</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:26%">もの</th><th>中身・役目</th></tr>
+        <tr><td class="t">.java</td><td class="l">ソースファイル。人が Java の文法で書く。javac は拡張子 .java しか受け付けない</td></tr>
+        <tr><td class="t">.class</td><td class="l">クラスファイル。<b>バイトコード</b>（JVM の命令）と記号表。<b>クラスごとに 1 つ</b>できる</td></tr>
+        <tr><td class="t">JVM</td><td class="l">クラスファイルを動かす仮想の計算機。OS・CPU のちがいを吸収する</td></tr>
+        <tr><td class="t">JDK</td><td class="l">javac・java などの道具一式。「Java を入れる」＝JDK を入れる</td></tr>
+      </table>
+      <div class="point"><b>まちがえやすい：</b>バイトコードは CPU の<b>機械語ではない</b>。JVM は「必ずインタプリタ」でもない（CPU の命令に翻訳して動かしてもよい）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-1.html">JVMS（Java SE 17）1.2</a>（The Java Virtual Machine knows nothing of the Java programming language, only of a particular binary format, the class file format／It is not inherently interpreted）／<a class="src" href="https://dev.java/learn/first-steps/first-java-code/getting-started/">dev.java「Getting Started with Java」</a>（The JRE … is a subset of the JDK that is not distributed by the OpenJDK or Oracle anymore／You cannot compile your code with the tools provided in the JRE）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javac.html">javac ドキュメント</a>（Source files must have a file name extension of .java）</div>
+</section>
+
+<section class="slide">
+  <h1>エラーが見つかるのは、いつか</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">Hello.java（Claude が作成）</div>
+<pre class="code"><span class="k">public class</span> Hello {
+  <span class="k">public static void</span> main(String[] args) {
+    System.out.println(args.length + <span class="s">":"</span> + args[0]);
+  }
+}</pre>
+      <div class="lbl" style="margin-top:10px">JDK 17 で動かした結果</div>
+<pre class="sh"><span class="p">$ javac Hello.java</span>        <span class="c">← 何も出ない＝成功</span>
+<span class="p">$ java Hello a b c</span>
+<span class="o">3:a</span>
+<span class="p">$ java Hello</span>
+<span class="e">Exception in thread "main"
+java.lang.ArrayIndexOutOfBoundsException:
+Index 0 out of bounds for length 0</span></pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">いつ</th><th>例</th></tr>
+        <tr><td class="t">コンパイル時<br>（javac）</td><td class="l">文法の誤り・見つからないクラス・あいまいな名前・public クラスとファイル名の不一致。<b>.class ができない</b></td></tr>
+        <tr><td class="t">起動時<br>（java）</td><td class="l">メインクラスが見つからない・main の形がちがう（static がない など）</td></tr>
+        <tr><td class="t">実行中</td><td class="l">配列の範囲外など。<b>例外</b>として知らされる（#13）</td></tr>
+      </table>
+      <div class="point"><b>本番の選択肢：</b>「コンパイルエラー」「実行時に例外がスローされる」「〇〇と表示される」が並ぶ。<b>どの段階で止まるか</b>を先に考える。左の例は、javac は引数の個数を知らないので<b>コンパイルは通る</b>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-12.html">JLS（Java SE 17）12.1</a>（passing it a single argument which is an array of strings）／実行結果は JDK 17（Eclipse Temurin 17.0.21）で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>main メソッドとコマンドライン引数</h1>
+  <p>public・static・void・String の配列。どれが欠けても入口にならない。</p>
+  <div class="foot"><span>Java Silver #01 プログラムの実行とパッケージ</span><span>試験内容 1</span></div>
+</section>
+
+<section class="slide">
+  <h1>main の形を分解する</h1>
+  <svg width="856" height="150" viewBox="0 0 856 150">
+    <g font-family="DejaVu Sans Mono, monospace" font-size="22" text-anchor="middle">
+      <rect x="20" y="52" width="96" height="40" rx="6" fill="#1f3a68"/><text x="68" y="79" fill="#fff">public</text>
+      <rect x="124" y="52" width="96" height="40" rx="6" fill="#2f5596"/><text x="172" y="79" fill="#fff">static</text>
+      <rect x="228" y="52" width="72" height="40" rx="6" fill="#5b80bf"/><text x="264" y="79" fill="#fff">void</text>
+      <rect x="308" y="52" width="72" height="40" rx="6" fill="#c9daf2"/><text x="344" y="79" fill="#1f3a68">main</text>
+      <text x="394" y="79" fill="#1d1d1f">(</text>
+      <rect x="406" y="52" width="130" height="40" rx="6" fill="#fde7cf"/><text x="471" y="79" fill="#7a3a00">String[]</text>
+      <rect x="544" y="52" width="72" height="40" rx="6" fill="#eef2f8" stroke="#c9daf2"/><text x="580" y="79" fill="#1f3a68">args</text>
+      <text x="630" y="79" fill="#1d1d1f">)</text>
+    </g>
+    <g font-size="11.5" text-anchor="middle" fill="#1f3a68">
+      <text x="68" y="40">どこからでも呼べる</text>
+      <text x="172" y="112">インスタンスなしで</text><text x="172" y="127">呼べる</text>
+      <text x="264" y="40">値を返さない</text>
+      <text x="344" y="112">名前は小文字の</text><text x="344" y="127">main だけ</text>
+      <text x="471" y="40">String の配列（必須）</text>
+      <text x="580" y="112">名前は自由</text>
+    </g>
+    <g font-size="12" fill="#4a5a78"><text x="660" y="60">同じ意味で書ける形</text>
+      <text x="660" y="80" font-family="DejaVu Sans Mono, monospace" font-size="11.5">String... args</text>
+      <text x="660" y="98" font-family="DejaVu Sans Mono, monospace" font-size="11.5">String args[]</text>
+      <text x="660" y="116" font-family="DejaVu Sans Mono, monospace" font-size="11.5">final String[] a</text>
+      <text x="660" y="134" font-family="DejaVu Sans Mono, monospace" font-size="11.5">static public …</text></g>
+  </svg>
+  <div class="cols" style="margin-top:6px">
+    <div class="point" style="margin-top:0"><b>JLS 12.1.4：</b>main は public・static・void で、型が「String の配列」の引数を 1 つ持つ。<code>String[] args</code> と <code>String... args</code>（可変長引数）のどちらでもよい。</div>
+    <div class="point" style="margin-top:0"><b>修飾子の順番は自由：</b><code>static public</code> でもよい。<code>final</code> を足してもよい。ただし<b>大文字の Main</b> は別の名前で、入口にならない（Java は大文字と小文字を区別する）。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-12.html">JLS 12.1.4 Invoke Test.main</a>（The method main must be declared public, static, and void. It must specify a formal parameter whose declared type is array of String／public static void main(String... args)）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/java.html">java ドキュメント（JDK 17）</a> Description（it must not return any value, and it must accept a String array as a parameter）</div>
+</section>
+
+<section class="slide">
+  <h1>起動できる main・できない main</h1>
+  <table class="mx">
+    <tr><th style="width:45%">A.java の main の宣言</th><th style="width:9%">javac</th><th style="width:10%">java A</th><th>JDK 17 の表示・理由</th></tr>
+    <tr><td class="l"><code>public static void main(String[] args)</code></td><td>OK</td><td class="t">起動</td><td class="l">標準の形</td></tr>
+    <tr><td class="l"><code>static public void main(String args[])</code></td><td>OK</td><td class="t">起動</td><td class="l">順番と [] の位置は自由</td></tr>
+    <tr><td class="l"><code>public static final void main(final String... a)</code></td><td>OK</td><td class="t">起動</td><td class="l">final・可変長引数・名前の変更は OK</td></tr>
+    <tr><td class="l"><code>public void main(String[] args)</code></td><td>OK</td><td class="x">失敗</td><td class="l">Main method is not static in class A</td></tr>
+    <tr><td class="l"><code>static void main(String[] args)</code></td><td>OK</td><td class="x">失敗</td><td class="l">Main method not found in class A（public がない）</td></tr>
+    <tr><td class="l"><code>public static int main(String[] args)</code></td><td>OK※</td><td class="x">失敗</td><td class="l">Main method must return a value of type void</td></tr>
+    <tr><td class="l"><code>public static void main(String args)</code></td><td>OK</td><td class="x">失敗</td><td class="l">Main method not found（配列でない）</td></tr>
+    <tr><td class="l"><code>public static void Main(String[] args)</code></td><td>OK</td><td class="x">失敗</td><td class="l">Main method not found（名前がちがう）</td></tr>
+  </table>
+  <div class="point"><b>ポイント：</b>形のちがう main も<b>ふつうのメソッドとしては正しい</b>ので、コンパイルは通る。止まるのは <b>java で起動したとき</b>。※ int を返すなら <code>return 0;</code> が必要（ないと missing return statement）。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-12.html">JLS 12.1.4</a>／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/java.html">java ドキュメント</a> Description（The method must be declared public and static, it must not return any value）／表示は JDK 17（Temurin 17.0.21）で 1 つずつ確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>コマンドライン引数は args に入る</h1>
+  <div class="cols wide-r">
+    <div>
+      <div class="cap">java Hello a b c のとき（Claude が作成）</div>
+      <svg width="380" height="190" viewBox="0 0 380 190">
+        <g font-size="13" text-anchor="middle" font-family="DejaVu Sans Mono, monospace">
+          <rect x="10" y="14" width="66" height="36" rx="6" fill="#eef2f8" stroke="#c9daf2"/><text x="43" y="37" fill="#4a5a78">java</text>
+          <rect x="82" y="14" width="76" height="36" rx="6" fill="#c9daf2"/><text x="120" y="37" fill="#1f3a68">Hello</text>
+          <rect x="176" y="14" width="56" height="36" rx="6" fill="#1f3a68"/><text x="204" y="37" fill="#fff">a</text>
+          <rect x="240" y="14" width="56" height="36" rx="6" fill="#2f5596"/><text x="268" y="37" fill="#fff">b</text>
+          <rect x="304" y="14" width="56" height="36" rx="6" fill="#5b80bf"/><text x="332" y="37" fill="#fff">c</text>
+          <line x1="204" y1="52" x2="204" y2="96" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="268" y1="52" x2="268" y2="96" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="332" y1="52" x2="332" y2="96" stroke="#5b80bf" stroke-width="2"/>
+          <rect x="176" y="98" width="56" height="36" fill="#fff" stroke="#1f3a68"/><text x="204" y="121" fill="#1f3a68">"a"</text>
+          <rect x="240" y="98" width="56" height="36" fill="#fff" stroke="#1f3a68"/><text x="268" y="121" fill="#1f3a68">"b"</text>
+          <rect x="304" y="98" width="56" height="36" fill="#fff" stroke="#1f3a68"/><text x="332" y="121" fill="#1f3a68">"c"</text>
+        </g>
+        <g font-size="11" text-anchor="middle" fill="#4a5a78">
+          <text x="120" y="70">クラス名は</text><text x="120" y="85">配列に入らない</text>
+          <text x="204" y="152">args[0]</text><text x="268" y="152">args[1]</text><text x="332" y="152">args[2]</text>
+          <text x="268" y="178" fill="#1f3a68" font-weight="700">args.length は 3</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:40%">打ったコマンド（bash）</th><th>args の中身</th></tr>
+        <tr><td class="l"><code>java Hello a b c</code></td><td class="l">"a"・"b"・"c"（3 つ）</td></tr>
+        <tr><td class="l"><code>java Hello "a b" c</code></td><td class="l">"a b"・"c"（2 つ。引用符はシェルが外す）</td></tr>
+        <tr><td class="l"><code>java Hello 10 20</code></td><td class="l">"10"・"20"（数字も<b>String</b>）</td></tr>
+        <tr><td class="l"><code>java Hello</code></td><td class="l"><b>長さ 0 の配列</b>（null ではない）</td></tr>
+      </table>
+      <div class="point warn"><b>C 言語とのちがい：</b>argv[0] にプログラム名が入る C とちがい、Java の args[0] は<b>最初の引数</b>。JLS 12.1 の例 <code>java Test reboot Bob Dot Enzo</code> では、配列は 4 つの文字列。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-12.html">JLS 12.1</a>（java Test reboot Bob Dot Enzo will typically start a Java Virtual Machine by invoking method main of class Test … passing it an array containing the four strings）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/java.html">java ドキュメント</a> Synopsis（Arguments following mainclass … are passed as arguments to the main class）／表の結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>コンパイルと実行</h1>
+  <p>javac にはファイル、java にはクラス。パッケージはディレクトリになる。</p>
+  <div class="foot"><span>Java Silver #01 プログラムの実行とパッケージ</span><span>試験内容 1</span></div>
+</section>
+
+<section class="slide">
+  <h1>javac と java の打ち方</h1>
+  <div class="cols">
+    <div>
+<pre class="sh"><span class="p">$ javac Hello.java</span>
+<span class="p">$ ls</span>
+<span class="o">Hello.class  Hello.java</span>
+<span class="p">$ java Hello a b c</span>
+<span class="o">3:a</span>
+<span class="p">$ java Hello.class</span>
+<span class="e">Error: Could not find or load main class Hello.class
+Caused by: java.lang.ClassNotFoundException: Hello.class</span>
+<span class="p">$ javac Hello</span>
+<span class="e">error: Class names, 'Hello', are only accepted
+if annotation processing is explicitly requested</span>
+<span class="p">$ java hello</span>
+<span class="e">Error: Could not find or load main class hello</span></pre>
+      <div class="mini">JDK 17 で打った結果（Claude が作成した Hello.java）</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">道具</th><th>渡すもの</th></tr>
+        <tr><td class="t">javac</td><td class="l"><b>ファイル名</b>（.java まで書く）。いくつでも並べられる</td></tr>
+        <tr><td class="t">java</td><td class="l"><b>クラス名</b>（.class は付けない）。パッケージがあれば<b>完全修飾名</b></td></tr>
+      </table>
+      <div class="point"><b>Hello.class がだめな理由：</b>java は最初の引数を「完全修飾名」として読む。「.」はパッケージの区切りなので、Hello.class は「Hello パッケージの class クラス」を探す意味になり、見つからない。</div>
+      <div class="point"><b>大文字・小文字：</b>クラス名の Hello と hello は別物。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/java.html">java ドキュメント</a>（java [options] mainclass [args ...]／the first argument that isn't an option of the java command is the fully qualified name of the class to be called）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javac.html">javac ドキュメント</a> Description（Source files must have a file name extension of .java. Class files have a file name extension of .class）</div>
+</section>
+
+<section class="slide">
+  <h1>パッケージはディレクトリになる</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">src/com/example/app/Main.java（Claude が作成）</div>
+<pre class="code small"><span class="k">package</span> com.example.app;
+
+<span class="k">import</span> com.example.util.Greeter;
+
+<span class="k">public class</span> Main {
+  <span class="k">public static void</span> main(String[] args) {
+    System.out.println(Greeter.hello(<span class="s">"Java"</span>));
+  }
+}</pre>
+<pre class="sh" style="margin-top:8px"><span class="p">$ javac -d out src/com/example/util/Greeter.java \
+                src/com/example/app/Main.java</span>
+<span class="p">$ java -cp out com.example.app.Main</span>
+<span class="o">Hello, Java</span>
+<span class="p">$ java -cp out Main</span>
+<span class="e">Error: Could not find or load main class Main</span>
+<span class="p">$ cd out/com/example/app; java Main</span>
+<span class="e">… NoClassDefFoundError: Main (wrong name: com/example/app/Main)</span></pre>
+    </div>
+    <div>
+      <div class="cap">-d out で作られる階層</div>
+<pre class="code small">out/
+└── com/
+    └── example/
+        ├── app/
+        │   └── <b>Main.class</b>      ← com.example.app.Main
+        └── util/
+            └── <b>Greeter.class</b>   ← com.example.util.Greeter</pre>
+      <div class="point"><b>-d：</b>クラスファイルの置き場所。パッケージ名どおりのディレクトリを<b>自動で作る</b>。-d がなければ、ソースファイルと<b>同じディレクトリ</b>にできる。</div>
+      <div class="point"><b>実行：</b>クラスパスには<b>パッケージの根元</b>（out）を書き、クラスは<b>完全修飾名</b>で書く。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javac.html">javac ドキュメント</a> -d（javac puts the class file in a subdirectory that reflects the … package name／If the -d option is not specified, then javac puts each class file in the same directory as the source file）／Arrangement of Source Code（The package p.q … is represented as the subdirectory q of directory p）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>クラスパス ― クラスを探す場所</h1>
+  <div class="cols wide-r">
+    <div>
+      <div class="cap">java -cp out com.example.app.Main の探し方</div>
+      <svg width="380" height="200" viewBox="0 0 380 200">
+        <defs><marker id="ar2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5b80bf"/></marker></defs>
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="12" width="110" height="40" rx="6" fill="#1f3a68"/><text x="65" y="37" fill="#fff" font-weight="700">クラスパス out</text>
+          <text x="190" y="37" fill="#1d1d1f" font-size="18">＋</text>
+          <rect x="216" y="12" width="154" height="40" rx="6" fill="#c9daf2"/><text x="293" y="37" fill="#1f3a68" font-weight="700">com.example.app.Main</text>
+          <line x1="190" y1="58" x2="190" y2="100" stroke="#5b80bf" stroke-width="2" marker-end="url(#ar2)"/>
+          <text x="282" y="84" fill="#4a5a78" font-size="10.5">「.」を「/」に読みかえる</text>
+          <rect x="10" y="108" width="360" height="40" rx="6" fill="#fff" stroke="#1f3a68"/>
+          <text x="190" y="133" fill="#1f3a68" font-family="DejaVu Sans Mono, monospace" font-weight="700">out/com/example/app/Main.class</text>
+          <text x="190" y="176" fill="#4a5a78" font-size="11">-cp も CLASSPATH もなければ、クラスパスは「.」</text>
+          <text x="190" y="193" fill="#4a5a78" font-size="11">（カレントディレクトリ）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:34%">決め方</th><th>中身</th></tr>
+        <tr><td class="t">-cp・-classpath・<br>--class-path</td><td class="l">コマンドで指定。<b>CLASSPATH より優先</b></td></tr>
+        <tr><td class="t">環境変数 CLASSPATH</td><td class="l">-cp がないとき使う。javac ドキュメントは「設定せず -cp で明示」を勧める</td></tr>
+        <tr><td class="t">どちらもない</td><td class="l"><b>カレントディレクトリ（.）</b></td></tr>
+      </table>
+      <table class="mx" style="margin-top:10px">
+        <tr><th style="width:34%">OS</th><th>2 つ以上並べるときの区切り</th></tr>
+        <tr><td class="t">Linux・macOS</td><td class="l"><b>:</b>（例 <code>-cp out:lib/util.jar</code>）</td></tr>
+        <tr><td class="t">Windows</td><td class="l"><b>;</b>（例 <code>-cp out;lib\util.jar</code>）</td></tr>
+      </table>
+      <div class="point"><b>JAR もクラスパスに書ける。</b>ディレクトリ名のあとに <code>*</code> を書くと、その中の .jar をすべて並べたのと同じ（java ドキュメント）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/java.html">java ドキュメント</a> --class-path（Specifying classpath overrides any setting of the CLASSPATH environment variable. If the class path option isn't used and classpath isn't set, then the user class path consists of the current directory (.)／a class path element that contains a base name of an asterisk (*) is considered equivalent to specifying a list of all the files in the directory with the extension .jar）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/javac.html">javac ドキュメント</a>（semicolon ; on Windows, or colon : on other systems／it is recommended that this environment variable should not be set）</div>
+</section>
+
+<section class="slide">
+  <h1>ソースファイルモード（JDK 11〜）</h1>
+  <div class="cols">
+    <div>
+<pre class="sh"><span class="p">$ ls</span>
+<span class="o">Hello.java</span>
+<span class="p">$ java Hello.java p q</span>
+<span class="o">2:p</span>
+<span class="p">$ ls</span>
+<span class="o">Hello.java</span>        <span class="c">← .class は残らない</span></pre>
+      <div class="lbl" style="margin-top:10px">Main.java に 2 つのクラス（Claude が作成）</div>
+<pre class="code small"><span class="k">class</span> T {
+  <span class="k">public static void</span> main(String[] a) { System.out.println(<span class="s">"T"</span>); }
+}
+<span class="k">class</span> Main {
+  <span class="k">public static void</span> main(String[] a) { System.out.println(<span class="s">"Main"</span>); }
+}</pre>
+<pre class="sh" style="margin-top:6px"><span class="p">$ java Main.java</span>
+<span class="o">T</span>                 <span class="c">← 最初に書いたクラスが動く</span></pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:36%">決まり</th><th>中身</th></tr>
+        <tr><td class="t">入り方</td><td class="l">.java のファイルを java に渡す</td></tr>
+        <tr><td class="t">コンパイル</td><td class="l"><b>メモリの上</b>。クラスファイルは作らない</td></tr>
+        <tr><td class="t">動くクラス</td><td class="l">ファイルの<b>最初</b>のトップレベルクラス（ファイル名と合っていなくてよい）</td></tr>
+        <tr><td class="t">ほかのソース</td><td class="l"><b>探さない</b>。別ファイルの B を使うと cannot find symbol</td></tr>
+        <tr><td class="t">引数</td><td class="l">ファイル名のあとの文字列が main に渡る</td></tr>
+      </table>
+      <div class="point"><b>javac とのちがい：</b><code>javac A.java</code> は、A が使う B.java もクラスパスから探してコンパイルし B.class を作る。ソースファイルモードは 1 ファイルだけ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/java.html">java ドキュメント</a> Using Source-File Mode（the source file is compiled into memory／No other source files are found and compiled／The class to be executed is the first top-level class found in the source file）／<a class="src" href="https://openjdk.org/jeps/330">JEP 330: Launch Single-File Source-Code Programs</a>（Release 11）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>パッケージとソースファイルの決まり</h1>
+  <p>package → import → クラス。public は 1 つで、ファイル名と同じ。</p>
+  <div class="foot"><span>Java Silver #01 プログラムの実行とパッケージ</span><span>試験内容 1</span></div>
+</section>
+
+<section class="slide">
+  <h1>ソースファイルの並び順</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">1 つのソースファイル（コンパイル単位）の形</div>
+      <div class="stack" style="margin-top:6px">
+        <div class="box b5">コメント・空白<span>どこに書いてもよい（宣言ではない）</span></div>
+        <div class="box b1">① package 宣言（0 か 1 つ）<span>なければ無名パッケージ</span></div>
+        <div class="box b2">② import 宣言（0 個以上）<span>効くのはこのファイルの中だけ</span></div>
+        <div class="box b3">③ クラス・インタフェースの宣言（0 個以上）<span>public なものは 1 つまで</span></div>
+      </div>
+      <div class="point"><b>JLS 7.3：</b>[PackageDeclaration] {ImportDeclaration} {TopLevelClassOrInterfaceDeclaration}。3 つとも省けるが、<b>順番は変えられない</b>。</div>
+    </div>
+    <div>
+      <div class="lbl">NG の例と JDK 17 の表示</div>
+<pre class="code small"><span class="ng"><span class="k">import</span> java.util.*;</span>
+<span class="ng"><span class="k">package</span> p;</span>           <span class="c">// import のあとに package</span></pre>
+<pre class="sh" style="margin:4px 0 8px"><span class="e">error: class, interface, enum, or record expected</span></pre>
+<pre class="code small"><span class="k">package</span> p;
+<span class="ng"><span class="k">package</span> q;</span>           <span class="c">// 2 つ目の package</span></pre>
+<pre class="sh" style="margin:4px 0 8px"><span class="e">error: class, interface, enum, or record expected</span></pre>
+      <div class="lbl">OK の例</div>
+<pre class="code small"><span class="ok"><span class="c">/* メモ */</span></span>
+<span class="ok"><span class="c">// コメントは package の前でもよい</span></span>
+<span class="k">package</span> p;
+<span class="k">import</span> java.util.*;
+<span class="k">public class</span> T { }</pre>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-7.html">JLS 7.3 Compilation Units</a>（OrdinaryCompilationUnit: [PackageDeclaration] {ImportDeclaration} {TopLevelClassOrInterfaceDeclaration}／A compilation unit that has no package declaration is part of an unnamed package）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-3.html">JLS 3.2</a>（after white space and comments are discarded）</div>
+</section>
+
+<section class="slide">
+  <h1>public クラスとファイル名・トップレベルの修飾子</h1>
+  <table class="mx">
+    <tr><th style="width:38%">ファイルと中身</th><th style="width:22%">javac の結果</th><th>説明</th></tr>
+    <tr><td class="l">T.java に <code>public class T</code></td><td class="t">OK・T.class</td><td class="l">public なクラスはクラス名＋.java のファイルに書く</td></tr>
+    <tr><td class="l">Main.java に <code>public class T</code></td><td class="x">エラー</td><td class="l">class T is public, should be declared in a file named T.java</td></tr>
+    <tr><td class="l">T.java に <code>public class T</code> と <code>public class U</code></td><td class="x">エラー</td><td class="l">public は 1 ファイルに 1 つまで。U でも同じエラー</td></tr>
+    <tr><td class="l">T.java に <code>public class T</code> と <code>class U</code></td><td class="t">OK・T.class と U.class</td><td class="l">public でないクラスは足してよい。main があれば <code>java U</code> も動く</td></tr>
+    <tr><td class="l">Main.java に <code>class T</code> と <code>class Main</code></td><td class="t">OK・T.class と Main.class</td><td class="l">public でなければファイル名と合っていなくてよい</td></tr>
+    <tr><td class="l"><code>final class A {}</code>・<code>abstract class A {}</code></td><td class="t">OK</td><td class="l">final・abstract はトップレベルに付けられる（#11）</td></tr>
+    <tr><td class="l"><code>private</code>・<code>protected</code>・<code>static class A {}</code></td><td class="x">エラー</td><td class="l">modifier private not allowed here（protected・static も同じ）</td></tr>
+  </table>
+  <div class="point"><b>JLS 7.6：</b>ファイル名の決まりは「ファイルシステムを使う処理系が課してよい制約」で、javac は守らせる。トップレベルのクラスのアクセスは <b>public か、何も書かない（同じパッケージだけ）</b>の 2 通り。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-7.html">JLS 7.6 Top Level Class and Interface Declarations</a>（It is a compile-time error if a top level class or interface declaration contains any one of the following access modifiers: protected, private, or static／The class or interface is declared public … there must be at most one such class or interface per compilation unit）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>無名パッケージとサブパッケージ</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">無名パッケージ</div>
+<pre class="code small"><span class="c">// Util.java（package を書かない）</span>
+<span class="k">public class</span> Util { }
+
+<span class="c">// p/T.java</span>
+<span class="k">package</span> p;
+<span class="ng"><span class="k">import</span> Util;</span>          <span class="c">// error: '.' expected</span>
+<span class="k">public class</span> T { }</pre>
+      <div class="point"><b>名前付きパッケージから、無名パッケージの型は使えない。</b>インポートできるのは名前付きパッケージの型だけ（JLS 7.5.1）。import を書かずに Util と書いても cannot find symbol。無名パッケージは「小さなプログラムや学習の始め」のための便利な仕組み（JLS 7.4.2）。</div>
+    </div>
+    <div>
+      <div class="cap">サブパッケージは別のパッケージ</div>
+      <svg width="400" height="140" viewBox="0 0 400 140">
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="12" width="180" height="58" rx="8" fill="#1f3a68"/><text x="100" y="36" fill="#fff" font-weight="700">java.util</text><text x="100" y="56" fill="#dfe7f3" font-size="10.5">ArrayList・List・Date …</text>
+          <rect x="210" y="12" width="180" height="58" rx="8" fill="#5b80bf"/><text x="300" y="36" fill="#fff" font-weight="700">java.util.concurrent</text><text x="300" y="56" fill="#eef2f8" font-size="10.5">ConcurrentHashMap …</text>
+          <text x="100" y="98" fill="#1f3a68" font-family="DejaVu Sans Mono, monospace">import java.util.*;</text>
+          <text x="100" y="118" fill="#4a5a78" font-size="10.5">左の箱だけ</text>
+          <text x="300" y="98" fill="#1f3a68" font-family="DejaVu Sans Mono, monospace">import java.util.concurrent.*;</text>
+          <text x="300" y="118" fill="#4a5a78" font-size="10.5">右の箱だけ</text>
+        </g>
+      </svg>
+      <div class="point"><b>* はサブパッケージを含まない。</b><code>import java.util.*;</code> のあと <code>concurrent.ConcurrentHashMap</code> と書くと package concurrent does not exist。パッケージそのもの（<code>import java.util;</code>）もインポートできない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-7.html">JLS 7.4.2 Unnamed Packages</a>（provided … principally for convenience when developing small or temporary applications or when just beginning development）／7.5.1（The class or interface must be either a member of a named package … or a compile-time error occurs／Example 7.5.1-3 an import declaration cannot import a subpackage, only a class or interface）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第5章</div>
+  <h1>インポート</h1>
+  <p>短い名前で書くための宣言。中身を取り込むわけではない。</p>
+  <div class="foot"><span>Java Silver #01 プログラムの実行とパッケージ</span><span>試験内容 1</span></div>
+</section>
+
+<section class="slide">
+  <h1>インポートの 4 種類と java.lang</h1>
+  <table class="mx">
+    <tr><th style="width:34%">書き方</th><th style="width:20%">種類</th><th>使えるようになるもの</th></tr>
+    <tr><td class="l"><code>import java.util.List;</code></td><td class="t">単一型</td><td class="l">List という 1 つの型</td></tr>
+    <tr><td class="l"><code>import java.util.*;</code></td><td class="t">オンデマンド</td><td class="l">java.util の型すべて（使った分だけ。サブパッケージは含まない）</td></tr>
+    <tr><td class="l"><code>import static java.lang.Math.max;</code></td><td class="t">単一 static</td><td class="l">Math の static メンバー max（同じ名前のオーバーロードすべて）</td></tr>
+    <tr><td class="l"><code>import static java.lang.Math.*;</code></td><td class="t">static オンデマンド</td><td class="l">Math の static メンバーすべて（<code>max(3, abs(-5))</code>・<code>PI</code>）</td></tr>
+    <tr><td class="l">（書かない）</td><td class="t">自動</td><td class="l"><b>java.lang</b> の型すべて：String・Math・System・StringBuilder・Integer など</td></tr>
+  </table>
+  <div class="cols" style="margin-top:12px">
+    <div>
+      <div class="lbl">まちがえやすい書き方（JDK 17 の表示）</div>
+<pre class="code small"><span class="ng"><span class="k">static import</span> java.lang.Math.max;</span>  <span class="c">// 語順が逆</span>
+<span class="c">  → class, interface, enum, or record expected</span>
+<span class="ng"><span class="k">import static</span> java.lang.Math;</span>      <span class="c">// クラス名で終わる</span>
+<span class="c">  → cannot find symbol</span>
+<span class="ng"><span class="k">import</span> java.lang.Math.*;</span>            <span class="c">// static がない</span>
+<span class="c">  → max(1, 2) が cannot find symbol</span></pre>
+    </div>
+    <div class="point" style="margin-top:0"><b>import の正体：</b>型や static メンバーを<b>短い名前</b>で書けるようにするだけ。クラスの中身はコピーしない。効くのは<b>書いたファイルの中だけ</b>で、同じパッケージのほかのファイルには効かない。import しなくても<b>完全修飾名</b>（<code>java.util.ArrayList</code>）で書けば使える。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-7.html">JLS 7.5</a>（makes classes, interfaces, or members available by their simple names only within the compilation unit that actually contains the import declaration）／7.5.1〜7.5.4（import TypeName ;／import PackageOrTypeName . * ;／import static TypeName . Identifier ;／import static TypeName . * ;）／7.3（Every compilation unit implicitly imports every public class or interface declared in the predefined package java.lang）</div>
+</section>
+
+<section class="slide">
+  <h1>名前がぶつかったとき ― Date の例</h1>
+  <table class="mx">
+    <tr><th style="width:36%">import の組み合わせ</th><th style="width:20%">Date を使うと</th><th>JDK 17 の結果・理由</th></tr>
+    <tr><td class="l"><code>import java.util.*;</code><br><code>import java.sql.*;</code></td><td class="x">エラー</td><td class="l">reference to Date is ambiguous。<b>使わなければエラーにならない</b></td></tr>
+    <tr><td class="l"><code>import java.util.Date;</code><br><code>import java.sql.*;</code></td><td class="t">java.util.Date</td><td class="l">単一型インポートが * のインポートを<b>隠す</b>（シャドウイング）</td></tr>
+    <tr><td class="l"><code>import java.util.Date;</code><br><code>import java.sql.Date;</code></td><td class="x">エラー</td><td class="l">a type with the same simple name is already defined by the single-type-import of Date。<b>使わなくてもエラー</b></td></tr>
+    <tr><td class="l"><code>import java.util.*;</code> と自分の <code>class Vector {}</code></td><td class="t">自分の Vector</td><td class="l">同じファイル・同じパッケージの型が * のインポートより優先（JLS 7.6 の例）</td></tr>
+  </table>
+  <div class="cols" style="margin-top:12px">
+    <div class="point" style="margin-top:0"><b>強い順：</b>① 自分のファイル・単一型インポート　② 同じパッケージの型　③ * のインポート（java.lang も ③ と同じ扱い）。①どうし・③どうしで同じ名前が並ぶと、決められずエラーになる。</div>
+    <div class="point" style="margin-top:0"><b>直し方：</b>どちらかを単一型インポートにする。もう片方は <code>java.sql.Date</code> のように完全修飾名で書く。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-7.html">JLS 7.5.1</a>（If two single-type-import declarations in the same compilation unit attempt to import classes or interfaces with the same simple name, then a compile-time error occurs）／7.5.2 Example 7.5.2-1（might be shadowed by a single-type-import declaration … by a class or interface named Vector and declared in the package to which the compilation unit belongs）／7.6 Example 7.6-1／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>問われ方とまちがえやすい点</h1>
+  <table class="mx">
+    <tr><th style="width:36%">こう聞かれたら</th><th>答えの考え方</th></tr>
+    <tr><td class="t">起動できる main は</td><td class="l"><b>public・static・void・String 配列</b>。順番・[] の位置・final・可変長・引数名は自由。形がちがってもコンパイルは通る</td></tr>
+    <tr><td class="t">args[0] は何か</td><td class="l">クラス名のあとの<b>最初の引数</b>。引数なしは長さ 0 → args[0] で例外</td></tr>
+    <tr><td class="t">正しいコマンドは</td><td class="l"><code>javac Xxx.java</code> → <code>java Xxx</code>。パッケージなら <code>java -cp 根元 完全修飾名</code></td></tr>
+    <tr><td class="t">.class はどこにできる</td><td class="l">-d あり → 指定先＋パッケージの階層。なし → ソースと同じ場所</td></tr>
+    <tr><td class="t">java X.java の結果</td><td class="l">メモリでコンパイル、最初のクラスが動く、.class なし、ほかのソースは探さない</td></tr>
+    <tr><td class="t">ファイルの並び</td><td class="l">package（1 つ）→ import → クラス。前に置けるのはコメントだけ</td></tr>
+    <tr><td class="t">import で使えるか</td><td class="l">* はサブパッケージを含まない。java.lang は自動。<code>import static</code> の語順</td></tr>
+    <tr><td class="t">同じ名前の型</td><td class="l">* どうしは<b>使えば</b>エラー、単一型どうしは<b>書いただけで</b>エラー、単一型 ＞ *</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">しくみ<span>.java →（javac）→ .class（バイトコード）→（java）→ JVM。JDK が道具一式</span></div>
+      <div class="box b2">main と引数<span>public static void main(String[] args)。args にクラス名は入らない</span></div>
+      <div class="box b3">コンパイルと実行<span>-d でパッケージの階層、-cp でパッケージの根元、java には完全修飾名。java X.java は JDK 11〜</span></div>
+      <div class="box b4">パッケージとインポート<span>package → import → クラス。public は 1 つでファイル名と同じ。java.lang は自動</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:44%">エラーの表示</th><th>原因</th></tr>
+        <tr><td class="t">Could not find or load main class</td><td class="l">クラス名・クラスパス・.class を付けた</td></tr>
+        <tr><td class="t">Main method not found</td><td class="l">public がない・名前や引数の型がちがう</td></tr>
+        <tr><td class="t">Main method is not static</td><td class="l">static がない</td></tr>
+        <tr><td class="t">should be declared in a file named</td><td class="l">public クラスとファイル名がちがう</td></tr>
+        <tr><td class="t">reference to … is ambiguous</td><td class="l">* のインポートどうしで名前がぶつかった</td></tr>
+      </table>
+      <div class="point"><b>次は #02 変数とデータ型。</b>基本データ型・変数のスコープ・var（ローカル変数型推論）へ進む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

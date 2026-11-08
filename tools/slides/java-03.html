@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Silver #03 文字列 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">Java Silver（SE 17・1Z0-825-JPN）　2 Javaの基本データ型と文字列の操作　#03</div>
+  <h1>文字列</h1>
+  <p>String は変わらない、StringBuilder は変わる ― == と equals、連結の順序、主なメソッド、StringBuilder、テキストブロック</p>
+  <div class="refs-legend">各ページの下に、根拠にした Oracle の資料（JLS・API・Text Blocks ガイド）を書いた（青い文字を押すと開く）。コードは Claude が作り、JDK 17 で動かして確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>試験内容チェックリスト 2（文字列の作成と操作）</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 String のしくみ<span>不変、リテラルのプール、== と equals、連結（+）の順序</span></div>
+      <div class="box b2">2 String のメソッド<span>位置は 0 から。substring は終わりを含まない。戻り値は新しい String</span></div>
+      <div class="box b3">3 StringBuilder<span>append・insert・delete・replace・reverse。自分自身が変わる</span></div>
+      <div class="box b4">4 テキストブロック<span>""" と改行で始まる。左の空白と行末の空白は消える。<span class="bs">\</span> と <span class="bs">\s</span></span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%"></th><th>String</th><th>StringBuilder</th></tr>
+        <tr><td class="t">中身</td><td><b>変わらない</b>（不変）</td><td><b>変わる</b></td></tr>
+        <tr><td class="t">変えるメソッド</td><td>新しい String を返す</td><td>自分を変えて自分を返す</td></tr>
+        <tr><td class="t">equals</td><td>中身を比べる</td><td>同じオブジェクトか（== と同じ）</td></tr>
+        <tr><td class="t">リテラル</td><td>"..."・テキストブロック</td><td>なし（new で作る）</td></tr>
+        <tr><td class="t">逆順</td><td>reverse なし</td><td>reverse()</td></tr>
+      </table>
+      <div class="point"><b>芯：</b>String のメソッドの戻り値を<b>受け取らない</b>コードは、何も変えていない。本番でいちばん多いひっかけ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.oracle.com/jp/education/certification/javase-17-programmer-1/">Oracle「Java SE 17 Programmer I（1Z0-825-JPN）」試験内容チェックリスト</a>（文字列の作成と操作(テキスト・ブロックを含む)）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">Java SE 17 API String</a>（Strings are constant; their values cannot be changed after they are created. String buffers support mutable strings）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/StringBuilder.html">API StringBuilder</a>（does not override equals）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>String のしくみ</h1>
+  <p>変わらない。だから同じリテラルは 1 つを使い回せる。</p>
+  <div class="foot"><span>Java Silver #03 文字列</span><span>試験内容 2</span></div>
+</section>
+
+<section class="slide">
+  <h1>String は不変 ― 戻り値を受け取らないと変わらない</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">s.toUpperCase(); のとき（Claude が作成）</div>
+      <svg width="400" height="200" viewBox="0 0 400 200">
+        <defs><marker id="a4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5b80bf"/></marker></defs>
+        <g font-size="12.5" text-anchor="middle">
+          <rect x="20" y="30" width="60" height="34" rx="6" fill="#eef2f8" stroke="#1f3a68"/><text x="50" y="52" fill="#1f3a68" font-weight="700">s</text>
+          <line x1="82" y1="47" x2="196" y2="47" stroke="#5b80bf" stroke-width="2" marker-end="url(#a4)"/>
+          <rect x="200" y="28" width="120" height="38" rx="6" fill="#1f3a68"/><text x="260" y="52" fill="#fff" font-family="DejaVu Sans Mono, monospace">"java"</text>
+          <rect x="200" y="118" width="120" height="38" rx="6" fill="#fff" stroke="#b25000" stroke-dasharray="5 3"/><text x="260" y="142" fill="#b25000" font-family="DejaVu Sans Mono, monospace">"JAVA"</text>
+          <text x="260" y="104" fill="#4a5a78" font-size="11">新しく作られる</text>
+          <text x="260" y="178" fill="#b25000" font-size="11">どの変数も指していない → 使われずに終わる</text>
+          <text x="110" y="90" fill="#1f3a68" font-size="11">s は "java" を</text><text x="110" y="106" fill="#1f3a68" font-size="11">指したまま</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+<pre class="code small"><span class="k">String</span> s = <span class="s">"java"</span>;
+s.toUpperCase();          <span class="c">// 戻り値を捨てている</span>
+s.concat(<span class="s">"!"</span>);             <span class="c">// これも</span>
+System.out.println(s);    <span class="c">// java</span>
+
+s = s.toUpperCase();      <span class="c">// 受け取れば変わる</span>
+System.out.println(s);    <span class="c">// JAVA</span></pre>
+      <div class="point"><b>String の「変えるように見える」メソッド</b>（toUpperCase・concat・replace・trim・substring など）は、どれも<b>新しい String を返す</b>だけ。</div>
+      <div class="point"><b>変わるのは変数の中身（参照）だけ：</b><code>s = s.toUpperCase();</code> は、s が新しいオブジェクトを指すようになる。"java" のオブジェクト自体は変わらない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">Java SE 17 API String</a>（Strings are constant; their values cannot be changed after they are created／Because String objects are immutable they can be shared）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>== と equals、リテラルのプール</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">オブジェクトの数（Claude が作成）</div>
+      <svg width="400" height="190" viewBox="0 0 400 190">
+        <g font-size="12" text-anchor="middle">
+          <rect x="190" y="10" width="200" height="90" rx="10" fill="#eef2f8" stroke="#c9daf2"/>
+          <text x="290" y="28" fill="#4a5a78" font-size="10.5">リテラルのプール（インターン）</text>
+          <rect x="240" y="44" width="100" height="36" rx="6" fill="#1f3a68"/><text x="290" y="67" fill="#fff" font-family="DejaVu Sans Mono, monospace">"hi"</text>
+          <rect x="240" y="130" width="100" height="36" rx="6" fill="#5b80bf"/><text x="290" y="153" fill="#fff" font-family="DejaVu Sans Mono, monospace">"hi"</text>
+          <text x="290" y="182" fill="#4a5a78" font-size="10.5">new で作った別のオブジェクト</text>
+          <rect x="20" y="30" width="56" height="28" rx="6" fill="#fff" stroke="#1f3a68"/><text x="48" y="49" fill="#1f3a68" font-weight="700">a</text>
+          <rect x="20" y="70" width="56" height="28" rx="6" fill="#fff" stroke="#1f3a68"/><text x="48" y="89" fill="#1f3a68" font-weight="700">b</text>
+          <rect x="20" y="134" width="56" height="28" rx="6" fill="#fff" stroke="#1f3a68"/><text x="48" y="153" fill="#1f3a68" font-weight="700">c</text>
+          <line x1="78" y1="44" x2="238" y2="58" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="78" y1="84" x2="238" y2="66" stroke="#5b80bf" stroke-width="2"/>
+          <line x1="78" y1="148" x2="238" y2="148" stroke="#5b80bf" stroke-width="2"/>
+        </g>
+      </svg>
+<pre class="code small"><span class="k">String</span> a = <span class="s">"hi"</span>, b = <span class="s">"hi"</span>;
+<span class="k">String</span> c = <span class="k">new</span> String(<span class="s">"hi"</span>);</pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:56%">式</th><th>結果</th></tr>
+        <tr><td class="l"><code>a == b</code></td><td class="t">true（同じオブジェクト）</td></tr>
+        <tr><td class="l"><code>a == c</code></td><td class="x">false（別のオブジェクト）</td></tr>
+        <tr><td class="l"><code>a.equals(c)</code></td><td class="t">true（中身が同じ）</td></tr>
+        <tr><td class="l"><code>"Hello" == "Hel" + "lo"</code></td><td class="t">true（定数式）</td></tr>
+        <tr><td class="l"><code>"Hello" == "Hel" + lo</code>（lo は変数）</td><td class="x">false（実行時の連結）</td></tr>
+        <tr><td class="l">lo が <code>final String lo = "lo";</code></td><td class="t">true（定数式になる）</td></tr>
+        <tr><td class="l"><code>("Hel" + lo).intern() == "Hello"</code></td><td class="t">true（プールのものが返る）</td></tr>
+      </table>
+      <div class="point"><b>中身を比べるなら必ず equals。</b>== は「同じオブジェクトか」。String と StringBuilder を == で比べるのは incomparable types でコンパイルエラー。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-3.html">JLS 3.10.5 String Literals</a>（a string literal always refers to the same instance of class String … strings that are the values of constant expressions … are "interned"／Example 3.10.5-1）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">API String.equals</a>（true if and only if the argument is not null and is a String object that represents the same sequence of characters）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>連結（+）は左から</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">1 + 2 + "3" + 4 + 5 の計算（Claude が作成）</div>
+      <svg width="400" height="200" viewBox="0 0 400 200">
+        <g font-family="DejaVu Sans Mono, monospace" font-size="14" text-anchor="middle">
+          <rect x="10" y="10" width="110" height="32" rx="6" fill="#c9daf2"/><text x="65" y="31" fill="#1f3a68">1 + 2</text>
+          <text x="210" y="31" fill="#4a5a78" font-size="12" font-family="IPAPGothic, sans-serif">数どうし → 足し算 → 3</text>
+          <rect x="10" y="56" width="110" height="32" rx="6" fill="#5b80bf"/><text x="65" y="77" fill="#fff">3 + "3"</text>
+          <text x="210" y="77" fill="#4a5a78" font-size="12" font-family="IPAPGothic, sans-serif">片方が String → 連結 → "33"</text>
+          <rect x="10" y="102" width="110" height="32" rx="6" fill="#2f5596"/><text x="65" y="123" fill="#fff">"33" + 4</text>
+          <text x="210" y="123" fill="#4a5a78" font-size="12" font-family="IPAPGothic, sans-serif">→ "334"</text>
+          <rect x="10" y="148" width="110" height="32" rx="6" fill="#1f3a68"/><text x="65" y="169" fill="#fff">"334" + 5</text>
+          <text x="210" y="169" fill="#1f3a68" font-size="12" font-weight="700" font-family="IPAPGothic, sans-serif">→ "3345"</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:50%">式</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l"><code>"" + 'a' + 1</code></td><td class="t">"a1"</td></tr>
+        <tr><td class="l"><code>'a' + 1 + ""</code></td><td class="t">"98"（char + int は数）</td></tr>
+        <tr><td class="l"><code>s = s + 1 + 2;</code>（s は "ab"）</td><td class="t">"ab12"</td></tr>
+        <tr><td class="l"><code>t += 1 + 2;</code>（t は "ab"）</td><td class="t">"ab3"（右辺が先）</td></tr>
+        <tr><td class="l"><code>s += "a";</code>（s は null）</td><td class="t">"nulla"</td></tr>
+        <tr><td class="l"><code>s.concat("a")</code>（s は null）</td><td class="x">NullPointerException</td></tr>
+        <tr><td class="l"><code>"x" + true + 2.0</code></td><td class="t">"xtrue2.0"</td></tr>
+      </table>
+      <div class="point"><b>決まり：</b>+ は<b>左から</b>。片方が String なら、もう片方を文字列に変えて<b>連結</b>。null は <b>"null"</b> になる。<code>+=</code> は右辺を先に計算する。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html">JLS 15.18.1 String Concatenation Operator +</a>（If only one operand expression is of type String, then string conversion is performed on the other operand／The + operator is syntactically left-associative … 1 + 2 + " fiddlers" is: "3 fiddlers"）／<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-5.html">JLS 5.1.11 String Conversion</a>（If the reference is null, it is converted to the string "null"）／15.26.2／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>String のメソッド</h1>
+  <p>位置は 0 から。終わりの位置は含まない。</p>
+  <div class="foot"><span>Java Silver #03 文字列</span><span>試験内容 2</span></div>
+</section>
+
+<section class="slide">
+  <h1>位置（インデックス）の数え方</h1>
+  <svg width="856" height="128" viewBox="0 0 856 128">
+    <g font-family="DejaVu Sans Mono, monospace" font-size="20" text-anchor="middle">
+      <rect x="40" y="30" width="54" height="44" fill="#fff" stroke="#1f3a68"/><text x="67" y="60">H</text>
+      <rect x="94" y="30" width="54" height="44" fill="#fff" stroke="#1f3a68"/><text x="121" y="60">e</text>
+      <rect x="148" y="30" width="54" height="44" fill="#c9daf2" stroke="#1f3a68"/><text x="175" y="60">l</text>
+      <rect x="202" y="30" width="54" height="44" fill="#c9daf2" stroke="#1f3a68"/><text x="229" y="60">l</text>
+      <rect x="256" y="30" width="54" height="44" fill="#fff" stroke="#1f3a68"/><text x="283" y="60">o</text>
+      <rect x="310" y="30" width="54" height="44" fill="#fff" stroke="#1f3a68"/><text x="337" y="60">␣</text>
+      <rect x="364" y="30" width="54" height="44" fill="#fde7cf" stroke="#1f3a68"/><text x="391" y="60">W</text>
+      <rect x="418" y="30" width="54" height="44" fill="#fde7cf" stroke="#1f3a68"/><text x="445" y="60">o</text>
+      <rect x="472" y="30" width="54" height="44" fill="#fde7cf" stroke="#1f3a68"/><text x="499" y="60">r</text>
+      <rect x="526" y="30" width="54" height="44" fill="#fde7cf" stroke="#1f3a68"/><text x="553" y="60">l</text>
+      <rect x="580" y="30" width="54" height="44" fill="#fde7cf" stroke="#1f3a68"/><text x="607" y="60">d</text>
+    </g>
+    <g font-size="12" text-anchor="middle" fill="#4a5a78">
+      <text x="67" y="22">0</text><text x="121" y="22">1</text><text x="175" y="22">2</text><text x="229" y="22">3</text><text x="283" y="22">4</text><text x="337" y="22">5</text><text x="391" y="22">6</text><text x="445" y="22">7</text><text x="499" y="22">8</text><text x="553" y="22">9</text><text x="607" y="22">10</text>
+      <text x="202" y="96" fill="#1f3a68" font-weight="700">substring(2, 4) → "ll"</text>
+      <text x="499" y="96" fill="#7a3a00" font-weight="700">substring(6) → "World"</text>
+      <text x="700" y="44" fill="#1f3a68">length() は 11</text>
+      <text x="700" y="64" fill="#1f3a68">最後の位置は 10</text>
+      <text x="420" y="120" fill="#4a5a78">substring(b, e) は b 〜 e−1。長さは e − b。e は含まない（delete・StringBuilder.replace も同じ）</text>
+    </g>
+  </svg>
+  <div class="cols" style="margin-top:6px">
+    <table class="mx">
+      <tr><th style="width:52%">式（s は "Hello World"）</th><th>結果</th></tr>
+      <tr><td class="l"><code>s.charAt(4)</code></td><td class="t">'o'</td></tr>
+      <tr><td class="l"><code>s.charAt(11)</code></td><td class="x">StringIndexOutOfBoundsException</td></tr>
+      <tr><td class="l"><code>s.indexOf('o')</code>・<code>s.lastIndexOf('o')</code></td><td class="t">4・7</td></tr>
+      <tr><td class="l"><code>s.indexOf('o', 5)</code></td><td class="t">7（5 から探す）</td></tr>
+      <tr><td class="l"><code>s.indexOf("x")</code></td><td class="t">-1（ない）</td></tr>
+    </table>
+    <table class="mx">
+      <tr><th style="width:52%">式</th><th>結果</th></tr>
+      <tr><td class="l"><code>s.substring(11)</code></td><td class="t">""（空文字列）</td></tr>
+      <tr><td class="l"><code>"Hello".substring(3, 2)</code></td><td class="x">StringIndexOutOfBoundsException</td></tr>
+      <tr><td class="l"><code>s.length</code>・<code>s.size()</code></td><td class="x">cannot find symbol</td></tr>
+      <tr><td class="l">配列 <code>a.length</code>・String <code>s.length()</code></td><td class="t">かっこの有無に注意</td></tr>
+    </table>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">Java SE 17 API String</a> substring（begins at the specified beginIndex and extends to the character at index endIndex - 1. Thus the length of the substring is endIndex-beginIndex）／charAt（IndexOutOfBoundsException - if the index argument is negative or not less than the length of this string）／indexOf（-1 is returned）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>調べるメソッド・作りかえるメソッド</h1>
+  <div class="cols">
+    <table class="mx">
+      <tr><th style="width:46%">調べる（例）</th><th>結果</th></tr>
+      <tr><td class="l"><code>"abcabc".startsWith("bc", 1)</code></td><td class="t">true（1 から調べる）</td></tr>
+      <tr><td class="l"><code>"abcabc".endsWith("")</code></td><td class="t">true（空はいつも含む）</td></tr>
+      <tr><td class="l"><code>"abcabc".contains("ca")</code></td><td class="t">true</td></tr>
+      <tr><td class="l"><code>"  ".isEmpty()</code>・<code>"  ".isBlank()</code></td><td class="t">false・true</td></tr>
+      <tr><td class="l"><code>"Java".equalsIgnoreCase("JAVA")</code></td><td class="t">true</td></tr>
+      <tr><td class="l"><code>"b".compareTo("a")</code></td><td class="t">1（後なら正）</td></tr>
+      <tr><td class="l"><code>"abc".compareTo("abd")</code></td><td class="t">-1（前なら負）</td></tr>
+      <tr><td class="l"><code>"ab".compareTo("abcd")</code></td><td class="t">-2（長さの差）</td></tr>
+      <tr><td class="l"><code>"Apple".compareTo("apple") &lt; 0</code></td><td class="t">true（大文字が前）</td></tr>
+    </table>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">作りかえる（新しい String を返す）</th><th>結果</th></tr>
+        <tr><td class="l"><code>"aaa".replace("aa", "b")</code></td><td class="t">"ba"（左から重ならずに）</td></tr>
+        <tr><td class="l"><code>"banana".replace('a', 'o')</code></td><td class="t">"bonono"（全部）</td></tr>
+        <tr><td class="l"><code>"  Hi  ".trim()</code></td><td class="t">"Hi"（strip も同じ。全角空白は strip だけ）</td></tr>
+        <tr><td class="l"><code>"ab".repeat(3)</code></td><td class="t">"ababab"</td></tr>
+        <tr><td class="l"><code>String.join("-", "a", "b", "c")</code></td><td class="t">"a-b-c"</td></tr>
+        <tr><td class="l"><code>"a,b,,c".split(",").length</code></td><td class="t">4（途中の空は残る）</td></tr>
+        <tr><td class="l"><code>"a,b,c,,".split(",").length</code></td><td class="t">3（末尾の空は消える）</td></tr>
+      </table>
+      <div class="point"><b>呼ぶたびに新しいオブジェクト：</b><code>s.toUpperCase() == s.toUpperCase()</code> は false。比べるなら equals。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">Java SE 17 API String</a>（startsWith・endsWith（true if the argument is the empty string）・contains・isEmpty・isBlank（empty or contains only white space codepoints）・compareTo・replace・trim・strip・repeat・join・split（Trailing empty strings are therefore not included in the resulting array））／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>StringBuilder</h1>
+  <p>同じオブジェクトの中身を変える。だから参照を共有すると全員に見える。</p>
+  <div class="foot"><span>Java Silver #03 文字列</span><span>試験内容 2</span></div>
+</section>
+
+<section class="slide">
+  <h1>String と StringBuilder のちがい</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">b = a のあと、それぞれ足すと（Claude が作成）</div>
+      <svg width="400" height="210" viewBox="0 0 400 210">
+        <g font-size="12" text-anchor="middle">
+          <text x="100" y="18" fill="#1f3a68" font-weight="700">StringBuilder</text>
+          <rect x="10" y="34" width="44" height="26" rx="5" fill="#fff" stroke="#1f3a68"/><text x="32" y="52">a</text>
+          <rect x="10" y="74" width="44" height="26" rx="5" fill="#fff" stroke="#1f3a68"/><text x="32" y="92">b</text>
+          <rect x="110" y="50" width="80" height="34" rx="6" fill="#1f3a68"/><text x="150" y="72" fill="#fff" font-family="DejaVu Sans Mono, monospace">"xy"</text>
+          <line x1="56" y1="47" x2="108" y2="62" stroke="#5b80bf" stroke-width="2"/><line x1="56" y1="87" x2="108" y2="74" stroke="#5b80bf" stroke-width="2"/>
+          <text x="100" y="124" fill="#4a5a78" font-size="10.5">b.append("y") で 1 つの</text><text x="100" y="139" fill="#4a5a78" font-size="10.5">オブジェクトが変わる → a も "xy"</text>
+          <text x="300" y="18" fill="#1f3a68" font-weight="700">String</text>
+          <rect x="210" y="34" width="44" height="26" rx="5" fill="#fff" stroke="#1f3a68"/><text x="232" y="52">s</text>
+          <rect x="210" y="74" width="44" height="26" rx="5" fill="#fff" stroke="#1f3a68"/><text x="232" y="92">t</text>
+          <rect x="300" y="34" width="70" height="28" rx="6" fill="#1f3a68"/><text x="335" y="53" fill="#fff" font-family="DejaVu Sans Mono, monospace">"x"</text>
+          <rect x="300" y="76" width="70" height="28" rx="6" fill="#e08a2c"/><text x="335" y="95" fill="#fff" font-family="DejaVu Sans Mono, monospace">"xy"</text>
+          <line x1="256" y1="47" x2="298" y2="48" stroke="#5b80bf" stroke-width="2"/><line x1="256" y1="87" x2="298" y2="90" stroke="#e08a2c" stroke-width="2"/>
+          <text x="300" y="124" fill="#4a5a78" font-size="10.5">t = t + "y" は新しい "xy" を</text><text x="300" y="139" fill="#4a5a78" font-size="10.5">作って t に入れる → s は "x"</text>
+          <text x="200" y="185" fill="#1f3a68" font-family="DejaVu Sans Mono, monospace" font-size="13">System.out.println(a + " " + s); → xy x</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:44%">比べ方</th><th>結果（JDK 17）</th></tr>
+        <tr><td class="l">sb どうしの <code>equals</code>（中身 "ab"）</td><td class="x">false（オブジェクトが別）</td></tr>
+        <tr><td class="l"><code>sb1.toString().equals(sb2.toString())</code></td><td class="t">true</td></tr>
+        <tr><td class="l"><code>"abc".equals(sb)</code></td><td class="x">false（型がちがう）</td></tr>
+        <tr><td class="l"><code>"abc".equals(sb.toString())</code></td><td class="t">true</td></tr>
+        <tr><td class="l"><code>"abc" == sb</code></td><td class="x">コンパイルエラー（incomparable types）</td></tr>
+      </table>
+      <div class="point"><b>StringBuilder は equals をオーバーライドしていない。</b>中身で比べたいときは toString して String の equals を使う（compareTo でも比べられる）。</div>
+      <div class="point"><b>容量：</b>new StringBuilder() は 16、new StringBuilder("abc") は 3＋16 ＝ 19。足りなければ自動で広がる。length（文字数）とは別。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/StringBuilder.html">Java SE 17 API StringBuilder</a>（A mutable sequence of characters／StringBuilder implements Comparable but does not override equals／StringBuilder() … initial capacity of 16 characters／StringBuilder(String str) … initial capacity of 16 plus the length of the string argument）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>StringBuilder のメソッドを順にたどる</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:46%">呼び出し</th><th>sb の中身</th></tr>
+        <tr><td class="l"><code>new StringBuilder("abcdef")</code></td><td class="l"><code>abcdef</code></td></tr>
+        <tr><td class="l"><code>.delete(1, 3)</code></td><td class="l"><code>adef</code>（1〜2 の b・c を消す）</td></tr>
+        <tr><td class="l"><code>.insert(0, "X")</code></td><td class="l"><code>Xadef</code></td></tr>
+        <tr><td class="l"><code>.append(1).append('!')</code></td><td class="l"><code>Xadef1!</code></td></tr>
+        <tr><td class="l"><code>.replace(1, 4, "Z")</code></td><td class="l"><code>XZf1!</code>（1〜3 を Z に）</td></tr>
+        <tr><td class="l"><code>.deleteCharAt(0)</code></td><td class="l"><code>Zf1!</code></td></tr>
+        <tr><td class="l"><code>.reverse()</code></td><td class="l"><code>!1fZ</code></td></tr>
+      </table>
+      <div class="mini">上はどれも sb 自身を返すので、つなげて書ける（メソッドチェーン）。表の中身は Claude が手で追った例。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:40%">メソッド</th><th>注意</th></tr>
+        <tr><td class="t">append</td><td class="l">どんな型も文字にして末尾へ。true は "true"、2.0 は "2.0"</td></tr>
+        <tr><td class="t">insert(i, x)</td><td class="l">i は 0〜length()。こえると StringIndexOutOfBoundsException</td></tr>
+        <tr><td class="t">delete(b, e)</td><td class="l">e は含まない（substring と同じ）</td></tr>
+        <tr><td class="t">replace(b, e, s)</td><td class="l"><b>位置</b>で置きかえ。String の replace（<b>文字列</b>で探す）と別物</td></tr>
+        <tr><td class="t">setCharAt・setLength</td><td class="l">戻り値は <b>void</b>。後ろにつなげられない</td></tr>
+        <tr><td class="t">toString</td><td class="l">今の中身で String を作る</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/StringBuilder.html">Java SE 17 API StringBuilder</a>（The append method always adds these characters at the end of the builder; the insert method adds the characters at a specified point／delete … extends to the character at index end - 1／replace／reverse／setCharAt・setLength（void））</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>テキストブロック</h1>
+  <p>""" と改行で始めて、見たままの複数行を書く。Java 15 から。</p>
+  <div class="foot"><span>Java Silver #03 文字列</span><span>試験内容 2</span></div>
+</section>
+
+<section class="slide">
+  <h1>テキストブロックの形と、最後の改行</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">終了の """ を最後の行の末尾に置く</div>
+<pre class="code small"><span class="k">String</span> s1 = <span class="s">"""
+    abc"""</span>;           <span class="c">// "abc"（長さ 3）</span></pre>
+      <div class="lbl" style="margin-top:8px">終了の """ を次の行に置く</div>
+<pre class="code small"><span class="k">String</span> s2 = <span class="s">"""
+    abc
+    """</span>;              <span class="c">// "abc\n"（長さ 4）</span></pre>
+      <div class="lbl" style="margin-top:8px">NG の例（JDK 17 の表示）</div>
+<pre class="code small"><span class="ng"><span class="k">String</span> t = <span class="s">"""abc"""</span>;</span>
+<span class="c">// illegal text block open delimiter sequence,</span>
+<span class="c">// missing line terminator</span>
+<span class="ng"><span class="k">String</span> u = <span class="s">"abc</span></span>
+<span class="ng"><span class="s">    "</span>;</span>       <span class="c">// unclosed string literal</span></pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:36%">決まり</th><th>中身</th></tr>
+        <tr><td class="t">開始の """</td><td class="l">そのあとは空白（任意）と<b>改行</b>。同じ行に中身は書けない</td></tr>
+        <tr><td class="t">中身</td><td class="l">開始の改行の<b>次の行</b>から、終了の """ の直前まで</td></tr>
+        <tr><td class="t">最後の改行</td><td class="l">""" が単独の行 → 付く。中身の行末 → 付かない</td></tr>
+        <tr><td class="t">型</td><td class="l"><b>String</b>。リテラルと同じくインターンされる（"hi<span class="bs">\n</span>" と == で true）</td></tr>
+        <tr><td class="t">" の扱い</td><td class="l">そのまま書ける。""" が 3 つ続くときだけエスケープ</td></tr>
+        <tr><td class="t">メソッド</td><td class="l">そのまま呼べる：<code>""".formatted("Java")</code></td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-3.html">JLS 3.10.6 Text Blocks</a>（The opening delimiter … concludes with a line terminator／A text block is always of type String／a text block always refers to the same instance of class String）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/text-blocks/index.html">Programmer's Guide to Text Blocks</a>（placing the closing delimiter on the last visible line effectively drops the last <span class="bs">\n</span>）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>左の空白はどこまで消えるか</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">空白を「・」で見えるようにした（Claude が作成）</div>
+<pre class="code"><span class="k">String</span> s = <span class="s">"""</span>
+<span class="c">・・・・・・・・</span>・・a
+<span class="c">・・・・・・・・</span>・・・・b
+<span class="c">・・・・・・・・</span><span class="s">"""</span>;</pre>
+      <div class="mini">灰色の 8 字が消える空白（付随的な空白）。残るのは a の前の 2 字と b の前の 4 字。</div>
+<pre class="sh" style="margin-top:8px"><span class="p">s.replace(' ', '.') を表示</span>
+<span class="o">..a
+....b</span></pre>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:46%">終了の """ の位置</th><th>結果（a 10 字・b 12 字下げ）</th></tr>
+        <tr><td class="l">8 字下げ（中身より左）</td><td class="l"><code>..a</code> / <code>....b</code></td></tr>
+        <tr><td class="l">10 字下げ（a と同じ）</td><td class="l"><code>a</code> / <code>..b</code></td></tr>
+        <tr><td class="l">14 字下げ（中身より右）</td><td class="l"><code>a</code> / <code>..b</code>（中身の最小に合わせる）</td></tr>
+        <tr><td class="l">行末に置く（<code>b"""</code>）</td><td class="l">中身の行だけで決まる。最後の改行なし</td></tr>
+      </table>
+      <div class="point"><b>決まり：</b>中身の行と「""" だけの最後の行」のうち、<b>いちばん左の行</b>に合わせて全体を左に寄せる。行どうしの<b>相対的な字下げは残る</b>。</div>
+      <div class="point"><b>行末の空白も消える。</b>残したいときは <code>\s</code> を使う（次のページ）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-3.html">JLS 3.10.6</a>（Incidental white space is removed, as if by execution of String.stripIndent）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/text-blocks/index.html">Programmer's Guide to Text Blocks</a> Incidental White Space（The entire contents of the text block is shifted to the left until the line with the least leading white space has no leading white space）・Trailing White Space／表の結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>テキストブロックのエスケープ</h1>
+  <div class="cols">
+    <div>
+<pre class="code small"><span class="k">String</span> s = <span class="s">"""
+    one \
+    two\s
+    """</span>;
+System.out.println(<span class="s">"["</span> + s.replace(<span class="s">"\n"</span>, <span class="s">"/"</span>) + <span class="s">"]"</span> + s.length());</pre>
+<pre class="sh" style="margin-top:4px"><span class="o">[one two /]9</span></pre>
+      <div class="point"><b>行末の <span class="bs">\</span>：</b>改行を取り消して次の行につなぐ。<span class="bs">\</span> の前の空白は行末ではないので<b>残る</b>。<br><b><span class="bs">\s</span>：</b>空白 1 つ。エスケープは<b>空白を消したあと</b>に変換されるので、行末でも残る。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:34%">エスケープ</th><th>意味</th></tr>
+        <tr><td class="t"><code>\n</code>・<code>\t</code></td><td class="l">改行・タブ（普通の文字列と同じ）</td></tr>
+        <tr><td class="t"><code>\"</code></td><td class="l">"。テキストブロックではふつう不要</td></tr>
+        <tr><td class="t"><code>\\</code></td><td class="l"><span class="bs">\</span> そのもの</td></tr>
+        <tr><td class="t"><code>\s</code></td><td class="l">空白 1 つ（Java 15〜）</td></tr>
+        <tr><td class="t"><code>\</code>＋改行</td><td class="l">改行しない（テキストブロックの中だけ）</td></tr>
+      </table>
+      <div class="point"><b>3 つの処理の順番：</b>① 改行を LF にそろえる → ② 左と行末の空白を消す → ③ エスケープを変換する。だから <span class="bs">\s</span> や <span class="bs">\040</span> は ② で消されない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-3.html">JLS 3.10.6</a>（Line terminators are normalized … Incidental white space is removed … Escape sequences are interpreted）／3.10.7 Escape Sequences（<span class="bs">\s</span> (space SP, Unicode <span class="bs">\u0020</span>)／<span class="bs">\</span> LineTerminator (line continuation)）／<a class="src" href="https://docs.oracle.com/en/java/javase/17/text-blocks/index.html">Programmer's Guide to Text Blocks</a>（<span class="bs">\s</span> can act as fence to prevent the stripping of trailing white space）／結果は JDK 17 で確かめたもの</div>
+</section>
+
+<section class="slide">
+  <h1>問われ方とまちがえやすい点</h1>
+  <table class="mx">
+    <tr><th style="width:34%">こう聞かれたら</th><th>答えの考え方</th></tr>
+    <tr><td class="t">String を変えたあとの表示</td><td class="l">戻り値を<b>代入したか</b>を見る。していなければ元のまま</td></tr>
+    <tr><td class="t">== の結果</td><td class="l">リテラル・定数式どうしは true。new・実行時の連結は false。intern() は true</td></tr>
+    <tr><td class="t">連結の結果</td><td class="l">左から。String が出るまでは数の計算。char + int は数。+= は右辺が先。null は "null"</td></tr>
+    <tr><td class="t">substring・delete</td><td class="l">位置は 0 から、終わりは含まない。長さ ＝ e − b</td></tr>
+    <tr><td class="t">例外の名前</td><td class="l">String・StringBuilder の位置の誤りは <b>StringIndexOutOfBoundsException</b></td></tr>
+    <tr><td class="t">StringBuilder の結果</td><td class="l">sb 自身が変わる。参照をコピーした変数からも見える。equals は同じオブジェクトか</td></tr>
+    <tr><td class="t">テキストブロックの長さ</td><td class="l">最後の改行の有無（""" の位置）、左の空白（いちばん左の行）、<span class="bs">\</span> と <span class="bs">\s</span></td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">String のしくみ<span>不変。同じリテラルは同じオブジェクト。中身は equals で比べる。+ は左から</span></div>
+      <div class="box b2">String のメソッド<span>0 から数え、終わりは含まない。どれも新しい String を返す</span></div>
+      <div class="box b3">StringBuilder<span>append・insert・delete・replace・reverse で自分が変わる。equals は == と同じ</span></div>
+      <div class="box b4">テキストブロック<span>"""＋改行で開始。左の空白はいちばん左の行に合わせて消える。<span class="bs">\</span> と <span class="bs">\s</span></span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:46%">式</th><th>結果</th></tr>
+        <tr><td class="l"><code>1 + 2 + "3" + 4 + 5</code></td><td class="t">"3345"</td></tr>
+        <tr><td class="l"><code>"Hello World".substring(2, 4)</code></td><td class="t">"ll"</td></tr>
+        <tr><td class="l"><code>"aaa".replace("aa", "b")</code></td><td class="t">"ba"</td></tr>
+        <tr><td class="l"><code>new SB("abcdef").delete(1, 3)</code></td><td class="t">"adef"</td></tr>
+        <tr><td class="l"><code>"a,b,c,,".split(",").length</code></td><td class="t">3</td></tr>
+      </table>
+      <div class="point"><b>次は #04 配列と ArrayList。</b>1 次元・2 次元の配列と、要素数が変わる ArrayList へ進む。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料（表の SB は StringBuilder の略）</div>
+</section>
+
+</body>

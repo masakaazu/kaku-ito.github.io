@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS SAA #24 ストレージとネットワークのコスト 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">AWS SAA（SAA-C03）　分野4 コスト最適化　#24</div>
+  <h1>ストレージとネットワークのコスト</h1>
+  <p>S3 の最小ストレージ期間・請求の最小サイズ・取り出し料金、Intelligent-Tiering の料金、ライフサイクルの移行と 128 KB、不完全なマルチパートアップロード、リクエスタ支払い、Storage Lens、アーカイブの取り出しオプション、gp3、EBS Snapshots Archive、Data Lifecycle Manager、EFS のライフサイクル管理、インターネット・AZ 間・リージョン間のデータ転送、NAT ゲートウェイの料金、ゲートウェイとインターフェイスのエンドポイント、CloudFront・Direct Connect・API Gateway のスロットリング</p>
+  <div class="refs-legend">各ページの下に、根拠にした AWS の公式ドキュメント（S3・EBS・EFS・VPC・PrivateLink・Data Exports・Well-Architected・Direct Connect・API Gateway の各ガイド）を書いた（青い文字を押すと開く）。「」の中はドキュメントの原文どおり（日本語版は機械翻訳のため、語順が不自然なところもそのまま）。サイズ・場面は Claude が作った例。具体的な単価は料金ページで変わるので扱わない。数字は 2026-11 時点のドキュメントによる</div>
+</section>
+
+<section class="slide">
+  <h1>全体像：どこでお金がかかるか<small>試験ガイド タスク 4.1・4.4</small></h1>
+  <svg width="856" height="236" viewBox="0 0 856 236">
+    <defs><marker id="a1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="10" width="400" height="216" rx="10" fill="#e3eefc" stroke="#1f5fa8"/><text x="210" y="32" fill="#1f5fa8" font-weight="700">ストレージ：置く・読む・動かす</text>
+      <rect x="30" y="46" width="170" height="40" rx="6" fill="#1f5fa8"/><text x="115" y="64" fill="#fff">保存（GB・月）</text><text x="115" y="80" fill="#fff">最小期間・最小サイズ</text>
+      <rect x="220" y="46" width="170" height="40" rx="6" fill="#1f5fa8"/><text x="305" y="64" fill="#fff">取り出し（GB）</text><text x="305" y="80" fill="#fff">IA・Glacier</text>
+      <rect x="30" y="98" width="170" height="40" rx="6" fill="#1f5fa8"/><text x="115" y="116" fill="#fff">リクエスト・移行</text><text x="115" y="132" fill="#fff">オブジェクトごと</text>
+      <rect x="220" y="98" width="170" height="40" rx="6" fill="#1f5fa8"/><text x="305" y="116" fill="#fff">モニタリング</text><text x="305" y="132" fill="#fff">Intelligent-Tiering</text>
+      <rect x="30" y="150" width="360" height="62" rx="6" fill="#fff" stroke="#1f5fa8"/><text x="210" y="172" fill="#1f3a68" font-weight="700">減らす：クラスを選ぶ・ライフサイクル・gp3</text><text x="210" y="192">スナップショットのアーカイブ・古いバックアップの削除</text>
+      <rect x="446" y="10" width="400" height="216" rx="10" fill="#fde7cf" stroke="#b25000"/><text x="646" y="32" fill="#b25000" font-weight="700">ネットワーク：出る・またぐ・通す</text>
+      <rect x="466" y="46" width="170" height="40" rx="6" fill="#b25000"/><text x="551" y="64" fill="#fff">インターネットへ送信</text><text x="551" y="80" fill="#fff">（受信は無料）</text>
+      <rect x="656" y="46" width="170" height="40" rx="6" fill="#b25000"/><text x="741" y="64" fill="#fff">AZ 間・リージョン間</text><text x="741" y="80" fill="#fff">境界をまたぐ</text>
+      <rect x="466" y="98" width="170" height="40" rx="6" fill="#b25000"/><text x="551" y="116" fill="#fff">NAT ゲートウェイ</text><text x="551" y="132" fill="#fff">時間＋処理 GB</text>
+      <rect x="656" y="98" width="170" height="40" rx="6" fill="#b25000"/><text x="741" y="116" fill="#fff">Direct Connect</text><text x="741" y="132" fill="#fff">ポート時間＋出力</text>
+      <rect x="466" y="150" width="360" height="62" rx="6" fill="#fff" stroke="#b25000"/><text x="646" y="172" fill="#b25000" font-weight="700">減らす：ゲートウェイエンドポイント・AZ ごとの NAT</text><text x="646" y="192">CloudFront のキャッシュ・Direct Connect・スロットリング</text>
+    </g>
+  </svg>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/wellarchitected/latest/cost-optimization-pillar/plan-for-data-transfer.html">データ転送を計画する</a>（「クラウドでコストを最適化するには、ネットワーキングリソースを効率的に使用する必要があります。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/storage-class-intro.html">Amazon S3 ストレージクラスの理解と管理</a></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>S3 のコスト</h1>
+  <p>保存の単価だけでなく、最小ストレージ期間・請求の最小サイズ・取り出し料金・移行のリクエストで決まる。減らす設定と、リクエスタ支払い。</p>
+  <div class="foot"><span>AWS SAA #24 ストレージとネットワークのコスト</span><span>タスク 4.1・4.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>S3 の料金を決める 4 つのしくみ</h1>
+  <table class="mx">
+    <tr><th style="width:26%">ストレージクラス</th><th>最小ストレージ期間</th><th>請求の最小サイズ</th><th>取り出し料金</th><th>AZ</th></tr>
+    <tr><td class="t">S3 Standard</td><td>なし</td><td>なし</td><td>なし</td><td>3 以上</td></tr>
+    <tr><td class="t">S3 Intelligent-Tiering</td><td>なし</td><td>なし</td><td>なし（モニタリング料金）</td><td>3 以上</td></tr>
+    <tr><td class="t">S3 Standard-IA</td><td>30 日</td><td>128 KB</td><td>GB 単位</td><td>3 以上</td></tr>
+    <tr><td class="t">S3 One Zone-IA</td><td>30 日</td><td>128 KB</td><td>GB 単位</td><td>1</td></tr>
+    <tr><td class="t">S3 Glacier Instant Retrieval</td><td>90 日</td><td>128 KB</td><td>GB 単位</td><td>3 以上</td></tr>
+    <tr><td class="t">S3 Glacier Flexible Retrieval</td><td>90 日</td><td>—</td><td>GB 単位</td><td>3 以上</td></tr>
+    <tr><td class="t">S3 Glacier Deep Archive</td><td>180 日</td><td>—</td><td>GB 単位</td><td>3 以上</td></tr>
+  </table>
+  <div class="point warn"><b>ひっかけ：</b>「保存の単価が安い」クラスほど、最小ストレージ期間・最小サイズ・取り出し料金のしばりが強い。すぐ消す・小さい・よく読むデータを安いクラスに入れると、かえって高くなる。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/storage-class-intro.html">Amazon S3 ストレージクラスの理解と管理</a>（「S3 Standard – IA と S3 1 ゾーン – IA ストレージクラスは、サイズが 128 KB 以上あり、少なくとも 30 日間保存する予定のオブジェクトに最適です。」「Amazon S3 では、これらのオブジェクトに取り出し料金が発生するため、アクセスが頻繁ではないデータに最適です。」）</div>
+</section>
+
+<section class="slide">
+  <h1>最小ストレージ期間と最小サイズを計算する</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">Standard-IA に入れて 10 日で消すと（Claude の例）</div>
+      <svg width="410" height="120" viewBox="0 0 410 120">
+        <g font-size="11" text-anchor="middle">
+          <line x1="20" y1="60" x2="400" y2="60" stroke="#4a5a78"/>
+          <rect x="20" y="40" width="120" height="40" fill="#1f5fa8"/><text x="80" y="64" fill="#fff">保存 10 日</text>
+          <rect x="140" y="40" width="240" height="40" fill="#fde7cf" stroke="#b25000" stroke-dasharray="4 3"/><text x="260" y="64" fill="#b25000">残り 20 日分も請求</text>
+          <text x="20" y="98" fill="#4a5a78">0 日</text><text x="140" y="98" fill="#4a5a78">10 日：削除</text><text x="380" y="98" fill="#4a5a78">30 日</text>
+          <text x="205" y="22" fill="#1f3a68" font-weight="700">30 日分の料金</text>
+        </g>
+      </svg>
+      <div class="mini">期間の前に削除・上書き・別のクラスへの移行をすると、残りの日数分が日割りでかかる。Deep Archive は 180 日、Glacier Flexible Retrieval と Instant Retrieval は 90 日。</div>
+    </div>
+    <div>
+      <div class="lbl">10 KB のオブジェクトを Standard-IA に置くと</div>
+      <svg width="410" height="120" viewBox="0 0 410 120">
+        <g font-size="11" text-anchor="middle">
+          <rect x="20" y="30" width="30" height="40" fill="#1f5fa8"/><text x="35" y="90" fill="#1f5fa8">実際 10 KB</text>
+          <rect x="120" y="30" width="270" height="40" fill="#fde7cf" stroke="#b25000"/><rect x="120" y="30" width="30" height="40" fill="#1f5fa8"/><text x="270" y="55" fill="#b25000">128 KB 分を請求</text>
+          <text x="205" y="110" fill="#4a5a78">小さいファイルが多いと IA でも安くならない</text>
+        </g>
+      </svg>
+      <div class="mini">Intelligent-Tiering は 128 KB 未満を見張らず、自動の階層化の対象にしない。</div>
+    </div>
+  </div>
+  <div class="point"><b>選び方：</b>128 KB 以上で、30 日以上置き、月に 1 回くらいしか読まない → Standard-IA。四半期に 1 回くらいでミリ秒で読みたい → Glacier Instant Retrieval。読み方が読めない → Intelligent-Tiering。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/storage-class-intro.html">Amazon S3 ストレージクラスの理解と管理</a>（「30 日前に削除、上書き、または別のストレージクラスに移行されたオブジェクトは、通常のストレージ使用料に加えて、最低 30 日間の残りの期間分の日割り料金が発生します。」「オブジェクトが 128 KB 以下の場合、Amazon S3 は 128 KB に相当する料金を請求します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Intelligent-Tiering：読めないアクセスに</h1>
+  <svg width="856" height="150" viewBox="0 0 856 150">
+    <defs><marker id="a2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="40" width="150" height="56" rx="8" fill="#1f5fa8"/><text x="85" y="64" fill="#fff" font-weight="700">高頻度アクセス</text><text x="85" y="82" fill="#fff">はじめはここ</text>
+      <rect x="230" y="40" width="150" height="56" rx="8" fill="#1f3a68"/><text x="305" y="64" fill="#fff" font-weight="700">低頻度アクセス</text><text x="305" y="82" fill="#fff">30 日アクセスなし</text>
+      <rect x="450" y="40" width="160" height="56" rx="8" fill="#4a5a78"/><text x="530" y="64" fill="#fff" font-weight="700">アーカイブ</text><text x="530" y="82" fill="#fff">インスタントアクセス 90 日</text>
+      <rect x="680" y="14" width="166" height="44" rx="8" fill="#fff" stroke="#4a5a78" stroke-dasharray="4 3"/><text x="763" y="32" fill="#4a5a78">アーカイブアクセス</text><text x="763" y="48" fill="#4a5a78">有効にすると 90 日〜</text>
+      <rect x="680" y="78" width="166" height="44" rx="8" fill="#fff" stroke="#4a5a78" stroke-dasharray="4 3"/><text x="763" y="96" fill="#4a5a78">ディープアーカイブ</text><text x="763" y="112" fill="#4a5a78">有効にすると 180 日</text>
+      <g stroke="#1f3a68" stroke-width="2"><line x1="160" y1="68" x2="228" y2="68" marker-end="url(#a2)"/><line x1="380" y1="68" x2="448" y2="68" marker-end="url(#a2)"/><line x1="610" y1="60" x2="678" y2="40" marker-end="url(#a2)"/><line x1="610" y1="76" x2="678" y2="98" marker-end="url(#a2)"/></g>
+      <text x="300" y="130" fill="#b25000">オブジェクトごとに少額のモニタリング・オートメーション料金。取り出し料金・最小ストレージ期間はない</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:26%"></th><th>Intelligent-Tiering</th><th>Standard-IA（ライフサイクルで移す）</th></tr>
+    <tr><td class="t">向くデータ</td><td>アクセスが読めない・変わる</td><td>アクセスが少ないとわかっている</td></tr>
+    <tr><td class="t">読んだときの料金</td><td>取り出し料金なし</td><td>GB 単位の取り出し料金</td></tr>
+    <tr><td class="t">追加の料金</td><td>オブジェクトごとのモニタリング</td><td>移行のリクエスト（オブジェクトごと）</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/intelligent-tiering-overview.html">S3 Intelligent-Tiering の仕組み</a>（「低頻度アクセス – S3 Intelligent-Tiering では、30 日間連続してアクセスされなかったオブジェクトは低頻度アクセス階層に移動されます。」「オブジェクトのサイズが 128 KB 未満の場合は、モニタリングされず、自動階層化に適していません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/storage-class-intro.html">Amazon S3 ストレージクラスの理解と管理</a>（「S3 Intelligent-Tiering には取り出し料金は発生しません。」）</div>
+</section>
+
+<section class="slide">
+  <h1>S3 のコストを下げる設定</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">ライフサイクルの移行と 128 KB<span>移行のリクエストはオブジェクトごとに課金。2024 年 9 月から 128 KB 未満はデフォルトで移行しない。Glacier Flexible・Deep Archive へはオブジェクトごとに 40 KB のオーバーヘッド</span></div>
+      <div class="box b2">不完全なマルチパートアップロードの中止<span>途中の部品にも保存の料金。AbortIncompleteMultipartUpload のルールがベストプラクティス。早期削除の料金はかからない</span></div>
+    </div>
+    <div class="stack">
+      <div class="box b3">リクエスタ支払い<span>リクエストとダウンロードの料金をリクエストした人が払う。保存は所有者。匿名のアクセスは不可</span></div>
+      <div class="box b4">S3 Storage Lens<span>組織・アカウント・バケットのメトリクスを集め、コスト最適化とデータ保護の推奨を示す</span></div>
+    </div>
+  </div>
+  <table class="mx">
+    <tr><th style="width:26%">アーカイブの取り出し</th><th>速さ</th><th>料金</th></tr>
+    <tr><td class="t">高速</td><td>すばやい（プロビジョンドキャパシティで容量を保証）</td><td>プレミアム機能（緊急の料金）</td></tr>
+    <tr><td class="t">標準（デフォルト）</td><td>Flexible はふつう 3〜5 時間、Deep Archive は 12 時間以内</td><td>大容量より高い</td></tr>
+    <tr><td class="t">大容量</td><td>最も遅い</td><td>最も安い。大量のデータ向け</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html">Amazon S3 ライフサイクルを使用したオブジェクトの移行</a>（「オブジェクトごとに移行リクエストが課金されるためです。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/mpu-abort-incomplete-mpu-lifecycle-config.html">不完全なマルチパートアップロードを削除するためのバケットライフサイクル設定の設定</a>（「ベストプラクティスとして、ストレージコストを最小限に抑えるため、AbortIncompleteMultipartUpload アクションを使用してライフサイクルルールを設定することをお勧めします。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html">アーカイブ取得オプションを理解する</a>（「大容量取り出しでは、大量のデータを安価に取得できます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>リクエスタ支払い：だれが何を払うか</h1>
+  <svg width="856" height="150" viewBox="0 0 856 150">
+    <defs><marker id="a3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="30" width="200" height="90" rx="8" fill="#1f3a68"/><text x="110" y="56" fill="#fff" font-weight="700">バケットの所有者</text><text x="110" y="78" fill="#fff">保存の料金は常に払う</text><text x="110" y="98" fill="#fff">（研究所など：Claude の例）</text>
+      <rect x="320" y="30" width="210" height="90" rx="8" fill="#e3eefc" stroke="#1f5fa8"/><text x="425" y="56" fill="#1f5fa8" font-weight="700">リクエスタ支払いのバケット</text><text x="425" y="78">大きなデータセット</text><text x="425" y="98">匿名のアクセスは不可</text>
+      <rect x="640" y="30" width="206" height="90" rx="8" fill="#b25000"/><text x="743" y="56" fill="#fff" font-weight="700">リクエストした人</text><text x="743" y="78" fill="#fff">リクエストと</text><text x="743" y="98" fill="#fff">ダウンロードの料金</text>
+      <line x1="210" y1="75" x2="318" y2="75" stroke="#1f3a68" stroke-width="2" marker-end="url(#a3)"/><text x="264" y="66" fill="#1f3a68">公開</text>
+      <line x1="638" y1="75" x2="532" y2="75" stroke="#1f3a68" stroke-width="2" marker-end="url(#a3)"/><text x="585" y="66" fill="#1f3a68">取得</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>使いどころ：</b>郵便番号のリスト・参照データ・地理空間の情報・ウェブクロールのデータなど、大きなデータセットを共有したいが、アクセスの費用は負担したくないとき。</div>
+    <div class="point warn"><b>ひっかけ：</b>リクエスタ支払いにしても、保存の料金は所有者。誰が払うかわからない匿名のアクセスはできなくなる。署名付き URL や CloudFront は、料金を払う人を変えない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/RequesterPaysBuckets.html">ストレージの転送と使用にリクエスタ支払い汎用バケットを使用する</a>（「リクエスタ支払いバケットの場合、リクエストおよびバケットからのデータのダウンロードにかかるコストは、所有者でなくリクエストを実行したリクエスタが支払います。」「データの保管にかかるコストは常にバケット所有者が支払います。」「汎用バケットでリクエスタ支払いを有効にすると、そのバケットへの匿名アクセスは許可されなくなります。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>ブロック・ファイル・バックアップのコスト</h1>
+  <p>gp2 から gp3 へ。めったに使わないスナップショットのアーカイブと、Data Lifecycle Manager による古いバックアップの削除。EFS のライフサイクル管理。</p>
+  <div class="foot"><span>AWS SAA #24 ストレージとネットワークのコスト</span><span>タスク 4.1・4.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>gp2 から gp3 へ</h1>
+  <svg width="856" height="140" viewBox="0 0 856 140">
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="10" width="400" height="120" rx="10" fill="#f6f8fb" stroke="#4a5a78"/><text x="210" y="32" fill="#4a5a78" font-weight="700">gp2</text>
+      <path d="M30,110 L120,110 L130,50 L190,50 L200,110 L390,110" fill="none" stroke="#4a5a78" stroke-width="2.5"/>
+      <line x1="30" y1="50" x2="390" y2="50" stroke="#4a5a78" stroke-dasharray="4 3"/><text x="320" y="44" fill="#4a5a78">3,000 IOPS（バースト）</text>
+      <text x="210" y="128" fill="#4a5a78">1 TiB 未満はバーストで 3,000 IOPS まで</text>
+      <rect x="446" y="10" width="400" height="120" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="646" y="32" fill="#3a7d44" font-weight="700">gp3（GiB 単価 20% 低い）</text>
+      <line x1="466" y1="50" x2="826" y2="50" stroke="#3a7d44" stroke-width="2.5"/><text x="646" y="44" fill="#3a7d44">3,000 IOPS・125 MiB/秒がいつでも（料金に含む）</text>
+      <text x="646" y="90">バーストは使わない</text><text x="646" y="110">大きさに関係なくベースラインがある</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:26%"></th><th>gp2</th><th>gp3</th></tr>
+    <tr><td class="t">GiB あたりの料金</td><td>—</td><td>gp2 より 20% 低い（EBS で最も低コストの SSD）</td></tr>
+    <tr><td class="t">性能のしくみ</td><td>1 TiB 未満はバーストで 3,000 IOPS</td><td>3,000 IOPS・125 MiB/秒のベースラインが料金に含まれる</td></tr>
+  </table>
+  <div class="point"><b>決め手：</b>「性能はそのままでボリュームのコストを下げたい」→ gp3 に変える。レイテンシーにとても敏感なワークロードには io2 Block Express が勧められている（コストを下げる目的ではない）。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/general-purpose.html">Amazon EBS 汎用 SSD ボリューム</a>（「さらに、gp3 ボリュームでは、GiB あたりの料金が汎用 SSD (gp2) ボリュームよりも 20% 低くなります。」「gp3 ボリュームは、ストレージの料金に含まれている 3,000 IOPS の一貫したベースライン IOPS パフォーマンスを提供します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>スナップショットと EFS のコスト</h1>
+  <svg width="856" height="130" viewBox="0 0 856 130">
+    <defs><marker id="a4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="20" width="220" height="70" rx="8" fill="#1f5fa8"/><text x="120" y="44" fill="#fff" font-weight="700">標準の階層</text><text x="120" y="62" fill="#fff">増分のスナップショット</text><text x="120" y="80" fill="#fff">DLM で作成・保持・削除</text>
+      <rect x="330" y="20" width="230" height="70" rx="8" fill="#4a5a78"/><text x="445" y="44" fill="#fff" font-weight="700">アーカイブ階層</text><text x="445" y="62" fill="#fff">フルのスナップショットに変わる</text><text x="445" y="80" fill="#fff">最大 75% 安い（90 日以上）</text>
+      <line x1="230" y1="45" x2="328" y2="45" stroke="#1f3a68" stroke-width="2" marker-end="url(#a4)"/><text x="279" y="38" fill="#1f3a68">アーカイブ</text>
+      <line x1="328" y1="70" x2="232" y2="70" stroke="#1f3a68" stroke-width="2" marker-end="url(#a4)"/><text x="279" y="86" fill="#1f3a68">使う前に復元</text>
+      <rect x="620" y="20" width="226" height="70" rx="8" fill="#3a7d44"/><text x="733" y="44" fill="#fff" font-weight="700">Data Lifecycle Manager</text><text x="733" y="62" fill="#fff">古いバックアップを削除</text><text x="733" y="80" fill="#fff">追加料金なし</text>
+      <text x="428" y="118" fill="#4a5a78">例：プロジェクト終了時のスナップショットを 7 年残す → アーカイブ（Claude の例）</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%">EFS のストレージクラス</th><th>向くデータ</th><th>ライフサイクルポリシー</th></tr>
+    <tr><td class="t">標準</td><td>よく読む</td><td>「標準への移行」で、読まれたファイルを戻せる</td></tr>
+    <tr><td class="t">低頻度アクセス（IA）</td><td>四半期に数回しか読まない</td><td>「IA へ移行」</td></tr>
+    <tr><td class="t">アーカイブ</td><td>年に数回しか読まない</td><td>「アーカイブへの移行」</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/snapshot-archive.html">Amazon EBS スナップショットのアーカイブ</a>（「Amazon EBS Snapshots Archive では、90 日以上保存する予定で、ほとんどアクセスする必要のないスナップショットに対して、スナップショットストレージコストを最大 75% 削減できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/snapshot-lifecycle.html">Amazon Data Lifecycle Manager でバックアップを自動化</a>（「古いバックアップを削除してストレージコストを削減する。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/efs/latest/ug/lifecycle-management-efs.html">ストレージライフサイクルを管理する</a>（「アーカイブストレージクラスは、年に数回しかアクセスされないデータ向けにコストが最適化されています。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>データ転送とネットワークのコスト</h1>
+  <p>どの向き・どの境界に料金がかかるか。NAT ゲートウェイの料金の減らし方、ゲートウェイとインターフェイスのエンドポイント。CloudFront・Direct Connect・API Gateway のスロットリング。</p>
+  <div class="foot"><span>AWS SAA #24 ストレージとネットワークのコスト</span><span>タスク 4.1・4.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>データ転送の料金マップ</h1>
+  <svg width="856" height="236" viewBox="0 0 856 236">
+    <defs><marker id="a5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker><marker id="a5o" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker><marker id="a5g" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#3a7d44"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="80" width="130" height="70" rx="10" fill="#f6f8fb" stroke="#4a5a78"/><text x="75" y="110" fill="#4a5a78" font-weight="700">インターネット</text><text x="75" y="128" fill="#4a5a78">利用者</text>
+      <rect x="220" y="10" width="380" height="216" rx="10" fill="#e3eefc" stroke="#1f5fa8"/><text x="410" y="30" fill="#1f5fa8" font-weight="700">リージョン A（東京など）</text>
+      <rect x="240" y="44" width="150" height="116" rx="8" fill="#fff" stroke="#4a5a78"/><text x="315" y="62" fill="#4a5a78">AZ a</text><rect x="265" y="100" width="100" height="34" rx="6" fill="#1f5fa8"/><text x="315" y="121" fill="#fff">EC2</text>
+      <rect x="430" y="44" width="150" height="116" rx="8" fill="#fff" stroke="#4a5a78"/><text x="505" y="62" fill="#4a5a78">AZ b</text><rect x="455" y="100" width="100" height="34" rx="6" fill="#1f5fa8"/><text x="505" y="121" fill="#fff">EC2</text>
+      <rect x="680" y="80" width="166" height="70" rx="10" fill="#f6f8fb" stroke="#4a5a78"/><text x="763" y="110" fill="#4a5a78" font-weight="700">リージョン B</text><text x="763" y="128" fill="#4a5a78">（バージニアなど）</text>
+      <line x1="140" y1="100" x2="263" y2="108" stroke="#3a7d44" stroke-width="2.5" marker-end="url(#a5g)"/><text x="190" y="88" fill="#3a7d44" font-weight="700">受信：無料</text>
+      <line x1="263" y1="126" x2="140" y2="134" stroke="#b25000" stroke-width="2.5" marker-end="url(#a5o)"/><text x="190" y="160" fill="#b25000" font-weight="700">送信：有料</text>
+      <line x1="367" y1="117" x2="453" y2="117" stroke="#b25000" stroke-width="2.5" marker-end="url(#a5o)"/><text x="410" y="184" fill="#b25000" font-weight="700">AZ 間：有料</text><text x="410" y="202" fill="#b25000">（受信・送信の両方のことも）</text>
+      <line x1="557" y1="117" x2="678" y2="117" stroke="#b25000" stroke-width="2.5" marker-end="url(#a5o)"/><text x="642" y="100" fill="#b25000" font-weight="700">リージョン間</text><text x="763" y="172" fill="#b25000">転送元から出る分が有料</text><text x="763" y="190" fill="#3a7d44">転送先に入る分は無料</text>
+    </g>
+  </svg>
+  <div class="point"><b>考え方：</b>データ転送の料金は、送信元・送信先・量で決まる。高い可用性のための AZ 間の転送は必要なコストとして受け入れ、大量の往復やリージョンをまたぐ転送は設計で減らす。どこに料金がかかっているかは CUR の使用タイプや Cost Explorer で見る。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/cur/latest/userguide/cur-data-transfers-charges.html">データ転送料金について</a>（「特定のリソースについては、 AWS リージョン内のデータ転送におけるインバウンドトラフィックとアウトバウンドトラフィックの両方に対して課金されます。」「転送先のリージョンに転送されたデータには料金はかかりません。」「インターネットからへのデータ転送には料金はかかりません AWS。」）</div>
+</section>
+
+<section class="slide">
+  <h1>NAT ゲートウェイの料金と減らし方</h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <defs><marker id="a6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker><marker id="a6g" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#3a7d44"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="10" width="560" height="180" rx="10" fill="#e3eefc" stroke="#1f5fa8"/><text x="530" y="28" fill="#1f5fa8" font-weight="700">VPC</text>
+      <rect x="25" y="48" width="250" height="94" rx="8" fill="#fff" stroke="#4a5a78"/><text x="150" y="64" fill="#4a5a78">AZ a</text>
+      <rect x="40" y="76" width="100" height="32" rx="6" fill="#b25000"/><text x="90" y="96" fill="#fff">NAT GW</text><rect x="160" y="76" width="100" height="32" rx="6" fill="#1f5fa8"/><text x="210" y="96" fill="#fff">EC2</text>
+      <rect x="305" y="48" width="250" height="94" rx="8" fill="#fff" stroke="#4a5a78"/><text x="430" y="64" fill="#4a5a78">AZ b</text>
+      <rect x="320" y="76" width="100" height="32" rx="6" fill="#fff" stroke="#b25000" stroke-dasharray="4 3"/><text x="370" y="96" fill="#b25000">NAT GW を足す</text><rect x="440" y="76" width="100" height="32" rx="6" fill="#1f5fa8"/><text x="490" y="96" fill="#fff">EC2</text>
+      <path d="M440,112 Q290,150 140,112" fill="none" stroke="#b25000" stroke-width="2" marker-end="url(#a6)"/><text x="290" y="170" fill="#b25000">AZ b の EC2 から AZ a の NAT へ：AZ 間の料金もかかる</text>
+      <rect x="640" y="20" width="206" height="50" rx="8" fill="#4a5a78"/><text x="743" y="42" fill="#fff">インターネット</text><text x="743" y="58" fill="#fff">（外部の API など）</text>
+      <rect x="640" y="100" width="206" height="50" rx="8" fill="#3a7d44"/><text x="743" y="122" fill="#fff">S3・DynamoDB</text><text x="743" y="138" fill="#fff">ゲートウェイエンドポイント</text>
+      <path d="M90,76 V36 H636" fill="none" stroke="#b25000" stroke-width="2" marker-end="url(#a6)"/>
+      <line x1="540" y1="100" x2="638" y2="124" stroke="#3a7d44" stroke-width="2.5" marker-end="url(#a6g)"/><text x="743" y="170" fill="#3a7d44">（NAT を通さない）</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:30%">NAT ゲートウェイの料金</th><th>減らし方</th></tr>
+    <tr><td class="t">使える時間 1 時間ごと</td><td class="l">大量に送るリソースと同じ AZ に置く。または、リソースがある各 AZ に NAT ゲートウェイを作る</td></tr>
+    <tr><td class="t">処理したデータ 1 GB ごと</td><td class="l">AWS のサービス宛てのトラフィックは、ゲートウェイエンドポイントやインターフェイスエンドポイントで NAT を通さない</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/nat-gateway-pricing.html">NAT ゲートウェイの料金</a>（「NAT ゲートウェイをプロビジョンすると、NAT ゲートウェイが使用可能な時間 1 時間ごと、およびゲートウェイが処理するデータ 1 GB ごとに課金されます。」「または、リソースがある各アベイラビリティーゾーンに NAT ゲートウェイを作成します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>エンドポイントと NAT インスタンス</h1>
+  <table class="mx">
+    <tr><th style="width:24%"></th><th>ゲートウェイエンドポイント</th><th>インターフェイスエンドポイント</th></tr>
+    <tr><td class="t">対象</td><td>S3 と DynamoDB</td><td>多くの AWS のサービス（S3・DynamoDB も）</td></tr>
+    <tr><td class="t">料金</td><td>追加料金なし</td><td>追加料金がかかる</td></tr>
+    <tr><td class="t">しくみ</td><td>ルートテーブルに経路を足す</td><td>VPC の中にプライベート IP のネットワークインターフェイス</td></tr>
+    <tr><td class="t">オンプレミス・ほかのリージョン・TGW から</td><td>使えない</td><td>使える</td></tr>
+  </table>
+  <div class="cols">
+    <div class="point"><b>選び方：</b>VPC の中から同じリージョンの S3・DynamoDB へ → ゲートウェイエンドポイント（無料）。オンプレミスから Direct Connect や VPN で S3 へプライベートに → インターフェイスエンドポイント。</div>
+    <div class="point warn"><b>NAT インスタンス：</b>NAT AMI のもとの Amazon Linux AMI はメンテナンスサポートが 2023 年 12 月 31 日に終わった。AWS は NAT ゲートウェイへの移行を勧めている（可用性と帯域幅に優れ、運用の手間が少ない）。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/gateway-endpoints.html">ゲートウェイエンドポイント</a>（「ゲートウェイエンドポイントは追加料金なしで使用できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/vpc-endpoints-s3.html">Amazon S3 のゲートウェイエンドポイント</a>（「このようなシナリオでは、追加料金で利用できるインターフェイスエンドポイントを使用する必要があります。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/VPC_NAT_Instance.html">NAT インスタンス</a>（「NAT ゲートウェイでは、可用性と帯域幅に優れ、運用管理の手間を軽減できます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>CloudFront・Direct Connect・スロットリング</h1>
+  <table class="mx">
+    <tr><th style="width:20%"></th><th>何を減らすか</th><th>料金・しくみ</th></tr>
+    <tr><td class="t">CloudFront</td><td class="l">オリジンの負荷とデータ転送（エッジでキャッシュ）</td><td class="l">使用タイプ・地域・選んだ機能で変わる</td></tr>
+    <tr><td class="t">Direct Connect</td><td class="l">大量のデータをインターネット経由で送るコスト</td><td class="l">ポート時間料金（容量と専用・ホスト型で決まる）＋データ転送出力</td></tr>
+    <tr><td class="t">API Gateway のスロットリング</td><td class="l">呼び出しすぎによるバックエンドの負荷とコスト</td><td class="l">トークンバケット。超えると 429 Too Many Requests</td></tr>
+  </table>
+  <div class="cols">
+    <div>
+      <div class="lbl">スロットリングがかかる順（API Gateway）</div>
+      <div class="stack">
+        <div class="box b1">1. 使用量プランのクライアント・メソッドごと<span>API キーで顧客を見分け、レートとクォータを決める</span></div>
+        <div class="box b2">2. ステージのメソッドごと<span>メソッドごとに違う設定もできる</span></div>
+        <div class="box b3">3. アカウント（リージョンごと）<span>申請で引き上げられる</span></div>
+        <div class="box b4">4. AWS のリージョン全体<span>すべてのアカウントに効く</span></div>
+      </div>
+    </div>
+    <div class="point"><b>決め手：</b>「世界中に静的なファイルを配り、送信の料金を減らす」→ CloudFront。「毎月何十 TB もオンプレミスとやり取り」→ Direct Connect（インターネット経由よりコスト効率がよく確実）。「特定の顧客の呼び出しすぎ」→ 使用量プランと API キー。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/wellarchitected/latest/cost-optimization-pillar/cost_data_transfer_optimized_components.html">COST08-BP02 データ転送コストを最適化するコンポーネントを選択する</a>（「インターネットを介して大量のデータを転送するよりも、この方が高コスト効率で確実です。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/directconnect/latest/UserGuide/Welcome.html">Direct Connect とは</a>（「ポート時間料金は容量および接続のタイプ (専用接続あるいはホスト型接続) によって決定されます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/api-gateway-request-throttling.html">API Gateway のスループットを向上させるために REST API へのリクエストをスロットリングする</a>（「API Gateway は、トークンバケットアルゴリズムを使用してトークンでリクエストをカウントし、API へのリクエストを調整します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">S3<span>最小ストレージ期間（30・90・180 日）、最小サイズ 128 KB、取り出し料金、Intelligent-Tiering、移行と 128 KB、不完全なアップロードの中止、リクエスタ支払い、Storage Lens、大容量取り出し</span></div>
+      <div class="box b2">EBS・EFS<span>gp3（20% 安い・3,000 IOPS 込み）、Snapshots Archive（75%・90 日）、Data Lifecycle Manager、EFS の IA とアーカイブ</span></div>
+      <div class="box b3">データ転送<span>受信は無料・送信は有料、AZ 間とリージョン間（転送元）は有料</span></div>
+      <div class="box b4">ネットワーク<span>NAT（時間＋GB、AZ ごと）、ゲートウェイエンドポイント（無料）、CloudFront、Direct Connect、スロットリング</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:54%">ひっかけ</th><th>正しくは</th></tr>
+        <tr><td class="l">すぐ消すデータを Standard-IA</td><td class="x">30 日分かかる</td></tr>
+        <tr><td class="l">小さいファイルを IA で節約</td><td class="x">128 KB 分で請求</td></tr>
+        <tr><td class="l">リクエスタ支払いで保存も相手</td><td class="x">保存は所有者</td></tr>
+        <tr><td class="l">S3 へのアクセスに NAT を通す</td><td class="x">ゲートウェイエンドポイント</td></tr>
+        <tr><td class="l">オンプレミスからゲートウェイ EP</td><td class="x">インターフェイス EP</td></tr>
+        <tr><td class="l">リージョン間は受信側が払う</td><td class="x">転送元から出る分</td></tr>
+      </table>
+      <div class="point">これで AWS SAA の 24 分野がそろった。分野マップから、気になる分野のクイズで復習する。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS SAA #05 ログ・監査と脅威の検出 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">AWS SAA（SAA-C03）　分野1 セキュアなアーキテクチャの設計　#05</div>
+  <h1>ログ・監査と脅威の検出</h1>
+  <p>だれが何をしたかは CloudTrail、どういう設定かは Config、怪しい動きは GuardDuty。似た名前のサービスを「何を見るか」で分ける</p>
+  <div class="refs-legend">各ページの下に、根拠にした AWS の公式ドキュメント（CloudTrail・Config・GuardDuty・Macie・Inspector・Security Hub CSPM・Detective・VPC フローログ・CloudWatch Logs・Artifact）を書いた（青い文字を押すと開く）。「」の中はドキュメントの原文どおり（日本語版は機械翻訳のため、語順が不自然なところもそのまま）。会社名や構成の例は Claude が作った例</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>試験ガイド タスク 1.2・1.3</small></h1>
+  <svg width="856" height="190" viewBox="0 0 856 190">
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="10" width="200" height="170" rx="12" fill="#e3eefc" stroke="#1f3a68"/>
+      <text x="110" y="34" fill="#1f3a68" font-weight="700">だれが何をした？</text>
+      <rect x="30" y="48" width="160" height="40" rx="8" fill="#1f3a68"/><text x="110" y="73" fill="#fff" font-weight="700">CloudTrail</text>
+      <text x="110" y="112" font-size="11">API の操作の記録</text><text x="110" y="130" font-size="11">管理イベント・データイベント</text>
+      <rect x="222" y="10" width="200" height="170" rx="12" fill="#e8f3ea" stroke="#3a7d44"/>
+      <text x="322" y="34" fill="#3a7d44" font-weight="700">どういう設定？</text>
+      <rect x="242" y="48" width="160" height="40" rx="8" fill="#3a7d44"/><text x="322" y="73" fill="#fff" font-weight="700">AWS Config</text>
+      <text x="322" y="112" font-size="11">設定と変化の履歴</text><text x="322" y="130" font-size="11">ルールで準拠を評価・修復</text>
+      <rect x="434" y="10" width="200" height="170" rx="12" fill="#f5f5f7" stroke="#4a5a78"/>
+      <text x="534" y="34" fill="#4a5a78" font-weight="700">何が流れた・何が出た？</text>
+      <rect x="454" y="48" width="160" height="34" rx="8" fill="#4a5a78"/><text x="534" y="70" fill="#fff" font-weight="700">VPC フローログ</text>
+      <rect x="454" y="90" width="160" height="34" rx="8" fill="#4a5a78"/><text x="534" y="112" fill="#fff" font-weight="700">CloudWatch Logs</text>
+      <text x="534" y="148" font-size="11">IP の通信・アプリのログ</text>
+      <rect x="646" y="10" width="200" height="170" rx="12" fill="#fff4e5" stroke="#b25000"/>
+      <text x="746" y="34" fill="#b25000" font-weight="700">怪しい・危ない？</text>
+      <text x="746" y="58" font-size="11.5">GuardDuty（怪しい動き）</text>
+      <text x="746" y="78" font-size="11.5">Macie（S3 の機密データ）</text>
+      <text x="746" y="98" font-size="11.5">Inspector（脆弱性）</text>
+      <text x="746" y="118" font-size="11.5">Security Hub CSPM（まとめる）</text>
+      <text x="746" y="138" font-size="11.5">Detective（原因を調べる）</text>
+      <text x="746" y="166" font-size="10.5" fill="#6e6e73">図は Claude が作った模式図</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:62%">試験ガイドの知識・スキル（要約）</th><th>このPDF</th></tr>
+    <tr><td class="l">適切なユースケースを備えたセキュリティサービス（Cognito・GuardDuty・Macie など）［1.2］</td><td class="t">第3章（Cognito は #02）</td></tr>
+    <tr><td class="l">データアクセスとガバナンス／コンプライアンス要件を満たすよう AWS の技術を調整する［1.3］</td><td class="t">第1・2章</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html">AWS「コンテンツ分野 1: セキュアなアーキテクチャの設計」</a>タスク 1.2・1.3</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>だれが何をしたか（CloudTrail）</h1>
+  <p>操作はすべてイベントになる。90 日はタダで見られる。長く残す・まとめる・改ざんを確かめる方法を押さえる。</p>
+  <div class="foot"><span>AWS SAA #05 ログ・監査と脅威の検出</span><span>タスク 1.2・1.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>CloudTrail の3つの記録のしかた</h1>
+  <svg width="856" height="150" viewBox="0 0 856 150">
+    <defs><marker id="f1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="40" width="150" height="70" rx="10" fill="#f5f5f7" stroke="#d2d2d7"/><text x="85" y="68" font-weight="700">操作</text><text x="85" y="86" font-size="10.5">コンソール・CLI・SDK・API</text>
+      <line x1="160" y1="75" x2="206" y2="75" stroke="#1f3a68" stroke-width="2" marker-end="url(#f1)"/>
+      <rect x="208" y="30" width="150" height="90" rx="10" fill="#1f3a68"/><text x="283" y="70" fill="#fff" font-weight="700">CloudTrail</text><text x="283" y="90" fill="#fff" font-size="11">イベント</text>
+      <line x1="358" y1="50" x2="430" y2="24" stroke="#1f3a68" stroke-width="2" marker-end="url(#f1)"/>
+      <line x1="358" y1="75" x2="430" y2="75" stroke="#1f3a68" stroke-width="2" marker-end="url(#f1)"/>
+      <line x1="358" y1="100" x2="430" y2="126" stroke="#1f3a68" stroke-width="2" marker-end="url(#f1)"/>
+      <rect x="432" y="6" width="190" height="36" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="527" y="29" fill="#1f3a68" font-weight="700">イベント履歴（90 日）</text>
+      <rect x="432" y="57" width="190" height="36" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="527" y="80" fill="#1f3a68" font-weight="700">証跡 → S3</text>
+      <rect x="432" y="108" width="190" height="36" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="527" y="131" fill="#1f3a68" font-weight="700">CloudTrail Lake</text>
+      <line x1="622" y1="75" x2="660" y2="60" stroke="#3a7d44" stroke-width="2" marker-end="url(#f1)"/>
+      <line x1="622" y1="75" x2="660" y2="92" stroke="#3a7d44" stroke-width="2" marker-end="url(#f1)"/>
+      <rect x="662" y="40" width="184" height="30" rx="6" fill="#3a7d44"/><text x="754" y="60" fill="#fff" font-size="11.5">CloudWatch Logs（任意）</text>
+      <rect x="662" y="80" width="184" height="30" rx="6" fill="#3a7d44"/><text x="754" y="100" fill="#fff" font-size="11.5">EventBridge（任意）</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:18%"></th><th>イベント履歴</th><th>証跡</th><th>CloudTrail Lake</th></tr>
+    <tr><td class="t">中身</td><td class="l">そのリージョンの管理イベント</td><td class="l">選んだイベント（管理・データ・Insights）</td><td class="l">選んだイベントをイベントデータストアに</td></tr>
+    <tr><td class="t">期間</td><td class="l">過去 90 日</td><td class="l">S3 に置くかぎり</td><td class="l">料金オプションで最長約 10 年など</td></tr>
+    <tr><td class="t">料金</td><td class="t">なし</td><td class="l">管理イベントの1コピーは無料（S3 の保存料は別）</td><td class="l">取り込み・保存・クエリに料金</td></tr>
+    <tr><td class="t">使いどころ</td><td class="l">最近の操作をすぐ調べる</td><td class="l">長期保存・通知・ほかのツールで分析</td><td class="l">SQL で長期の監査・分析</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/cloudtrail-user-guide.html">とは AWS CloudTrail</a>（「イベント履歴 の閲覧には CloudTrail の料金はかかりません。」「証跡を作成すると、進行中の管理イベントのコピーを 1 つ無料で CloudTrail から S3 バケットに配信できますが、Amazon S3 ストレージには料金がかかります。」）</div>
+</section>
+
+<section class="slide">
+  <h1>管理イベント・データイベント・Insights イベント</h1>
+  <table class="mx">
+    <tr><th style="width:18%"></th><th>管理イベント</th><th>データイベント</th><th>Insights イベント</th></tr>
+    <tr><td class="t">何の記録</td><td class="l">リソースに対する管理の操作（コントロールプレーン）</td><td class="l">リソースの上や中での操作</td><td class="l">API の呼び出しの率・エラーの率の異常</td></tr>
+    <tr><td class="t">例</td><td class="l"><code>AttachRolePolicy</code>・<code>CreateSubnet</code>・<code>CreateTrail</code>・EC2 の起動</td><td class="l">S3 の <code>GetObject</code>・<code>PutObject</code>・<code>DeleteObject</code>、Lambda の実行</td><td class="l">ふだんより急に <code>RunInstances</code> が増えた</td></tr>
+    <tr><td class="t">デフォルトで記録</td><td class="t">される</td><td class="x">されない（量が多い）</td><td class="x">されない</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point warn"><b>本番のひっかけ：</b>「S3 のオブジェクトをだれが読んだか」は、証跡を作っただけでは残らない。データイベントを有効にする。</div>
+    <div class="point"><b>アラームにつなぐ：</b>証跡を CloudWatch Logs や EventBridge に送ると、「IAM のポリシーが変わったら SNS で通知」のような仕組みが作れる。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/cloudtrail-concepts.html">CloudTrail のコンセプト</a>（「デフォルトでは、証跡とイベントデータストアは管理イベントをログ記録しますが、データイベントまたは Insights イベントは記録しません。」「データイベントは、多くの場合、高ボリュームのアクティビティです。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/logging-insights-events-with-cloudtrail.html">CloudTrail Insights の使用</a></div>
+</section>
+
+<section class="slide">
+  <h1>もれなく・改ざんなく残す</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">組織の証跡 × マルチリージョン</div>
+      <svg width="410" height="170" viewBox="0 0 410 170">
+        <defs><marker id="f2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <rect x="4" y="6" width="250" height="158" rx="10" fill="#f5f5f7" stroke="#1f3a68"/><text x="129" y="24" fill="#1f3a68" font-weight="700">組織</text>
+          <rect x="16" y="34" width="110" height="34" rx="6" fill="#b23a2c"/><text x="71" y="55" fill="#fff">管理アカウント</text>
+          <rect x="136" y="34" width="110" height="34" rx="6" fill="#3a7d44"/><text x="191" y="55" fill="#fff">メンバー A</text>
+          <rect x="16" y="78" width="110" height="34" rx="6" fill="#3a7d44"/><text x="71" y="99" fill="#fff">メンバー B</text>
+          <rect x="136" y="78" width="110" height="34" rx="6" fill="#3a7d44"/><text x="191" y="99" fill="#fff">メンバー C</text>
+          <text x="129" y="134">各アカウントの、有効な</text><text x="129" y="150">すべてのリージョンの操作</text>
+          <line x1="254" y1="85" x2="296" y2="85" stroke="#1f3a68" stroke-width="2" marker-end="url(#f2)"/>
+          <rect x="298" y="56" width="108" height="60" rx="8" fill="#1f3a68"/><text x="352" y="82" fill="#fff" font-weight="700">ログ用の</text><text x="352" y="98" fill="#fff" font-weight="700">S3 バケット</text>
+        </g>
+      </svg>
+      <div class="mini">組織の証跡は管理アカウント（または委任された管理者）が作る。メンバーアカウントのユーザーは、消す・止める・変えるができない。図は Claude が作った模式図。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:44%">守りたいこと</th><th>使うもの</th></tr>
+        <tr><td class="l">全アカウントの記録を1か所に</td><td class="t">組織の証跡</td></tr>
+        <tr><td class="l">使っていないリージョンの操作も残す</td><td class="t">マルチリージョン証跡</td></tr>
+        <tr><td class="l">届いたあとに書き換えられていない証明</td><td class="t">ログファイルの整合性の検証</td></tr>
+        <tr><td class="l">90 日より長く、SQL で分析</td><td class="t">CloudTrail Lake</td></tr>
+      </table>
+      <div class="point"><b>整合性の検証のしくみ：</b>SHA-256 のハッシュと、RSA のデジタル署名。気づかれずに変更・削除・偽造することが計算上できなくなる。セキュリティやフォレンシックの調査で重要。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/creating-trail-organization.html">組織の証跡の作成</a>（「組織の証跡では、組織内の管理アカウントとすべてのメンバーアカウントのイベントが記録されます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/awscloudtrail/latest/userguide/cloudtrail-log-file-validation-intro.html">CloudTrail ログファイルの整合性の検証</a>（「検証されたログファイルは、セキュリティおよびフォレンシック調査で非常に重要です。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>設定とネットワークの記録</h1>
+  <p>Config は「リソースの今と昔の姿」。フローログは「流れた通信」。CloudWatch Logs は「アプリが書いたログ」。</p>
+  <div class="foot"><span>AWS SAA #05 ログ・監査と脅威の検出</span><span>タスク 1.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>同じ出来事を CloudTrail と Config で見る</h1>
+  <svg width="856" height="170" viewBox="0 0 856 170">
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="10" width="836" height="40" rx="8" fill="#fff4e5" stroke="#b25000"/>
+      <text x="428" y="35" fill="#b25000" font-weight="700">出来事：10/3 14:05 に、ユーザー tanaka が sg-web から「22 番を 0.0.0.0/0 から許可」のルールを足した（Claude が作った例）</text>
+      <rect x="10" y="62" width="410" height="100" rx="10" fill="#e3eefc" stroke="#1f3a68"/>
+      <text x="215" y="84" fill="#1f3a68" font-weight="700">CloudTrail のイベント</text>
+      <text x="215" y="106" font-family="DejaVu Sans Mono" font-size="11">eventName: AuthorizeSecurityGroupIngress</text>
+      <text x="215" y="124" font-family="DejaVu Sans Mono" font-size="11">userIdentity: tanaka / sourceIP / 時刻</text>
+      <text x="215" y="148" font-size="11" fill="#4a5a78">→「だれが・いつ・どこから・何の操作を」</text>
+      <rect x="436" y="62" width="410" height="100" rx="10" fill="#e8f3ea" stroke="#3a7d44"/>
+      <text x="641" y="84" fill="#3a7d44" font-weight="700">Config の設定の履歴</text>
+      <text x="641" y="106" font-size="11">sg-web の設定：10/3 以前は 443 だけ → 以後は 443 と 22</text>
+      <text x="641" y="124" font-size="11">関係：どの EC2・ENI に付いているか</text>
+      <text x="641" y="148" font-size="11" fill="#4a5a78">→「リソースがどういう状態で、どう変わったか」＋ルールで準拠を評価</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>Config の動き：</b>リソースの作成・変更・削除を続けて記録し、設定のスナップショットと履歴を S3 に届ける。変化を SNS で知らせることもできる。</div>
+    <div class="point warn"><b>どちらでも止めない：</b>CloudTrail も Config も「記録・評価」のサービス。危ない操作を事前に止めるのは SCP や IAM のポリシー（#01・#02）。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/config/latest/developerguide/WhatIsConfig.html">AWS Config とは?</a>（「AWS Config は、AWS アカウントにある AWS リソースに関する設定の詳細ビューを提供します。」「また、AWS Config はリソースの作成、変更、または削除を継続的に評価します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Config ルール → 修復 → まとめて配る・まとめて見る</h1>
+  <svg width="856" height="130" viewBox="0 0 856 130">
+    <defs><marker id="f3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="30" width="170" height="64" rx="10" fill="#f5f5f7" stroke="#d2d2d7"/><text x="95" y="56" font-weight="700">設定が変わる</text><text x="95" y="76" font-size="11">（または決めた頻度）</text>
+      <rect x="220" y="30" width="190" height="64" rx="10" fill="#3a7d44"/><text x="315" y="56" fill="#fff" font-weight="700">Config ルールで評価</text><text x="315" y="76" fill="#fff" font-size="11">準拠／非準拠</text>
+      <rect x="450" y="30" width="190" height="64" rx="10" fill="#1f3a68"/><text x="545" y="56" fill="#fff" font-weight="700">修復アクション</text><text x="545" y="76" fill="#fff" font-size="11">SSM 自動化ドキュメント</text>
+      <rect x="680" y="30" width="166" height="64" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="763" y="56" fill="#1f3a68" font-weight="700">直った</text><text x="763" y="76" font-size="11">手動か自動で</text>
+      <line x1="180" y1="62" x2="218" y2="62" stroke="#1f3a68" stroke-width="2" marker-end="url(#f3)"/>
+      <line x1="410" y1="62" x2="448" y2="62" stroke="#1f3a68" stroke-width="2" marker-end="url(#f3)"/>
+      <line x1="640" y1="62" x2="678" y2="62" stroke="#1f3a68" stroke-width="2" marker-end="url(#f3)"/>
+      <text x="430" y="118" fill="#4a5a78" font-size="11">例：「パブリックな S3 バケット」を非準拠と評価 → 自動でパブリックアクセスをブロック（Claude が作った例）</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%">しくみ</th><th>何をする</th><th style="width:34%">本番の言い回し</th></tr>
+    <tr><td class="t">Config ルール</td><td class="l">あるべき設定を決めて評価。AWS のマネージドルールと、自分で書くカスタムルール</td><td class="l">「基準に合わないリソースを続けて見つける」</td></tr>
+    <tr><td class="t">修復</td><td class="l">非準拠のリソースを Systems Manager の自動化ドキュメントで直す</td><td class="l">「見つけたら自動で直す」</td></tr>
+    <tr><td class="t">コンフォーマンスパック</td><td class="l">ルールと修復の一式を、アカウント・リージョン・組織にまとめて配る（YAML）</td><td class="l">「PCI DSS 向けのルール一式を全社に」</td></tr>
+    <tr><td class="t">アグリゲータ</td><td class="l">複数アカウント・複数リージョンの設定と準拠のデータを1か所に集める</td><td class="l">「全社の準拠状況を1画面で」</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/config/latest/developerguide/remediation.html">AWS Config による非準拠リソースの是正</a>（「AWS Config では、AWS Config ルール で評価されている非準拠のリソースを修復できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/config/latest/developerguide/conformance-packs.html">コンフォーマンスパック</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/config/latest/developerguide/aggregate-data.html">マルチアカウントマルチリージョンのデータ集約</a></div>
+</section>
+
+<section class="slide">
+  <h1>VPC フローログと CloudWatch Logs</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">VPC フローログ</div>
+      <table class="mx">
+        <tr><th style="width:34%">項目</th><th>中身</th></tr>
+        <tr><td class="t">記録するもの</td><td class="l">ネットワークインターフェイスに出入りする IP の通信の情報（送信元・送信先・ポート・許可か拒否か など）</td></tr>
+        <tr><td class="t">記録しないもの</td><td class="x">パケットの中身</td></tr>
+        <tr><td class="t">送り先</td><td class="l">CloudWatch Logs・S3・Data Firehose</td></tr>
+        <tr><td class="t">性能への影響</td><td class="t">なし（通信の経路の外で集める）</td></tr>
+        <tr><td class="t">使いどころ</td><td class="l">厳しすぎる SG のルールの診断、インスタンスに届く通信の監視</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">CloudWatch Logs</div>
+      <table class="mx">
+        <tr><th style="width:34%">項目</th><th>中身</th></tr>
+        <tr><td class="t">集めるもの</td><td class="l">EC2・CloudTrail・Route 53 など、システム・アプリ・AWS のサービスのログ</td></tr>
+        <tr><td class="t">できること</td><td class="l">クエリで検索、フィルターでログからメトリクスを作る、機密データのマスキング</td></tr>
+        <tr><td class="t">ログクラス</td><td class="l">標準と、取り込みが安い低頻度アクセス</td></tr>
+      </table>
+      <div class="point"><b>アラームの作り方：</b>ログ →（フィルター）→ メトリクス → CloudWatch アラーム → SNS。「ERROR が 1 分に 10 回で通知」など。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/flow-logs.html">VPC フローログを使用した IP トラフィックのログ記録</a>（「フローログデータはネットワークトラフィックのパスの外で収集されるため、ネットワークのスループットやレイテンシーには影響しません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html">Amazon CloudWatch Logs とは</a>（「CloudWatch Logs を使用すると、使用するすべてのシステム、アプリケーション、 AWS サービスからのログを 1 つの非常にスケーラブルなサービスに一元化できます。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>脅威の検出と調査</h1>
+  <p>見つける（GuardDuty・Macie・Inspector）、まとめる（Security Hub CSPM）、調べる（Detective）、対応する（EventBridge）。</p>
+  <div class="foot"><span>AWS SAA #05 ログ・監査と脅威の検出</span><span>タスク 1.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>5つのサービスの関係</h1>
+  <svg width="856" height="220" viewBox="0 0 856 220">
+    <defs><marker id="f4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <text x="110" y="18" fill="#6e6e73" font-size="11">見るもの</text>
+      <rect x="10" y="26" width="200" height="50" rx="8" fill="#f5f5f7" stroke="#d2d2d7"/><text x="110" y="46" font-size="11">CloudTrail 管理イベント・</text><text x="110" y="64" font-size="11">VPC フローログ・DNS ログ</text>
+      <rect x="10" y="86" width="200" height="50" rx="8" fill="#f5f5f7" stroke="#d2d2d7"/><text x="110" y="115" font-size="11">S3 のオブジェクトとバケット</text>
+      <rect x="10" y="146" width="200" height="50" rx="8" fill="#f5f5f7" stroke="#d2d2d7"/><text x="110" y="166" font-size="11">EC2・ECR のイメージ・</text><text x="110" y="184" font-size="11">Lambda のソフトウェア</text>
+      <rect x="250" y="26" width="170" height="50" rx="8" fill="#b25000"/><text x="335" y="47" fill="#fff" font-weight="700">GuardDuty</text><text x="335" y="65" fill="#fff" font-size="11">怪しい動き</text>
+      <rect x="250" y="86" width="170" height="50" rx="8" fill="#b25000"/><text x="335" y="107" fill="#fff" font-weight="700">Macie</text><text x="335" y="125" fill="#fff" font-size="11">機密データ</text>
+      <rect x="250" y="146" width="170" height="50" rx="8" fill="#b25000"/><text x="335" y="167" fill="#fff" font-weight="700">Inspector</text><text x="335" y="185" fill="#fff" font-size="11">脆弱性</text>
+      <line x1="210" y1="51" x2="248" y2="51" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#f4)"/>
+      <line x1="210" y1="111" x2="248" y2="111" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#f4)"/>
+      <line x1="210" y1="171" x2="248" y2="171" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#f4)"/>
+      <line x1="420" y1="51" x2="478" y2="96" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#f4)"/>
+      <line x1="420" y1="111" x2="478" y2="111" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#f4)"/>
+      <line x1="420" y1="171" x2="478" y2="126" stroke="#1f3a68" stroke-width="1.5" marker-end="url(#f4)"/>
+      <rect x="480" y="76" width="180" height="70" rx="10" fill="#1f3a68"/><text x="570" y="102" fill="#fff" font-weight="700">Security Hub CSPM</text><text x="570" y="120" fill="#fff" font-size="11">検出結果をまとめる＋</text><text x="570" y="136" fill="#fff" font-size="11">基準でチェック（Config 必要）</text>
+      <rect x="696" y="20" width="150" height="56" rx="10" fill="#3a7d44"/><text x="771" y="44" fill="#fff" font-weight="700">Detective</text><text x="771" y="62" fill="#fff" font-size="11">原因をさかのぼる</text>
+      <rect x="696" y="146" width="150" height="56" rx="10" fill="#4a5a78"/><text x="771" y="170" fill="#fff" font-weight="700">EventBridge</text><text x="771" y="188" fill="#fff" font-size="11">→ SNS・Lambda で対応</text>
+      <line x1="420" y1="40" x2="694" y2="40" stroke="#3a7d44" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#f4)"/>
+      <line x1="660" y1="130" x2="694" y2="162" stroke="#4a5a78" stroke-width="1.5" marker-end="url(#f4)"/>
+      <text x="428" y="214" fill="#6e6e73" font-size="10.5">図は Claude が作った模式図。GuardDuty の検出結果は EventBridge にも直接送られる</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>見つける3兄弟：</b>動き＝GuardDuty、データ＝Macie、ソフトの穴＝Inspector。</div>
+    <div class="point"><b>まとめと調査：</b>一覧と採点＝Security Hub CSPM、さかのぼって調べる＝Detective。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/securityhub/latest/userguide/what-is-securityhub.html">AWS Security Hub CSPM の概要</a>（「Security Hub CSPM は、 のサービスにリンクされたルール AWS Config を使用して、ほとんどのコントロールのセキュリティチェックを実行します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/detective/latest/userguide/what-is-detective.html">Amazon Detective とは</a>（「Detective は、 AWS リソースからログデータを自動的に収集します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>GuardDuty：有効にするだけで見張る</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:36%">基本データソース</th><th>見えること（例）</th></tr>
+        <tr><td class="t">CloudTrail 管理イベント</td><td class="l">ふだんと違う場所からの API の呼び出し、ログの停止</td></tr>
+        <tr><td class="t">VPC フローログ</td><td class="l">悪いと知られた IP との通信</td></tr>
+        <tr><td class="t">Route 53 Resolver の DNS クエリログ</td><td class="l">悪いドメインの名前解決（マイニングなど）</td></tr>
+      </table>
+      <div class="mini">見えることの例は Claude がまとめたもの。GuardDuty は独立した複製のストリームでログを読むので、証跡やフローログを自分で有効にしなくてよく、既存の設定にも影響しない。初めてのリージョンは 30 日間の無料トライアル。</div>
+      <div class="point warn"><b>見つけて知らせる：</b>GuardDuty は検出結果を出す。止める・隔離するのは EventBridge から呼ぶ Lambda などで自分で組む。</div>
+    </div>
+    <div>
+      <div class="lbl">自動対応の例</div>
+      <svg width="410" height="190" viewBox="0 0 410 190">
+        <defs><marker id="f5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="130" y="4" width="150" height="36" rx="8" fill="#b25000"/><text x="205" y="27" fill="#fff" font-weight="700">GuardDuty の検出結果</text>
+          <line x1="205" y1="40" x2="205" y2="60" stroke="#1f3a68" stroke-width="2" marker-end="url(#f5)"/>
+          <rect x="130" y="62" width="150" height="36" rx="8" fill="#4a5a78"/><text x="205" y="85" fill="#fff" font-weight="700">EventBridge のルール</text>
+          <line x1="180" y1="98" x2="100" y2="124" stroke="#1f3a68" stroke-width="2" marker-end="url(#f5)"/>
+          <line x1="230" y1="98" x2="310" y2="124" stroke="#1f3a68" stroke-width="2" marker-end="url(#f5)"/>
+          <rect x="20" y="126" width="160" height="40" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="100" y="144" fill="#1f3a68" font-weight="700">SNS</text><text x="100" y="160" font-size="10.5">担当者にメール</text>
+          <rect x="230" y="126" width="160" height="40" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="310" y="144" fill="#1f3a68" font-weight="700">Lambda</text><text x="310" y="160" font-size="10.5">隔離用の SG に付け替え</text>
+          <text x="205" y="184" fill="#6e6e73" font-size="10.5">構成は Claude が作った例</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/guardduty/latest/ug/guardduty_data-sources.html">GuardDuty 基本データソース</a>（「GuardDuty は CloudTrail イベントを管理したり、既存の CloudTrail 設定に影響を与えたりすることはありません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/guardduty/latest/ug/guardduty_findings_eventbridge.html">EventBridge を使用した GuardDuty 検出結果の処理</a>（「検出結果をイベントとして自動的に公開 (送信) します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>選び分け：この要件ならこれ</h1>
+  <table class="mx">
+    <tr><th style="width:62%">要件</th><th>答え</th></tr>
+    <tr><td class="l">だれがリソースを消したか調べる</td><td class="t">CloudTrail</td></tr>
+    <tr><td class="l">S3 のオブジェクトをだれが読んだか残す</td><td class="t">CloudTrail のデータイベント</td></tr>
+    <tr><td class="l">全アカウントの操作の記録を、止められないよう1か所に</td><td class="t">組織の証跡</td></tr>
+    <tr><td class="l">ログが改ざんされていないことを証明</td><td class="t">ログファイルの整合性の検証</td></tr>
+    <tr><td class="l">先月の時点の設定を見る／基準に合わない設定を見つける</td><td class="t">Config／Config ルール</td></tr>
+    <tr><td class="l">通信が SG で拒否されていないか</td><td class="t">VPC フローログ</td></tr>
+    <tr><td class="l">怪しい動き（認証情報の悪用・マイニング）を見つける</td><td class="t">GuardDuty</td></tr>
+    <tr><td class="l">S3 の個人情報を見つける</td><td class="t">Macie</td></tr>
+    <tr><td class="l">EC2・コンテナイメージの脆弱性</td><td class="t">Inspector</td></tr>
+    <tr><td class="l">検出結果を一元化し、CIS などの基準で採点</td><td class="t">Security Hub CSPM</td></tr>
+    <tr><td class="l">AWS 側の SOC・ISO のレポートを入手</td><td class="t">AWS Artifact</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">CloudTrail<span>イベント履歴 90 日・証跡で S3・Lake で長期分析。データイベントはデフォルトで記録しない</span></div>
+      <div class="box b2">Config<span>設定と関係の履歴。ルールで評価、修復は SSM。パックで配り、アグリゲータで集める</span></div>
+      <div class="box b3">フローログ・CloudWatch Logs<span>IP の通信（中身なし）・アプリのログ。フィルター → メトリクス → アラーム</span></div>
+      <div class="box b4">検出と調査<span>GuardDuty・Macie・Inspector が見つけ、Security Hub CSPM がまとめ、Detective が調べる</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">ひっかけ</th><th>正しくは</th></tr>
+        <tr><td class="l">証跡は S3 の GetObject も記録</td><td class="x">データイベントは別に有効化</td></tr>
+        <tr><td class="l">Config ルールが違反を事前に拒否</td><td class="x">評価と修復。止めるのは SCP</td></tr>
+        <tr><td class="l">GuardDuty には先にフローログが必要</td><td class="x">不要。独立して読む</td></tr>
+        <tr><td class="l">Macie で EC2 の脆弱性</td><td class="x">Inspector</td></tr>
+        <tr><td class="l">Artifact で自社環境を採点</td><td class="x">Security Hub CSPM</td></tr>
+      </table>
+      <div class="point">次の #06 からは分野2「弾力性に優れたアーキテクチャ」。まずは SQS・SNS・EventBridge などのメッセージングと疎結合を学ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS SAA #04 暗号化と秘密情報 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">AWS SAA（SAA-C03）　分野1 セキュアなアーキテクチャの設計　#04</div>
+  <h1>暗号化と秘密情報</h1>
+  <p>鍵は KMS、専用の HSM は CloudHSM、証明書は ACM、パスワードは Secrets Manager。保存時と転送中を分けて考える</p>
+  <div class="refs-legend">各ページの下に、根拠にした AWS の公式ドキュメント（KMS・CloudHSM・ACM・Secrets Manager・Parameter Store・S3・EBS・RDS）を書いた（青い文字を押すと開く）。「」の中はドキュメントの原文どおり（日本語版は機械翻訳のため、語順が不自然なところもそのまま）。会社名や構成の例は Claude が作った例</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>試験ガイド タスク 1.3</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 鍵を管理する<span>KMS のキーの種類・キーポリシー・グラント・エンベロープ暗号化・ローテーション・削除・マルチリージョンキー</span></div>
+      <div class="box b2">2 鍵・証明書・秘密を置く場所<span>CloudHSM（専用 HSM）・ACM（SSL/TLS 証明書）・Secrets Manager と Parameter Store</span></div>
+      <div class="box b3">3 保存時の暗号化<span>S3（SSE-S3・SSE-KMS・DSSE-KMS・SSE-C・クライアント側）・EBS・RDS</span></div>
+      <div class="box b4">4 転送中の暗号化<span>TLS。S3 は aws:SecureTransport で HTTPS を強制。RDS は SSL/TLS で接続</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:62%">タスク 1.3 の知識・スキル（要約）</th><th>このPDF</th></tr>
+        <tr><td class="l">暗号化と適切なキー管理／暗号化キーにアクセスポリシーを実装する</td><td class="t">第1章</td></tr>
+        <tr><td class="l">保管中のデータを暗号化する（KMS など）</td><td class="t">第1・3章</td></tr>
+        <tr><td class="l">転送中のデータを暗号化する（TLS を使った ACM など）</td><td class="t">第2・3章</td></tr>
+        <tr><td class="l">データのバックアップとレプリケーション</td><td class="t">第1・3章（暗号化したまま複製。バックアップの仕組みは #10）</td></tr>
+        <tr><td class="l">データの保持と分類・データアクセスとガバナンス</td><td class="t">#05（Macie）・#13（S3）</td></tr>
+      </table>
+      <div class="point"><b>2つの軸：</b>「保存時（at rest）」は KMS などの鍵で、「転送中（in transit）」は TLS の証明書で守る。問題文がどちらを聞いているかを先に見る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html">AWS「コンテンツ分野 1: セキュアなアーキテクチャの設計」</a>タスク 1.3</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>KMS のキー</h1>
+  <p>鍵そのものは KMS の外に出ない。データはデータキーで、データキーは KMS キーで封をする。</p>
+  <div class="foot"><span>AWS SAA #04 暗号化と秘密情報</span><span>タスク 1.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>KMS キーの3つの種類</h1>
+  <table class="mx">
+    <tr><th style="width:18%"></th><th>カスタマーマネージドキー</th><th>AWS マネージドキー</th><th>AWS 所有のキー</th></tr>
+    <tr><td class="t">だれが作る</td><td class="l">自分</td><td class="l">AWS のサービスが自分のアカウントに（<code>aws/s3</code> など）</td><td class="l">AWS のサービス（自分のアカウントの外）</td></tr>
+    <tr><td class="t">キーポリシー</td><td class="t">自分で決める</td><td class="l">サービスが決める。見るだけ</td><td class="x">見えない</td></tr>
+    <tr><td class="t">ローテーション</td><td class="t">選べる（自動・オンデマンド）</td><td class="l">毎年自動。変えられない</td><td class="l">サービスが決める</td></tr>
+    <tr><td class="t">削除</td><td class="t">予定を入れられる</td><td class="x">できない</td><td class="x">できない</td></tr>
+    <tr><td class="t">CloudTrail で監査</td><td class="t">できる</td><td class="t">できる</td><td class="x">できない</td></tr>
+    <tr><td class="t">料金</td><td class="l">月額＋使った分</td><td class="l">月額なし・使った分</td><td class="t">なし</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>選び方：</b>キーを「監査も制御もしなくてよい」→ AWS 所有のキー。「監査はしたいが管理は任せたい」→ AWS マネージドキー。「権限・ローテーション・削除を自分で」「アカウント間で共有」→ カスタマーマネージドキー。</div>
+    <div class="point warn"><b>KMS キーはリージョンごと：</b>別のリージョンで使うには、そのリージョンのキーを指定する（またはマルチリージョンキー）。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/concepts.html">AWS KMS keys</a>（比較表・「すべての AWS マネージドキー は毎年自動的にローテーションされます。このローテーションスケジュールは変更できません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/Overview.Encryption.html">Amazon RDS リソースの暗号化</a>（「KMS キーは、作成された AWS リージョンに固有です。」）</div>
+</section>
+
+<section class="slide">
+  <h1>エンベロープ暗号化</h1>
+  <svg width="856" height="210" viewBox="0 0 856 210">
+    <defs><marker id="e1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="10" width="230" height="190" rx="12" fill="#fff4e5" stroke="#b25000"/>
+      <text x="125" y="32" fill="#b25000" font-weight="700">AWS KMS（HSM の中）</text>
+      <rect x="40" y="48" width="170" height="40" rx="8" fill="#b25000"/><text x="125" y="73" fill="#fff" font-weight="700">KMS キー（外に出ない）</text>
+      <text x="125" y="112" font-size="11">① GenerateDataKey</text>
+      <text x="125" y="128" font-size="11">データキーを作り、</text><text x="125" y="144" font-size="11">平文と暗号化済みの2つを返す</text>
+      <text x="125" y="176" font-size="11" fill="#6e6e73">③ 復号のときは暗号化済みの</text><text x="125" y="192" font-size="11" fill="#6e6e73">データキーだけを送る</text>
+      <line x1="240" y1="80" x2="300" y2="80" stroke="#1f3a68" stroke-width="2" marker-end="url(#e1)"/>
+      <rect x="302" y="10" width="250" height="190" rx="12" fill="#f5f5f7" stroke="#d2d2d7"/>
+      <text x="427" y="32" font-weight="700">アプリ（KMS の外）</text>
+      <rect x="320" y="46" width="100" height="36" rx="6" fill="#3a7d44"/><text x="370" y="68" fill="#fff" font-size="11.5">平文のデータキー</text>
+      <rect x="434" y="46" width="104" height="36" rx="6" fill="#fff" stroke="#b25000" stroke-width="2"/><text x="486" y="68" fill="#b25000" font-size="11.5">暗号化データキー</text>
+      <text x="427" y="104" font-size="11">② 平文のデータキーで</text><text x="427" y="120" font-size="11">大きなデータを手元で暗号化</text>
+      <text x="427" y="140" font-size="11">→ 平文のデータキーはメモリから消す</text>
+      <line x1="552" y1="110" x2="606" y2="110" stroke="#1f3a68" stroke-width="2" marker-end="url(#e1)"/>
+      <rect x="608" y="30" width="238" height="150" rx="12" fill="#e3eefc" stroke="#1f3a68"/>
+      <text x="727" y="52" fill="#1f3a68" font-weight="700">保存するもの（封筒）</text>
+      <rect x="630" y="66" width="194" height="40" rx="6" fill="#1f3a68"/><text x="727" y="91" fill="#fff">暗号化したデータ</text>
+      <rect x="630" y="114" width="194" height="40" rx="6" fill="#fff" stroke="#b25000" stroke-width="2"/><text x="727" y="139" fill="#b25000">暗号化データキー</text>
+      <text x="727" y="172" font-size="11" fill="#4a5a78">図は Claude が作った模式図</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>なぜ封筒にする：</b>大きなデータを毎回 KMS に送らずにすむ。KMS には小さなデータキーの暗号化・復号だけを頼む。S3・EBS・RDS の暗号化もこの考え方。</div>
+    <div class="point warn"><b>KMS はデータキーを保存しない：</b>暗号化データキーはデータと一緒に自分で保存する。KMS キーそのものはダウンロードできない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/kms-cryptography.html">AWS KMS 暗号化の必須事項</a>（「データキーでプレーンテキストデータを暗号化してから、そのデータキーを別のキーで暗号化する手法です。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/data-keys.html">データキーを生成する</a>（「ダウンロードできない対称 KMS キーとは異なり、データキーは AWS KMSの外部での使用のためにユーザーに返されます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>だれがキーを使えるか：キーポリシー・IAM・グラント</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:26%">しくみ</th><th>役割</th></tr>
+        <tr><td class="t">キーポリシー</td><td class="l">KMS キーのリソースポリシー。すべてのキーにちょうど1つ必要。アクセス制御の主な方法</td></tr>
+        <tr><td class="t">IAM ポリシー</td><td class="l">デフォルトのキーポリシーが、キーを持つアカウントに IAM ポリシーでの許可を認めている</td></tr>
+        <tr><td class="t">グラント</td><td class="l">ポリシーを変えずに作って消せる一時的な許可。AWS のサービスが代わりにキーを使うときに多い。拒否はできない</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">別のアカウントにキーを使わせる</div>
+      <svg width="410" height="150" viewBox="0 0 410 150">
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="4" y="10" width="190" height="130" rx="10" fill="#fff4e5" stroke="#b25000"/><text x="99" y="30" fill="#b25000" font-weight="700">アカウント A（キーの持ち主）</text>
+          <rect x="24" y="44" width="150" height="34" rx="6" fill="#b25000"/><text x="99" y="66" fill="#fff">KMS キー</text>
+          <text x="99" y="100">キーポリシーで</text><text x="99" y="116">B を許可</text>
+          <rect x="216" y="10" width="190" height="130" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="311" y="30" fill="#1f3a68" font-weight="700">アカウント B（使う側）</text>
+          <rect x="236" y="44" width="150" height="34" rx="6" fill="#1f3a68"/><text x="311" y="66" fill="#fff">IAM ロール</text>
+          <text x="311" y="100">IAM ポリシーで</text><text x="311" y="116">A のキーの使用を許可</text>
+        </g>
+      </svg>
+      <div class="point"><b>両方が要る：</b>キーポリシー（持ち主側）と、相手のアカウントの IAM ポリシー。片方だけでは使えない。図は Claude が作った模式図。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/key-policies.html">AWS KMS のキーポリシー</a>（「すべての KMS キーには、厳密に 1 つのキーポリシーが必要です。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/grants.html">AWS KMS の許可</a>（「グラントは KMS キーへのアクセスを許可できますが、アクセスを拒否することはできません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/key-policy-modifying-external-accounts.html">他のアカウントのユーザーに KMS キーの使用を許可する</a>（「クロスアカウントアクセスには、KMS キーのキーポリシーと、外部ユーザーアカウントの IAM ポリシーのアクセス許可が必要です。」）</div>
+</section>
+
+<section class="slide">
+  <h1>ローテーションと削除</h1>
+  <svg width="856" height="150" viewBox="0 0 856 150">
+    <g font-size="12" text-anchor="middle">
+      <text x="20" y="22" text-anchor="start" fill="#1f3a68" font-weight="700">自動キーローテーション（キー ID は同じまま、中身の鍵が増えていく）</text>
+      <rect x="20" y="34" width="816" height="44" rx="8" fill="#e3eefc" stroke="#1f3a68"/>
+      <text x="80" y="61" fill="#1f3a68" font-weight="700">KMS キー</text>
+      <rect x="140" y="42" width="160" height="28" rx="5" fill="#fff" stroke="#1f3a68"/><text x="220" y="61">マテリアル 1（1年目）</text>
+      <rect x="320" y="42" width="160" height="28" rx="5" fill="#fff" stroke="#1f3a68"/><text x="400" y="61">マテリアル 2（2年目）</text>
+      <rect x="500" y="42" width="160" height="28" rx="5" fill="#1f3a68"/><text x="580" y="61" fill="#fff">マテリアル 3（今）</text>
+      <text x="745" y="61" font-size="11">新しい暗号化は 3 で</text>
+      <text x="400" y="98" font-size="11" fill="#4a5a78">古いマテリアルは残るので、1 や 2 で暗号化したデータもそのまま復号できる。アプリの変更は要らない</text>
+      <text x="20" y="126" text-anchor="start" fill="#b23a2c" font-weight="700">削除</text>
+      <rect x="70" y="112" width="160" height="26" rx="5" fill="#fff" stroke="#3a7d44"/><text x="150" y="130" fill="#3a7d44">有効</text>
+      <rect x="250" y="112" width="300" height="26" rx="5" fill="#fff4e5" stroke="#b25000"/><text x="400" y="130" fill="#b25000">削除保留中（7～30 日・取り消せる）</text>
+      <rect x="570" y="112" width="200" height="26" rx="5" fill="#b23a2c"/><text x="670" y="130" fill="#fff">削除（元に戻せない）</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%"></th><th>カスタマーマネージドキー</th><th>AWS マネージドキー</th></tr>
+    <tr><td class="t">自動ローテーション</td><td class="l">選んで有効にする。デフォルトの期間は 365 日（期間は変えられる）。オンデマンドでも回せる</td><td class="l">毎年自動。止めたり変えたりできない</td></tr>
+    <tr><td class="t">使わなくなったら</td><td class="l">迷ったら<b>無効化</b>（戻せる）。削除はそのキーのデータが二度と復号できなくなる</td><td class="x">削除できない</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/rotate-keys.html">ローテーション AWS KMS keys</a>（「デフォルトのローテーション期間は 365 日です。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/deleting-keys.html">AWS KMS key を削除する</a>（「KMS キーを削除すると、その KMS キーで暗号化されたデータを復号できなくなります。」「デフォルトの待機時間は、30 日です。」）</div>
+</section>
+
+<section class="slide">
+  <h1>マルチリージョンキーとキーマテリアルのインポート</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">マルチリージョンキー</div>
+      <svg width="410" height="140" viewBox="0 0 410 140">
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="4" y="10" width="180" height="96" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="94" y="30" fill="#1f3a68" font-weight="700">東京</text>
+          <rect x="24" y="42" width="140" height="30" rx="6" fill="#1f3a68"/><text x="94" y="62" fill="#fff" font-family="DejaVu Sans Mono" font-size="11">mrk-1234…</text>
+          <text x="94" y="94">ここで暗号化</text>
+          <rect x="226" y="10" width="180" height="96" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="316" y="30" fill="#1f3a68" font-weight="700">大阪（レプリカ）</text>
+          <rect x="246" y="42" width="140" height="30" rx="6" fill="#1f3a68"/><text x="316" y="62" fill="#fff" font-family="DejaVu Sans Mono" font-size="11">mrk-1234…</text>
+          <text x="316" y="94">そのまま復号できる</text>
+          <line x1="184" y1="57" x2="226" y2="57" stroke="#1f3a68" stroke-width="2" stroke-dasharray="4 3"/>
+          <text x="205" y="128" fill="#4a5a78">同じキーマテリアル・同じキー ID。ポリシーは別々</text>
+        </g>
+      </svg>
+      <div class="mini">使う場面：リージョンをまたぐ災害対策・バックアップ、世界に配るアプリ。普通のキーのまま別リージョンに複製したデータは、その先のリージョンのキーで再暗号化が要る。</div>
+    </div>
+    <div>
+      <div class="lbl">キーマテリアルのインポート（BYOK）</div>
+      <table class="mx">
+        <tr><th style="width:40%">項目</th><th>中身</th></tr>
+        <tr><td class="t">何をする</td><td class="l">マテリアルなしで KMS キーを作り、自分の鍵を取り込む</td></tr>
+        <tr><td class="t">できること</td><td class="l">有効期限を付ける・すぐ消す</td></tr>
+        <tr><td class="t">責任</td><td class="l">キーマテリアルの責任は自分に残る</td></tr>
+        <tr><td class="t">合う要件</td><td class="l">「自社で作った鍵を使う」「鍵をすぐ消せること」</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/multi-region-keys-overview.html">AWS KMS のマルチリージョンキー</a>（「バックアップおよびリカバリアーキテクチャでは、マルチリージョンキーを使用すると、 AWS リージョン 停止が発生した場合でも、暗号化されたデータを中断することなく処理できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/importing-keys.html">キーマテリアルのインポート</a>（「ただし、キーマテリアルを使用せずに KMS キーを作成し、独自のキーマテリアルをその KMS キーにインポートできます。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>HSM・証明書・秘密情報</h1>
+  <p>専用の金庫が要るなら CloudHSM。HTTPS の証明書は ACM。パスワードはコードから外して Secrets Manager へ。</p>
+  <div class="foot"><span>AWS SAA #04 暗号化と秘密情報</span><span>タスク 1.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>KMS と CloudHSM</h1>
+  <table class="mx">
+    <tr><th style="width:22%"></th><th>AWS KMS</th><th>AWS CloudHSM</th></tr>
+    <tr><td class="t">HSM</td><td class="l">AWS が運用するマネージドな HSM（FIPS 140-3 レベル 3 で検証）</td><td class="l">自分専用・シングルテナントの HSM のクラスター</td></tr>
+    <tr><td class="t">制御</td><td class="l">キーポリシーと IAM。運用は AWS</td><td class="l">キー・アルゴリズム・ユーザーを自分で完全に制御。AWS には見えない</td></tr>
+    <tr><td class="t">AWS サービスとの統合</td><td class="t">S3・EBS・RDS など多数</td><td class="l">直接はない（カスタムキーストア経由で KMS と組み合わせる）</td></tr>
+    <tr><td class="t">責任</td><td class="l">小さい</td><td class="x">大きい（クラスターの冗長化なども考える）</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>カスタムキーストア：</b>KMS キーのキーマテリアルを、自分の CloudHSM クラスターで作って保存。暗号の処理はクラスターの HSM の中。KMS の統合と CloudHSM の制御のいいとこ取り。</div>
+    <div class="point"><b>本番の言い回し：</b>「シングルテナント」「専用の HSM」「キーを AWS にも見せない」→ CloudHSM。「S3 や EBS とかんたんに統合」→ KMS。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/cloudhsm/latest/userguide/introduction.html">とは AWS CloudHSM</a>（「このコントロールのトレードオフは、マネージド型の AWS サービスを使用した場合よりも責任が大きくなることです。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/keystore-cloudhsm.html">AWS CloudHSM キーストア</a>（「カスタムキーストアで KMS キーを使用する際、暗号化オペレーションはクラスター内の HSM で実行されます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>ACM の証明書はリージョンで決まる</h1>
+  <svg width="856" height="186" viewBox="0 0 856 186">
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="10" width="260" height="124" rx="12" fill="#fff4e5" stroke="#b25000"/>
+      <text x="140" y="32" fill="#b25000" font-weight="700">us-east-1（バージニア北部）</text>
+      <rect x="40" y="46" width="200" height="36" rx="6" fill="#b25000"/><text x="140" y="69" fill="#fff" font-weight="700">CloudFront 用の証明書</text>
+      <text x="140" y="104" font-size="11">CloudFront は世界のエッジに</text><text x="140" y="120" font-size="11">この証明書を配る</text>
+      <rect x="300" y="10" width="260" height="124" rx="12" fill="#e3eefc" stroke="#1f3a68"/>
+      <text x="430" y="32" fill="#1f3a68" font-weight="700">ap-northeast-1（東京）</text>
+      <rect x="330" y="46" width="200" height="36" rx="6" fill="#1f3a68"/><text x="430" y="69" fill="#fff" font-weight="700">東京の ALB 用の証明書</text>
+      <rect x="590" y="10" width="256" height="124" rx="12" fill="#e3eefc" stroke="#1f3a68"/>
+      <text x="718" y="32" fill="#1f3a68" font-weight="700">ap-northeast-3（大阪）</text>
+      <rect x="618" y="46" width="200" height="36" rx="6" fill="#1f3a68"/><text x="718" y="69" fill="#fff" font-weight="700">大阪の ALB 用の証明書</text>
+      <text x="574" y="154" font-size="11" fill="#4a5a78">同じドメインでも、リージョンごとにリクエスト（またはインポート）する。</text>
+      <text x="574" y="170" font-size="11" fill="#4a5a78">リージョン間でコピーはできない</text>
+      <text x="140" y="162" font-size="11" fill="#6e6e73">構成は Claude が作った例</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:26%"></th><th>ACM で発行した証明書</th><th>インポートした証明書</th></tr>
+    <tr><td class="t">料金</td><td class="t">追加料金なし</td><td class="t">追加料金なし</td></tr>
+    <tr><td class="t">更新</td><td class="t">ELB・CloudFront などに付けていれば、DNS 検証なら自動</td><td class="x">自動更新なし。期限を見張って再インポート</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/acm/latest/userguide/acm-overview.html">とは AWS Certificate Manager</a>（「リージョン間で証明書をコピーすることはできません。」「Amazon CloudFront で ACM 証明書を使用するには、米国東部 (バージニア北部) リージョン の証明書をリクエスト (またはインポート) していることを確認します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/acm/latest/userguide/import-certificate.html">証明書のインポート</a>（「インポートした証明書の有効期限をモニタリングし、失効する前に更新する責任はお客様に帰します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Secrets Manager と Parameter Store</h1>
+  <div class="cols">
+    <div>
+      <svg width="410" height="150" viewBox="0 0 410 150">
+        <defs><marker id="e2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="4" y="50" width="100" height="46" rx="8" fill="#f5f5f7" stroke="#d2d2d7"/><text x="54" y="70" font-weight="700">アプリ</text><text x="54" y="86" font-size="10.5">コードに鍵なし</text>
+          <rect x="150" y="40" width="120" height="66" rx="8" fill="#3a7d44"/><text x="210" y="66" fill="#fff" font-weight="700">Secrets</text><text x="210" y="82" fill="#fff" font-weight="700">Manager</text>
+          <rect x="310" y="50" width="96" height="46" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="358" y="78" fill="#1f3a68" font-weight="700">RDS</text>
+          <line x1="104" y1="73" x2="148" y2="73" stroke="#1f3a68" stroke-width="2" marker-end="url(#e2)"/><text x="126" y="64" font-size="10">①取る</text>
+          <line x1="270" y1="73" x2="308" y2="73" stroke="#3a7d44" stroke-width="2" marker-end="url(#e2)"/><text x="300" y="30" font-size="10" fill="#3a7d44">②定期的にパスワードを変更</text>
+
+          <text x="205" y="130" fill="#4a5a78" font-size="10.5">パスワードが変わってもアプリの更新は要らない（図は模式図）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:28%"></th><th>Parameter Store</th><th>Secrets Manager</th></tr>
+        <tr><td class="t">向いているもの</td><td class="l">AMI ID・URL などの設定値</td><td class="l">DB の認証情報・API キー</td></tr>
+        <tr><td class="t">暗号化</td><td class="l"><code>SecureString</code> で KMS</td><td class="l">KMS</td></tr>
+        <tr><td class="t">ローテーション</td><td class="x">なし</td><td class="t">自動</td></tr>
+        <tr><td class="t">料金</td><td class="t">標準階層は無料</td><td class="l">シークレットごと・API コールごと</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="lbl" style="margin-top:6px">AWS のおすすめの置き場所（Secrets Manager のドキュメントより）</div>
+  <table class="mx">
+    <tr><th>AWS の認証情報</th><th>暗号化キー</th><th>SSH キー</th><th>プライベートキーと証明書</th><th>DB の認証情報・API キー</th></tr>
+    <tr><td class="t">IAM（ロール）</td><td class="t">KMS</td><td class="t">EC2 Instance Connect</td><td class="t">ACM</td><td class="t">Secrets Manager</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/secretsmanager/latest/userguide/intro.html">とは AWS Secrets Manager</a>（「Secrets Manager で、シークレットの自動ローテーションスケジュールを設定することができます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/systems-manager-parameter-store.html">AWS Systems Manager Parameter Store</a>（比較表・「データベース認証情報、API キー、トークンなどのシークレットの場合は、AWS Secrets Manager をお勧めします。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>ストレージと通信の暗号化</h1>
+  <p>S3 は5つの選び方。EBS と RDS は「作るときに暗号化」が基本で、あとからはスナップショット経由。</p>
+  <div class="foot"><span>AWS SAA #04 暗号化と秘密情報</span><span>タスク 1.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>S3 の暗号化の選び方</h1>
+  <table class="mx">
+    <tr><th style="width:16%">方式</th><th style="width:24%">キーを管理するのは</th><th>特徴</th><th style="width:26%">合う要件</th></tr>
+    <tr><td class="t">SSE-S3</td><td class="l">S3</td><td class="l">全バケットのデフォルト。2023 年 1 月 5 日から新しいオブジェクトは自動で暗号化。追加費用なし</td><td class="l">とくに要件がない</td></tr>
+    <tr><td class="t">SSE-KMS</td><td class="l">KMS（<code>aws/s3</code> かカスタマーマネージド）</td><td class="l">キーの権限で復号できる人を分ける。CloudTrail で監査。KMS の料金がかかる</td><td class="l">監査・権限の分離・アカウント間の共有（カスタマーマネージド）</td></tr>
+    <tr><td class="t">DSSE-KMS</td><td class="l">KMS</td><td class="l">独立した2つの AES-256 の層</td><td class="l">「2層の暗号化」が必要</td></tr>
+    <tr><td class="t">SSE-C</td><td class="l">お客様（リクエストごとに渡す）</td><td class="l">S3 はキーを保存しない。キーをなくすとデータも失う。HTTPS 必須。新しいバケットではデフォルトで無効（2026 年 4 月から）</td><td class="l">キーを AWS に預けたくないが、暗号化処理は S3 に任せたい</td></tr>
+    <tr><td class="t">クライアント側</td><td class="l">お客様</td><td class="l">S3 に送る前に暗号化。S3 は中身を知らない</td><td class="l">AWS をふくむ第三者に中身を見せない</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>S3 バケットキー：</b>SSE-KMS で KMS への呼び出しを減らし、KMS のリクエストコストを最大 99% 削減。「SSE-KMS の KMS の料金が高い」→ これ。</div>
+    <div class="point warn"><b>ひっかけ：</b>「SSE-S3 でキーの使用を CloudTrail で監査」はできない。キーの監査が要るなら SSE-KMS。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/serv-side-encryption.html">サーバー側の暗号化によるデータの保護</a>（「Amazon S3 マネージドキーによるサーバー側の暗号化 (SSE-S3) は、Amazon S3 のすべてのバケットでのデフォルトの暗号化設定です。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/ServerSideEncryptionCustomerKeys.html">SSE−C</a>（「これは、暗号化キーを紛失した場合、オブジェクトも失われることを意味します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/bucket-key.html">S3 バケットキー</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/UsingClientSideEncryption.html">クライアント側の暗号化</a>（「Amazon S3 は、すでに暗号化されているオブジェクトを受け取るだけで、オブジェクトの暗号化または復号には関与しません。」）</div>
+</section>
+
+<section class="slide">
+  <h1>転送中の暗号化：HTTPS を強制する</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">S3：HTTP のリクエストを拒否するバケットポリシー</div>
+      <pre class="code small">{
+  <span class="s">"Effect"</span>: <span class="k">"Deny"</span>,
+  <span class="s">"Principal"</span>: <span class="s">"*"</span>,
+  <span class="s">"Action"</span>: <span class="s">"s3:*"</span>,
+  <span class="s">"Resource"</span>: [
+    <span class="s">"arn:aws:s3:::example-bucket"</span>,
+    <span class="s">"arn:aws:s3:::example-bucket/*"</span>
+  ],
+  <span class="s">"Condition"</span>: {
+    <span class="s">"Bool"</span>: { <span class="ng">"aws:SecureTransport": "false"</span> }
+  }
+}</pre>
+      <div class="mini">ステートメントは Claude が書いた例（バケット名は例）。HTTPS でないリクエストを明示的に拒否する。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">場所</th><th>転送中の暗号化</th></tr>
+        <tr><td class="t">S3</td><td class="l">バケットポリシーで <code>aws:SecureTransport</code> を使い HTTPS だけを許可</td></tr>
+        <tr><td class="t">ALB・CloudFront</td><td class="l">ACM の証明書で HTTPS のリスナー</td></tr>
+        <tr><td class="t">RDS</td><td class="l">SSL/TLS で接続。サーバー証明書を検証すれば相手も確かめられる</td></tr>
+        <tr><td class="t">EBS</td><td class="l">暗号化ボリュームなら、ボリュームとインスタンスの間も暗号化</td></tr>
+      </table>
+      <div class="point warn"><b>保存時と混同しない：</b>デフォルトの暗号化を SSE-KMS にしても、HTTP の接続は止まらない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/security-best-practices.html">Amazon S3 のセキュリティのベストプラクティス</a>（「HTTPS (TLS) を使用すると、潜在的な攻撃者が中間者攻撃または同様の攻撃を使用してネットワークトラフィックを盗聴または操作することを防止できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html">SSL/TLS を使用した接続の暗号化</a>（「SSL/TLS 接続は、クライアントと DB インスタンスまたはクラスターの間を移動するデータを暗号化することによって、1 つのセキュリティ層を提供します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>EBS の暗号化</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">暗号化したボリュームで暗号化されるもの</div>
+      <table class="mx">
+        <tr><td class="t">1</td><td class="l">ボリューム内の保存データ</td></tr>
+        <tr><td class="t">2</td><td class="l">ボリュームとインスタンスの間で移動するデータ</td></tr>
+        <tr><td class="t">3</td><td class="l">ボリュームから作ったスナップショット</td></tr>
+        <tr><td class="t">4</td><td class="l">そのスナップショットから作ったボリューム</td></tr>
+      </table>
+      <div class="lbl" style="margin-top:8px">デフォルトでの EBS 暗号化</div>
+      <div class="mini">リージョンごとの設定。有効にすると、そのリージョンで新しく作るボリュームとスナップショットは必ず暗号化され、個別に無効にはできない。既存のものには影響しない。</div>
+    </div>
+    <div>
+      <div class="lbl">暗号化していないボリュームを暗号化する</div>
+      <svg width="410" height="150" viewBox="0 0 410 150">
+        <defs><marker id="e3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <rect x="4" y="20" width="88" height="44" rx="6" fill="#fff" stroke="#b23a2c" stroke-width="2"/><text x="48" y="40">ボリューム</text><text x="48" y="55" fill="#b23a2c">暗号化なし</text>
+          <rect x="110" y="20" width="88" height="44" rx="6" fill="#fff" stroke="#b23a2c" stroke-width="2"/><text x="154" y="40">スナップ</text><text x="154" y="55" fill="#b23a2c">暗号化なし</text>
+          <rect x="216" y="20" width="88" height="44" rx="6" fill="#1f3a68"/><text x="260" y="40" fill="#fff">スナップ</text><text x="260" y="55" fill="#fff">暗号化コピー</text>
+          <rect x="322" y="20" width="84" height="44" rx="6" fill="#1f3a68"/><text x="364" y="40" fill="#fff">ボリューム</text><text x="364" y="55" fill="#fff">暗号化あり</text>
+          <line x1="92" y1="42" x2="108" y2="42" stroke="#1f3a68" stroke-width="2" marker-end="url(#e3)"/>
+          <line x1="198" y1="42" x2="214" y2="42" stroke="#1f3a68" stroke-width="2" marker-end="url(#e3)"/>
+          <line x1="304" y1="42" x2="320" y2="42" stroke="#1f3a68" stroke-width="2" marker-end="url(#e3)"/>
+          <text x="205" y="92" fill="#4a5a78">スナップショットを取り → 暗号化してコピー →</text>
+          <text x="205" y="108" fill="#4a5a78">新しいボリュームを作ってインスタンスに付け替える</text>
+          <text x="205" y="132" fill="#6e6e73">（暗号化なしのスナップショットから、暗号化した</text><text x="205" y="146" fill="#6e6e73">ボリュームを直接作ることもできる。図は模式図）</text>
+        </g>
+      </svg>
+      <div class="point warn"><b>その場で暗号化はできない：</b>既存のボリュームの設定を変えて暗号化する方法はない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/how-ebs-encryption-works.html">Amazon EBS 暗号化の仕組み</a>（「暗号化されていないスナップショットから暗号化されたボリュームを作成する場合、Amazon EC2 は AWS KMS と連携して、次のように EBS ボリュームを暗号化および復号化します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/encryption-by-default.html">デフォルトで Amazon EBS の暗号化を有効化</a>（「デフォルトでの暗号化はリージョン固有の設定です。」）</div>
+</section>
+
+<section class="slide">
+  <h1>RDS の暗号化</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:58%">できる・できない</th><th>答え</th></tr>
+        <tr><td class="l">作るときに暗号化する</td><td class="t">できる</td></tr>
+        <tr><td class="l">作ったあとで、その場で暗号化する</td><td class="x">できない</td></tr>
+        <tr><td class="l">暗号化を外す</td><td class="x">できない</td></tr>
+        <tr><td class="l">暗号化していない DB のリードレプリカだけ暗号化</td><td class="x">できない</td></tr>
+        <tr><td class="l">暗号化していないスナップショットを暗号化してコピー</td><td class="t">できる</td></tr>
+        <tr><td class="l">暗号化スナップショットを別リージョンへコピー</td><td class="t">できる（先のリージョンの KMS キーを指定）</td></tr>
+      </table>
+      <div class="mini">暗号化した DB では、ストレージ・ログ・自動バックアップ・リードレプリカ・スナップショットがすべて暗号化される。</div>
+    </div>
+    <div>
+      <div class="lbl">暗号化していない DB を暗号化する手順</div>
+      <div class="stack">
+        <div class="box b1">1 スナップショットを取る<span>暗号化なしのスナップショット</span></div>
+        <div class="box b2">2 コピーするときに暗号化<span>KMS キーを指定</span></div>
+        <div class="box b3">3 暗号化スナップショットから復元<span>新しい暗号化 DB ができる</span></div>
+        <div class="box b4">4 アプリの接続先を切り替える<span>ブルー/グリーンデプロイでも暗号化できる</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/Overview.Encryption.html">Amazon RDS リソースの暗号化</a>（「Amazon RDS DB インスタンスは、DB インスタンスの作成時にのみ暗号化できます。」「暗号化された DB インスタンスの暗号化をオフにすることはできません。」「保管中に暗号化されるデータには、DB インスタンス、ログ、自動バックアップ、リードレプリカ、スナップショットの基本的なストレージが含まれます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>選び分け：この要件ならこれ</h1>
+  <table class="mx">
+    <tr><th style="width:60%">要件</th><th>答え</th></tr>
+    <tr><td class="l">暗号化キーの権限を自分で決め、使用を監査する</td><td class="t">KMS のカスタマーマネージドキー</td></tr>
+    <tr><td class="l">リージョンをまたいで、再暗号化せずに復号する</td><td class="t">マルチリージョンキー</td></tr>
+    <tr><td class="l">シングルテナントの HSM でキーを完全に自社管理</td><td class="t">CloudHSM</td></tr>
+    <tr><td class="l">CloudFront に独自ドメインの HTTPS</td><td class="t">ACM の証明書（us-east-1）</td></tr>
+    <tr><td class="l">DB のパスワードをコードから外し、自動で変える</td><td class="t">Secrets Manager</td></tr>
+    <tr><td class="l">設定値を安く保存（ローテーション不要）</td><td class="t">Parameter Store</td></tr>
+    <tr><td class="l">SSE-KMS の KMS の料金を下げる</td><td class="t">S3 バケットキー</td></tr>
+    <tr><td class="l">S3 に HTTPS でしかアクセスさせない</td><td class="t">バケットポリシーで aws:SecureTransport</td></tr>
+    <tr><td class="l">リージョンで今後作る EBS をすべて暗号化</td><td class="t">デフォルトでの EBS 暗号化</td></tr>
+    <tr><td class="l">暗号化していない RDS を暗号化</td><td class="t">スナップショット → 暗号化コピー → 復元</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">KMS<span>3種類のキー。キーポリシーは必ず1つ。データキーで封をするエンベロープ暗号化。削除は 7～30 日待ってから</span></div>
+      <div class="box b2">HSM と証明書<span>CloudHSM＝専用・自分で管理。ACM＝無料・自動更新。CloudFront 用は us-east-1</span></div>
+      <div class="box b3">秘密情報<span>Secrets Manager＝自動ローテーション。Parameter Store＝設定値・標準は無料</span></div>
+      <div class="box b4">保存時と転送中<span>S3 は5方式＋バケットキー。EBS・RDS はあとからはスナップショット経由。HTTPS は SecureTransport</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">ひっかけ</th><th>正しくは</th></tr>
+        <tr><td class="l">AWS マネージドキーのポリシーを変える</td><td class="x">変えられない</td></tr>
+        <tr><td class="l">ローテーションで古いデータが読めなくなる</td><td class="x">そのまま読める</td></tr>
+        <tr><td class="l">ACM の証明書をリージョン間でコピー</td><td class="x">できない</td></tr>
+        <tr><td class="l">インポートした証明書も自動更新</td><td class="x">されない</td></tr>
+        <tr><td class="l">Parameter Store で自動ローテーション</td><td class="x">ない</td></tr>
+        <tr><td class="l">RDS をその場で暗号化</td><td class="x">できない</td></tr>
+      </table>
+      <div class="point">次の #05 では、CloudTrail・Config・GuardDuty・Macie などのログ・監査と脅威の検出を学ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

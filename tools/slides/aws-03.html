@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS SAA #03 ネットワークのセキュリティ 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">AWS SAA（SAA-C03）　分野1 セキュアなアーキテクチャの設計　#03</div>
+  <h1>ネットワークのセキュリティ</h1>
+  <p>VPC の中はサブネットとセキュリティグループで分けて守る。外からの攻撃は WAF と Shield で手前で止める</p>
+  <div class="refs-legend">各ページの下に、根拠にした AWS の公式ドキュメント（Amazon VPC・AWS WAF・Shield・Firewall Manager・Network Firewall・Systems Manager）を書いた（青い文字を押すと開く）。「」の中はドキュメントの原文どおり（Network Firewall は英語版しかないので英語のまま）。会社名や構成の例は Claude が作った例</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>試験ガイド タスク 1.2</small></h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <g font-size="12" text-anchor="middle">
+      <rect x="8" y="60" width="96" height="70" rx="10" fill="#f5f5f7" stroke="#d2d2d7"/><text x="56" y="92" font-weight="700">利用者</text><text x="56" y="110" font-size="11" fill="#6e6e73">と攻撃者</text>
+      <line x1="104" y1="95" x2="130" y2="95" stroke="#1f3a68" stroke-width="2"/>
+      <rect x="130" y="20" width="200" height="150" rx="12" fill="#fff4e5" stroke="#b25000"/>
+      <text x="230" y="40" fill="#b25000" font-weight="700">エッジ（VPC の手前）</text>
+      <rect x="146" y="52" width="168" height="34" rx="6" fill="#b25000"/><text x="230" y="74" fill="#fff" font-weight="700">Shield（DDoS）</text>
+      <rect x="146" y="92" width="168" height="34" rx="6" fill="#b25000"/><text x="230" y="114" fill="#fff" font-weight="700">WAF（HTTP の中身）</text>
+      <text x="230" y="150" font-size="11" fill="#6e6e73">CloudFront・ALB などに付ける</text>
+      <line x1="330" y1="95" x2="356" y2="95" stroke="#1f3a68" stroke-width="2"/>
+      <rect x="356" y="10" width="490" height="180" rx="12" fill="#f5f5f7" stroke="#1f3a68" stroke-width="1.5"/>
+      <text x="380" y="30" text-anchor="start" fill="#1f3a68" font-weight="700">VPC</text>
+      <rect x="372" y="40" width="130" height="34" rx="6" fill="#4a5a78"/><text x="437" y="62" fill="#fff" font-size="11.5">Network Firewall</text>
+      <rect x="520" y="40" width="310" height="140" rx="10" fill="#fff" stroke="#1f3a68" stroke-dasharray="5 3"/>
+      <text x="675" y="58" fill="#1f3a68" font-weight="700">サブネット ← ネットワーク ACL</text>
+      <rect x="540" y="70" width="270" height="96" rx="8" fill="#e3eefc" stroke="#1f3a68"/>
+      <text x="675" y="90" fill="#1f3a68" font-weight="700">インスタンス ← セキュリティグループ</text>
+      <rect x="590" y="104" width="170" height="44" rx="6" fill="#1f3a68"/><text x="675" y="131" fill="#fff" font-weight="700">EC2・RDS など</text>
+      <text x="437" y="100" font-size="11" fill="#4a5a78">VPC の境界で</text><text x="437" y="116" font-size="11" fill="#4a5a78">中身まで調べる</text>
+      <text x="437" y="160" font-size="11" fill="#4a5a78">図は Claude が</text><text x="437" y="175" font-size="11" fill="#4a5a78">作った模式図</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:58%">タスク 1.2 の知識・スキル（要約）</th><th>このPDF</th></tr>
+    <tr><td class="l">VPC のセキュリティのしくみ（セキュリティグループ・ルートテーブル・ネットワーク ACL）</td><td class="t">第1・2章</td></tr>
+    <tr><td class="l">ネットワークのセグメント化（パブリックサブネットとプライベートサブネット）</td><td class="t">第1章</td></tr>
+    <tr><td class="l">外部の脅威からの保護（WAF・Shield・Firewall Manager など）</td><td class="t">第3章</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain1.html">AWS「コンテンツ分野 1: セキュアなアーキテクチャの設計」</a>タスク 1.2</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>サブネットとセキュリティグループ</h1>
+  <p>外に面するものだけを外に出す。残りはプライベートに置き、許可だけを書いて守る。</p>
+  <div class="foot"><span>AWS SAA #03 ネットワークのセキュリティ</span><span>タスク 1.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>パブリックとプライベートはルートテーブルで決まる</h1>
+  <svg width="856" height="226" viewBox="0 0 856 226">
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="8" width="700" height="210" rx="12" fill="#f5f5f7" stroke="#1f3a68" stroke-width="1.5"/>
+      <text x="30" y="28" text-anchor="start" fill="#1f3a68" font-weight="700">VPC 10.0.0.0/16</text>
+      <rect x="30" y="38" width="320" height="170" rx="10" fill="#fff4e5" stroke="#b25000"/>
+      <text x="190" y="58" fill="#b25000" font-weight="700">パブリックサブネット</text>
+      <rect x="50" y="70" width="130" height="40" rx="6" fill="#b25000"/><text x="115" y="95" fill="#fff" font-weight="700">ALB</text>
+      <rect x="200" y="70" width="130" height="40" rx="6" fill="#b25000"/><text x="265" y="95" fill="#fff" font-weight="700">NAT ゲートウェイ</text>
+      <rect x="50" y="128" width="280" height="66" rx="6" fill="#fff" stroke="#b25000"/>
+      <text x="190" y="146" fill="#b25000" font-weight="700">ルートテーブル</text>
+      <text x="190" y="166" font-family="DejaVu Sans Mono" font-size="11">10.0.0.0/16 → local</text>
+      <text x="190" y="184" font-family="DejaVu Sans Mono" font-size="11">0.0.0.0/0 → igw-…</text>
+      <rect x="370" y="38" width="320" height="170" rx="10" fill="#e3eefc" stroke="#1f3a68"/>
+      <text x="530" y="58" fill="#1f3a68" font-weight="700">プライベートサブネット</text>
+      <rect x="390" y="70" width="130" height="40" rx="6" fill="#1f3a68"/><text x="455" y="95" fill="#fff" font-weight="700">EC2（アプリ）</text>
+      <rect x="540" y="70" width="130" height="40" rx="6" fill="#1f3a68"/><text x="605" y="95" fill="#fff" font-weight="700">RDS</text>
+      <rect x="390" y="128" width="280" height="66" rx="6" fill="#fff" stroke="#1f3a68"/>
+      <text x="530" y="146" fill="#1f3a68" font-weight="700">ルートテーブル</text>
+      <text x="530" y="166" font-family="DejaVu Sans Mono" font-size="11">10.0.0.0/16 → local</text>
+      <text x="530" y="184" font-family="DejaVu Sans Mono" font-size="11">0.0.0.0/0 → nat-…</text>
+      <rect x="730" y="70" width="116" height="60" rx="10" fill="#3a7d44"/><text x="788" y="96" fill="#fff" font-weight="700">インターネット</text><text x="788" y="114" fill="#fff" font-size="11">ゲートウェイ</text>
+      <line x1="710" y1="100" x2="730" y2="100" stroke="#3a7d44" stroke-width="3"/>
+      <text x="788" y="160" font-size="11" fill="#4a5a78">構成は Claude が</text><text x="788" y="176" font-size="11" fill="#4a5a78">作った例</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:22%"></th><th>パブリックサブネット</th><th>プライベートサブネット</th></tr>
+    <tr><td class="t">決め手</td><td class="l">インターネットゲートウェイへの直接のルートがある</td><td class="l">ない（外へ出るなら NAT デバイス経由）</td></tr>
+    <tr><td class="t">置くもの</td><td class="l">ALB・NAT ゲートウェイなど、外に面するものだけ</td><td class="l">アプリサーバー・データベース。AWS のおすすめ</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/configure-subnets.html">サブネット</a>（「AWS リソースを保護するために、プライベートサブネットを使用することをお勧めします。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/infrastructure-security.html">Amazon VPC のインフラストラクチャセキュリティ</a>（「インターネットからの直接アクセスを認めるべきでないインスタンスには、プライベートサブネットを使用します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>セキュリティグループの決まり</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:34%">決まり</th><th>中身</th></tr>
+        <tr><td class="t">付ける先</td><td class="l">EC2 インスタンスなどのリソース（インスタンスレベル）。1つのリソースに複数付けられる</td></tr>
+        <tr><td class="t">書けるルール</td><td class="l">許可だけ。拒否は書けない</td></tr>
+        <tr><td class="t">複数付けたら</td><td class="l">ルールが集約されて1つのルールの集まりになる（許可の足し算）</td></tr>
+        <tr><td class="t">戻りの通信</td><td class="l">自動で許可（ステートフル）</td></tr>
+        <tr><td class="t">料金</td><td class="l">追加料金なし</td></tr>
+      </table>
+      <div class="point"><b>AWS の位置づけ：</b>VPC へのネットワークアクセスを制御する主な手段はセキュリティグループ。ネットワーク ACL は追加の防御の層。</div>
+    </div>
+    <div>
+      <div class="lbl">最初の状態</div>
+      <table class="mx">
+        <tr><th style="width:36%"></th><th>インバウンド</th><th>アウトバウンド</th></tr>
+        <tr><td class="t">新しく作った SG</td><td class="x">ルールなし（何も入れない）</td><td class="t">すべて許可</td></tr>
+        <tr><td class="t">デフォルトの SG</td><td class="l">同じ SG が付いたリソースからすべて許可</td><td class="t">すべて許可</td></tr>
+      </table>
+      <div class="mini">デフォルトのセキュリティグループはルールを変えられるが、削除はできない。</div>
+      <div class="point warn"><b>ひっかけ：</b>「セキュリティグループで特定の IP を拒否する」はできない。拒否したいならネットワーク ACL（第2章）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/security-group-rules.html">セキュリティグループのルール</a>（「許可ルールを指定できます。拒否ルールは指定できません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/infrastructure-security.html">Amazon VPC のインフラストラクチャセキュリティ</a>（「VPC へのネットワークアクセスを制御するための主要なメカニズムとして」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/default-security-group.html">デフォルトのセキュリティグループ</a>（「デフォルトのセキュリティグループを削除することはできません。」）</div>
+</section>
+
+<section class="slide">
+  <h1>セキュリティグループを参照して層をつなぐ</h1>
+  <svg width="856" height="190" viewBox="0 0 856 190">
+    <defs><marker id="ar3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="40" width="110" height="60" rx="10" fill="#f5f5f7" stroke="#d2d2d7"/><text x="65" y="76" font-weight="700">インターネット</text>
+      <rect x="170" y="20" width="190" height="100" rx="10" fill="#fff4e5" stroke="#b25000"/><text x="265" y="40" fill="#b25000" font-weight="700">sg-alb</text>
+      <rect x="200" y="52" width="130" height="34" rx="6" fill="#b25000"/><text x="265" y="74" fill="#fff" font-weight="700">ALB</text>
+      <text x="265" y="108" font-size="11">IN：443 ← 0.0.0.0/0</text>
+      <rect x="410" y="20" width="200" height="100" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="510" y="40" fill="#1f3a68" font-weight="700">sg-app</text>
+      <rect x="430" y="52" width="70" height="34" rx="6" fill="#1f3a68"/><text x="465" y="74" fill="#fff">EC2</text>
+      <rect x="520" y="52" width="70" height="34" rx="6" fill="#1f3a68"/><text x="555" y="74" fill="#fff">EC2</text>
+      <text x="510" y="108" font-size="11">IN：8080 ← sg-alb</text>
+      <rect x="660" y="20" width="186" height="100" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="753" y="40" fill="#3a7d44" font-weight="700">sg-db</text>
+      <rect x="688" y="52" width="130" height="34" rx="6" fill="#3a7d44"/><text x="753" y="74" fill="#fff" font-weight="700">RDS</text>
+      <text x="753" y="108" font-size="11">IN：3306 ← sg-app</text>
+      <line x1="120" y1="70" x2="168" y2="70" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar3)"/>
+      <line x1="360" y1="70" x2="408" y2="70" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar3)"/>
+      <line x1="610" y1="70" x2="658" y2="70" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar3)"/>
+      <text x="428" y="150" fill="#4a5a78">送信元に IP ではなくセキュリティグループを書く。Auto Scaling で EC2 が増えても、新しい EC2 に sg-app が付けば自動で通る</text>
+      <text x="428" y="172" fill="#6e6e73" font-size="11">ポート番号と名前は Claude が作った例</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:36%">聞かれ方</th><th>答え</th></tr>
+    <tr><td class="l">DB にはアプリ層からだけ届くようにしたい（台数は変わる）</td><td class="t">DB の SG の送信元に、アプリ層の SG を指定</td></tr>
+    <tr><td class="l">Web サーバーに管理者の自宅 IP からだけ SSH させたい</td><td class="t">送信元に <code>203.0.113.1/32</code>（単一の IP は /32）</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/security-group-rules.html">セキュリティグループのルール</a>（「ルールのソースまたは宛先としてセキュリティグループを指定する場合、ルールはセキュリティグループに関連付けられているすべてのインスタンスに影響します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>管理のためのログイン：踏み台より Session Manager</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">踏み台ホスト（bastion）</div>
+      <svg width="400" height="110" viewBox="0 0 400 110">
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="4" y="34" width="70" height="40" rx="8" fill="#f5f5f7" stroke="#d2d2d7"/><text x="39" y="58">管理者</text>
+          <rect x="110" y="24" width="120" height="60" rx="8" fill="#fff4e5" stroke="#b25000"/><text x="170" y="48" fill="#b25000" font-weight="700">踏み台</text><text x="170" y="66" font-size="10.5">パブリック・22 を開ける</text>
+          <rect x="270" y="24" width="124" height="60" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="332" y="48" fill="#1f3a68" font-weight="700">EC2</text><text x="332" y="66" font-size="10.5">プライベート</text>
+          <line x1="74" y1="54" x2="110" y2="54" stroke="#b25000" stroke-width="2"/><text x="92" y="46" font-size="10" fill="#b25000">SSH</text>
+          <line x1="230" y1="54" x2="270" y2="54" stroke="#b25000" stroke-width="2"/><text x="250" y="46" font-size="10" fill="#b25000">SSH</text>
+          <text x="200" y="104" fill="#6e6e73" font-size="10.5">ポートを開け、鍵を配り、踏み台自体も守る必要がある</text>
+        </g>
+      </svg>
+      <div class="lbl" style="margin-top:6px">Session Manager</div>
+      <svg width="400" height="110" viewBox="0 0 400 110">
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="4" y="34" width="70" height="40" rx="8" fill="#f5f5f7" stroke="#d2d2d7"/><text x="39" y="52">管理者</text><text x="39" y="66" font-size="10">ブラウザ・CLI</text>
+          <rect x="110" y="24" width="120" height="60" rx="8" fill="#3a7d44"/><text x="170" y="48" fill="#fff" font-weight="700">Systems Manager</text><text x="170" y="66" fill="#fff" font-size="10.5">IAM で許可を判断</text>
+          <rect x="270" y="24" width="124" height="60" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="332" y="44" fill="#1f3a68" font-weight="700">EC2</text><text x="332" y="60" font-size="10.5">SSM Agent が</text><text x="332" y="74" font-size="10.5">外向きにつなぐ</text>
+          <line x1="74" y1="54" x2="110" y2="54" stroke="#3a7d44" stroke-width="2"/>
+          <line x1="270" y1="54" x2="230" y2="54" stroke="#3a7d44" stroke-width="2"/>
+          <text x="200" y="104" fill="#6e6e73" font-size="10.5">インバウンドのポートを1つも開けない</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:36%"></th><th>踏み台ホスト</th><th>Session Manager</th></tr>
+        <tr><td class="t">インバウンドのポート</td><td class="x">22 などを開ける</td><td class="t">開けない</td></tr>
+        <tr><td class="t">SSH キー</td><td class="x">配って管理する</td><td class="t">要らない</td></tr>
+        <tr><td class="t">だれが入れるか</td><td class="l">鍵を持つ人</td><td class="l">IAM ポリシーで一元管理</td></tr>
+        <tr><td class="t">記録</td><td class="l">自分で仕組みを作る</td><td class="l">セッションのログを S3 などに残せる</td></tr>
+      </table>
+      <div class="point"><b>本番の言い回し：</b>「ポートを開けずに」「踏み台や SSH キーの管理なしで」「監査できるように」インスタンスに入る → Session Manager。</div>
+      <div class="mini">図は Claude が作った模式図。Session Manager を使うには、インスタンスに SSM Agent と、Systems Manager を使うための IAM の権限が要る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/systems-manager/latest/userguide/session-manager.html">AWS Systems Manager Session Manager</a>（「インバウンドポートを開いたり、踏み台ホストや SSH キーを管理したりする必要はありません」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>ネットワーク ACL</h1>
+  <p>サブネットの出入口の、番号順で、戻りも見ない関所。拒否を書けるのはここ。</p>
+  <div class="foot"><span>AWS SAA #03 ネットワークのセキュリティ</span><span>タスク 1.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>セキュリティグループとネットワーク ACL</h1>
+  <table class="mx">
+    <tr><th style="width:20%">特性</th><th>セキュリティグループ</th><th>ネットワーク ACL</th></tr>
+    <tr><td class="t">効く単位</td><td class="l">インスタンス（リソース）レベル</td><td class="l">サブネットレベル</td></tr>
+    <tr><td class="t">ルール</td><td class="l">許可だけ</td><td class="l">許可と拒否</td></tr>
+    <tr><td class="t">評価のしかた</td><td class="l">すべてのルールを見てから決める</td><td class="l">番号の小さい順に見て、最初に一致したもので決める</td></tr>
+    <tr><td class="t">戻りの通信</td><td class="l">自動で許可（ステートフル）</td><td class="l">明示的に許可が必要（ステートレス）</td></tr>
+    <tr><td class="t">付け方</td><td class="l">1つのリソースに複数付けられる</td><td class="l">1つのサブネットに一度に1つだけ（1つの ACL は複数のサブネットに付けられる）</td></tr>
+    <tr><td class="t">AWS の位置づけ</td><td class="l">主な手段</td><td class="l">きめの粗い補助の制御。特定の通信を拒否する、サブネットのガードレール</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>覚え方：</b>SG は「人ごとの名札チェック（許可リスト）」、NACL は「建物の入口の番号順の関所」。両方を通らないと届かない。</div>
+    <div class="point warn"><b>どちらでも止められない通信：</b>Route 53 Resolver（VPC＋2 のアドレス）との DNS や、インスタンスメタデータなど。DNS の問い合わせを絞るなら Route 53 Resolver DNS Firewall。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/infrastructure-security.html">Amazon VPC のインフラストラクチャセキュリティ</a>（比較表・「ステートレスできめの粗いネットワーク制御を行うことができます」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/vpc-network-acls.html">ネットワーク ACL</a>（「サブネットは一度に 1 つのネットワーク ACL にのみ関連付けることができます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>ルール番号：小さい順、最初の一致で決まる</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">例：Web サーバーのサブネットのインバウンド</div>
+      <table class="mx">
+        <tr><th style="width:14%">番号</th><th>種類・ポート</th><th>送信元</th><th style="width:16%">動作</th></tr>
+        <tr><td class="t">90</td><td class="l">すべて</td><td class="l">198.51.100.0/24</td><td class="x">拒否</td></tr>
+        <tr><td class="t">100</td><td class="l">TCP 443</td><td class="l">0.0.0.0/0</td><td class="t">許可</td></tr>
+        <tr><td class="t">110</td><td class="l">TCP 1024-65535</td><td class="l">0.0.0.0/0</td><td class="t">許可</td></tr>
+        <tr><td class="t">*</td><td class="l">すべて</td><td class="l">0.0.0.0/0</td><td class="x">拒否</td></tr>
+      </table>
+      <div class="mini">ルールは Claude が作った例。110 は、サーバーが外へ始めた通信の戻り（一時ポートあて）を通すためのもの。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:46%">届いた通信</th><th>結果</th></tr>
+        <tr><td class="l">198.51.100.9 から 443</td><td class="x">90 で拒否（100 は見ない）</td></tr>
+        <tr><td class="l">203.0.113.5 から 443</td><td class="t">100 で許可</td></tr>
+        <tr><td class="l">203.0.113.5 から 22</td><td class="x">どれにも一致せず * で拒否</td></tr>
+      </table>
+      <div class="point warn"><b>拒否は小さい番号に。</b>許可 100・拒否 200 の順だと、100 に先に一致して拒否が効かない。IAM の「明示的な Deny が勝つ」とは考え方が違う。</div>
+      <div class="mini">番号は 1～32,766。後から間に挟めるよう、10 や 100 おきに付けるのが AWS のおすすめ。<code>*</code> のルールは消せない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/nacl-rules.html">ネットワーク ACL ルール</a>（「ルールは、最も低い番号のルールから評価されます。ルールがトラフィックに一致すると、それと相反するより高い数値のルールの有無にかかわらず、すぐに適用されます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>ステートレスと一時ポート</h1>
+  <svg width="856" height="160" viewBox="0 0 856 160">
+    <defs><marker id="ar4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker><marker id="ar5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="40" width="170" height="80" rx="10" fill="#f5f5f7" stroke="#d2d2d7"/><text x="95" y="72" font-weight="700">利用者の PC</text><text x="95" y="92" font-size="11" font-family="DejaVu Sans Mono">ポート 50123</text><text x="95" y="108" font-size="10.5" fill="#6e6e73">（OS が選ぶ一時ポート）</text>
+      <rect x="350" y="20" width="160" height="120" rx="10" fill="#fff4e5" stroke="#b25000"/><text x="430" y="40" fill="#b25000" font-weight="700">ネットワーク ACL</text><text x="430" y="85" font-size="11">行きと戻りを別々に評価</text>
+      <rect x="680" y="40" width="166" height="80" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="763" y="72" fill="#1f3a68" font-weight="700">Web サーバー</text><text x="763" y="92" font-size="11" font-family="DejaVu Sans Mono">ポート 443</text>
+      <line x1="180" y1="62" x2="676" y2="62" stroke="#1f3a68" stroke-width="2" marker-end="url(#ar4)"/>
+      <text x="265" y="56" fill="#1f3a68" font-size="11">① 行き：→ 443</text><text x="595" y="56" fill="#1f3a68" font-size="11">インバウンドで 443 を許可</text>
+      <line x1="680" y1="100" x2="184" y2="100" stroke="#b25000" stroke-width="2" marker-end="url(#ar5)"/>
+      <text x="265" y="118" fill="#b25000" font-size="11">② 戻り：→ 50123</text><text x="595" y="118" fill="#b25000" font-size="11">アウトバウンドで一時ポートを許可</text>
+      <text x="428" y="154" fill="#4a5a78" font-size="11">セキュリティグループなら②は自動で通る。NACL は②のルールがないと戻れない。ポート番号は Claude が作った例</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:40%">一時ポートを使う側</th><th>範囲</th></tr>
+    <tr><td class="l">多くの Linux カーネル</td><td class="t">32768～61000</td></tr>
+    <tr><td class="l">Windows Server 2008 以降</td><td class="t">49152～65535</td></tr>
+    <tr><td class="l">Elastic Load Balancing・NAT ゲートウェイ・Lambda</td><td class="t">1024～65535</td></tr>
+  </table>
+  <div class="mini">いろいろなクライアントを受けるなら、NACL では 1024～65535 をまとめて開けることが多い。インスタンス自身がクライアントになる通信（更新の取得など）は、逆にインバウンドで一時ポートを開ける。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/vpc-network-acls.html">ネットワーク ACL</a>（「以前に送受信されたトラフィックに関する情報は保存されません」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/custom-network-acl.html">カスタムネットワーク ACL</a>（一時ポート・「NAT ゲートウェイはポート 1024～65535 を使用します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>デフォルトの ACL とカスタムの ACL</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:26%"></th><th>デフォルトの NACL</th><th>カスタムの NACL</th></tr>
+        <tr><td class="t">できるとき</td><td class="l">VPC と一緒に自動で</td><td class="l">自分で作る</td></tr>
+        <tr><td class="t">最初の状態</td><td class="t">すべて許可</td><td class="x">すべて拒否（<code>*</code> だけ）</td></tr>
+        <tr><td class="t">付くサブネット</td><td class="l">ほかの ACL に関連付けていないサブネット（自動）</td><td class="l">明示的に関連付けたサブネット</td></tr>
+      </table>
+      <div class="point warn"><b>ひっかけ：</b>カスタムの NACL を作って付けただけで、そのサブネットは通信できなくなる。インとアウトの両方に、戻りの分も含めて許可を足す。</div>
+    </div>
+    <div>
+      <div class="lbl">ネットワーク ACL が向いている場面</div>
+      <table class="mx">
+        <tr><th style="width:60%">要件</th><th>NACL を使う理由</th></tr>
+        <tr><td class="l">攻撃元の IP の範囲を、サブネット全体で止める</td><td class="t">拒否が書ける</td></tr>
+        <tr><td class="l">誤ったセキュリティグループで起動されたときの保険</td><td class="t">サブネット全体に効く</td></tr>
+        <tr><td class="l">データベースのサブネットには、アプリのサブネットからしか入れない</td><td class="t">サブネットのガードレール</td></tr>
+      </table>
+      <div class="mini">ネットワーク ACL のルールは、通信がサブネットに出入りするときに評価される。同じサブネットの中の通信には効かない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/default-network-acl.html">VPC のデフォルトのネットワーク ACL</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/custom-network-acl.html">カスタムネットワーク ACL</a>（「これらのルールにより、パケットが他のどのルールにも一致しない場合は拒否されます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/vpc-network-acls.html">ネットワーク ACL</a>（「ネットワーク ACL ルールは、トラフィックがサブネット内でルーティングされるときではなく、サブネットに出入りするときに評価されます。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>外からの攻撃への守り</h1>
+  <p>DDoS は Shield、HTTP の中身は WAF、VPC の境界は Network Firewall。組織にまとめて配るのは Firewall Manager。</p>
+  <div class="foot"><span>AWS SAA #03 ネットワークのセキュリティ</span><span>タスク 1.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>DDoS 攻撃の種類と Shield</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:30%">層</th><th>攻撃の例</th></tr>
+        <tr><td class="t">レイヤー 3（ネットワーク）</td><td class="l">大量の通信で回線を埋める（UDP リフレクションなど）</td></tr>
+        <tr><td class="t">レイヤー 4（トランスポート）</td><td class="l">プロトコルを悪用して相手を疲れさせる（TCP SYN フラッドなど）</td></tr>
+        <tr><td class="t">レイヤー 7（アプリケーション）</td><td class="l">正しい形のリクエストを大量に送る（HTTP のフラッド）</td></tr>
+      </table>
+      <div class="point"><b>入口を AWS のエッジに：</b>Route 53 のホストゾーン・CloudFront・Global Accelerator は、Shield Standard の効果が特に大きい。EC2 を直接さらすより強い。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:28%"></th><th>Shield Standard</th><th>Shield Advanced</th></tr>
+        <tr><td class="t">料金</td><td class="t">追加料金なし・自動</td><td class="l">申し込む（有料）</td></tr>
+        <tr><td class="t">守る層</td><td class="l">よくある L3・L4</td><td class="l">L3・L4 ＋ L7 の自動緩和</td></tr>
+        <tr><td class="t">SRT の支援</td><td class="x">なし</td><td class="t">あり</td></tr>
+        <tr><td class="t">コスト保護</td><td class="x">なし</td><td class="t">あり</td></tr>
+        <tr><td class="t">WAF の料金</td><td class="l">別にかかる</td><td class="l">保護するリソースの標準の WAF の料金はふくまれる</td></tr>
+      </table>
+      <div class="mini">Shield Advanced で守れるのは、CloudFront・Route 53 のホストゾーン・Global Accelerator・Elastic IP（EC2）・ALB などのインターネットに面したリソース。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/ddos-standard-summary.html">AWS Shield Standard の概要</a>（「すべての AWS お客様は、Shield Standard の自動保護を追加料金なしで利用できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/ddos-advanced-summary-capabilities.html">AWS Shield Advanced 機能とオプション</a>（「DDoS 攻撃に起因する可能性のある AWS 請求の急増に対するコスト保護を提供します」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/ddos-overview.html">AWS Shield と Shield Advanced の仕組み</a></div>
+</section>
+
+<section class="slide">
+  <h1>AWS WAF：HTTP(S) のリクエストを見て止める</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">付けられる先（主なもの）</div>
+      <table class="mx">
+        <tr><th>付けられる</th><th style="width:40%">付けられない</th></tr>
+        <tr><td class="t">CloudFront ディストリビューション</td><td class="x">Network Load Balancer</td></tr>
+        <tr><td class="t">Application Load Balancer</td><td class="x">EC2 インスタンスそのもの</td></tr>
+        <tr><td class="t">API Gateway の REST API</td><td class="x">VPC・サブネット</td></tr>
+        <tr><td class="t">AppSync・Cognito ユーザープール など</td><td class="l"></td></tr>
+      </table>
+      <div class="lbl" style="margin-top:8px">ウェブ ACL（新しいコンソールでは保護パック）</div>
+      <div class="mini">ルールを上から評価し、どれにも当たらなければデフォルトアクション（Allow か Block）。公開サイトは Allow にして悪いものだけ止める。ルールのアクションは許可・ブロック・カウント・CAPTCHA・チャレンジ。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:42%">ルールの種類</th><th>使いどころ</th></tr>
+        <tr><td class="t">マネージドルールグループ</td><td class="l">よくある攻撃のパターンを、自分でルールを書かずに防ぐ</td></tr>
+        <tr><td class="t">SQL インジェクション・XSS</td><td class="l">リクエストの中の悪意のある SQL やスクリプトを調べる</td></tr>
+        <tr><td class="t">レートベース</td><td class="l">同じ IP などから速すぎるリクエストを制限（L7 の DDoS・総当たり）</td></tr>
+        <tr><td class="t">地理的一致</td><td class="l">送信元の国や地域で扱い分ける</td></tr>
+        <tr><td class="t">IP セット</td><td class="l">決まった IP アドレスの一覧で許可・ブロック</td></tr>
+      </table>
+      <div class="point warn"><b>SG・NACL では防げない：</b>SQL インジェクションは正しい 443 番の通信の中身に入ってくる。ポートと IP しか見ないものでは区別できない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/waf-chapter.html">AWS WAF</a>（「保護されたウェブアプリケーションリソースに転送される HTTP(S) リクエストをモニタリングできるウェブアプリケーションファイアウォールです」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/waf-rule-statement-type-rate-based.html">レートベースのルールステートメント</a>（「レートベースのルールでは、受信リクエストをカウントし、レートが速すぎる場合にはリクエストを制限します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/web-acl-default-action.html">デフォルトアクション</a></div>
+</section>
+
+<section class="slide">
+  <h1>Firewall Manager・Network Firewall・DNS Firewall</h1>
+  <table class="mx">
+    <tr><th style="width:22%">サービス</th><th>何をするか</th><th style="width:30%">本番の言い回し</th></tr>
+    <tr><td class="t">AWS Firewall Manager</td><td class="l">WAF・Shield Advanced・セキュリティグループ・ネットワーク ACL・Network Firewall・DNS Firewall のルールを、組織の複数のアカウントとリソースにまとめて適用。新しいアカウントやリソースにも自動で付ける</td><td class="l">「組織の全アカウントで」「新しいリソースにも自動で」</td></tr>
+    <tr><td class="t">AWS Network Firewall</td><td class="l">VPC のための、ステートフルなマネージドのファイアウォール兼 IDS/IPS。VPC の境界で通信をフィルター。Suricata 互換のルール・ドメイン名のリスト・ディープパケットインスペクション</td><td class="l">「VPC から出る通信を許可したドメインだけに」「VPC の出入りを中身まで検査」</td></tr>
+    <tr><td class="t">Route 53 Resolver DNS Firewall</td><td class="l">VPC の中から Route 53 Resolver に送る DNS の問い合わせをフィルター</td><td class="l">「悪いドメインの名前解決を止める」</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>WAF との違い：</b>WAF は CloudFront・ALB などに届く HTTP(S) を見る。Network Firewall は VPC の出入りの通信全般（HTTP 以外も）を見る。</div>
+    <div class="point"><b>Firewall Manager は「配る係」：</b>自分では通信を調べない。実際に止めるのは WAF や SG など。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/fms-chapter.html">AWS Firewall Manager</a>（「アカウントに追加されたリソースへの保護を自動的に追加します」）／<a class="src" href="https://docs.aws.amazon.com/network-firewall/latest/developerguide/what-is-aws-network-firewall.html">What is AWS Network Firewall?</a>（「Use custom lists of known bad domains to limit the types of domain names that your applications can access.」）</div>
+</section>
+
+<section class="slide">
+  <h1>選び分け：この要件ならこれ</h1>
+  <table class="mx">
+    <tr><th style="width:62%">要件</th><th>答え</th></tr>
+    <tr><td class="l">DB をインターネットから直接触れないところに置く</td><td class="t">プライベートサブネット</td></tr>
+    <tr><td class="l">DB にはアプリ層の EC2 からだけ入れる（台数が変わる）</td><td class="t">SG の送信元に SG を指定</td></tr>
+    <tr><td class="l">特定の IP の範囲をサブネット全体で拒否</td><td class="t">ネットワーク ACL の拒否ルール（小さい番号）</td></tr>
+    <tr><td class="l">ポートを開けず、鍵の管理なしでインスタンスに入る</td><td class="t">Session Manager</td></tr>
+    <tr><td class="l">SQL インジェクション・XSS を止める</td><td class="t">WAF（ALB・CloudFront に付ける）</td></tr>
+    <tr><td class="l">同じ IP からの大量のリクエストを自動で止める</td><td class="t">WAF のレートベースのルール</td></tr>
+    <tr><td class="l">DDoS で専門チームの支援と料金の補償がほしい</td><td class="t">Shield Advanced</td></tr>
+    <tr><td class="l">組織の全アカウントに同じ WAF のルールを自動で付ける</td><td class="t">Firewall Manager</td></tr>
+    <tr><td class="l">VPC から外へは許可したドメインだけに出す</td><td class="t">Network Firewall</td></tr>
+  </table>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">サブネット<span>パブリック＝IGW への直接のルートあり。外に面するものだけ置く。残りはプライベート</span></div>
+      <div class="box b2">セキュリティグループ<span>インスタンス単位・許可だけ・全部見て決める・ステートフル。SG を参照して層をつなぐ</span></div>
+      <div class="box b3">ネットワーク ACL<span>サブネット単位・許可と拒否・小さい番号から・ステートレス（一時ポートを忘れない）</span></div>
+      <div class="box b4">外からの攻撃<span>Shield＝DDoS、WAF＝HTTP の中身、Network Firewall＝VPC の境界、Firewall Manager＝まとめて配る</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:50%">ひっかけ</th><th>正しくは</th></tr>
+        <tr><td class="l">SG で特定の IP を拒否</td><td class="x">できない。NACL で</td></tr>
+        <tr><td class="l">NACL は拒否が優先</td><td class="x">番号順。最初の一致</td></tr>
+        <tr><td class="l">NACL で応答も自動で通る</td><td class="x">ステートレス。戻りを許可</td></tr>
+        <tr><td class="l">NLB に WAF を付ける</td><td class="x">付けられない</td></tr>
+        <tr><td class="l">Shield Standard を申し込む</td><td class="x">自動・追加料金なし</td></tr>
+      </table>
+      <div class="point">次の #04 では、KMS・CloudHSM・ACM・Secrets Manager などの暗号化と秘密情報の扱いを学ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
