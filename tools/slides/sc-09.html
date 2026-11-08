@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>支援士 #09 インシデント対応と脅威インテリジェンス 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">情報処理安全確保支援士試験　科目A-2　中分類25 情報セキュリティ対策　#09</div>
+  <h1>インシデント対応と脅威インテリジェンス</h1>
+  <p>知る（インテリジェンス）、備える（計画・訓練）、動く（対応・報告）、戻す（復旧）</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（IPA の支援士試験シラバス案、NIST SP 800-61、JPCERT/CC、FIRST、OASIS、個人情報保護委員会、IPA 内部不正防止ガイドラインなど）を書いた。過去問は IPA 公開の午前Ⅱ。例の場面は Claude が作った</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>シラバス案 中分類25 小分類1〜3（組織的・人的・物理的管理策に関する技術・手法）</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 脅威インテリジェンス<span>OSINT・IoC・痛みのピラミッド・STIX・TAXII・TLP・脅威ハンティング・テイクダウン</span></div>
+      <div class="box b2">2 インシデント対応と事業継続<span>ハンドリング・4つの段階・トリアージ・IRP・CSIRT マテリアル・報告と通知・公表・保険・事後レビュー、RTO・RPO・代替サイト</span></div>
+      <div class="box b3">3 人的・物理的な対策<span>内部不正防止ガイドライン・訓練（標的型メール・レッドチーム・机上）・UEBA・クリアランス・ゾーニング・アンチパスバック・MDM</span></div>
+    </div>
+    <div>
+      <div class="lbl">過去の午前Ⅱでの出方</div>
+      <table class="mx">
+        <tr><th>テーマ</th><th style="width:30%">出た回</th></tr>
+        <tr><td class="l">IoC に該当するもの</td><td class="t">R7春</td></tr>
+        <tr><td class="l">UEBA の機能</td><td class="t">R7秋</td></tr>
+        <tr><td class="l">STIX/TAXII（ATT&amp;CK の誤りの選択肢）</td><td class="t">R6秋</td></tr>
+      </table>
+      <div class="point warn">午前Ⅱでは新しい言葉が<b>1問ずつ</b>出始めた段階。科目B では<b>インシデント対応の判断</b>（隔離・報告・復旧の順番）が中心になる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）Ver.0.1」中分類25 小分類1〜3／IPA 午前Ⅱ 令和7年度春期 問13・令和7年度秋期 問14・令和6年度秋期 問3</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>脅威インテリジェンス</h1>
+  <p>集めた情報を、使える知見に変えて、決まった形で共有する。</p>
+  <div class="foot"><span>支援士 #09 インシデント対応と脅威インテリジェンス</span><span>25-1〜25-3</span></div>
+</section>
+
+<section class="slide">
+  <h1>IoC と痛みのピラミッド</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">R7春 問13：IoC に該当するのは</div>
+      <table class="mx">
+        <tr><th>選択肢</th><th style="width:30%">IoC か</th></tr>
+        <tr><td class="l">JVN の脆弱性情報</td><td class="t">いいえ（攻撃の可能性）</td></tr>
+        <tr><td class="l">認証局の失効リスト</td><td class="t">いいえ（CRL）</td></tr>
+        <tr><td class="l"><b>機器のログの C&amp;C との通信履歴</b></td><td class="x">はい（侵害の痕跡）</td></tr>
+        <tr><td class="l">FW のフィルタリングルール</td><td class="t">いいえ（防御の設定）</td></tr>
+      </table>
+      <div class="point">IoC＝<b>侵害された痕跡</b>。ハッシュ値・C2 の IP/ドメイン・不審なレジストリ・通信のパターン。</div>
+    </div>
+    <div>
+      <div class="lbl">痛みのピラミッド（上ほど攻撃者が変えにくい）</div>
+      <div class="stack">
+        <div class="box" style="background:#b23a2c">TTP（戦術・技術・手順）<span>手口ごと変えさせる＝大きな痛み</span></div>
+        <div class="box b4">ツール</div>
+        <div class="box b2">ネットワーク・ホストの痕跡</div>
+        <div class="box b3">ドメイン名</div>
+        <div class="box b5">IP アドレス</div>
+        <div class="box b5">ハッシュ値<span>すぐ変えられる</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ 令和7年度春期 問13／David J. Bianco「The Pyramid of Pain」（2013）</div>
+</section>
+
+<section class="slide">
+  <h1>STIX・TAXII・TLP：書き方・運び方・広げ方</h1>
+  <div class="cols">
+    <div>
+      <div class="flow" style="gap:4px">
+        <div class="box b1">STIX<span>何を書くか（形式・JSON）</span></div><div class="to">→</div>
+        <div class="box b2">TAXII<span>どう運ぶか（HTTPS の API）</span></div><div class="to">→</div>
+        <div class="box b3">受け手<span>SIEM・SOAR に取り込む</span></div>
+      </div>
+      <div class="code small" style="margin-top:8px">{ "type": "indicator",
+  "pattern": "[ipv4-addr:value = '198.51.100.7']",
+  "pattern_type": "stix",
+  "valid_from": "2026-11-01T00:00:00Z" }</div>
+      <div class="point">STIX のオブジェクト：攻撃者・キャンペーン・攻撃パターン・マルウェア・指標（indicator）・対策 など。</div>
+    </div>
+    <table class="mx">
+      <tr><th style="width:36%">TLP 2.0</th><th>共有してよい範囲</th></tr>
+      <tr><td class="x">RED</td><td class="l">その場の受け手本人だけ</td></tr>
+      <tr><td class="t">AMBER+STRICT</td><td class="l">受け手の<b>組織の中だけ</b></td></tr>
+      <tr><td class="t">AMBER</td><td class="l">組織の中と、必要な顧客まで</td></tr>
+      <tr><td class="t">GREEN</td><td class="l">コミュニティの中まで（公開しない）</td></tr>
+      <tr><td class="t">CLEAR</td><td class="l">制限なし（旧 WHITE）</td></tr>
+    </table>
+  </div>
+  <div class="cite">出典：OASIS「STIX Version 2.1」「TAXII Version 2.1」／FIRST「Traffic Light Protocol (TLP) Version 2.0」（2022）。STIX の例は Claude が作った（アドレスは文書用）</div>
+</section>
+
+<section class="slide">
+  <h1>OSINT・脅威ハンティング・テイクダウン</h1>
+  <div class="cols3">
+    <div>
+      <div class="lbl">OSINT</div>
+      <div class="point">報道・SNS・公開レポート・CT ログ・WHOIS。防御側は<b>自組織の漏えいや攻撃予告</b>を探す。攻撃者は偵察に使う（#02）。</div>
+    </div>
+    <div>
+      <div class="lbl">脅威ハンティング</div>
+      <div class="point"><b>潜んでいる前提</b>で、仮説を立てて能動的に探す。アラートを待つ通常の監視と違う。見つけた手口は検知ルールへ。</div>
+    </div>
+    <div>
+      <div class="lbl">テイクダウン</div>
+      <div class="point">フィッシングサイト・配布サイト・C2 の停止を、ホスティング事業者や登録事業者に依頼。<b>証拠を残してから</b>。</div>
+    </div>
+  </div>
+  <table class="mx" style="margin-top:12px">
+    <tr><th style="width:20%">インテリジェンスの種類</th><th>読み手</th><th>例</th></tr>
+    <tr><td class="t">戦略的</td><td class="l">経営層</td><td class="l">業界をねらう攻撃の傾向、地政学的なリスク</td></tr>
+    <tr><td class="t">戦術的</td><td class="l">防御の設計者</td><td class="l">攻撃者の TTP（ATT&amp;CK で表す）</td></tr>
+    <tr><td class="t">運用的・技術的</td><td class="l">SOC・CSIRT</td><td class="l">IoC（ハッシュ値・IP・ドメイン）</td></tr>
+  </table>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」用語例「OSINT」「脅威ハンティング」「テイクダウン」。種類の整理は一般的な分け方を Claude がまとめた</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>インシデント対応と事業継続</h1>
+  <p>封じ込めてから根絶、根絶してから復旧。</p>
+  <div class="foot"><span>支援士 #09 インシデント対応と脅威インテリジェンス</span><span>25-1〜25-3</span></div>
+</section>
+
+<section class="slide">
+  <h1>インシデント対応の4つの段階（SP 800-61 Rev.2）</h1>
+  <div class="flow">
+    <div class="box b5">準備<span>体制・IRP・連絡先・ツール・訓練</span></div><div class="to">→</div>
+    <div class="box b1">検知・分析<span>兆候の発見・トリアージ・範囲の特定・記録</span></div><div class="to">→</div>
+    <div class="box b4">封じ込め・根絶・復旧<span>隔離 → 原因除去 → 戻して監視</span></div><div class="to">→</div>
+    <div class="box b2">事後対応<span>事後レビュー・再発防止</span></div>
+  </div>
+  <div class="cols" style="margin-top:12px">
+    <table class="mx">
+      <tr><th>よくある誤り</th><th>正しくは</th></tr>
+      <tr><td class="l">感染 PC の電源をすぐ切る</td><td class="l">ネットワークから切り離し、<b>電源は入れたまま</b>（メモリの証拠）</td></tr>
+      <tr><td class="l">原因を除く前に復旧する</td><td class="l">根絶してから。でないと再侵入される</td></tr>
+      <tr><td class="l">確かめてから報告する</td><td class="l"><b>まず報告</b>。記録は最初から</td></tr>
+      <tr><td class="l">担当者の責任を追及する</td><td class="l">仕組みの改善に目を向ける</td></tr>
+    </table>
+    <div>
+      <div class="point"><b>トリアージ：</b>インシデントか、範囲内か、影響と緊急度は → 優先順位。</div>
+      <div class="point warn">2025年の <b>Rev.3</b> は CSF 2.0 の6つの機能（統治・識別・防御・検知・対応・復旧）に合わせて組み直した。Rev.2 の4段階も引き続き基本。</div>
+    </div>
+  </div>
+  <div class="cite">出典：NIST SP 800-61 Rev.2 Figure 3-1・Rev.3（2025）／JPCERT/CC「インシデントハンドリングマニュアル」</div>
+</section>
+
+<section class="slide">
+  <h1>報告・通知・公表：個人データの漏えいのとき</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">個人情報保護委員会への報告と本人通知が義務になる事態</div>
+      <table class="mx">
+        <tr><td class="t">①</td><td class="l">要配慮個人情報（病歴など）の漏えい</td></tr>
+        <tr><td class="t">②</td><td class="l">財産的被害のおそれ（カード番号など）</td></tr>
+        <tr><td class="x">③</td><td class="l"><b>不正の目的</b>によるおそれ（不正アクセスなど）</td></tr>
+        <tr><td class="t">④</td><td class="l">1,000人を超える漏えい</td></tr>
+      </table>
+      <div class="point">それぞれ「おそれ」を含む。③は人数に関係なく対象。</div>
+    </div>
+    <div>
+      <div class="lbl">報告の2段階</div>
+      <div class="flow" style="gap:4px">
+        <div class="box b4">速報<span>知ってから速やかに（おおむね3〜5日以内）</span></div><div class="to">→</div>
+        <div class="box b1">確報<span>30日以内（③は60日以内）</span></div>
+      </div>
+      <table class="mx" style="margin-top:8px">
+        <tr><th>ほかの届出・対応</th></tr>
+        <tr><td class="l">警察（被害の相談）、IPA（届出制度）、JPCERT/CC、監督官庁</td></tr>
+        <tr><td class="l">公表の判断と広報、問い合わせ窓口、偽のお詫びメールへの注意</td></tr>
+        <tr><td class="l">サイバー保険の連絡（調査会社・弁護士の紹介）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：個人情報の保護に関する法律施行規則 第7条・第8条／個人情報保護委員会「ガイドライン（通則編）」3-5／IPA「支援士試験 シラバス（案）」用語例</div>
+</section>
+
+<section class="slide">
+  <h1>RTO・RPO と代替サイト</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">時間の軸で見る</div>
+      <div class="flow" style="gap:4px">
+        <div class="box b2">最後のバックアップ<span>← RPO（失ってよいデータの幅）</span></div><div class="to">→</div>
+        <div class="box" style="background:#b23a2c">障害の発生</div><div class="to">→</div>
+        <div class="box b1">業務の再開<span>RTO（再開までの時間）→</span></div>
+      </div>
+      <div class="point"><b>例：</b>「4時間以内に再開、失ってよいのは直近15分」→ RTO＝4時間、RPO＝15分。</div>
+      <div class="point warn">RPO を0に近づけるにはリアルタイムの複製、RTO を短くするにはホットサイトや待機系。<b>どちらも費用が上がる</b>。</div>
+    </div>
+    <table class="mx">
+      <tr><th>代替サイト</th><th>用意しているもの</th><th style="width:22%">再開</th><th style="width:16%">費用</th></tr>
+      <tr><td class="t">ホット</td><td class="l">同じ機器とデータを稼働させておく</td><td class="t">すぐ</td><td class="x">高</td></tr>
+      <tr><td class="t">ウォーム</td><td class="l">機器はあるが、データの復元・設定が必要</td><td class="t">数時間〜数日</td><td class="t">中</td></tr>
+      <tr><td class="t">コールド</td><td class="l">場所・電源・回線だけ</td><td class="t">数日〜数週間</td><td class="t">低</td></tr>
+    </table>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」用語例「復旧目標（RTO，RPO）に基づく復旧設計，代替サイト（ホットサイト，コールドサイト）」</div>
+</section>
+
+<section class="slide">
+  <h1>ランサムウェアに耐えるバックアップ</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">3-2-1 ルール</div>
+      <div class="flow" style="gap:4px">
+        <div class="box b1">3<span>3つのコピー</span></div>
+        <div class="box b2">2<span>2種類の媒体</span></div>
+        <div class="box b3">1<span>1つは離れた場所</span></div>
+      </div>
+      <div class="point">加えて、<b>オフライン</b>（つながっていない）か<b>イミュータブル</b>（一定期間書き換え・削除できない）の保管を1つ。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>やりがちな運用</th><th>何が起きるか</th></tr>
+        <tr><td class="l">同じネットワークの共有フォルダに上書き</td><td class="x">本番と一緒に暗号化される</td></tr>
+        <tr><td class="l">ドメイン管理者で消せる</td><td class="x">乗っ取られた管理者に消される</td></tr>
+        <tr><td class="l">取るだけで戻したことがない</td><td class="x">いざというとき戻せない・RTO を超える</td></tr>
+      </table>
+      <div class="point warn"><b>復旧手順の検証</b>を定期的に。復元の時間を測り、RTO に収まるか確かめる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」用語例「バックアップからの復旧手順の検証」。3-2-1 ルールは広く使われる目安</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>人的・物理的な対策</h1>
+  <p>人の不正と過ち、建物と端末を守る。</p>
+  <div class="foot"><span>支援士 #09 インシデント対応と脅威インテリジェンス</span><span>25-1〜25-3</span></div>
+</section>
+
+<section class="slide">
+  <h1>内部不正を防ぐ5つの基本原則と訓練</h1>
+  <div class="cols">
+    <table class="mx">
+      <tr><th style="width:30%">基本原則</th><th>対策の例</th></tr>
+      <tr><td class="t">犯行を難しくする</td><td class="l">アクセス権の最小化、USB の制限</td></tr>
+      <tr><td class="x">捕まるリスクを高める</td><td class="l">ログの監視と<b>その周知</b>、UEBA</td></tr>
+      <tr><td class="t">犯行の見返りを減らす</td><td class="l">重要情報の暗号化、DRM</td></tr>
+      <tr><td class="t">犯行の誘因を減らす</td><td class="l">公平な評価、職場環境の改善</td></tr>
+      <tr><td class="t">犯罪の弁明をさせない</td><td class="l">ルールの周知、誓約書・秘密保持契約</td></tr>
+    </table>
+    <div>
+      <table class="mx">
+        <tr><th>訓練</th><th>中身</th></tr>
+        <tr><td class="t">標的型メール訓練</td><td class="l">疑似メールで開封率・<b>報告率</b>を測る</td></tr>
+        <tr><td class="t">レッドチーム演習</td><td class="l">攻撃者役が<b>目標の達成</b>を試み、検知・対応力を評価</td></tr>
+        <tr><td class="t">机上演習</td><td class="l">シナリオを<b>話し合い</b>、判断と手順を確かめる</td></tr>
+      </table>
+      <div class="point"><b>R7秋 問14 UEBA：</b>「利用者や機器の<b>異常な振る舞い</b>を検知」。生体認証・アクセス制御・USB 暗号化は違う。</div>
+      <div class="point warn"><b>セキュリティクリアランス：</b>重要経済安保情報保護活用法（2024年成立・2025年施行）で、民間の人も適性評価の対象に。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「組織における内部不正防止ガイドライン 第5版」／IPA 午前Ⅱ 令和7年度秋期 問14／重要経済安保情報の保護及び活用に関する法律</div>
+</section>
+
+<section class="slide">
+  <h1>物理的な対策：ゾーニングと入退管理、モバイル機器</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">セキュリティゾーニング</div>
+      <div class="flow" style="gap:4px">
+        <div class="box b5">一般<span>受付・会議室</span></div><div class="to">→</div>
+        <div class="box b2">執務<span>社員証</span></div><div class="to">→</div>
+        <div class="box b1">セキュリティ<span>サーバ室・生体認証</span></div>
+      </div>
+      <table class="mx" style="margin-top:8px">
+        <tr><th>共連れ対策</th><th>しくみ</th></tr>
+        <tr><td class="x">アンチパスバック</td><td class="l">入室記録がないと退室できない（逆も）</td></tr>
+        <tr><td class="t">サークル型ゲート</td><td class="l">1人ずつしか通れない</td></tr>
+        <tr><td class="t">インターロック</td><td class="l">2つの扉が同時に開かない</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">MDM でできること</div>
+      <table class="mx">
+        <tr><td class="l">パスコード・暗号化の設定を強制</td></tr>
+        <tr><td class="l">入れてよいアプリを制限</td></tr>
+        <tr><td class="x">紛失時の遠隔ロック・遠隔消去（リモートワイプ）</td></tr>
+        <tr><td class="l">OS の版や設定の状態を把握</td></tr>
+      </table>
+      <div class="point">MAM（業務アプリとデータだけ管理）、BYOD（私物端末の業務利用）。</div>
+      <div class="point warn">サポートユーティリティ（電源・空調・給水）の<b>保守</b>も物理的対策。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」中分類25 小分類3 用語例</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ：本番での問われ方</h1>
+  <div class="cols">
+    <div>
+      <div class="point"><b>言葉の定義：</b>IoC＝侵害の痕跡、UEBA＝異常なふるまいの検知、STIX＝形式、TAXII＝手順、TLP＝共有範囲。</div>
+      <div class="point"><b>順番：</b>準備 → 検知・分析 → 封じ込め → 根絶 → 復旧 → 事後対応。</div>
+      <div class="point"><b>数字：</b>漏えい報告の速報（3〜5日）・確報（30日／不正目的は60日）。RTO は時間、RPO は時点。</div>
+    </div>
+    <div>
+      <div class="point warn"><b>科目B（午後）の定番：</b>ログから感染端末を特定 → 隔離の判断 → 影響範囲の調査 → 報告先と期限 → 再発防止。「電源を切る」「確かめてから報告」は誤り。</div>
+      <div class="point">SIEM・SOAR・EDR などの監視の製品は <b>#12</b>、証拠の保全とフォレンジックは <b>#19</b>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ（このPDFの問題演習）／NIST SP 800-61／個人情報保護委員会ガイドライン</div>
+</section>
+
+</body>
+</html>
