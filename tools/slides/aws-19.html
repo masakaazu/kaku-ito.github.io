@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS SAA #19 CloudFrontとGlobal Accelerator 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">AWS SAA（SAA-C03）　分野3 高パフォーマンス　#19</div>
+  <h1>CloudFront と Global Accelerator</h1>
+  <p>CloudFront のエッジロケーション・リージョン別エッジキャッシュ・Origin Shield、TTL とキャッシュキー、無効化とバージョン付きファイル名、OAC・カスタムヘッダー・VPC オリジン、署名付き URL と署名付き Cookie、地理的制限・フィールドレベル暗号化・HTTPS・WAF、オリジンフェイルオーバー、CloudFront Functions と Lambda@Edge、Global Accelerator の静的 IP・標準とカスタムルーティング・トラフィックダイヤル・重み・クライアント IP の保存</p>
+  <div class="refs-legend">各ページの下に、根拠にした AWS の公式ドキュメント（Amazon CloudFront デベロッパーガイド・AWS Global Accelerator デベロッパーガイド）を書いた（青い文字を押すと開く）。「」の中はドキュメントの原文どおり（日本語版は機械翻訳のため、語順が不自然なところもそのまま）。サイト名・ファイル名・リージョンの組み合わせは Claude が作った例。数字は 2026-11 時点のドキュメントによる</div>
+</section>
+
+<section class="slide">
+  <h1>全体像：2 つの「エッジから速く」<small>試験ガイド タスク 3.4</small></h1>
+  <svg width="856" height="210" viewBox="0 0 856 210">
+    <defs><marker id="a1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="20" width="120" height="70" rx="10" fill="#f6f8fb" stroke="#4a5a78"/><text x="70" y="48" fill="#4a5a78" font-weight="700">ブラウザ</text><text x="70" y="66" fill="#4a5a78">画像・HTML・API</text>
+      <rect x="190" y="20" width="200" height="70" rx="8" fill="#1f3a68"/><text x="290" y="44" fill="#fff" font-weight="700">CloudFront のエッジ</text><text x="290" y="62" fill="#fff">キャッシュにあればすぐ返す</text><text x="290" y="78" fill="#fff">入口：ディストリビューションのドメイン名</text>
+      <rect x="470" y="20" width="370" height="70" rx="10" fill="#e3eefc" stroke="#1f5fa8"/><text x="655" y="44" fill="#1f5fa8" font-weight="700">オリジン</text><text x="655" y="64">S3 バケット・ALB・EC2・ほかの HTTP サーバー</text><text x="655" y="80" fill="#4a5a78">キャッシュにないときだけ取りに行く</text>
+      <line x1="130" y1="55" x2="188" y2="55" stroke="#1f3a68" stroke-width="2" marker-end="url(#a1)"/><line x1="390" y1="55" x2="468" y2="55" stroke="#1f3a68" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#a1)"/>
+      <rect x="10" y="120" width="120" height="70" rx="10" fill="#f6f8fb" stroke="#4a5a78"/><text x="70" y="148" fill="#4a5a78" font-weight="700">ゲーム・VoIP</text><text x="70" y="166" fill="#4a5a78">TCP・UDP</text>
+      <rect x="190" y="120" width="200" height="70" rx="8" fill="#b25000"/><text x="290" y="144" fill="#fff" font-weight="700">Global Accelerator</text><text x="290" y="162" fill="#fff">キャッシュはしない・通信を運ぶ</text><text x="290" y="178" fill="#fff">入口：2 つの静的 IP（エニーキャスト）</text>
+      <rect x="470" y="120" width="170" height="70" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="555" y="144" fill="#3a7d44" font-weight="700">東京リージョン</text><text x="555" y="164">ALB・NLB・EC2・EIP</text>
+      <rect x="670" y="120" width="170" height="70" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="755" y="144" fill="#3a7d44" font-weight="700">オレゴンリージョン</text><text x="755" y="164">ALB・NLB・EC2・EIP</text>
+      <line x1="130" y1="155" x2="188" y2="155" stroke="#1f3a68" stroke-width="2" marker-end="url(#a1)"/><line x1="390" y1="155" x2="468" y2="155" stroke="#1f3a68" stroke-width="2" marker-end="url(#a1)"/>
+      <path d="M390,175 Q530,205 668,175" fill="none" stroke="#1f3a68" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#a1)"/><text x="530" y="206" fill="#4a5a78">正常で最適なリージョンへ</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:18%"></th><th>CloudFront</th><th>Global Accelerator</th></tr>
+    <tr><td class="t">何を速くする</td><td class="l">ウェブコンテンツ（静的と動的）。エッジのキャッシュとバックボーン</td><td class="l">TCP・UDP の通信。最寄りのエッジから AWS のグローバルネットワーク</td></tr>
+    <tr><td class="t">決め手の言葉</td><td class="l">画像・動画・キャッシュ・S3・署名付き URL・地理的制限</td><td class="l">固定 IP・許可リスト・UDP・ゲーム・リージョン間の素早い切り替え</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/Introduction.html">Amazon CloudFront とは何ですか?</a>（「CloudFront では、エッジロケーションというデータセンターの世界的ネットワークを経由してコンテンツを配信します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/global-accelerator/latest/dg/introduction-components.html">AWS Global Accelerator コンポーネント</a>（「静的 IP アドレスは、AWS エッジネットワークからのエニーキャストです。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>CloudFront のしくみとキャッシュ</h1>
+  <p>キャッシュミスのときの流れ、エッジロケーションとリージョン別エッジキャッシュ、Origin Shield、TTL、キャッシュキーとキャッシュヒット率、無効化とバージョン付きファイル名。</p>
+  <div class="foot"><span>AWS SAA #19 CloudFront と Global Accelerator</span><span>タスク 3.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>リクエストの流れ：キャッシュの 3 つの層</h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <defs><marker id="a2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="40" width="100" height="70" rx="10" fill="#f6f8fb" stroke="#4a5a78"/><text x="60" y="70" fill="#4a5a78" font-weight="700">ビューワー</text><text x="60" y="88" fill="#4a5a78">（利用者）</text>
+      <rect x="160" y="30" width="150" height="90" rx="8" fill="#1f3a68"/><text x="235" y="56" fill="#fff" font-weight="700">エッジロケーション</text><text x="235" y="72" fill="#fff">（POP）</text><text x="235" y="92" fill="#fff">DNS で最も近い所へ</text><text x="235" y="108" fill="#fff">人気のものをすぐ返す</text>
+      <rect x="360" y="30" width="150" height="90" rx="8" fill="#1f5fa8"/><text x="435" y="56" fill="#fff" font-weight="700">リージョン別</text><text x="435" y="72" fill="#fff" font-weight="700">エッジキャッシュ</text><text x="435" y="92" fill="#fff">POP より大きい</text><text x="435" y="108" fill="#fff">人気が下がっても残す</text>
+      <rect x="560" y="30" width="130" height="90" rx="8" fill="#6a3d9a"/><text x="625" y="56" fill="#fff" font-weight="700">Origin Shield</text><text x="625" y="76" fill="#fff">（任意・追加料金）</text><text x="625" y="96" fill="#fff">オリジンの前の</text><text x="625" y="110" fill="#fff">最後の層</text>
+      <rect x="740" y="30" width="106" height="90" rx="10" fill="#e3eefc" stroke="#1f5fa8"/><text x="793" y="70" fill="#1f5fa8" font-weight="700">オリジン</text><text x="793" y="90" fill="#1f5fa8">S3・ALB など</text>
+      <g stroke="#1f3a68" stroke-width="2"><line x1="110" y1="75" x2="158" y2="75" marker-end="url(#a2)"/><line x1="310" y1="75" x2="358" y2="75" marker-end="url(#a2)"/><line x1="510" y1="75" x2="558" y2="75" marker-end="url(#a2)"/><line x1="690" y1="75" x2="738" y2="75" marker-end="url(#a2)"/></g>
+      <path d="M310,120 Q525,150 740,120" fill="none" stroke="#b25000" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#a2)"/>
+      <text x="525" y="170" fill="#b25000" font-weight="700">PUT・POST・リクエスト時に決まる動的なリクエスト、同じリージョンの S3 オリジン</text><text x="525" y="186" fill="#b25000">→ リージョン別エッジキャッシュを通らない</text>
+      <text x="235" y="140" fill="#4a5a78">キャッシュミスなら次の層へ</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>キャッシュミスのとき：</b>オリジンから最初のバイトが届いたらすぐ利用者へ送り始め（全部を待たない）、次のリクエストに備えてキャッシュにも入れる。</div>
+    <div class="point warn"><b>ひっかけ：</b>キャッシュできない動的なコンテンツにも CloudFront は効く。リクエストが AWS のバックボーンネットワークを通るから。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/HowCloudFrontWorks.html">CloudFront がコンテンツを配信する方法</a>（「オリジンから最初のバイトが到着した直後に、CloudFront はそのオブジェクトをユーザーに転送し始めます。」「リクエスト時に決定される動的リクエストは、リージョン別エッジキャッシュを通過せず、直接オリジンに送信されます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/Introduction.html">Amazon CloudFront とは何ですか?</a>（「CloudFront は、コンテンツを最良の方法で供給できるエッジロケーションに各ユーザーリクエストを AWS バックボーンネットワーク経由でルーティングすることで、コンテンツの配信を高速化します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Origin Shield：オリジンへのリクエストを 1 つにまとめる</h1>
+  <div class="cols">
+    <svg width="410" height="220" viewBox="0 0 410 220">
+      <defs><marker id="a3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+      <g font-size="11" text-anchor="middle">
+        <rect x="10" y="10" width="110" height="34" rx="6" fill="#1f5fa8"/><text x="65" y="31" fill="#fff">エッジキャッシュ（米）</text>
+        <rect x="10" y="62" width="110" height="34" rx="6" fill="#1f5fa8"/><text x="65" y="83" fill="#fff">エッジキャッシュ（欧）</text>
+        <rect x="10" y="114" width="110" height="34" rx="6" fill="#1f5fa8"/><text x="65" y="135" fill="#fff">エッジキャッシュ（亜）</text>
+        <rect x="170" y="52" width="110" height="54" rx="8" fill="#6a3d9a"/><text x="225" y="76" fill="#fff" font-weight="700">Origin Shield</text><text x="225" y="94" fill="#fff">オリジンの近く</text>
+        <rect x="320" y="52" width="80" height="54" rx="8" fill="#e3eefc" stroke="#1f5fa8"/><text x="360" y="83" fill="#1f5fa8" font-weight="700">オリジン</text>
+        <g stroke="#1f3a68" stroke-width="2"><line x1="120" y1="27" x2="168" y2="66" marker-end="url(#a3)"/><line x1="120" y1="79" x2="168" y2="79" marker-end="url(#a3)"/><line x1="120" y1="131" x2="168" y2="94" marker-end="url(#a3)"/><line x1="280" y1="79" x2="318" y2="79" marker-end="url(#a3)"/></g>
+        <text x="300" y="70" fill="#b25000" font-weight="700">1 回</text>
+        <text x="205" y="180" fill="#4a5a78">同じ動画が世界中から一斉に求められても</text><text x="205" y="198" fill="#4a5a78">オリジンへ行くのは Origin Shield からだけ</text>
+      </g>
+    </svg>
+    <table class="mx">
+      <tr><th style="width:36%">項目</th><th>内容</th></tr>
+      <tr><td class="t">効果</td><td class="l">ヒット率が上がる。同時リクエストがまとまり、オリジンの負荷が下がる</td></tr>
+      <tr><td class="t">置く場所</td><td class="l">オリジンへのレイテンシーが最も低いリージョン</td></tr>
+      <tr><td class="t">料金</td><td class="l">追加料金がかかる</td></tr>
+      <tr><td class="t">似たもの</td><td class="l">リージョン別エッジキャッシュは自動で使われ、設定はいらない</td></tr>
+    </table>
+  </div>
+  <div class="point warn"><b>見分け方：</b>「オリジンの負荷を下げたい」「複数のリージョンの利用者が同じものを取りに来る」→ Origin Shield。無効化や TTL を短くすると、オリジンへのリクエストはかえって増える。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/origin-shield.html">Amazon CloudFront Origin Shield の使用</a>（「Origin Shield を使用すると、CloudFront のすべてのキャッシュレイヤーからオリジンへのすべてのリクエストが Origin Shield を通過し、キャッシュヒットの可能性が高くなります。」「オリジンに対するレイテンシーが最も低い AWS リージョンを選択するようにしてください。」）</div>
+</section>
+
+<section class="slide">
+  <h1>TTL：どれだけキャッシュに持つか</h1>
+  <table class="mx">
+    <tr><th style="width:26%">決める場所</th><th>やり方</th><th style="width:30%">効く範囲</th></tr>
+    <tr><td class="t">キャッシュ動作</td><td class="l">最小・最大・デフォルトの TTL を設定する（キャッシュポリシー）</td><td class="l">同じパスパターンのすべてのファイル</td></tr>
+    <tr><td class="t">オリジンのヘッダー</td><td class="l">Cache-Control の max-age・s-maxage、または Expires を返す</td><td class="l">そのファイルだけ</td></tr>
+    <tr><td class="t">何も設定しない</td><td class="l">キャッシュポリシーを使わないときの既定は 24 時間</td><td class="l">すべて</td></tr>
+  </table>
+  <svg width="856" height="110" viewBox="0 0 856 110">
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="20" width="200" height="60" rx="8" fill="#1f3a68"/><text x="110" y="45" fill="#fff" font-weight="700">TTL が切れた</text><text x="110" y="64" fill="#fff">次のリクエストでオリジンに確認</text>
+      <rect x="300" y="10" width="250" height="38" rx="8" fill="#3a7d44"/><text x="425" y="34" fill="#fff">変わっていない → 304 Not Modified</text>
+      <rect x="300" y="58" width="250" height="38" rx="8" fill="#b25000"/><text x="425" y="82" fill="#fff">変わった → 新しいファイルを取る</text>
+      <line x1="210" y1="40" x2="298" y2="29" stroke="#1f3a68" stroke-width="2"/><line x1="210" y1="60" x2="298" y2="77" stroke="#1f3a68" stroke-width="2"/>
+      <text x="700" y="34" fill="#4a5a78">短い TTL：動的なコンテンツ向き</text><text x="700" y="82" fill="#4a5a78">長い TTL：性能が上がり、負荷が下がる</text>
+    </g>
+  </svg>
+  <div class="point"><b>s-maxage の使いどころ：</b>max-age と併用すると、ブラウザのキャッシュと CloudFront のエッジキャッシュで、保持する期間を変えられる。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/Expiration.html">コンテンツをキャッシュに保持する期間 (有効期限) を管理する</a>（「キャッシュポリシーの使用をオプトアウトした場合、デフォルトの TTL (有効期限) は 24 時間ですが、次の設定を更新してデフォルトを上書きできます。」「CloudFront キャッシュに最新バージョンがすでにある場合、オリジンはステータスコード `304 Not Modified` を返します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>キャッシュキーとキャッシュヒット率</h1>
+  <svg width="856" height="150" viewBox="0 0 856 150">
+    <g font-size="11" text-anchor="middle">
+      <text x="210" y="18" fill="#b25000" font-weight="700">すべてのクエリ文字列をキーに入れる</text>
+      <rect x="10" y="28" width="400" height="26" rx="5" fill="#fde7cf"/><text x="210" y="46">/item.jpg?lang=ja&amp;utm_source=mail　→ キャッシュ 1</text>
+      <rect x="10" y="60" width="400" height="26" rx="5" fill="#fde7cf"/><text x="210" y="78">/item.jpg?lang=ja&amp;utm_source=sns　→ キャッシュ 2</text>
+      <rect x="10" y="92" width="400" height="26" rx="5" fill="#fde7cf"/><text x="210" y="110">/item.jpg?utm_source=ad&amp;lang=ja　→ キャッシュ 3</text>
+      <text x="210" y="140" fill="#b25000">同じ画像なのに 3 回オリジンへ（ミス）</text>
+      <text x="640" y="18" fill="#3a7d44" font-weight="700">lang だけをキーに入れる</text>
+      <rect x="440" y="44" width="400" height="58" rx="8" fill="#e8f3ea" stroke="#3a7d44"/><text x="640" y="68">/item.jpg?lang=ja　→ キャッシュ 1 つ</text><text x="640" y="88" fill="#3a7d44">2 回目からはヒット</text>
+      <text x="640" y="140" fill="#3a7d44">内容を変えるパラメータだけを含める</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:30%">ヒット率を上げる方法</th><th>説明</th></tr>
+    <tr><td class="t">キーを絞る</td><td class="l">オリジンが一意のオブジェクトを返すクエリ文字列・ヘッダー・Cookie だけをキャッシュポリシーで含める</td></tr>
+    <tr><td class="t">そろえる</td><td class="l">パラメータの大文字と小文字、並べる順序を統一する</td></tr>
+    <tr><td class="t">長く持つ</td><td class="l">max-age を実用的な範囲で長くする。Origin Shield を使う</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html">ポリシーを使用してキャッシュキーを制御する</a>（「キャッシュキーに含まれる値が少なくなると、キャッシュヒットの可能性が高まります。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/cache-hit-ratio.html">CloudFront キャッシュから直接提供するリクエストの割合 (キャッシュヒット率) を増やす</a>（「オリジンが一意のオブジェクトを返すクエリ文字列パラメータのみを転送するように CloudFront を設定する。」）</div>
+</section>
+
+<section class="slide">
+  <h1>古いファイルを消す：無効化 と バージョン付きファイル名</h1>
+  <table class="mx">
+    <tr><th style="width:20%"></th><th>無効化（Invalidation）</th><th>バージョン付きファイル名</th></tr>
+    <tr><td class="t">やること</td><td class="l">エッジキャッシュのファイルを有効期限の前に消す（POP とリージョン別エッジキャッシュの両方）</td><td class="l">style_v2.css のように名前を変え、HTML の参照も変える</td></tr>
+    <tr><td class="t">次のリクエスト</td><td class="l">CloudFront がオリジンから最新版を取る</td><td class="l">新しい名前なので、最初から新しいファイル</td></tr>
+    <tr><td class="t">ブラウザ・プロキシ</td><td class="l">古い版が残って見えることがある</td><td class="l">確実に新しい版になる</td></tr>
+    <tr><td class="t">コスト</td><td class="l">無効化の料金がかかりうる</td><td class="l">こちらのほうが安い</td></tr>
+    <tr><td class="t">向く場面</td><td class="l">誤って公開したファイルをすぐ消す</td><td class="l">頻繁に更新するファイル。ロールバックも簡単</td></tr>
+  </table>
+  <div class="cols">
+    <div class="point"><b>見分け方：</b>「すぐに配信を止めたい」→ 無効化。「頻繁に更新」「確実に新しい版」「コストを抑える」→ バージョン付きファイル名。</div>
+    <div class="point warn"><b>ひっかけ：</b>TTL を短くしても、すでにキャッシュされたファイルはすぐには消えない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/Invalidation.html">ファイルを無効化してコンテンツを削除する</a>（「ファイルを無効にした場合、キャッシュ内でオブジェクトが有効期限切れになるまで、ユーザーに旧バージョンが引き続き表示されることがあります。」「バージョニングのほうが、コストが安くなります。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/HowCloudFrontWorks.html">CloudFront がコンテンツを配信する方法</a>（「たとえば、キャッシュ無効化リクエストでは、有効期限が切れる前に、POP とリージョン別エッジキャッシュの両方からオブジェクトが削除されます。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>CloudFront のセキュリティと高可用性</h1>
+  <p>OAC で S3 を守る、カスタムヘッダーと VPC オリジンで ALB を守る、署名付き URL と署名付き Cookie、地理的制限、フィールドレベル暗号化、HTTPS と us-east-1 の証明書、AWS WAF、オリジンフェイルオーバー、CloudFront Functions と Lambda@Edge。</p>
+  <div class="foot"><span>AWS SAA #19 CloudFront と Global Accelerator</span><span>タスク 3.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>S3 オリジンを守る：OAC</h1>
+  <svg width="856" height="150" viewBox="0 0 856 150">
+    <defs><marker id="a4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker><marker id="a5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="20" width="110" height="50" rx="10" fill="#f6f8fb" stroke="#4a5a78"/><text x="65" y="50" fill="#4a5a78" font-weight="700">利用者</text>
+      <rect x="220" y="20" width="160" height="50" rx="8" fill="#1f3a68"/><text x="300" y="42" fill="#fff" font-weight="700">CloudFront</text><text x="300" y="59" fill="#fff">OAC で署名して送る</text>
+      <rect x="520" y="10" width="320" height="110" rx="10" fill="#e3eefc" stroke="#1f5fa8"/><text x="680" y="32" fill="#1f5fa8" font-weight="700">S3 バケット（非公開のまま）</text><text x="680" y="56">バケットポリシー：</text><text x="680" y="74">このディストリビューションからだけ許可</text>
+      <line x1="120" y1="45" x2="218" y2="45" stroke="#1f3a68" stroke-width="2" marker-end="url(#a4)"/><line x1="380" y1="45" x2="518" y2="45" stroke="#1f3a68" stroke-width="2" marker-end="url(#a4)"/><text x="450" y="38" fill="#3a7d44" font-weight="700">許可</text>
+      <path d="M65,70 Q290,150 518,100" fill="none" stroke="#b25000" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#a5)"/><text x="300" y="146" fill="#b25000" font-weight="700">S3 の URL で直接 → 拒否</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%">方法</th><th>特徴</th><th style="width:30%">本番での扱い</th></tr>
+    <tr><td class="t">OAC</td><td class="l">すべてのリージョンの S3（オプトインリージョンも）、PUT・DELETE などの動的なリクエストに対応</td><td class="l">新しく作るならこれ（推奨）</td></tr>
+    <tr><td class="t">OAI</td><td class="l">古い方法</td><td class="l">「OAI を作る」は推奨ではない</td></tr>
+    <tr><td class="t">ウェブサイトエンドポイント</td><td class="l">S3 の静的ウェブサイトホスティングのエンドポイントは、カスタムオリジンとして設定する</td><td class="l">OAC も OAI も使えない</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html">Amazon S3 オリジンへのアクセスを制限する</a>（「以下の機能をサポートしているため、代わりに OAC を使用することをお勧めします。」「オリジンが、ウェブサイトエンドポイントとして設定されている Amazon S3 バケットである場合、CloudFront でカスタムオリジンとして設定する必要があります。」）</div>
+</section>
+
+<section class="slide">
+  <h1>ALB・EC2 を守る：カスタムヘッダーと VPC オリジン</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">インターネット向けの ALB のまま守る</div>
+      <svg width="410" height="150" viewBox="0 0 410 150">
+        <defs><marker id="a6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <rect x="5" y="20" width="120" height="50" rx="8" fill="#1f3a68"/><text x="65" y="42" fill="#fff" font-weight="700">CloudFront</text><text x="65" y="58" fill="#fff">秘密のヘッダーを付ける</text>
+          <rect x="250" y="20" width="150" height="110" rx="8" fill="#e3eefc" stroke="#1f5fa8"/><text x="325" y="42" fill="#1f5fa8" font-weight="700">ALB のリスナールール</text><text x="325" y="66">ヘッダーあり → 転送</text><text x="325" y="90" fill="#b25000">ヘッダーなし → 拒否</text>
+          <line x1="125" y1="45" x2="248" y2="45" stroke="#1f3a68" stroke-width="2" marker-end="url(#a6)"/><text x="187" y="38" fill="#4a5a78">X-Origin-Verify</text>
+          <rect x="5" y="95" width="120" height="40" rx="8" fill="#f6f8fb" stroke="#4a5a78"/><text x="65" y="119" fill="#4a5a78">直接来た利用者</text>
+          <line x1="125" y1="115" x2="248" y2="105" stroke="#b25000" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#a6)"/>
+        </g>
+      </svg>
+      <div class="mini">ヘッダーの値は Claude が作った例。安全性を上げるには HTTPS も使う。</div>
+    </div>
+    <div>
+      <div class="lbl">プライベートサブネットに置いたまま</div>
+      <svg width="410" height="150" viewBox="0 0 410 150">
+        <defs><marker id="a7" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <rect x="5" y="40" width="120" height="50" rx="8" fill="#1f3a68"/><text x="65" y="62" fill="#fff" font-weight="700">CloudFront</text><text x="65" y="78" fill="#fff">唯一の入口</text>
+          <rect x="180" y="10" width="225" height="130" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="292" y="30" fill="#3a7d44" font-weight="700">VPC のプライベートサブネット</text>
+          <rect x="200" y="44" width="185" height="34" rx="6" fill="#3a7d44"/><text x="292" y="66" fill="#fff">ALB・NLB・EC2（VPC オリジン）</text>
+          <text x="292" y="102" fill="#3a7d44">パブリックなアクセスなし</text><text x="292" y="120" fill="#3a7d44">ACL などの手間が減る</text>
+          <line x1="125" y1="62" x2="198" y2="62" stroke="#1f3a68" stroke-width="2" marker-end="url(#a7)"/>
+        </g>
+      </svg>
+      <div class="mini">AWS RAM で、ほかのアカウントと共有することもできる。</div>
+    </div>
+  </div>
+  <div class="point warn"><b>ひっかけ：</b>ALB を守るのに S3 のバケットポリシーや OAC は使えない。「ALB をインターネットに出したくない」なら VPC オリジン、出したままなら カスタムヘッダー。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/restrict-access-to-load-balancer.html">Application Load Balancer へのアクセスを制限する</a>（「CloudFront を設定して、Application Load Balancer に送信するリクエストにカスタム HTTP ヘッダーを追加します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/private-content-vpc-origins.html">VPC オリジンを使用したアクセス制限</a>（「プライベートサブネットの Application Load Balancer (ALB)、Network Load Balancer (NLB)、EC2 インスタンスを VPC オリジンとして使用できます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>見る人を絞る：署名付き URL と署名付き Cookie</h1>
+  <table class="mx">
+    <tr><th style="width:22%"></th><th>署名付き URL</th><th>署名付き Cookie</th></tr>
+    <tr><td class="t">向く場面</td><td class="l">個別のファイル（アプリのインストーラーなど）</td><td class="l">複数のファイル（HLS の動画のすべてのファイル・会員エリア）</td></tr>
+    <tr><td class="t">URL</td><td class="l">署名が URL に入るので変わる</td><td class="l">今の URL を変えずに使える</td></tr>
+    <tr><td class="t">クライアント</td><td class="l">Cookie に対応しないクライアントでも使える</td><td class="l">Cookie に対応している必要がある</td></tr>
+  </table>
+  <svg width="856" height="96" viewBox="0 0 856 96">
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="14" width="250" height="66" rx="8" fill="#1f3a68"/><text x="135" y="38" fill="#fff" font-weight="700">信頼されたキーグループ（推奨）</text><text x="135" y="58" fill="#fff">公開鍵を CloudFront に登録</text>
+      <rect x="300" y="14" width="250" height="66" rx="8" fill="#1f5fa8"/><text x="425" y="38" fill="#fff" font-weight="700">アプリが秘密鍵で署名</text><text x="425" y="58" fill="#fff">有効期限などを入れる</text>
+      <rect x="590" y="14" width="256" height="66" rx="8" fill="#3a7d44"/><text x="718" y="38" fill="#fff" font-weight="700">署名者をキャッシュ動作に追加</text><text x="718" y="58" fill="#fff">そのファイルは署名が必須になる</text>
+      <line x1="260" y1="47" x2="298" y2="47" stroke="#1f3a68" stroke-width="2"/><line x1="550" y1="47" x2="588" y2="47" stroke="#1f3a68" stroke-width="2"/>
+    </g>
+  </svg>
+  <div class="point warn"><b>ひっかけ：</b>CloudFront の署名付き URL と、S3 の署名付き URL（#13）は別もの。CloudFront で配信していて会員だけに見せたいなら CloudFront 側。OAC は S3 への直接アクセスを防ぐだけで、会員かどうかは確かめない。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/private-content-choosing-signed-urls-cookies.html">署名付き URL を使用するか、署名付き Cookie を使用するかを決定する</a>（「個別のファイル (アプリケーションのインストールダウンロード) へのアクセスを制限する場合。」「現在の URL を変更したくない場合。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html">署名付き URL と署名付き Cookie を作成できる署名者を指定する</a>（「署名付き URL と署名付き Cookie が有効な信頼されたキーグループを使用することをお勧めします。」）</div>
+</section>
+
+<section class="slide">
+  <h1>そのほかの守り：国・フィールド・HTTPS・WAF</h1>
+  <table class="mx">
+    <tr><th style="width:22%">機能</th><th>何をするか</th><th style="width:32%">本番で狙われる点</th></tr>
+    <tr><td class="t">地理的制限</td><td class="l">許可する国か拒否する国のリストで、ディストリビューションのすべてのファイルを国単位で制限</td><td class="l">ファイルの一部だけ・国より細かい単位なら、サードパーティーの位置情報サービス</td></tr>
+    <tr><td class="t">フィールドレベル暗号化</td><td class="l">POST の特定のフィールド（最大 10 個）を、エッジで公開鍵で暗号化</td><td class="l">アプリの奥まで暗号化のまま。秘密鍵を持つアプリだけが読める。HTTPS だけでは途中で平文になる</td></tr>
+    <tr><td class="t">HTTPS と証明書</td><td class="l">ビューワーとの間、オリジンとの間で HTTPS を必須にする。ACM のパブリック証明書を推奨</td><td class="l">ビューワー向けの ACM 証明書は us-east-1（バージニア北部）で用意する</td></tr>
+    <tr><td class="t">AWS WAF</td><td class="l">ウェブ ACL をディストリビューションに付け、リクエストがサーバーに届く前にブロック</td><td class="l">コンソールの 1 回の選択による保護で作れる。WAF と Shield の詳細は #04</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/georestrictions.html">コンテンツの地理的配分を制限する</a>（「ディストリビューションに関連するすべてのファイルへのアクセスを制限し、国レベルでアクセスを制限する場合は、この方法を使用します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/field-level-encryption.html">フィールドレベル暗号化を使用した機密データの保護</a>（「リクエストの最大 10 個のデータフィールドを暗号化できます」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/cnames-and-https-requirements.html">CloudFront で SSL/TLS 証明書を使用するための要件</a>（「AWS Certificate Manager (ACM) の証明書を使用して、ビューワーと CloudFront との間で HTTPS を必須にする場合は、米国東部 (バージニア北部) リージョン (us-east-1) の証明書をリクエスト (またはインポート) していることを確認します」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/distribution-web-awswaf.html">AWS WAF 保護を使用する</a>（「CloudFront コンソールで 1 回の選択による保護を使用します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>オリジンフェイルオーバー：オリジングループ</h1>
+  <svg width="856" height="190" viewBox="0 0 856 190">
+    <defs><marker id="a8" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker><marker id="a9" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="60" width="160" height="60" rx="8" fill="#1f3a68"/><text x="90" y="85" fill="#fff" font-weight="700">CloudFront</text><text x="90" y="103" fill="#fff">キャッシュミス</text>
+      <rect x="300" y="10" width="520" height="170" rx="10" fill="#f6f8fb" stroke="#4a5a78"/><text x="560" y="30" fill="#4a5a78" font-weight="700">オリジングループ</text>
+      <rect x="330" y="44" width="200" height="50" rx="8" fill="#1f5fa8"/><text x="430" y="66" fill="#fff" font-weight="700">プライマリ</text><text x="430" y="83" fill="#fff">東京の S3</text>
+      <rect x="330" y="116" width="200" height="50" rx="8" fill="#3a7d44"/><text x="430" y="138" fill="#fff" font-weight="700">セカンダリ</text><text x="430" y="155" fill="#fff">大阪の S3（レプリケーション先）</text>
+      <line x1="170" y1="80" x2="328" y2="69" stroke="#1f3a68" stroke-width="2" marker-end="url(#a8)"/><text x="250" y="66" fill="#1f3a68">① まずプライマリ</text>
+      <line x1="170" y1="100" x2="328" y2="141" stroke="#b25000" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#a9)"/><text x="235" y="140" fill="#b25000">② 失敗したら</text>
+      <text x="670" y="62" fill="#b25000" font-weight="700">失敗とみなすもの</text><text x="670" y="82">設定したステータスコード</text><text x="670" y="98">（400・403・404・416・429・</text><text x="670" y="114">500・502・503・504 から選ぶ）</text><text x="670" y="134">つながらない（503 を選んだとき）</text><text x="670" y="156" fill="#4a5a78">既定：10 秒×3 回試して切り替え</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>動き：</b>前のリクエストをセカンダリに切り替えたあとも、次のリクエストはまずプライマリに送る。切り替えはリクエストごと。</div>
+    <div class="point warn"><b>ひっかけ：</b>Origin Shield や無効化はオリジンを切り替えない。ディストリビューションを 2 つ作っても、利用者を切り替えるしくみはない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html">CloudFront オリジンフェイルオーバーを使用して高可用性を最適化する</a>（「開始するには、プライマリとセカンダリの 2 つのオリジンを持つオリジングループを作成します。」「CloudFront は、前のリクエストをセカンダリオリジンにフェイルオーバーした場合でも、すべての受信リクエストをプライマリオリジンにルーティングします。」）</div>
+</section>
+
+<section class="slide">
+  <h1>エッジでコードを動かす：CloudFront Functions と Lambda@Edge</h1>
+  <div class="cols">
+    <table class="mx">
+      <tr><th style="width:28%"></th><th>CloudFront Functions</th><th>Lambda@Edge</th></tr>
+      <tr><td class="t">言語</td><td class="l">JavaScript</td><td class="l">Node.js・Python</td></tr>
+      <tr><td class="t">イベント</td><td class="l">ビューワーの 2 つだけ</td><td class="l">ビューワーとオリジンの 4 つ</td></tr>
+      <tr><td class="t">スケール</td><td class="l">毎秒数百万</td><td class="l">1 リージョン毎秒 1 万</td></tr>
+      <tr><td class="t">実行時間</td><td class="l">1 ミリ秒未満</td><td class="l">最大 30 秒</td></tr>
+      <tr><td class="t">コードの大きさ</td><td class="l">10 KB</td><td class="l">50 MB</td></tr>
+      <tr><td class="t">ネットワーク・本文</td><td class="l">使えない</td><td class="l">使える</td></tr>
+      <tr><td class="t">向く処理</td><td class="l">ヘッダー操作・URL の書き換え・キャッシュキーの正規化・JWT の検証</td><td class="l">外部サービスの呼び出し・数ミリ秒以上かかる処理・ライブラリが要る処理</td></tr>
+    </table>
+    <svg width="410" height="250" viewBox="0 0 410 250">
+      <defs><marker id="b1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+      <g font-size="11" text-anchor="middle">
+        <rect x="5" y="90" width="70" height="60" rx="8" fill="#f6f8fb" stroke="#4a5a78"/><text x="40" y="124" fill="#4a5a78" font-weight="700">利用者</text>
+        <rect x="160" y="80" width="90" height="80" rx="8" fill="#1f3a68"/><text x="205" y="115" fill="#fff" font-weight="700">CloudFront</text><text x="205" y="132" fill="#fff">キャッシュ</text>
+        <rect x="335" y="90" width="70" height="60" rx="8" fill="#e3eefc" stroke="#1f5fa8"/><text x="370" y="124" fill="#1f5fa8" font-weight="700">オリジン</text>
+        <line x1="75" y1="100" x2="158" y2="100" stroke="#1f3a68" stroke-width="2" marker-end="url(#b1)"/><line x1="158" y1="140" x2="77" y2="140" stroke="#1f3a68" stroke-width="2" marker-end="url(#b1)"/>
+        <line x1="250" y1="100" x2="333" y2="100" stroke="#1f3a68" stroke-width="2" marker-end="url(#b1)"/><line x1="333" y1="140" x2="252" y2="140" stroke="#1f3a68" stroke-width="2" marker-end="url(#b1)"/>
+        <rect x="35" y="20" width="120" height="44" rx="6" fill="#3a7d44"/><text x="95" y="38" fill="#fff" font-weight="700">ビューワー</text><text x="95" y="54" fill="#fff">リクエスト</text>
+        <rect x="35" y="180" width="120" height="44" rx="6" fill="#3a7d44"/><text x="95" y="198" fill="#fff" font-weight="700">ビューワー</text><text x="95" y="214" fill="#fff">レスポンス</text>
+        <rect x="255" y="20" width="120" height="44" rx="6" fill="#b25000"/><text x="315" y="38" fill="#fff" font-weight="700">オリジン</text><text x="315" y="54" fill="#fff">リクエスト</text>
+        <rect x="255" y="180" width="120" height="44" rx="6" fill="#b25000"/><text x="315" y="198" fill="#fff" font-weight="700">オリジン</text><text x="315" y="214" fill="#fff">レスポンス</text>
+        <text x="205" y="244" fill="#4a5a78">緑＝両方で使える　橙＝Lambda@Edge だけ</text>
+      </g>
+    </svg>
+  </div>
+  <div class="point"><b>オリジンのイベント：</b>オリジンリクエストは、CloudFront がリクエストをオリジンに転送したとき（キャッシュミス）だけ動く。ビューワーリクエストは、キャッシュを確かめる前に毎回動く。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/edge-functions-choosing.html">CloudFront Functions と Lambda@Edge の違い</a>（「外部サービスを使用して処理するために、ネットワークアクセスを必要とする関数。」「完了までに数ミリ秒以上かかる関数。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonCloudFront/latest/DeveloperGuide/lambda-cloudfront-trigger-events.html">Lambda@Edge 関数をトリガーできる CloudFront イベント</a>（「CloudFront がリクエストをオリジンに転送したときにのみ、関数が実行されます。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>Global Accelerator</h1>
+  <p>2 つの静的なエニーキャスト IP、リスナーとエンドポイントグループ、標準とカスタムルーティングのアクセラレーター、トラフィックダイヤルとエンドポイントの重み、クライアントアフィニティ、クライアント IP の保存、ヘルスチェック。</p>
+  <div class="foot"><span>AWS SAA #19 CloudFront と Global Accelerator</span><span>タスク 3.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>Global Accelerator の部品</h1>
+  <svg width="856" height="230" viewBox="0 0 856 230">
+    <defs><marker id="b2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="80" width="100" height="60" rx="10" fill="#f6f8fb" stroke="#4a5a78"/><text x="60" y="106" fill="#4a5a78" font-weight="700">利用者</text><text x="60" y="124" fill="#4a5a78">世界中</text>
+      <rect x="150" y="60" width="150" height="100" rx="8" fill="#b25000"/><text x="225" y="84" fill="#fff" font-weight="700">静的 IP × 2</text><text x="225" y="102" fill="#fff">エニーキャスト</text><text x="225" y="120" fill="#fff">最も近いエッジが受ける</text><text x="225" y="140" fill="#fff">無効にしても残る</text>
+      <rect x="340" y="60" width="130" height="100" rx="8" fill="#1f3a68"/><text x="405" y="86" fill="#fff" font-weight="700">リスナー</text><text x="405" y="106" fill="#fff">ポートと</text><text x="405" y="122" fill="#fff">TCP・UDP・両方</text><text x="405" y="142" fill="#fff">クライアントアフィニティ</text>
+      <rect x="520" y="10" width="326" height="100" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="683" y="30" fill="#3a7d44" font-weight="700">エンドポイントグループ（東京）ダイヤル 100%</text>
+      <rect x="540" y="44" width="135" height="50" rx="6" fill="#3a7d44"/><text x="607" y="66" fill="#fff">ALB-1</text><text x="607" y="82" fill="#fff">重み 200</text>
+      <rect x="690" y="44" width="135" height="50" rx="6" fill="#3a7d44"/><text x="757" y="66" fill="#fff">ALB-2</text><text x="757" y="82" fill="#fff">重み 50</text>
+      <rect x="520" y="120" width="326" height="100" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="683" y="140" fill="#3a7d44" font-weight="700">エンドポイントグループ（オレゴン）ダイヤル 100%</text>
+      <rect x="540" y="154" width="135" height="50" rx="6" fill="#3a7d44"/><text x="607" y="176" fill="#fff">NLB</text><text x="607" y="192" fill="#fff">重み 128</text>
+      <rect x="690" y="154" width="135" height="50" rx="6" fill="#3a7d44"/><text x="757" y="176" fill="#fff">EC2・EIP</text><text x="757" y="192" fill="#fff">重み 128</text>
+      <g stroke="#1f3a68" stroke-width="2"><line x1="110" y1="110" x2="148" y2="110" marker-end="url(#b2)"/><line x1="300" y1="110" x2="338" y2="110" marker-end="url(#b2)"/><line x1="470" y1="100" x2="518" y2="60" marker-end="url(#b2)"/><line x1="470" y1="120" x2="518" y2="170" marker-end="url(#b2)"/></g>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>静的 IP の良さ：</b>取引先のファイアウォールや DNS に 1 回だけ登録すれば、後ろのエンドポイントやリージョンを変えても IP は変わらない。オリジンを 2 つの入口の後ろに隠すので、攻撃のリスクも減る。</div>
+    <div class="point warn"><b>ひっかけ：</b>IP はアクセラレーターを無効にしても割り当てられたまま。削除すると失う。リージョンごとに IP が付くのではない。重みとリージョンの組み合わせは Claude が作った例。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/global-accelerator/latest/dg/introduction-components.html">AWS Global Accelerator コンポーネント</a>（「静的 IP アドレスは、アクセラレーターを無効にし、トラフィックを受け入れたりルーティングしたりしなくなった場合でも、存在する限り、アクセラレーターに割り当てられたままになります。」「各リスナーには 1 つ以上のエンドポイントグループが関連付けられ、トラフィックはいずれかのグループのエンドポイントに転送されます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/global-accelerator/latest/dg/introduction-benefits-of-migrating.html">AWS Global Accelerator ユースケースについて</a>（「Global Accelerator は、2 つの静的エントリポイントの背後にあるオリジンをマスキングすることで、攻撃のリスクを減らします。」）</div>
+</section>
+
+<section class="slide">
+  <h1>標準アクセラレーター と カスタムルーティングアクセラレーター</h1>
+  <table class="mx">
+    <tr><th style="width:20%"></th><th>標準アクセラレーター</th><th>カスタムルーティングアクセラレーター</th></tr>
+    <tr><td class="t">送り先の決め方</td><td class="l">ユーザーの場所・エンドポイントのヘルス・重みなどで最適なものへ</td><td class="l">外部の静的 IP とリスナーポートで、特定の EC2 とポートに決まった形で</td></tr>
+    <tr><td class="t">エンドポイント</td><td class="l">ALB（内部向けも可）・NLB・EC2・Elastic IP</td><td class="l">VPC のサブネット（中の EC2 のプライベート IP）</td></tr>
+    <tr><td class="t">クライアント IP</td><td class="l">ALB・EC2・セキュリティグループ付き NLB で保存できる</td><td class="l">常に保存される</td></tr>
+    <tr><td class="t">使う場面</td><td class="l">世界の利用者を最も近い正常なリージョンへ。素早い切り替え</td><td class="l">VoIP やオンラインゲームで、複数の利用者を同じセッションのサーバーに集める</td></tr>
+  </table>
+  <div class="cols">
+    <div class="point"><b>見分け方：</b>「マッチングしたプレイヤーを同じサーバーの同じポートへ」→ カスタムルーティング。「最寄りの正常なリージョンへ」「固定 IP」→ 標準。</div>
+    <div class="point warn"><b>ひっかけ：</b>クライアントアフィニティは 1 人の利用者を同じエンドポイントに送るだけ。ほかの利用者と同じサーバーにはそろえられない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/global-accelerator/latest/dg/introduction-how-it-works.html">AWS Global Accelerator の働き</a>（「カスタムルーティングアクセラレーターの場合、各クライアントは、指定した外部静的 IP アドレスとリスナーポートに基づいて、VPC サブネット内の特定の Amazon EC2 インスタンスとポートにルーティングされます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/global-accelerator/latest/dg/introduction-components.html">AWS Global Accelerator コンポーネント</a>（「標準アクセラレーターのエンドポイントは、Network Load Balancer、Application Load Balancer、EC2 インスタンス、または Elastic IP アドレスです。」）</div>
+</section>
+
+<section class="slide">
+  <h1>通信の割合を決める 3 つのつまみ</h1>
+  <table class="mx">
+    <tr><th style="width:22%">つまみ</th><th style="width:20%">単位</th><th>使い方</th><th style="width:26%">注意</th></tr>
+    <tr><td class="t">トラフィックダイヤル</td><td class="l">エンドポイントグループ（リージョン）</td><td class="l">0〜100%。既定は 100%。下げた分はほかのリージョンへ。リージョンの性能テスト・ブルー/グリーン</td><td class="l">変更は新しい接続だけに効く</td></tr>
+    <tr><td class="t">エンドポイントの重み</td><td class="l">グループの中のエンドポイント</td><td class="l">同じリージョンの中での分散。新しい版のテスト</td><td class="l">可用性のため、限られた場面で上書きされる</td></tr>
+    <tr><td class="t">クライアントアフィニティ</td><td class="l">リスナー</td><td class="l">同じ送信元 IP の利用者を同じエンドポイントへ。状態を持つアプリ</td><td class="l">割合は決めない</td></tr>
+  </table>
+  <svg width="856" height="110" viewBox="0 0 856 110">
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="20" width="200" height="70" rx="8" fill="#1f3a68"/><text x="110" y="45" fill="#fff" font-weight="700">新しいリージョンの</text><text x="110" y="63" fill="#fff" font-weight="700">ダイヤルを 10%</text>
+      <rect x="320" y="20" width="200" height="70" rx="8" fill="#1f5fa8"/><text x="420" y="45" fill="#fff" font-weight="700">様子を見て 50%</text><text x="420" y="63" fill="#fff">新しい接続から反映</text>
+      <rect x="630" y="20" width="216" height="70" rx="8" fill="#3a7d44"/><text x="738" y="45" fill="#fff" font-weight="700">問題がなければ 100%</text><text x="738" y="63" fill="#fff">既存の接続は切らなくてよい</text>
+      <line x1="210" y1="55" x2="318" y2="55" stroke="#1f3a68" stroke-width="2"/><line x1="520" y1="55" x2="628" y2="55" stroke="#1f3a68" stroke-width="2"/>
+    </g>
+  </svg>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/global-accelerator/latest/dg/about-endpoint-groups-traffic-dial.html">トラフィックダイヤルを使用してリージョンへ送信するトラフィックフローを調整する</a>（「デフォルトでは、トラフィックダイヤルはアクセラレーター内のすべてのリージョンエンドポイントグループで 100 (つまり 100%) に設定されています。」「トラフィックダイヤルを変更すると、更新された設定は新しい接続にのみ適用されることを注意してください。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/global-accelerator/latest/dg/about-endpoints-endpoint-weights.html">エンドポイントの重みがトラフィックボリュームを管理する仕組み</a>（「加重ルーティングでは、エンドポイントグループ内の特定のリソース (エンドポイント) にルーティングされるトラフィックの量を選択できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/global-accelerator/latest/dg/about-listeners.html">AWS Global Accelerator の標準アクセラレーターのリスナー</a>（「クライアントアフィニティにより、Global Accelerator は特定のソース (クライアント) IP アドレスのユーザーからのすべてのリクエストを同じエンドポイントリソースにルーティングします。」）</div>
+</section>
+
+<section class="slide">
+  <h1>クライアント IP の保存とヘルスチェック</h1>
+  <table class="mx">
+    <tr><th style="width:40%">エンドポイント（標準アクセラレーター）</th><th>クライアント IP の保存</th></tr>
+    <tr><td class="t">Application Load Balancer</td><td class="x" style="color:#3a7d44">できる</td></tr>
+    <tr><td class="t">EC2 インスタンス</td><td class="x" style="color:#3a7d44">できる</td></tr>
+    <tr><td class="t">NLB（セキュリティグループあり）</td><td class="x" style="color:#3a7d44">できる</td></tr>
+    <tr><td class="t">NLB（セキュリティグループなし）</td><td class="x">できない</td></tr>
+    <tr><td class="t">Elastic IP アドレス</td><td class="x">できない</td></tr>
+  </table>
+  <div class="cols">
+    <div class="point"><b>ヘルスチェック：</b>定期的にすべてのエンドポイントを確かめ、正常なものだけに送る。異常になると、新しい接続を瞬時にほかの正常なエンドポイントへ。正常なものが 1 つもないときは、グループのすべてのエンドポイントに送る。</div>
+    <div class="point warn"><b>ひっかけ：</b>全部が異常でも「503 を返す」「捨てる」ではない。Global Accelerator が CloudFront に送るしくみもない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/global-accelerator/latest/dg/preserve-client-ip-address.html">AWS Global Accelerator でクライアント IP アドレスを保存する</a>（「Global Accelerator は、カスタムルーティングアクセラレーター上のエンドポイントのクライアント IP アドレスを常に保存します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/global-accelerator/latest/dg/about-endpoint-groups-health-check-options.html">アクセラレーターのヘルスチェックアクセスを確保する</a>（「トラフィックをルーティングする正常なエンドポイントがない場合、Global Accelerator は受信クライアントリクエストをエンドポイントグループ内のすべてのエンドポイントにルーティングします。」）</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">CloudFront のキャッシュ<span>POP → リージョン別エッジキャッシュ → Origin Shield → オリジン。TTL の既定 24 時間。キーを絞るとヒット率が上がる</span></div>
+      <div class="box b2">オリジンを守る<span>S3 は OAC（ウェブサイトエンドポイントは不可）。ALB はカスタムヘッダーか VPC オリジン</span></div>
+      <div class="box b3">見る人を絞る<span>1 ファイルは署名付き URL、多くのファイルは署名付き Cookie。国は地理的制限。証明書は us-east-1</span></div>
+      <div class="box b4">Global Accelerator<span>静的 IP 2 つ・TCP と UDP。リージョンはダイヤル、中は重み、同じ利用者はアフィニティ、同じサーバーはカスタムルーティング</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:54%">ひっかけ</th><th>正しくは</th></tr>
+        <tr><td class="l">新しく S3 を守るなら OAI</td><td class="x">OAC</td></tr>
+        <tr><td class="l">頻繁な更新のたびに無効化</td><td class="x">バージョン付きファイル名</td></tr>
+        <tr><td class="l">証明書はオリジンのリージョン</td><td class="x">us-east-1</td></tr>
+        <tr><td class="l">外部 API を呼ぶ処理に CloudFront Functions</td><td class="x">Lambda@Edge</td></tr>
+        <tr><td class="l">UDP のゲームに CloudFront</td><td class="x">Global Accelerator</td></tr>
+        <tr><td class="l">リージョンの割合をエンドポイントの重みで</td><td class="x">トラフィックダイヤル</td></tr>
+      </table>
+      <div class="point">次の #20 では、データ分析のサービスを学ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
