@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Gold #09 並列ストリーム 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">Java SE 17 Programmer II（1Z0-826-JPN）　試験内容 3 Java ストリーム API　#09</div>
+  <h1>並列ストリーム</h1>
+  <p>parallelStream・parallel、順序と forEachOrdered、結合則・単位元・副作用</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（Oracle の試験内容チェックリスト、Java SE 17 API の java.util.stream パッケージの説明・BaseStream・Stream・Collectors・ForkJoinPool、The Java Tutorials の Parallelism）を書いた。コードの結果は JDK 17（Eclipse Temurin 17.0.21）で何度か実行して確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>分けて、同時に処理して、まとめる</small></h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">ソース 1, 2, 3, 4, 5, 6, 7, 8</div>
+      <div class="arrow">↓ Spliterator で分ける（fork）</div>
+      <div class="cols" style="gap:8px">
+        <div class="box b2">1, 2, 3, 4<span>worker-1</span></div>
+        <div class="box b2">5, 6, 7, 8<span>worker-2</span></div>
+      </div>
+      <div class="arrow">↓ まとまりごとに計算 → 結果をまとめる（join）</div>
+      <div class="box b3">最終の結果<span>コンバイナ・結合則が必要</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>書き方</th><th>結果</th></tr>
+        <tr><td class="t">list.parallelStream()</td><td class="l">並列（Collection のメソッド）</td></tr>
+        <tr><td class="t">stream.parallel()</td><td class="l">並列</td></tr>
+        <tr><td class="t">s.parallel().sequential()</td><td class="l">逐次（最後が効く）</td></tr>
+        <tr><td class="t">s.sequential().parallel()</td><td class="l">並列</td></tr>
+        <tr><td class="t">Stream.of(1).unordered()</td><td class="l">逐次のまま</td></tr>
+      </table>
+      <div class="point warn">Stream.of(...).parallelStream() は cannot find symbol。</div>
+      <div class="point">スレッド：main と ForkJoinPool.commonPool-worker-N。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API BaseStream.parallel・sequential・isParallel・unordered、Collection.parallelStream、ForkJoinPool.commonPool／JDK 17 でのコンパイルと実行の結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>順序</h1>
+  <p>守る操作と、守らない操作。</p>
+  <div class="foot"><span>Java Gold #09 並列ストリーム</span><span>試験内容 3</span></div>
+</section>
+
+<section class="slide">
+  <h1>順序を守る操作・守らない操作</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>操作</th><th>並列での順序</th></tr>
+        <tr><td class="t">forEach</td><td class="l">決まらない</td></tr>
+        <tr><td class="t">forEachOrdered</td><td class="l">出現順序どおり</td></tr>
+        <tr><td class="t">collect(toList())・toList()</td><td class="l">出現順序どおり</td></tr>
+        <tr><td class="t">joining・順序のある reduce</td><td class="l">出現順序どおり</td></tr>
+        <tr><td class="t">findFirst</td><td class="l">必ず最初</td></tr>
+        <tr><td class="t">findAny</td><td class="l">決まらない</td></tr>
+      </table>
+      <div class="point">出現順序（encounter order）：List・配列・range は持つ、HashSet は持たない。</div>
+    </div>
+    <div>
+      <div class="code small">IntStream.rangeClosed(1, 8).parallel()
+  .forEach(System.out::print);
+<span class="c">// 例：65782341（毎回変わる）</span>
+IntStream.rangeClosed(1, 8).parallel()
+  .forEachOrdered(sb::append);
+<span class="c">// 12345678（毎回同じ）</span>
+List.of(3,1,2).parallelStream().map(n -&gt; n * 2).toList()
+<span class="c">// [6, 2, 4]</span>
+List.of(3,1,2).parallelStream().sorted()
+  .forEach(System.out::print);
+<span class="c">// 順序は決まらない</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：API Stream.forEach・forEachOrdered・findFirst・findAny・toList、java.util.stream パッケージの説明「Ordering」／JDK 17 で複数回実行した結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>並列で正しく動かす条件</h1>
+  <p>結合則・単位元・副作用・干渉。</p>
+  <div class="foot"><span>Java Gold #09 並列ストリーム</span><span>試験内容 3</span></div>
+</section>
+
+<section class="slide">
+  <h1>単位元と結合則</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">単位元でない値を渡すと</div>
+      <div class="code small">Stream.of(1,2,3).reduce(10, Integer::sum)            <span class="c">// 16</span>
+Stream.of(1,2,3).parallel().reduce(10, Integer::sum) <span class="c">// 36</span>
+<span class="c">// (10+1) + (10+2) + (10+3)</span></div>
+      <div class="lbl">結合則を満たさない演算</div>
+      <div class="code small">IntStream.rangeClosed(1, 8).reduce(0, (x, y) -&gt; x - y)
+<span class="c">// -36</span>
+IntStream.rangeClosed(1, 8).parallel().reduce(0, (x, y) -&gt; x - y)
+<span class="c">// 0（JDK 17 での例。-36 にならない）</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>演算</th><th>結合則</th><th>単位元</th></tr>
+        <tr><td class="t">足し算</td><td class="l">○</td><td class="l">0</td></tr>
+        <tr><td class="t">掛け算</td><td class="l">○</td><td class="l">1</td></tr>
+        <tr><td class="t">max・min</td><td class="l">○</td><td class="l">―（Optional 版を使う）</td></tr>
+        <tr><td class="t">文字列の連結</td><td class="l">○</td><td class="l">""</td></tr>
+        <tr><td class="t">引き算・割り算</td><td class="l">×</td><td class="l">―</td></tr>
+      </table>
+      <div class="point warn">コンパイラも実行時も調べない。黙って違う結果になる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API java.util.stream パッケージの説明「Associativity」「Reduction operations」、Stream.reduce／JDK 17 で 5 回実行した結果</div>
+</section>
+
+<section class="slide">
+  <h1>副作用と、安全な集め方</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">List&lt;Integer&gt; l = new ArrayList&lt;&gt;();
+IntStream.range(0, 10000).parallel().forEach(l::add);
+<span class="c">// × 要素が欠ける・ArrayIndexOutOfBoundsException</span>
+
+List&lt;Integer&gt; s = Collections.synchronizedList(new ArrayList&lt;&gt;());
+IntStream.range(0, 10000).parallel().forEach(s::add);
+<span class="c">// △ 10000 個（順序は決まらない、遅い）</span>
+
+List&lt;Integer&gt; r = IntStream.range(0, 10000).parallel()
+    .boxed().collect(Collectors.toList());
+<span class="c">// ○ 10000 個・元の順</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>求められること</th><th>中身</th></tr>
+        <tr><td class="t">干渉しない</td><td class="l">実行中にソースを変えない</td></tr>
+        <tr><td class="t">状態を持たない</td><td class="l">外の Set などに頼らない（重複除去は distinct）</td></tr>
+        <tr><td class="t">副作用を避ける</td><td class="l">外のコレクションに書かず collect で作る</td></tr>
+      </table>
+      <div class="point">forEachOrdered は 1 つずつ順に処理するので、StringBuilder にも安全に append できる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API java.util.stream パッケージの説明「Non-interference」「Stateless behaviors」「Side-effects」、Collections.synchronizedList／JDK 17 で 20 回実行した結果</div>
+</section>
+
+<section class="slide">
+  <h1>3 引数の reduce と並行コレクタ</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">Stream.of("a","bb","cc").parallel()
+  .reduce(0,
+          (n, s) -&gt; n + s.length(),   <span class="c">// accumulator</span>
+          Integer::sum)                <span class="c">// combiner</span>
+<span class="c">// 5（並列でも同じ）</span></div>
+      <div class="point warn">combiner は並列のときだけ呼ばれる。まちがっていても逐次では気づかない。</div>
+    </div>
+    <div>
+      <div class="code small">ConcurrentMap&lt;Integer, List&lt;String&gt;&gt; m =
+  Stream.of("a","bb","cc").parallel()
+    .collect(Collectors.groupingByConcurrent(String::length));
+<span class="c">// m.get(2) は bb と cc（順は決まらない）
+// m.getClass() → ConcurrentHashMap</span></div>
+      <table class="mx">
+        <tr><th></th><th>groupingBy</th><th>groupingByConcurrent</th></tr>
+        <tr><td class="t">並列での集め方</td><td class="l">まとまりごとに Map → まとめる</td><td class="l">1 つの ConcurrentMap に直接</td></tr>
+        <tr><td class="t">順序</td><td class="l">守る</td><td class="l">守らない</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：API Stream.reduce(U, BiFunction, BinaryOperator)、Collectors.groupingByConcurrent・toConcurrentMap／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">並列かどうか</td><td class="l">parallel・sequential は最後が効く、parallelStream は Collection だけ、unordered は並列にしない</td></tr>
+    <tr><td class="t">出力が決まるか</td><td class="l">forEach・findAny は決まらない、forEachOrdered・toList・findFirst・joining は決まる</td></tr>
+    <tr><td class="t">reduce の結果</td><td class="l">単位元でない値・結合則を満たさない演算は並列で変わる</td></tr>
+    <tr><td class="t">副作用</td><td class="l">ArrayList への add は危険、collect を使う</td></tr>
+    <tr><td class="t">速さ</td><td class="l">要素が少ない・処理が軽いと並列のほうが遅いことがある</td></tr>
+  </table>
+  <div class="cite">出典：試験内容チェックリスト 3／本資料の問題演習（全 30 問、JDK 17 で確認）</div>
+</section>
+
+</body>
+</html>
