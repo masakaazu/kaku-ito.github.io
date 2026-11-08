@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>支援士 #15 暗号技術 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">情報処理安全確保支援士試験　科目A-2　中分類25 情報セキュリティ対策　#15</div>
+  <h1>暗号技術</h1>
+  <p>方式・鍵交換・ハッシュ・モード・鍵管理、そして量子の時代へ</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（IPA の支援士試験シラバス案、CRYPTREC、NIST FIPS・SP 800 など）を書いた。過去問は IPA 公開の午前Ⅱ。例の場面は Claude が作った</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>シラバス案 中分類25 小分類7「暗号技術」</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 暗号方式と鍵交換<span>共通鍵・公開鍵・ハイブリッド、RSA・楕円曲線・ECDSA、DH・ECDH・前方秘匿性、ビットセキュリティ</span></div>
+      <div class="box b2">2 ハッシュ関数と共通鍵暗号<span>原像・第二原像・衝突、SHA-2・SHA-3・危殆化、AES、ストリーム暗号、CBC・CTR・AEAD、軽量暗号</span></div>
+      <div class="box b3">3 鍵と乱数、量子<span>鍵のライフサイクル・HSM・KMS、PRNG・QRNG、PQC・量子暗号・ワンタイムパッド</span></div>
+    </div>
+    <div>
+      <div class="lbl">過去の午前Ⅱでの出方（15回出題）</div>
+      <table class="mx">
+        <tr><th>テーマ</th><th style="width:38%">出た回</th></tr>
+        <tr><td class="l">衝突発見困難性</td><td class="t">H31春・R3春・R5春</td></tr>
+        <tr><td class="l">PQC はどれか</td><td class="t">R3秋・R6秋・R7秋</td></tr>
+        <tr><td class="l">量子暗号の特徴</td><td class="t">R4春・R6秋</td></tr>
+        <tr><td class="l">ブロックチェーン</td><td class="t">R2・R4秋</td></tr>
+        <tr><td class="l">前方秘匿性・AES の鍵長・CTR</td><td class="t">R4秋・R3春・R5春</td></tr>
+        <tr><td class="l">情報理論的安全性・SHA-512/256</td><td class="t">R7秋・R7春</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）Ver.0.1」中分類25 小分類7／IPA 午前Ⅱ 各回（このPDFの問題演習を参照）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>暗号方式と鍵交換</h1>
+  <p>速さの共通鍵、配りやすさの公開鍵。</p>
+  <div class="foot"><span>支援士 #15 暗号技術</span><span>25-7</span></div>
+</section>
+
+<section class="slide">
+  <h1>ハイブリッド暗号のしくみ</h1>
+  <div class="flow" style="gap:4px">
+    <div class="box b5">① 送信者が使い捨ての<b>共通鍵 K</b> を作る</div><div class="to">→</div>
+    <div class="box b2">② データ本体を K で暗号化<span>速い（AES-GCM）</span></div><div class="to">→</div>
+    <div class="box b1">③ K を<b>受信者の公開鍵</b>で暗号化<span>遅いが短い</span></div><div class="to">→</div>
+    <div class="box b3">④ 受信者は秘密鍵で K を取り出し、本体を復号</div>
+  </div>
+  <div class="cols" style="margin-top:12px">
+    <table class="mx">
+      <tr><th></th><th>共通鍵暗号</th><th>公開鍵暗号</th></tr>
+      <tr><td class="t">鍵</td><td class="l">同じ鍵</td><td class="l">公開鍵と秘密鍵</td></tr>
+      <tr><td class="t">n 人の鍵の数</td><td class="l">n(n-1)/2</td><td class="l">2n（1人1組）</td></tr>
+      <tr><td class="t">速さ</td><td class="l">速い</td><td class="l">遅い</td></tr>
+      <tr><td class="t">安全性の根拠</td><td class="l">総当たりの計算量</td><td class="l">素因数分解・離散対数</td></tr>
+    </table>
+    <div>
+      <div class="point"><b>RSA：</b>素因数分解。2048 ビット以上。</div>
+      <div class="point"><b>楕円曲線：</b>短い鍵で同じ強さ。署名の <b>ECDSA</b> は署名ごとの乱数が漏れる・使い回すと秘密鍵が計算される。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」用語例〔暗号方式の種類〕／CRYPTREC 暗号リスト</div>
+</section>
+
+<section class="slide">
+  <h1>鍵交換と前方秘匿性（R4秋 問8）</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">Diffie-Hellman 鍵交換</div>
+      <div class="flow" style="gap:4px">
+        <div class="box b1">A：秘密 a<span>g^a を送る</span></div><div class="to">⇄</div>
+        <div class="box b2">B：秘密 b<span>g^b を送る</span></div>
+      </div>
+      <div class="point">両者とも <b>g^ab</b> を計算できる。盗聴者は g^a と g^b からは求められない（離散対数問題）。</div>
+      <div class="point warn">相手を<b>認証しない</b> → 中間者攻撃。TLS は証明書と署名で確かめる。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>鍵の決め方</th><th style="width:36%">サーバ秘密鍵の漏えい後</th></tr>
+        <tr><td class="l">RSA で共通鍵を送る</td><td class="t">過去の通信も解読される</td></tr>
+        <tr><td class="l">使い捨ての DHE・ECDHE</td><td class="x">過去は解読されない＝PFS</td></tr>
+      </table>
+      <div class="point">TLS 1.3 は ECDHE などだけ → 常に前方秘匿性。</div>
+      <div class="point">R4秋 問8 の誤りの選択肢：チェーンで共有＝ブロックチェーン、片方の鍵で暗号化＝公開鍵暗号、ハッシュから推測できない＝一方向性。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ 令和4年度秋期 問8／RFC 8446 TLS 1.3</div>
+</section>
+
+<section class="slide">
+  <h1>ビットセキュリティで強さをそろえる</h1>
+  <table class="mx">
+    <tr><th style="width:20%">強さ</th><th>共通鍵</th><th>RSA・DH</th><th>楕円曲線</th><th style="width:26%">使える期間（NIST）</th></tr>
+    <tr><td class="t">80 ビット</td><td class="l">2鍵トリプル DES</td><td class="l">1024</td><td class="l">160</td><td class="x">使用禁止</td></tr>
+    <tr><td class="t">112 ビット</td><td class="l">3鍵トリプル DES</td><td class="l">2048</td><td class="l">224</td><td class="l">2030年まで</td></tr>
+    <tr><td class="x">128 ビット</td><td class="l">AES-128</td><td class="l">3072</td><td class="l">256</td><td class="l">2031年以降も</td></tr>
+    <tr><td class="t">192 ビット</td><td class="l">AES-192</td><td class="l">7680</td><td class="l">384</td><td class="l">〃</td></tr>
+    <tr><td class="t">256 ビット</td><td class="l">AES-256</td><td class="l">15360</td><td class="l">512</td><td class="l">〃</td></tr>
+  </table>
+  <div class="point warn" style="margin-top:12px">同じ「128」でも方式で意味が違う。<b>RSA 3072 ≒ 楕円曲線 256 ≒ AES-128</b>。量子コンピュータは RSA・楕円曲線を根本から崩す（第3章）。</div>
+  <div class="cite">出典：NIST SP 800-57 Part 1 Rev.5 Table 2・Table 4／NIST SP 800-131A Rev.2</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>ハッシュ関数と共通鍵暗号</h1>
+  <p>3つの「困難性」と、ブロックのつなぎ方。</p>
+  <div class="foot"><span>支援士 #15 暗号技術</span><span>25-7</span></div>
+</section>
+
+<section class="slide">
+  <h1>ハッシュ関数の3つの性質（H31春・R3春・R5春）</h1>
+  <table class="mx">
+    <tr><th style="width:22%">性質</th><th>与えられるもの → 探すもの</th><th style="width:24%">SHA-256 での目安</th></tr>
+    <tr><td class="t">原像計算困難性<br>（一方向性）</td><td class="l">ハッシュ値 h → h になる元のメッセージ</td><td class="l">2 の 256 乗</td></tr>
+    <tr><td class="t">第二原像発見困難性</td><td class="l">メッセージ M → M と同じハッシュ値の<b>別の</b> M'</td><td class="l">2 の 256 乗</td></tr>
+    <tr><td class="x">衝突発見困難性</td><td class="l">何もなし → ハッシュ値が一致する<b>二つ</b>のメッセージ</td><td class="x">2 の 128 乗（誕生日攻撃）</td></tr>
+  </table>
+  <div class="cols" style="margin-top:12px">
+    <div class="point warn">過去問の誤りの選択肢：「256 の 2 乗」（数が小さすぎ）、「元のメッセージの発見に 2 の 256 乗」（原像の話）、「ハッシュ値が与えられたとき」（原像の説明）。</div>
+    <div>
+      <div class="point"><b>危殆化：</b>MD5（2004年 衝突）、SHA-1（2017年 SHAttered）。</div>
+      <div class="point"><b>SHA-512/256（R7春）：</b>SHA-512 を1回 → 256 ビットに切り詰め。<b>SHA-3</b> はスポンジ構造の別系統。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ 令和5年度春期 問4・令和7年度春期 問3／NIST FIPS 180-4・FIPS 202</div>
+</section>
+
+<section class="slide">
+  <h1>AES と暗号利用モード（R3春 問7・R5春 問7）</h1>
+  <div class="cols">
+    <div>
+      <div class="point"><b>AES：</b>ブロック長 128 ビット固定、鍵長は <b>128・192・256</b> から選ぶ。</div>
+      <div class="lbl">CBC と CTR</div>
+      <div class="stack">
+        <div class="box b2">CBC：C_i ＝ E(P_i ⊕ C_(i-1))<span>暗号化は順番に、復号は並列に</span></div>
+        <div class="box b1">CTR：C_i ＝ P_i ⊕ E(カウンタ＋i)<span>暗号化も復号も鍵ストリームとの XOR</span></div>
+      </div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>性質</th><th>CBC</th><th>CTR</th></tr>
+        <tr><td class="l">暗号化の並列</td><td class="t">できない</td><td class="x">できる</td></tr>
+        <tr><td class="l">復号の並列</td><td class="t">できる</td><td class="x">できる</td></tr>
+        <tr><td class="l">パディング</td><td class="t">要る</td><td class="x">不要</td></tr>
+        <tr><td class="l">1ビットの誤り</td><td class="t">ブロック全体＋次の1ビット</td><td class="x">その1ビット</td></tr>
+      </table>
+      <div class="point warn">R5春 問7 の誤りの選択肢ウ・エは <b>CBC</b> の性質。ECB は同じ平文→同じ暗号文で使わない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：NIST FIPS 197（AES）・SP 800-38A（Modes of Operation）／IPA 午前Ⅱ 令和3年度春期 問7・令和5年度春期 問7</div>
+</section>
+
+<section class="slide">
+  <h1>ストリーム暗号・認証付き暗号・軽量暗号</h1>
+  <table class="mx">
+    <tr><th style="width:20%">種類</th><th>しくみ</th><th style="width:30%">例</th></tr>
+    <tr><td class="t">ストリーム暗号</td><td class="l">鍵ストリームと平文を少しずつ XOR。同じ鍵ストリームの再利用は厳禁</td><td class="l">KCipher-2（電子政府推奨暗号）、ChaCha20</td></tr>
+    <tr><td class="x">認証付き暗号 AEAD</td><td class="l">暗号化＋改ざん検出を一度に。関連データ（ヘッダ）も守る</td><td class="l">AES-GCM・AES-CCM・ChaCha20-Poly1305</td></tr>
+    <tr><td class="t">軽量暗号</td><td class="l">回路規模・電力を小さく。IoT のセンサー向け</td><td class="l">Ascon（NIST が 2023年に選定）</td></tr>
+  </table>
+  <div class="cols" style="margin-top:12px">
+    <div class="point">日本のブロック暗号 <b>Camellia</b>（NTT・三菱電機）も電子政府推奨暗号。</div>
+    <div class="point warn">「軽量」は安全性を下げてよいという意味ではない。</div>
+  </div>
+  <div class="cite">出典：CRYPTREC 暗号リスト／IPA「支援士試験 シラバス（案）」用語例〔共通鍵暗号〕／NIST Lightweight Cryptography Project</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>鍵と乱数の管理、量子と耐量子計算機暗号</h1>
+  <p>鍵は一生を管理する。量子は「使う」と「耐える」を区別する。</p>
+  <div class="foot"><span>支援士 #15 暗号技術</span><span>25-7</span></div>
+</section>
+
+<section class="slide">
+  <h1>鍵のライフサイクルと守る道具</h1>
+  <div class="flow" style="gap:4px">
+    <div class="box b1">生成<span>CSPRNG・HSM</span></div><div class="to">→</div>
+    <div class="box b2">配送<span>鍵交換・ラップ</span></div><div class="to">→</div>
+    <div class="box b3">保管<span>HSM・KMS</span></div><div class="to">→</div>
+    <div class="box b5">利用<span>権限・記録</span></div><div class="to">→</div>
+    <div class="box b4">更新<span>暗号期間</span></div><div class="to">→</div>
+    <div class="box b1">廃棄<span>復元不可に</span></div>
+  </div>
+  <div class="cols" style="margin-top:12px">
+    <table class="mx">
+      <tr><th>道具</th><th>役割</th></tr>
+      <tr><td class="t">HSM</td><td class="l">耐タンパ装置。鍵を外に出さず中で署名・暗号化（FIPS 140-3）</td></tr>
+      <tr><td class="t">KMS</td><td class="l">鍵の一元管理。エンベロープ暗号化（データキーをマスターキーで包む）</td></tr>
+      <tr><td class="t">CSPRNG</td><td class="l">出力から次を予測できない擬似乱数（SP 800-90A の DRBG）</td></tr>
+      <tr><td class="t">QRNG</td><td class="l">量子現象による真の乱数</td></tr>
+    </table>
+    <div>
+      <div class="point warn">セッション ID・トークンに標準の rand() や時刻のシードは使わない。</div>
+      <div class="point"><b>危殆化：</b>アルゴリズムが弱くなる、または鍵が漏れること。前者は移行、後者は失効と再発行。</div>
+    </div>
+  </div>
+  <div class="cite">出典：CRYPTREC「暗号鍵管理システム設計指針」／NIST SP 800-57 Part 1・SP 800-90A Rev.1・FIPS 140-3</div>
+</section>
+
+<section class="slide">
+  <h1>「量子」の付く言葉を区別する</h1>
+  <table class="mx">
+    <tr><th style="width:22%">言葉</th><th>正体</th><th style="width:30%">過去問の正解の言い方</th></tr>
+    <tr><td class="x">PQC 耐量子計算機暗号</td><td class="l"><b>従来のコンピュータ</b>で動き、量子コンピュータの攻撃にも耐える暗号（格子など）。NIST FIPS 203〜205（2024年）</td><td class="l">量子コンピュータを使った攻撃に対しても安全（R3秋・R6秋・R7秋）</td></tr>
+    <tr><td class="x">量子暗号（QKD）</td><td class="l">量子通信路で乱数を共有し、使い捨ての鍵に。盗聴すると気付ける</td><td class="l">原理的に第三者に解読されない（R4春・R6秋）</td></tr>
+    <tr><td class="t">Shor のアルゴリズム</td><td class="l">量子コンピュータで素因数分解・離散対数を解く</td><td class="l">PQC の誤りの選択肢</td></tr>
+    <tr><td class="t">ワンタイムパッド</td><td class="l">平文と同じ長さの真の乱数の鍵を一度だけ</td><td class="l">情報理論的安全性（R7秋 問9）</td></tr>
+  </table>
+  <div class="point warn" style="margin-top:12px">RSA・DH・楕円曲線は「計算量的安全性」。今の通信を記録して将来解読する <b>Harvest Now, Decrypt Later</b> に備えて PQC へ移行する。</div>
+  <div class="cite">出典：NIST FIPS 203・204・205（2024）／IPA 午前Ⅱ 令和7年度秋期 問3・問9、令和6年度秋期 問5・問9</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ：本番での問われ方</h1>
+  <div class="cols">
+    <div>
+      <div class="point"><b>方式：</b>本体は共通鍵、鍵の配送は公開鍵（ハイブリッド）。DH は認証しない → 中間者。</div>
+      <div class="point warn"><b>前方秘匿性：</b>使い捨ての DH 鍵 → 秘密鍵が後で漏れても過去は解読されない。</div>
+      <div class="point"><b>ハッシュ：</b>衝突＝一致する二つを探す（2 の n/2 乗）、原像＝ハッシュ値から元を、第二原像＝決まった M と同じ値の別の M'。</div>
+    </div>
+    <div>
+      <div class="point"><b>AES：</b>鍵 128・192・256。<b>CTR：</b>鍵ストリームと XOR、並列・パディング不要。<b>CBC：</b>暗号化は直列。</div>
+      <div class="point warn"><b>量子：</b>PQC＝従来機で動く耐性のある暗号、量子暗号＝量子通信路で鍵を共有、ワンタイムパッド＝情報理論的安全性。</div>
+      <div class="point"><b>ブロックチェーン：</b>必須はハッシュ関数（改ざん検出）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ（このPDFの問題演習）／IPA「支援士試験 シラバス（案）Ver.0.1」</div>
+</section>
+
+</body>
+</html>
