@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS SAA #10 高可用性と災害対策 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">AWS SAA（SAA-C03）　分野2 弾力性に優れたアーキテクチャの設計　#10</div>
+  <h1>高可用性と災害対策</h1>
+  <p>部品が壊れても止まらない（高可用性）と、大きな災害のあとに戻す（ディザスタリカバリ）。RTO・RPO と 4 つの DR 戦略、バックアップとレプリケーションの使い分け</p>
+  <div class="refs-legend">各ページの下に、根拠にした AWS の公式ドキュメント（ホワイトペーパー「AWS でのワークロードのディザスタリカバリ」・AWS Backup・Well-Architected 信頼性の柱など）を書いた（青い文字を押すと開く）。「」の中はドキュメントの原文どおり（日本語版は機械翻訳のため、語順が不自然なところもそのまま）。会社名や構成の例は Claude が作った例</div>
+</section>
+
+<section class="slide">
+  <h1>全体像：何が壊れるかで対策が変わる<small>試験ガイド タスク 2.2</small></h1>
+  <svg width="856" height="210" viewBox="0 0 856 210">
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="10" width="200" height="190" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="110" y="34" fill="#1f3a68" font-weight="700">部品（1 台・1 ディスク）</text>
+      <rect x="25" y="50" width="170" height="40" rx="6" fill="#1f3a68"/><text x="110" y="75" fill="#fff" font-size="11">複数台＋ALB</text>
+      <rect x="25" y="100" width="170" height="40" rx="6" fill="#1f3a68"/><text x="110" y="125" fill="#fff" font-size="11">Auto Scaling で置き換え</text>
+      <text x="110" y="172" fill="#1f3a68" font-size="11">#09 で学んだ</text>
+      <rect x="225" y="10" width="200" height="190" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="325" y="34" fill="#3a7d44" font-weight="700">AZ（データセンター）</text>
+      <rect x="240" y="50" width="170" height="40" rx="6" fill="#3a7d44"/><text x="325" y="75" fill="#fff" font-size="11">マルチ AZ に分ける</text>
+      <rect x="240" y="100" width="170" height="40" rx="6" fill="#3a7d44"/><text x="325" y="125" fill="#fff" font-size="11">静的安定性</text>
+      <text x="325" y="172" fill="#3a7d44" font-size="11">高可用性（第1章）</text>
+      <rect x="440" y="10" width="200" height="190" rx="10" fill="#fff4e5" stroke="#b25000"/><text x="540" y="34" fill="#b25000" font-weight="700">リージョン全体</text>
+      <rect x="455" y="50" width="170" height="40" rx="6" fill="#b25000"/><text x="540" y="75" fill="#fff" font-size="11">別リージョンへの DR</text>
+      <rect x="455" y="100" width="170" height="40" rx="6" fill="#b25000"/><text x="540" y="125" fill="#fff" font-size="11">4 つの戦略から選ぶ</text>
+      <text x="540" y="172" fill="#b25000" font-size="11">DR（第2章）</text>
+      <rect x="655" y="10" width="191" height="190" rx="10" fill="#f5f5f7" stroke="#4a5a78"/><text x="750" y="34" fill="#4a5a78" font-weight="700">データ（削除・破損）</text>
+      <rect x="670" y="50" width="161" height="40" rx="6" fill="#4a5a78"/><text x="750" y="75" fill="#fff" font-size="11">ポイントインタイム</text>
+      <rect x="670" y="100" width="161" height="40" rx="6" fill="#4a5a78"/><text x="750" y="125" fill="#fff" font-size="11">Vault Lock・別アカウント</text>
+      <text x="750" y="172" fill="#4a5a78" font-size="11">バックアップ（第3章）</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>高可用性と DR は別もの：</b>高可用性はワークロードの部品に、DR はワークロード全体の別のコピーに重点を置く。まず高可用性の目標を満たし、そのうえで DR を考える。</div>
+    <div class="point warn"><b>レプリケーションはバックアップではない：</b>継続的なレプリケーションは、削除や破損もそのまま相手にコピーする。DR にはポイントインタイムのバックアップも要る。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/whitepapers/latest/disaster-recovery-workloads-on-aws/high-availability-is-not-disaster-recovery.html">高可用性はディザスタリカバリではありません</a>（「プライマリストレージデバイスでファイルを削除または破損した場合、それらの破壊的な変更はセカンダリストレージデバイスにレプリケートできます。」「代わりに、DR 戦略の一部としてpoint-in-timeバックアップも必要です。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>高可用性の基本</h1>
+  <p>リージョンと AZ のしくみ、単一障害点をなくす、障害時に「起動に頼らない」設計。DR を支える自動化と見える化の道具。</p>
+  <div class="foot"><span>AWS SAA #10 高可用性と災害対策</span><span>タスク 2.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>リージョンと AZ</h1>
+  <svg width="856" height="190" viewBox="0 0 856 190">
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="10" width="520" height="170" rx="12" fill="#f5f5f7" stroke="#1f3a68"/><text x="60" y="32" fill="#1f3a68" font-weight="700">リージョン</text><text x="270" y="32" fill="#4a5a78" font-size="11">（少なくとも 3 つの AZ）</text>
+      <g fill="#fff" stroke="#3a7d44"><rect x="30" y="50" width="140" height="110" rx="8"/><rect x="200" y="50" width="140" height="110" rx="8"/><rect x="370" y="50" width="140" height="110" rx="8"/></g>
+      <g fill="#3a7d44" font-weight="700"><text x="100" y="72">AZ a</text><text x="270" y="72">AZ c</text><text x="440" y="72">AZ d</text></g>
+      <g fill="#3a7d44"><rect x="50" y="86" width="100" height="26" rx="5"/><rect x="220" y="86" width="100" height="26" rx="5"/><rect x="390" y="86" width="100" height="26" rx="5"/></g>
+      <g fill="#fff" font-size="11"><text x="100" y="104">EC2</text><text x="270" y="104">EC2</text><text x="440" y="104">EC2</text></g>
+      <rect x="50" y="122" width="100" height="26" rx="5" fill="#1f3a68"/><text x="100" y="140" fill="#fff" font-size="11">DB（プライマリ）</text>
+      <rect x="220" y="122" width="100" height="26" rx="5" fill="#fff" stroke="#1f3a68"/><text x="270" y="140" fill="#1f3a68" font-size="11">DB（スタンバイ）</text>
+      <line x1="150" y1="135" x2="218" y2="135" stroke="#1f3a68" stroke-width="2"/><text x="185" y="172" fill="#1f3a68" font-size="10.5">同期レプリケーション</text>
+      <rect x="600" y="40" width="246" height="110" rx="12" fill="#fff4e5" stroke="#b25000"/><text x="723" y="64" fill="#b25000" font-weight="700">別のリージョン</text><text x="723" y="88" font-size="11">完全に分離して作られている</text><text x="723" y="108" font-size="11">自動ではレプリケートされない</text><text x="723" y="128" font-size="11">→ コピーやレプリケーションを設定</text>
+      <line x1="530" y1="95" x2="598" y2="95" stroke="#b25000" stroke-width="2" stroke-dasharray="5 4"/>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>AZ の距離：</b>相関する障害を防ぐため最大でおよそ 100 km 離れているが、1 桁ミリ秒のレイテンシーで同期レプリケーションできるほど近い。だからマルチ AZ の DB は同期でコピーできる。</div>
+    <div class="point warn"><b>単一障害点（SPOF）：</b>1 つの AZ の 1 台の EC2・1 つの NAT ゲートウェイ・シングル AZ の DB。1 つの AZ だけのワークロードには高可用性がない。データセンター 1 つの障害までなら、マルチ AZ で守れる。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/global-infrastructure/latest/regions/aws-availability-zones.html">AWS アベイラビリティーゾーン</a>（「各リージョンには少なくとも 3 つのアベイラビリティーゾーンがあります。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/whitepapers/latest/aws-fault-isolation-boundaries/availability-zones.html">アベイラビリティーゾーン</a>（「リージョン内のアベイラビリティーゾーン間は、相関する障害を防ぐために意味のある距離として最大 60 マイル (約 100 km) 離れていますが、1 桁ミリ秒のレイテンシーで同期レプリケーションを利用するには十分近い距離にあります。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/using-regions-availability-zones.html">リージョンとゾーン</a>（「各リージョンは他のリージョンと完全に分離されるように設計されています。」）</div>
+</section>
+
+<section class="slide">
+  <h1>静的安定性：障害時の「起動」に頼らない</h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <g font-size="11" text-anchor="middle">
+      <text x="210" y="16" fill="#b25000" font-weight="700" font-size="12">起動に頼る（安いが確実ではない）</text>
+      <g fill="#fff" stroke="#4a5a78"><rect x="10" y="26" width="130" height="120" rx="8"/><rect x="145" y="26" width="130" height="120" rx="8"/><rect x="280" y="26" width="130" height="120" rx="8"/></g>
+      <g fill="#4a5a78" font-weight="700"><text x="75" y="44">AZ a</text><text x="210" y="44">AZ c</text><text x="345" y="44">AZ d</text></g>
+      <g fill="#b25000"><rect x="25" y="54" width="45" height="36" rx="5"/><rect x="80" y="54" width="45" height="36" rx="5"/><rect x="160" y="54" width="45" height="36" rx="5"/><rect x="215" y="54" width="45" height="36" rx="5"/></g>
+      <g fill="#ddd"><rect x="295" y="54" width="45" height="36" rx="5"/><rect x="350" y="54" width="45" height="36" rx="5"/></g>
+      <line x1="285" y1="30" x2="405" y2="142" stroke="#b25000" stroke-width="3"/><line x1="405" y1="30" x2="285" y2="142" stroke="#b25000" stroke-width="3"/>
+      <rect x="25" y="100" width="45" height="36" rx="5" fill="#fff" stroke="#b25000" stroke-dasharray="4 3"/><rect x="160" y="100" width="45" height="36" rx="5" fill="#fff" stroke="#b25000" stroke-dasharray="4 3"/>
+      <text x="210" y="168" fill="#b25000">6 台中 2 台が消え、残り 4 台。足りない分を起動する</text>
+      <text x="210" y="186" fill="#b25000">（起動の仕組みと残りの AZ のキャパシティに頼る）</text>
+      <text x="645" y="16" fill="#3a7d44" font-weight="700" font-size="12">静的安定性（前もって多めに置く）</text>
+      <g fill="#fff" stroke="#4a5a78"><rect x="445" y="26" width="130" height="120" rx="8"/><rect x="580" y="26" width="130" height="120" rx="8"/><rect x="715" y="26" width="130" height="120" rx="8"/></g>
+      <g fill="#4a5a78" font-weight="700"><text x="510" y="44">AZ a</text><text x="645" y="44">AZ c</text><text x="780" y="44">AZ d</text></g>
+      <g fill="#3a7d44"><rect x="460" y="54" width="45" height="36" rx="5"/><rect x="515" y="54" width="45" height="36" rx="5"/><rect x="460" y="100" width="45" height="36" rx="5"/><rect x="595" y="54" width="45" height="36" rx="5"/><rect x="650" y="54" width="45" height="36" rx="5"/><rect x="595" y="100" width="45" height="36" rx="5"/></g>
+      <g fill="#ddd"><rect x="730" y="54" width="45" height="36" rx="5"/><rect x="785" y="54" width="45" height="36" rx="5"/><rect x="730" y="100" width="45" height="36" rx="5"/></g>
+      <line x1="720" y1="30" x2="840" y2="142" stroke="#b25000" stroke-width="3"/><line x1="840" y1="30" x2="720" y2="142" stroke="#b25000" stroke-width="3"/>
+      <text x="645" y="168" fill="#3a7d44">9 台中 3 台が消えても、残り 6 台で全負荷を受ける</text>
+      <text x="645" y="186" fill="#3a7d44">（何も起動しなくてよい）</text>
+    </g>
+  </svg>
+  <div class="mini">常に 6 台が必要なワークロードの例（Claude が作った例）。</div>
+  <div class="cols">
+    <div class="point"><b>なぜ：</b>新しいインスタンスの起動に頼る設計は安いが、AZ やリージョンの大規模な障害では、起動の仕組みと、影響のないゾーンのキャパシティの両方に頼るので効果が下がる。</div>
+    <div class="point warn"><b>コストとの交換：</b>AZ を増やすほど、静的安定性のために余分に置く台数は減る（Claude の計算：2 AZ なら必要数の 2 倍、3 AZ なら 1.5 倍）。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/wellarchitected/latest/reliability-pillar/rel_withstand_component_failures_static_stability.html">REL11-BP05 静的安定性を使用してバイモーダル動作を防止する</a>（「バイモーダル動作の例は、安定した Amazon EC2 設計により、1 つの AZ が削除された場合にワークロードの負荷を処理するのに十分な数のインスタンスが各 AZ にプロビジョニングされる場合です。」「ゾーンを追加することで、静的安定性に必要な追加のコンピューティング量を減らすことができます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>DR を支える自動化：作り直せるようにしておく</h1>
+  <table class="mx">
+    <tr><th style="width:24%">道具</th><th>何をする</th><th style="width:30%">本番の言い回し</th></tr>
+    <tr><td class="t">CloudFormation（IaC）</td><td class="l">インフラをテンプレートで書き、同じ環境を確実に作り直す。CDK はプログラミング言語で書き、CloudFormation に変換</td><td class="l">「DR リージョンに同じ環境をすばやく」</td></tr>
+    <tr><td class="t">StackSets</td><td class="l">複数のアカウントとリージョンに、1 回の操作でスタックを作る・更新する・消す</td><td class="l">「複数アカウント・複数リージョンに同じ構成」</td></tr>
+    <tr><td class="t">AMI のコピー</td><td class="l">AMI はリージョン固有。別のリージョンで起動するにはコピーしておく</td><td class="l">「大阪でも同じ AMI から起動」</td></tr>
+    <tr><td class="t">Service Quotas</td><td class="l">リージョンごとのクォータ（制限）を見て、引き上げを申請する</td><td class="l">「DR リージョンで本番の規模まで増やせない」</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>コントロールプレーンとデータプレーン：</b>作る・変える（API での起動や設定）はコントロールプレーン、動いているものがサービスを提供するのはデータプレーン。データプレーンのほうがふつうは可用性の設計目標が高いので、フェイルオーバーはデータプレーンの操作だけで済むようにする。</div>
+    <div class="point warn"><b>ひっかけ：</b>「災害時に Auto Scaling で増やす」はコントロールプレーンに頼る。確実さを優先するなら前もって置く（静的安定性・ホットスタンバイ）。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/what-is-cfnstacksets.html">StackSets を使用したアカウントとリージョン全体でのスタックの管理</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/CopyingAMIs.html">Amazon EC2 AMI のコピー</a>（「ただし、AMI はリージョンに固有のリソースであるため、特定の AWS リージョンでインスタンスを起動するときは、そのリージョンに AMI を配置する必要があります。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/servicequotas/latest/userguide/intro.html">Service Quotas とは何ですか。</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html">クラウド内での災害対策オプション</a>（「これは、データプレーンには通常、コントロールプレーンよりも高い可用性の設計目標があるためです。」）</div>
+</section>
+
+<section class="slide">
+  <h1>見える化・接続・確かめる道具</h1>
+  <table class="mx">
+    <tr><th style="width:22%">サービス</th><th>何をする</th><th style="width:32%">本番の言い回し → これ</th></tr>
+    <tr><td class="t">Amazon RDS Proxy</td><td class="l">DB への接続をプールして共有。フェイルオーバーのとき、アプリの接続を保ったままスタンバイにつなぐ。IAM 認証・Secrets Manager</td><td class="l">「大量の Lambda で接続があふれる」「フェイルオーバーの切断を減らす」</td></tr>
+    <tr><td class="t">AWS X-Ray</td><td class="l">リクエストのデータ（トレース）を集め、サービスをまたぐ経路のどこが遅いか・エラーかを見せる</td><td class="l">「どのサービスで時間がかかっているか」</td></tr>
+    <tr><td class="t">AWS FIS</td><td class="l">わざと障害を起こす実験。条件を満たしたら自動で止めるガードレール</td><td class="l">「本当に AZ の障害に耐えるか実際に試す」</td></tr>
+    <tr><td class="t">AWS Resilience Hub</td><td class="l">RTO・RPO の目標を決め、満たせるかを評価し、Well-Architected に基づいて改善を勧める</td><td class="l">「目標を満たせるか評価・追跡」</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>まぎらわしい組：</b>CloudWatch＝メトリクスとログ。X-Ray＝リクエストの経路。CloudTrail＝だれがどの API を呼んだか。Config＝設定の変化。</div>
+    <div class="point warn"><b>RDS Proxy の位置：</b>読み取りを分けたいならリードレプリカ、接続の数とフェイルオーバーの切断なら RDS Proxy。インスタンスを大きくするのは一時しのぎ。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/rds-proxy.html">Amazon RDS Proxy</a>（「RDS Proxy は、アプリケーション接続を維持しながらスタンバイ DB インスタンスに自動的に接続することで、データベースの障害に対するアプリケーションの耐障害性を高めます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/xray/latest/devguide/aws-xray.html">AWS X-Ray とは</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/fis/latest/userguide/what-is.html">AWS Fault Injection Service とは</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/resilience-hub/latest/userguide/what-is.html">AWS Resilience Hub とは</a>（「AWS Resilience Hub を使用すると、レジリエンス目標を定義し、その目標に対するレジリエンス体制を評価し、 AWS Well-Architected フレームワークに基づいて改善のための推奨事項を実装できます。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>DR の目標と 4 つの戦略</h1>
+  <p>どれだけ早く戻すか（RTO）、どこまでのデータを失ってよいか（RPO）。目標とコストで、4 つの戦略から選ぶ。</p>
+  <div class="foot"><span>AWS SAA #10 高可用性と災害対策</span><span>タスク 2.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>RPO と RTO</h1>
+  <svg width="856" height="170" viewBox="0 0 856 170">
+    <defs><marker id="b1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <line x1="20" y1="90" x2="840" y2="90" stroke="#4a5a78" stroke-width="2" marker-end="url(#b1)"/><text x="826" y="112" fill="#4a5a78">時間</text>
+      <circle cx="200" cy="90" r="8" fill="#1f3a68"/><text x="200" y="130" fill="#1f3a68" font-weight="700">最後に戻せる時点</text><text x="200" y="148" font-size="11">（最後のバックアップ）</text>
+      <circle cx="430" cy="90" r="10" fill="#b25000"/><text x="430" y="130" fill="#b25000" font-weight="700">災害が起きた</text>
+      <circle cx="700" cy="90" r="8" fill="#3a7d44"/><text x="700" y="130" fill="#3a7d44" font-weight="700">サービスが戻った</text>
+      <rect x="200" y="30" width="230" height="40" rx="6" fill="#e3eefc" stroke="#1f3a68"/><text x="315" y="48" fill="#1f3a68" font-weight="700">RPO</text><text x="315" y="64" font-size="11">失ってよいデータの時間</text>
+      <rect x="430" y="30" width="270" height="40" rx="6" fill="#e8f3ea" stroke="#3a7d44"/><text x="565" y="48" fill="#3a7d44" font-weight="700">RTO</text><text x="565" y="64" font-size="11">止まっていてよい時間</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:16%"></th><th>意味</th><th style="width:36%">小さくするには</th></tr>
+    <tr><td class="t">RPO</td><td class="l">最後のデータの復旧時点から、障害までに許される最大の時間（どこまで戻るか）</td><td class="l">バックアップの頻度を上げる → 継続的なレプリケーション</td></tr>
+    <tr><td class="t">RTO</td><td class="l">サービスが止まってから復旧までに許される最大の時間（どれだけ早く戻すか）</td><td class="l">DR リージョンに前もって動かしておくものを増やす</td></tr>
+  </table>
+  <div class="point warn" style="margin-top:8px"><b>コストで決める：</b>RTO・RPO は事業継続計画（BCP）のビジネスへの影響分析で決める。復旧の仕組みのコストが障害や損失のコストより高いなら、規制などがない限り作らない。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/whitepapers/latest/disaster-recovery-workloads-on-aws/business-continuity-plan-bcp.html">事業継続計画 (BCP)</a>（「目標復旧時間 (RTO) は、サービスの中断からサービスの復旧までの最大許容遅延時間です。」「目標復旧時点 (RPO) は、最後のデータ復旧時点からの最大許容時間です。」「復旧戦略のコストが障害や損失のコストよりも高い場合は、規制要件などのセカンダリドライバーがない限り、復旧オプションを設定しないでください。」）</div>
+</section>
+
+<section class="slide">
+  <h1>4 つの DR 戦略</h1>
+  <svg width="856" height="180" viewBox="0 0 856 180">
+    <defs><marker id="b2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#4a5a78"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="10" width="200" height="120" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="110" y="34" fill="#1f3a68" font-weight="700">バックアップと復元</text><text x="110" y="58" font-size="11">DR 側：バックアップだけ</text><text x="110" y="78" font-size="11">災害時：インフラを作り</text><text x="110" y="94" font-size="11">データを復元</text>
+      <rect x="222" y="10" width="200" height="120" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="322" y="34" fill="#3a7d44" font-weight="700">パイロットライト</text><text x="322" y="58" font-size="11">DR 側：データは常に複製</text><text x="322" y="78" font-size="11">サーバーは「スイッチオフ」</text><text x="322" y="94" font-size="11">災害時：オンにして増やす</text>
+      <rect x="434" y="10" width="200" height="120" rx="10" fill="#fff4e5" stroke="#b25000"/><text x="534" y="34" fill="#b25000" font-weight="700">ウォームスタンバイ</text><text x="534" y="58" font-size="11">DR 側：縮小版の本番が</text><text x="534" y="78" font-size="11">常に動く（すぐ処理できる）</text><text x="534" y="94" font-size="11">災害時：スケールアップ</text>
+      <rect x="646" y="10" width="200" height="120" rx="10" fill="#f5e8e8" stroke="#9a3030"/><text x="746" y="34" fill="#9a3030" font-weight="700">マルチサイト A/A</text><text x="746" y="58" font-size="11">全リージョンで本番の</text><text x="746" y="78" font-size="11">トラフィックを処理</text><text x="746" y="94" font-size="11">災害時：壊れた所を外す</text>
+      <line x1="20" y1="152" x2="836" y2="152" stroke="#4a5a78" stroke-width="2" marker-end="url(#b2)"/>
+      <text x="110" y="172" fill="#4a5a78" font-size="11">コスト・複雑さ 低い／復旧 遅い</text><text x="746" y="172" fill="#4a5a78" font-size="11">コスト・複雑さ 高い／復旧 ほぼゼロ</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>選び方：</b>要件の RTO・RPO を満たす中で、最も安いもの。データセンター 1 つの障害だけなら、マルチ AZ ＋バックアップと復元で足りることもある。リージョンの災害や規制が要件なら、パイロットライト以上。</div>
+    <div class="point warn"><b>どの戦略でもバックアップ：</b>マルチサイトでも、データの破損や削除からの復旧時間は 0 より大きく、戻せるのは災害が見つかる前の時点。バックアップと復旧のテストは要る。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html">クラウド内での災害対策オプション</a>（「AWS 内で利用できるディザスタリカバリ戦略は、低コストと複雑さの低いバックアップから、複数のアクティブなリージョンを使用したより複雑な戦略まで、4 つのアプローチに広く分類できます。」「このアプローチはディザスタリカバリに対する最も複雑でコストのかかるアプローチですが、正しいテクノロジーの選択と実装により、ほとんどのディザスタの復旧時間をほぼゼロに短縮できます (ただし、データの破損はバックアップに依存する必要があり、通常はゼロ以外の復旧ポイントになる可能性があります）。」）</div>
+</section>
+
+<section class="slide">
+  <h1>パイロットライト・ウォームスタンバイ・ホットスタンバイ</h1>
+  <svg width="856" height="190" viewBox="0 0 856 190">
+    <g font-size="11" text-anchor="middle">
+      <g fill="#fff" stroke="#4a5a78"><rect x="10" y="10" width="270" height="170" rx="10"/><rect x="293" y="10" width="270" height="170" rx="10"/><rect x="576" y="10" width="270" height="170" rx="10"/></g>
+      <g font-weight="700" font-size="12"><text x="145" y="32" fill="#3a7d44">パイロットライト（DR 側）</text><text x="428" y="32" fill="#b25000">ウォームスタンバイ（DR 側）</text><text x="711" y="32" fill="#1f3a68">ホットスタンバイ（DR 側）</text></g>
+      <g fill="#ddd" stroke="#999" stroke-dasharray="4 3"><rect x="30" y="50" width="50" height="40" rx="5"/><rect x="90" y="50" width="50" height="40" rx="5"/><rect x="150" y="50" width="50" height="40" rx="5"/><rect x="210" y="50" width="50" height="40" rx="5"/></g>
+      <text x="145" y="106" fill="#666">アプリ：0 台（スイッチオフ）</text>
+      <g fill="#b25000"><rect x="313" y="50" width="50" height="40" rx="5"/></g><g fill="#ddd" stroke="#999" stroke-dasharray="4 3"><rect x="373" y="50" width="50" height="40" rx="5"/><rect x="433" y="50" width="50" height="40" rx="5"/><rect x="493" y="50" width="50" height="40" rx="5"/></g>
+      <text x="428" y="106" fill="#b25000">アプリ：縮小版がすぐ処理できる</text>
+      <g fill="#1f3a68"><rect x="596" y="50" width="50" height="40" rx="5"/><rect x="656" y="50" width="50" height="40" rx="5"/><rect x="716" y="50" width="50" height="40" rx="5"/><rect x="776" y="50" width="50" height="40" rx="5"/></g>
+      <text x="711" y="106" fill="#1f3a68">アプリ：本番の全負荷ぶん</text>
+      <g fill="#3a7d44"><rect x="40" y="120" width="210" height="34" rx="6"/><rect x="323" y="120" width="210" height="34" rx="6"/><rect x="606" y="120" width="210" height="34" rx="6"/></g>
+      <g fill="#fff"><text x="145" y="142">DB：常にレプリケーション</text><text x="428" y="142">DB：常にレプリケーション</text><text x="711" y="142">DB：常にレプリケーション</text></g>
+      <text x="145" y="172" fill="#3a7d44">災害時：オンにして増やす</text><text x="428" y="172" fill="#b25000">災害時：スケールアップだけ</text><text x="711" y="172" fill="#1f3a68">災害時：トラフィックを向けるだけ</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>パイロットライト vs ウォームスタンバイ：</b>どちらも DR リージョンにプライマリのコピーを持つ。違いは、パイロットライトは追加の操作なしではリクエストを処理できず、ウォームスタンバイは（小さい規模で）すぐに処理できること。</div>
+    <div class="point warn"><b>ホットスタンバイ：</b>Auto Scaling はコントロールプレーンなので、それに頼ると回復性が下がる。全負荷ぶんを前もって置く静的に安定した形がホットスタンバイ。ふだんは 1 つのリージョンだけが処理する。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html">クラウド内での災害対策オプション</a>（「違いは、パイロットライトは追加のアクションを最初に実行しない限りリクエストを処理できないのに対し、ウォームスタンバイはトラフィックを (キャパシティーレベルを減らして) すぐに処理できることです。」「Auto Scaling はコントロールプレーンのアクティビティであるため、それに依存すると、全体的な復旧戦略の耐障害性が低下します。」「この静的に安定した設定は、ホットスタンバイと呼ばれます (次のセクションを参照）。」）</div>
+</section>
+
+<section class="slide">
+  <h1>マルチサイトアクティブ/アクティブとデータの書き方</h1>
+  <table class="mx">
+    <tr><th style="width:20%">書き込みの戦略</th><th>どこに書く</th><th style="width:34%">向くサービス</th></tr>
+    <tr><td class="t">書き込みグローバル</td><td class="l">すべての書き込みを 1 つのリージョンへ。そこが落ちたら別のリージョンを昇格</td><td class="l">Aurora グローバルデータベース（1 分以内に昇格、書き込み転送）</td></tr>
+    <tr><td class="t">書き込みローカル</td><td class="l">利用者に最も近いリージョンへ書く</td><td class="l">DynamoDB グローバルテーブル（同時更新は最後に書いたものが勝つ）</td></tr>
+    <tr><td class="t">書き込みパーティション</td><td class="l">ユーザー ID などのキーで、書くリージョンを決めて競合を避ける</td><td class="l">双方向の S3 レプリケーション</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>フェイルオーバーはない：</b>全リージョンでトラフィックを処理しているので、壊れたリージョンからトラフィックを外すだけ。テストでは「外せるか」「残りで全部を受けられるか」を確かめる。</div>
+    <div class="point warn"><b>アクティブ/パッシブとの違い：</b>アクティブ/パッシブ（パイロットライト・ウォーム・ホット）では、ふだんは全トラフィックがプライマリへ行き、書き込みもプライマリだけ。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html">クラウド内での災害対策オプション</a>（「マルチサイトがアクティブ/アクティブの場合、ワークロードが複数のリージョンで実行されているため、このシナリオではフェイルオーバーのようなものはありません。」「Amazon DynamoDB グローバルテーブルでは、最後のライターが同時更新間の調整を獲得します。」「アクティブ/パッシブ戦略では、書き込みはプライマリリージョンに対してのみ行われます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>フェイルオーバーと DR のテスト</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">フェイルオーバーの注意</div>
+      <div class="point warn"><b>自動は慎重に：</b>ヘルスチェックやアラームで自動に始めるフェイルオーバーは慎重に使う。復旧時間と復旧ポイントは 0 より大きいので、誤ったアラームで切り替えると、その分の損失が出る。手動で始めることも多い。</div>
+      <div class="point" style="margin-top:6px"><b>フェイルバック：</b>復旧したら、プライマリに戻す手順も用意し、試しておく。</div>
+    </div>
+    <div>
+      <div class="lbl">テストしないと気付けないこと（例）</div>
+      <table class="mx">
+        <tr><th>症状</th><th style="width:44%">対策</th></tr>
+        <tr><td class="l">DR リージョンで台数が増やせない</td><td class="l">サービスクォータを前もって引き上げる</td></tr>
+        <tr><td class="l">DR 側の AMI が古い</td><td class="l">AMI を作るたびにコピー</td></tr>
+        <tr><td class="l">前は足りたキャパシティが今は足りない</td><td class="l">本番の成長に合わせて見直す</td></tr>
+        <tr><td class="l">バックアップから戻せない</td><td class="l">復元のテストを定期的に</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="point" style="margin-top:8px"><b>テストの考え方：</b>くり返しテストしている経路しか、いざというときにうまく動かない。DR リージョンへのフェイルオーバーを定期的に行い、RTO と RPO を満たせるか確かめる。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html">クラウド内での災害対策オプション</a>（「ヘルスチェックまたはアラームに基づいて自動的に開始されるフェイルオーバーは、慎重に使用する必要があります。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/whitepapers/latest/disaster-recovery-workloads-on-aws/testing-disaster-recovery.html">ディザスタリカバリのテスト</a>（「エラー復旧がうまくいくのは頻繁にテストする経路のみであることは、これまでの経験からも明らかです。」「最後にテストしたときに十分だったセカンダリの容量が、このシナリオでは負荷を許容できなくなるか、セカンダリリージョンのサービスクォータが十分ではない可能性があります。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>データの保護と複製・切り替え</h1>
+  <p>バックアップを一元化して消されないように守る。データを別のリージョンに複製し、利用者のトラフィックを切り替える。</p>
+  <div class="foot"><span>AWS SAA #10 高可用性と災害対策</span><span>タスク 2.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>AWS Backup：まとめて守る</h1>
+  <svg width="856" height="190" viewBox="0 0 856 190">
+    <defs><marker id="b3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <g fill="#e3eefc" stroke="#1f3a68"><rect x="10" y="10" width="120" height="28" rx="5"/><rect x="10" y="44" width="120" height="28" rx="5"/><rect x="10" y="78" width="120" height="28" rx="5"/><rect x="10" y="112" width="120" height="28" rx="5"/><rect x="10" y="146" width="120" height="28" rx="5"/></g>
+      <g fill="#1f3a68"><text x="70" y="29">EC2・EBS</text><text x="70" y="63">RDS・Aurora</text><text x="70" y="97">DynamoDB</text><text x="70" y="131">EFS・FSx</text><text x="70" y="165">Storage Gateway</text></g>
+      <rect x="190" y="50" width="170" height="90" rx="10" fill="#b25000"/><text x="275" y="76" fill="#fff" font-weight="700" font-size="12">バックアッププラン</text><text x="275" y="96" fill="#fff">いつ・どの頻度・何日保持</text><text x="275" y="114" fill="#fff">コピー先も書ける</text>
+      <g stroke="#1f3a68" stroke-width="1.5"><line x1="130" y1="24" x2="188" y2="70" marker-end="url(#b3)"/><line x1="130" y1="92" x2="188" y2="95" marker-end="url(#b3)"/><line x1="130" y1="160" x2="188" y2="120" marker-end="url(#b3)"/></g>
+      <rect x="420" y="50" width="170" height="90" rx="10" fill="#3a7d44"/><text x="505" y="76" fill="#fff" font-weight="700" font-size="12">バックアップボールト</text><text x="505" y="96" fill="#fff">東京・本番アカウント</text><text x="505" y="114" fill="#fff">Vault Lock</text>
+      <line x1="360" y1="95" x2="418" y2="95" stroke="#1f3a68" stroke-width="2" marker-end="url(#b3)"/>
+      <rect x="660" y="10" width="186" height="70" rx="10" fill="#fff" stroke="#3a7d44"/><text x="753" y="36" fill="#3a7d44" font-weight="700" font-size="12">大阪のボールト</text><text x="753" y="56">リージョン間のコピー</text>
+      <rect x="660" y="104" width="186" height="76" rx="10" fill="#fff" stroke="#4a5a78"/><text x="753" y="128" fill="#4a5a78" font-weight="700" font-size="12">別アカウントのボールト</text><text x="753" y="148">クロスアカウントのコピー</text><text x="753" y="166">（論理エアギャップも）</text>
+      <line x1="590" y1="80" x2="658" y2="50" stroke="#1f3a68" stroke-width="2" marker-end="url(#b3)"/><line x1="590" y1="110" x2="658" y2="140" stroke="#1f3a68" stroke-width="2" marker-end="url(#b3)"/>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>一元化：</b>サービスごとにバラバラにスナップショットを取らず、バックアッププランで自動でバックアップ・保持する。タグでリソースを選べる。バックアップの頻度が RPO を決める。</div>
+    <div class="point warn"><b>コピーの目的：</b>リージョン間＝本番から距離を離す事業継続・規制の要件。アカウント間＝本番アカウントが侵害されても消されないように。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/aws-backup/latest/devguide/whatisbackup.html">AWS Backup とは</a>（「AWS Backup は、サービス間、クラウド内、オンプレミスでデータ保護を簡単に一元化および自動化できるフルマネージド AWS サービスです。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/aws-backup/latest/devguide/cross-region-backup.html">AWS リージョン間でのバックアップコピーの作成</a>（「スケジュールバックアッププランを使用して、バックアップを AWS リージョン間でコピーできます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/aws-backup/latest/devguide/create-cross-account-backup.html">AWS アカウント間でのバックアップコピーの作成</a>（「運用上またはセキュリティ上の理由から、組織 AWS アカウント 内の 1 つ以上の にバックアップを安全にコピーする場合は、クロスアカウントバックアップを使用します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>消されないバックアップ：Vault Lock と論理エアギャップ</h1>
+  <table class="mx">
+    <tr><th style="width:22%">しくみ</th><th>だれが消せる・変えられる</th><th style="width:30%">本番の言い回し</th></tr>
+    <tr><td class="t">ふつうのボールト</td><td class="l">十分な権限を持つユーザー（ルートユーザーなど）は削除できる</td><td class="l">—</td></tr>
+    <tr><td class="t">Vault Lock ガバナンスモード</td><td class="l">十分な IAM 権限を持つユーザーはロックを解除できる</td><td class="l">「権限のある管理者は外せてよい」「まず試す」</td></tr>
+    <tr><td class="t">Vault Lock コンプライアンスモード</td><td class="l">猶予期間が過ぎると、顧客・アカウントの所有者・AWS も、設定の変更や削除ができない</td><td class="l">「ルートユーザーを含めだれも消せない」「規制で保持」</td></tr>
+    <tr><td class="t">論理エアギャップボールト</td><td class="l">コンプライアンスモードが備わる特別なボールト。他のアカウントと共有し、持ち主のアカウントに入れなくても（MPA で）復旧できる</td><td class="l">「アカウントが乗っ取られても別のアカウントから復元」</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>継続的バックアップ（PITR）：</b>最初にフルバックアップ、あとはトランザクションログ。最大 35 日の範囲で、1 秒単位で指定した時刻に戻せる。スナップショットと両方で守ることが勧められている。</div>
+    <div class="point warn"><b>注意：</b>ロックしたボールトのバックアップは保持期間が終わるまで消せないので、保持の設定を誤るとストレージの料金がかかり続ける。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/aws-backup/latest/devguide/vault-lock.html">AWS Backup ボールトロック</a>（「コンプライアンスモードでロックが有効になっていて、猶予期間が終了すると、復旧ポイントが含まれている限り、顧客、アカウント/データ所有者、または AWS によるボールト設定の変更または削除ができなくなります。」「ロックされたボールトのバックアップはライフサイクルが完了するまで削除できないため、意図しないストレージコストを避けるために、保持設定が適切に設定されていることを確認してください。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/aws-backup/latest/devguide/logicallyairgappedvault.html">論理エアギャップボールト</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/aws-backup/latest/devguide/point-in-time-recovery.html">継続的バックアップとポイントインタイムリカバリ (PITR)</a></div>
+</section>
+
+<section class="slide">
+  <h1>クロスリージョンのレプリケーション</h1>
+  <table class="mx">
+    <tr><th style="width:24%">サービス</th><th>しくみ</th><th style="width:30%">切り替え</th></tr>
+    <tr><td class="t">S3 のレプリケーション（CRR）</td><td class="l">DR リージョンのバケットへ、継続的に非同期でコピー。バージョニングで、誤った削除や変更からも守る</td><td class="l">DR 側のバケットを使う（#13）</td></tr>
+    <tr><td class="t">RDS のクロスリージョンリードレプリカ</td><td class="l">別のリージョンに読み取り用のレプリカ</td><td class="l">プライマリに昇格（数分・再起動あり）（#15）</td></tr>
+    <tr><td class="t">Aurora グローバルデータベース</td><td class="l">ふつう 1 秒未満で、最大 5 つのセカンダリリージョンへ</td><td class="l">1 分以内に読み書きを引き受ける（#15）</td></tr>
+    <tr><td class="t">DynamoDB グローバルテーブル</td><td class="l">全リージョンで読み書きできる</td><td class="l">切り替え不要（#16）</td></tr>
+    <tr><td class="t">AWS Elastic Disaster Recovery</td><td class="l">サーバーのブロックレベルのレプリケーション。安いストレージと最小限のコンピューティングのステージングエリアに置く</td><td class="l">災害時に起動（パイロットライト）。RDS は対象外</td></tr>
+  </table>
+  <div class="point warn" style="margin-top:8px"><b>レプリケーションとバックアップは両方：</b>レプリケーションは RPO をほぼゼロにするが、削除や破損もそのままコピーされる。ポイントインタイムのバックアップを組み合わせる。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html">クラウド内での災害対策オプション</a>（「Amazon Aurora グローバルデータベースでは、プライマリリージョンでパフォーマンスの低下や機能停止が発生した場合、いずれかのセカンダリリージョンを昇格させて、リージョンが完全に機能停止した場合でも 1 分以内に読み取り/書き込みの責任を引き受けることができます。」「Elastic Disaster Recovery は、パイロットライト戦略を使用して、ステージングエリアとして使用される Amazon Virtual Private Cloud (Amazon VPC) 内のデータのコピーと「スイッチオフ」リソースを維持します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>利用者のトラフィックを切り替える</h1>
+  <svg width="856" height="170" viewBox="0 0 856 170">
+    <defs><marker id="b4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="60" width="110" height="50" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="65" y="90" fill="#1f3a68" font-weight="700" font-size="12">利用者</text>
+      <rect x="180" y="10" width="220" height="44" rx="8" fill="#4a5a78"/><text x="290" y="29" fill="#fff" font-weight="700">Route 53</text><text x="290" y="45" fill="#fff">ヘルスチェック＋DNS フェイルオーバー</text>
+      <rect x="180" y="63" width="220" height="44" rx="8" fill="#b25000"/><text x="290" y="82" fill="#fff" font-weight="700">Global Accelerator</text><text x="290" y="98" fill="#fff">同じ静的 IP のまま正常な所へ</text>
+      <rect x="180" y="116" width="220" height="44" rx="8" fill="#1f3a68"/><text x="290" y="135" fill="#fff" font-weight="700">CloudFront</text><text x="290" y="151" fill="#fff">オリジンフェイルオーバー（リクエストごと）</text>
+      <g stroke="#1f3a68" stroke-width="2"><line x1="120" y1="75" x2="178" y2="34" marker-end="url(#b4)"/><line x1="120" y1="85" x2="178" y2="85" marker-end="url(#b4)"/><line x1="120" y1="95" x2="178" y2="136" marker-end="url(#b4)"/></g>
+      <rect x="520" y="20" width="150" height="56" rx="8" fill="#ddd" stroke="#999"/><text x="595" y="44" fill="#666" font-weight="700" font-size="12">東京（異常）</text><text x="595" y="62" fill="#666">プライマリ</text>
+      <rect x="520" y="96" width="150" height="56" rx="8" fill="#3a7d44"/><text x="595" y="120" fill="#fff" font-weight="700" font-size="12">大阪</text><text x="595" y="138" fill="#fff">DR リージョン</text>
+      <line x1="400" y1="85" x2="518" y2="120" stroke="#3a7d44" stroke-width="3" marker-end="url(#b4)"/>
+      <line x1="400" y1="70" x2="518" y2="50" stroke="#999" stroke-width="2" stroke-dasharray="5 4"/>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>使い分け：</b>Route 53＝DNS の名前で切り替え（#11）。Global Accelerator＝エニーキャストの同じ静的な IP のまま切り替え、DNS のキャッシュの問題も避ける。トラフィックダイヤルで割合も変えられる（#19）。CloudFront＝リクエストが失敗したらセカンダリのオリジンへ（#19）。</div>
+    <div class="point warn"><b>CloudFront は「リクエストごと」：</b>オリジンフェイルオーバーでは、後に続くリクエストもまずプライマリに送られる。リージョン全体を切り替える操作ではない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html">クラウド内での災害対策オプション</a>（「AnyCast IP を使用すると、1 つ以上の AWS リージョンの複数のエンドポイントを同じ静的パブリック IP アドレスに関連付けることができます。」「Global Accelerator は、DNS システム (Route 53 など) で発生する可能性のあるキャッシュの問題も回避します。」「前述のフェイルオーバーオペレーションとは異なり、後続のすべてのリクエストは引き続きプライマリエンドポイントに送信され、フェイルオーバーはリクエストごとに行われます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">高可用性<span>マルチ AZ で単一障害点をなくす。静的安定性で、障害時の起動に頼らない</span></div>
+      <div class="box b2">目標<span>RPO＝どこまで戻るか（バックアップの頻度）、RTO＝どれだけ早く戻すか</span></div>
+      <div class="box b3">4 つの戦略<span>バックアップと復元 → パイロットライト → ウォームスタンバイ → マルチサイト。安い順＝遅い順</span></div>
+      <div class="box b4">データと切り替え<span>AWS Backup・Vault Lock・PITR、レプリケーション、Route 53・Global Accelerator</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">ひっかけ</th><th>正しくは</th></tr>
+        <tr><td class="l">RPO＝止まっていてよい時間</td><td class="x">それは RTO</td></tr>
+        <tr><td class="l">レプリケーションがあればバックアップ不要</td><td class="x">破損もコピーされる</td></tr>
+        <tr><td class="l">パイロットライトはすぐ処理できる</td><td class="x">それはウォーム</td></tr>
+        <tr><td class="l">ガバナンスモードならだれも消せない</td><td class="x">コンプライアンスモード</td></tr>
+        <tr><td class="l">AMI は全リージョンで使える</td><td class="x">コピーが要る</td></tr>
+        <tr><td class="l">DR リージョンのクォータは自動で同じ</td><td class="x">前もって引き上げ</td></tr>
+      </table>
+      <div class="point">次の #11 では、Route 53 を学ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
