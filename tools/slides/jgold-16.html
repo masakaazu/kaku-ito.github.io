@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Gold #16 JDBC 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">Java SE 17 Programmer II（1Z0-826-JPN）　試験内容 7 JDBC　#16</div>
+  <h1>JDBC</h1>
+  <p>DriverManager・DataSource、Statement・ResultSet、PreparedStatement・CallableStatement、トランザクション・バッチ</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（Oracle の試験内容チェックリスト、Java SE 17 API の java.sql パッケージ（DriverManager・Connection・Statement・PreparedStatement・CallableStatement・ResultSet・Savepoint）と javax.sql.DataSource、The Java Tutorials の JDBC Database Access）を書いた。コードの結果は JDK 17（Eclipse Temurin 17.0.21）と H2 Database 2.2.224 で実行して確かめた。例外のメッセージはドライバによってちがう</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>接続 → SQL → 結果 → 閉じる</small></h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">DriverManager.getConnection(URL, ユーザー, パスワード)<span>または DataSource.getConnection()</span></div>
+      <div class="arrow">↓ Connection</div>
+      <div class="box b1">createStatement()・prepareStatement(sql)・prepareCall(sql)<span>Statement・PreparedStatement・CallableStatement</span></div>
+      <div class="arrow">↓ executeQuery</div>
+      <div class="box b2">ResultSet<span>next() で 1 行ずつ、getInt(1)・getString("name")</span></div>
+      <div class="arrow">↓ try-with-resources で逆順に close</div>
+    </div>
+    <div>
+      <div class="code small">String url = "jdbc:h2:mem:shop";
+try (Connection c = DriverManager.getConnection(url, "sa", "");
+     PreparedStatement ps = c.prepareStatement(
+         "SELECT name FROM item WHERE price &gt; ?")) {
+  ps.setInt(1, 100);
+  try (ResultSet rs = ps.executeQuery()) {
+    while (rs.next()) System.out.println(rs.getString(1));
+  }
+}</div>
+      <div class="point">Connection・Statement・ResultSet はすべてインタフェース（new できない）。メソッドは SQLException（チェック例外）を投げる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API java.sql パッケージ・DriverManager・Connection／The Java Tutorials「Processing SQL Statements with JDBC」</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>接続</h1>
+  <p>URL と DriverManager・DataSource。</p>
+  <div class="foot"><span>Java Gold #16 JDBC</span><span>試験内容 7</span></div>
+</section>
+
+<section class="slide">
+  <h1>JDBC URL と接続の取り方</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>jdbc</th><th>サブプロトコル</th><th>サブネーム</th></tr>
+        <tr><td class="t">jdbc:</td><td class="l">mysql:</td><td class="l">//localhost:3306/shop</td></tr>
+        <tr><td class="t">jdbc:</td><td class="l">postgresql:</td><td class="l">//host/db</td></tr>
+        <tr><td class="t">jdbc:</td><td class="l">h2:</td><td class="l">mem:test</td></tr>
+      </table>
+      <div class="code small">DriverManager.getConnection("jdbc:nodb:x");
+<span class="c">// SQLException: No suitable driver found for jdbc:nodb:x</span>
+
+<span class="c">// throws も catch もない main で</span>
+Connection c = DriverManager.getConnection(url);
+<span class="c">// × unreported exception SQLException</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th></th><th>DriverManager</th><th>DataSource</th></tr>
+        <tr><td class="t">種類</td><td class="l">クラス（java.sql）</td><td class="l">インタフェース（javax.sql）</td></tr>
+        <tr><td class="t">取り方</td><td class="l">getConnection(URL, …)</td><td class="l">getConnection()</td></tr>
+        <tr><td class="t">接続先</td><td class="l">コードに URL を書く</td><td class="l">前もって設定（JNDI など）</td></tr>
+        <tr><td class="t">接続プール</td><td class="l">なし</td><td class="l">組み合わせられる</td></tr>
+      </table>
+      <div class="point">JDBC 4.0 からドライバは自動で登録される（Class.forName は不要）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API DriverManager・javax.sql.DataSource／JDK 17 と H2 でのコンパイルと実行の結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>Statement と ResultSet</h1>
+  <p>3 つの execute と、カーソル。</p>
+  <div class="foot"><span>Java Gold #16 JDBC</span><span>試験内容 7</span></div>
+</section>
+
+<section class="slide">
+  <h1>3 つの execute</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>メソッド</th><th>戻り値</th><th>まちがえた SQL</th></tr>
+        <tr><td class="t">executeQuery</td><td class="l">ResultSet（0 行でも null でない）</td><td class="l">DELETE など → SQLException</td></tr>
+        <tr><td class="t">executeUpdate</td><td class="l">int（行数、DDL は 0）</td><td class="l">SELECT → SQLException</td></tr>
+        <tr><td class="t">execute</td><td class="l">boolean（ResultSet なら true）</td><td class="l">なんでも可</td></tr>
+      </table>
+      <div class="point warn">ResultSet r = s.executeUpdate(…); は「int cannot be converted to ResultSet」のコンパイルエラー。</div>
+    </div>
+    <div>
+      <div class="code small">s.executeUpdate("CREATE TABLE item(…)")       <span class="c">// 0</span>
+s.executeUpdate("INSERT … (1,'pen',100),
+  (2,'ink',NULL),(3,'cup',300)")            <span class="c">// 3</span>
+s.executeUpdate("UPDATE item SET price =
+  price + 1 WHERE price &gt; 0")              <span class="c">// 2（NULL は外れる）</span>
+
+s.execute("SELECT * FROM item")   <span class="c">// true</span>
+s.getUpdateCount()                <span class="c">// -1</span>
+s.execute("DELETE … id = 99")     <span class="c">// false</span>
+s.getUpdateCount()                <span class="c">// 0</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：API Statement.executeQuery・executeUpdate・execute・getUpdateCount／JDK 17 と H2 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>ResultSet のカーソル</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>位置</th><th>id</th><th>name</th><th>price</th></tr>
+        <tr><td class="t">（最初はここ）</td><td class="l"></td><td class="l"></td><td class="l"></td></tr>
+        <tr><td class="t">1 行目</td><td class="l">1</td><td class="l">pen</td><td class="l">101</td></tr>
+        <tr><td class="t">2 行目</td><td class="l">2</td><td class="l">ink</td><td class="l">NULL</td></tr>
+        <tr><td class="t">3 行目</td><td class="l">3</td><td class="l">cup</td><td class="l">301</td></tr>
+      </table>
+      <div class="code small">rs.getInt(1)      <span class="c">// next 前 → SQLException</span>
+while (rs.next()) { … }
+rs.getInt(0)      <span class="c">// SQLException（列は 1 から）</span>
+rs.getString("ID") <span class="c">// 大文字・小文字は区別しない</span></div>
+    </div>
+    <div>
+      <div class="code small"><span class="c">// 2 行目（price が NULL）</span>
+int pr = rs.getInt("price"); <span class="c">// 0</span>
+rs.wasNull()                 <span class="c">// true</span>
+rs.getObject("price")        <span class="c">// null</span>
+rs.getString("name");
+rs.wasNull()   <span class="c">// false（最後に読んだ name）</span>
+
+ResultSet r1 = s.executeQuery("SELECT 1");
+ResultSet r2 = s.executeQuery("SELECT 2");
+r1.isClosed()  <span class="c">// true（同じ Statement）</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：API ResultSet・ResultSet.wasNull・Statement／JDK 17 と H2 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>スクロールとメタデータ</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">Statement sc = c.createStatement(
+    ResultSet.TYPE_SCROLL_INSENSITIVE,
+    ResultSet.CONCUR_READ_ONLY);
+ResultSet x = sc.executeQuery("SELECT id … ORDER BY id");
+x.last();       x.getInt(1)  <span class="c">// 3（getRow も 3）</span>
+x.absolute(1);  x.getInt(1)  <span class="c">// 1</span>
+x.relative(1);  x.getInt(1)  <span class="c">// 2</span>
+x.absolute(-1); x.getInt(1)  <span class="c">// 3（最後）</span>
+x.absolute(10)               <span class="c">// false</span>
+x.beforeFirst(); x.next()    <span class="c">// true → 1</span></div>
+      <div class="point warn">既定の TYPE_FORWARD_ONLY で previous は SQLException。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>定数</th><th>意味</th></tr>
+        <tr><td class="t">TYPE_FORWARD_ONLY</td><td class="l">前に進むだけ（既定）</td></tr>
+        <tr><td class="t">TYPE_SCROLL_INSENSITIVE</td><td class="l">前後に動ける。ほかの変更を見ない</td></tr>
+        <tr><td class="t">TYPE_SCROLL_SENSITIVE</td><td class="l">前後に動ける。ほかの変更を見る</td></tr>
+        <tr><td class="t">CONCUR_READ_ONLY・UPDATABLE</td><td class="l">読むだけ・更新できる</td></tr>
+      </table>
+      <div class="code small">ResultSetMetaData md = s.executeQuery(
+  "SELECT id AS num, v FROM t").getMetaData();
+md.getColumnCount()    <span class="c">// 2</span>
+md.getColumnLabel(1)   <span class="c">// NUM（別名）</span>
+md.getColumnName(1)    <span class="c">// ID（元の名前）</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：API ResultSet.absolute・relative・last・previous、ResultSetMetaData／JDK 17 と H2 での実行結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>PreparedStatement と CallableStatement</h1>
+  <p>? に値を入れる、プロシージャを呼ぶ。</p>
+  <div class="foot"><span>Java Gold #16 JDBC</span><span>試験内容 7</span></div>
+</section>
+
+<section class="slide">
+  <h1>PreparedStatement</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">PreparedStatement ps = c.prepareStatement(
+  "SELECT name FROM item WHERE id = ? AND price &gt; ?");
+ps.setInt(1, 3);
+ps.executeQuery();  <span class="c">// SQLException（2 つ目が未設定）</span>
+ps.setInt(2, 0);
+ps.executeQuery();  <span class="c">// cup</span>
+ps.setInt(0, 1);    <span class="c">// SQLException（1 から）</span>
+ps.setInt(3, 1);    <span class="c">// SQLException（? は 2 つ）</span>
+
+PreparedStatement pu = c.prepareStatement(
+  "UPDATE item SET name = ? WHERE id &gt;= ?");
+pu.setString(1, "x"); pu.setInt(2, 2);
+pu.executeUpdate()  <span class="c">// 2</span>
+pu.setInt(2, 3);    <span class="c">// 1 つ目の値は残る</span>
+pu.executeUpdate()  <span class="c">// 1</span></div>
+    </div>
+    <div>
+      <div class="box b2">Statement で文字列をつなぐ<span>"… WHERE name = '" + 入力 + "'" → SQL インジェクションの危険</span></div>
+      <div class="box b1">PreparedStatement の ?<span>setString で値として入る → 防げる。前もって準備され、くり返しが速い</span></div>
+      <div class="point">executeQuery()・executeUpdate() は引数なし（SQL は作るときに渡した）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API PreparedStatement・clearParameters／The Java Tutorials「Using Prepared Statements」／JDK 17 と H2 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>CallableStatement</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">try (CallableStatement cs =
+       c.prepareCall("{? = call TWICE(?)}")) {
+  cs.registerOutParameter(1, Types.INTEGER);
+  cs.setInt(2, 21);
+  cs.execute();
+  cs.getInt(1);   <span class="c">// 42</span>
+}</div>
+      <div class="point">CallableStatement は PreparedStatement の子。Statement → PreparedStatement → CallableStatement。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>パラメータ</th><th>実行の前</th><th>実行のあと</th></tr>
+        <tr><td class="t">IN</td><td class="l">setXxx</td><td class="l">―</td></tr>
+        <tr><td class="t">OUT</td><td class="l">registerOutParameter(番号, Types.〜)</td><td class="l">getXxx</td></tr>
+        <tr><td class="t">INOUT</td><td class="l">setXxx と registerOutParameter</td><td class="l">getXxx</td></tr>
+      </table>
+      <div class="code small">{call 名前(?, ?)}        <span class="c">// プロシージャ</span>
+{? = call 名前(?)}       <span class="c">// 戻り値のある関数</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：API CallableStatement・registerOutParameter・java.sql.Types／JDK 17 と H2 での実行結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>トランザクションとバッチ</h1>
+  <p>まとめて確定、まとめて取り消し。</p>
+  <div class="foot"><span>Java Gold #16 JDBC</span><span>試験内容 7</span></div>
+</section>
+
+<section class="slide">
+  <h1>commit・rollback・Savepoint</h1>
+  <div class="cols">
+    <div>
+      <div class="code small"><span class="c">// t は 1 行</span>
+c.getAutoCommit()            <span class="c">// true（既定）</span>
+c.setAutoCommit(false);
+insert(2);
+Savepoint sp = c.setSavepoint();
+insert(3);
+c.rollback(sp);   <span class="c">// 3 だけ取り消し → 2 行</span>
+c.commit();       <span class="c">// 2 行で確定</span>
+insert(4);
+c.rollback();     <span class="c">// 4 を取り消し → 2 行</span>
+insert(5);
+c.setAutoCommit(true);  <span class="c">// ここで commit</span>
+c.rollback();     <span class="c">// 戻らない → 3 行</span></div>
+    </div>
+    <div>
+      <div class="box b1">自動コミット（既定）<span>SQL を 1 つ実行するたびに確定</span></div>
+      <div class="box b2">setAutoCommit(false)<span>commit まで確定しない。rollback で最後の commit 以降を取り消す</span></div>
+      <div class="box b3">Savepoint<span>rollback(sp) は印のあとだけ。トランザクションは続く</span></div>
+      <div class="code small">PreparedStatement b = c.prepareStatement(
+  "INSERT INTO t VALUES (?, ?)");
+for (…) { b.setInt(1, i); b.setInt(2, i); b.addBatch(); }
+int[] res = b.executeBatch();  <span class="c">// [1, 1, 1]</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：API Connection.setAutoCommit・commit・rollback・setSavepoint、Statement.addBatch・executeBatch／JDK 17 と H2 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">接続</td><td class="l">jdbc:サブプロトコル:サブネーム、SQLException はチェック例外、DataSource はインタフェース</td></tr>
+    <tr><td class="t">execute の使い分け</td><td class="l">戻り値の型（ResultSet・int・boolean）、まちがえた SQL は実行時の SQLException</td></tr>
+    <tr><td class="t">ResultSet</td><td class="l">最初は 1 行目の前、列は 1 から、NULL の getInt は 0 と wasNull</td></tr>
+    <tr><td class="t">PreparedStatement</td><td class="l">? の番号は 1 から、未設定は例外、値は残る</td></tr>
+    <tr><td class="t">CallableStatement</td><td class="l">prepareCall、{call …}、registerOutParameter</td></tr>
+    <tr><td class="t">トランザクション</td><td class="l">既定は自動コミット、Savepoint、setAutoCommit(true) で commit</td></tr>
+  </table>
+  <div class="cite">出典：試験内容チェックリスト 7／本資料の問題演習（全 30 問、JDK 17 と H2 で確認）</div>
+</section>
+
+</body>
+</html>
