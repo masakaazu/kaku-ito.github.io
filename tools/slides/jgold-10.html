@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Gold #10 モジュールの宣言と実行 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">Java SE 17 Programmer II（1Z0-826-JPN）　試験内容 4 Java モジュール・システム　#10</div>
+  <h1>モジュールの宣言と実行</h1>
+  <p>module-info.java・requires／transitive／static・exports／opens・javac と java のオプション</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（Oracle の試験内容チェックリスト、Java 言語仕様 JLS 7.7、JDK 17 Tool Specifications の javac・java・jar・jlink、JEP 261）を書いた。モジュールの構成とコマンドの結果は JDK 17（Eclipse Temurin 17.0.21）で実行して確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>読む（requires）× 公開する（exports）</small></h1>
+  <div class="cols">
+    <div>
+      <div class="box b2">com.app<span>requires com.lib;</span></div>
+      <div class="arrow">↓ 読む（reads）</div>
+      <div class="box b1">com.lib<span>exports com.lib.api;</span></div>
+      <div class="cols" style="gap:8px">
+        <div class="box b3">com.lib.api<span>○ 使える</span></div>
+        <div class="box b3">com.lib.internal<span>× public でも使えない</span></div>
+      </div>
+      <div class="point warn">package com.lib.internal is not visible（… which does not export it）</div>
+    </div>
+    <div>
+      <div class="lbl">ソースと出力の置き方</div>
+      <div class="code small">src/
+  com.lib/module-info.java
+  com.lib/com/lib/api/Greeter.java
+  com.lib/com/lib/internal/Util.java
+  com.app/module-info.java
+  com.app/com/app/Main.java
+<span class="c">// javac -d out --module-source-path src -m com.app,com.lib</span>
+out/com.app/module-info.class
+out/com.app/com/app/Main.class
+out/com.lib/...</div>
+      <div class="point">java.base はすべてのモジュールが自動で読む（requires java.base mandated）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JLS 7.7、JEP 261、javac（--module-source-path）／JDK 17 でのコンパイル結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>module-info.java</h1>
+  <p>依存（requires）と公開（exports・opens）。</p>
+  <div class="foot"><span>Java Gold #10 モジュールの宣言と実行</span><span>試験内容 4</span></div>
+</section>
+
+<section class="slide">
+  <h1>ディレクティブの一覧</h1>
+  <table class="mx">
+    <tr><th>ディレクティブ</th><th>意味</th><th>コンパイル時</th><th>実行時</th></tr>
+    <tr><td class="t">requires M</td><td class="l">M を読む</td><td class="l">必要</td><td class="l">必要（ないと FindException）</td></tr>
+    <tr><td class="t">requires transitive M</td><td class="l">自分を読むモジュールにも M を読ませる</td><td class="l">必要</td><td class="l">必要</td></tr>
+    <tr><td class="t">requires static M</td><td class="l">任意の依存</td><td class="l">必要</td><td class="l">なくてよい（自動では解決されない）</td></tr>
+    <tr><td class="t">exports P</td><td class="l">P の public 型を公開</td><td class="l">効く</td><td class="l">効く</td></tr>
+    <tr><td class="t">exports P to M</td><td class="l">M にだけ公開</td><td class="l">効く</td><td class="l">効く</td></tr>
+    <tr><td class="t">opens P（to M）</td><td class="l">深いリフレクションを許す</td><td class="l">効かない</td><td class="l">効く</td></tr>
+    <tr><td class="t">open module</td><td class="l">全パッケージを opens</td><td class="l" colspan="2">中に opens は書けない</td></tr>
+    <tr><td class="t">uses・provides … with</td><td class="l" colspan="3">サービス（#11）</td></tr>
+  </table>
+  <div class="cite">出典：JLS 7.7.1 Dependences・7.7.2 Exported and Opened Packages</div>
+</section>
+
+<section class="slide">
+  <h1>requires transitive と requires static</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">module a.core { exports a.core; }
+module b.api  { requires <span class="k">transitive</span> a.core; exports b.api; }
+module c.app  { requires b.api; }
+<span class="c">// c.app から a.core.Core を使える（暗黙の読み取り）</span>
+<span class="c">// transitive なし → package a.core is not visible
+//   (… but module c.app does not read it)</span></div>
+      <div class="point">java.sql は java.logging・java.xml・java.transaction.xa を requires transitive。requires java.sql だけで java.util.logging も使える。</div>
+    </div>
+    <div>
+      <div class="code small">module use.it { requires <span class="k">static</span> opt.dep; }
+java -p only -m use.it/use.it.Main    <span class="c">// NoClassDefFoundError</span>
+java -p out  -m use.it/use.it.Main    <span class="c">// NoClassDefFoundError</span>
+java -p out --add-modules opt.dep -m use.it/use.it.Main <span class="c">// dep</span></div>
+      <div class="point warn">ふつうの requires で依存がない：起動時に FindException「Module a.core not found, required by b.api」。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JLS 7.7.1、JEP 261（implied readability）、java（--add-modules）／JDK 17 でのコンパイルと実行の結果</div>
+</section>
+
+<section class="slide">
+  <h1>exports と opens</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">Field f = m.data.Box.class.getDeclaredField("secret");
+f.setAccessible(true);
+f.get(new m.data.Box());</div>
+      <table class="mx">
+        <tr><th>m.data の宣言</th><th>結果</th></tr>
+        <tr><td class="t">exports m.data;</td><td class="l">InaccessibleObjectException</td></tr>
+        <tr><td class="t">exports m.data; opens m.data;</td><td class="l">値が取れる</td></tr>
+        <tr><td class="t">open module m.data { exports m.data; }</td><td class="l">値が取れる</td></tr>
+        <tr><td class="t">open module … { opens m.data; }</td><td class="l">'opens' only allowed in strong modules</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">限定公開</div>
+      <div class="code small">module com.lib {
+  exports com.lib.api;
+  exports com.lib.internal to com.app;
+}
+<span class="c">// java -d com.lib の表示：
+// qualified exports com.lib.internal to com.app</span></div>
+      <div class="point warn">同じパッケージを 2 回 exports：duplicate or conflicting exports。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JLS 7.7.2、API InaccessibleObjectException／JDK 17 でのコンパイルと実行の結果</div>
+</section>
+
+<section class="slide">
+  <h1>コンパイルエラーになる宣言</h1>
+  <table class="mx">
+    <tr><th>宣言</th><th>エラー</th></tr>
+    <tr><td class="t">module my-mod { }</td><td class="l">'{' expected（ハイフン不可）</td></tr>
+    <tr><td class="t">requires java.sql; requires java.sql;</td><td class="l">duplicate requires: java.sql</td></tr>
+    <tr><td class="t">exports com.lib.api.Greeter;（クラス名）</td><td class="l">package is empty or does not exist: com.lib.api.Greeter</td></tr>
+    <tr><td class="t">exports com.lib.nothing;（クラスなし）</td><td class="l">package is empty or does not exist: com.lib.nothing</td></tr>
+    <tr><td class="t">A requires B ／ B requires A</td><td class="l">cyclic dependence involving …</td></tr>
+    <tr><td class="t">モジュールの中に package 文なしのクラス</td><td class="l">unnamed package is not allowed in named modules</td></tr>
+    <tr><td class="t">requires java.base;</td><td class="l">エラーにならない（自動で読むのと同じ）</td></tr>
+    <tr><td class="t">module m3 { }</td><td class="l">警告だけ（should avoid terminal digits）</td></tr>
+  </table>
+  <div class="cite">出典：JLS 7.7、JDK 17 でのコンパイル結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>コンパイルと実行</h1>
+  <p>javac・java・jar のオプション。</p>
+  <div class="foot"><span>Java Gold #10 モジュールの宣言と実行</span><span>試験内容 4</span></div>
+</section>
+
+<section class="slide">
+  <h1>javac と java</h1>
+  <div class="cols">
+    <div>
+      <div class="code small"><span class="c"># まとめてコンパイル</span>
+javac -d out --module-source-path src -m com.app,com.lib
+<span class="c"># 1 つずつコンパイル</span>
+javac -d out/com.app -p libs src/com.app/module-info.java src/com.app/com/app/Main.java
+<span class="c"># 実行</span>
+java -p out -m com.app/com.app.Main
+java --module-path out --module com.app/com.app.Main
+java -p out -m com.app
+<span class="c"># module com.app does not have a ModuleMainClass attribute,
+#   use -m &lt;module&gt;/&lt;main-class&gt;</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>オプション</th><th>javac</th><th>java</th></tr>
+        <tr><td class="t">-d</td><td class="l">出力先</td><td class="l">--describe-module</td></tr>
+        <tr><td class="t">-m</td><td class="l">コンパイルするモジュール</td><td class="l">--module（実行する）</td></tr>
+        <tr><td class="t">-p</td><td class="l" colspan="2">--module-path</td></tr>
+        <tr><td class="t">-cp</td><td class="l" colspan="2">--class-path（モジュールとしては扱わない）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：JDK 17 Tool Specifications javac・java／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>調べるオプションと jar・jlink</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">java --list-modules
+<span class="c">java.base@17.0.21
+java.compiler@17.0.21 …（70 個）</span>
+java -p out --describe-module com.lib
+<span class="c">com.lib file:///…/out/com.lib/
+exports com.lib.api
+requires java.base mandated
+contains com.lib.internal</span>
+java -p jars --show-module-resolution -m c.app
+<span class="c">root c.app file:///…/app.jar
+c.app requires b.api file:///…/b.jar
+b.api requires a.core file:///…/lib.jar</span></div>
+    </div>
+    <div>
+      <div class="code small">jar --create --file jars/app.jar \
+    --main-class c.app.Main -C out/c.app .
+jar --describe-module --file jars/app.jar
+<span class="c">c.app jar:file:///…/app.jar!/module-info.class
+requires b.api
+requires java.base mandated
+contains c.app
+main-class c.app.Main</span>
+java -p jars -m c.app   <span class="c">// main-class があるので OK</span></div>
+      <div class="point">jlink：必要なモジュールだけのランタイムを作る（--module-path・--add-modules・--output）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JDK 17 Tool Specifications java（--list-modules・--describe-module・--show-module-resolution）・jar・jlink／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">使えるか</td><td class="l">相手のモジュールを読んでいるか（requires・transitive）＋相手が exports しているか</td></tr>
+    <tr><td class="t">ディレクティブの意味</td><td class="l">transitive は受け渡し、static はコンパイル時だけ、to は限定、opens は実行時リフレクション</td></tr>
+    <tr><td class="t">エラーになる宣言</td><td class="l">循環・重複・クラス名の exports・open module に opens・ハイフン</td></tr>
+    <tr><td class="t">コマンド</td><td class="l">-p と -m の書き方、モジュール名/メインクラス、java の -d は describe</td></tr>
+    <tr><td class="t">出力先</td><td class="l">out/モジュール名/パッケージ/クラス</td></tr>
+    <tr><td class="t">実行時のエラー</td><td class="l">依存なし → FindException、static の依存なし → NoClassDefFoundError、opens なし → InaccessibleObjectException</td></tr>
+  </table>
+  <div class="cite">出典：試験内容チェックリスト 4／本資料の問題演習（全 30 問、JDK 17 で確認）</div>
+</section>
+
+</body>
+</html>
