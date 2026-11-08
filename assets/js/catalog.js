@@ -219,6 +219,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/08.html", title: "コンテナ 用語集", desc: "ECS（クラスター・タスク定義・タスク・サービス・レプリカとデーモン）、ECR（スキャン・ライフサイクルポリシー・レプリケーション）、起動タイプとキャパシティプロバイダー・マネージドインスタンス・ECS Anywhere・配置戦略、タスクロールとタスク実行ロール・awsvpc・シークレット・ストレージ、サービスの自動スケーリング・ALB・ローリング更新・ブルー/グリーン・スケジュール、EKS（マネージド型ノードグループ・Fargate・Auto Mode・HPA・Karpenter・Pod Identity・Hybrid Nodes）", fields: [8], pdf: "terms/08.pdf" },
       { type: "terms", file: "terms/09.html", title: "ロードバランサーとAuto Scaling 用語集", desc: "ALB・NLB・GWLB の選び方、リスナールール・ターゲットグループ・登録解除の遅延、Auto Scaling のポリシーとウォームプール", fields: [9], pdf: "terms/09.pdf" },
       { type: "terms", file: "terms/10.html", title: "高可用性と災害対策 用語集", desc: "RTO・RPO と 4 つの DR 戦略（バックアップと復元・パイロットライト・ウォームスタンバイ・マルチサイト）、静的安定性、AWS Backup と Vault Lock、クロスリージョンのレプリケーション", fields: [10], pdf: "terms/10.pdf" },
+      { type: "terms", file: "terms/11.html", title: "Route 53 用語集", desc: "パブリックとプライベートのホストゾーン、エイリアスと CNAME、TTL と DNSSEC、8 つのルーティングポリシー、ヘルスチェック、Resolver のインバウンドとアウトバウンド", fields: [11], pdf: "terms/11.pdf" },
     ],
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },

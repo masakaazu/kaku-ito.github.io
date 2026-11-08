@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS SAA #11 Route 53 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">AWS SAA（SAA-C03）　分野2・3 弾力性／高パフォーマンス　#11</div>
+  <h1>Route 53</h1>
+  <p>名前を IP に変える DNS を、AWS ではどう作るか。ホストゾーンとレコード、8 つのルーティングポリシー、ヘルスチェックでのフェイルオーバー、オンプレミスとの名前解決</p>
+  <div class="refs-legend">各ページの下に、根拠にした AWS の公式ドキュメント（Amazon Route 53 デベロッパーガイド・Amazon VPC ユーザーガイド）を書いた（青い文字を押すと開く）。「」の中はドキュメントの原文どおり（日本語版は機械翻訳のため、語順が不自然なところもそのまま）。ドメイン名・IP アドレス・構成は Claude が作った例</div>
+</section>
+
+<section class="slide">
+  <h1>全体像：名前が引かれるまで<small>試験ガイド タスク 2.2・3.4</small></h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <defs><marker id="d1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="70" width="110" height="56" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="65" y="93" fill="#1f3a68" font-weight="700" font-size="12">ブラウザ</text><text x="65" y="111">www.example.com</text>
+      <rect x="170" y="70" width="130" height="56" rx="8" fill="#4a5a78"/><text x="235" y="93" fill="#fff" font-weight="700" font-size="12">DNS リゾルバー</text><text x="235" y="111" fill="#fff">ISP など・キャッシュ</text>
+      <line x1="120" y1="98" x2="168" y2="98" stroke="#1f3a68" stroke-width="2" marker-end="url(#d1)"/>
+      <rect x="360" y="10" width="140" height="40" rx="6" fill="#fff" stroke="#4a5a78"/><text x="430" y="34" fill="#4a5a78">① ルートネームサーバー</text>
+      <rect x="360" y="60" width="140" height="40" rx="6" fill="#fff" stroke="#4a5a78"/><text x="430" y="84" fill="#4a5a78">② .com の TLD サーバー</text>
+      <rect x="360" y="110" width="140" height="80" rx="8" fill="#b25000"/><text x="430" y="134" fill="#fff" font-weight="700" font-size="12">③ Route 53 の</text><text x="430" y="152" fill="#fff" font-weight="700" font-size="12">ネームサーバー（4 つ）</text><text x="430" y="172" fill="#fff">ホストゾーンで答える</text>
+      <g stroke="#1f3a68" stroke-width="1.5"><line x1="300" y1="85" x2="358" y2="30" marker-end="url(#d1)"/><line x1="300" y1="95" x2="358" y2="80" marker-end="url(#d1)"/><line x1="300" y1="108" x2="358" y2="145" marker-end="url(#d1)"/></g>
+      <rect x="560" y="110" width="140" height="80" rx="8" fill="#fff4e5" stroke="#b25000"/><text x="630" y="132" fill="#b25000" font-weight="700" font-size="12">ルーティング</text><text x="630" y="150" fill="#b25000">ポリシー</text><text x="630" y="168" fill="#b25000">＋ヘルスチェック</text>
+      <line x1="500" y1="150" x2="558" y2="150" stroke="#b25000" stroke-width="2" marker-end="url(#d1)"/>
+      <rect x="730" y="110" width="116" height="80" rx="8" fill="#3a7d44"/><text x="788" y="140" fill="#fff" font-weight="700" font-size="12">ALB の IP</text><text x="788" y="158" fill="#fff">（答え）</text>
+      <line x1="700" y1="150" x2="728" y2="150" stroke="#3a7d44" stroke-width="2" marker-end="url(#d1)"/>
+      <rect x="560" y="10" width="286" height="80" rx="10" fill="#f5f5f7" stroke="#1f3a68"/><text x="703" y="32" fill="#1f3a68" font-weight="700" font-size="12">Route 53 の 3 つの機能</text><text x="703" y="54">ドメイン登録・DNS ルーティング・ヘルスチェック</text><text x="703" y="74">好きな組み合わせで使える</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>キャッシュ：</b>リゾルバーは答えを TTL のあいだキャッシュする。ネームサーバーの情報はふつう 2 日間キャッシュされる。だから DNS の切り替えは「すぐには全員に効かない」。</div>
+    <div class="point warn"><b>この分野の問われ方：</b>どのルーティングポリシーか（8 つ）、エイリアスか CNAME か、ヘルスチェックの種類、オンプレミスとの向き（インバウンドかアウトバウンドか）。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/Welcome.html">Amazon Route 53 とは？</a>（「Route 53 を使用すると、ドメイン登録、DNS ルーティング、ヘルスチェックの 3 つの主要な機能を任意の組み合わせで実行できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/welcome-dns-service.html">ウェブサイトやウェブアプリケーションへのインターネットトラフィックのルーティング</a>（「通常、ネームサーバーは 2 日間キャッシュされます。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>DNS とホストゾーン</h1>
+  <p>名前の入れ物（ホストゾーン）と中身（レコード）。インターネット向けと VPC の中向け、エイリアスと CNAME、TTL と DNSSEC。</p>
+  <div class="foot"><span>AWS SAA #11 Route 53</span><span>タスク 2.2・3.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>パブリックホストゾーンとプライベートホストゾーン</h1>
+  <svg width="856" height="180" viewBox="0 0 856 180">
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="10" width="400" height="160" rx="12" fill="#e3eefc" stroke="#1f3a68"/><text x="210" y="32" fill="#1f3a68" font-weight="700" font-size="12">パブリックホストゾーン example.com</text>
+      <rect x="30" y="46" width="360" height="30" rx="5" fill="#fff" stroke="#1f3a68"/><text x="210" y="66">www.example.com → ALB（エイリアス）</text>
+      <rect x="30" y="84" width="360" height="30" rx="5" fill="#fff" stroke="#1f3a68"/><text x="210" y="104">example.com → CloudFront（エイリアス）</text>
+      <text x="210" y="140" fill="#1f3a68">インターネットのだれでも引ける</text><text x="210" y="158" fill="#1f3a68">NS・SOA は自動で作られる</text>
+      <rect x="446" y="10" width="400" height="160" rx="12" fill="#e8f3ea" stroke="#3a7d44"/><text x="646" y="32" fill="#3a7d44" font-weight="700" font-size="12">プライベートホストゾーン example.com</text>
+      <rect x="466" y="46" width="360" height="30" rx="5" fill="#fff" stroke="#3a7d44"/><text x="646" y="66">www.example.com → 社内用の ALB</text>
+      <rect x="466" y="84" width="360" height="30" rx="5" fill="#fff" stroke="#3a7d44"/><text x="646" y="104">db.example.com → 10.0.2.15</text>
+      <text x="646" y="140" fill="#3a7d44">関連付けた VPC の中からだけ引ける</text><text x="646" y="158" fill="#3a7d44">enableDnsHostnames と enableDnsSupport を true</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>スプリットビュー DNS：</b>同じ名前（example.com）でパブリックとプライベートの両方を作ると、VPC の中からはプライベートの答え、外からはパブリックの答えが返る。社内用と公開用を同じドメインで分けられる。</div>
+    <div class="point warn"><b>引けないとき：</b>プライベートホストゾーンの名前が VPC の中で引けないなら、VPC の DNS 属性（enableDnsHostnames・enableDnsSupport）を確かめる。インターネットゲートウェイは関係ない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/hosted-zones-working-with.html">ホストゾーンの使用</a>（「ホストゾーンは、レコードのコンテナです。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/hosted-zones-private.html">プライベートホストゾーンの使用</a>（「スプリットビュー DNS では、内部使用 (accounting.example.com) とパブリックウェブサイト (www.example.com) などの外部使用で同じドメイン名 (example.com) を使用します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/vpc-dns.html">VPC の DNS 属性</a></div>
+</section>
+
+<section class="slide">
+  <h1>レコードの種類</h1>
+  <table class="mx">
+    <tr><th style="width:14%">タイプ</th><th>何を書く</th><th style="width:36%">本番での使いどころ</th></tr>
+    <tr><td class="t">A／AAAA</td><td class="l">名前 → IPv4／IPv6 アドレス</td><td class="l">基本。エイリアスも A／AAAA として作る</td></tr>
+    <tr><td class="t">CNAME</td><td class="l">名前 → 別のドメイン名</td><td class="l">サブドメインだけ。ゾーンの頂点には作れない。クエリは有料</td></tr>
+    <tr><td class="t">MX</td><td class="l">メールサーバーの名前と優先順位</td><td class="l">メールの受け先</td></tr>
+    <tr><td class="t">TXT</td><td class="l">文字列</td><td class="l">SPF は TXT で書く（SPF タイプは勧められない）・ドメインの確認</td></tr>
+    <tr><td class="t">NS／SOA</td><td class="l">ネームサーバー／ゾーンの情報</td><td class="l">ホストゾーンを作ると自動で作られる</td></tr>
+    <tr><td class="t">CAA</td><td class="l">証明書を発行してよい認証局</td><td class="l">間違った CA による発行を防ぐ</td></tr>
+    <tr><td class="t">DS</td><td class="l">委任先のゾーンのキーの参照</td><td class="l">DNSSEC の信頼の連鎖</td></tr>
+  </table>
+  <div class="point" style="margin-top:8px"><b>TTL：</b>リゾルバーがキャッシュする秒数。長いとクエリが減って料金が下がるが、変更の反映が遅れる。短いと変更やフェイルオーバーが早く効く。ヘルスチェックと組み合わせるレコードは 60 秒以下が勧められている。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/ResourceRecordTypes.html">サポートされる DNS レコードタイプ</a>（「CAA レコードを作成すると、間違った CA がドメインの証明書を発行することを防止できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/route-53-concepts.html">Amazon Route 53 の概念</a>（「Route 53 の料金は Route 53 が応答する DNS クエリの数に一部基づいているため、TTL を長くすると料金を減らすことができます。」「このレコードをヘルスチェックに関連付ける場合は、クライアントがヘルスステータスの変化に迅速に応答するように、TTL を 60 秒以下に指定することをお勧めします。」）</div>
+</section>
+
+<section class="slide">
+  <h1>エイリアスレコードと CNAME</h1>
+  <svg width="856" height="160" viewBox="0 0 856 160">
+    <defs><marker id="d2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="20" width="180" height="50" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="100" y="42" fill="#1f3a68" font-weight="700" font-size="12">example.com</text><text x="100" y="60">（ゾーンの頂点）</text>
+      <rect x="250" y="20" width="200" height="50" rx="8" fill="#3a7d44"/><text x="350" y="42" fill="#fff" font-weight="700" font-size="12">エイリアス（A）</text><text x="350" y="60" fill="#fff">作れる・無料・IP に追従</text>
+      <rect x="510" y="20" width="160" height="50" rx="8" fill="#b25000"/><text x="590" y="50" fill="#fff" font-weight="700" font-size="12">ALB</text>
+      <line x1="190" y1="45" x2="248" y2="45" stroke="#1f3a68" stroke-width="2" marker-end="url(#d2)"/><line x1="450" y1="45" x2="508" y2="45" stroke="#1f3a68" stroke-width="2" marker-end="url(#d2)"/>
+      <rect x="10" y="95" width="180" height="50" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="100" y="117" fill="#1f3a68" font-weight="700" font-size="12">example.com</text><text x="100" y="135">（ゾーンの頂点）</text>
+      <rect x="250" y="95" width="200" height="50" rx="8" fill="#ddd" stroke="#999"/><text x="350" y="117" fill="#666" font-weight="700" font-size="12">CNAME</text><text x="350" y="135" fill="#666">頂点には作れない</text>
+      <line x1="190" y1="120" x2="248" y2="120" stroke="#999" stroke-width="2" stroke-dasharray="5 4"/>
+      <text x="760" y="40" fill="#1f3a68">エイリアスの向け先の例</text><text x="760" y="60">ALB・NLB・CloudFront</text><text x="760" y="78">S3 の静的ウェブサイト</text><text x="760" y="96">API Gateway</text><text x="760" y="114">同じゾーンの別のレコード</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:20%"></th><th>エイリアスレコード</th><th>CNAME レコード</th></tr>
+    <tr><td class="t">ゾーンの頂点</td><td>作れる</td><td>作れない（サブドメインだけ）</td></tr>
+    <tr><td class="t">料金</td><td>AWS リソースへのクエリは無料</td><td>クエリに課金される</td></tr>
+    <tr><td class="t">向け先</td><td class="l">AWS リソースと、同じホストゾーンのレコード</td><td class="l">任意の DNS の名前</td></tr>
+    <tr><td class="t">TTL</td><td class="l">AWS リソースなら自分で決められない（リソースの既定値）</td><td class="l">自分で決める</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html">エイリアスレコードと非エイリアスレコードの選択</a>（「CNAME レコードとは異なり、DNS 名前空間の最上位ノード (Zone Apex とも呼ばれる) にエイリアスレコードを作成できます。」「Route 53 では、 AWS リソースへのエイリアスクエリには課金されません。」「エイリアスレコードが AWS リソースを指す場合、有効期限 (TTL) を設定することはできません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-to-elb-load-balancer.html">ELB ロードバランサーへのトラフィックのルーティング</a>（「ロードバランサーの IP アドレスが変更されると、Route 53 は新しい IP アドレスを使用して DNS クエリへの応答を開始します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>ドメイン登録と DNSSEC</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">ドメインと DNS の分け方（例）</div>
+      <table class="mx">
+        <tr><th>ドメインの登録</th><th>DNS（ホストゾーン）</th></tr>
+        <tr><td class="l">Route 53</td><td class="l">Route 53</td></tr>
+        <tr><td class="l">他社のレジストラ</td><td class="l">Route 53（レジストラ側でネームサーバーを Route 53 の 4 つに変える）</td></tr>
+        <tr><td class="l">他社 → Route 53 へ移管</td><td class="l">Route 53</td></tr>
+      </table>
+      <div class="mini">Route 53 に登録したドメインを、別のレジストラに移管することもできる。</div>
+    </div>
+    <div>
+      <div class="lbl">DNSSEC 署名</div>
+      <svg width="410" height="130" viewBox="0 0 410 130">
+        <defs><marker id="d3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <rect x="5" y="10" width="120" height="44" rx="6" fill="#b25000"/><text x="65" y="30" fill="#fff" font-weight="700">Route 53</text><text x="65" y="46" fill="#fff">応答に署名（KSK）</text>
+          <rect x="285" y="10" width="120" height="44" rx="6" fill="#3a7d44"/><text x="345" y="30" fill="#fff" font-weight="700">リゾルバー</text><text x="345" y="46" fill="#fff">署名を検証</text>
+          <line x1="125" y1="32" x2="283" y2="32" stroke="#1f3a68" stroke-width="2" marker-end="url(#d3)"/><text x="205" y="24">署名付きの応答</text>
+          <rect x="5" y="76" width="120" height="44" rx="6" fill="#fff" stroke="#1f3a68"/><text x="65" y="96" fill="#1f3a68" font-weight="700">親のゾーン</text><text x="65" y="112" fill="#1f3a68">DS レコード</text>
+          <text x="250" y="96" fill="#1f3a68">親から子へ「信頼の連鎖」</text><text x="250" y="114" fill="#4a5a78">TTL は 1 週間までに制限</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="cols" style="margin-top:6px">
+    <div class="point"><b>DNSSEC で守れること：</b>応答が Route 53 から来て、途中で改ざんされていないことを、リゾルバーが検証できる。なりすました応答で偽のサイトへ誘導されるのを防ぐ。</div>
+    <div class="point warn"><b>ほかと区別：</b>CAA＝証明書を出せる認証局を決める。DNS ファイアウォール＝VPC から出る名前解決を止める。DNSSEC＝自分のゾーンの応答に署名する。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/registrar.html">Amazon Route 53 を使用したドメインの登録と管理</a>（「また、既存のドメインの登録を他のレジストラから Route 53 に移管することも、逆に、Route 53 に登録したドメインの登録を別のレジストラに移管することもできます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/dns-configuring-dnssec.html">Amazon Route 53 での DNSSEC 署名の設定</a>（「ドメインネームシステムセキュリティ拡張 (DNSSEC) 署名により、DNS リゾルバーは DNS 応答が Amazon Route 53 から送信され、改ざんされていないことを検証できます。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>ルーティングポリシー</h1>
+  <p>同じ名前に、どの答えを返すか。割合・速さ・障害・場所・距離・正常な複数の値・利用者の IP の 8 つの決め方。</p>
+  <div class="foot"><span>AWS SAA #11 Route 53</span><span>タスク 2.2・3.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>8 つのルーティングポリシー</h1>
+  <table class="mx">
+    <tr><th style="width:17%">ポリシー</th><th>何で答えを選ぶ</th><th style="width:36%">本番の言い回し</th></tr>
+    <tr><td class="t">シンプル</td><td class="l">1 つのリソース（1 つのレコードに複数の値も書ける）</td><td class="l">「1 台の Web サーバー」</td></tr>
+    <tr><td class="t">加重</td><td class="l">重みの割合（重み ÷ 合計）</td><td class="l">「5% だけ新バージョン」「少しずつ移行」</td></tr>
+    <tr><td class="t">レイテンシー</td><td class="l">利用者から最もレイテンシーが低いリージョン</td><td class="l">「世界中の利用者に最も速く」</td></tr>
+    <tr><td class="t">フェイルオーバー</td><td class="l">プライマリが正常ならプライマリ、異常ならセカンダリ</td><td class="l">「アクティブ/パッシブ」「障害時だけ予備へ」</td></tr>
+    <tr><td class="t">位置情報</td><td class="l">利用者のいる場所（大陸・国・米国の州）</td><td class="l">「国ごとに言語」「配信の権利がある国だけ」</td></tr>
+    <tr><td class="t">地理的近接性</td><td class="l">利用者とリソースの距離＋バイアス</td><td class="l">「あるリージョンに送る範囲を広げる」</td></tr>
+    <tr><td class="t">複数値回答</td><td class="l">正常なレコードからランダムに最大 8 つ</td><td class="l">「DNS で複数の IP、故障したものは返さない」</td></tr>
+    <tr><td class="t">IP ベース</td><td class="l">利用者の IP の CIDR と送り先の対応（自分で登録）</td><td class="l">「特定の ISP の利用者を特定のエンドポイントへ」</td></tr>
+  </table>
+  <div class="point warn" style="margin-top:8px"><b>まぎらわしい組：</b>「速さ」＝レイテンシー（ネットワークの測定）。「場所の区切り」＝位置情報（国・大陸）。「距離と範囲の調整」＝地理的近接性（バイアス）。「利用者の IP」＝IP ベース。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy.html">ルーティングポリシーの選択</a>（「フェイルオーバールーティングポリシー – アクティブ/パッシブフェイルオーバーを構成する場合に使用します。」「複数値回答ルーティングポリシー – ランダムに選ばれた最大 8 つの正常なレコードを使用して Route 53 が DNS クエリに応答する場合に使用します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>加重・レイテンシー・フェイルオーバー</h1>
+  <svg width="856" height="190" viewBox="0 0 856 190">
+    <defs><marker id="d4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="10" width="270" height="170" rx="10" fill="#fff" stroke="#4a5a78"/><text x="145" y="32" fill="#1f3a68" font-weight="700" font-size="12">加重（重み 9：1）</text>
+      <rect x="30" y="50" width="230" height="44" rx="6" fill="#4a5a78"/><text x="145" y="77" fill="#fff">旧バージョン 9 ÷ 10 ＝ 90%</text>
+      <rect x="30" y="104" width="230" height="44" rx="6" fill="#b25000"/><text x="145" y="131" fill="#fff">新バージョン 1 ÷ 10 ＝ 10%</text>
+      <text x="145" y="170" fill="#4a5a78">重みを 0 にすると送るのを止める</text>
+      <rect x="293" y="10" width="270" height="170" rx="10" fill="#fff" stroke="#4a5a78"/><text x="428" y="32" fill="#1f3a68" font-weight="700" font-size="12">レイテンシー</text>
+      <rect x="383" y="50" width="90" height="34" rx="6" fill="#e3eefc" stroke="#1f3a68"/><text x="428" y="72" fill="#1f3a68">ロンドンの人</text>
+      <rect x="303" y="120" width="110" height="40" rx="6" fill="#3a7d44"/><text x="358" y="138" fill="#fff">オレゴン</text><text x="358" y="152" fill="#fff" font-size="10">低い → これを返す</text>
+      <rect x="443" y="120" width="110" height="40" rx="6" fill="#ddd" stroke="#999"/><text x="498" y="138" fill="#666">シンガポール</text><text x="498" y="152" fill="#666" font-size="10">高い</text>
+      <line x1="415" y1="84" x2="370" y2="118" stroke="#3a7d44" stroke-width="2" marker-end="url(#d4)"/><line x1="440" y1="84" x2="485" y2="118" stroke="#999" stroke-width="2" stroke-dasharray="4 3"/>
+      <rect x="576" y="10" width="270" height="170" rx="10" fill="#fff" stroke="#4a5a78"/><text x="711" y="32" fill="#1f3a68" font-weight="700" font-size="12">フェイルオーバー</text>
+      <rect x="596" y="50" width="230" height="44" rx="6" fill="#1f3a68"/><text x="711" y="69" fill="#fff">プライマリ：東京の ALB</text><text x="711" y="85" fill="#fff" font-size="10">ヘルスチェックで正常なら</text>
+      <rect x="596" y="104" width="230" height="44" rx="6" fill="#fff4e5" stroke="#b25000"/><text x="711" y="123" fill="#b25000">セカンダリ：大阪の ALB</text><text x="711" y="139" fill="#b25000" font-size="10">または S3 のメンテナンスページ</text>
+      <text x="711" y="170" fill="#4a5a78">異常なときだけセカンダリへ</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>レイテンシーは測定で決まる：</b>利用者と AWS のデータセンターのあいだのレイテンシーのデータで選ぶ。地図の上で近いリージョンが選ばれるとは限らない。</div>
+    <div class="point warn"><b>加重 vs フェイルオーバー：</b>加重は常に割合で両方に送る。重み 100：0 にしても、異常時の自動の切り替えのための仕組みではない。アクティブ/パッシブはフェイルオーバー。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-weighted.html">加重ルーティング</a>（「リソースへのトラフィックの送信を停止する場合は、そのレコードの重みを 0 に変更します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-latency.html">レイテンシーに基づくルーティング</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-failover.html">フェイルオーバールーティング</a>（「フェイルオーバールーティングを使用すると、トラフィックが正常であればリソースに、最初のリソースが異常であれば別のリソースにルーティングできます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>位置情報・地理的近接性・IP ベース</h1>
+  <svg width="856" height="180" viewBox="0 0 856 180">
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="10" width="270" height="160" rx="10" fill="#fff" stroke="#4a5a78"/><text x="145" y="32" fill="#1f3a68" font-weight="700" font-size="12">位置情報（場所の区切り）</text>
+      <rect x="25" y="46" width="240" height="30" rx="5" fill="#1f3a68"/><text x="145" y="66" fill="#fff">日本 → 日本語のサイト</text>
+      <rect x="25" y="82" width="240" height="30" rx="5" fill="#4a5a78"/><text x="145" y="102" fill="#fff">ヨーロッパ → フランクフルト</text>
+      <rect x="25" y="118" width="240" height="30" rx="5" fill="#fff" stroke="#b25000"/><text x="145" y="138" fill="#b25000">デフォルト → 英語のサイト</text>
+      <text x="145" y="164" fill="#b25000" font-size="10">デフォルトがないと「応答なし」</text>
+      <rect x="293" y="10" width="270" height="160" rx="10" fill="#fff" stroke="#4a5a78"/><text x="428" y="32" fill="#1f3a68" font-weight="700" font-size="12">地理的近接性（距離＋バイアス）</text>
+      <circle cx="378" cy="100" r="40" fill="#e3eefc" stroke="#1f3a68"/><text x="378" y="104" fill="#1f3a68">東京</text>
+      <circle cx="478" cy="100" r="58" fill="#fff4e5" stroke="#b25000" stroke-dasharray="5 4" opacity="0.9"/><text x="478" y="96" fill="#b25000">シンガポール</text><text x="478" y="112" fill="#b25000" font-size="10">バイアス＋</text>
+      <text x="428" y="166" fill="#4a5a78" font-size="10">バイアスで範囲を広げる・狭める</text>
+      <rect x="576" y="10" width="270" height="160" rx="10" fill="#fff" stroke="#4a5a78"/><text x="711" y="32" fill="#1f3a68" font-weight="700" font-size="12">IP ベース（利用者の CIDR）</text>
+      <rect x="591" y="50" width="240" height="40" rx="5" fill="#3a7d44"/><text x="711" y="68" fill="#fff">ISP-A の 198.51.100.0/24</text><text x="711" y="83" fill="#fff" font-size="10">→ ISP-A と直接つながった拠点</text>
+      <rect x="591" y="100" width="240" height="40" rx="5" fill="#4a5a78"/><text x="711" y="118" fill="#fff">それ以外（デフォルトの「*」）</text><text x="711" y="133" fill="#fff" font-size="10">→ ふつうの拠点</text>
+      <text x="711" y="164" fill="#4a5a78" font-size="10">自分が知っている利用者の情報で決める</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>位置情報の使い道：</b>利用者の言語で見せる・配信の権利がある場所だけに制限する。重なるときは小さい地域（例：北米よりカナダ）が優先。</div>
+    <div class="point warn"><b>違いの決め手：</b>「国の境目どおり」なら位置情報。「範囲を少しずつ広げたい」なら地理的近接性。「特定の ISP・特定の CIDR」なら IP ベース。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-geo.html">位置情報ルーティング</a>（「デフォルトレコードを作成しない場合、Route 53 はそのような場所からのクエリに対して "応答なし" という応答を返します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-geoproximity.html">地理的近接性ルーティング</a>（「バイアスは、トラフィックがリソースに移動する地理的リージョンを拡大または縮小します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-ipbased.html">IP ベースルーティング</a></div>
+</section>
+
+<section class="slide">
+  <h1>複数値回答とシンプルの違い</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">シンプル（1 つのレコードに 4 つの IP）</div>
+      <svg width="410" height="120" viewBox="0 0 410 120">
+        <g font-size="11" text-anchor="middle">
+          <g fill="#4a5a78"><rect x="10" y="10" width="90" height="40" rx="5"/><rect x="110" y="10" width="90" height="40" rx="5"/><rect x="210" y="10" width="90" height="40" rx="5"/></g>
+          <rect x="310" y="10" width="90" height="40" rx="5" fill="#ddd" stroke="#9a3030"/>
+          <g fill="#fff"><text x="55" y="35">.10</text><text x="155" y="35">.11</text><text x="255" y="35">.12</text></g><text x="355" y="35" fill="#9a3030">.13 故障</text>
+          <text x="205" y="78" fill="#9a3030">4 つとも返す（故障した .13 も）</text>
+          <text x="205" y="100" fill="#4a5a78">値ごとの正常性は確かめない</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="lbl">複数値回答（値ごとのレコード＋ヘルスチェック）</div>
+      <svg width="410" height="120" viewBox="0 0 410 120">
+        <g font-size="11" text-anchor="middle">
+          <g fill="#3a7d44"><rect x="10" y="10" width="90" height="40" rx="5"/><rect x="110" y="10" width="90" height="40" rx="5"/><rect x="210" y="10" width="90" height="40" rx="5"/></g>
+          <rect x="310" y="10" width="90" height="40" rx="5" fill="#ddd" stroke="#9a3030"/>
+          <g fill="#fff"><text x="55" y="35">.10 ✓</text><text x="155" y="35">.11 ✓</text><text x="255" y="35">.12 ✓</text></g><text x="355" y="35" fill="#9a3030">.13 ✗</text>
+          <text x="205" y="78" fill="#3a7d44">正常な 3 つだけを返す（最大 8 つ）</text>
+          <text x="205" y="100" fill="#4a5a78">全部が異常なら最大 8 つの異常なものを返す</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="cols" style="margin-top:6px">
+    <div class="point"><b>ロードバランサーとの違い：</b>DNS は IP を返すだけで、リクエストを中継しない。リゾルバーが答えをキャッシュしたあとにサーバーが使えなくなったら、クライアントのソフトが答えの中の別の IP を試せる。複数値回答は「ロードバランサーの代わりではない」。</div>
+    <div class="point warn"><b>本番の言い回し：</b>「ロードバランサーを使わず、DNS で複数の正常な IP を返したい」→ 複数値回答。「ヘルスチェック付きで負荷を分けたい（リクエストごと）」→ ALB・NLB（#09）。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-multivalue.html">複数値回答ルーティング</a>（「これはロードバランサーに代わるものではありませんが、複数のヘルスチェックされた IP アドレスを返すことは、DNS を使用して稼働時間とロード共有を向上させる方法です。」「すべてのレコードが異常である場合、Route 53 は DNS クエリに最大 8 つの異常なレコードを返します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/routing-policy-simple.html">シンプルルーティング</a></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>ヘルスチェックとハイブリッド DNS</h1>
+  <p>何をどこから確かめるか。VPC の中は届かない。オンプレミスと名前を引き合う向き、出ていく名前解決の絞り方。</p>
+  <div class="foot"><span>AWS SAA #11 Route 53</span><span>タスク 2.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>ヘルスチェックの種類</h1>
+  <table class="mx">
+    <tr><th style="width:24%">種類</th><th>何を見る</th><th style="width:34%">こんなとき</th></tr>
+    <tr><td class="t">エンドポイント</td><td class="l">世界各地のヘルスチェッカーから、IP かドメイン名にインターネット経由でリクエスト。間隔は 30 秒か 10 秒。18% を超えるチェッカーが正常なら正常</td><td class="l">公開している Web サーバー・ALB</td></tr>
+    <tr><td class="t">算出した</td><td class="l">ほかの複数のヘルスチェックの結果をまとめる</td><td class="l">「5 台中 3 台以上が正常なら正常」</td></tr>
+    <tr><td class="t">CloudWatch アラーム</td><td class="l">アラームと同じデータストリームで判断（ALARM になるのを待たない）</td><td class="l">VPC の中のプライベートなリソース・DynamoDB のスロットリングなど任意のメトリクス</td></tr>
+    <tr><td class="t">Evaluate Target Health</td><td class="l">エイリアスレコードの向け先（ALB など）の正常性を評価（ヘルスチェックを別に作らなくてよい）</td><td class="l">ALB へのエイリアスを組み合わせたフェイルオーバー・レイテンシー</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point warn"><b>VPC の中は届かない：</b>Route 53 のヘルスチェッカーは VPC の外にある。プライベート IP だけのリソースは、CloudWatch のメトリクスにアラームを付け、そのアラームを見るヘルスチェックにする。</div>
+    <div class="point"><b>18% の理由：</b>1 つの地域のネットワークの問題だけで異常と判断しないよう、複数のリージョンのチェッカーが正常と見ていることを確かめるための値。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/health-checks-types.html">Amazon Route 53 ヘルスチェックの種類</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/dns-failover-determining-health-of-endpoints.html">Amazon Route 53 でヘルスチェックの正常性を判断する方法</a>（「18% を超えるヘルスチェッカーがエンドポイントを正常であるとレポートした場合、Route 53 はそのエンドポイントを正常と見なします。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/dns-failover-private-hosted-zones.html">プライベートホストゾーンのフェイルオーバーの設定</a>（「Route 53 ヘルスチェッカーは VPC の外にあります。」）</div>
+</section>
+
+<section class="slide">
+  <h1>レコードのツリー：レイテンシー × フェイルオーバー</h1>
+  <svg width="856" height="210" viewBox="0 0 856 210">
+    <defs><marker id="d5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="328" y="8" width="200" height="40" rx="6" fill="#1f3a68"/><text x="428" y="25" fill="#fff" font-weight="700">www.example.com</text><text x="428" y="40" fill="#fff">フェイルオーバー</text>
+      <rect x="130" y="76" width="260" height="44" rx="6" fill="#b25000"/><text x="260" y="94" fill="#fff" font-weight="700">プライマリ：レイテンシーのエイリアス</text><text x="260" y="110" fill="#fff">Evaluate Target Health ＝ Yes</text>
+      <rect x="500" y="76" width="260" height="44" rx="6" fill="#fff4e5" stroke="#b25000"/><text x="630" y="94" fill="#b25000" font-weight="700">セカンダリ：S3 の静的ウェブサイト</text><text x="630" y="110" fill="#b25000">「ただいまメンテナンス中」</text>
+      <line x1="390" y1="48" x2="300" y2="74" stroke="#1f3a68" stroke-width="2" marker-end="url(#d5)"/><line x1="466" y1="48" x2="560" y2="74" stroke="#1f3a68" stroke-width="2" marker-end="url(#d5)"/>
+      <rect x="40" y="152" width="200" height="44" rx="6" fill="#3a7d44"/><text x="140" y="170" fill="#fff" font-weight="700">東京の ALB</text><text x="140" y="186" fill="#fff">エイリアス</text>
+      <rect x="280" y="152" width="200" height="44" rx="6" fill="#3a7d44"/><text x="380" y="170" fill="#fff" font-weight="700">オレゴンの ALB</text><text x="380" y="186" fill="#fff">エイリアス</text>
+      <line x1="230" y1="120" x2="160" y2="150" stroke="#1f3a68" stroke-width="2" marker-end="url(#d5)"/><line x1="290" y1="120" x2="360" y2="150" stroke="#1f3a68" stroke-width="2" marker-end="url(#d5)"/>
+      <text x="680" y="170" fill="#4a5a78">両方のリージョンが異常のときだけ</text><text x="680" y="188" fill="#4a5a78">セカンダリのページを出す</text>
+    </g>
+  </svg>
+  <div class="mini">構成は Claude が作った例。どちらかのリージョンが異常ならレイテンシーの中で外れ、両方が異常ならフェイルオーバーでセカンダリへ。</div>
+  <div class="cols">
+    <div class="point"><b>ターゲットの正常性の評価：</b>エイリアスレコードで Yes にすると、向け先の正常性を Route 53 が確かめる。ヘルスチェックを関連付ける代わりに、または一緒に使える。</div>
+    <div class="point warn"><b>TTL も合わせて：</b>切り替えを早く効かせたいなら、TTL を 60 秒以下に。エイリアスで AWS リソースに向けるときはリソースの既定の TTL になる。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/dns-failover-complex-configs.html">Amazon Route 53 の複雑な構成でのヘルスチェックの動作</a>（「[Evaluate Target Health] の値を [Yes] に設定する代わりに (または設定したうえで)、エイリアスレコードにヘルスチェックを関連付けることができます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>オンプレミスと名前を引き合う：Resolver エンドポイント</h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <defs><marker id="d6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker><marker id="d7" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="10" width="260" height="180" rx="12" fill="#f5f5f7" stroke="#4a5a78"/><text x="140" y="32" fill="#4a5a78" font-weight="700" font-size="12">オンプレミス</text>
+      <rect x="40" y="60" width="200" height="44" rx="6" fill="#4a5a78"/><text x="140" y="78" fill="#fff" font-weight="700">社内の DNS サーバー</text><text x="140" y="94" fill="#fff">corp.example.com を管理</text>
+      <rect x="40" y="130" width="200" height="40" rx="6" fill="#fff" stroke="#4a5a78"/><text x="140" y="154" fill="#4a5a78">社員の PC</text>
+      <rect x="320" y="80" width="140" height="40" rx="6" fill="#fff" stroke="#1f3a68" stroke-dasharray="4 3"/><text x="390" y="98" fill="#1f3a68">VPN か</text><text x="390" y="112" fill="#1f3a68">Direct Connect</text>
+      <rect x="510" y="10" width="336" height="180" rx="12" fill="#e3eefc" stroke="#1f3a68"/><text x="678" y="32" fill="#1f3a68" font-weight="700" font-size="12">VPC</text>
+      <rect x="530" y="46" width="140" height="44" rx="6" fill="#3a7d44"/><text x="600" y="64" fill="#fff" font-weight="700">インバウンド</text><text x="600" y="80" fill="#fff">エンドポイント</text>
+      <rect x="530" y="130" width="140" height="44" rx="6" fill="#b25000"/><text x="600" y="148" fill="#fff" font-weight="700">アウトバウンド</text><text x="600" y="164" fill="#fff">エンドポイント＋ルール</text>
+      <rect x="700" y="80" width="130" height="50" rx="6" fill="#1f3a68"/><text x="765" y="100" fill="#fff" font-weight="700">VPC Resolver</text><text x="765" y="116" fill="#fff">プライベートゾーン</text>
+      <line x1="240" y1="70" x2="528" y2="62" stroke="#3a7d44" stroke-width="2.5" marker-end="url(#d6)"/><text x="400" y="56" fill="#3a7d44">外 → VPC の名前を引く</text>
+      <line x1="528" y1="160" x2="242" y2="96" stroke="#b25000" stroke-width="2.5" marker-end="url(#d7)"/><text x="390" y="170" fill="#b25000">VPC → 社内の名前を引く</text>
+      <line x1="670" y1="68" x2="698" y2="95" stroke="#1f3a68" stroke-width="1.5"/><line x1="670" y1="150" x2="698" y2="120" stroke="#1f3a68" stroke-width="1.5"/>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>向きで覚える：</b>インバウンド＝オンプレミス（や別の VPC）から VPC へ入るクエリの入口。アウトバウンド＝VPC からオンプレミスへ出るクエリの出口で、どのドメインをどこに送るかのルールを作る。</div>
+    <div class="point warn"><b>ひっかけ：</b>プライベートホストゾーンに関連付けられるのは VPC で、オンプレミスの DNS サーバーは関連付けられない。オンプレミスから引くならインバウンドエンドポイント経由。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/resolver.html">Route 53 VPC Resolver とは</a>（「インバウンド Resolver エンドポイントを使用すると、VPC に、オンプレミスネットワークまたは別の VPC から DNS クエリが可能になります。」「アウトバウンド Resolver エンドポイントを使用すると、VPC から、オンプレミスネットワークまたは別の VPC に DNS クエリが可能になります。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/resolver-forwarding-outbound-queries.html">ネットワークへのアウトバウンド DNS クエリの転送</a></div>
+</section>
+
+<section class="slide">
+  <h1>DNS ファイアウォール</h1>
+  <svg width="856" height="160" viewBox="0 0 856 160">
+    <defs><marker id="d8" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="10" width="400" height="140" rx="12" fill="#e3eefc" stroke="#1f3a68"/><text x="210" y="32" fill="#1f3a68" font-weight="700" font-size="12">VPC</text>
+      <rect x="30" y="60" width="130" height="50" rx="6" fill="#9a3030"/><text x="95" y="82" fill="#fff" font-weight="700">侵入された</text><text x="95" y="98" fill="#fff">インスタンス</text>
+      <rect x="230" y="50" width="160" height="70" rx="8" fill="#b25000"/><text x="310" y="74" fill="#fff" font-weight="700">DNS ファイアウォール</text><text x="310" y="92" fill="#fff">ルールグループ</text><text x="310" y="108" fill="#fff">許可・ブロック</text>
+      <line x1="160" y1="85" x2="228" y2="85" stroke="#1f3a68" stroke-width="2" marker-end="url(#d8)"/>
+      <rect x="520" y="20" width="320" height="50" rx="8" fill="#ddd" stroke="#9a3030"/><text x="680" y="42" fill="#9a3030" font-weight="700">secret-data.attacker.example</text><text x="680" y="58" fill="#9a3030">→ ブロック（データの DNS 漏洩を防ぐ）</text>
+      <rect x="520" y="90" width="320" height="50" rx="8" fill="#3a7d44"/><text x="680" y="112" fill="#fff" font-weight="700">s3.ap-northeast-1.amazonaws.com</text><text x="680" y="128" fill="#fff">→ 許可</text>
+      <line x1="390" y1="75" x2="518" y2="45" stroke="#9a3030" stroke-width="2" stroke-dasharray="5 4"/><line x1="390" y1="95" x2="518" y2="115" stroke="#3a7d44" stroke-width="2" marker-end="url(#d8)"/>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>何を防ぐ：</b>主な用途は「DNS 漏洩」。侵入した攻撃者が、DNS のルックアップを使って VPC のデータを自分のドメインに送るのを、名前の解決の段階で止める。</div>
+    <div class="point warn"><b>似た名前の区別：</b>DNS ファイアウォール＝出ていく名前の解決。Network Firewall＝通信そのもの。AWS WAF＝HTTP のリクエスト。DNSSEC＝自分のゾーンの応答への署名。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/resolver-dns-firewall.html">DNS ファイアウォールを使用してアウトバウンド DNS トラフィックをフィルタリングする</a>（「Resolver DNS Firewall を使用すると、仮想プライベートクラウド (VPC) のアウトバウンド DNS トラフィックをフィルタリングおよび規制できます。」「DNS Firewall による保護の主な用途は、データの DNS 漏洩を防ぐことです。」）</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">ゾーンとレコード<span>パブリックとプライベート（VPC の DNS 属性）。頂点はエイリアス（無料・IP に追従）、CNAME は不可</span></div>
+      <div class="box b2">ルーティング<span>加重＝割合、レイテンシー＝速さ、フェイルオーバー＝障害時、位置情報＝国、近接性＝距離＋バイアス</span></div>
+      <div class="box b3">ヘルスチェック<span>18% を超えたら正常。VPC の中は CloudWatch アラーム。算出、Evaluate Target Health</span></div>
+      <div class="box b4">ハイブリッド DNS<span>外 → VPC はインバウンド、VPC → 外はアウトバウンド＋ルール。DNS ファイアウォール</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">ひっかけ</th><th>正しくは</th></tr>
+        <tr><td class="l">頂点に CNAME</td><td class="x">エイリアス</td></tr>
+        <tr><td class="l">国で分けるのにレイテンシー</td><td class="x">位置情報</td></tr>
+        <tr><td class="l">位置情報でデフォルトなし</td><td class="x">「応答なし」になる</td></tr>
+        <tr><td class="l">プライベート IP にエンドポイントのチェック</td><td class="x">CloudWatch アラーム</td></tr>
+        <tr><td class="l">オンプレミスから引くのにアウトバウンド</td><td class="x">インバウンド</td></tr>
+        <tr><td class="l">複数値回答＝ロードバランサー</td><td class="x">代わりではない</td></tr>
+      </table>
+      <div class="point">次の #12 では、EC2 を学ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
