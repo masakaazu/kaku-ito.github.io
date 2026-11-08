@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS SAA #23 コストの見える化と管理 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">AWS SAA（SAA-C03）　分野4 コスト最適化　#23</div>
+  <h1>コストの見える化と管理</h1>
+  <p>Cost Explorer（予測・適切なサイズ設定・予約の有効期限切れアラート）、コストと使用状況レポートと Data Exports（CUR 2.0）、料金見積りツール、AWS Budgets（コスト・使用量・使用率・カバレッジの予算、予算アクション）、コスト異常検出、Cost Optimization Hub、Trusted Advisor、EC2 の休止、コスト配分タグ（ユーザー定義・AWS 生成・アクティブ化）、タグポリシー、Cost Categories、一括請求と割引共有</p>
+  <div class="refs-legend">各ページの下に、根拠にした AWS の公式ドキュメント（Cost Management・Data Exports・Billing・Organizations・サポート・料金見積りツール・EC2 の各ガイド）を書いた（青い文字を押すと開く）。「」の中はドキュメントの原文どおり（日本語版は機械翻訳のため、語順が不自然なところもそのまま）。金額・場面は Claude が作った例。数字は 2026-11 時点のドキュメントによる</div>
+</section>
+
+<section class="slide">
+  <h1>全体像：見る・見張る・直す・分ける<small>試験ガイド タスク 4.1〜4.4</small></h1>
+  <svg width="856" height="236" viewBox="0 0 856 236">
+    <defs><marker id="a1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="78" width="150" height="80" rx="10" fill="#1f3a68"/><text x="85" y="104" fill="#fff" font-weight="700">請求データ</text><text x="85" y="124" fill="#fff">コストと使用状況</text><text x="85" y="142" fill="#fff">（タグ付き・タグなし）</text>
+      <rect x="230" y="10" width="290" height="50" rx="8" fill="#1f5fa8"/><text x="375" y="31" fill="#fff" font-weight="700">見る・予測する</text><text x="375" y="49" fill="#fff">Cost Explorer・CUR / Data Exports</text>
+      <rect x="230" y="68" width="290" height="50" rx="8" fill="#3a7d44"/><text x="375" y="89" fill="#fff" font-weight="700">見張る</text><text x="375" y="107" fill="#fff">Budgets（しきい値）・コスト異常検出（機械学習）</text>
+      <rect x="230" y="126" width="290" height="50" rx="8" fill="#b25000"/><text x="375" y="147" fill="#fff" font-weight="700">直す</text><text x="375" y="165" fill="#fff">Cost Optimization Hub・Trusted Advisor</text>
+      <rect x="230" y="184" width="290" height="50" rx="8" fill="#6a3d9a"/><text x="375" y="205" fill="#fff" font-weight="700">分ける・まとめる</text><text x="375" y="223" fill="#fff">コスト配分タグ・Cost Categories・一括請求</text>
+      <g stroke="#1f3a68" stroke-width="2"><line x1="160" y1="100" x2="228" y2="35" marker-end="url(#a1)"/><line x1="160" y1="110" x2="228" y2="93" marker-end="url(#a1)"/><line x1="160" y1="126" x2="228" y2="151" marker-end="url(#a1)"/><line x1="160" y1="140" x2="228" y2="209" marker-end="url(#a1)"/></g>
+      <rect x="590" y="10" width="256" height="224" rx="10" fill="#f6f8fb" stroke="#4a5a78"/><text x="718" y="32" fill="#4a5a78" font-weight="700">使う前</text>
+      <text x="718" y="60">料金見積りツール</text><text x="718" y="78" fill="#4a5a78">これから作る構成の見積り</text>
+      <line x1="610" y1="96" x2="826" y2="96" stroke="#c8d0dc"/>
+      <text x="718" y="122" fill="#4a5a78" font-weight="700">決め手のことば</text>
+      <text x="718" y="146">「傾向・予測」→ Cost Explorer</text><text x="718" y="166">「超えたら通知・止める」→ Budgets</text><text x="718" y="186">「ふだんと違う」→ 異常検出</text><text x="718" y="206">「部署別」→ タグ・Cost Categories</text><text x="718" y="226">「請求を 1 つに」→ 一括請求</text>
+    </g>
+  </svg>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/cost-management/latest/userguide/ce-what-is.html">AWS Cost Explorer を使用してコストと使用状況を分析する</a>（「AWS Cost Explorer は、コストと使用状況を表示および分析できるツールです。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/cost-management/latest/userguide/budgets-managing-costs.html">AWS Budgets によるコストの管理</a>（「AWS Budgets を使用して、 AWS コストと使用状況を追跡し、アクションを実行できます。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>コストを見る・予測する</h1>
+  <p>Cost Explorer のグラフ・予測・適切なサイズ設定・予約のアラート。最も細かいデータを出す CUR と Data Exports。作る前の料金見積りツール。</p>
+  <div class="foot"><span>AWS SAA #23 コストの見える化と管理</span><span>タスク 4.1〜4.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>AWS Cost Explorer</h1>
+  <svg width="856" height="150" viewBox="0 0 856 150">
+    <g font-size="11" text-anchor="middle">
+      <line x1="40" y1="130" x2="830" y2="130" stroke="#4a5a78"/>
+      <g fill="#1f5fa8"><rect x="60" y="80" width="40" height="50"/><rect x="120" y="74" width="40" height="56"/><rect x="180" y="70" width="40" height="60"/><rect x="240" y="62" width="40" height="68"/><rect x="300" y="66" width="40" height="64"/><rect x="360" y="54" width="40" height="76"/></g>
+      <g fill="#3a7d44"><rect x="60" y="100" width="40" height="30"/><rect x="120" y="98" width="40" height="32"/><rect x="180" y="96" width="40" height="34"/><rect x="240" y="92" width="40" height="38"/><rect x="300" y="94" width="40" height="36"/><rect x="360" y="86" width="40" height="44"/></g>
+      <text x="230" y="20" fill="#1f3a68" font-weight="700">過去（最大 13 か月）：サービス別に積み上げ</text>
+      <rect x="430" y="40" width="380" height="90" fill="#e3eefc"/>
+      <path d="M440,50 L520,46 L600,42 L680,38 L760,34 L800,32" fill="none" stroke="#1f5fa8" stroke-dasharray="4 3"/>
+      <path d="M440,74 L520,74 L600,73 L680,72 L760,71 L800,70" fill="none" stroke="#1f3a68" stroke-width="2.5"/>
+      <path d="M440,98 L520,102 L600,104 L680,106 L760,108 L800,110" fill="none" stroke="#1f5fa8" stroke-dasharray="4 3"/>
+      <text x="620" y="20" fill="#1f3a68" font-weight="700">予測（最大 18 か月）：80% の予測間隔</text>
+      <rect x="470" y="140" width="10" height="8" fill="#1f5fa8"/><text x="510" y="148">EC2</text><rect x="550" y="140" width="10" height="8" fill="#3a7d44"/><text x="580" y="148">S3</text><text x="720" y="148" fill="#4a5a78">（Claude の例）</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%">機能</th><th>内容</th></tr>
+    <tr><td class="t">表示と分析</td><td class="l">グラフ・レポートで見る。Group By でサービスなどに分ける。時間単位は日別・月別・時間別。CSV でダウンロードできる</td></tr>
+    <tr><td class="t">予測</td><td class="l">過去の使用状況から。80% の予測間隔。データが足りない（請求サイクルが 1 回未満など）と出ない</td></tr>
+    <tr><td class="t">推奨</td><td class="l">予約（RI など）の推奨、EC2 の適切なサイズ設定（縮小・終了）の推奨</td></tr>
+    <tr><td class="t">料金</td><td class="l">画面で見るのは無料。API はページ分割されたリクエストごとに 0.01 USD</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/cost-management/latest/userguide/ce-what-is.html">AWS Cost Explorer を使用してコストと使用状況を分析する</a>（「過去 13 か月までのデータを表示したり、今後 18 か月間に費やす可能性のある金額を予測したり、購入するリザーブドインスタンスのレコメンデーションを取得したりできます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/cost-management/latest/userguide/ce-forecast.html">Cost Explorer で予測する</a>（「Cost Explorer の予測では、80% の予測間隔になります。」）</div>
+</section>
+
+<section class="slide">
+  <h1>CUR・Data Exports と料金見積りツール</h1>
+  <svg width="856" height="130" viewBox="0 0 856 130">
+    <defs><marker id="a2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="30" width="170" height="70" rx="8" fill="#1f3a68"/><text x="95" y="56" fill="#fff" font-weight="700">Data Exports</text><text x="95" y="74" fill="#fff">CUR 2.0（推奨）</text><text x="95" y="90" fill="#fff">SQL で列を選ぶ</text>
+      <rect x="290" y="30" width="170" height="70" rx="8" fill="#3a7d44"/><text x="375" y="56" fill="#fff" font-weight="700">自分の S3 バケット</text><text x="375" y="74" fill="#fff">1 日に最大 3 回更新</text><text x="375" y="90" fill="#fff">最初は最大 24 時間</text>
+      <rect x="570" y="10" width="276" height="34" rx="6" fill="#1f5fa8"/><text x="708" y="32" fill="#fff">Amazon Athena（SQL で集計）</text>
+      <rect x="570" y="48" width="276" height="34" rx="6" fill="#1f5fa8"/><text x="708" y="70" fill="#fff">Amazon Redshift</text>
+      <rect x="570" y="86" width="276" height="34" rx="6" fill="#1f5fa8"/><text x="708" y="108" fill="#fff">Quick（見える化）</text>
+      <g stroke="#1f3a68" stroke-width="2"><line x1="180" y1="65" x2="288" y2="65" marker-end="url(#a2)"/><line x1="460" y1="58" x2="568" y2="28" marker-end="url(#a2)"/><line x1="460" y1="65" x2="568" y2="65" marker-end="url(#a2)"/><line x1="460" y1="72" x2="568" y2="102" marker-end="url(#a2)"/></g>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:20%"></th><th>Cost Explorer</th><th>CUR・Data Exports</th><th>料金見積りツール</th></tr>
+    <tr><td class="t">何のデータ</td><td>過去の実績と予測</td><td>最も包括的な実績（製品・使用タイプ・オペレーションごと）</td><td>これから使う構成</td></tr>
+    <tr><td class="t">どこで見る</td><td>コンソールの画面・API</td><td>自分の S3 に出し、自分で分析</td><td>ウェブの無料のツール</td></tr>
+    <tr><td class="t">向く場面</td><td class="l">傾向をすぐ見る</td><td class="l">細かく集計する・ほかのデータと合わせる</td><td class="l">作る前・使う前の見積り</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/cur/latest/userguide/what-is-cur.html">AWS コストと使用状況レポートとは</a>（「AWS コストと使用状況レポート (AWS CUR) には、利用可能な最も包括的なコストと使用状況データのセットが含まれています。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/cur/latest/userguide/what-is-data-exports.html">AWS Data Exports とは</a>（「コストと使用状況レポート 2.0 (CUR 2.0) は、詳細な AWS コストと使用状況データを受け取るための新しく推奨される方法です。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/pricing-calculator/latest/userguide/what-is-pricing-calculator.html">AWS 料金見積りツールとは</a>（「AWS 料金見積りツール は、 AWS サービスを使用するためのコスト見積もりを作成するために使用できる無料のウェブベースの計画ツールです。」）</div>
+</section>
+
+<section class="slide">
+  <h1>適切なサイズ設定と予約のアラート</h1>
+  <svg width="856" height="120" viewBox="0 0 856 120">
+    <defs><marker id="a3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <line x1="30" y1="70" x2="830" y2="70" stroke="#1f3a68" stroke-width="2" marker-end="url(#a3)"/>
+      <rect x="30" y="56" width="560" height="28" rx="4" fill="#e3eefc" stroke="#1f5fa8"/><text x="200" y="75" fill="#1f5fa8">3 年の RI（Claude の例）</text>
+      <circle cx="350" cy="70" r="7" fill="#b25000"/><text x="350" y="40" fill="#b25000" font-weight="700">60 日前</text>
+      <circle cx="490" cy="70" r="7" fill="#b25000"/><text x="490" y="40" fill="#b25000" font-weight="700">30 日前</text>
+      <circle cx="565" cy="70" r="7" fill="#b25000"/><text x="565" y="40" fill="#b25000" font-weight="700">7 日前</text>
+      <line x1="590" y1="50" x2="590" y2="96" stroke="#1f3a68" stroke-width="2"/><text x="640" y="40" fill="#1f3a68" font-weight="700">期限切れ</text>
+      <text x="460" y="110" fill="#4a5a78">切れる 7 日・30 日・60 日前に E メールのアラート → 買い直すかを決める</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:30%">Cost Explorer の機能</th><th>何がわかるか</th></tr>
+    <tr><td class="t">適切なサイズ設定に関する推奨事項</td><td class="l">EC2 を縮小・終了してコストを減らす機会。いまは Cost Optimization Hub を使うことが勧められている</td></tr>
+    <tr><td class="t">予約の概要</td><td class="l">予約の数、オンデマンドと比べた削減額、今月切れる予約の数</td></tr>
+    <tr><td class="t">予約の有効期限切れアラート</td><td class="l">切れる 7 日・30 日・60 日前に E メール</td></tr>
+  </table>
+  <div class="point warn"><b>ひっかけ：</b>「サイズの推奨」は Cost Explorer の適切なサイズ設定・Compute Optimizer・Cost Optimization Hub。「RI の期限」は予約の有効期限切れアラート。「買った RI が使われていない」は Budgets の使用率の予算。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/cost-management/latest/userguide/ce-rightsizing.html">適切なサイズ設定に関する推奨事項によるコストの最適化</a>（「Cost Explorer の適切なサイズ設定に関する推奨事項の機能を使用するとAmazon Elastic Compute Cloud (Amazon EC2) でインスタンスを縮小または終了してコストを削減する機会を特定できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/cost-management/latest/userguide/ce-ris.html">Cost Explorer の予約について</a>（「予約の有効期限切れアラートでは、予約の有効期限が切れる 7 日、30 日、または 60 日前に E メールアラートを受け取れます。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>予算・異常・推奨</h1>
+  <p>Budgets の予算のタイプ、使用率とカバレッジ、予算アクション。機械学習のコスト異常検出。Cost Optimization Hub と Trusted Advisor。EC2 の休止。</p>
+  <div class="foot"><span>AWS SAA #23 コストの見える化と管理</span><span>タスク 4.1〜4.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>AWS Budgets：決めたしきい値で見張る</h1>
+  <svg width="856" height="120" viewBox="0 0 856 120">
+    <g font-size="11" text-anchor="middle">
+      <rect x="40" y="40" width="700" height="34" rx="4" fill="#f6f8fb" stroke="#4a5a78"/>
+      <rect x="40" y="40" width="360" height="34" rx="4" fill="#1f5fa8"/><text x="220" y="62" fill="#fff">実際の支出 520 USD</text>
+      <rect x="400" y="40" width="240" height="34" fill="#e3eefc" stroke="#1f5fa8" stroke-dasharray="4 3"/><text x="520" y="62" fill="#1f5fa8">月末の予測 900 USD</text>
+      <line x1="600" y1="28" x2="600" y2="86" stroke="#b25000" stroke-width="2"/><text x="600" y="20" fill="#b25000" font-weight="700">80%（800 USD）で通知</text>
+      <line x1="740" y1="28" x2="740" y2="86" stroke="#1f3a68" stroke-width="2"/><text x="790" y="20" fill="#1f3a68" font-weight="700">予算 1,000 USD</text>
+      <text x="428" y="104" fill="#4a5a78">実際の支出でも予測の支出でも通知できる（E メール・SNS）。情報の更新は 1 日に最大 3 回（Claude の例）</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:28%">予算のタイプ</th><th>しきい値</th><th style="width:28%">通知のタイミング</th></tr>
+    <tr><td class="t">コスト予算</td><td class="l">支出の額</td><td>近づいた・超えた</td></tr>
+    <tr><td class="t">使用量予算</td><td class="l">1 つ以上のサービスの使用量</td><td>近づいた・超えた</td></tr>
+    <tr><td class="t">RI・Savings Plans の使用率の予算</td><td class="l">買った割引がどれだけ使われているか</td><td>下回った</td></tr>
+    <tr><td class="t">RI・Savings Plans のカバレッジの予算</td><td class="l">使用のうち割引の対象になっている割合</td><td>下回った</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/cost-management/latest/userguide/budgets-managing-costs.html">AWS Budgets によるコストの管理</a>（「実際 (発生後) の支出と予測 (発生前) の支出の両方についてアラートを表示するように選択できます。」「AWS 予算情報は 1 日に最大 3 回更新されます。」「使用量予算: 1 つ以上のサービスに対して使用量の上限を設定し、使用量が設定したしきい値に近づいた場合や超過した場合に通知を受け取ります。」）</div>
+</section>
+
+<section class="slide">
+  <h1>使用率とカバレッジの違い</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">使用率：買った割引のうち、使われた割合</div>
+      <svg width="410" height="110" viewBox="0 0 410 110">
+        <g font-size="11" text-anchor="middle">
+          <rect x="10" y="30" width="390" height="36" rx="4" fill="#fff" stroke="#1f5fa8" stroke-width="2"/>
+          <rect x="10" y="30" width="273" height="36" rx="4" fill="#1f5fa8"/><text x="146" y="53" fill="#fff">使われた 70%</text><text x="340" y="53" fill="#1f5fa8">余り 30%</text>
+          <text x="205" y="20" fill="#1f3a68" font-weight="700">買った Savings Plans・RI</text>
+          <text x="205" y="90" fill="#b25000">下がる＝割引が余っている（買いすぎ）</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="lbl">カバレッジ：使用のうち、割引の対象の割合</div>
+      <svg width="410" height="110" viewBox="0 0 410 110">
+        <g font-size="11" text-anchor="middle">
+          <rect x="10" y="30" width="390" height="36" rx="4" fill="#fde7cf" stroke="#b25000"/>
+          <rect x="10" y="30" width="234" height="36" rx="4" fill="#3a7d44"/><text x="127" y="53" fill="#fff">割引の対象 60%</text><text x="322" y="53" fill="#b25000">オンデマンド 40%</text>
+          <text x="205" y="20" fill="#1f3a68" font-weight="700">実際の使用（インスタンス時間など）</text>
+          <text x="205" y="90" fill="#b25000">下がる＝割引の外の使用が増えた（買い足し）</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="point"><b>使い分け：</b>「買った Savings Plans が使われていないか」→ 使用率の予算。「オンデマンドが増えて、割引の対象の割合が下がった」→ カバレッジの予算。どちらも、日別などの期間で、しきい値を下回ったら E メールや SNS で通知できる（例：使用率が 80% を下回ったら）。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/cost-management/latest/userguide/budgets-managing-costs.html">AWS Budgets によるコストの管理</a>（「RI 使用率の予算: RI の使用率に関するしきい値を定義し、使用率がこのレベルを下回った際にアラートを受け取ることで、未使用または使用率の低い RI を特定できます。」「RI カバレッジの予算: カバレッジのしきい値を設定し、RI の対象となるインスタンス時間の割合がこのレベルを下回るとアラートを受け取るため、予約の対象となる使用量をモニタリングできます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>予算アクション：超えたら代わりに動く</h1>
+  <svg width="856" height="140" viewBox="0 0 856 140">
+    <defs><marker id="a4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="40" width="170" height="60" rx="8" fill="#3a7d44"/><text x="95" y="64" fill="#fff" font-weight="700">予算のしきい値</text><text x="95" y="82" fill="#fff">例：予測の 90%</text>
+      <rect x="250" y="20" width="160" height="40" rx="8" fill="#4a5a78"/><text x="330" y="45" fill="#fff">自動で実行</text>
+      <rect x="250" y="80" width="160" height="40" rx="8" fill="#4a5a78"/><text x="330" y="105" fill="#fff">手動で承認してから</text>
+      <rect x="490" y="8" width="356" height="34" rx="6" fill="#1f3a68"/><text x="668" y="30" fill="#fff">IAM ポリシーを適用（例：EC2 を作れない Deny）</text>
+      <rect x="490" y="52" width="356" height="34" rx="6" fill="#1f3a68"/><text x="668" y="74" fill="#fff">SCP を適用（管理アカウントからほかのアカウントへも）</text>
+      <rect x="490" y="96" width="356" height="34" rx="6" fill="#1f3a68"/><text x="668" y="118" fill="#fff">アカウント内の特定の EC2・RDS インスタンスを対象に</text>
+      <g stroke="#1f3a68" stroke-width="2"><line x1="180" y1="62" x2="248" y2="42" marker-end="url(#a4)"/><line x1="180" y1="78" x2="248" y2="98" marker-end="url(#a4)"/><line x1="410" y1="40" x2="488" y2="25" marker-end="url(#a4)"/><line x1="410" y1="70" x2="488" y2="69" marker-end="url(#a4)"/><line x1="410" y1="100" x2="488" y2="113" marker-end="url(#a4)"/></g>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>使いどころ：</b>通知だけでなく、予算を超えたら権限を絞って新しいリソースを作らせない。予算期間中に新しいリソースを作らせないために SCP を使える。同じしきい値で複数のアクションを動かせる。</div>
+    <div class="point warn"><b>ひっかけ：</b>管理アカウントからほかのアカウントに SCP は適用できるが、ほかのアカウントの EC2・RDS インスタンスは対象にできない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/cost-management/latest/userguide/budgets-controls.html">予算アクションを設定する</a>（「これを行うには、しきい値を設定した後、自動的に実行するか、手動承認後に実行するように予算アクションを設定します。」「予算期間中に新しいリソースをプロビジョニングする必要がないように、SCP を使用できます。」「ただし、別のアカウントで Amazon EC2 または Amazon RDS インスタンスをターゲットにすることはできません。」）</div>
+</section>
+
+<section class="slide">
+  <h1>コスト異常検出と Budgets</h1>
+  <svg width="856" height="140" viewBox="0 0 856 140">
+    <g font-size="11" text-anchor="middle">
+      <line x1="40" y1="120" x2="830" y2="120" stroke="#4a5a78"/>
+      <path d="M40,96 L120,94 L200,98 L280,92 L360,96 L440,94 L520,90 L560,40 L600,38 L640,92 L720,94 L800,92" fill="none" stroke="#1f5fa8" stroke-width="2.5"/>
+      <path d="M40,96 L120,94 L200,98 L280,92 L360,96 L440,94 L520,90 L600,92 L680,94 L800,92" fill="none" stroke="#3a7d44" stroke-dasharray="5 4"/>
+      <line x1="40" y1="24" x2="830" y2="24" stroke="#b25000" stroke-dasharray="6 4"/><text x="760" y="18" fill="#b25000">Budgets の予算額</text>
+      <circle cx="580" cy="39" r="12" fill="none" stroke="#b25000" stroke-width="2.5"/><text x="680" y="56" fill="#b25000" font-weight="700">異常を検出 → 通知</text>
+      <text x="230" y="80" fill="#3a7d44">機械学習で学んだ、ふだんのパターン</text>
+      <text x="420" y="138" fill="#4a5a78">予算額に届かなくても、ふだんと違う増え方なら異常検出が知らせる（Claude の例）</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%"></th><th>AWS Budgets</th><th>AWS コスト異常検出</th></tr>
+    <tr><td class="t">基準</td><td>自分で決めたしきい値</td><td>機械学習で学んだふだんの支出（時期による増加も考える）</td></tr>
+    <tr><td class="t">原因の調べ方</td><td>—</td><td>サービス・アカウント・リージョン・使用タイプ</td></tr>
+    <tr><td class="t">動く頻度</td><td>情報の更新は 1 日に最大 3 回</td><td>1 日に約 3 回（割引を計算した後の正味のコスト）</td></tr>
+    <tr><td class="t">そのあと</td><td>通知・予算アクション</td><td>E メール・SNS で通知（Slack などにもつなげられる）</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/cost-management/latest/userguide/manage-ad.html">AWS コスト異常検出による異常な支出の検出</a>（「AWS コスト異常検出は、機械学習モデルを使用して、デプロイされた の異常な支出パターンを検出して警告する機能です AWS のサービス。」「例えば、時期的な増加や自然な増加を週別または月別で評価することができます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>推奨を集める：Cost Optimization Hub と Trusted Advisor</h1>
+  <table class="mx">
+    <tr><th style="width:20%"></th><th>Cost Optimization Hub</th><th>Trusted Advisor</th><th>Compute Optimizer（#22）</th></tr>
+    <tr><td class="t">何をする</td><td>アカウントとリージョンをまたいで推奨をまとめ、優先順位を付ける</td><td>ベストプラクティスに照らして環境を調べ、推奨する</td><td>使用率のメトリクスから適切なサイズを推奨</td></tr>
+    <tr><td class="t">範囲</td><td>サイズの変更・アイドルの削除・Savings Plans・RI</td><td>コスト削減のほか、可用性・パフォーマンス・セキュリティ・サービス制限</td><td>EC2・EBS・Lambda・RDS など</td></tr>
+    <tr><td class="t">決め手</td><td class="l">RI・SP の割引を考えた削減額</td><td class="l">チェックの一覧で、ムダを見つける</td><td class="l">サイズが大きすぎないか</td></tr>
+  </table>
+  <div class="cols">
+    <div>
+      <div class="lbl">Trusted Advisor のコスト最適化のチェック（一部）</div>
+      <table class="mx">
+        <tr><td class="l">使用率の低い Amazon EC2 インスタンス</td><td class="l">関連付けられていない Elastic IP アドレス</td></tr>
+        <tr><td class="l">アイドル状態のロードバランサー</td><td class="l">利用頻度の低い Amazon EBS ボリューム</td></tr>
+        <tr><td class="l">アイドル状態の NAT ゲートウェイ</td><td class="l">RI のリース有効期限切れ</td></tr>
+      </table>
+    </div>
+    <div class="point warn"><b>ひっかけ：</b>Trusted Advisor のチェックを全部使えるのは Business Support+・Enterprise Support などのプラン。基本サポートでは、サービス制限のすべてのチェックと、セキュリティと障害耐性の一部のチェックだけ。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/cost-management/latest/userguide/cost-optimization-hub.html">Cost Optimization Hub による機会の特定</a>（「リソースの適切なサイジング、アイドル状態のリソースの削除、Savings Plans、リザーブドインスタンスに関する推奨事項を作成します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/awssupport/latest/user/trusted-advisor.html">AWS Trusted Advisor</a>（「AWS Trusted Advisor チェックは、 AWS Business Support+、 AWS Enterprise Support、または AWS Unified Operations プランをご利用のお客様が利用できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/awssupport/latest/user/cost-optimization-checks.html">コスト最適化</a></div>
+</section>
+
+<section class="slide">
+  <h1>EC2 の休止：止めている間は払わない</h1>
+  <svg width="856" height="150" viewBox="0 0 856 150">
+    <defs><marker id="a5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="30" width="200" height="90" rx="8" fill="#1f5fa8"/><text x="110" y="54" fill="#fff" font-weight="700">running</text><text x="110" y="74" fill="#fff">RAM にデータを温めた状態</text><text x="110" y="94" fill="#fff">インスタンスの料金</text>
+      <rect x="320" y="30" width="220" height="90" rx="8" fill="#4a5a78"/><text x="430" y="54" fill="#fff" font-weight="700">休止（stopped）</text><text x="430" y="74" fill="#fff">RAM の内容は EBS ルートに</text><text x="430" y="94" fill="#fff">インスタンスの料金なし</text>
+      <rect x="650" y="30" width="196" height="90" rx="8" fill="#3a7d44"/><text x="748" y="54" fill="#fff" font-weight="700">再開</text><text x="748" y="74" fill="#fff">RAM の内容を戻す</text><text x="748" y="94" fill="#fff">プロセスも続きから</text>
+      <line x1="210" y1="75" x2="318" y2="75" stroke="#1f3a68" stroke-width="2" marker-end="url(#a5)"/><text x="264" y="66" fill="#1f3a68">夜</text>
+      <line x1="540" y1="75" x2="648" y2="75" stroke="#1f3a68" stroke-width="2" marker-end="url(#a5)"/><text x="594" y="66" fill="#1f3a68">朝</text>
+      <text x="430" y="142" fill="#b25000">かかるのは EBS ボリュームのストレージ（RAM の内容の分も）だけ</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>使いどころ：</b>起動してメモリを温めるまでに時間がかかるアプリを、温めた状態で止めておく（事前ウォーミング）。インスタンス ID も保たれ、データボリュームも付け直される。</div>
+    <div class="point warn"><b>条件：</b>休止を有効にして起動し、前提を満たしたインスタンスだけが休止できる。RAM の内容を EBS に移すデータ転送には料金がかからない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/Hibernate.html">Amazon EC2 インスタンスの休止</a>（「休止状態に入ると、インスタンスメモリ (RAM) に置かれていた内容が、Amazon Elastic Block Store (Amazon EBS) のルートボリュームに保存されます。」「EBS ボリュームのストレージに対しては、RAM の内容のストレージも含めて、料金が発生します。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>タグと複数アカウント</h1>
+  <p>コスト配分タグ（ユーザー定義・AWS 生成）とアクティブ化、タグポリシー、Cost Categories。Organizations の一括請求と、RI・Savings Plans の割引共有。</p>
+  <div class="foot"><span>AWS SAA #23 コストの見える化と管理</span><span>タスク 4.1〜4.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>コスト配分タグ：付けて、アクティブ化して、分ける</h1>
+  <svg width="856" height="140" viewBox="0 0 856 140">
+    <defs><marker id="a6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="14" width="200" height="34" rx="6" fill="#1f5fa8"/><text x="110" y="36" fill="#fff">EC2　CostCenter=Sales</text>
+      <rect x="10" y="54" width="200" height="34" rx="6" fill="#1f5fa8"/><text x="110" y="76" fill="#fff">S3　CostCenter=Dev</text>
+      <rect x="10" y="94" width="200" height="34" rx="6" fill="#4a5a78"/><text x="110" y="116" fill="#fff">EBS　（タグなし）</text>
+      <rect x="290" y="34" width="220" height="74" rx="8" fill="#b25000"/><text x="400" y="58" fill="#fff" font-weight="700">管理アカウントで</text><text x="400" y="76" fill="#fff">タグキーをアクティブ化</text><text x="400" y="94" fill="#fff">（出るまで・効くまで最大 24 時間）</text>
+      <rect x="590" y="20" width="256" height="100" rx="8" fill="#e3eefc" stroke="#1f5fa8"/><text x="718" y="42" fill="#1f5fa8" font-weight="700">Cost Explorer・レポート</text><text x="718" y="66">Sales：○○ USD</text><text x="718" y="86">Dev：○○ USD</text><text x="718" y="106">タグなし：○○ USD</text>
+      <g stroke="#1f3a68" stroke-width="2"><line x1="210" y1="31" x2="288" y2="58" marker-end="url(#a6)"/><line x1="210" y1="71" x2="288" y2="71" marker-end="url(#a6)"/><line x1="210" y1="111" x2="288" y2="86" marker-end="url(#a6)"/><line x1="510" y1="71" x2="588" y2="71" marker-end="url(#a6)"/></g>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:22%"></th><th>ユーザー定義タグ</th><th>AWS 生成タグ</th></tr>
+    <tr><td class="t">だれが付ける</td><td>自分（タグエディタでまとめて付けられる）</td><td>AWS（例：aws:createdBy＝作った人）</td></tr>
+    <tr><td class="t">使う前に</td><td>コスト配分タグとしてアクティブ化</td><td>管理アカウントの所有者が有効にする</td></tr>
+    <tr><td class="t">注意</td><td class="l">秘密の情報を入れない。組織を移ったらアクティブ化し直す</td><td class="l">aws:createdBy が入るのは一部のリージョンだけ</td></tr>
+  </table>
+  <div class="point warn"><b>ひっかけ：</b>コスト配分タグの管理画面に入れるのは、組織の管理アカウントと、組織に入っていない単一のアカウントだけ。コスト配分レポートには、タグ付きとタグなしの両方のリソースが出る。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html">コスト配分タグを使用した AWS コストの整理と追跡</a>（「タグ付きとタグなしのどちらのリソースもこのレポートに出力されるので、リソース別の請求額を明確に分類できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/awsaccountbilling/latest/aboutv2/activating-tags.html">ユーザー定義のコスト配分タグのアクティブ化</a>（「請求レポートにタグを表示するには、タグをアクティブ化する必要があります。」）</div>
+</section>
+
+<section class="slide">
+  <h1>タグポリシーと Cost Categories</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">タグポリシー（Organizations）：付け方をそろえる</div>
+      <svg width="410" height="120" viewBox="0 0 410 120">
+        <g font-size="11" text-anchor="middle">
+          <rect x="10" y="10" width="160" height="26" rx="4" fill="#fde7cf"/><text x="90" y="28" fill="#b25000">CostCenter</text>
+          <rect x="10" y="44" width="160" height="26" rx="4" fill="#fde7cf"/><text x="90" y="62" fill="#b25000">costcenter</text>
+          <rect x="10" y="78" width="160" height="26" rx="4" fill="#fde7cf"/><text x="90" y="96" fill="#b25000">Cost-Center</text>
+          <path d="M175,57 L225,57" stroke="#1f3a68" stroke-width="2"/><path d="M225,50 L240,57 L225,64 z" fill="#1f3a68"/>
+          <rect x="250" y="40" width="150" height="34" rx="6" fill="#3a7d44"/><text x="325" y="62" fill="#fff">CostCenter に統一</text>
+          <text x="205" y="116" fill="#4a5a78">キーも値も大文字と小文字を区別する</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="lbl">Cost Categories：ルールで社内の構造に分ける</div>
+      <table class="mx">
+        <tr><th>ルール（Claude の例）</th><th style="width:34%">カテゴリ</th></tr>
+        <tr><td class="l">アカウント 1〜3 のコスト</td><td>Team : Team1</td></tr>
+        <tr><td class="l">アカウント 4・5 のコスト</td><td>Team : Team2</td></tr>
+        <tr><td class="l">ほかのすべてのアカウント</td><td>Team : Team3</td></tr>
+      </table>
+      <div class="mini">すべてのコストの明細に付くキーと値の組。Cost Explorer と Budgets で、追加の請求のディメンションとして使える。</div>
+    </div>
+  </div>
+  <div class="point"><b>見分け方：</b>「タグの書き方がばらばら」→ タグポリシー。「アカウントや条件をまとめて部署別に見る」→ Cost Categories。「タグで分けて見られない」→ まずコスト配分タグのアクティブ化。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_tag-policies.html">タグポリシー</a>（「タグポリシーを使用すると、組織のアカウントの AWS リソースにアタッチされたタグを標準化できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/awsaccountbilling/latest/aboutv2/manage-cost-categories.html">AWS Cost Categories によるコストの整理</a>（「Cost Categories では、コストを意味のあるカテゴリにグループ化するルールを作成できます。」「Cost Explorer と AWSBudgets では、コストカテゴリが追加の請求ディメンションとして表示されます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>一括請求と割引の共有</h1>
+  <svg width="856" height="160" viewBox="0 0 856 160">
+    <g font-size="11" text-anchor="middle">
+      <rect x="320" y="8" width="216" height="50" rx="8" fill="#1f3a68"/><text x="428" y="30" fill="#fff" font-weight="700">管理アカウント</text><text x="428" y="48" fill="#fff">全メンバーの料金を払う・請求書 1 つ</text>
+      <g stroke="#1f3a68" stroke-width="2"><line x1="428" y1="58" x2="110" y2="96"/><line x1="428" y1="58" x2="320" y2="96"/><line x1="428" y1="58" x2="536" y2="96"/><line x1="428" y1="58" x2="746" y2="96"/></g>
+      <rect x="20" y="96" width="180" height="50" rx="8" fill="#1f5fa8"/><text x="110" y="118" fill="#fff">本番アカウント</text><text x="110" y="136" fill="#fff">RI を購入</text>
+      <rect x="230" y="96" width="180" height="50" rx="8" fill="#1f5fa8"/><text x="320" y="118" fill="#fff">開発アカウント</text><text x="320" y="136" fill="#fff">RI の割引が付く</text>
+      <rect x="446" y="96" width="180" height="50" rx="8" fill="#1f5fa8"/><text x="536" y="118" fill="#fff">分析アカウント</text><text x="536" y="136" fill="#fff">S3 の使用量を合算</text>
+      <rect x="656" y="96" width="180" height="50" rx="8" fill="#fff" stroke="#b25000" stroke-width="2"/><text x="746" y="118" fill="#b25000">子会社アカウント</text><text x="746" y="136" fill="#b25000">割引の共有を無効化</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%">一括請求の利点</th><th>内容</th></tr>
+    <tr><td class="t">1 つの請求書</td><td class="l">複数のアカウントの請求をまとめる。メンバーの請求書は情報のためだけ</td></tr>
+    <tr><td class="t">合計使用量</td><td class="l">全アカウントの使用量を合算し、ボリューム料金割引・RI の割引・Savings Plans を共有する</td></tr>
+    <tr><td class="t">追加料金なし</td><td class="l">一括請求は追加のコストなしで使える</td></tr>
+  </table>
+  <div class="point"><b>割引共有：</b>管理アカウントが、組織全体の共有・グループごとの共有・アカウントごとの有効と無効を決める。独立採算のアカウントだけ共有を外す、などができる。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/awsaccountbilling/latest/aboutv2/consolidated-billing.html">AWS Organizations の請求の統合</a>（「これにより、ボリューム料金割引、リザーブドインスタンス割引、Savings Plans が共有されます。」「追加料金なし – 一括請求は追加コストなしで提供されます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/awsaccountbilling/latest/aboutv2/ri-turn-off.html">リザーブドインスタンスと Savings Plans の割引共有</a>（「個々のメンバーアカウントの共有割引を無効にすることができます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">見る・予測する<span>Cost Explorer（13 か月・18 か月の予測・80% の予測間隔・サイズと予約の推奨・期限切れアラート）、CUR・Data Exports（S3・Athena）、料金見積りツール</span></div>
+      <div class="box b2">見張る<span>Budgets（コスト・使用量・使用率・カバレッジ、予測でも通知、予算アクション）、コスト異常検出（機械学習）</span></div>
+      <div class="box b3">直す<span>Cost Optimization Hub、Trusted Advisor（アイドル・未使用の EIP など）、EC2 の休止</span></div>
+      <div class="box b4">分ける・まとめる<span>コスト配分タグとアクティブ化、タグポリシー、Cost Categories、一括請求、割引共有</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:54%">ひっかけ</th><th>正しくは</th></tr>
+        <tr><td class="l">タグを付けたのに分けられない</td><td class="x">アクティブ化</td></tr>
+        <tr><td class="l">買った SP が余っていないか</td><td class="x">使用率の予算</td></tr>
+        <tr><td class="l">しきい値なしで急な増加</td><td class="x">コスト異常検出</td></tr>
+        <tr><td class="l">超えたら EC2 を作らせない</td><td class="x">予算アクション</td></tr>
+        <tr><td class="l">使う前の見積りに Cost Explorer</td><td class="x">料金見積りツール</td></tr>
+        <tr><td class="l">タグの表記ゆれ</td><td class="x">タグポリシー</td></tr>
+      </table>
+      <div class="point">次の #24 では、ストレージとネットワークのコスト（S3 のストレージクラス・データ転送・NAT ゲートウェイなど）を学ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
