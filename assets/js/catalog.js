@@ -256,6 +256,7 @@ window.SITE_CATALOG = {
     sc: [
       { type: "terms", file: "terms/01.html", title: "脅威と脆弱性 用語集", desc: "攻撃ベクトル・攻撃対象領域・脅威モデリング・STRIDE・脅威シナリオ・10大脅威2026・BEC・ソーシャルエンジニアリング・踏み台、ボットと C&C・RAT・リバースシェル（コネクトバック）・ルートキット・ランサムウェア・クリプトジャッキング・ポリモーフィック／メタモーフィック・ファイルレス・エクスプロイトコード／キット・Mirai、認可の不備・入力確認・ハードコード・認証バイパス・平文・レースコンディション・OWASP の3つの Top 10、不正のトライアングル・ハクティビズム・RaaS・IAB・二重恐喝・ダークウェブ。42語と問題27問（過去の午前Ⅱ 8問を含む）", fields: [1], pdf: "terms/01.pdf" },
       { type: "terms", file: "terms/02.html", title: "攻撃の流れと認証への攻撃 用語集", desc: "サイバーキルチェーンの7段階・MITRE ATT&CK と TTP・フットプリンティング・ポートスキャン・初期侵入・権限昇格・永続化・ラテラルムーブメント・C2・持ち出し・ドメインフロンティング、ブルートフォース・辞書・リバースブルートフォース・パスワードスプレー・クレデンシャルスタッフィング・レインボーテーブル・Pass the Hash／Ticket・MFA 疲労攻撃・AiTM フィッシング、セッションハイジャック・セッション固定化・リプレイ・中間者・MITB とトランザクション署名。28語と問題22問（過去の午前Ⅱ 10問を含む）", fields: [2], pdf: "terms/02.pdf" },
+      { type: "terms", file: "terms/03.html", title: "Webアプリケーションへの攻撃 用語集", desc: "SQL・OS コマンド・ヘッダのインジェクション、トラバーサル、SSRF、XSS の3つの型、CSRF、クリックジャッキングと、根本的な対策・保険的な対策", fields: [3], pdf: "terms/03.pdf" },
     ],
     aws: [
       { type: "terms", file: "terms/01.html", title: "IAMとポリシー 用語集", desc: "ルートユーザー・IAM ユーザー・グループ・ロール・インスタンスプロファイル・STS の一時的な認証情報・アクセスキー・MFA、ID ベースとリソースベースのポリシー・AWS 管理／カスタマー管理／インライン・Effect・Action・NotAction・Resource・Principal・Condition とグローバル条件キー・ポリシー変数・ARN、暗黙的な拒否と明示的な拒否・アクセス許可の境界・セッションポリシー・クロスアカウントアクセス・外部 ID・iam:PassRole・IAM Access Analyzer・認証情報レポート。38語と問題30問（タスク 1.1）", fields: [1], pdf: "terms/01.pdf" },
