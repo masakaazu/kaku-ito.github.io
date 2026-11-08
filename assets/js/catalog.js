@@ -351,6 +351,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/04.html", title: "ネストしたクラス 用語集", desc: "内部クラスと外側のインスタンス・outer.new Inner()・Outer.this・Java 16 からの内部クラスの static メンバー、static なネストしたクラスとインタフェースの中のクラス、ローカルクラスと effectively final・変数の捕捉・ローカルのレコード、無名クラスの決まり（コンストラクタ不可・初期化子・var）と this、二重かっこ初期化、バイナリ名。20語と問題30問", fields: [4], pdf: "terms/04.pdf" },
       { type: "terms", file: "terms/05.html", title: "ラムダ式と関数型インタフェース 用語集", desc: "関数型インタフェースの条件、ラムダ式の書き方とスコープ、メソッド参照の4種類、java.util.function と合成メソッド。22語と問題30問", fields: [5], pdf: "terms/05.pdf" },
       { type: "terms", file: "terms/06.html", title: "ストリームの生成と中間操作 用語集", desc: "パイプラインと遅延評価・要素の流れる順・短絡操作・使用済みストリームの IllegalStateException、Stream.of／Arrays.stream／iterate／generate／range、filter・map・flatMap・mapMulti・distinct・sorted・peek・limit・skip・takeWhile・dropWhile、toList。25語と問題30問", fields: [6], pdf: "terms/06.pdf" },
+      { type: "terms", file: "terms/07.html", title: "リダクションとCollectors 用語集", desc: "reduce の 3 つの形と単位元・Optional、collect の 3 引数版、toMap の重複キーとマージ・null、toList／toUnmodifiableList／toCollection／joining、counting（Long）・averagingInt（Double）・summarizingInt・maxBy・teeing、groupingBy・partitioningBy と mapping／filtering／flatMapping／reducing。24語と問題30問", fields: [7], pdf: "terms/07.pdf" },
     ],
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },
