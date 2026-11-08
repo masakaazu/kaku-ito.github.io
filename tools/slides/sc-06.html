@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>支援士 #06 セキュリティの考え方とリスクマネジメント 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">情報処理安全確保支援士試験　科目A-2　中分類24 情報セキュリティマネジメント　#06</div>
+  <h1>セキュリティの考え方とリスクマネジメント</h1>
+  <p>何を守るのか（7つの特性）、どう守るのか（原則）、どこまで守るのか（リスクの評価と対応）</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（IPA の支援士試験シラバス案、JIS Q 27000・27001・31000、ISO/IEC 27005 など）を書いた。過去問は IPA 公開の午前Ⅱ。金額の例は Claude が作った</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>シラバス案 中分類24 小分類1「情報セキュリティの考え方」・小分類2「リスクマネジメント」</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 情報セキュリティの考え方<span>CIA＋真正性・責任追跡性・否認防止・信頼性、多層防御、バイ・デザイン／デフォルト、最小権限、need-to-know、フェイルセーフ／セキュア、責任共有モデル</span></div>
+      <div class="box b2">2 リスクの見つけ方と測り方<span>情報資産台帳、リスクの種類、ALE・SLE・ARO、4つのアプローチ、リスク基準、特定・分析・評価、リスク所有者</span></div>
+      <div class="box b3">3 リスク対応<span>回避・低減・移転・保有、リスク対応計画、リスク登録簿、残留リスクと受容の承認</span></div>
+    </div>
+    <div>
+      <div class="lbl">過去の午前Ⅱでの出方</div>
+      <table class="mx">
+        <tr><th>テーマ</th><th style="width:36%">出た回</th></tr>
+        <tr><td class="l">JIS Q 27000 の用語の定義</td><td class="t">R5秋・R7春</td></tr>
+        <tr><td class="l">フールプルーフなど設計の名前</td><td class="t">R4春</td></tr>
+      </table>
+      <div class="point">午前Ⅱでは少ないが、<b>科目B（午後）でリスクアセスメントの手順や対応の選択</b>を問われる土台。AP・SG の午前でも頻出。</div>
+      <div class="point warn">定義の<b>入れ替え</b>が定番のひっかけ：脅威⇔脆弱性、リスク評価⇔リスク対応。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）Ver.0.1」中分類24／IPA 午前Ⅱ 令和5年度秋期 問11・令和7年度春期 問10・令和4年度春期 問22</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>情報セキュリティの考え方</h1>
+  <p>守る特性を言い当て、守り方の原則を区別する。</p>
+  <div class="foot"><span>支援士 #06 セキュリティの考え方とリスクマネジメント</span><span>24-1・24-2</span></div>
+</section>
+
+<section class="slide">
+  <h1>7つの特性：CIA と、それを補う4つ</h1>
+  <table class="mx">
+    <tr><th style="width:14%">特性</th><th>JIS Q 27000 の意味（要約）</th><th style="width:22%">損なう例</th><th style="width:22%">守る手段</th></tr>
+    <tr><td class="t">機密性</td><td class="l">認可されない者に使用させず、開示しない</td><td class="l">漏えい・盗聴</td><td class="l">アクセス制御・暗号化</td></tr>
+    <tr><td class="t">完全性</td><td class="l">正確で完全である</td><td class="l">改ざん・誤更新</td><td class="l">ハッシュ・署名</td></tr>
+    <tr><td class="t">可用性</td><td class="l">認可された者が要求したとき使える</td><td class="l">DoS・故障</td><td class="l">冗長化・バックアップ</td></tr>
+    <tr><td class="x">真正性</td><td class="l">主張どおりのものである</td><td class="l">なりすまし</td><td class="l">認証・署名</td></tr>
+    <tr><td class="x">責任追跡性</td><td class="l">動作をその主体だけに一意にさかのぼれる</td><td class="l">共有アカウント</td><td class="l">個人 ID・ログ</td></tr>
+    <tr><td class="x">否認防止</td><td class="l">事象・行為とその主体を後から否認させない</td><td class="l">「送っていない」</td><td class="l">署名＋タイムスタンプ</td></tr>
+    <tr><td class="x">信頼性</td><td class="l">意図した動作・結果が一貫している</td><td class="l">誤動作</td><td class="l">テスト・品質管理</td></tr>
+  </table>
+  <div class="point warn" style="margin-top:10px"><b>否認防止に MAC は不十分：</b>共通鍵なので受信者も同じ MAC を作れる → 第三者に「送信者が作った」と示せない（#15）。</div>
+  <div class="cite">出典：JIS Q 27000:2019 用語の定義（情報セキュリティ・機密性・完全性・可用性・真正性・否認防止・信頼性など）。要約は Claude</div>
+</section>
+
+<section class="slide">
+  <h1>守り方の原則：似た言葉を区別する</h1>
+  <div class="cols">
+    <table class="mx">
+      <tr><th>原則</th><th>一言で</th></tr>
+      <tr><td class="t">多層防御</td><td class="l">性質の違う層を重ねる（入口・内部・出口）</td></tr>
+      <tr><td class="t">セキュリティ・バイ・デザイン</td><td class="l">企画・設計から組み込む</td></tr>
+      <tr><td class="t">セキュア・バイ・デフォルト</td><td class="l">初期設定のままで安全</td></tr>
+      <tr><td class="t">最小権限の原則</td><td class="l">操作の権限を必要最小限に</td></tr>
+      <tr><td class="t">need-to-know</td><td class="l">知る必要のある情報だけ見せる</td></tr>
+      <tr><td class="t">攻撃対象領域の最小化</td><td class="l">入口を減らす</td></tr>
+    </table>
+    <div>
+      <div class="lbl">多層防御の典型</div>
+      <div class="flow" style="gap:4px">
+        <div class="box b5">入口<span>メール検査・FW・WAF</span></div><div class="to">→</div>
+        <div class="box b2">内部<span>EDR・最小権限・分割</span></div><div class="to">→</div>
+        <div class="box b1">出口<span>外向き通信の監視・C2 遮断</span></div>
+      </div>
+      <div class="point warn">同じファイアウォールを2台並べても、同じ方法で破られる → 多層防御とはいえない。</div>
+      <div class="point"><b>最小権限 vs need-to-know：</b>「何ができるか」と「何を知ってよいか」。部長でも関係ない部署の設計書は見られない＝need-to-know。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」中分類24 用語例／NISC「セキュリティ・バイ・デザイン」／CISA「Secure by Design」（2023）</div>
+</section>
+
+<section class="slide">
+  <h1>故障・誤操作に備える設計の名前</h1>
+  <div class="cols">
+    <table class="mx">
+      <tr><th style="width:28%">名前</th><th>故障・誤りが起きたら</th><th style="width:30%">例</th></tr>
+      <tr><td class="t">フェイルセーフ</td><td class="l">安全（人命・設備）の側へ</td><td class="l">停電で非常口の錠が開く</td></tr>
+      <tr><td class="x">フェイルセキュア</td><td class="l">セキュリティ（閉じる・拒否）の側へ</td><td class="l">停電でサーバ室の錠は閉じたまま</td></tr>
+      <tr><td class="t">フェールソフト</td><td class="l">機能を落として動き続ける</td><td class="l">片方のエンジンで飛ぶ</td></tr>
+      <tr><td class="t">フォールトトレランス</td><td class="l">冗長化で全機能を続ける</td><td class="l">二重化したサーバ</td></tr>
+      <tr><td class="t">フールプルーフ</td><td class="l">誤操作をさせない・知らせる</td><td class="l">誤入力のメッセージ</td></tr>
+    </table>
+    <div>
+      <div class="point"><b>R4春 問22：</b>「規定外の無効なデータが入力されたとき、誤入力のメッセージを出して正しい入力を促す」＝<b>フールプルーフ</b>。</div>
+      <div class="point warn">認証サーバに届かないとき、ログインを<b>許す</b>のはフェイルオープン、<b>拒む</b>のはフェイルセキュア（フェイルクローズ）。セキュリティでは拒む側が基本。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ 令和4年度春期 問22／IPA「支援士試験 シラバス（案）」用語例「フェイルセーフ／フェイルセキュア」</div>
+</section>
+
+<section class="slide">
+  <h1>責任共有モデル：どこまでが利用者の責任か</h1>
+  <table class="mx">
+    <tr><th style="width:22%">層</th><th>オンプレミス</th><th>IaaS</th><th>PaaS</th><th>SaaS</th></tr>
+    <tr><td class="t">データ・アカウント・アクセス権</td><td class="x">利用者</td><td class="x">利用者</td><td class="x">利用者</td><td class="x">利用者</td></tr>
+    <tr><td class="t">アプリケーション</td><td class="x">利用者</td><td class="x">利用者</td><td class="x">利用者</td><td class="t">事業者</td></tr>
+    <tr><td class="t">ミドルウェア・ランタイム</td><td class="x">利用者</td><td class="x">利用者</td><td class="t">事業者</td><td class="t">事業者</td></tr>
+    <tr><td class="t">OS</td><td class="x">利用者</td><td class="x">利用者</td><td class="t">事業者</td><td class="t">事業者</td></tr>
+    <tr><td class="t">仮想化・物理・設備</td><td class="x">利用者</td><td class="t">事業者</td><td class="t">事業者</td><td class="t">事業者</td></tr>
+  </table>
+  <div class="cols" style="margin-top:12px">
+    <div class="point warn">どの形態でも<b>データとアクセス権は利用者</b>。クラウドの漏えいの多くは、公開設定の誤りなど利用者側の範囲で起きる（#18）。</div>
+    <div class="point"><b>外部委託・クラウドの利用：</b>選ぶ（ISMAP・認証）→ 契約（要件・再委託・監査権・報告）→ 監視 → 終了（返却・消去）。委託しても<b>委託元の責任は残る</b>。</div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」用語例「クラウドサービスの責任共有モデル」「外部委託やクラウドサービスの利用時における情報セキュリティ」。表は一般的な分担を Claude が単純化</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>リスクの見つけ方と測り方</h1>
+  <p>特定 → 分析 → 評価。定義を入れ替える問題に注意。</p>
+  <div class="foot"><span>支援士 #06 セキュリティの考え方とリスクマネジメント</span><span>24-1・24-2</span></div>
+</section>
+
+<section class="slide">
+  <h1>リスクマネジメントの流れ（JIS Q 31000）</h1>
+  <div class="cols wide-r">
+    <div class="stack">
+      <div class="box b5">適用範囲・状況・基準の確定<span>リスク基準を決めておく</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b1">リスクアセスメント<span>① リスク特定 → ② リスク分析 → ③ リスク評価</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">リスク対応<span>回避・低減・移転・保有 → 対応計画</span></div>
+      <div class="lbl" style="margin-top:6px">すべての段階を囲む：コミュニケーション及び協議／モニタリング及びレビュー／記録作成及び報告</div>
+    </div>
+    <table class="mx">
+      <tr><th style="width:22%">段階</th><th>JIS Q 27000 の定義（要約）</th></tr>
+      <tr><td class="t">リスク特定</td><td class="l">発見・認識・記述。リスク源・事象・原因・起こりうる結果の特定を含む</td></tr>
+      <tr><td class="t">リスク分析</td><td class="l">特質を理解し、<b>リスクレベル</b>を決定する</td></tr>
+      <tr><td class="t">リスク評価</td><td class="l">分析結果を<b>リスク基準と比較</b>し、受容・許容できるかを決める</td></tr>
+      <tr><td class="t">リスク対応</td><td class="l">リスクを<b>修正</b>する</td></tr>
+      <tr><td class="t">脅威</td><td class="l">損害を与えうる望ましくないインシデントの<b>潜在的な原因</b></td></tr>
+      <tr><td class="t">脆弱性</td><td class="l">脅威に付け込まれうる資産・管理策の<b>弱点</b></td></tr>
+    </table>
+  </div>
+  <div class="cite">出典：JIS Q 31000:2019 図4 プロセス／JIS Q 27000:2019 用語の定義。要約は Claude</div>
+</section>
+
+<section class="slide">
+  <h1>R7春 問10（R5秋 問11 と同じ）：定義の入れ替えを見抜く</h1>
+  <table class="mx">
+    <tr><th style="width:8%"></th><th>選択肢の文</th><th style="width:30%">本当は何の定義か</th></tr>
+    <tr><td class="t">ア</td><td class="l">脅威とは、一つ以上の要因によって付け込まれる可能性がある、資産又は管理策の弱点</td><td class="x">脆弱性</td></tr>
+    <tr><td class="t">イ</td><td class="l">脆弱性とは、システム又は組織に損害を与える可能性がある、望ましくないインシデントの潜在的な原因</td><td class="x">脅威</td></tr>
+    <tr><td class="t">ウ</td><td class="l">リスク対応とは、受容・許容可能かを決定するために、リスク分析の結果をリスク基準と比較するプロセス</td><td class="x">リスク評価</td></tr>
+    <tr><td class="t">エ</td><td class="l">リスク特定とは、リスクを発見、認識及び記述するプロセス（リスク源、事象、原因、結果の特定を含む）</td><td class="t"><b>正しい</b></td></tr>
+  </table>
+  <div class="cols" style="margin-top:12px">
+    <div class="point"><b>覚え方：</b>脅威は「原因」、脆弱性は「弱点」。評価は「基準と比べる」、対応は「修正する」。</div>
+    <div class="point warn">リスク評価の英語は <b>Risk Evaluation</b>。リスクアセスメント（Assessment）は特定・分析・評価の<b>全体</b>。</div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ 令和7年度春期 問10・令和5年度秋期 問11／JIS Q 27000:2019</div>
+</section>
+
+<section class="slide">
+  <h1>定量的リスク分析：ALE = SLE × ARO</h1>
+  <div class="cols">
+    <div>
+      <div class="formula">SLE ＝ 資産の価値 × 暴露係数（EF）</div>
+      <div class="formula" style="margin-top:6px">ALE ＝ SLE × ARO（年間発生率）</div>
+      <div class="lbl" style="margin-top:10px">計算の例</div>
+      <table class="mx">
+        <tr><td class="l">資産の価値</td><td class="t">4,000 万円</td></tr>
+        <tr><td class="l">暴露係数 EF</td><td class="t">25%</td></tr>
+        <tr><td class="l">SLE</td><td class="t">1,000 万円</td></tr>
+        <tr><td class="l">ARO（4年に1回）</td><td class="t">0.25</td></tr>
+        <tr><td class="l"><b>ALE</b></td><td class="x">250 万円/年</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">対策の費用対効果</div>
+      <div class="steps">
+        <li>対策で ARO が 0.25 → 0.1 になる</li>
+        <li>対策後の ALE ＝ 1,000 × 0.1 ＝ 100 万円</li>
+        <li>減る損失 ＝ 250 − 100 ＝ <b>150 万円/年</b></li>
+        <li>対策の費用 80 万円/年 &lt; 150 万円 → <b>導入する価値あり</b></li>
+      </div>
+      <div class="point warn">定量的分析は比べやすいが、ARO や EF の見積もりが難しい。定性的分析（高・中・低、リスクマトリックス）は手軽だが人によって差が出る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」用語例「年間予想損失額（ALE），単一損失予想額（SLE），年間発生率（ARO）」。数値の例は Claude が作った</div>
+</section>
+
+<section class="slide">
+  <h1>リスク分析の4つのアプローチとリスクマトリックス</h1>
+  <div class="cols">
+    <table class="mx">
+      <tr><th>アプローチ</th><th>方法</th><th style="width:28%">長所／短所</th></tr>
+      <tr><td class="t">ベースライン</td><td class="l">既存の基準・管理策の一覧と比べる</td><td class="l">速い／固有のリスクを見落とす</td></tr>
+      <tr><td class="t">非形式的</td><td class="l">専門家の経験と判断</td><td class="l">手軽／偏る</td></tr>
+      <tr><td class="t">詳細リスク分析</td><td class="l">資産ごとに価値・脅威・脆弱性を評価</td><td class="l">精密／時間と費用</td></tr>
+      <tr><td class="t">組合せ</td><td class="l">重要部分は詳細、他はベースライン</td><td class="l">バランスが良い</td></tr>
+    </table>
+    <div>
+      <div class="lbl">リスクマトリックス（定性的分析）</div>
+      <table class="mx mini">
+        <tr><th>影響＼起こりやすさ</th><th>低</th><th>中</th><th>高</th></tr>
+        <tr><td class="t">大</td><td class="t">中</td><td class="x">高</td><td class="x">高</td></tr>
+        <tr><td class="t">中</td><td class="t">低</td><td class="t">中</td><td class="x">高</td></tr>
+        <tr><td class="t">小</td><td class="t">低</td><td class="t">低</td><td class="t">中</td></tr>
+      </table>
+      <div class="point">マスの値＝<b>リスクレベル</b>。これを<b>リスク基準</b>（例：「高」は必ず対応、「低」は受容）と比べるのがリスク評価。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」用語例「リスク分析のアプローチ」「リスクマトリックス」／ISO/IEC TR 13335-3</div>
+</section>
+
+<section class="slide">
+  <h1>資産・リスクの種類・リスクの責任者</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">リスクの種類（シラバス案の例）</div>
+      <table class="mx">
+        <tr><td class="t">オペレーショナル</td><td class="l">業務の誤り・障害・内部不正</td></tr>
+        <tr><td class="t">サプライチェーン</td><td class="l">取引先・委託先からの被害（#05）</td></tr>
+        <tr><td class="t">外部サービス利用</td><td class="l">クラウド・SaaS の障害や設定の誤り</td></tr>
+        <tr><td class="t">SNS の情報発信</td><td class="l">炎上・誤投稿・なりすましアカウント</td></tr>
+        <tr><td class="t">地政学的</td><td class="l">国家間の対立による攻撃・規制</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="point"><b>情報資産台帳</b>（何を持っているか）→ <b>リスク登録簿</b>（何が起こりうるか、だれが責任者か、対応はどこまで進んだか）。</div>
+      <div class="point warn"><b>リスク所有者：</b>リスクを運用管理する責任と権限をもつ人。JIS Q 27001 6.1.3 f) は、リスク対応計画と<b>残留リスクの受容</b>について、リスク所有者の承認を得ることを求める。</div>
+      <div class="point"><b>リスク態度：</b>リスク選好（どれだけのリスクを取ってよいか）、リスク回避的な態度。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」中分類24 小分類2 用語例／JIS Q 27001:2023 6.1.2・6.1.3</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>リスク対応</h1>
+  <p>4つの選択肢と、必ず残るリスクの扱い。</p>
+  <div class="foot"><span>支援士 #06 セキュリティの考え方とリスクマネジメント</span><span>24-1・24-2</span></div>
+</section>
+
+<section class="slide">
+  <h1>リスク対応の4つの選択肢</h1>
+  <div class="cols">
+    <table class="mx">
+      <tr><th style="width:24%">選択肢</th><th>すること</th><th style="width:34%">例</th></tr>
+      <tr><td class="t">回避</td><td class="l">原因となる活動をやめる・始めない</td><td class="l">カード情報を自社で持たない</td></tr>
+      <tr><td class="t">低減（軽減）</td><td class="l">起こりやすさ・影響を小さく</td><td class="l">MFA・暗号化・バックアップ</td></tr>
+      <tr><td class="t">移転（共有）</td><td class="l">他者と分け合う</td><td class="l">サイバー保険・外部委託</td></tr>
+      <tr><td class="t">保有（受容）</td><td class="l">判断して受け入れる</td><td class="l">損失が小さく対策が割高</td></tr>
+    </table>
+    <div>
+      <div class="lbl">起こりやすさ × 影響で選ぶ目安</div>
+      <table class="mx mini">
+        <tr><th></th><th>起こりにくい</th><th>起こりやすい</th></tr>
+        <tr><td class="t">影響 大</td><td class="t">移転</td><td class="x">回避・低減</td></tr>
+        <tr><td class="t">影響 小</td><td class="t">保有</td><td class="t">低減</td></tr>
+      </table>
+      <div class="point warn">保険は<b>お金</b>を移すだけ。評判の低下・法的責任・業務の停止は移せない。</div>
+      <div class="point">リスクコントロール（回避・低減）とリスクファイナンス（移転・保有）という分け方もある。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JIS Q 31000:2019 6.5.2 リスク対応の選択肢／IPA「支援士試験 シラバス（案）」用語例「リスク対応の選択肢」。目安の表は一般的な整理を Claude がまとめた</div>
+</section>
+
+<section class="slide">
+  <h1>対応計画・残留リスク・受容の承認</h1>
+  <div class="flow">
+    <div class="box b1">リスク評価<span>基準を超えるリスク</span></div><div class="to">→</div>
+    <div class="box b2">対応の選択<span>回避・低減・移転・保有</span></div><div class="to">→</div>
+    <div class="box b3">リスク対応計画<span>だれが・いつまでに・どの管理策</span></div><div class="to">→</div>
+    <div class="box b5">残留リスク<span>基準以下かを確認</span></div><div class="to">→</div>
+    <div class="box" style="background:#b23a2c">リスク所有者が承認<span>計画と残留リスクの受容</span></div>
+  </div>
+  <div class="cols" style="margin-top:14px">
+    <div>
+      <div class="point"><b>残留リスク</b>は必ず残る。ゼロにはできない。気付いていないリスクも含みうる。</div>
+      <div class="point"><b>リスクコミュニケーション：</b>経営者・従業員・取引先などと、すべての段階で情報を共有し意見を交わす。</div>
+    </div>
+    <div class="point warn"><b>保有 ≠ 放置。</b>分析・評価のうえで「受け入れる」と判断し、承認を得て、監視を続ける。把握していないのは対応ではなく管理の不備。</div>
+  </div>
+  <div class="cite">出典：JIS Q 27001:2023 6.1.3／JIS Q 31000:2019 6.2 コミュニケーション及び協議</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ：本番での問われ方</h1>
+  <div class="cols">
+    <div>
+      <div class="point"><b>特性を当てる：</b>共有アカウント→責任追跡性、署名の否定→否認防止、なりすまし→真正性。</div>
+      <div class="point"><b>設計の名前：</b>誤入力→フールプルーフ、安全側へ→フェイルセーフ、閉じる側へ→フェイルセキュア。</div>
+      <div class="point"><b>JIS Q 27000 の定義：</b>脅威＝原因、脆弱性＝弱点、評価＝比較、対応＝修正、特定＝発見・認識・記述。</div>
+    </div>
+    <div>
+      <div class="point"><b>計算：</b>ALE＝資産価値×EF×ARO。対策の価値＝ALE の減少額 − 費用。</div>
+      <div class="point"><b>対応の分類：</b>保険＝移転、やめる＝回避、対策＝低減、受け入れる＝保有。</div>
+      <div class="point warn">ISMS の要求事項（4〜10 箇条）と管理策（附属書 A）は <b>#08</b> で。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ（このPDFの問題演習）／JIS Q 27000:2019・JIS Q 27001:2023・JIS Q 31000:2019</div>
+</section>
+
+</body>
+</html>
