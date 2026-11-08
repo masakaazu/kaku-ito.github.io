@@ -359,6 +359,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/12.html", title: "スレッドと同期 用語集", desc: "Thread の継承と Runnable、start と run・IllegalThreadStateException、6 つの状態（BLOCKED・WAITING・TIMED_WAITING）、join・sleep・interrupt、デーモン、競合状態と synchronized（this と Class のロック）・volatile・デッドロック、wait／notify・ReentrantLock・ReadWriteLock・AtomicInteger。20語と問題30問", fields: [12], pdf: "terms/12.pdf" },
       { type: "terms", file: "terms/13.html", title: "ExecutorServiceと並行コレクション 用語集", desc: "ExecutorService・Future・Callable・shutdown、CopyOnWriteArrayList・ConcurrentHashMap・BlockingQueue、CountDownLatch・CyclicBarrier・Flow。20語と問題30問", fields: [13], pdf: "terms/13.pdf" },
       { type: "terms", file: "terms/14.html", title: "コンソールとI/Oストリーム 用語集", desc: "System.in・Console、InputStream／Reader・Buffered・PrintWriter・try-with-resources、Serializable・transient・ObjectOutputStream。20語と問題30問", fields: [14], pdf: "terms/14.pdf" },
+      { type: "terms", file: "terms/15.html", title: "PathとFiles 用語集", desc: "Path の分解・resolve・relativize・normalize、Files の作成・コピー・削除・読み書き、walk・list・find・属性。20語と問題30問", fields: [15], pdf: "terms/15.pdf" },
     ],
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },
