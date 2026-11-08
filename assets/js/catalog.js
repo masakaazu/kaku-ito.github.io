@@ -349,6 +349,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/02.html", title: "ジェネリクス 用語集", desc: "ジェネリッククラス・ジェネリックメソッドと型引数の明示、ダイヤモンドと var、ジェネリック型の実装とブリッジメソッド、境界（extends・&・再帰的な境界）、ワイルドカード（?・? extends・? super）と PECS、不変性と配列の共変性、型消去・原型・ヒープ汚染、new T()・static T・instanceof・ジェネリック配列・同じイレイジャの制限。22語と問題30問", fields: [2], pdf: "terms/02.pdf" },
       { type: "terms", file: "terms/03.html", title: "ソートと便利なメソッド 用語集", desc: "Comparable と自然順序・compareTo の戻り値・equals との一貫性、Comparator の comparing・comparingInt・thenComparing・reversed のかかり方・naturalOrder・reverseOrder・nullsFirst／nullsLast・CASE_INSENSITIVE_ORDER、安定なソート、List.sort・Collections.sort・Arrays.sort、binarySearch・max・min・frequency・disjoint・reverse・swap・fill・nCopies・emptyList・同期化したビュー。26語と問題30問", fields: [3], pdf: "terms/03.pdf" },
       { type: "terms", file: "terms/04.html", title: "ネストしたクラス 用語集", desc: "内部クラスと外側のインスタンス・outer.new Inner()・Outer.this・Java 16 からの内部クラスの static メンバー、static なネストしたクラスとインタフェースの中のクラス、ローカルクラスと effectively final・変数の捕捉・ローカルのレコード、無名クラスの決まり（コンストラクタ不可・初期化子・var）と this、二重かっこ初期化、バイナリ名。20語と問題30問", fields: [4], pdf: "terms/04.pdf" },
+      { type: "terms", file: "terms/05.html", title: "ラムダ式と関数型インタフェース 用語集", desc: "関数型インタフェースの条件、ラムダ式の書き方とスコープ、メソッド参照の4種類、java.util.function と合成メソッド。22語と問題30問", fields: [5], pdf: "terms/05.pdf" },
     ],
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },

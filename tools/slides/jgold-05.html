@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Gold #05 ラムダ式と関数型インタフェース 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">Java SE 17 Programmer II（1Z0-826-JPN）　試験内容 2 関数型インタフェースとラムダ式　#05</div>
+  <h1>ラムダ式と関数型インタフェース</h1>
+  <p>関数型インタフェース・ラムダ式の書き方・メソッド参照・java.util.function</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（Oracle の試験内容チェックリスト、Java 言語仕様 JLS、Java SE 17 API の java.util.function、The Java Tutorials の Lambda Expressions・Method References）を書いた。コードの結果は JDK 17（Eclipse Temurin 17.0.21）で実行して確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>「抽象メソッド 1 つ」に処理を渡す</small></h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">関数型インタフェース<span>抽象メソッドがちょうど 1 つ</span></div>
+      <div class="arrow">↑ ターゲット型として代入</div>
+      <div class="cols" style="gap:8px">
+        <div class="box b2">ラムダ式<span>s -&gt; s.length()</span></div>
+        <div class="box b3">メソッド参照<span>String::length</span></div>
+      </div>
+      <div class="point">ラムダ式もメソッド参照も、それだけでは型が決まらない。代入先・引数・キャストの型（ターゲット型）で決まる。</div>
+    </div>
+    <div>
+      <div class="lbl">java.util.function の 4 つの基本</div>
+      <table class="mx">
+        <tr><th>型</th><th>メソッド</th><th>形</th></tr>
+        <tr><td class="t">Supplier&lt;T&gt;</td><td class="l">get()</td><td class="l">() → T</td></tr>
+        <tr><td class="t">Consumer&lt;T&gt;</td><td class="l">accept(T)</td><td class="l">T → void</td></tr>
+        <tr><td class="t">Predicate&lt;T&gt;</td><td class="l">test(T)</td><td class="l">T → boolean</td></tr>
+        <tr><td class="t">Function&lt;T,R&gt;</td><td class="l">apply(T)</td><td class="l">T → R</td></tr>
+      </table>
+      <div class="point warn">メソッド名の取り違え（Supplier の apply など）は cannot find symbol。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JLS 9.8・15.13・15.27／API java.util.function／試験内容チェックリスト 2</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>関数型インタフェース</h1>
+  <p>抽象メソッドの数え方。</p>
+  <div class="foot"><span>Java Gold #05 ラムダ式と関数型インタフェース</span><span>試験内容 2</span></div>
+</section>
+
+<section class="slide">
+  <h1>抽象メソッドの数え方</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">@FunctionalInterface
+interface Calc {
+  int apply(int a, int b);         <span class="c">// 1 つ目（これだけ）</span>
+  default int twice(int x) { return apply(x, 2); }
+  static Calc plus() { return (a, b) -&gt; a + b; }
+  boolean equals(Object o);        <span class="c">// 数えない</span>
+  String toString();               <span class="c">// 数えない</span>
+}
+Calc c = (a, b) -&gt; a * b;
+c.apply(3, 4)  <span class="c">// 12</span>
+c.twice(5)     <span class="c">// 10</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>中身</th><th>数えるか</th></tr>
+        <tr><td class="t">ふつうの抽象メソッド</td><td class="l">○</td></tr>
+        <tr><td class="t">default・static・private</td><td class="l">×</td></tr>
+        <tr><td class="t">Object の public と同じ</td><td class="l">×</td></tr>
+        <tr><td class="t">親 2 つから同じ go(String)</td><td class="l">1 つと数える</td></tr>
+      </table>
+      <div class="point warn"><code>interface D extends Runnable { void stop(); }</code> は run と stop で 2 つ → @FunctionalInterface でエラー。</div>
+      <div class="point">@FunctionalInterface は付けなくても使える。付けると、条件違反をコンパイラが見つける。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JLS 9.8・9.6.4.9、API java.lang.FunctionalInterface／JDK 17 でのコンパイルと実行の結果</div>
+</section>
+
+<section class="slide">
+  <h1>ターゲット型がないとエラー</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">Object o = () -&gt; System.out.println("x");
+<span class="c">// × Object is not a functional interface</span>
+var r = () -&gt; System.out.println("x");
+<span class="c">// × cannot infer type for local variable r
+//   (lambda expression needs an explicit target-type)</span>
+Object o = <span class="k">(Runnable)</span> () -&gt; System.out.println("x");
+<span class="c">// ○ キャストで型を与える</span>
+Runnable r = () -&gt; { return 1; };
+<span class="c">// × bad return type ... unexpected return value</span></div>
+    </div>
+    <div>
+      <div class="lbl">オーバーロードの選び分け</div>
+      <div class="code small">static void run(Runnable r)       { print("R"); }
+static void run(Supplier&lt;String&gt; s) { print("S"); }
+run(() -&gt; "x");                   <span class="c">// S</span>
+run(() -&gt; System.out.print(""));  <span class="c">// R</span></div>
+      <div class="point">値を返すラムダ式は void 型（Runnable）に合わない。void のメソッド呼び出しは Supplier に合わない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JLS 15.27.3 Type of a Lambda Expression・14.4.1・15.12.2.1／JDK 17 でのコンパイルと実行の結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>ラムダ式の書き方</h1>
+  <p>引数・本体・スコープ。</p>
+  <div class="foot"><span>Java Gold #05 ラムダ式と関数型インタフェース</span><span>試験内容 2</span></div>
+</section>
+
+<section class="slide">
+  <h1>引数と本体の書き方</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>書き方</th><th>可否</th></tr>
+        <tr><td class="t">x -&gt; x + 1</td><td class="l">○</td></tr>
+        <tr><td class="t">(x, y) -&gt; x + y</td><td class="l">○</td></tr>
+        <tr><td class="t">(Integer x, Integer y) -&gt; x + y</td><td class="l">○</td></tr>
+        <tr><td class="t">(var x, var y) -&gt; x + y</td><td class="l">○ Java 11〜</td></tr>
+        <tr><td class="t">(Integer x, y) -&gt; x + y</td><td class="l">× 混在</td></tr>
+        <tr><td class="t">Integer x -&gt; x + 1</td><td class="l">× ( ) が必要</td></tr>
+        <tr><td class="t">(int x) -&gt; x + 1 ※Function&lt;Integer,Integer&gt;</td><td class="l">× 型が違う</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">本体</div>
+      <div class="code small">() -&gt; "hi"                <span class="c">// ○ 式</span>
+() -&gt; { return "hi"; }    <span class="c">// ○ ブロック＋return</span>
+() -&gt; { "hi"; }           <span class="c">// × not a statement</span>
+() -&gt; return "hi";        <span class="c">// × { } が必要</span></div>
+      <div class="point warn">混在のエラー文：cannot mix implicitly-typed and explicitly-typed parameters。</div>
+      <div class="point">int と書くと incompatible parameter types in lambda expression。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JLS 15.27.1 Lambda Parameters・15.27.2 Lambda Body／JDK 17 でのコンパイル結果</div>
+</section>
+
+<section class="slide">
+  <h1>ラムダ式のスコープ</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">String s = "outer";
+Function&lt;String,String&gt; f = <span class="k">s</span> -&gt; s.toUpperCase();
+<span class="c">// × variable s is already defined in method main(String[])</span>
+
+int x = 5;
+Runnable r = () -&gt; { <span class="k">int x = 10</span>; };
+<span class="c">// × variable x is already defined</span></div>
+      <div class="point">ラムダ式の本体は新しいスコープを作らない。外側と同じ名前は使えない。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th></th><th>ラムダ式</th><th>無名クラス</th></tr>
+        <tr><td class="t">外側と同じ名前の変数</td><td class="l">×</td><td class="l">○（覆い隠す）</td></tr>
+        <tr><td class="t">this</td><td class="l">外側のインスタンス</td><td class="l">無名クラス自身</td></tr>
+        <tr><td class="t">外側のローカル変数</td><td class="l" colspan="2">effectively final のみ（#04）</td></tr>
+      </table>
+      <div class="lbl">ラムダ式を返すラムダ式</div>
+      <div class="code small">Function&lt;Integer, Function&lt;Integer,Integer&gt;&gt; adder
+    = a -&gt; b -&gt; a + b;
+adder.apply(3).apply(4)   <span class="c">// 7</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：JLS 15.27.2・6.4 Shadowing and Obscuring・15.8.3／JDK 17 でのコンパイルと実行の結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>メソッド参照</h1>
+  <p>4 つの種類と、ターゲット型による選ばれ方。</p>
+  <div class="foot"><span>Java Gold #05 ラムダ式と関数型インタフェース</span><span>試験内容 2</span></div>
+</section>
+
+<section class="slide">
+  <h1>メソッド参照の 4 種類</h1>
+  <table class="mx">
+    <tr><th>種類</th><th>例</th><th>同じ意味のラムダ式</th><th>引数の使われ方</th></tr>
+    <tr><td class="t">static メソッド</td><td class="l">Integer::parseInt</td><td class="l">s -&gt; Integer.parseInt(s)</td><td class="l">全部がメソッドの引数</td></tr>
+    <tr><td class="t">束縛された（特定のオブジェクト）</td><td class="l">prefix::concat</td><td class="l">s -&gt; prefix.concat(s)</td><td class="l">全部がメソッドの引数</td></tr>
+    <tr><td class="t">束縛されていない（任意のオブジェクト）</td><td class="l">String::startsWith</td><td class="l">(a, b) -&gt; a.startsWith(b)</td><td class="l">1 つ目が呼ぶ相手、残りが引数</td></tr>
+    <tr><td class="t">コンストラクタ</td><td class="l">ArrayList::new／int[]::new</td><td class="l">() -&gt; new ArrayList&lt;&gt;()／n -&gt; new int[n]</td><td class="l">全部がコンストラクタの引数</td></tr>
+  </table>
+  <div class="cols">
+    <div>
+      <div class="code small">Comparator&lt;String&gt; c = String::compareTo;
+c.compare("b", "a")          <span class="c">// 1（"b".compareTo("a")）</span>
+Supplier&lt;Integer&gt; s = String::length;
+<span class="c">// × invalid method reference
+//   unexpected instance method length() found in unbound lookup</span>
+String w = "hey";
+Supplier&lt;Integer&gt; t = w::length;   <span class="c">// ○ 3</span></div>
+    </div>
+    <div>
+      <div class="point">コンストラクタ参照の get・apply は、呼ぶたびに新しいオブジェクトを作る（l1 == l2 は false）。</div>
+      <div class="point">レコードの正規コンストラクタも <code>Sq::new</code> で参照できる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JLS 15.13・15.13.1・15.13.3／The Java Tutorials「Method References」／JDK 17 でのコンパイルと実行の結果</div>
+</section>
+
+<section class="slide">
+  <h1>同じ参照でも、ターゲット型で中身が変わる</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">Consumer&lt;String&gt; c = System.out::println;
+Runnable r          = System.out::println;
+c.accept("hi");   <span class="c">// println(String) → hi</span>
+r.run();          <span class="c">// println() → 空の行</span></div>
+      <div class="code small">BiFunction&lt;Integer,Integer,Integer&gt; f = Math::max;
+BinaryOperator&lt;Integer&gt; g = Integer::sum;
+ToIntBiFunction&lt;Integer,Integer&gt; h = Integer::compare;
+f.apply(2,9) + g.apply(2,9) + h.applyAsInt(2,9)
+<span class="c">// 9 + 11 + (-1) = 19（文字列がないので足し算）</span></div>
+    </div>
+    <div>
+      <div class="box b2">関数記述子（引数の型 → 戻り値の型）</div>
+      <div class="arrow">↓ これに合うメソッドを探す</div>
+      <div class="box b3">String::concat<span>(String, String) → String ＝ BinaryOperator&lt;String&gt; ○</span></div>
+      <div class="box b3">String::length<span>String → int ＝ Function / ToIntFunction ○、Supplier ×</span></div>
+      <div class="point warn">Integer.compare は −1・0・1 を返す（差ではない）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JLS 15.13.1、API PrintStream.println・Math.max・Integer.sum・Integer.compare／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>java.util.function</h1>
+  <p>派生したインタフェースと、合成のメソッド。</p>
+  <div class="foot"><span>Java Gold #05 ラムダ式と関数型インタフェース</span><span>試験内容 2</span></div>
+</section>
+
+<section class="slide">
+  <h1>派生したインタフェース</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>型</th><th>メソッド</th><th>形</th></tr>
+        <tr><td class="t">UnaryOperator&lt;T&gt;</td><td class="l">apply</td><td class="l">T → T</td></tr>
+        <tr><td class="t">BinaryOperator&lt;T&gt;</td><td class="l">apply</td><td class="l">(T, T) → T</td></tr>
+        <tr><td class="t">BiFunction&lt;T,U,R&gt;</td><td class="l">apply</td><td class="l">(T, U) → R</td></tr>
+        <tr><td class="t">BiConsumer&lt;T,U&gt;</td><td class="l">accept</td><td class="l">(T, U) → void</td></tr>
+        <tr><td class="t">BiPredicate&lt;T,U&gt;</td><td class="l">test</td><td class="l">(T, U) → boolean</td></tr>
+      </table>
+      <div class="point">Bi の Supplier はない。BinaryOperator には static の minBy・maxBy。</div>
+    </div>
+    <div>
+      <div class="lbl">基本データ型用（ボクシングしない）</div>
+      <table class="mx">
+        <tr><th>型</th><th>メソッド</th><th>形</th></tr>
+        <tr><td class="t">IntSupplier</td><td class="l">getAsInt</td><td class="l">() → int</td></tr>
+        <tr><td class="t">BooleanSupplier</td><td class="l">getAsBoolean</td><td class="l">() → boolean</td></tr>
+        <tr><td class="t">IntPredicate</td><td class="l">test</td><td class="l">int → boolean</td></tr>
+        <tr><td class="t">IntFunction&lt;R&gt;</td><td class="l">apply</td><td class="l">int → R</td></tr>
+        <tr><td class="t">ToIntFunction&lt;T&gt;</td><td class="l">applyAsInt</td><td class="l">T → int</td></tr>
+        <tr><td class="t">IntUnaryOperator</td><td class="l">applyAsInt</td><td class="l">int → int</td></tr>
+      </table>
+      <div class="point warn">戻り値が基本データ型になるものは getAs〜・applyAs〜。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API java.util.function（UnaryOperator・BinaryOperator・BiFunction・BiConsumer・BiPredicate・IntSupplier ほか）</div>
+</section>
+
+<section class="slide">
+  <h1>合成のメソッド</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">Function：andThen と compose</div>
+      <div class="code small">plus1 = x -&gt; x + 1;  times2 = x -&gt; x * 2;
+plus1.andThen(times2).apply(5)  <span class="c">// (5+1)*2 = 12</span>
+plus1.compose(times2).apply(5)  <span class="c">// 5*2+1  = 11</span>
+Function.identity().apply(5)    <span class="c">// 5</span></div>
+      <div class="lbl">Consumer：andThen（同じ引数で左から順）</div>
+      <div class="code small">a.andThen(b).andThen(a).accept("ab");
+<span class="c">// a:"AB"  b:2  a:"AB"  → AB2AB</span></div>
+    </div>
+    <div>
+      <div class="lbl">Predicate：and・or・negate・not・isEqual</div>
+      <div class="code small">p = empty.negate().and(longer.negate())
+         .or(s -&gt; s.startsWith("z"));
+"" → false  "ab" → true  "abcd" → false  "zzzzz" → true
+Predicate.not(String::isBlank).test("  ")  <span class="c">// false</span>
+Predicate.isEqual("a").test(null)          <span class="c">// false（NPE なし）</span></div>
+      <div class="point warn"><code>p.and(null)</code> は合成した時点で NullPointerException。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API Function.andThen・compose・identity、Consumer.andThen、Predicate.and・or・negate・not・isEqual／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>コレクションの関数型メソッド</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">List&lt;String&gt; list = new ArrayList&lt;&gt;(List.of("a","bb","ccc"));
+list.removeIf(s -&gt; s.length() == 2);   <span class="c">// Predicate</span>
+list.replaceAll(String::toUpperCase);  <span class="c">// UnaryOperator</span>
+list.forEach(System.out::print);       <span class="c">// Consumer → ACCC</span>
+Map&lt;String,Integer&gt; m = new TreeMap&lt;&gt;(Map.of("x",1,"y",2));
+m.replaceAll((k, v) -&gt; v * 10);        <span class="c">// BiFunction</span>
+m.forEach((k, v) -&gt; print(k + v));     <span class="c">// BiConsumer → x10y20</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>メソッド</th><th>引数の型</th></tr>
+        <tr><td class="t">Collection.removeIf</td><td class="l">Predicate</td></tr>
+        <tr><td class="t">List.replaceAll</td><td class="l">UnaryOperator</td></tr>
+        <tr><td class="t">Iterable.forEach</td><td class="l">Consumer</td></tr>
+        <tr><td class="t">Map.forEach</td><td class="l">BiConsumer</td></tr>
+        <tr><td class="t">Map.replaceAll</td><td class="l">BiFunction</td></tr>
+        <tr><td class="t">Map.computeIfAbsent</td><td class="l">Function</td></tr>
+      </table>
+      <div class="point">これらはストリームを使わずに、コレクションそのものを変える（#06〜で扱うストリームとの違い）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API Collection.removeIf・List.replaceAll・Iterable.forEach・Map.forEach・Map.replaceAll・Map.computeIfAbsent／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">関数型インタフェースか</td><td class="l">抽象メソッドの数（default・static・Object のメソッドは数えない、継承分を足す）</td></tr>
+    <tr><td class="t">ラムダ式がコンパイルできるか</td><td class="l">型あり・なし・var の混在、( ) と { } と return、外側と同じ名前、effectively final</td></tr>
+    <tr><td class="t">ターゲット型</td><td class="l">Object・var への代入は×、キャストで○、void か値を返すか</td></tr>
+    <tr><td class="t">メソッド参照</td><td class="l">4 種類のどれか、1 つ目の引数が呼ぶ相手になるか、Supplier に unbound は×</td></tr>
+    <tr><td class="t">メソッド名</td><td class="l">get・accept・test・apply、getAsInt・applyAsInt</td></tr>
+    <tr><td class="t">合成の順</td><td class="l">andThen は左から、compose は右から、null は合成時に NPE</td></tr>
+  </table>
+  <div class="cite">出典：試験内容チェックリスト 2／本資料の問題演習（全 30 問、JDK 17 で確認）</div>
+</section>
+
+</body>
+</html>
