@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>支援士 #20 ネットワーク 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">情報処理安全確保支援士試験　科目A-2　関連分野　中分類16 ネットワーク　#20</div>
+  <h1>ネットワーク</h1>
+  <p>守る前に、どう流れるかを知る</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（IPA の支援士試験シラバス案、IEEE 802.11・802.1D・802.1Q、RFC 791・792・8200・4861・9293・9000・2131・9110・2328・4271・7348・5798、3GPP TS 23.501 など）を書いた。過去問は IPA 公開の午前Ⅱ。例の場面は Claude が作った</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>シラバス案 中分類16 ネットワーク（午前Ⅱの関連分野、毎回 2〜3 問）</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 LAN と接続装置<span>CSMA/CA・隠れ端末・OFDMA、STP・802.1Q・リンクアグリゲーション・VRRP・VXLAN</span></div>
+      <div class="box b2">2 IP とルーティング<span>サブネット計算・特殊なアドレス・フラグメント・IPv6・NDP・ARP・ICMP・OSPF・BGP</span></div>
+      <div class="box b3">3 トランスポートとアプリ<span>TCP・QUIC・ポート番号・DHCP・HTTP・587番・SNMP・SNTP・Ajax</span></div>
+      <div class="box b5">4 通信サービス・モバイル・IoT<span>PPPoE・IPsec/L2TP・5G SA/NSA・スライシング・LPWA・伝送の計算</span></div>
+    </div>
+    <div>
+      <div class="lbl">過去の午前Ⅱでの出方（H31〜R7 で 34 問）</div>
+      <table class="mx">
+        <tr><th>テーマ</th><th style="width:30%">問数</th></tr>
+        <tr><td class="l">IP アドレス・サブネット・ブロードキャスト</td><td class="t">8</td></tr>
+        <tr><td class="l">STP・スイッチ・冗長化</td><td class="t">8</td></tr>
+        <tr><td class="l">TCP・HTTP・ポート・管理</td><td class="t">8</td></tr>
+        <tr><td class="l">IPv6・ICMP・ルーティング・DHCP</td><td class="t">5</td></tr>
+        <tr><td class="l">無線 LAN・接続・計算</td><td class="t">5</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）Ver.0.1」中分類16／IPA 午前Ⅱ 各回（このPDFの問題演習を参照）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>LAN と接続装置</h1>
+  <p>どの装置が何を越えさせ、何を止めるか。</p>
+  <div class="foot"><span>支援士 #20 ネットワーク</span><span>16</span></div>
+</section>
+
+<section class="slide">
+  <h1>接続装置が通すもの</h1>
+  <table class="mx">
+    <tr><th style="width:20%">装置</th><th>層</th><th>見るもの</th><th>コリジョン</th><th>ブロードキャスト</th></tr>
+    <tr><td class="t">リピータハブ</td><td class="t">物理</td><td class="t">信号</td><td class="t">通す</td><td class="t">通す</td></tr>
+    <tr><td class="t">L2 スイッチ</td><td class="t">データリンク</td><td class="t">MAC アドレス</td><td class="t">分ける</td><td class="t">通す</td></tr>
+    <tr><td class="t">ルータ・L3 SW</td><td class="t">ネットワーク</td><td class="t">IP アドレス</td><td class="t">分ける</td><td class="t"><b>通さない</b></td></tr>
+  </table>
+  <div class="point" style="margin-top:10px">R3秋・R7春：ルータで分けたセグメント間 → コリジョンは伝搬しない、ブロードキャストも中継しない（ア）。</div>
+  <div class="cols" style="margin-top:10px">
+    <div class="box b2">無線 LAN は CSMA/CA<span>送信中に衝突を検出できないので、空きを確かめ、ランダムに待って送り、ACK で確認（R4春）</span></div>
+    <div class="box b4">隠れ端末問題<span>AP とは通じるが互いのキャリアが見えない端末同士が AP で衝突（H31）。対策 RTS/CTS。逆は「さらし端末」</span></div>
+  </div>
+  <div class="cite">出典：IEEE 802.11／IPA 午前Ⅱ H31 問18・R3秋 問19・R4春 問18・R7春 問18</div>
+</section>
+
+<section class="slide">
+  <h1>スパニングツリープロトコル</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">ループがあると</div>
+      <div class="box b4">ブロードキャストストーム<span>フレームが回り続けて網が止まる</span></div>
+      <div class="lbl" style="margin-top:8px">STP（IEEE 802.1D）</div>
+      <div class="stack">
+        <div class="box b1">BPDU を交換しルートブリッジを決める</div>
+        <div class="box b1">各ブリッジ：ルートへ最小コストのポート ＝ <b>ルートポート</b></div>
+        <div class="box b1">各リンク：ルートに近い側のポート ＝ <b>代表ポート</b>（R5春）</div>
+        <div class="box b5">残り ＝ ブロッキング。障害時は迂回路に</div>
+      </div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>選択肢に並ぶ機能</th><th>正体</th></tr>
+        <tr><td class="l">MAC を見て廃棄か中継か</td><td class="t">フィルタリング</td></tr>
+        <tr><td class="l">古い MAC をテーブルから消す</td><td class="t">エージング</td></tr>
+        <tr><td class="l">経路を振り分けて負荷分散</td><td class="t">ロードバランス</td></tr>
+        <tr><td class="l">ループ検出・迂回ルート決定</td><td class="t"><b>STP</b>（R7春）</td></tr>
+        <tr><td class="l">アクセス／トランクポート</td><td class="t">VLAN の用語</td></tr>
+      </table>
+      <div class="point">IGMP・RIP・SIP は誤り（R2・R4春）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IEEE 802.1D／IPA 午前Ⅱ R2 問20・R4春 問20・R5春 問19・R7春 問19</div>
+</section>
+
+<section class="slide">
+  <h1>束ねる・引き継ぐ・包む</h1>
+  <div class="cols3">
+    <div class="box b1">リンクアグリゲーション<span>複数ポートを一つの論理ポートに。帯域と冗長性（IEEE 802.1AX、R3春）<br>× MIMO＝複数アンテナ、MIME＝メール</span></div>
+    <div class="box b2">VRRP<span>複数ルータで仮想 IP を共有。クライアントの設定を変えずにデフォルトゲートウェイを冗長化（R4秋）<br>× RARP・RSTP・RTSP</span></div>
+    <div class="box b3">VXLAN<span>L2 フレームを UDP で包み、L3 網の上に論理 L2 網（R3秋）。ID は 24 ビット<br>× QinQ・IPsec・PPPoE</span></div>
+  </div>
+  <table class="mx" style="margin-top:12px">
+    <tr><th>VLAN の用語</th><th>意味</th></tr>
+    <tr><td class="t">IEEE 802.1Q</td><td class="l">フレームに VLAN ID（12 ビット）のタグを付ける</td></tr>
+    <tr><td class="t">トランクポート</td><td class="l">タグ付きで複数の VLAN を運ぶ</td></tr>
+    <tr><td class="t">アクセスポート</td><td class="l">一つの VLAN、タグなしで端末をつなぐ</td></tr>
+    <tr><td class="t">IEEE 802.1ad（QinQ）</td><td class="l">タグを二重にして事業者網で運ぶ</td></tr>
+  </table>
+  <div class="cite">出典：IEEE 802.1AX・802.1Q／RFC 5798（VRRPv3）・RFC 7348（VXLAN）／IPA 午前Ⅱ R3春 問19・R3秋 問18・R4秋 問20</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>IP とルーティング</h1>
+  <p>アドレスを計算し、特殊なアドレスを見分ける。</p>
+  <div class="foot"><span>支援士 #20 ネットワーク</span><span>16</span></div>
+</section>
+
+<section class="slide">
+  <h1>サブネットの計算</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">ホスト数 ＝ 2^(ホスト部のビット数) − 2</div>
+      <table class="mx">
+        <tr><th>マスク</th><th>/</th><th>ホスト部</th><th>ホスト数</th></tr>
+        <tr><td class="t">255.255.255.0</td><td class="t">24</td><td class="t">8</td><td class="t">254</td></tr>
+        <tr><td class="t">255.255.255.128（FFFFFF80）</td><td class="t">25</td><td class="t">7</td><td class="t"><b>126</b></td></tr>
+        <tr><td class="t">255.255.255.192</td><td class="t">26</td><td class="t">6</td><td class="t">62</td></tr>
+        <tr><td class="t">255.255.255.224</td><td class="t">27</td><td class="t">5</td><td class="t">30</td></tr>
+      </table>
+      <div class="point">−2 はネットワークアドレス（全部 0）とブロードキャスト（全部 1）。</div>
+    </div>
+    <div>
+      <div class="lbl">R5秋：クラス C を 50 ノードずつ 4 つに</div>
+      <div class="flow" style="gap:4px">
+        <div class="box b5">4 つ<span>サブネット 2 ビット</span></div><div class="to">→</div>
+        <div class="box b2">ホスト部 6 ビット<span>62 台 ≧ 50</span></div><div class="to">→</div>
+        <div class="box b1">/26<span>255.255.255.192</span></div>
+      </div>
+      <div class="point warn" style="margin-top:10px">255.255.255.64 はビットが連続しないのでマスクにならない。</div>
+      <div class="lbl">R3秋：クラス B で FFFFFF80</div>
+      <div class="box b1">/25 → 2⁷ − 2 ＝ 126</div>
+    </div>
+  </div>
+  <div class="cite">出典：RFC 950・RFC 4632／IPA 午前Ⅱ R3秋 問20・R5秋 問18</div>
+</section>
+
+<section class="slide">
+  <h1>特殊なアドレス</h1>
+  <table class="mx">
+    <tr><th style="width:30%">アドレス</th><th>意味</th><th style="width:16%">出た回</th></tr>
+    <tr><td class="t">127.0.0.1</td><td class="l">ループバック。同じコンピュータのプログラム同士</td><td class="t">R3春</td></tr>
+    <tr><td class="t">169.254.0.0/16</td><td class="l">DHCP が使えないとき自動生成（リンクローカル）</td><td class="t">R3春の誤り</td></tr>
+    <tr><td class="t">224〜239（クラス D）</td><td class="l">マルチキャスト（例 239.0.1.1）</td><td class="t">R4秋・R5秋</td></tr>
+    <tr><td class="t">10/8・172.16/12・192.168/16</td><td class="l">プライベートアドレス</td><td class="t">R5秋の誤り</td></tr>
+    <tr><td class="t">255.255.255.255</td><td class="l">リミテッドブロードキャスト。ルータは越えない</td><td class="t">R2・R5春</td></tr>
+    <tr><td class="t">192.168.10.255</td><td class="l">ディレクテッドブロードキャスト（ホスト部が全部 1）</td><td class="t">R5春</td></tr>
+  </table>
+  <div class="point">DHCP：自分のサブネットを知らない PC は <b>255.255.255.255</b> へ。別サブネットのサーバへはルータの DHCP リレーエージェントが中継（R2）。</div>
+  <div class="point">配られたアドレスを使う前に <b>ARP</b> で重複を確認（R5秋）。</div>
+  <div class="cite">出典：RFC 1918・RFC 3927・RFC 5771・RFC 919・RFC 2131／IPA 午前Ⅱ 各回</div>
+</section>
+
+<section class="slide">
+  <h1>IPv6・ICMP・フラグメント</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th></th><th>IPv4</th><th>IPv6</th></tr>
+        <tr><td class="t">アドレス</td><td class="t">32 ビット</td><td class="t">128 ビット（2⁹⁶ 倍）</td></tr>
+        <tr><td class="t">ヘッダー</td><td class="t">可変長</td><td class="t">40 オクテット固定＋拡張（8 の倍数）</td></tr>
+        <tr><td class="t">MAC の解決</td><td class="t">ARP</td><td class="t">NDP（ICMPv6）</td></tr>
+        <tr><td class="t">途中での分割</td><td class="t">ルータもする</td><td class="t">しない（送信元だけ）</td></tr>
+        <tr><td class="t">再構築</td><td class="t">宛先ホスト</td><td class="t">宛先ホスト</td></tr>
+      </table>
+      <div class="point warn">R4秋の罠：「2¹²⁸ 倍」は誤り。2¹²⁸ ÷ 2³² ＝ 2⁹⁶。</div>
+    </div>
+    <div>
+      <div class="lbl">ICMP のメッセージ（R6秋）</div>
+      <table class="mx">
+        <tr><td class="t">Echo Request／Reply</td><td class="l">ping</td></tr>
+        <tr><td class="t">Destination Unreachable</td><td class="l">届けられない（ソースルーティング失敗など）</td></tr>
+        <tr><td class="t">Time Exceeded</td><td class="l">TTL が 0、再組立てのタイムアウト</td></tr>
+        <tr><td class="t">Redirect</td><td class="l">より良いルータを教え、経路の変更を要請</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：RFC 791・RFC 792・RFC 8200・RFC 4861／IPA 午前Ⅱ R1秋 問19・R4秋 問18・R6秋 問19</div>
+</section>
+
+<section class="slide">
+  <h1>ルーティングプロトコル</h1>
+  <table class="mx">
+    <tr><th style="width:16%"></th><th>RIP-2</th><th>OSPF</th><th>BGP</th></tr>
+    <tr><td class="t">使う範囲</td><td class="t">AS の中</td><td class="t">AS の中</td><td class="t">AS の間</td></tr>
+    <tr><td class="t">型</td><td class="t">距離ベクトル（ホップ数）</td><td class="t"><b>リンクステート</b>（コスト）</td><td class="t">パスベクトル（AS パス）</td></tr>
+    <tr><td class="t">更新</td><td class="t">30 秒ごと</td><td class="t">変化があったとき</td><td class="t">変化があったとき</td></tr>
+    <tr><td class="t">可変長サブネット</td><td class="t">対応</td><td class="t">対応</td><td class="t">対応</td></tr>
+    <tr><td class="t">更新の送り方</td><td class="t">マルチキャスト 224.0.0.9</td><td class="t">マルチキャスト 224.0.0.5・6</td><td class="t">TCP 179 番の接続</td></tr>
+  </table>
+  <div class="point" style="margin-top:10px">R7秋：OSPF だけに当てはまる ＝ <b>リンク状態のデータベース</b>。VLSM とマルチキャストは両方、30 秒は RIP。</div>
+  <div class="point warn">BGP の誤った経路広告（BGP ハイジャック）は RPKI で経路の正当性を確かめる。</div>
+  <div class="cite">出典：RFC 2453（RIP-2）・RFC 2328（OSPFv2）・RFC 4271（BGP-4）／IPA 令和7年度秋期 午前Ⅱ 問19</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>トランスポートとアプリケーション</h1>
+  <p>どのヘッダーに何があり、どのポートで何が動くか。</p>
+  <div class="foot"><span>支援士 #20 ネットワーク</span><span>16</span></div>
+</section>
+
+<section class="slide">
+  <h1>TCP・QUIC とポート番号</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>ヘッダー</th><th>主な項目</th></tr>
+        <tr><td class="t">IP</td><td class="l">送信元・宛先 IP アドレス、TTL、プロトコル番号</td></tr>
+        <tr><td class="t">TCP</td><td class="l"><b>ポート番号</b>、順序番号、確認応答番号、ウィンドウ（R6春）</td></tr>
+      </table>
+      <div class="point">TCP：トランスポート層、バイト単位のウィンドウ制御、確認応答がなければ再送（R1秋）。</div>
+      <div class="box b2">QUIC<span>UDP の上で TLS 1.3 を組み込み、複数ストリームを並行。HTTP/3 の土台。ヘッダーも暗号化</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>ポート</th><th>用途</th></tr>
+        <tr><td class="t">20・21</td><td class="l">FTP（データ・制御）</td></tr>
+        <tr><td class="t">22・23</td><td class="l">SSH・TELNET</td></tr>
+        <tr><td class="t">25</td><td class="l">SMTP（サーバ間）</td></tr>
+        <tr><td class="t">53・123</td><td class="l">DNS・NTP</td></tr>
+        <tr><td class="t">80・443</td><td class="l">HTTP・HTTPS</td></tr>
+        <tr><td class="t">161・162</td><td class="l">SNMP・トラップ</td></tr>
+        <tr><td class="t"><b>587</b></td><td class="l">サブミッション（OP25B と併用、R6春）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：RFC 9293（TCP）・RFC 9000（QUIC）・RFC 6409・IANA Service Name and Port Number Registry／IPA 午前Ⅱ R1秋 問20・R6春 問18・19</div>
+</section>
+
+<section class="slide">
+  <h1>HTTP と管理のプロトコル</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">フォームのデータの場所（R7春）</div>
+      <div class="code small">GET /search?q=abc HTTP/1.1   ← GET はリクエスト行
+Host: example.jp
+
+POST /login HTTP/1.1
+Host: example.jp
+Content-Type: application/x-www-form-urlencoded
+
+id=abc&amp;pw=xyz                ← POST はメッセージボディ</div>
+      <table class="mx" style="margin-top:6px">
+        <tr><td class="t">1xx</td><td class="l">情報</td><td class="t">2xx</td><td class="l">成功</td></tr>
+        <tr><td class="t">3xx</td><td class="l"><b>リダイレクト</b>（R7秋）</td><td class="t">4xx／5xx</td><td class="l">クライアント／サーバの誤り</td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>名前</th><th>何をするか</th></tr>
+        <tr><td class="t">SNMP Trap</td><td class="l">エージェントが自発的に通知（H31）</td></tr>
+        <tr><td class="t">SNTP</td><td class="l">PC の時刻合わせ（R4春）</td></tr>
+        <tr><td class="t">Ajax</td><td class="l">非同期通信で画面の一部を書き換え（R7秋）</td></tr>
+        <tr><td class="t">REST</td><td class="l">URL のリソースを HTTP メソッドで操作</td></tr>
+        <tr><td class="t">GraphQL</td><td class="l">必要なデータの形を問合せで指定</td></tr>
+      </table>
+      <div class="point">誤りの常連：NNTP（ニュース）・RTCP（RTP 制御）・TFTP・DOM・SAX。</div>
+    </div>
+  </div>
+  <div class="cite">出典：RFC 9110・RFC 9112（HTTP/1.1）・RFC 3416（SNMPv2 PDU）・RFC 4330（SNTP）／IPA 午前Ⅱ H31 問20・R4春 問19・R7春 問20・R7秋 問18・20</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>通信サービス・モバイル・IoT</h1>
+  <p>包んで運ぶ、分けて提供する、遠くまで少しずつ。</p>
+  <div class="foot"><span>支援士 #20 ネットワーク</span><span>16</span></div>
+</section>
+
+<section class="slide">
+  <h1>接続とトンネル</h1>
+  <table class="mx">
+    <tr><th style="width:18%">名前</th><th>何を運ぶか</th><th style="width:32%">ポイント</th></tr>
+    <tr><td class="t">PPPoE</td><td class="l">シリアル回線の PPP を LAN（イーサネット）の上で</td><td class="l">ID・パスワードで認証（H31）</td></tr>
+    <tr><td class="t">IPoE</td><td class="l">認証の手順なしに IP をそのまま</td><td class="l">IPv6 で混雑しにくい</td></tr>
+    <tr><td class="t">IPsec</td><td class="l"><b>ネットワーク層</b>の IP パケットを IP で包む</td><td class="l">暗号化も（R6秋）</td></tr>
+    <tr><td class="t">L2TP・PPTP</td><td class="l">データリンク層の PPP フレーム</td><td class="l">L2TP は暗号化なし → L2TP/IPsec</td></tr>
+    <tr><td class="t">MPLS</td><td class="l">ラベルで高速転送（事業者網）</td><td class="l">IP-VPN の基盤</td></tr>
+  </table>
+  <div class="lbl" style="margin-top:10px">伝送の計算（R5春）</div>
+  <div class="flow" style="gap:4px">
+    <div class="box b5">10⁹ × 0.5<span>＝ 5 × 10⁸ bit/s</span></div><div class="to">÷</div>
+    <div class="box b2">6 × 10⁶ × 8 ÷ 60<span>＝ 8 × 10⁵ bit/s／台</span></div><div class="to">＝</div>
+    <div class="box b1"><b>625 台</b></div>
+  </div>
+  <div class="cite">出典：RFC 2516（PPPoE）・RFC 4301（IPsec）・RFC 2661（L2TP）／IPA 午前Ⅱ H31 問19・R5春 問18・R6秋 問18</div>
+</section>
+
+<section class="slide">
+  <h1>モバイルと IoT の通信</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>5G の方式</th><th>しくみ</th></tr>
+        <tr><td class="t">NSA</td><td class="l">制御は 4G、データに 5G 基地局</td></tr>
+        <tr><td class="t">SA</td><td class="l">5G 基地局＋5G コアだけ。スライシング・超低遅延</td></tr>
+      </table>
+      <div class="box b2" style="margin-top:8px">ネットワークスライシング<span>一つの網を、低遅延・多数接続など用途別の仮想網に分ける。スライス間の分離が要件</span></div>
+      <div class="point">IMEI＝端末の識別番号、IMSI＝加入者（SIM）の識別番号。</div>
+    </div>
+    <div>
+      <div class="lbl">LPWA（低速・低消費電力・広範囲）</div>
+      <table class="mx">
+        <tr><th>方式</th><th>帯域</th></tr>
+        <tr><td class="t">LTE-M（Cat-M1）</td><td class="l">携帯の免許帯。移動しながらも可</td></tr>
+        <tr><td class="t">NB-IoT</td><td class="l">携帯の免許帯。より狭帯域・低速</td></tr>
+        <tr><td class="t">LoRaWAN・Sigfox</td><td class="l">免許不要の帯域</td></tr>
+        <tr><td class="t">Wi-SUN</td><td class="l">免許不要。スマートメーター</td></tr>
+      </table>
+      <div class="point warn">BLE は低電力だが近距離、Wi-Fi・ミリ波は高速だが電力も大きい。</div>
+    </div>
+  </div>
+  <div class="cite">出典：3GPP TS 23.501／IPA「支援士試験 シラバス（案）」用語例〔モバイル通信・IoT 通信〕</div>
+</section>
+
+</body>
+</html>

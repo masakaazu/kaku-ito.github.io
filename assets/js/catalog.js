@@ -273,6 +273,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/17.html", title: "セキュア開発とWebの防御 用語集", desc: "SAST・DAST・ファジング、エスケープ・プレースホルダ・CSRF トークン・BOF 対策（カナリア・DEP・ASLR）・ソルトとストレッチング、同一オリジンと CORS、cookie の Secure・HttpOnly・SameSite、HSTS・CSP・SRI・Cache-Control、シークレット管理・署名付きコミット・成果物の署名・SLSA・要塞化。26語と問題18問（過去の午前Ⅱ 5問を含む）", fields: [17], pdf: "terms/17.pdf" },
       { type: "terms", file: "terms/18.html", title: "ゼロトラスト・クラウド・AI・IoTのセキュリティ 用語集", desc: "ZTA の PDP・PEP、プロンプトインジェクション対策、責任共有モデル・IMDSv2・コンテナ、TPM・セキュアブート、IEC 62443・一方向ゲートウェイ。27語と問題18問（過去の午前Ⅱ 3問を含む）", fields: [18], pdf: "terms/18.pdf" },
       { type: "terms", file: "terms/19.html", title: "フォレンジックとセキュリティ評価 用語集", desc: "揮発性の順序・ハッシュ値・Chain of Custody、マルウェア解析、CVE・CWE・CVSS・SCAP・SBOM、ISO/IEC 15408・FIPS 140-3・CRYPTREC 暗号リスト。30語と問題22問（過去の午前Ⅱ 13問を含む）", fields: [19], pdf: "terms/19.pdf" },
+      { type: "terms", file: "terms/20.html", title: "ネットワーク 用語集", desc: "STP・VRRP・VXLAN、サブネット計算と特殊なアドレス、IPv6・ICMP・OSPF、TCP・HTTP・ポート番号、PPPoE・IPsec・5G・LPWA。35語と問題39問（過去の午前Ⅱ 32問を含む）", fields: [20], pdf: "terms/20.pdf" },
     ],
     aws: [
       { type: "terms", file: "terms/01.html", title: "IAMとポリシー 用語集", desc: "ルートユーザー・IAM ユーザー・グループ・ロール・インスタンスプロファイル・STS の一時的な認証情報・アクセスキー・MFA、ID ベースとリソースベースのポリシー・AWS 管理／カスタマー管理／インライン・Effect・Action・NotAction・Resource・Principal・Condition とグローバル条件キー・ポリシー変数・ARN、暗黙的な拒否と明示的な拒否・アクセス許可の境界・セッションポリシー・クロスアカウントアクセス・外部 ID・iam:PassRole・IAM Access Analyzer・認証情報レポート。38語と問題30問（タスク 1.1）", fields: [1], pdf: "terms/01.pdf" },
