@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS SAA #13 Amazon S3 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">AWS SAA（SAA-C03）　分野3 高パフォーマンス　#13</div>
+  <h1>Amazon S3</h1>
+  <p>オブジェクトを、用途に合った値段と速さで置く。8 つのストレージクラス、ライフサイクル・バージョニング・Object Lock・レプリケーション、プレフィックス・マルチパート・Transfer Acceleration・イベント通知・署名付き URL・アクセスポイント</p>
+  <div class="refs-legend">各ページの下に、根拠にした AWS の公式ドキュメント（Amazon S3 ユーザーガイド）を書いた（青い文字を押すと開く）。「」の中はドキュメントの原文どおり（日本語版は機械翻訳のため、語順が不自然なところもそのまま）。バケット名・日数・構成は Claude が作った例</div>
+</section>
+
+<section class="slide">
+  <h1>全体像：バケット・キー・オブジェクト<small>試験ガイド タスク 3.1</small></h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="10" width="470" height="180" rx="12" fill="#e3eefc" stroke="#1f3a68"/><text x="245" y="32" fill="#1f3a68" font-weight="700" font-size="13">バケット example-logs（東京リージョン）</text>
+      <rect x="30" y="46" width="430" height="30" rx="5" fill="#fff" stroke="#1f3a68"/><text x="40" y="66" text-anchor="start"><tspan fill="#b25000" font-weight="700">app/2026/11/</tspan><tspan>a.log　（キー）</tspan></text><text x="440" y="66" text-anchor="end" fill="#4a5a78">Standard</text>
+      <rect x="30" y="84" width="430" height="30" rx="5" fill="#fff" stroke="#1f3a68"/><text x="40" y="104" text-anchor="start"><tspan fill="#b25000" font-weight="700">app/2026/11/</tspan><tspan>b.log</tspan></text><text x="440" y="104" text-anchor="end" fill="#4a5a78">Standard</text>
+      <rect x="30" y="122" width="430" height="30" rx="5" fill="#fff" stroke="#1f3a68"/><text x="40" y="142" text-anchor="start"><tspan fill="#3a7d44" font-weight="700">app/2025/01/</tspan><tspan>a.log</tspan></text><text x="440" y="142" text-anchor="end" fill="#4a5a78">Glacier Flexible Retrieval</text>
+      <text x="245" y="176" fill="#4a5a78">オレンジ・緑の部分がプレフィックス。フォルダーのように見えるが、キーの一部</text>
+      <rect x="520" y="10" width="326" height="56" rx="8" fill="#1f3a68"/><text x="683" y="34" fill="#fff" font-weight="700" font-size="12">第1章 ストレージクラス</text><text x="683" y="52" fill="#fff">オブジェクトごとに値段と速さを選ぶ</text>
+      <rect x="520" y="72" width="326" height="56" rx="8" fill="#3a7d44"/><text x="683" y="96" fill="#fff" font-weight="700" font-size="12">第2章 管理と保護</text><text x="683" y="114" fill="#fff">ライフサイクル・バージョン・ロック・複製</text>
+      <rect x="520" y="134" width="326" height="56" rx="8" fill="#b25000"/><text x="683" y="158" fill="#fff" font-weight="700" font-size="12">第3章 性能と使い方</text><text x="683" y="176" fill="#fff">プレフィックス・マルチパート・通知・共有</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>オブジェクトの見分け方：</b>バケット＋キー＋（バージョニングが有効なら）バージョン ID の組み合わせで、オブジェクトが 1 つに決まる。ストレージクラスはバケットではなくオブジェクトごとに付く。</div>
+    <div class="point warn"><b>この PDF の範囲外：</b>暗号化は #04、バケットポリシーとパブリックアクセスのブロックは #01・#03、CloudFront は #19、S3 のコストの見える化は #23・#24 で学ぶ。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/Welcome.html">Amazon S3 とは</a>（「Amazon S3 は、データをオブジェクト、階層データ、または表形式データとしてバケット内に保存するオブジェクトストレージサービスです。」「バケット、オブジェクトキー、およびオプションでバージョン ID（バケットで S3 バージョニングが有効になっている場合）の組み合わせによって、各オブジェクトが一意に識別されます。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>ストレージクラス</h1>
+  <p>アクセスの多さ・取り出しの速さ・AZ の数・最小ストレージ期間で選ぶ。自動で選ぶ Intelligent-Tiering、アーカイブの復元、1 つの AZ の 2 つのクラス。</p>
+  <div class="foot"><span>AWS SAA #13 Amazon S3</span><span>タスク 3.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>ストレージクラスの地図</h1>
+  <svg width="856" height="230" viewBox="0 0 856 230">
+    <defs><marker id="s1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#4a5a78"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <line x1="20" y1="196" x2="836" y2="196" stroke="#4a5a78" stroke-width="2" marker-end="url(#s1)"/>
+      <text x="40" y="216" text-anchor="start" fill="#4a5a78" font-weight="700">よく読む・高い</text><text x="830" y="216" text-anchor="end" fill="#4a5a78" font-weight="700">ほとんど読まない・安い</text>
+      <rect x="20" y="20" width="150" height="52" rx="8" fill="#1f3a68"/><text x="95" y="42" fill="#fff" font-weight="700">S3 Standard</text><text x="95" y="60" fill="#fff">既定・頻繁</text>
+      <rect x="20" y="84" width="150" height="52" rx="8" fill="#b25000"/><text x="95" y="106" fill="#fff" font-weight="700">S3 Express One Zone</text><text x="95" y="124" fill="#fff">1 桁ミリ秒・1 AZ</text>
+      <rect x="190" y="20" width="150" height="52" rx="8" fill="#4a5a78"/><text x="265" y="42" fill="#fff" font-weight="700">Standard-IA</text><text x="265" y="60" fill="#fff">月 1 回・30 日</text>
+      <rect x="190" y="84" width="150" height="52" rx="8" fill="#fff" stroke="#b25000" stroke-width="2"/><text x="265" y="106" fill="#b25000" font-weight="700">One Zone-IA</text><text x="265" y="124" fill="#b25000">月 1 回・1 AZ・30 日</text>
+      <rect x="360" y="20" width="150" height="52" rx="8" fill="#3a7d44"/><text x="435" y="42" fill="#fff" font-weight="700">Glacier Instant</text><text x="435" y="60" fill="#fff">四半期 1 回・ミリ秒・90 日</text>
+      <rect x="530" y="20" width="150" height="52" rx="8" fill="#2c5f34"/><text x="605" y="42" fill="#fff" font-weight="700">Glacier Flexible</text><text x="605" y="60" fill="#fff">半年 1 回・復元・90 日</text>
+      <rect x="700" y="20" width="136" height="52" rx="8" fill="#1d3d22"/><text x="768" y="42" fill="#fff" font-weight="700">Glacier Deep Archive</text><text x="768" y="60" fill="#fff">年 1 回・復元・180 日</text>
+      <rect x="190" y="148" width="490" height="36" rx="18" fill="#efe8f6" stroke="#6a3d9a"/><text x="435" y="171" fill="#6a3d9a" font-weight="700">S3 Intelligent-Tiering：アクセスに合わせて、この範囲を自動で行き来する（取り出し料金なし）</text>
+      <text x="95" y="160" fill="#b25000" font-weight="700">オレンジ＝1 つの AZ</text>
+      <text x="605" y="96" fill="#2c5f34">Flexible・Deep Archive は</text><text x="605" y="112" fill="#2c5f34">アーカイブ：読む前に復元</text>
+    </g>
+  </svg>
+  <div class="point"><b>選び方の順：</b>①どれくらい読むか（頻度）②読むときの速さ（ミリ秒か、数分〜数時間待てるか）③ AZ を失ってもよいか（作り直せるか）④どれくらい残すか（最小ストレージ期間）。頻度が分からないなら Intelligent-Tiering。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/storage-class-intro.html">Amazon S3 ストレージクラスの理解と管理</a>（「デフォルトでは、S3 のオブジェクトは S3 Standard ストレージクラスに保存されますが、Amazon S3 は、保存するオブジェクトに対して、広範なストレージクラスを提供します。」「S3 One Zone-IA (ONEZONE_IA) と S3 Express One Zone (EXPRESS_ONEZONE) を除くすべてのストレージクラスは、災害によるアベイラビリティーゾーンの物理的な損失に対して回復力を持つように設計されていることに注意します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>比較表：数字で覚える</h1>
+  <table class="mx">
+    <tr><th style="width:24%">クラス</th><th>アクセスの目安</th><th style="width:14%">可用性</th><th style="width:8%">AZ</th><th style="width:13%">最小期間</th><th style="width:13%">最小サイズ</th></tr>
+    <tr><td class="t">S3 Standard</td><td class="l">月に 2 回以上・ミリ秒</td><td>99.99%</td><td>3 以上</td><td>なし</td><td>なし</td></tr>
+    <tr><td class="t">Intelligent-Tiering</td><td class="l">分からない・変わる</td><td>99.9%</td><td>3 以上</td><td>なし</td><td>なし</td></tr>
+    <tr><td class="t">Standard-IA</td><td class="l">月に 1 回・ミリ秒</td><td>99.9%</td><td>3 以上</td><td>30 日</td><td>128 KB</td></tr>
+    <tr><td class="t">One Zone-IA</td><td class="l">月に 1 回・作り直せる</td><td>99.5%</td><td>1</td><td>30 日</td><td>128 KB</td></tr>
+    <tr><td class="t">Express One Zone</td><td class="l">1 桁ミリ秒が要る</td><td>99.95%</td><td>1</td><td>なし</td><td>なし</td></tr>
+    <tr><td class="t">Glacier Instant Retrieval</td><td class="l">四半期に 1 回・ミリ秒</td><td>99.9%</td><td>3 以上</td><td>90 日</td><td>128 KB</td></tr>
+    <tr><td class="t">Glacier Flexible Retrieval</td><td class="l">年に 1〜2 回・数分〜12 時間</td><td>99.99%＊</td><td>3 以上</td><td>90 日</td><td>—</td></tr>
+    <tr><td class="t">Glacier Deep Archive</td><td class="l">年に 1 回未満・9〜48 時間</td><td>99.99%＊</td><td>3 以上</td><td>180 日</td><td>—</td></tr>
+  </table>
+  <div class="mini">耐久性はすべて 99.999999999%（イレブンナイン）。＊は復元したあとの可用性。最小期間より前に削除・上書き・移行すると、残りの期間の料金がかかる。128 KB より小さいオブジェクトも 128 KB 分の料金になる</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/storage-class-intro.html">Amazon S3 ストレージクラスの理解と管理</a>（「オブジェクトが 128 KB 以下の場合、Amazon S3 は 128 KB に相当する料金を請求します。」「最小ストレージ期間の 30 日が過ぎる前にオブジェクトを削除した場合は、30 日分の料金が発生します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/glacier-storage-classes.html">長期データストレージとしての S3 Glacier ストレージクラスを理解する</a>（「最小ストレージ期間より前にオブジェクトを削除、上書き、または別のストレージクラスに移行した場合、その期間の残りに対して料金が請求されます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>S3 Intelligent-Tiering：自動で階層を移る</h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <defs><marker id="s2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#6a3d9a"/></marker><marker id="s3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#3a7d44"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="20" width="150" height="60" rx="8" fill="#1f3a68"/><text x="85" y="44" fill="#fff" font-weight="700">高頻度アクセス</text><text x="85" y="62" fill="#fff">最初はここ</text>
+      <rect x="230" y="20" width="150" height="60" rx="8" fill="#4a5a78"/><text x="305" y="44" fill="#fff" font-weight="700">低頻度アクセス</text><text x="305" y="62" fill="#fff">ミリ秒で読める</text>
+      <rect x="450" y="20" width="170" height="60" rx="8" fill="#6a3d9a"/><text x="535" y="44" fill="#fff" font-weight="700">アーカイブインスタント</text><text x="535" y="62" fill="#fff">ミリ秒で読める</text>
+      <line x1="160" y1="40" x2="228" y2="40" stroke="#6a3d9a" stroke-width="2" marker-end="url(#s2)"/><text x="194" y="32" fill="#6a3d9a">30 日</text>
+      <line x1="380" y1="40" x2="448" y2="40" stroke="#6a3d9a" stroke-width="2" marker-end="url(#s2)"/><text x="414" y="32" fill="#6a3d9a">90 日</text>
+      <path d="M305,80 C305,108 85,108 85,82" fill="none" stroke="#3a7d44" stroke-width="2" marker-end="url(#s3)"/><path d="M535,80 C535,118 100,118 92,82" fill="none" stroke="#3a7d44" stroke-width="2"/>
+      <text x="300" y="132" fill="#3a7d44" font-weight="700">アクセスされたら高頻度アクセスへ自動で戻る</text>
+      <rect x="650" y="10" width="196" height="76" rx="8" fill="#fff" stroke="#6a3d9a" stroke-dasharray="5 4"/><text x="748" y="30" fill="#6a3d9a" font-weight="700">オプション（有効にしたとき）</text><text x="748" y="50">アーカイブアクセス（90 日〜）</text><text x="748" y="68">ディープアーカイブ（180 日〜）</text><text x="748" y="82" fill="#9a3030" font-size="10">読む前に復元が要る</text>
+      <rect x="10" y="148" width="836" height="44" rx="8" fill="#f5f5f7" stroke="#4a5a78"/><text x="428" y="168">料金：取り出し料金はない。オブジェクトごとのモニタリングとオートメーションの少額の料金がかかる</text><text x="428" y="184" fill="#9a3030">128 KB 未満のオブジェクトはモニタリングされず、いつも高頻度アクセス階層</text>
+    </g>
+  </svg>
+  <div class="point"><b>選ぶ合図：</b>「アクセスのパターンが分からない・変わる」「運用の手間なく自動で」なら Intelligent-Tiering。決まった日数で動かすならライフサイクル。小さなファイルばかりなら効果が出ない。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/storage-class-intro.html">Amazon S3 ストレージクラスの理解と管理</a>（「低頻度アクセス – S3 Intelligent-Tiering では、30 日間連続してアクセスされなかったオブジェクトは低頻度アクセス階層に移動されます。」「オブジェクトのサイズが 128 KB 未満の場合は、モニタリングされず、自動階層化に適していません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/intelligent-tiering-overview.html">S3 Intelligent-Tiering の仕組み</a>（「低頻度アクセス階層またはアーカイブインスタントアクセス階層にあるオブジェクトに後からアクセスすると、自動的に高頻度アクセス階層に戻されます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>S3 Glacier の 3 つのクラスと取り出しオプション</h1>
+  <table class="mx">
+    <tr><th style="width:24%"></th><th>Glacier Instant Retrieval</th><th>Glacier Flexible Retrieval</th><th>Glacier Deep Archive</th></tr>
+    <tr><td class="t">アーカイブか</td><td>いいえ（GET ですぐ読める）</td><td>はい（復元が要る）</td><td>はい（復元が要る）</td></tr>
+    <tr><td class="t">迅速（Expedited）</td><td rowspan="3" class="l">取り出しオプションはない。ミリ秒で読める</td><td>1〜5 分（有料のプレミアム）</td><td>利用不可</td></tr>
+    <tr><td class="t">標準（Standard）・既定</td><td>3〜5 時間</td><td>12 時間以内</td></tr>
+    <tr><td class="t">大容量（Bulk）</td><td>5〜12 時間（無料）</td><td>48 時間以内</td></tr>
+    <tr><td class="t">最小ストレージ期間</td><td>90 日</td><td>90 日</td><td>180 日</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>本番の場面：</b>「急ぎで数個を数分で」→ 迅速。「大量を安く、半日待てる」→ 大容量。「いつでもミリ秒で、でもめったに読まない」→ Instant Retrieval。「年 1 回未満、2 日待てる、最も安く」→ Deep Archive。</div>
+    <div class="point warn"><b>迅速を確実に：</b>需要が高いときは迅速取り出しが使えないことがある。確実にしたいならプロビジョンドキャパシティーを買う。もっと予測どおりに速く読みたいなら Instant Retrieval を検討する。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html">アーカイブ取得オプションを理解する</a>（「3 つの取り出しアクセスオプション (高速、標準、大容量) から選択して、希望する取り出し速度に基づいてアーカイブされたオブジェクトを復元できます。」「プロビジョンドキャパシティーがなくても、需要が異常に高い期間は、迅速取り出しを使用できない可能性があります。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/glacier-storage-classes.html">長期データストレージとしての S3 Glacier ストレージクラスを理解する</a>（「一括取り出しは無料です。」）</div>
+</section>
+
+<section class="slide">
+  <h1>1 つの AZ のクラス：One Zone-IA と Express One Zone</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">S3 One Zone-IA（安く置く）</div>
+      <svg width="410" height="120" viewBox="0 0 410 120">
+        <g font-size="11" text-anchor="middle">
+          <rect x="10" y="10" width="120" height="60" rx="8" fill="#ddd"/><text x="70" y="36" fill="#9a3030" font-weight="700">AZ-a</text><text x="70" y="54" fill="#9a3030">失われると…</text>
+          <rect x="145" y="10" width="120" height="60" rx="8" fill="#fff" stroke="#4a5a78" stroke-dasharray="4 3"/><text x="205" y="44" fill="#4a5a78">AZ-c（置かない）</text>
+          <rect x="280" y="10" width="120" height="60" rx="8" fill="#fff" stroke="#4a5a78" stroke-dasharray="4 3"/><text x="340" y="44" fill="#4a5a78">AZ-d（置かない）</text>
+          <text x="205" y="94" fill="#9a3030" font-weight="700">データは回復できない</text><text x="205" y="112">→ 作り直せるデータだけに使う</text>
+        </g>
+      </svg>
+      <div class="point">Standard-IA より安い。CRR のコピー先のレプリカや、元から作り直せるデータに。作り直せないデータは Standard-IA。</div>
+    </div>
+    <div>
+      <div class="lbl">S3 Express One Zone（速く読む）</div>
+      <svg width="410" height="120" viewBox="0 0 410 120">
+        <g font-size="11" text-anchor="middle">
+          <rect x="10" y="10" width="390" height="70" rx="10" fill="#fdf0e2" stroke="#b25000"/><text x="205" y="28" fill="#b25000" font-weight="700">AZ-a（自分で選ぶ）</text>
+          <rect x="30" y="38" width="150" height="34" rx="6" fill="#1f3a68"/><text x="105" y="60" fill="#fff">EC2・学習ジョブ</text>
+          <rect x="230" y="38" width="150" height="34" rx="6" fill="#b25000"/><text x="305" y="54" fill="#fff" font-weight="700">ディレクトリバケット</text><text x="305" y="67" fill="#fff">…--usw2-az1--x-s3</text>
+          <line x1="180" y1="55" x2="228" y2="55" stroke="#1f3a68" stroke-width="3"/>
+          <text x="205" y="98" fill="#b25000" font-weight="700">1 桁ミリ秒・最大 10 倍速い</text><text x="205" y="114">リクエストのコストは S3 Standard より 50% 低い</text>
+        </g>
+      </svg>
+      <div class="point">レイテンシーが最も低いクラス。コンピューティングと同じ AZ に置ける。AZ の損失には耐えられない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/storage-class-intro.html">Amazon S3 ストレージクラスの理解と管理</a>（「Amazon S3 はオブジェクトデータを 1 つのアベイラビリティーゾーンでのみ保存するため、S3 Standard-IA よりも安価になります。」「S3 Express One Zone は、現在入手可能なレイテンシーが最も低いクラウドオブジェクトストレージクラスで、データアクセス速度は最大 10 倍速く、リクエストコストは S3 スタンダードよりも 50% 低減されます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/directory-buckets-overview.html">ディレクトリバケットの使用</a></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>データの管理と保護</h1>
+  <p>日数で自動に移す・消す（ライフサイクル）、誤りから戻す（バージョニングと MFA 削除）、だれにも消させない（Object Lock）、別の場所にコピーする（レプリケーション）。</p>
+  <div class="foot"><span>AWS SAA #13 Amazon S3</span><span>タスク 3.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>S3 ライフサイクル：上から下へ移して、最後に消す</h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <defs><marker id="s4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="10" width="120" height="30" rx="5" fill="#1f3a68"/><text x="70" y="30" fill="#fff" font-weight="700">S3 Standard</text>
+      <rect x="70" y="48" width="120" height="30" rx="5" fill="#4a5a78"/><text x="130" y="68" fill="#fff">Standard-IA</text>
+      <rect x="130" y="86" width="140" height="30" rx="5" fill="#6a3d9a"/><text x="200" y="106" fill="#fff">Intelligent-Tiering</text>
+      <rect x="210" y="124" width="120" height="30" rx="5" fill="#fff" stroke="#b25000" stroke-width="2"/><text x="270" y="144" fill="#b25000">One Zone-IA</text>
+      <rect x="270" y="162" width="130" height="30" rx="5" fill="#3a7d44"/><text x="335" y="182" fill="#fff">Glacier Instant</text>
+      <text x="230" y="30" fill="#4a5a78" text-anchor="start">↓ 上から下への移行だけ</text><text x="230" y="46" fill="#4a5a78" text-anchor="start">（ウォーターフォール）</text>
+      <rect x="420" y="124" width="130" height="30" rx="5" fill="#2c5f34"/><text x="485" y="144" fill="#fff">Glacier Flexible</text>
+      <rect x="420" y="162" width="130" height="30" rx="5" fill="#1d3d22"/><text x="485" y="182" fill="#fff">Deep Archive</text>
+      <rect x="590" y="10" width="256" height="182" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="718" y="32" fill="#1f3a68" font-weight="700" font-size="12">ログのルールの例（Claude の例）</text>
+      <text x="610" y="58" text-anchor="start">作成</text><text x="826" y="58" text-anchor="end" font-weight="700">S3 Standard</text>
+      <text x="610" y="84" text-anchor="start">30 日後（移行アクション）</text><text x="826" y="84" text-anchor="end" font-weight="700">Standard-IA</text>
+      <text x="610" y="110" text-anchor="start">1 年後（移行アクション）</text><text x="826" y="110" text-anchor="end" font-weight="700">Glacier Flexible</text>
+      <text x="610" y="136" text-anchor="start">7 年後（失効アクション）</text><text x="826" y="136" text-anchor="end" font-weight="700" fill="#9a3030">削除</text>
+      <text x="610" y="164" text-anchor="start" fill="#4a5a78">＋ 不完全なマルチパートを</text><text x="610" y="180" text-anchor="start" fill="#4a5a78">　 7 日後に削除</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>移行アクションと失効アクション：</b>移行＝別のクラスへ移すタイミング。失効＝削除するタイミング。ルールは既存のオブジェクトにも、あとから追加されたものにも効く。</div>
+    <div class="point warn"><b>注意：</b>128 KB 未満は既定で移行されない（1 件ごとの移行の料金が割高になるため）。最小ストレージ期間の前に移すと、その分の料金がかかる。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lifecycle-mgmt.html">オブジェクトのライフサイクルの管理</a>（「S3 ライフサイクルは、オブジェクトを低コストのストレージクラスに移行するか、ユーザーに代わって期限切れのオブジェクトを削除することで、ライフサイクル全体でコスト効率の高い方法でオブジェクトを保存するのに役立ちます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html">Amazon S3 ライフサイクルを使用したオブジェクトの移行</a>（「Amazon S3 は、以下の図のようにストレージクラス間の移行のためのウォーターフォールモデルをサポートします。」「2024 年 9 月以降、デフォルトの動作により、128 KB 未満のオブジェクトが任意のストレージクラスに移行されることを回避します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>バージョニングと MFA 削除</h1>
+  <svg width="856" height="180" viewBox="0 0 856 180">
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="10" width="250" height="160" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="135" y="30" fill="#1f3a68" font-weight="700" font-size="12">① 上書き</text>
+      <rect x="40" y="44" width="190" height="32" rx="5" fill="#1f3a68"/><text x="135" y="64" fill="#fff">config.json　v2（最新）</text>
+      <rect x="40" y="84" width="190" height="32" rx="5" fill="#fff" stroke="#1f3a68"/><text x="135" y="104">config.json　v1（残る）</text>
+      <text x="135" y="146" fill="#1f3a68">前のバージョンから戻せる</text>
+      <rect x="290" y="10" width="270" height="160" rx="10" fill="#fdf0e2" stroke="#b25000"/><text x="425" y="30" fill="#b25000" font-weight="700" font-size="12">② 削除（バージョン指定なし）</text>
+      <rect x="320" y="44" width="210" height="32" rx="5" fill="#b25000"/><text x="425" y="64" fill="#fff">削除マーカー（最新になる）</text>
+      <rect x="320" y="84" width="210" height="32" rx="5" fill="#fff" stroke="#b25000"/><text x="425" y="104">config.json　v2（残る）</text>
+      <rect x="320" y="122" width="210" height="28" rx="5" fill="#fff" stroke="#b25000"/><text x="425" y="140">config.json　v1（残る）</text>
+      <text x="425" y="164" fill="#b25000">本当には消えていない</text>
+      <rect x="590" y="10" width="256" height="160" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="718" y="30" fill="#3a7d44" font-weight="700" font-size="12">③ MFA 削除を有効にすると</text>
+      <text x="718" y="58">次の 2 つに MFA のコードが要る</text>
+      <rect x="610" y="70" width="216" height="30" rx="5" fill="#3a7d44"/><text x="718" y="90" fill="#fff">バージョンの完全な削除</text>
+      <rect x="610" y="106" width="216" height="30" rx="5" fill="#3a7d44"/><text x="718" y="126" fill="#fff">バージョニングの状態の変更</text>
+      <text x="718" y="156" fill="#3a7d44">有効にできるのはルートアカウントだけ</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>状態：</b>無効（既定）→ 有効 → 停止。一度有効にすると無効には戻せない（停止はできる）。各バージョンはオブジェクト全体として料金がかかるので、古いバージョンはライフサイクルで整理する。</div>
+    <div class="point warn"><b>前提になる機能：</b>レプリケーションと Object Lock は、バージョニングが有効なバケットでしか使えない。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/Versioning.html">S3 バージョニングによる複数のバージョンのオブジェクトの保持</a>（「例えば、オブジェクトを削除した場合、Amazon S3 は、オブジェクトを完全に削除する代わりに削除マーカーを挿入します。」「一度バケットのバージョニングを有効にすると、バージョニング無効の状態に戻すことはできません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/MultiFactorAuthenticationDelete.html">MFA 削除の設定</a>（「ただし、MFA Delete を有効化できるのは、バケット所有者 (ルートアカウント) のみです。」）</div>
+</section>
+
+<section class="slide">
+  <h1>S3 Object Lock：WORM で消させない</h1>
+  <table class="mx">
+    <tr><th style="width:20%"></th><th>コンプライアンスモード</th><th>ガバナンスモード</th><th>リーガルホールド</th></tr>
+    <tr><td class="t">期間</td><td>保持期間を決める</td><td>保持期間を決める</td><td>期限なし（外すまで）</td></tr>
+    <tr><td class="t">だれが消せる</td><td class="l" style="color:#9a3030;font-weight:700">だれも（ルートユーザーも）</td><td class="l">s3:BypassGovernanceRetention の許可を持ち、ヘッダーを付けた人</td><td class="l">明示的に外すまでだれも消せない</td></tr>
+    <tr><td class="t">モードの変更</td><td>できない（期間の延長だけ）</td><td>特別な許可があればできる</td><td>—</td></tr>
+    <tr><td class="t">使う場面</td><td class="l">規制で、決まった期間だれにも変えさせない</td><td class="l">ほとんどの人から守る・本番の前の試し</td><td class="l">訴訟などで、終わりが決まっていない</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>前提：</b>Object Lock はバージョニングが有効なバケットでだけ動く。ロックはオブジェクトのバージョンごとに付き、同じ名前で上書きすると新しいバージョンができ、古いバージョンはロックされたまま残る。</div>
+    <div class="point warn"><b>最も強い保護：</b>コンプライアンスモードのオブジェクトを期限の前に消す唯一の方法は、AWS アカウントを削除すること。「ルートユーザーも含めて」とあればコンプライアンスモード。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/object-lock.html">S3 Object Lock を使用したオブジェクトのロック</a>（「オブジェクトロックは、write-once-read-many (WORM) モデルを使用してオブジェクトを保存します。」「オブジェクトロックは S3 バージョニングが有効になっているバケットでのみ機能します。」「保持期限が切れる前にコンプライアンスモードのオブジェクトを削除する唯一の方法は、関連する AWS アカウント を削除することです。」）</div>
+</section>
+
+<section class="slide">
+  <h1>レプリケーション：CRR・SRR・RTC・バッチ</h1>
+  <svg width="856" height="190" viewBox="0 0 856 190">
+    <defs><marker id="s5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="10" width="440" height="170" rx="12" fill="#f5f5f7" stroke="#4a5a78"/><text x="230" y="30" fill="#4a5a78" font-weight="700" font-size="12">東京リージョン</text>
+      <rect x="30" y="50" width="170" height="70" rx="8" fill="#1f3a68"/><text x="115" y="76" fill="#fff" font-weight="700">レプリケート元</text><text x="115" y="94" fill="#fff">バージョニング：有効</text><text x="115" y="110" fill="#fff">app-data</text>
+      <rect x="260" y="50" width="170" height="70" rx="8" fill="#4a5a78"/><text x="345" y="76" fill="#fff" font-weight="700">ログ集約バケット</text><text x="345" y="94" fill="#fff">バージョニング：有効</text><text x="345" y="110" fill="#fff">別のアカウントでもよい</text>
+      <line x1="200" y1="85" x2="258" y2="85" stroke="#1f3a68" stroke-width="2" marker-end="url(#s5)"/><text x="229" y="78" fill="#1f3a68" font-weight="700">SRR</text>
+      <text x="230" y="150" fill="#4a5a78">SRR：ログの集約・本番とテストの同期・データを国外に出さない</text>
+      <rect x="560" y="10" width="286" height="170" rx="12" fill="#e8f3ea" stroke="#3a7d44"/><text x="703" y="30" fill="#3a7d44" font-weight="700" font-size="12">大阪リージョン</text>
+      <rect x="610" y="50" width="190" height="70" rx="8" fill="#3a7d44"/><text x="705" y="76" fill="#fff" font-weight="700">レプリケート先</text><text x="705" y="94" fill="#fff">バージョニング：有効</text><text x="705" y="110" fill="#fff">クラスを変えてもよい</text>
+      <line x1="200" y1="62" x2="608" y2="62" stroke="#1f3a68" stroke-width="2" marker-end="url(#s5)"/><text x="505" y="56" fill="#1f3a68" font-weight="700">CRR（＋RTC で 15 分）</text>
+      <text x="703" y="150" fill="#3a7d44">CRR：コンプライアンス・近くで読む</text><text x="703" y="166" fill="#3a7d44">・別のリージョンへのフェイルオーバー</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:26%">機能</th><th>何をコピーする</th><th style="width:34%">ひっかけ</th></tr>
+    <tr><td class="t">ライブレプリケーション</td><td class="l">設定のあとに作られた・更新されたオブジェクト（非同期）</td><td class="l">既存のオブジェクトはコピーされない</td></tr>
+    <tr><td class="t">S3 バッチレプリケーション</td><td class="l">既存のオブジェクト・失敗したオブジェクトをオンデマンドで</td><td class="l">RTC は効かない</td></tr>
+    <tr><td class="t">S3 RTC</td><td class="l">新しいオブジェクトの 99.99% を 15 分以内（SLA）</td><td class="l">時間の保証が要るときだけ</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/replication.html">リージョン内およびリージョン間でのオブジェクトのレプリケート</a>（「レプリケーションを使用すると、Amazon S3 バケット間でオブジェクトを自動で非同期的にコピーできます。」「S3 RTC はバッチレプリケーションには適用されません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/replication-requirements.html">レプリケーションの要件と考慮事項</a>（「レプリケート元とレプリケート先の両方のバケットで、バージョニングを有効にする必要があります。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/replication-time-control.html">S3 Replication Time Control (S3 RTC)を使用してコンプライアンス要件を満たす</a></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>性能と使い方</h1>
+  <p>プレフィックスで広げる、大きなファイルは分けて送る・分けて読む、遠くからは Transfer Acceleration。イベント通知・署名付き URL・バッチオペレーション・アクセスポイント。</p>
+  <div class="foot"><span>AWS SAA #13 Amazon S3</span><span>タスク 3.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>プレフィックスとリクエストレート</h1>
+  <svg width="856" height="190" viewBox="0 0 856 190">
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="10" width="380" height="170" rx="10" fill="#fff" stroke="#9a3030"/><text x="200" y="30" fill="#9a3030" font-weight="700" font-size="12">1 つのプレフィックスに集中</text>
+      <rect x="40" y="46" width="320" height="40" rx="6" fill="#ddd"/><text x="200" y="64">logs/2026-11-08-0001.txt</text><text x="200" y="78">logs/2026-11-08-0002.txt …（連番）</text>
+      <text x="200" y="112">GET が毎秒 8,000 件</text><text x="200" y="134" fill="#9a3030" font-weight="700">→ 上限を超えて 503（Slow Down）</text><text x="200" y="160" fill="#4a5a78">S3 が自動でスケールするまで一時的に返る</text>
+      <rect x="430" y="10" width="416" height="170" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="638" y="30" fill="#3a7d44" font-weight="700" font-size="12">プレフィックスに分散</text>
+      <rect x="450" y="44" width="120" height="44" rx="6" fill="#3a7d44"/><text x="510" y="62" fill="#fff" font-weight="700">a1b2/</text><text x="510" y="78" fill="#fff">GET 5,500/秒</text>
+      <rect x="580" y="44" width="120" height="44" rx="6" fill="#3a7d44"/><text x="640" y="62" fill="#fff" font-weight="700">c3d4/</text><text x="640" y="78" fill="#fff">GET 5,500/秒</text>
+      <rect x="710" y="44" width="120" height="44" rx="6" fill="#3a7d44"/><text x="770" y="62" fill="#fff" font-weight="700">e5f6/</text><text x="770" y="78" fill="#fff">GET 5,500/秒</text>
+      <text x="638" y="114">プレフィックスの数に制限はない</text><text x="638" y="136" fill="#3a7d44" font-weight="700">→ 分けた数だけ全体の処理量が増える</text><text x="638" y="160" fill="#4a5a78">PUT/COPY/POST/DELETE は毎秒 3,500 以上</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>数字：</b>パーティショニングされたプレフィックスごとに、毎秒 3,500 以上の書き込み系（PUT/COPY/POST/DELETE）と 5,500 以上の読み取り系（GET/HEAD）。図の件数は Claude が作った例。</div>
+    <div class="point warn"><b>ほかの手：</b>同じオブジェクトが何度も読まれるなら、CloudFront や ElastiCache でキャッシュして S3 へのリクエスト自体を減らす。503 の数は CloudWatch のリクエストメトリクスで監視できる。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/optimizing-performance.html">設計パターンのベストプラクティス: Amazon S3 のパフォーマンスの最適化</a>（「例えば、アプリケーションは、パーティショニングされた Amazon S3 プレフィックスごとに毎秒 3,500 回以上の PUT/COPY/POST/DELETE リクエストまたは 5,500 回以上の GET/HEAD リクエストを達成できます。」「バケット内のプレフィックスの数に制限はありません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/optimizing-performance-design-patterns.html">Amazon S3 のパフォーマンスの設計パターン</a>（「スケーリングプロセス中に、HTTP 503 (Slow Down) レスポンスを受け取る場合があります。」）</div>
+</section>
+
+<section class="slide">
+  <h1>マルチパートアップロードとバイト範囲のフェッチ</h1>
+  <svg width="856" height="180" viewBox="0 0 856 180">
+    <defs><marker id="s6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <text x="210" y="18" fill="#1f3a68" font-weight="700" font-size="12">アップロード：パートに分けて並列に送る</text>
+      <rect x="10" y="30" width="90" height="120" rx="6" fill="#1f3a68"/><text x="55" y="86" fill="#fff" font-weight="700">10 GB</text><text x="55" y="102" fill="#fff">動画</text>
+      <g fill="#4a5a78"><rect x="140" y="30" width="80" height="24" rx="4"/><rect x="140" y="62" width="80" height="24" rx="4"/><rect x="140" y="94" width="80" height="24" rx="4" fill="#9a3030"/><rect x="140" y="126" width="80" height="24" rx="4"/></g>
+      <text x="180" y="46" fill="#fff">パート 1</text><text x="180" y="78" fill="#fff">パート 2</text><text x="180" y="110" fill="#fff">3 失敗→再送</text><text x="180" y="142" fill="#fff">パート 4…</text>
+      <g stroke="#1f3a68" stroke-width="1.5"><line x1="100" y1="90" x2="138" y2="42" marker-end="url(#s6)"/><line x1="100" y1="90" x2="138" y2="74" marker-end="url(#s6)"/><line x1="100" y1="90" x2="138" y2="106" marker-end="url(#s6)"/><line x1="100" y1="90" x2="138" y2="138" marker-end="url(#s6)"/></g>
+      <rect x="270" y="60" width="140" height="60" rx="8" fill="#3a7d44"/><text x="340" y="84" fill="#fff" font-weight="700">完了で 1 つに</text><text x="340" y="102" fill="#fff">パート番号の順に連結</text>
+      <line x1="220" y1="90" x2="268" y2="90" stroke="#1f3a68" stroke-width="2" marker-end="url(#s6)"/>
+      <line x1="430" y1="10" x2="430" y2="170" stroke="#ccc"/>
+      <text x="645" y="18" fill="#b25000" font-weight="700" font-size="12">ダウンロード：Range で一部だけ並列に読む</text>
+      <rect x="460" y="40" width="370" height="36" rx="6" fill="#fff" stroke="#b25000"/><text x="788" y="63">オブジェクト</text>
+      <g fill="#b25000" opacity="0.85"><rect x="460" y="40" width="90" height="36" rx="6"/><rect x="555" y="40" width="90" height="36" rx="6"/><rect x="650" y="40" width="90" height="36" rx="6"/></g>
+      <text x="505" y="63" fill="#fff">bytes 0-</text><text x="600" y="63" fill="#fff">範囲 2</text><text x="695" y="63" fill="#fff">範囲 3</text>
+      <text x="645" y="104">同時接続で別々の範囲を取る → 全体のスループットが上がる</text><text x="645" y="124">小さい範囲なら、中断しても取り直しやすい</text><text x="645" y="150" fill="#4a5a78">マルチパートで上げたものは、同じパートの大きさで取ると速い</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>マルチパートアップロード：</b>100 MB 以上で勧められている。パート番号は 1〜10,000。順番はばらばらでよく、失敗したパートだけ送り直す。サイズが分からないうちから送り始められる。</div>
+    <div class="point warn"><b>残ったパートは有料：</b>完了も停止もしないと、パートの料金がかかり続ける。ライフサイクルの AbortIncompleteMultipartUpload で、日数がたったら消す。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/mpuoverview.html">Amazon S3 でのマルチパートアップロードを使用したオブジェクトのアップロードとコピー</a>（「100 MB 以上のオブジェクトは、単一のオペレーションでアップロードするのではなく、マルチパートアップロードを使用するのがベストプラクティスです。」「1～10,000 の範囲で任意のパート番号を選択できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/optimizing-performance-guidelines.html">Amazon S3 のパフォーマンスのガイドライン</a>（「Amazon S3 への同時接続を使用して、同じオブジェクトのさまざまなバイト範囲をフェッチできます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>遠くから速く：Transfer Acceleration とマルチリージョンアクセスポイント</h1>
+  <svg width="856" height="170" viewBox="0 0 856 170">
+    <defs><marker id="s7" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="20" width="130" height="50" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="75" y="42" fill="#1f3a68" font-weight="700">海外の支店</text><text x="75" y="58">大きなファイル</text>
+      <rect x="200" y="20" width="140" height="50" rx="8" fill="#b25000"/><text x="270" y="42" fill="#fff" font-weight="700">近くのエッジ</text><text x="270" y="58" fill="#fff">CloudFront の拠点</text>
+      <rect x="400" y="20" width="180" height="50" rx="8" fill="#4a5a78"/><text x="490" y="42" fill="#fff" font-weight="700">最適化されたネットワークパス</text><text x="490" y="58" fill="#fff">エッジから S3 へ</text>
+      <rect x="640" y="20" width="200" height="50" rx="8" fill="#1f3a68"/><text x="740" y="42" fill="#fff" font-weight="700">東京の 1 つのバケット</text><text x="740" y="58" fill="#fff">Transfer Acceleration を有効</text>
+      <g stroke="#b25000" stroke-width="2"><line x1="140" y1="45" x2="198" y2="45" marker-end="url(#s7)"/><line x1="340" y1="45" x2="398" y2="45" marker-end="url(#s7)"/><line x1="580" y1="45" x2="638" y2="45" marker-end="url(#s7)"/></g>
+      <rect x="10" y="96" width="830" height="64" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="425" y="118" fill="#3a7d44" font-weight="700" font-size="12">マルチリージョンアクセスポイント：1 つのグローバルエンドポイント → Global Accelerator → 最も近いバケット</text><text x="425" y="138">複数のリージョンのバケットを束ね、データは CRR で同期。障害のときはフェイルオーバーコントロールで数分以内に切り替え</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:34%">問題文の言葉</th><th>答え</th></tr>
+    <tr><td class="l">世界中から 1 つのバケットにアップロードが遅い</td><td class="x">S3 Transfer Acceleration</td></tr>
+    <tr><td class="l">複数のリージョンのバケットを 1 つの入口で・近いほうへ</td><td class="x">マルチリージョンアクセスポイント</td></tr>
+    <tr><td class="l">同じコンテンツを世界中に配信（ダウンロード）</td><td class="x">CloudFront でキャッシュ（#19）</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/transfer-acceleration.html">Amazon S3 Transfer Acceleration を使用した高速かつ安全なファイル転送の設定</a>（「Amazon S3 Transfer Acceleration は、クライアントと S3 汎用バケットの間で、ファイルの長距離転送を高速、簡単、安全に実行できるようにするバケットレベルの機能です。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/MultiRegionAccessPoints.html">マルチリージョンアクセスポイントを使用したマルチリージョントラフィックの管理</a>（「Amazon S3 マルチリージョンアクセスポイントを使用すると、複数の AWS リージョンにある S3 バケットからのリクエストをアプリケーションが実行するために使用できるグローバルエンドポイントを作成できます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>イベント通知と署名付き URL</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">S3 イベント通知</div>
+      <svg width="410" height="170" viewBox="0 0 410 170">
+        <defs><marker id="s8" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <rect x="10" y="50" width="130" height="70" rx="8" fill="#1f3a68"/><text x="75" y="76" fill="#fff" font-weight="700">バケット</text><text x="75" y="94" fill="#fff">作成・削除・復元</text><text x="75" y="110" fill="#fff">レプリケーションなど</text>
+          <rect x="230" y="6" width="170" height="30" rx="5" fill="#3a7d44"/><text x="315" y="26" fill="#fff">SNS トピック</text>
+          <rect x="230" y="44" width="170" height="30" rx="5" fill="#3a7d44"/><text x="315" y="64" fill="#fff">SQS キュー（標準）</text>
+          <rect x="230" y="82" width="170" height="30" rx="5" fill="#3a7d44"/><text x="315" y="102" fill="#fff">Lambda 関数</text>
+          <rect x="230" y="120" width="170" height="30" rx="5" fill="#3a7d44"/><text x="315" y="140" fill="#fff">EventBridge</text>
+          <g stroke="#1f3a68" stroke-width="1.5"><line x1="140" y1="85" x2="228" y2="21" marker-end="url(#s8)"/><line x1="140" y1="85" x2="228" y2="59" marker-end="url(#s8)"/><line x1="140" y1="85" x2="228" y2="97" marker-end="url(#s8)"/><line x1="140" y1="85" x2="228" y2="135" marker-end="url(#s8)"/></g>
+          <text x="315" y="166" fill="#9a3030">SQS の FIFO キューには直接送れない</text>
+        </g>
+      </svg>
+      <div class="mini">少なくとも 1 回は届くように作られている。ふつうは数秒で届く</div>
+    </div>
+    <div>
+      <div class="lbl">署名付き URL（時間制限付きの鍵）</div>
+      <table class="mx">
+        <tr><th style="width:36%">項目</th><th>内容</th></tr>
+        <tr><td class="t">何ができる</td><td class="l">バケットポリシーを変えずに、ダウンロードやアップロードを許す</td></tr>
+        <tr><td class="t">指定するもの</td><td class="l">バケット・キー・HTTP メソッド・有効期限</td></tr>
+        <tr><td class="t">権限</td><td class="l">作った人がその操作の許可を持っている必要がある</td></tr>
+        <tr><td class="t">期限</td><td class="l">IAM ユーザー・署名バージョン 4 で最大 7 日間。期限まで何度でも使える</td></tr>
+      </table>
+      <div class="point" style="margin-top:6px">AWS のアカウントを持たない人にも、一時的にファイルを渡したり受け取ったりできる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/EventNotifications.html">Amazon S3 イベント通知</a>（「Amazon S3 イベント通知は、少なくとも 1 回配信されるように設計されています。」「Amazon Simple キューサービス FIFO (先入れ先出し) キューは、Amazon S3 イベント通知の送信先としてサポートされていません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/using-presigned-url.html">署名付き URL を使用したオブジェクトのダウンロードおよびアップロード</a>（「バケットポリシーを更新せずに、Amazon S3 内のオブジェクトへの時間制限付きのアクセス権を付与するには、署名付き URL を使用できます。」「署名付き URL は、有効期限日時まで複数回使用できます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>まとめて扱う・分けて渡す</h1>
+  <table class="mx">
+    <tr><th style="width:24%">機能</th><th>何をする</th><th style="width:34%">選ぶ合図</th></tr>
+    <tr><td class="t">S3 バッチオペレーション</td><td class="l">マニフェスト（S3 インベントリのレポートなど）に並べたオブジェクトに、1 種類の操作を一括で。コピー・タグ・ACL・復元・暗号化の更新</td><td class="l">「数十億のオブジェクトに一括で」「既存のオブジェクトをまとめて」</td></tr>
+    <tr><td class="t">S3 アクセスポイント</td><td class="l">共有のデータセットに、それぞれ別の許可とネットワークの制御を持つ入口を作る。VPC からだけに限れる</td><td class="l">「チームごとに許可を分けたい」「バケットポリシーが巨大」</td></tr>
+    <tr><td class="t">静的ウェブサイトホスティング</td><td class="l">HTML・画像・クライアント側のスクリプトなど静的なコンテンツを配信</td><td class="l">「サーバーなしで静的なサイト」。HTTPS で配るなら CloudFront（Amplify ホスティング）</td></tr>
+    <tr><td class="t">強い整合性</td><td class="l">PUT・DELETE のあと、すぐに読むと最新の結果が返る（すべてのリージョン）</td><td class="l">「書いた直後に読むと古い？」→ 古くならない</td></tr>
+  </table>
+  <div class="point" style="margin-top:8px"><b>アクセスポイントの範囲：</b>アクセスポイントで行えるのはオブジェクトの操作だけ。バケットの削除やレプリケーションの設定などはできない。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/batch-ops.html">バッチオペレーションでオブジェクトオペレーションを一括で実行する</a>（「S3 バッチオペレーションを使用して、オブジェクトのコピー、オブジェクトのサーバー側の暗号化の更新、オブジェクトのタグやアクセスコントロールリスト (ACL) の設定を行います。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/access-points.html">アクセスポイントを使用した共有データセットへのアクセスの管理</a>（「仮想プライベートクラウド (VPC) からのリクエストのみを受け付けるようにアクセスポイントを設定することで、プライベートネットワークへの Amazon S3 データアクセスを制限できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/WebsiteHosting.html">Amazon S3 を使用して静的ウェブサイトをホスティングする</a>／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/Welcome.html">Amazon S3 とは</a>（「Amazon S3 には、すべての AWS リージョン にある Amazon S3 バケットの、オブジェクトの PUT と DELETE に関する、書き込み後読み取りの強力な整合性があります。」）</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">ストレージクラス<span>頻度・速さ・AZ・最小期間で選ぶ。分からなければ Intelligent-Tiering。Flexible・Deep Archive は復元が要る</span></div>
+      <div class="box b2">管理<span>ライフサイクルで移行と失効（上から下へ）。不完全なマルチパートも掃除</span></div>
+      <div class="box b3">保護<span>バージョニング＋MFA 削除。Object Lock はコンプライアンス／ガバナンス／リーガルホールド。CRR・SRR・RTC・バッチ</span></div>
+      <div class="box b4">性能と使い方<span>プレフィックスで分散、マルチパートとバイト範囲、Transfer Acceleration、通知、署名付き URL、アクセスポイント</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">ひっかけ</th><th>正しくは</th></tr>
+        <tr><td class="l">作り直せないデータに One Zone-IA</td><td class="x">Standard-IA</td></tr>
+        <tr><td class="l">Deep Archive を数分で取り出す</td><td class="x">迅速はない</td></tr>
+        <tr><td class="l">ガバナンスモードでだれも消せない</td><td class="x">コンプライアンス</td></tr>
+        <tr><td class="l">レプリケーションで既存もコピー</td><td class="x">バッチレプリケーション</td></tr>
+        <tr><td class="l">503 にバケットを増やすしかない</td><td class="x">プレフィックスを分ける</td></tr>
+        <tr><td class="l">FIFO キューへ直接通知</td><td class="x">送れない</td></tr>
+      </table>
+      <div class="point">次の #14 では、ブロックとファイルのストレージを学ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
