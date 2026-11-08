@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS SAA #15 RDSとAurora 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">AWS SAA（SAA-C03）　分野3 高パフォーマンス　#15</div>
+  <h1>RDS と Aurora</h1>
+  <p>マネージドのリレーショナルデータベース。マルチ AZ とリードレプリカの違い、バックアップと復元、暗号化と認証、Aurora のストレージ・エンドポイント・Serverless・Global Database</p>
+  <div class="refs-legend">各ページの下に、根拠にした AWS の公式ドキュメント（Amazon RDS ユーザーガイド・Amazon Aurora ユーザーガイド）を書いた（青い文字を押すと開く）。「」の中はドキュメントの原文どおり（日本語版は機械翻訳のため、語順が不自然なところもそのまま）。台数・リージョン・時刻は Claude が作った例。数字は 2026-11 時点のドキュメントによる</div>
+</section>
+
+<section class="slide">
+  <h1>全体像：RDS と Aurora<small>試験ガイド タスク 3.3</small></h1>
+  <svg width="856" height="190" viewBox="0 0 856 190">
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="10" width="400" height="170" rx="12" fill="#e3eefc" stroke="#1f3a68"/><text x="210" y="32" fill="#1f3a68" font-weight="700" font-size="13">Amazon RDS（DB インスタンス）</text>
+      <rect x="40" y="48" width="150" height="50" rx="6" fill="#1f3a68"/><text x="115" y="70" fill="#fff" font-weight="700">DB インスタンス</text><text x="115" y="88" fill="#fff">CPU・メモリ</text>
+      <rect x="40" y="104" width="150" height="40" rx="6" fill="#4a5a78"/><text x="115" y="128" fill="#fff">EBS のストレージ</text>
+      <rect x="230" y="48" width="160" height="96" rx="8" fill="#fff" stroke="#1f3a68"/><text x="310" y="68" fill="#1f3a68" font-weight="700">6 つのエンジン</text><text x="310" y="88">Db2・MariaDB</text><text x="310" y="106">SQL Server・MySQL</text><text x="310" y="124">Oracle・PostgreSQL</text>
+      <text x="210" y="168">インスタンスごとに自分のストレージを持つ</text>
+      <rect x="446" y="10" width="400" height="170" rx="12" fill="#e8f3ea" stroke="#3a7d44"/><text x="646" y="32" fill="#3a7d44" font-weight="700" font-size="13">Amazon Aurora（DB クラスター）</text>
+      <g fill="#3a7d44"><rect x="470" y="48" width="100" height="40" rx="6"/><rect x="590" y="48" width="100" height="40" rx="6"/><rect x="710" y="48" width="110" height="40" rx="6"/></g>
+      <text x="520" y="73" fill="#fff" font-weight="700">ライター</text><text x="640" y="73" fill="#fff">リーダー</text><text x="765" y="73" fill="#fff">リーダー</text>
+      <rect x="470" y="104" width="350" height="40" rx="6" fill="#2f6b38"/><text x="645" y="128" fill="#fff" font-weight="700">共有のクラスターボリューム（3 AZ・自動で伸びる）</text>
+      <g stroke="#3a7d44" stroke-width="2"><line x1="520" y1="88" x2="520" y2="104"/><line x1="640" y1="88" x2="640" y2="104"/><line x1="765" y1="88" x2="765" y2="104"/></g>
+      <text x="646" y="168">MySQL・PostgreSQL 互換。インスタンスとストレージが分かれる</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>マネージドの意味：</b>パッチ・バックアップ・障害検出・復旧は AWS が行う。利用者は基盤のホストにはアクセスできない。OS まで触る必要があれば RDS Custom（または EC2 に自分で入れる）。</div>
+    <div class="point warn"><b>この PDF の範囲外：</b>DynamoDB と ElastiCache は #16、AWS Backup は #10、KMS は #7、Secrets Manager の全体は #8、DMS での移行は #21 で学ぶ。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/Welcome.html">Amazon Relational Database Service (Amazon RDS) とは</a>（「IBM Db2、MariaDB、Microsoft SQL Server、MySQL、Oracle Database、PostgreSQL など既に使い慣れたデータベースエンジンを使用できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html">Amazon Aurora とは</a>（「Amazon Aurora (Aurora) は完全マネージド型のリレーショナルデータベースエンジンで、MySQL および PostgreSQL と互換性があります。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>RDS の可用性とスケーリング</h1>
+  <p>マルチ AZ DB インスタンス・マルチ AZ DB クラスター・リードレプリカの違い、クロスリージョンと昇格、RDS Proxy、ストレージの自動スケーリング、RDS Custom。</p>
+  <div class="foot"><span>AWS SAA #15 RDS と Aurora</span><span>タスク 3.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>3 つの構成：スタンバイは読めない</h1>
+  <svg width="856" height="210" viewBox="0 0 856 210">
+    <defs><marker id="c1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker><marker id="c2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="5" y="5" width="270" height="200" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="140" y="24" fill="#1f3a68" font-weight="700" font-size="12">マルチ AZ DB インスタンス</text>
+      <text x="75" y="46" fill="#4a5a78">AZ-a</text><text x="205" y="46" fill="#4a5a78">AZ-c</text>
+      <rect x="20" y="54" width="110" height="44" rx="6" fill="#1f3a68"/><text x="75" y="74" fill="#fff" font-weight="700">プライマリ</text><text x="75" y="90" fill="#fff">読み書き</text>
+      <rect x="150" y="54" width="110" height="44" rx="6" fill="#fff" stroke="#1f3a68" stroke-dasharray="4 3"/><text x="205" y="74" fill="#1f3a68" font-weight="700">スタンバイ</text><text x="205" y="90" fill="#9a3030">読めない</text>
+      <line x1="130" y1="76" x2="148" y2="76" stroke="#1f3a68" stroke-width="2" marker-end="url(#c1)"/><text x="140" y="118" fill="#1f3a68">同期</text>
+      <text x="140" y="150">障害のとき自動でフェイルオーバー</text><text x="140" y="170">目的：高可用性</text>
+      <rect x="293" y="5" width="270" height="200" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="428" y="24" fill="#3a7d44" font-weight="700" font-size="12">マルチ AZ DB クラスター</text>
+      <rect x="308" y="40" width="80" height="44" rx="6" fill="#3a7d44"/><text x="348" y="60" fill="#fff" font-weight="700">ライター</text><text x="348" y="76" fill="#fff">AZ-a</text>
+      <rect x="400" y="100" width="70" height="44" rx="6" fill="#fff" stroke="#3a7d44"/><text x="435" y="120" fill="#3a7d44" font-weight="700">リーダー</text><text x="435" y="136" fill="#3a7d44">AZ-c</text>
+      <rect x="480" y="100" width="70" height="44" rx="6" fill="#fff" stroke="#3a7d44"/><text x="515" y="120" fill="#3a7d44" font-weight="700">リーダー</text><text x="515" y="136" fill="#3a7d44">AZ-d</text>
+      <path d="M388,62 L435,62 L435,98" fill="none" stroke="#3a7d44" stroke-width="2"/><path d="M388,70 L515,70 L515,98" fill="none" stroke="#3a7d44" stroke-width="2"/>
+      <text x="470" y="56" fill="#3a7d44">準同期</text>
+      <text x="428" y="170">リーダーも読める・フェイルオーバー先</text><text x="428" y="190">目的：高可用性＋読み取り</text>
+      <rect x="581" y="5" width="270" height="200" rx="10" fill="#fdf0e2" stroke="#b25000"/><text x="716" y="24" fill="#b25000" font-weight="700" font-size="12">リードレプリカ</text>
+      <rect x="596" y="40" width="100" height="44" rx="6" fill="#b25000"/><text x="646" y="60" fill="#fff" font-weight="700">ソース</text><text x="646" y="76" fill="#fff">読み書き</text>
+      <g fill="#fff" stroke="#b25000"><rect x="736" y="34" width="100" height="26" rx="5"/><rect x="736" y="66" width="100" height="26" rx="5"/><rect x="736" y="98" width="100" height="26" rx="5"/></g>
+      <text x="786" y="51" fill="#b25000">レプリカ</text><text x="786" y="83" fill="#b25000">レプリカ</text><text x="786" y="115" fill="#b25000">別リージョンも可</text>
+      <g stroke="#b25000" stroke-width="2"><line x1="696" y1="56" x2="734" y2="47" marker-end="url(#c2)"/><line x1="696" y1="62" x2="734" y2="79" marker-end="url(#c2)"/><line x1="696" y1="70" x2="734" y2="111" marker-end="url(#c2)"/></g>
+      <text x="716" y="150">非同期・最大 15 台・読み取り専用</text><text x="716" y="170">目的：読み取りの拡張・DR</text><text x="716" y="190" fill="#9a3030">自動では増減しない</text>
+    </g>
+  </svg>
+  <div class="point warn"><b>いちばんのひっかけ：</b>「読み取りの負荷を下げたい」にマルチ AZ DB インスタンスを答えさせる選択肢。そのスタンバイは読み取りを処理できない。読み取りを逃がすのはリードレプリカかマルチ AZ DB クラスター（Aurora なら Aurora レプリカ）。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html">Amazon RDS のマルチ AZ DB インスタンスデプロイ</a>（「高可用性のオプションは、読み取り専用シナリオ向けのスケーリングソリューションではありません。」「スタンバイレプリカを使用してリードトラフィックを処理することはできません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/multi-az-db-clusters-concepts.html">Amazon RDS のマルチ AZ DB クラスターデプロイ</a>（「マルチ AZ DB クラスター配置では、準同期レプリケーションを使用します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/USER_ReadRepl.html">DB インスタンスのリードレプリカの操作</a>（「RDS は、リードレプリカの自動スケーリングをサポートしていません。」）</div>
+</section>
+
+<section class="slide">
+  <h1>比べて選ぶ</h1>
+  <table class="mx">
+    <tr><th style="width:22%">構成</th><th style="width:22%">複製</th><th style="width:12%">読める</th><th>選ぶ合図</th></tr>
+    <tr><td class="t">マルチ AZ DB インスタンス</td><td>別の AZ のスタンバイ 1 台へ同期</td><td style="color:#9a3030">読めない</td><td class="l">「AZ の障害でも自動で復旧」「読み取りの分散は不要」</td></tr>
+    <tr><td class="t">マルチ AZ DB クラスター</td><td>3 つの AZ のリーダー 2 台へ準同期</td><td>読める</td><td class="l">「高可用性と読み取りの拡張を 1 つで」「書き込みレイテンシーを低く」</td></tr>
+    <tr><td class="t">リードレプリカ</td><td>非同期（最大 15 台）</td><td>読める</td><td class="l">「レポートのクエリを本番から分ける」「数秒遅れのデータでよい」</td></tr>
+    <tr><td class="t">クロスリージョンリードレプリカ</td><td>別のリージョンへ非同期</td><td>読める</td><td class="l">「リージョンの災害対策」「遠くの利用者の近くで読む」「リージョンの移行」</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <div class="point"><b>同期と非同期：</b>同期（マルチ AZ DB インスタンス）はコミットの時点でスタンバイにも書かれるのでデータを失いにくいが、書き込みのレイテンシーが長くなることがある。非同期（リードレプリカ）はプライマリを待たせないが、少し遅れる。</div>
+    <div class="point warn"><b>組み合わせられる：</b>マルチ AZ の DB インスタンスにリードレプリカを付けられる。スタンバイへは同期、リードレプリカへは非同期で複製され、読み取りはリードレプリカだけが受ける。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/multi-az-db-clusters-concepts.html">Amazon RDS のマルチ AZ DB クラスターデプロイ</a>（「マルチ AZ DB クラスターは、マルチ AZ DB インスタンスの配置と比較して、高可用性、読み取りワークロードの容量の増加、および書き込みレイテンシーの低減を提供します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/USER_ReadRepl.html">DB インスタンスのリードレプリカの操作</a>（「スタンバイレプリカとのレプリケーションは同期的です。」「リードレプリカとは異なり、スタンバイレプリカは読み取りトラフィックを処理できません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/CHAP_Limits.html">Amazon RDS のクォータと制約</a></div>
+</section>
+
+<section class="slide">
+  <h1>クロスリージョンリードレプリカと昇格</h1>
+  <svg width="856" height="180" viewBox="0 0 856 180">
+    <defs><marker id="c3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b25000"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="10" width="300" height="160" rx="12" fill="#e3eefc" stroke="#1f3a68"/><text x="160" y="30" fill="#1f3a68" font-weight="700" font-size="12">東京リージョン</text>
+      <rect x="60" y="56" width="200" height="56" rx="8" fill="#1f3a68"/><text x="160" y="80" fill="#fff" font-weight="700">RDS for MySQL（ソース）</text><text x="160" y="98" fill="#fff">読み書き</text>
+      <text x="160" y="148" fill="#9a3030">リージョン全体の障害</text><line x1="70" y1="50" x2="250" y2="118" stroke="#9a3030" stroke-width="2" stroke-dasharray="6 4"/>
+      <rect x="546" y="10" width="300" height="160" rx="12" fill="#fdf0e2" stroke="#b25000"/><text x="696" y="30" fill="#b25000" font-weight="700" font-size="12">大阪リージョン</text>
+      <rect x="596" y="46" width="200" height="44" rx="8" fill="#fff" stroke="#b25000" stroke-width="2"/><text x="696" y="66" fill="#b25000" font-weight="700">リードレプリカ</text><text x="696" y="82" fill="#b25000">ふだんは大阪の利用者が読む</text>
+      <rect x="596" y="112" width="200" height="44" rx="8" fill="#b25000"/><text x="696" y="132" fill="#fff" font-weight="700">昇格した DB インスタンス</text><text x="696" y="148" fill="#fff">書き込みを再開</text>
+      <line x1="696" y1="90" x2="696" y2="110" stroke="#b25000" stroke-width="2" marker-end="url(#c3)"/><text x="740" y="104" fill="#b25000">昇格</text>
+      <line x1="260" y1="76" x2="594" y2="68" stroke="#b25000" stroke-width="2" marker-end="url(#c3)"/><text x="428" y="62" fill="#b25000">非同期の複製（安全な通信路は RDS が設定）</text>
+      <text x="428" y="96" fill="#4a5a78">リージョン間のデータ転送は有料</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>使い道は 3 つ：</b>災害対策、利用者に近いリージョンでの読み取り、リージョン間の移行。昇格すると再起動し、ソースとの複製は止まる。昇格には数分以上かかることがある。</div>
+    <div class="point warn"><b>読まないなら：</b>別のリージョンで復元できればよく、ふだんの読み取りに使わないなら、DB を動かし続けない「自動バックアップのクロスリージョンレプリケーション」のほうが安い（次の章）。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/USER_ReadRepl.XRgn.html">別の AWS リージョン でのリードレプリカの作成</a>（「Amazon RDS では、リードレプリカをソース DB インスタンスとは異なる AWS リージョン に作成できます。」「クロスリージョンレプリケーションから転送されたデータには、Amazon RDS のデータ転送料金が発生します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/USER_ReadRepl.Promote.html">リードレプリカをスタンドアロン DB インスタンスに昇格させる</a>（「リードレプリカを昇格させると、RDS によって DB インスタンスが使用可能になる前に DB インスタンスが再起動されます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>RDS Proxy・ストレージの自動スケーリング・RDS Custom</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">RDS Proxy（接続をプールする）</div>
+      <svg width="410" height="150" viewBox="0 0 410 150">
+        <g font-size="11" text-anchor="middle">
+          <g fill="#b25000"><rect x="5" y="8" width="80" height="22" rx="4"/><rect x="5" y="36" width="80" height="22" rx="4"/><rect x="5" y="64" width="80" height="22" rx="4"/><rect x="5" y="92" width="80" height="22" rx="4"/><rect x="5" y="120" width="80" height="22" rx="4"/></g>
+          <g fill="#fff"><text x="45" y="23">Lambda</text><text x="45" y="51">Lambda</text><text x="45" y="79">Lambda</text><text x="45" y="107">Lambda</text><text x="45" y="135">Lambda</text></g>
+          <rect x="150" y="40" width="110" height="70" rx="8" fill="#6a3d9a"/><text x="205" y="68" fill="#fff" font-weight="700">RDS Proxy</text><text x="205" y="86" fill="#fff">接続プール</text>
+          <g stroke="#b25000" stroke-width="1.5"><line x1="85" y1="19" x2="150" y2="55"/><line x1="85" y1="47" x2="150" y2="65"/><line x1="85" y1="75" x2="150" y2="75"/><line x1="85" y1="103" x2="150" y2="85"/><line x1="85" y1="131" x2="150" y2="95"/></g>
+          <rect x="310" y="45" width="95" height="60" rx="8" fill="#1f3a68"/><text x="357" y="72" fill="#fff" font-weight="700">RDS</text><text x="357" y="90" fill="#fff">少ない接続</text>
+          <g stroke="#1f3a68" stroke-width="2"><line x1="260" y1="66" x2="310" y2="66"/><line x1="260" y1="84" x2="310" y2="84"/></g>
+        </g>
+      </svg>
+      <div class="point">接続の急増から DB を守る。フェイルオーバーでもアプリの接続を保つ。IAM 認証を強制でき、ほとんどのアプリはコードを変えずに使える。</div>
+    </div>
+    <div>
+      <div class="lbl">ストレージの自動スケーリングと RDS Custom</div>
+      <table class="mx">
+        <tr><th style="width:36%">機能</th><th>内容</th></tr>
+        <tr><td class="t">ストレージの自動スケーリング</td><td class="l">空き領域が 10% 未満の状態が 5 分以上続くと、ストレージを自動で増やす。増えるのはストレージだけ（CPU・メモリ・台数は変わらない）</td></tr>
+        <tr><td class="t">RDS Custom</td><td class="l">DB と OS の管理者権限が要るアプリ向け。OS とデータベース環境をカスタマイズでき、管理作業は自動化される</td></tr>
+        <tr><td class="t">ふつうの RDS</td><td class="l">基盤のホストにアクセスできず、一部の特権も制限される。すべて AWS に任せたいとき</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/rds-proxy.html">Amazon RDS Proxy</a>（「Amazon RDS Proxy を使用すると、アプリケーションでデータベース接続をプールおよび共有して、アプリケーションのスケーリング能力を向上させることができます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/USER_PIOPS.Autoscaling.html">Amazon RDS ストレージの自動スケーリングによる容量の自動管理</a>（「使用可能な空き領域は、割り当てられたストレージの 10% 未満です。」「低ストレージ状態は 5 分以上続きます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/rds-custom.html">Amazon RDS Custom</a>（「マネージドサービスエクスペリエンスを提供するために、Amazon RDS では基盤となるホストにアクセスできません。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>RDS の保護と運用</h1>
+  <p>自動バックアップと特定時点への復元、DB スナップショット、別のリージョンへのバックアップ、暗号化、IAM データベース認証と Secrets Manager、ブルー/グリーンデプロイ、メンテナンス。</p>
+  <div class="foot"><span>AWS SAA #15 RDS と Aurora</span><span>タスク 3.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>バックアップと特定時点への復元（PITR）</h1>
+  <svg width="856" height="160" viewBox="0 0 856 160">
+    <defs><marker id="c4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#3a7d44"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <line x1="40" y1="60" x2="760" y2="60" stroke="#4a5a78" stroke-width="2"/><text x="790" y="64" fill="#4a5a78">現在</text>
+      <text x="30" y="30" text-anchor="start" fill="#1f3a68" font-weight="700">保持期間（0〜35 日）の始まり</text>
+      <g fill="#1f3a68"><rect x="60" y="48" width="18" height="24" rx="3"/><rect x="260" y="48" width="18" height="24" rx="3"/><rect x="460" y="48" width="18" height="24" rx="3"/><rect x="660" y="48" width="18" height="24" rx="3"/></g>
+      <text x="370" y="92" fill="#1f3a68">■ バックアップウィンドウのスナップショット</text>
+      <g stroke="#b25000" stroke-width="2"><line x1="300" y1="52" x2="300" y2="68"/><line x1="340" y1="52" x2="340" y2="68"/><line x1="380" y1="52" x2="380" y2="68"/><line x1="420" y1="52" x2="420" y2="68"/><line x1="500" y1="52" x2="500" y2="68"/><line x1="540" y1="52" x2="540" y2="68"/><line x1="580" y1="52" x2="580" y2="68"/><line x1="620" y1="52" x2="620" y2="68"/><line x1="700" y1="52" x2="700" y2="68"/><line x1="740" y1="52" x2="740" y2="68"/></g>
+      <text x="620" y="92" fill="#b25000">| 5 分ごとのトランザクションログ</text>
+      <path d="M560,40 L560,20" stroke="#9a3030" stroke-width="2"/><text x="560" y="14" fill="#9a3030" font-weight="700">10:42 に誤って削除</text>
+      <rect x="380" y="112" width="300" height="40" rx="8" fill="#3a7d44"/><text x="530" y="130" fill="#fff" font-weight="700">10:41 の状態で新しい DB インスタンス</text><text x="530" y="146" fill="#fff">スナップショット＋ログで作る（元の DB はそのまま）</text>
+      <path d="M552,62 L540,110" stroke="#3a7d44" stroke-width="2" marker-end="url(#c4)"/>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%">バックアップ</th><th>特徴</th><th style="width:30%">選ぶ合図</th></tr>
+    <tr><td class="t">自動バックアップ</td><td class="l">DB インスタンス全体。保持期間は 0〜35 日（0 で無効）。DB を消すとき「保持」を選ばないと一緒に消える</td><td class="l">「数分前・数日前に戻す」</td></tr>
+    <tr><td class="t">DB スナップショット（手動）</td><td class="l">保持期間で消えず、DB を消しても残る。コピー（別リージョン・暗号化）と共有ができる</td><td class="l">「35 日より長く残す」「変更の前に」</td></tr>
+    <tr><td class="t">クロスリージョンの自動バックアップ</td><td class="l">スナップショットとログを別のリージョンにも複製。マルチ AZ DB クラスターは不可</td><td class="l">「別のリージョンで PITR」「読み取りは不要」</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/USER_PIT.html">Amazon RDS の DB インスタンスを特定の時点に復元する</a>（「DB インスタンスを特定の時点に復元し、ソース DB インスタンスを変更せずに新しい DB インスタンスを作成できます。」「RDS は、DB インスタンスのトランザクションログを 5 分ごとに Amazon S3 にアップロードします。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.BackupRetention.html">バックアップの保存期間</a>（「DB インスタンスのバックアップ保持期間は、0 ～ 35 日間で設定できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/USER_ReplicateBackups.html">別の AWS リージョン への自動バックアップのレプリケーション</a>（「自動バックアップレプリケーションは、マルチ AZ DB クラスターではサポートされていません。」）</div>
+</section>
+
+<section class="slide">
+  <h1>暗号化と、パスワードの扱い</h1>
+  <div class="lbl">暗号化していない DB を暗号化する</div>
+  <svg width="856" height="90" viewBox="0 0 856 90">
+    <defs><marker id="c5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="20" width="160" height="50" rx="8" fill="#fff" stroke="#9a3030" stroke-width="2"/><text x="90" y="42" fill="#9a3030" font-weight="700">暗号化なしの DB</text><text x="90" y="58" fill="#9a3030">そのままは変えられない</text>
+      <rect x="230" y="20" width="160" height="50" rx="8" fill="#fff" stroke="#4a5a78"/><text x="310" y="42" fill="#4a5a78" font-weight="700">スナップショット</text><text x="310" y="58" fill="#4a5a78">暗号化なし</text>
+      <rect x="450" y="20" width="160" height="50" rx="8" fill="#6a3d9a"/><text x="530" y="42" fill="#fff" font-weight="700">暗号化したコピー</text><text x="530" y="58" fill="#fff">KMS キーを指定</text>
+      <rect x="670" y="20" width="176" height="50" rx="8" fill="#3a7d44"/><text x="758" y="42" fill="#fff" font-weight="700">暗号化した DB</text><text x="758" y="58" fill="#fff">コピーから復元</text>
+      <g stroke="#1f3a68" stroke-width="2"><line x1="170" y1="45" x2="228" y2="45" marker-end="url(#c5)"/><line x1="390" y1="45" x2="448" y2="45" marker-end="url(#c5)"/><line x1="610" y1="45" x2="668" y2="45" marker-end="url(#c5)"/></g>
+      <text x="199" y="14">取る</text><text x="419" y="14">コピー</text><text x="639" y="14">復元</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%">機能</th><th>内容</th><th style="width:30%">ひっかけ</th></tr>
+    <tr><td class="t">RDS の暗号化（KMS）</td><td class="l">ストレージ・ログ・自動バックアップ・リードレプリカ・スナップショットを AES-256 で。アプリの変更は不要</td><td class="l">作成後に KMS キーは変えられない。暗号化なしの DB の暗号化レプリカは作れない</td></tr>
+    <tr><td class="t">IAM データベース認証</td><td class="l">パスワードの代わりに認証トークン（有効期間 15 分）。MariaDB・MySQL・PostgreSQL</td><td class="l">パスワードを「管理」するのではなく「使わない」</td></tr>
+    <tr><td class="t">Secrets Manager との統合</td><td class="l">マスターユーザーのパスワードを RDS が Secrets Manager で管理し、既定で 7 日ごとにローテーション</td><td class="l">パスワード自体はある。自動で変えるのが目的</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/Overview.Encryption.html">Amazon RDS リソースの暗号化</a>（「ただし、暗号化されていないスナップショットのコピーは暗号化できるので、暗号化されていない DB インスタンスに効果的に暗号化を追加できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html">MariaDB、MySQL、および PostgreSQL の IAM データベース認証</a>（「この認証方法では、DB インスタンスに接続するときにパスワードを使用する必要はありません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/rds-secrets-manager.html">Amazon RDS および AWS Secrets Manager によるパスワード管理</a>（「RDS はシークレットの設定を管理し、デフォルトで 7 日ごとにシークレットをローテーションします。」）</div>
+</section>
+
+<section class="slide">
+  <h1>ブルー/グリーンデプロイとメンテナンス</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">ブルー/グリーンデプロイ</div>
+      <svg width="410" height="150" viewBox="0 0 410 150">
+        <defs><marker id="c6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#3a7d44"/></marker></defs>
+        <g font-size="11" text-anchor="middle">
+          <rect x="10" y="20" width="150" height="70" rx="8" fill="#1f5fa8"/><text x="85" y="46" fill="#fff" font-weight="700">ブルー（本番）</text><text x="85" y="64" fill="#fff">MySQL 8.0</text>
+          <rect x="250" y="20" width="150" height="70" rx="8" fill="#3a7d44"/><text x="325" y="46" fill="#fff" font-weight="700">グリーン（ステージング）</text><text x="325" y="64" fill="#fff">MySQL 8.4 で試す</text>
+          <line x1="160" y1="55" x2="248" y2="55" stroke="#3a7d44" stroke-width="2" marker-end="url(#c6)"/><text x="204" y="47" fill="#3a7d44">同期</text>
+          <rect x="90" y="108" width="230" height="34" rx="6" fill="#fff" stroke="#3a7d44"/><text x="205" y="129" fill="#3a7d44" font-weight="700">スイッチオーバー：通常 1 分未満</text>
+        </g>
+      </svg>
+      <div class="point">エンジンのバージョンアップやパラメータの変更を、本番に影響なく試す。データは失われず、アプリの変更も不要。RDS では MariaDB・MySQL・PostgreSQL。</div>
+    </div>
+    <div>
+      <div class="lbl">マルチ AZ のメンテナンスの順番</div>
+      <table class="mx">
+        <tr><th style="width:12%">順</th><th>すること</th></tr>
+        <tr><td class="t">1</td><td class="l">スタンバイにメンテナンスを行う</td></tr>
+        <tr><td class="t">2</td><td class="l">スタンバイをプライマリに昇格させる</td></tr>
+        <tr><td class="t">3</td><td class="l">旧プライマリにメンテナンスを行い、新しいスタンバイにする</td></tr>
+      </table>
+      <div class="point" style="margin-top:6px">メンテナンスウィンドウは DB インスタンスごとの週単位の 30 分。必須として自動で入るのは、セキュリティと信頼性に関わるパッチだけ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/blue-green-deployments-overview.html">Amazon RDS ブルー/グリーンデプロイの概要</a>（「切り替えには通常 1 分もかからず、データが失われることはなく、アプリケーションを変更する必要もありません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.Maintenance.html">DB インスタンスのメンテナンス</a>（「旧プライマリでメンテナンスを実行し、その旧プライマリが新しいスタンバイになる。」「セキュリティやインスタンスの信頼性に関連するパッチのみ、必須のパッチ適用として自動的にスケジューリングされます。」）。バージョンの番号は Claude が作った例</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>Amazon Aurora</h1>
+  <p>3 つの AZ に 6 つのコピーを持つクラスターボリューム、Aurora レプリカと 3 種類のエンドポイント、Auto Scaling と Serverless v2、Global Database、バックトラックとクローン、I/O-Optimized。</p>
+  <div class="foot"><span>AWS SAA #15 RDS と Aurora</span><span>タスク 3.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>Aurora のしくみ：ストレージを共有するクラスター</h1>
+  <svg width="856" height="215" viewBox="0 0 856 215">
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="6" width="150" height="34" rx="6" fill="#fff" stroke="#1f3a68"/><text x="85" y="27" fill="#1f3a68" font-weight="700">クラスターエンドポイント</text>
+      <rect x="350" y="6" width="150" height="34" rx="6" fill="#fff" stroke="#3a7d44"/><text x="425" y="27" fill="#3a7d44" font-weight="700">リーダーエンドポイント</text>
+      <rect x="10" y="56" width="270" height="76" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="20" y="72" text-anchor="start" fill="#4a5a78">AZ-a</text><rect x="30" y="80" width="230" height="42" rx="6" fill="#1f3a68"/><text x="145" y="98" fill="#fff" font-weight="700">ライター（プライマリ）</text><text x="145" y="114" fill="#fff">読み書き</text>
+      <rect x="293" y="56" width="270" height="76" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="303" y="72" text-anchor="start" fill="#4a5a78">AZ-c</text><rect x="313" y="80" width="230" height="42" rx="6" fill="#3a7d44"/><text x="428" y="98" fill="#fff" font-weight="700">Aurora レプリカ</text><text x="428" y="114" fill="#fff">読み取り・フェイルオーバー先</text>
+      <rect x="576" y="56" width="270" height="76" rx="10" fill="#e3eefc" stroke="#1f3a68"/><text x="836" y="72" text-anchor="end" fill="#4a5a78">AZ-d</text><rect x="596" y="80" width="230" height="42" rx="6" fill="#3a7d44"/><text x="711" y="98" fill="#fff" font-weight="700">Aurora レプリカ</text><text x="711" y="114" fill="#fff">最大 15 台まで</text>
+      <line x1="85" y1="40" x2="100" y2="80" stroke="#1f3a68" stroke-width="2"/><line x1="425" y1="40" x2="428" y2="80" stroke="#3a7d44" stroke-width="2"/><line x1="490" y1="40" x2="700" y2="80" stroke="#3a7d44" stroke-width="2"/>
+      <rect x="10" y="146" width="836" height="64" rx="10" fill="#2f6b38"/><text x="428" y="164" fill="#fff" font-weight="700" font-size="12">クラスターボリューム（SSD・最大 256 TiB・自動で伸びる）</text>
+      <g fill="#fff"><rect x="70" y="174" width="44" height="26" rx="4"/><rect x="130" y="174" width="44" height="26" rx="4"/><rect x="350" y="174" width="44" height="26" rx="4"/><rect x="410" y="174" width="44" height="26" rx="4"/><rect x="640" y="174" width="44" height="26" rx="4"/><rect x="700" y="174" width="44" height="26" rx="4"/></g>
+      <g fill="#2f6b38"><text x="92" y="191">1</text><text x="152" y="191">2</text><text x="372" y="191">3</text><text x="432" y="191">4</text><text x="662" y="191">5</text><text x="722" y="191">6</text></g>
+      <g stroke="#a8d0ae" stroke-width="2"><line x1="145" y1="122" x2="145" y2="146"/><line x1="428" y1="122" x2="428" y2="146"/><line x1="711" y1="122" x2="711" y2="146"/></g>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>6 つのコピー：</b>書き込みは 3 つの AZ の 6 つのストレージノードに同期で複製される。リーダーがいてもいなくても、ライター 1 台だけでもストレージは 3 AZ。インスタンスはストレージを共有するので、レプリカのラグは通常 100 ミリ秒未満で、追加もすぐ。</div>
+    <div class="point warn"><b>インスタンスの可用性は別：</b>ライター 1 台だけだと、障害のときに引き継ぐインスタンスがない。別の AZ に Aurora レプリカを足すと、その 1 台がプライマリを引き継ぐ（マルチ AZ になる）。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/Concepts.AuroraHighAvailability.html">Amazon Aurora の高可用性</a>（「データがプライマリ DB インスタンスに書き込まれると、Aurora によりアベイラビリティーゾーン全体で、クラスターボリュームに関連付けられた 6 つのストレージノードにデータが同期的に複製されます。」「問題がプライマリインスタンスに影響する場合、これらのリーダーインスタンスの 1 つがプライマリインスタンスとして引き継ぎます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/Aurora.Replication.html">Amazon Aurora でのレプリケーション</a>（「このラグは、通常はプライマリインスタンスが更新を書き込んだ後、100 ミリ秒未満です。」）</div>
+</section>
+
+<section class="slide">
+  <h1>エンドポイントとストレージ設定</h1>
+  <table class="mx">
+    <tr><th style="width:22%">エンドポイント</th><th>つながる先</th><th style="width:34%">使う場面</th></tr>
+    <tr><td class="t">クラスターエンドポイント</td><td class="l">いまのプライマリ（ライター）。フェイルオーバーしても同じ接続文字列</td><td class="l">書き込み（INSERT・DDL・DML）</td></tr>
+    <tr><td class="t">リーダーエンドポイント</td><td class="l">すべての Aurora レプリカに接続を自動で分散</td><td class="l">ふつうの読み取り</td></tr>
+    <tr><td class="t">カスタムエンドポイント</td><td class="l">選んだインスタンスの組だけ</td><td class="l">大きさの違うインスタンスを分析用に分ける</td></tr>
+    <tr><td class="t">インスタンスエンドポイント</td><td class="l">特定の 1 台</td><td class="l">診断・チューニング</td></tr>
+  </table>
+  <div class="cols" style="margin-top:8px">
+    <table class="mx">
+      <tr><th style="width:36%">ストレージ設定</th><th>I/O の料金</th><th style="width:30%">向く場合</th></tr>
+      <tr><td class="t">Aurora Standard</td><td class="l">100 万リクエストごとに課金</td><td class="l">I/O が総支出の 25% 未満</td></tr>
+      <tr><td class="t">Aurora I/O-Optimized</td><td class="l">追加料金なし</td><td class="l">I/O が総支出の 25% 以上</td></tr>
+    </table>
+    <div class="point">I/O-Optimized から Standard へはいつでも、Standard から I/O-Optimized へは 30 日に 1 回切り替えられる。「I/O の料金が高い・予測しにくい」なら I/O-Optimized。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.Endpoints.html">Amazon Aurora エンドポイント接続</a>（「Aurora は、すべての Aurora レプリカ間で接続バランシングを自動的に実行します。」「これは、DB クラスター内に異なるインスタンス容量と設定がある場合に便利です。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.StorageReliability.html">Amazon Aurora ストレージ</a>（「Aurora I/O-Optimized は、I/O 支出が Aurora データベースの総支出の 25% 以上である場合に最適な選択肢です。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Aurora Auto Scaling と Aurora Serverless v2</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">Aurora Auto Scaling（リーダーの台数を増減）</div>
+      <svg width="410" height="140" viewBox="0 0 410 140">
+        <g font-size="11" text-anchor="middle">
+          <rect x="10" y="40" width="80" height="50" rx="6" fill="#1f3a68"/><text x="50" y="62" fill="#fff" font-weight="700">ライター</text><text x="50" y="78" fill="#fff">対象外</text>
+          <g fill="#3a7d44"><rect x="120" y="20" width="60" height="34" rx="5"/><rect x="190" y="20" width="60" height="34" rx="5"/></g><g fill="#fff" stroke="#3a7d44" stroke-dasharray="4 3"><rect x="260" y="20" width="60" height="34" rx="5"/><rect x="330" y="20" width="60" height="34" rx="5"/></g>
+          <text x="150" y="41" fill="#fff">リーダー</text><text x="220" y="41" fill="#fff">リーダー</text><text x="290" y="41" fill="#3a7d44">追加</text><text x="360" y="41" fill="#3a7d44">追加</text>
+          <text x="255" y="80" fill="#3a7d44">平均 CPU 使用率などがターゲットを超えたら足す</text><text x="255" y="100" fill="#3a7d44">最小と最大の台数はポリシーで決める</text>
+          <text x="205" y="130" fill="#9a3030">RDS のリードレプリカにはこの機能がない</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="lbl">Aurora Serverless v2（容量そのものを伸縮）</div>
+      <svg width="410" height="140" viewBox="0 0 410 140">
+        <g font-size="11">
+          <line x1="40" y1="110" x2="400" y2="110" stroke="#4a5a78"/><line x1="40" y1="10" x2="40" y2="110" stroke="#4a5a78"/>
+          <text x="34" y="20" text-anchor="end" fill="#4a5a78">ACU</text><text x="34" y="113" text-anchor="end" fill="#4a5a78">0</text><text x="400" y="126" text-anchor="end" fill="#4a5a78">時刻（夜→昼→夜）</text>
+          <polyline points="40,110 90,110 110,80 140,60 170,30 200,45 230,25 260,55 290,70 320,100 340,110 400,110" fill="none" stroke="#6a3d9a" stroke-width="3"/>
+          <text x="60" y="102" fill="#6a3d9a">一時停止</text><text x="360" y="102" fill="#6a3d9a">一時停止</text><text x="200" y="20" text-anchor="middle" fill="#6a3d9a" font-weight="700">負荷に合わせて細かく</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="point"><b>Auto Scaling：</b>Aurora レプリカの数を CloudWatch のメトリクスとターゲット値で調整する。ライターの負荷には効かない。</div>
+    <div class="point warn"><b>Serverless v2：</b>1 ACU は約 2 GiB のメモリと CPU・ネットワーク。0〜256 ACU。最小を 0 ACU にすると、使わないときに一時停止して料金を抑える。グラフの形は Claude が描いた模式図。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/Aurora.Integrating.AutoScaling.html">Aurora レプリカでの Amazon Aurora Auto Scaling</a>（「Aurora Auto Scaling は、ライター DB インスタンスのワークロードには適用されません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.how-it-works.html">Aurora serverless の仕組み</a>（「各 ACU では、約 2 ギビバイト (GiB) のメモリと、対応する CPU、ネットワークが組み合わせられています。」「最小容量が 0 ACU の場合、ワークロードが実行されていないときは、クラスターは 0 にスケールされます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Aurora Global Database</h1>
+  <svg width="856" height="180" viewBox="0 0 856 180">
+    <defs><marker id="c7" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#3a7d44"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="30" width="250" height="120" rx="12" fill="#e3eefc" stroke="#1f3a68"/><text x="135" y="50" fill="#1f3a68" font-weight="700" font-size="12">プライマリ：東京</text>
+      <rect x="30" y="62" width="210" height="34" rx="6" fill="#1f3a68"/><text x="135" y="84" fill="#fff" font-weight="700">ライター（書き込みはここだけ）</text>
+      <rect x="30" y="104" width="210" height="30" rx="6" fill="#3a7d44"/><text x="135" y="124" fill="#fff">リーダー</text>
+      <rect x="440" y="6" width="190" height="76" rx="12" fill="#e8f3ea" stroke="#3a7d44"/><text x="535" y="26" fill="#3a7d44" font-weight="700">セカンダリ：バージニア北部</text><rect x="460" y="38" width="150" height="30" rx="6" fill="#3a7d44"/><text x="535" y="58" fill="#fff">リーダー（読み取り専用）</text>
+      <rect x="440" y="98" width="190" height="76" rx="12" fill="#e8f3ea" stroke="#3a7d44"/><text x="535" y="118" fill="#3a7d44" font-weight="700">セカンダリ：フランクフルト</text><rect x="460" y="130" width="150" height="30" rx="6" fill="#3a7d44"/><text x="535" y="150" fill="#fff">リーダー（読み取り専用）</text>
+      <line x1="260" y1="70" x2="438" y2="46" stroke="#3a7d44" stroke-width="2" marker-end="url(#c7)"/><line x1="260" y1="110" x2="438" y2="136" stroke="#3a7d44" stroke-width="2" marker-end="url(#c7)"/>
+      <text x="350" y="92" fill="#3a7d44" font-weight="700">通常 1 秒未満で複製</text>
+      <rect x="660" y="20" width="186" height="140" rx="10" fill="#fff" stroke="#4a5a78"/><text x="753" y="42" fill="#4a5a78" font-weight="700">数字</text>
+      <text x="753" y="66">セカンダリは最大 10 リージョン</text><text x="753" y="88">RPO：通常は秒単位</text><text x="753" y="110">RTO：分単位</text><text x="753" y="132">スイッチオーバー：損失なし</text><text x="753" y="152">書き込み転送も使える</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>選ぶ合図：</b>「世界中の利用者が近くで読む」「書き込みは 1 リージョン」「リージョン全体の障害に分単位で切り替える」。計画的な切り替えはスイッチオーバー、障害のときはフェイルオーバー。</div>
+    <div class="point warn"><b>RDS との違い：</b>RDS ではクロスリージョンリードレプリカ（非同期・昇格は手動）。Aurora の Global Database は専用のインフラで複製し、セカンダリはそれぞれクラスターとして読み取りを拡張できる。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html">Amazon Aurora Global Database の使用</a>（「Aurora Global Database は、データが書き込まれる 1 つのプライマリ AWS リージョンと、最大 10 の読み取り専用セカンダリ AWS リージョンで構成されます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/aurora-global-database-disaster-recovery.html">Amazon Aurora Global Database でのスイッチオーバーまたはフェイルオーバーの使用</a>（「Aurora Global Database の場合、RTO は分単位になります。」「Aurora Global Database の場合、RPO (目標復旧時点) は通常、秒単位で測定されます。」）。リージョンの組み合わせは Claude が作った例</div>
+</section>
+
+<section class="slide">
+  <h1>戻す・複製する：PITR・バックトラック・クローン</h1>
+  <table class="mx">
+    <tr><th style="width:18%">機能</th><th>何が起きる</th><th style="width:16%">対象</th><th style="width:28%">選ぶ合図</th></tr>
+    <tr><td class="t">特定時点への復元</td><td class="l">保持期間（1〜35 日）の任意の時点で、新しいクラスターを作る</td><td>Aurora 全般</td><td class="l">「新しい DB でよい」「数日前に戻す」</td></tr>
+    <tr><td class="t">バックトラック</td><td class="l">新しいクラスターを作らず、同じクラスターを巻き戻す（最大 72 時間）。前後に何度も動かせる</td><td>Aurora MySQL</td><td class="l">「WHERE 句のない DELETE を数分で戻す」</td></tr>
+    <tr><td class="t">クローン</td><td class="l">コピーオンライトで、データを共有する別のクラスターを素早く作る。変更した分だけ領域が増える</td><td>Aurora 全般</td><td class="l">「本番データでテスト環境」「追加の領域を最小に」</td></tr>
+    <tr><td class="t">クラスタースナップショット</td><td class="l">手動で取る。期限切れにならない</td><td>Aurora 全般</td><td class="l">「保持期間より長く残す」</td></tr>
+  </table>
+  <svg width="856" height="70" viewBox="0 0 856 70">
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="10" width="260" height="50" rx="8" fill="#e3eefc" stroke="#1f3a68"/><text x="140" y="32" fill="#1f3a68" font-weight="700">PITR・スナップショット</text><text x="140" y="50">接続先が変わる（新しいクラスター）</text>
+      <rect x="298" y="10" width="260" height="50" rx="8" fill="#fdf0e2" stroke="#b25000"/><text x="428" y="32" fill="#b25000" font-weight="700">バックトラック</text><text x="428" y="50">接続先は同じ（その場で巻き戻す）</text>
+      <rect x="586" y="10" width="260" height="50" rx="8" fill="#e8f3ea" stroke="#3a7d44"/><text x="716" y="32" fill="#3a7d44" font-weight="700">クローン</text><text x="716" y="50">本番はそのまま・別のクラスターで試す</text>
+    </g>
+  </svg>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Managing.Backtrack.html">Aurora DB クラスターのバックトラック</a>（「Amazon Aurora MySQL 互換エディション では、バックアップからデータを復元しないで、DB クラスターを特定の時刻までバックトラックできます。」「バックトトラックウィンドウの上限は 72 時間です。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/Aurora.Managing.Clone.html">Amazon Aurora DB クラスターのボリュームのクローン作成</a>（「このメカニズムでは、初期クローンを作成するために使用する追加領域は最小限です。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/Aurora.Managing.Backups.html">Aurora DB クラスターのバックアップと復元の概要</a>（「Aurora DB クラスタースナップショットは期限切れになりません。」）</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">RDS の可用性<span>マルチ AZ DB インスタンス＝同期スタンバイ（読めない）、DB クラスター＝3 AZ・リーダー 2 台、リードレプリカ＝非同期・最大 15 台</span></div>
+      <div class="box b2">RDS の保護<span>PITR は新しい DB・保持は 0〜35 日、長期は手動スナップショット、暗号化はスナップショットのコピーで</span></div>
+      <div class="box b3">Aurora<span>3 AZ に 6 コピー、レプリカ最大 15 台、エンドポイントで書き込みと読み取りを分ける、I/O-Optimized</span></div>
+      <div class="box b4">Aurora の機能<span>Auto Scaling・Serverless v2・Global Database・バックトラック・クローン</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:54%">ひっかけ</th><th>正しくは</th></tr>
+        <tr><td class="l">読み取りの負荷にマルチ AZ のスタンバイ</td><td class="x">リードレプリカ</td></tr>
+        <tr><td class="l">RDS のリードレプリカを自動で増減</td><td class="x">Aurora Auto Scaling</td></tr>
+        <tr><td class="l">自動バックアップを 1 年保持</td><td class="x">手動スナップショット</td></tr>
+        <tr><td class="l">既存の DB をその場で暗号化</td><td class="x">暗号化コピーから復元</td></tr>
+        <tr><td class="l">RDS for PostgreSQL でバックトラック</td><td class="x">PITR</td></tr>
+        <tr><td class="l">Lambda の接続の急増にリードレプリカ</td><td class="x">RDS Proxy</td></tr>
+      </table>
+      <div class="point">次の #16 では、DynamoDB とキャッシュを学ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>

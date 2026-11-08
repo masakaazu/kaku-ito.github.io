@@ -223,6 +223,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/12.html", title: "EC2 用語集", desc: "インスタンスタイプの名前と 6 つのカテゴリ、バーストと無制限モード、Graviton と Compute Optimizer、AMI と Image Builder、ユーザーデータと IMDSv2、インスタンスストアと休止、自動復旧、ENI・Elastic IP・ENA・EFA、プレイスメントグループ", fields: [12], pdf: "terms/12.pdf" },
       { type: "terms", file: "terms/13.html", title: "Amazon S3 用語集", desc: "8 つのストレージクラスと Intelligent-Tiering、Glacier の取り出しオプション、Express One Zone、ライフサイクル、バージョニングと MFA 削除、Object Lock、CRR・SRR・RTC・バッチレプリケーション、プレフィックスとリクエストレート、マルチパート、Transfer Acceleration、イベント通知、署名付き URL、アクセスポイント", fields: [13], pdf: "terms/13.pdf" },
       { type: "terms", file: "terms/14.html", title: "ブロックとファイルのストレージ 用語集", desc: "EBS の gp3・gp2・io2 Block Express・st1・sc1、マルチアタッチ、Elastic Volumes、暗号化、スナップショットと DLM・高速スナップショット復元・アーカイブ・ごみ箱、EFS のマウントターゲット・リージョンと 1 ゾーン・ストレージクラス・スループットモードとパフォーマンスモード・アクセスポイント・レプリケーション、FSx for Windows File Server・Lustre・NetApp ONTAP・OpenZFS", fields: [14], pdf: "terms/14.pdf" },
+      { type: "terms", file: "terms/15.html", title: "RDS と Aurora 用語集", desc: "マルチ AZ DB インスタンスと DB クラスター、リードレプリカとクロスリージョン・昇格、RDS Proxy、ストレージの自動スケーリング、RDS Custom、自動バックアップと特定時点への復元・スナップショット、暗号化、IAM データベース認証、Secrets Manager、ブルー/グリーンデプロイ、Aurora のクラスターボリューム・レプリカ・エンドポイント・I/O-Optimized・Auto Scaling・Serverless v2・Global Database・バックトラック・クローン", fields: [15], pdf: "terms/15.pdf" },
     ],
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },
