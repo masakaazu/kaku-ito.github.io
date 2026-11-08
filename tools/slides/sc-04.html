@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>支援士 #04 ネットワーク・DNS・DoSの攻撃 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">情報処理安全確保支援士試験　科目A-2　中分類23 情報セキュリティの脅威　#04</div>
+  <h1>ネットワーク・DNS・DoSの攻撃</h1>
+  <p>送信元を偽る、名前解決をだます、量で押しつぶす。パケットの向きで攻撃を読み解く</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（IPA の支援士試験シラバス案、CISA、RFC、CERT/CC、JPCERT/CC など）を書いた。過去問は IPA 公開の午前Ⅱ。例のアドレスや会社は Claude が作った</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>シラバス案 中分類23 小分類2「信頼を悪用した攻撃」「サービスの妨害を狙った攻撃」</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 なりすましと信頼の悪用<span>IP・ARP スプーフィング・第三者中継・フィッシング・スミッシング・標的型・水飲み場型・SEO ポイズニング</span></div>
+      <div class="box b2">2 DNS への攻撃<span>キャッシュポイズニング・カミンスキー攻撃・ドメイン名ハイジャック・オープンリゾルバ</span></div>
+      <div class="box b3">3 サービス妨害<span>SYN フラッド・バックスキャッタ・Smurf・HTTP フラッド・Slow HTTP・マルチベクトル・リフレクション（DNS・NTP）</span></div>
+    </div>
+    <div>
+      <div class="lbl">過去の午前Ⅱでの出方（平成31〜令和7年度）</div>
+      <table class="mx">
+        <tr><th>テーマ</th><th style="width:44%">出た回</th></tr>
+        <tr><td class="l">Smurf 攻撃はどれか</td><td class="t">H31春・R3春・R4秋・R6秋</td></tr>
+        <tr><td class="l">未使用アドレスへの SYN/ACK</td><td class="t">R4秋・R6春・R7秋</td></tr>
+        <tr><td class="l">カミンスキー・キャッシュポイズニング</td><td class="t">H31春・R5春・R7春</td></tr>
+        <tr><td class="l">リフレクション（NTP・DRDoS・サービス）</td><td class="t">R3春・R6秋・R7春</td></tr>
+        <tr><td class="l">マルチベクトル型 DDoS</td><td class="t">R1秋</td></tr>
+      </table>
+      <div class="point">DoS は<b>毎年のように出る</b>。同じ問題の選択肢の順番を入れ替えて再出題されることが多い。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）Ver.0.1」中分類23 小分類2／IPA 午前Ⅱ 各回（このPDFの問題演習を参照）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>なりすましと信頼の悪用</h1>
+  <p>「送り主」「宛先」「見慣れたサイト」を偽る。</p>
+  <div class="foot"><span>支援士 #04 ネットワーク・DNS・DoSの攻撃</span><span>23-2</span></div>
+</section>
+
+<section class="slide">
+  <h1>IP スプーフィングと ARP スプーフィング</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">IP スプーフィング：送信元アドレスを偽る</div>
+      <table class="mx">
+        <tr><th>プロトコル</th><th>偽装の通りやすさ</th></tr>
+        <tr><td class="t">UDP・ICMP</td><td class="l">応答を待たないので、そのまま通る → 反射・増幅に使われる</td></tr>
+        <tr><td class="t">TCP</td><td class="l">3ウェイハンドシェイクが完了しない → SYN フラッドに使われる</td></tr>
+      </table>
+      <div class="point"><b>対策：</b>境界で送信元を検査（イングレスフィルタリング、BCP 38）。外から来たのに<b>送信元が内部</b>のパケットは捨てる。</div>
+    </div>
+    <div>
+      <div class="lbl">ARP スプーフィング（ARP ポイズニング）</div>
+      <div class="flow" style="gap:4px">
+        <div class="box b1">PC<span>GW の MAC は？</span></div><div class="to">→</div>
+        <div class="box b4">攻撃者<span>「GW は私（偽の MAC）」</span></div><div class="to">→</div>
+        <div class="box b2">本物の GW<span>攻撃者が中継</span></div>
+      </div>
+      <div class="point warn">LAN の中だけで起きる。ゲートウェイになりすますと<b>外へ出る通信をすべて盗聴・改ざん</b>（中間者攻撃、#02）。</div>
+      <div class="point"><b>対策：</b>スイッチの DHCP スヌーピング＋DAI（ダイナミック ARP インスペクション）、静的 ARP。</div>
+    </div>
+  </div>
+  <div class="cite">出典：RFC 2827（BCP 38）Network Ingress Filtering／Cisco「Configuring Dynamic ARP Inspection」／IPA「支援士試験 シラバス（案）」中分類25「DHCP スヌーピング」</div>
+</section>
+
+<section class="slide">
+  <h1>第三者中継とフィッシングの仲間</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">第三者中継（オープンリレー）</div>
+      <div class="flow" style="gap:4px">
+        <div class="box b4">社外の送信者<span>迷惑メール業者</span></div><div class="to">→</div>
+        <div class="box b2">自社のメールサーバ<span>制限なしで中継</span></div><div class="to">→</div>
+        <div class="box b4">社外の宛先<span>大量の受信者</span></div>
+      </div>
+      <div class="point warn">踏み台にされ、IP が<b>ブラックリスト入り</b> → 自社の正規メールも届かない。</div>
+      <div class="point"><b>対策：</b>中継する送信元を自組織に限る、SMTP-AUTH、OP25B（#14）。</div>
+    </div>
+    <table class="mx">
+      <tr><th>攻撃</th><th>入口</th><th>特徴</th></tr>
+      <tr><td class="t">フィッシング</td><td class="l">メール</td><td class="l">本物そっくりの偽サイトで資格情報を入力させる</td></tr>
+      <tr><td class="t">スミッシング</td><td class="l">SMS</td><td class="l">不在通知などを装う。偽アプリを入れさせる手口も</td></tr>
+      <tr><td class="t">標的型攻撃</td><td class="l">業務に見せたメール</td><td class="l">事前に偵察。長期に潜伏（APT）</td></tr>
+      <tr><td class="t">水飲み場型</td><td class="l">標的がよく見る正規サイト</td><td class="l">標的の IP のときだけ攻撃コード</td></tr>
+      <tr><td class="t">SEO ポイズニング</td><td class="l">検索結果</td><td class="l">話題の言葉で罠のサイトを上位に</td></tr>
+    </table>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」用語例「第三者中継（オープンリレー）」「フィッシング（スミッシング）」「標的型攻撃」「SEO ポイズニング」</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>DNS への攻撃</h1>
+  <p>正しいドメイン名を入れても、偽のサイトへ連れて行かれる。</p>
+  <div class="foot"><span>支援士 #04 ネットワーク・DNS・DoSの攻撃</span><span>23-2</span></div>
+</section>
+
+<section class="slide">
+  <h1>DNS キャッシュポイズニング：答えより先に偽の答えを届ける</h1>
+  <div class="flow" style="gap:4px">
+    <div class="box b1">① 利用者<span>www.bank.example の IP は？</span></div><div class="to">→</div>
+    <div class="box b2">② キャッシュ DNS<span>権威サーバに問い合わせ中</span></div><div class="to">→</div>
+    <div class="box b3">③ 権威 DNS<span>正しい答え（遅れて届く）</span></div>
+  </div>
+  <div class="flow" style="gap:4px;margin-top:8px">
+    <div class="box b4">攻撃者<span>偽の答えを大量に送る</span></div><div class="to">→</div>
+    <div class="box" style="background:#b23a2c">キャッシュに偽の IP<span>利用者全員が偽サイトへ</span></div>
+  </div>
+  <div class="cols" style="margin-top:12px">
+    <table class="mx">
+      <tr><th>偽の答えが受け入れられる条件</th><th style="width:34%">対策</th></tr>
+      <tr><td class="l">DNS ヘッダの ID（16 ビット）が一致</td><td class="t">ID をランダムに</td></tr>
+      <tr><td class="l">宛先ポート（＝問い合わせの送信元ポート）が一致</td><td class="t">ポートをランダムに</td></tr>
+      <tr><td class="l">正しい答えより先に届く</td><td class="t">—</td></tr>
+      <tr><td class="l">内容の正しさを確かめていない</td><td class="t">DNSSEC で署名（#16）</td></tr>
+    </table>
+    <div class="point warn"><b>H31春 問11：</b>正解は「ID をランダムに変更」。「送信元ポート番号を <b>53 に固定</b>」は逆効果のひっかけ。</div>
+  </div>
+  <div class="cite">出典：RFC 5452 Measures for Making DNS More Resilient against Forged Answers／IPA 午前Ⅱ 平成31年度春期 問11</div>
+</section>
+
+<section class="slide">
+  <h1>カミンスキー攻撃：何度でも試せるようにした</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th></th><th>従来の攻撃</th><th>カミンスキー攻撃（2008）</th></tr>
+        <tr><td class="t">問い合わせる名前</td><td class="l">www.bank.example</td><td class="l">a1.bank.example、a2…（存在しない）</td></tr>
+        <tr><td class="t">失敗したら</td><td class="x">正しい答えがキャッシュされ TTL の間は再挑戦できない</td><td class="l">次の名前ですぐ再挑戦</td></tr>
+        <tr><td class="t">偽の答えの中身</td><td class="l">その名前の IP</td><td class="l">bank.example 全体の権威サーバを偽サーバに</td></tr>
+      </table>
+      <div class="lbl" style="margin-top:10px">当たる確率の目安</div>
+      <div class="formula">ID だけ：2<sup>16</sup> ≒ 6.5万通り　→　ID×ポート：約 6.5万 × 約6万 ≒ <b>約40億通り</b></div>
+    </div>
+    <div>
+      <div class="point"><b>R7春 問4（R5春 問5 と同じ）：</b>正解は「問合せ時の<b>送信元ポート番号をランダム化</b>」。</div>
+      <table class="mx">
+        <tr><th>誤りの選択肢</th><th>本当は何の対策か</th></tr>
+        <tr><td class="l">計2台の冗長構成</td><td class="t">過負荷・故障</td></tr>
+        <tr><td class="l">SPF でレコードを認証</td><td class="t">メールの送信元（#14）</td></tr>
+        <tr><td class="l">プレースホルダ</td><td class="t">SQL インジェクション（#03）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：CERT/CC VU#800113（2008）／RFC 5452／IPA 午前Ⅱ 令和7年度春期 問4・令和5年度春期 問5。確率の数字は Claude の概算</div>
+</section>
+
+<section class="slide">
+  <h1>ドメイン名ハイジャックとオープンリゾルバ</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">ドメイン名ハイジャック</div>
+      <div class="point warn">キャッシュをだますのではなく、<b>登録情報や権威 DNS そのもの</b>を書き換える。だれが引いても偽サーバに着く。</div>
+      <table class="mx">
+        <tr><th>入口</th><th>対策</th></tr>
+        <tr><td class="l">レジストラのアカウントの乗っ取り</td><td class="l">MFA、レジストリロック</td></tr>
+        <tr><td class="l">権威 DNS への侵入</td><td class="l">登録情報・NS の監視</td></tr>
+        <tr><td class="l">残ったサブドメインの CNAME（テイクオーバー）</td><td class="l">使わない DNS レコードを消す</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">オープンリゾルバ</div>
+      <div class="point">だれからの再帰問い合わせにも答えるキャッシュ DNS サーバ。</div>
+      <div class="stack">
+        <div class="box b4">DNS アンプ攻撃の踏み台<span>送信元を偽った問い合わせに大きな応答を返す</span></div>
+        <div class="box b4">キャッシュポイズニングの的<span>外部から問い合わせを起こさせやすい</span></div>
+      </div>
+      <div class="point"><b>対策：</b>再帰問い合わせを自組織の利用者に限る。権威 DNS とキャッシュ DNS を分ける。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JPCERT/CC「オープンリゾルバに関する注意喚起」／IPA「支援士試験 シラバス（案）」中分類23 用語例</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>サービス妨害（DoS・DDoS）</h1>
+  <p>何を使い切らせるのか（回線・接続・処理）で分ける。</p>
+  <div class="foot"><span>支援士 #04 ネットワーク・DNS・DoSの攻撃</span><span>23-2</span></div>
+</section>
+
+<section class="slide">
+  <h1>SYN フラッドとバックスキャッタ</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">3ウェイハンドシェイクを途中で止める</div>
+      <table class="mx">
+        <tr><th>正常</th><th>SYN フラッド</th></tr>
+        <tr><td class="l">① SYN →</td><td class="l">① SYN →（送信元は偽）×大量</td></tr>
+        <tr><td class="l">② ← SYN/ACK</td><td class="l">② ← SYN/ACK（偽の送信元へ）</td></tr>
+        <tr><td class="l">③ ACK →（接続完了）</td><td class="x">③ 来ない → 待ち行列が満杯</td></tr>
+      </table>
+      <div class="point"><b>SYN cookie：</b>SYN では待ち行列を使わず、情報を SYN/ACK のシーケンス番号に埋め込む。正しい ACK が来たら接続（RFC 4987）。</div>
+    </div>
+    <div>
+      <div class="lbl">R7秋 問7（R4秋・R6春 と同じ）</div>
+      <div class="code small">送信元 A : 80/tcp  →  未使用アドレス
+種類 SYN/ACK × 大量</div>
+      <div class="steps" style="margin-top:8px">
+        <li>A は SYN/ACK（<b>応答</b>）を返している側</li>
+        <li>宛先が未使用 → だれかが送信元を偽って A に SYN を送った</li>
+        <li>だから <b>A を攻撃先とするサービス妨害</b>（ア）</li>
+      </div>
+      <div class="point">未使用のアドレス（ダークネット）に届くこうした応答を<b>バックスキャッタ</b>という。NICTER などが観測に使う。</div>
+    </div>
+  </div>
+  <div class="cite">出典：RFC 4987 TCP SYN Flooding Attacks and Common Mitigations／IPA 午前Ⅱ 令和7年度秋期 問7／NICT「NICTER 観測レポート」</div>
+</section>
+
+<section class="slide">
+  <h1>Smurf 攻撃：ブロードキャストで増やす</h1>
+  <div class="flow">
+    <div class="box b4">攻撃者<span>ICMP エコー要求<br>送信元＝標的・宛先＝ブロードキャスト</span></div><div class="to">→</div>
+    <div class="box b2">踏み台のネットワーク<span>全機器がエコー応答を返す</span></div><div class="to">→</div>
+    <div class="box" style="background:#b23a2c">標的<span>大量の ICMP エコー応答</span></div>
+  </div>
+  <div class="cols" style="margin-top:12px">
+    <table class="mx">
+      <tr><th>R6秋 問6 の選択肢</th><th style="width:36%">正体</th></tr>
+      <tr><td class="l">ICMP エコー要求・送信元＝標的・宛先＝ブロードキャスト</td><td class="t"><b>Smurf（正解）</b></td></tr>
+      <tr><td class="l">受信可能範囲を超える大きなパケット</td><td class="t">Ping of Death など</td></tr>
+      <tr><td class="l">偽の送信元の SYN を大量、ACK を返さない</td><td class="t">SYN フラッド</td></tr>
+      <tr><td class="l">ボットネットで大量のなりすましメール</td><td class="t">メール爆弾</td></tr>
+    </table>
+    <div>
+      <div class="point warn">H31春・R3春 の版では「ICMP の<b>応答</b>パケットを大量に発生させ…攻撃対象に送られる」、R4秋 では「偽装した ICMP の<b>要求</b>パケットを送って、大量の<b>応答</b>パケットが攻撃対象に」が正解。</div>
+      <div class="point"><b>対策：</b>ルータでダイレクテッドブロードキャストを転送しない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ 令和6年度秋期 問6・平成31年度春期 問6・令和3年度春期 問4・令和4年度秋期 問4</div>
+</section>
+
+<section class="slide">
+  <h1>アプリケーション層の DoS：HTTP フラッドと Slow HTTP</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th></th><th>HTTP フラッド</th><th>Slow HTTP</th></tr>
+        <tr><td class="t">量</td><td class="l">大量の GET・POST</td><td class="l">少ない</td></tr>
+        <tr><td class="t">使い切らせるもの</td><td class="l">処理能力（アプリ・DB）</td><td class="l">同時接続数</td></tr>
+        <tr><td class="t">手口</td><td class="l">重い検索などを連打</td><td class="l">ヘッダ・本文を数秒おきに少しずつ</td></tr>
+        <tr><td class="t">気付き方</td><td class="l">要求数の急増</td><td class="l">量は普段どおりで接続が埋まる</td></tr>
+        <tr><td class="t">対策</td><td class="l">レート制限・Bot 判定・WAF・CDN</td><td class="l">受信タイムアウト短縮・IP ごとの同時接続数制限</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">Slowloris の送り方（イメージ）</div>
+      <div class="code small">GET / HTTP/1.1
+Host: www.example.jp
+<span class="c">（10秒待つ）</span>
+X-a: 1
+<span class="c">（10秒待つ）</span>
+X-b: 2   <span class="c">…空行を送らず終わらせない</span></div>
+      <div class="point warn"><b>R7春 問1：</b>「多数の HTTP リクエストを長期間掛けて送信し続け、セッションを占有」は DRDoS ではなく Slow HTTP。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Apache HTTP Server ドキュメント「Security Tips」Denial of Service (DoS) attacks・mod_reqtimeout／IPA 午前Ⅱ 令和7年度春期 問1</div>
+</section>
+
+<section class="slide">
+  <h1>リフレクション（DRDoS）と増幅率</h1>
+  <div class="flow">
+    <div class="box b4">攻撃者<span>小さな要求 × 多数<br>送信元＝標的</span></div><div class="to">→</div>
+    <div class="box b2">第三者のサーバ<span>DNS・NTP・Memcached…</span></div><div class="to">→</div>
+    <div class="box" style="background:#b23a2c">標的<span>大きな応答が集中</span></div>
+  </div>
+  <div class="cols" style="margin-top:12px">
+    <table class="mx">
+      <tr><th>プロトコル</th><th>増幅率（CISA）</th><th>使われる要求</th></tr>
+      <tr><td class="t">DNS</td><td class="t">28〜54</td><td class="l">ANY 型、署名付き応答</td></tr>
+      <tr><td class="t">NTP</td><td class="x">556.9</td><td class="l">monlist（最大600件の一覧）</td></tr>
+      <tr><td class="t">SSDP</td><td class="t">30.8</td><td class="l">M-SEARCH</td></tr>
+      <tr><td class="t">SNMPv2</td><td class="t">6.3</td><td class="l">GetBulk</td></tr>
+      <tr><td class="t">Memcached</td><td class="x">10,000〜51,000</td><td class="l">stats など（UDP 11211）</td></tr>
+    </table>
+    <div>
+      <div class="point"><b>R3春 問1：</b>悪用されやすいのは「<b>DNS, Memcached, NTP</b>」。DKIM・DNSSEC・SPF や IPsec・TLS は違う。</div>
+      <div class="point warn"><b>R6秋 問4：</b>NTP サーバは<b>踏み台</b>。「送信元を偽って、レスポンスが大きくなるリクエストを送る」が正解。「NTP サーバに echo request」は ICMP なので誤り。</div>
+    </div>
+  </div>
+  <div class="cite">出典：CISA「Alert TA14-017A UDP-Based Amplification Attacks」（増幅率の表）／IPA 午前Ⅱ 令和3年度春期 問1・令和6年度秋期 問4</div>
+</section>
+
+<section class="slide">
+  <h1>DDoS とマルチベクトル型</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">R1秋 問13：マルチベクトル型はどれか</div>
+      <table class="mx">
+        <tr><th>選択肢</th><th style="width:30%">攻撃の種類</th></tr>
+        <tr><td class="l">DNS リフレクタで DNS を止める</td><td class="t">1種類</td></tr>
+        <tr><td class="l"><b>SYN Flood と HTTP POST Flood を同時に</b></td><td class="t"><b>2種類（L4＋L7）</b></td></tr>
+        <tr><td class="l">IoT 機器から UDP Flood</td><td class="t">1種類（台数は多い）</td></tr>
+        <tr><td class="l">FW の送信順序を操作して枯渇</td><td class="t">1種類</td></tr>
+      </table>
+      <div class="point warn">「多数の機器から」は <b>D</b>DoS の条件で、<b>マルチベクトル</b>の条件ではない。</div>
+    </div>
+    <div>
+      <div class="lbl">DDoS への備え（詳しくは #13）</div>
+      <div class="stack">
+        <div class="box b1">CDN・Anycast<span>大容量の回線と多数の拠点で受け止めて分散</span></div>
+        <div class="box b2">スクラビングセンター<span>通信を引き込み、攻撃の通信だけ取り除いて返す</span></div>
+        <div class="box b3">レート制限・Bot 対策<span>L7 の攻撃を見分けて絞る</span></div>
+        <div class="box b5">送信元検証（BCP 38）<span>自分のネットワークから偽装パケットを出さない</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ 令和元年度秋期 問13／IPA「支援士試験 シラバス（案）」中分類25「DDoS 対策（CDN，スクラビングセンター，Anycast，レート制限）」</div>
+</section>
+
+<section class="slide">
+  <h1>過去問の問われ方のまとめ</h1>
+  <div class="cols">
+    <div>
+      <div class="point"><b>パケットの向きを読む：</b>応答（SYN/ACK・エコー応答）を出している側は<b>被害者</b>か<b>踏み台</b>。送信元を偽った要求が先にある。</div>
+      <div class="point"><b>DNS は「ランダム化」：</b>ID と送信元ポート番号をランダムに。固定するのは逆。根本的には DNSSEC。</div>
+      <div class="point"><b>リフレクションの条件：</b>UDP・送信元を偽れる・応答が大きい。DNS・NTP・Memcached。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>名前</th><th>一言で</th></tr>
+        <tr><td class="t">Smurf</td><td class="l">ICMP ＋ ブロードキャスト</td></tr>
+        <tr><td class="t">SYN フラッド</td><td class="l">ACK を返さず待たせる</td></tr>
+        <tr><td class="t">DRDoS</td><td class="l">第三者のサーバに反射させる</td></tr>
+        <tr><td class="t">Slow HTTP</td><td class="l">ゆっくり送って接続を占有</td></tr>
+        <tr><td class="t">マルチベクトル</td><td class="l">種類の違う攻撃を組み合わせる</td></tr>
+        <tr><td class="t">カミンスキー</td><td class="l">存在しない名前で何度でも毒入れ</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ 平成31〜令和7年度（このPDFの問題演習）</div>
+</section>
+
+</body>
+</html>
