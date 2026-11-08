@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Gold #17 ローカライズ 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">Java SE 17 Programmer II（1Z0-826-JPN）　試験内容 8 ローカライズ　#17</div>
+  <h1>ローカライズ</h1>
+  <p>Locale・Locale.Category、ResourceBundle の探す順、NumberFormat・DecimalFormat・CompactNumberFormat、DateTimeFormatter・MessageFormat</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（Oracle の試験内容チェックリスト、Java SE 17 API の Locale・ResourceBundle・ListResourceBundle・NumberFormat・DecimalFormat・CompactNumberFormat・MessageFormat・DateTimeFormatter・FormatStyle、The Java Tutorials の Internationalization）を書いた。コードの結果は JDK 17（Eclipse Temurin 17.0.21、既定のロケール en_US、ロケールのデータは CLDR）で実行して確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>ロケールに合わせて「文字」と「書式」を変える</small></h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">Locale<span>言語＋国（ja_JP・en_US・de_DE）</span></div>
+      <div class="arrow">↓ どれを使うか決める</div>
+      <div class="box b1">ResourceBundle<span>画面の文言（キー → 値）を言語ごとに切りかえる</span></div>
+      <div class="box b2">NumberFormat・DateTimeFormatter・MessageFormat<span>数値・通貨・日付・文の書式を切りかえる</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>値</th><th>en_US</th><th>de_DE</th><th>ja_JP</th></tr>
+        <tr><td class="t">1234567.891</td><td class="l">1,234,567.891</td><td class="l">1.234.567,891</td><td class="l">1,234,567.891</td></tr>
+        <tr><td class="t">通貨</td><td class="l">$1,234,567.89</td><td class="l">1.234.567,89 €</td><td class="l">￥1,234,568</td></tr>
+        <tr><td class="t">2026-03-05 SHORT</td><td class="l">3/5/26</td><td class="l">05.03.26</td><td class="l">2026/03/05</td></tr>
+        <tr><td class="t">MMMM</td><td class="l">March</td><td class="l">März</td><td class="l">3月</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：API Locale・ResourceBundle・NumberFormat・DateTimeFormatter／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>Locale</h1>
+  <p>作り方と、既定のロケール。</p>
+  <div class="foot"><span>Java Gold #17 ローカライズ</span><span>試験内容 8</span></div>
+</section>
+
+<section class="slide">
+  <h1>Locale の作り方</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">new Locale("fr")                <span class="c">// fr</span>
+new Locale("en", "GB")          <span class="c">// en_GB</span>
+new Locale("EN", "us")          <span class="c">// en_US（そろえられる）</span>
+new Locale("xx", "YY")          <span class="c">// xx_YY（例外にならない）</span>
+Locale.JAPAN                    <span class="c">// ja_JP</span>
+Locale.JAPANESE                 <span class="c">// ja</span>
+Locale.forLanguageTag("ja-JP")  <span class="c">// ja_JP</span>
+new Locale.Builder().setLanguage("de")
+    .setRegion("CH").build()    <span class="c">// de_CH</span>
+
+new Locale();       <span class="c">// × no suitable constructor</span>
+Locale.of("en");    <span class="c">// × cannot find symbol（Java 19〜）</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>メソッド（en_GB）</th><th>結果</th></tr>
+        <tr><td class="t">getLanguage()</td><td class="l">en</td></tr>
+        <tr><td class="t">getCountry()</td><td class="l">GB</td></tr>
+        <tr><td class="t">getDisplayCountry(Locale.ENGLISH)</td><td class="l">United Kingdom</td></tr>
+        <tr><td class="t">getDisplayLanguage(Locale.JAPAN)</td><td class="l">英語</td></tr>
+        <tr><td class="t">toString()</td><td class="l">en_GB</td></tr>
+        <tr><td class="t">toLanguageTag()</td><td class="l">en-GB</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：API Locale・Locale.Builder／JDK 17 でのコンパイルと実行の結果</div>
+</section>
+
+<section class="slide">
+  <h1>既定のロケールと Category</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">Locale.setDefault(Locale.GERMANY);
+Locale.getDefault()                        <span class="c">// de_DE</span>
+Locale.getDefault(Locale.Category.FORMAT)  <span class="c">// de_DE</span>
+
+Locale.setDefault(Locale.Category.FORMAT, Locale.FRANCE);
+Locale.getDefault()                         <span class="c">// de_DE</span>
+Locale.getDefault(Locale.Category.FORMAT)   <span class="c">// fr_FR</span>
+Locale.getDefault(Locale.Category.DISPLAY)  <span class="c">// de_DE</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>Category</th><th>使われる場面</th></tr>
+        <tr><td class="t">DISPLAY</td><td class="l">言語・国などの名前の表示（getDisplayName など）</td></tr>
+        <tr><td class="t">FORMAT</td><td class="l">数値・通貨・日付の書式（NumberFormat.getInstance() など）</td></tr>
+      </table>
+      <div class="point">setDefault(l) は両方を、setDefault(Category, l) はそのカテゴリだけを変える。JVM の中だけの変更。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API Locale.setDefault・getDefault・Locale.Category／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>リソース・バンドル</h1>
+  <p>どのファイルの、どのキーが使われるか。</p>
+  <div class="foot"><span>Java Gold #17 ローカライズ</span><span>試験内容 8</span></div>
+</section>
+
+<section class="slide">
+  <h1>探す順と親のつながり</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>ファイル</th><th>中身</th></tr>
+        <tr><td class="t">Msg.properties</td><td class="l">hello=Hello(base)、bye=Bye(base)、only=base-only</td></tr>
+        <tr><td class="t">Msg_en.properties</td><td class="l">hello=Hello(en)</td></tr>
+        <tr><td class="t">Msg_fr.properties</td><td class="l">hello=Bonjour(fr)、bye=Au revoir(fr)</td></tr>
+        <tr><td class="t">Msg_fr_CA.properties</td><td class="l">hello=Allo(fr_CA)</td></tr>
+      </table>
+      <div class="arrow">↓ 既定のロケールは en_US</div>
+      <table class="mx">
+        <tr><th>求めた</th><th>見つかる</th><th>hello / bye / only</th></tr>
+        <tr><td class="t">fr_CA</td><td class="l">fr_CA</td><td class="l">Allo / Au revoir / base-only</td></tr>
+        <tr><td class="t">fr_FR</td><td class="l">fr</td><td class="l">Bonjour / Au revoir / base-only</td></tr>
+        <tr><td class="t">ja_JP</td><td class="l">en</td><td class="l">Hello(en) / Bye(base) / base-only</td></tr>
+        <tr><td class="t">Locale.ROOT</td><td class="l">（基底）</td><td class="l">Hello(base) / …</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="box b1">① バンドルを探す<span>求めた（国あり → 国なし）→ 既定のロケール（国あり → 国なし）→ 基底</span></div>
+      <div class="box b2">② キーを探す<span>見つかったバンドル → 国を外した親 → 基底（既定のロケールのバンドルは親にならない）</span></div>
+      <div class="point warn">ja_JP で Msg_ja がないと、基底ではなく既定のロケールの Msg_en が使われる。既定を fr_FR にすると Msg_fr。</div>
+      <div class="point">getNoFallbackControl を渡すと、既定のロケールを飛ばして基底へ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API ResourceBundle.getBundle・ResourceBundle.Control／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>クラスのバンドルと例外</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">public class Msg_de extends ListResourceBundle {
+  protected Object[][] getContents() {
+    return new Object[][] {
+      {"hello", "Hallo(de.class)"}, {"num", 42} };
+  }
+}
+<span class="c">// Msg_de.properties もあるとき</span>
+ResourceBundle de = ResourceBundle.getBundle("Msg", Locale.GERMANY);
+de.getString("hello")  <span class="c">// Hallo(de.class)（クラスが先）</span>
+de.getObject("num")    <span class="c">// 42</span>
+de.getString("num")    <span class="c">// ClassCastException</span>
+de.getString("zzz")    <span class="c">// MissingResourceException</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>場面</th><th>結果</th></tr>
+        <tr><td class="t">キーがない</td><td class="l">MissingResourceException（非チェック）</td></tr>
+        <tr><td class="t">バンドルがない</td><td class="l">MissingResourceException</td></tr>
+        <tr><td class="t">値が String でない</td><td class="l">getString で ClassCastException</td></tr>
+        <tr><td class="t">keySet()</td><td class="l">親のキーも含む（fr_CA なら bye・hello・only）</td></tr>
+        <tr><td class="t">Properties.getProperty</td><td class="l">なければ null（既定値を渡せばそれ）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：API ResourceBundle・ListResourceBundle・Properties／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>数値のフォーマット</h1>
+  <p>NumberFormat と DecimalFormat。</p>
+  <div class="foot"><span>Java Gold #17 ローカライズ</span><span>試験内容 8</span></div>
+</section>
+
+<section class="slide">
+  <h1>NumberFormat の種類</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>メソッド（Locale.US）</th><th>例</th></tr>
+        <tr><td class="t">getInstance</td><td class="l">1234567.891 → 1,234,567.891</td></tr>
+        <tr><td class="t">getCurrencyInstance</td><td class="l">1234567.891 → $1,234,567.89</td></tr>
+        <tr><td class="t">getPercentInstance</td><td class="l">0.256 → 26%、1.5 → 150%</td></tr>
+        <tr><td class="t">getIntegerInstance</td><td class="l">2.5 → 2、3.5 → 4（HALF_EVEN）</td></tr>
+        <tr><td class="t">getCompactNumberInstance(SHORT)</td><td class="l">1234 → 1K、1500000 → 2M、999 → 999</td></tr>
+        <tr><td class="t">getCompactNumberInstance(LONG)</td><td class="l">1500000 → 2 million</td></tr>
+      </table>
+      <div class="point warn">NumberFormat は抽象クラス（new できない）。丸めの既定は HALF_EVEN。</div>
+    </div>
+    <div>
+      <div class="code small">NumberFormat nf = NumberFormat.getInstance(Locale.US);
+nf.parse("1,234.5abc")  <span class="c">// 1234.5（読めるところまで）</span>
+nf.parse("12x3")        <span class="c">// 12</span>
+nf.parse("3.0")         <span class="c">// Long の 3</span>
+nf.parse("abc")         <span class="c">// ParseException（チェック例外）</span>
+NumberFormat.getInstance(Locale.GERMANY)
+    .parse("1.234,5")   <span class="c">// 1234.5</span>
+
+c.setMaximumFractionDigits(1);
+c.format(1234)          <span class="c">// 1.2K</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：API NumberFormat・CompactNumberFormat・ParseException／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>DecimalFormat のパターン</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>記号</th><th>意味</th></tr>
+        <tr><td class="t">0</td><td class="l">数字（なければ 0 を出す）</td></tr>
+        <tr><td class="t">#</td><td class="l">数字（なければ出さない）</td></tr>
+        <tr><td class="t">.</td><td class="l">小数点</td></tr>
+        <tr><td class="t">,</td><td class="l">けた区切り</td></tr>
+        <tr><td class="t">%</td><td class="l">100 倍してパーセント</td></tr>
+        <tr><td class="t">'文字'</td><td class="l">そのまま出す</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="code small">new DecimalFormat("#,##0.00").format(1234.5)  <span class="c">// 1,234.50</span>
+new DecimalFormat("000.#").format(5.25)       <span class="c">// 005.2</span>
+new DecimalFormat("#.##").format(0.5)         <span class="c">// 0.5</span>
+new DecimalFormat("0.0").format(2.25)         <span class="c">// 2.2（HALF_EVEN）</span>
+new DecimalFormat("$#,###").format(1234567)   <span class="c">// $1,234,567</span>
+
+String.format(Locale.GERMANY, "%,.2f", 1234567.891)
+<span class="c">// 1.234.567,89</span></div>
+      <div class="point">ちょうど半分は偶数のほうへ（5.25 → 5.2、2.5 → 2、3.5 → 4）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API DecimalFormat・RoundingMode.HALF_EVEN・String.format／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>日付・時刻とメッセージ</h1>
+  <p>DateTimeFormatter と MessageFormat。</p>
+  <div class="foot"><span>Java Gold #17 ローカライズ</span><span>試験内容 8</span></div>
+</section>
+
+<section class="slide">
+  <h1>DateTimeFormatter</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">LocalDateTime dt = LocalDateTime.of(2026,3,5,14,7,9);
+"yyyy/MM/dd"  <span class="c">// 2026/03/05</span>
+"y-M-d"       <span class="c">// 2026-3-5</span>
+"yyyy/mm/dd"  <span class="c">// 2026/07/05（mm は分！）</span>
+"hh:mm a"     <span class="c">// 02:07 PM（US）</span>
+"HH:mm:ss"    <span class="c">// 14:07:09</span>
+"MMM MMMM EEE EEEE"  <span class="c">// Mar March Thu Thursday</span>
+"'Today is' yyyy 'at' H'h'"  <span class="c">// Today is 2026 at 14h</span>
+
+LocalDate.of(2026,3,5).format(ofPattern("HH:mm"))
+<span class="c">// UnsupportedTemporalTypeException:</span>
+<span class="c">//   Unsupported field: HourOfDay</span>
+ofPattern("yyyy-MM-dd q b")
+<span class="c">// IllegalArgumentException: Unknown pattern letter: b</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>FormatStyle</th><th>US</th><th>JAPAN</th></tr>
+        <tr><td class="t">SHORT</td><td class="l">3/5/26</td><td class="l">2026/03/05</td></tr>
+        <tr><td class="t">MEDIUM</td><td class="l">Mar 5, 2026</td><td class="l">2026/03/05</td></tr>
+        <tr><td class="t">LONG</td><td class="l">March 5, 2026</td><td class="l">2026年3月5日</td></tr>
+        <tr><td class="t">FULL</td><td class="l">Thursday, March 5, 2026</td><td class="l">2026年3月5日木曜日</td></tr>
+      </table>
+      <div class="point warn">ofLocalizedDateTime の LONG・FULL はタイムゾーンが要る。LocalDateTime では DateTimeException（Unable to extract ZoneId）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API DateTimeFormatter・FormatStyle・UnsupportedTemporalTypeException／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>MessageFormat</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">MessageFormat.format("{0} has {1} items, {0}!", "Ann", 1234)
+<span class="c">// Ann has 1,234 items, Ann!</span>
+
+MessageFormat.format("{1} {0} {2}", "a", "b")
+<span class="c">// b a {2}（値がなければそのまま）</span>
+
+MessageFormat.format("It''s {0} '{1}'", "x", "y")
+<span class="c">// It's x {1}</span>
+
+new MessageFormat("{0,number,#.#} {1,number,percent}",
+    Locale.US).format(new Object[]{3.14159, 0.5})
+<span class="c">// 3.1 50%</span></div>
+    </div>
+    <div>
+      <div class="box b1">{番号}<span>何度でも使える。数値はロケールで区切られる</span></div>
+      <div class="box b2">' と ''<span>'…' の中はそのまま、'' で ' を 1 つ</span></div>
+      <div class="box b3">リソース・バンドルと組み合わせる<span>パターンをバンドルに入れ、値を MessageFormat で入れる</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：API MessageFormat／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">Locale</td><td class="l">toString は _、toLanguageTag は -、new Locale() はない、Category</td></tr>
+    <tr><td class="t">バンドルを探す順</td><td class="l">国を外す → 既定のロケール → 基底、クラスが先</td></tr>
+    <tr><td class="t">キーを探す範囲</td><td class="l">親（国・言語を外したもの）と基底だけ、なければ MissingResourceException</td></tr>
+    <tr><td class="t">数値</td><td class="l">ロケールで区切りが変わる、HALF_EVEN、parse は読めるところまで</td></tr>
+    <tr><td class="t">日付</td><td class="l">MM と mm、HH と hh、LocalDate に時刻は UnsupportedTemporalTypeException</td></tr>
+    <tr><td class="t">MessageFormat</td><td class="l">{番号}、' の扱い、値のない番号は残る</td></tr>
+  </table>
+  <div class="cite">出典：試験内容チェックリスト 8／本資料の問題演習（全 30 問、JDK 17 で確認）</div>
+</section>
+
+</body>
+</html>

@@ -361,6 +361,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/14.html", title: "コンソールとI/Oストリーム 用語集", desc: "System.in・Console、InputStream／Reader・Buffered・PrintWriter・try-with-resources、Serializable・transient・ObjectOutputStream。20語と問題30問", fields: [14], pdf: "terms/14.pdf" },
       { type: "terms", file: "terms/15.html", title: "PathとFiles 用語集", desc: "Path の分解・resolve・relativize・normalize、Files の作成・コピー・削除・読み書き、walk・list・find・属性。20語と問題30問", fields: [15], pdf: "terms/15.pdf" },
       { type: "terms", file: "terms/16.html", title: "JDBC 用語集", desc: "DriverManager・DataSource、Statement・ResultSet、PreparedStatement・CallableStatement、トランザクション・バッチ。19語と問題30問", fields: [16], pdf: "terms/16.pdf" },
+      { type: "terms", file: "terms/17.html", title: "ローカライズ 用語集", desc: "Locale・Locale.Category、ResourceBundle の探す順、NumberFormat・DecimalFormat・CompactNumberFormat、DateTimeFormatter・MessageFormat。19語と問題30問", fields: [17], pdf: "terms/17.pdf" },
     ],
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },
