@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Gold #08 集計・探索とOptional 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">Java SE 17 Programmer II（1Z0-826-JPN）　試験内容 3 Java ストリーム API　#08</div>
+  <h1>集計・探索とOptional</h1>
+  <p>count・max・min・sum・average、findFirst・findAny・anyMatch・allMatch・noneMatch、Optional</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（Oracle の試験内容チェックリスト、Java SE 17 API の Stream・IntStream・Optional・OptionalInt・OptionalDouble・IntSummaryStatistics）を書いた。コードの結果は JDK 17（Eclipse Temurin 17.0.21）で実行して確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>終端操作の戻り値</small></h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>終端操作</th><th>Stream&lt;T&gt;</th><th>IntStream</th></tr>
+        <tr><td class="t">count</td><td class="l">long</td><td class="l">long</td></tr>
+        <tr><td class="t">max・min</td><td class="l">Optional&lt;T&gt;（Comparator 必須）</td><td class="l">OptionalInt（引数なし）</td></tr>
+        <tr><td class="t">sum</td><td class="l">なし</td><td class="l">int</td></tr>
+        <tr><td class="t">average</td><td class="l">なし</td><td class="l">OptionalDouble</td></tr>
+        <tr><td class="t">findFirst・findAny</td><td class="l">Optional&lt;T&gt;</td><td class="l">OptionalInt</td></tr>
+        <tr><td class="t">anyMatch など</td><td class="l">boolean</td><td class="l">boolean</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="box b1">Optional&lt;T&gt;<span>値があるかもしれない入れ物</span></div>
+      <div class="arrow">↓</div>
+      <div class="cols" style="gap:8px">
+        <div class="box b2">Optional[x]<span>値あり</span></div>
+        <div class="box b3">Optional.empty<span>空（null は持たない）</span></div>
+      </div>
+      <div class="point warn">空の get・orElseThrow() は NoSuchElementException「No value present」。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API Stream・IntStream・Optional・OptionalInt／試験内容チェックリスト 3</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>集計</h1>
+  <p>count・max・min・sum・average。</p>
+  <div class="foot"><span>Java Gold #08 集計・探索とOptional</span><span>試験内容 3</span></div>
+</section>
+
+<section class="slide">
+  <h1>Stream と IntStream の集計</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">Stream.of("b","a","c").max(Comparator.naturalOrder())  <span class="c">// Optional[c]</span>
+Stream.of("b","a").max();
+<span class="c">// × cannot be applied to given types
+//   required: Comparator&lt;? super String&gt;</span>
+Stream.of(1,2,3).sum();          <span class="c">// × cannot find symbol</span>
+IntStream.of(1,2,3).max()        <span class="c">// OptionalInt[3]</span>
+IntStream.of(1,2,3).sum()        <span class="c">// 6</span>
+IntStream.empty().sum()          <span class="c">// 0</span>
+IntStream.empty().average()      <span class="c">// OptionalDouble.empty</span>
+IntStream.rangeClosed(1,4).average().getAsDouble() <span class="c">// 2.5</span></div>
+    </div>
+    <div>
+      <div class="lbl">Comparator の向きに注意</div>
+      <div class="code small">s = Stream.of(5,3,8)
+s.max(Integer::compare)          <span class="c">// 8</span>
+s.max((x, y) -&gt; y - x)           <span class="c">// 3</span>
+s.min(Comparator.reverseOrder()) <span class="c">// 8</span>
+Stream.of("a","b")
+  .max(comparing(String::length)) <span class="c">// a（同点は先）</span></div>
+      <div class="point">max は「Comparator で見て一番後ろ」。逆順の Comparator なら値は一番小さいもの。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API Stream.max・min・count、IntStream.max・sum・average／JDK 17 でのコンパイルと実行の結果</div>
+</section>
+
+<section class="slide">
+  <h1>count はパイプラインを動かさないことがある</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">long c = Stream.of(1,2,3).peek(System.out::print).count();
+<span class="c">// " 3" だけ（peek は呼ばれない）</span>
+long d = Stream.of(1,2,3).map(n -&gt; { print("m"); return n; }).count();
+<span class="c">// " 3" だけ（map も呼ばれない）</span>
+long e = Stream.of(1,2,3).filter(n -&gt; n &gt; 1).peek(...).count();
+<span class="c">// filter があると数が分からないので実行される</span></div>
+    </div>
+    <div>
+      <div class="box b2">Java 9〜 の count</div>
+      <div class="arrow">↓ ソースから数が分かる？</div>
+      <div class="cols" style="gap:8px">
+        <div class="box b3">分かる<span>パイプラインを実行せず数を返す</span></div>
+        <div class="box b3">分からない<span>ふつうに実行して数える</span></div>
+      </div>
+      <div class="point warn">API Note：副作用（peek など）に頼るコードは、実行されないことがある。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API Stream.count（API Note）／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>探索とマッチ</h1>
+  <p>短絡と、要素 0 個のときの値。</p>
+  <div class="foot"><span>Java Gold #08 集計・探索とOptional</span><span>試験内容 3</span></div>
+</section>
+
+<section class="slide">
+  <h1>anyMatch・allMatch・noneMatch</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>メソッド</th><th>止まるとき</th><th>0 個のとき</th></tr>
+        <tr><td class="t">anyMatch</td><td class="l">true の要素が見つかった</td><td class="l">false</td></tr>
+        <tr><td class="t">allMatch</td><td class="l">false の要素が見つかった</td><td class="l">true</td></tr>
+        <tr><td class="t">noneMatch</td><td class="l">true の要素が見つかった</td><td class="l">true</td></tr>
+      </table>
+      <div class="point">0 個のとき：「全部が条件を満たす」「1 つもない」は反例がないので true。</div>
+    </div>
+    <div>
+      <div class="code small">Stream.of(1,2,3,4).peek(print).anyMatch(n -&gt; n &gt; 1)
+<span class="c">// 12true</span>
+Stream.of(1,2,3,4).peek(print).allMatch(n -&gt; n &lt; 3)
+<span class="c">// 123false</span>
+Stream.iterate(1, n -&gt; n + 1).anyMatch(n -&gt; n &gt; 3)
+<span class="c">// true（無限でも終わる）</span>
+Stream.iterate(1, n -&gt; n + 1).noneMatch(n -&gt; n == 5)
+<span class="c">// false（5 で止まる）</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：API Stream.anyMatch・allMatch・noneMatch／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>findFirst と findAny</h1>
+  <table class="mx">
+    <tr><th></th><th>findFirst</th><th>findAny</th></tr>
+    <tr><td class="t">返す要素</td><td class="l">最初の要素（順序があれば並列でも）</td><td class="l">どれか 1 つ（決まっていない）</td></tr>
+    <tr><td class="t">逐次ストリーム</td><td class="l">最初の要素</td><td class="l">たいてい最初の要素</td></tr>
+    <tr><td class="t">並列ストリーム</td><td class="l">最初の要素（遅くなりうる）</td><td class="l">変わりうる（速い）</td></tr>
+    <tr><td class="t">戻り値</td><td class="l" colspan="2">Optional&lt;T&gt;（IntStream なら OptionalInt）、0 個なら empty</td></tr>
+  </table>
+  <div class="code small">Stream.of("a","bb","ccc").filter(s -&gt; s.length() &gt; 5)
+  .findFirst().map(String::toUpperCase).orElse("none")   <span class="c">// none</span></div>
+  <div class="cite">出典：API Stream.findFirst・findAny、IntStream.findFirst／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>Optional</h1>
+  <p>作る・取り出す・変換する。</p>
+  <div class="foot"><span>Java Gold #08 集計・探索とOptional</span><span>試験内容 3</span></div>
+</section>
+
+<section class="slide">
+  <h1>作る・調べる</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">Optional.of("x")            <span class="c">// Optional[x]</span>
+Optional.of((String) null)  <span class="c">// NullPointerException</span>
+Optional.ofNullable(null)   <span class="c">// Optional.empty</span>
+Optional.empty()            <span class="c">// Optional.empty</span>
+
+Optional.empty().isPresent()  <span class="c">// false</span>
+Optional.empty().isEmpty()    <span class="c">// true（Java 11〜）</span>
+Optional.empty().get()        <span class="c">// NoSuchElementException</span></div>
+    </div>
+    <div>
+      <div class="code small">Optional.of("a").ifPresentOrElse(
+    s -&gt; print("has " + s),     <span class="c">// 値あり → Consumer</span>
+    () -&gt; print("none"));       <span class="c">// 空 → Runnable</span>
+Optional.empty().ifPresent(s -&gt; print("X")); <span class="c">// 何もしない</span></div>
+      <div class="point">isPresent は boolean を返す。ifPresent は void で処理を実行する。</div>
+      <div class="point">ifPresentOrElse・or・stream は Java 9、orElseThrow() は Java 10、isEmpty は Java 11。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API Optional.of・ofNullable・empty・isPresent・isEmpty・get・ifPresent・ifPresentOrElse／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>取り出す：orElse と orElseGet</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">static String def() { print("[def]"); return "d"; }
+
+Optional&lt;String&gt; o = Optional.of("v");
+o.orElse(def())         <span class="c">// [def]v  ← 値があっても def() が動く</span>
+o.orElseGet(Main::def)  <span class="c">// v       ← 呼ばれない</span>
+
+Optional&lt;String&gt; e = Optional.empty();
+e.orElse(def())         <span class="c">// [def]d</span>
+e.orElseGet(Main::def)  <span class="c">// [def]d</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>メソッド</th><th>空のとき</th></tr>
+        <tr><td class="t">get()</td><td class="l">NoSuchElementException</td></tr>
+        <tr><td class="t">orElseThrow()</td><td class="l">NoSuchElementException</td></tr>
+        <tr><td class="t">orElseThrow(IllegalArgumentException::new)</td><td class="l">IllegalArgumentException</td></tr>
+        <tr><td class="t">orElse(x)</td><td class="l">x（x は常に評価）</td></tr>
+        <tr><td class="t">orElseGet(s)</td><td class="l">s.get()（空のときだけ）</td></tr>
+      </table>
+      <div class="point warn">OptionalInt は getAsInt（get はない）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API Optional.orElse・orElseGet・orElseThrow、OptionalInt.getAsInt／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>変換する：map・flatMap・filter・or・stream</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">Optional&lt;String&gt; o = Optional.of(" ab ");
+o.map(String::trim)
+ .filter(s -&gt; s.length() &gt; 1)
+ .map(String::length)       <span class="c">// Optional[2]</span>
+o.filter(String::isEmpty).map(String::length)  <span class="c">// Optional.empty</span>
+Optional.of("x").map(s -&gt; null)               <span class="c">// Optional.empty</span>
+
+Optional&lt;Integer&gt; r = o2.map(s -&gt; Optional.of(1));
+<span class="c">// × 結果は Optional&lt;Optional&lt;Integer&gt;&gt;</span>
+Optional&lt;Integer&gt; r = o2.flatMap(s -&gt; Optional.of(1)); <span class="c">// ○</span></div>
+    </div>
+    <div>
+      <div class="code small">Optional.empty()
+  .or(() -&gt; Optional.of("b"))  <span class="c">// Optional[b]</span>
+Optional.of("a")
+  .or(() -&gt; Optional.of("b"))  <span class="c">// Optional[a]</span>
+List.of(Optional.of("a"),
+        Optional.empty(),
+        Optional.of("c"))
+  .stream()
+  .flatMap(Optional::stream)   <span class="c">// a, c</span></div>
+      <div class="point">orElse は T を返す。or は Optional を返す。</div>
+      <div class="point">空になったら、そのあとの map・filter はすべて素通りして空のまま。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API Optional.map・flatMap・filter・or・stream／JDK 17 でのコンパイルと実行の結果</div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">型</td><td class="l">Stream の max は Comparator 必須で Optional、IntStream の sum は int、average は OptionalDouble、Stream に sum はない</td></tr>
+    <tr><td class="t">0 個のとき</td><td class="l">allMatch・noneMatch は true、anyMatch は false、sum は 0、average・max は empty</td></tr>
+    <tr><td class="t">短絡</td><td class="l">どの要素まで peek を通るか、無限ストリームで終わるか</td></tr>
+    <tr><td class="t">count</td><td class="l">数が分かれば peek・map は動かない（Java 9〜）</td></tr>
+    <tr><td class="t">Optional の例外</td><td class="l">of(null) は NPE、空の get・orElseThrow() は NoSuchElementException</td></tr>
+    <tr><td class="t">評価のタイミング</td><td class="l">orElse の引数は常に評価、orElseGet は空のときだけ</td></tr>
+    <tr><td class="t">変換</td><td class="l">map と flatMap の型、map が null を返すと empty</td></tr>
+  </table>
+  <div class="cite">出典：試験内容チェックリスト 3／本資料の問題演習（全 30 問、JDK 17 で確認）</div>
+</section>
+
+</body>
+</html>
