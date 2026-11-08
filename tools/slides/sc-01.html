@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>支援士 #01 脅威と脆弱性 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">情報処理安全確保支援士試験　科目A-2　中分類23 情報セキュリティの脅威　#01</div>
+  <h1>脅威と脆弱性</h1>
+  <p>だれが、どこから、何を使って、なぜ攻めてくるのか</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（IPA の支援士試験シラバス案・10大脅威・内部不正防止ガイドライン、OWASP、MITRE CWE など）を書いた。過去問は IPA 公開の午前Ⅱ。例の会社や場面は Claude が作った</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>シラバス案 中分類23 小分類1「脅威と脆弱性」の4項目</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 脅威の種類と動向<span>攻撃ベクトル・攻撃対象領域・脅威モデリング（STRIDE）・BEC・10大脅威</span></div>
+      <div class="box b2">2 マルウェア・不正プログラム<span>RAT・リバースシェル・ランサムウェア・ステルス技術・ファイルレス・エクスプロイトコード</span></div>
+      <div class="box b3">3 脆弱性<span>認可の不備・入力確認・ハードコード・認証バイパス・平文・レースコンディション・OWASP の3つの Top 10</span></div>
+      <div class="box b4">4 不正の動機・メカニズム<span>不正のトライアングル・ハクティビズム・RaaS・IAB・二重恐喝・ダークウェブ</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:52%">支援士の新制度（2027年度〜）</th><th>中身</th></tr>
+        <tr><td class="l">科目A-1（共通知識）</td><td class="t">45分・30問</td></tr>
+        <tr><td class="l">科目A-2（専門知識）← この教材</td><td class="t">35分・25問</td></tr>
+        <tr><td class="l">科目B（技能）</td><td class="t">120分・12問（選択式）</td></tr>
+      </table>
+      <div class="point"><b>午前Ⅱとの関係：</b>IPA は、科目Aの出題範囲は「表記の変更等で、範囲そのものに変更はない」としている。だから過去の午前Ⅱがそのまま練習になる。</div>
+      <div class="point warn"><b>この分野の過去問の傾向：</b>マルウェアの名前と動作（Mirai・クリプトジャッキング・ルートキット・コネクトバック）を、似た説明と見分けさせる問題が多い。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.ipa.go.jp/shiken/syllabus/henkou/2026/20260630.html">IPA「情報処理安全確保支援士試験 シラバス（案）Ver.0.1」</a>／<a class="src" href="https://www.ipa.go.jp/shiken/syllabus/henkou/2025/20260331.html">IPA「情報処理技術者試験及び情報処理安全確保支援士試験の見直しの検討状況について」</a></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>脅威の種類と動向</h1>
+  <p>攻撃の「入口」と「種類」を整理する。設計の段階で脅威を洗い出すのが脅威モデリング。</p>
+  <div class="foot"><span>支援士 #01 脅威と脆弱性</span><span>23-1</span></div>
+</section>
+
+<section class="slide">
+  <h1>攻撃ベクトルと攻撃対象領域：「道」と「入口の総和」</h1>
+  <svg width="856" height="220" viewBox="0 0 856 220">
+    <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b23a2c"/></marker></defs>
+    <g font-size="12.5" text-anchor="middle">
+      <rect x="10" y="80" width="120" height="60" rx="10" fill="#b23a2c"/><text x="70" y="106" fill="#fff" font-weight="700">攻撃者</text><text x="70" y="124" fill="#fff" font-size="11">外部・内部</text>
+      <rect x="300" y="10" width="546" height="200" rx="14" fill="#f5f5f7" stroke="#1f3a68" stroke-width="2" stroke-dasharray="7 4"/>
+      <text x="573" y="32" fill="#1f3a68" font-weight="700">攻撃対象領域（アタックサーフェス）＝入口の総和</text>
+      <rect x="320" y="46" width="150" height="40" rx="8" fill="#1f3a68"/><text x="395" y="71" fill="#fff">VPN 機器</text>
+      <rect x="320" y="96" width="150" height="40" rx="8" fill="#1f3a68"/><text x="395" y="121" fill="#fff">メール・添付</text>
+      <rect x="320" y="146" width="150" height="40" rx="8" fill="#1f3a68"/><text x="395" y="171" fill="#fff">公開 Web・API</text>
+      <rect x="490" y="46" width="150" height="40" rx="8" fill="#2f5596"/><text x="565" y="71" fill="#fff">委託先の接続</text>
+      <rect x="490" y="96" width="150" height="40" rx="8" fill="#2f5596"/><text x="565" y="121" fill="#fff">従業員（人）</text>
+      <rect x="490" y="146" width="150" height="40" rx="8" fill="#2f5596"/><text x="565" y="171" fill="#fff">USB・持込み機器</text>
+      <rect x="660" y="46" width="170" height="40" rx="8" fill="#5b80bf"/><text x="745" y="71" fill="#fff">放置したクラウド資源</text>
+      <rect x="660" y="96" width="170" height="40" rx="8" fill="#5b80bf"/><text x="745" y="121" fill="#fff">退職者のアカウント</text>
+      <rect x="660" y="146" width="170" height="40" rx="8" fill="#5b80bf"/><text x="745" y="171" fill="#fff">使わない公開ポート</text>
+      <line x1="130" y1="100" x2="316" y2="66" stroke="#b23a2c" stroke-width="2.5" marker-end="url(#ar)"/>
+      <text x="215" y="70" fill="#b23a2c" font-weight="700">攻撃ベクトル</text><text x="215" y="160" fill="#b23a2c" font-size="11">＝実際に通る1本の道</text>
+      <line x1="130" y1="120" x2="316" y2="116" stroke="#b23a2c" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#ar)"/>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>攻撃ベクトル：</b>「どこから・何を使って」入るかという個々の経路。CVSS の基本評価基準にも「攻撃元区分（AV）」として出てくる（ネットワーク・隣接・ローカル・物理）。</div>
+    <div class="point"><b>攻撃対象領域の最小化：</b>使わないサービスを止め、公開範囲を絞り、不要なアカウントを消す。外部から見える資産を継続的に把握するのが ASM／EASM（#12）。</div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」中分類23 小分類1 用語例「攻撃ベクトル，攻撃対象領域（アタックサーフェス）」、中分類24 小分類1「攻撃対象領域の最小化」、中分類25 小分類5「ASM／EASM」</div>
+</section>
+
+<section class="slide">
+  <h1>STRIDE：脅威の6種類は「守りたい性質」の裏返し</h1>
+  <table class="mx">
+    <tr><th style="width:24%">STRIDE</th><th style="width:22%">損なわれる性質</th><th>例</th><th style="width:24%">主な対策</th></tr>
+    <tr><td class="t">S なりすまし<br>Spoofing</td><td class="t">真正性（認証）</td><td class="l">盗んだパスワードで他人としてログインする</td><td class="l">多要素認証・パスキー</td></tr>
+    <tr><td class="t">T 改ざん<br>Tampering</td><td class="t">完全性</td><td class="l">通信途中や DB の金額を書き換える</td><td class="l">MAC・デジタル署名・アクセス制御</td></tr>
+    <tr><td class="t">R 否認<br>Repudiation</td><td class="t">否認防止</td><td class="l">「その注文は自分ではない」と言い逃れる</td><td class="l">デジタル署名・改ざんできないログ</td></tr>
+    <tr><td class="t">I 情報漏えい<br>Information disclosure</td><td class="t">機密性</td><td class="l">エラーメッセージに内部情報が出る</td><td class="l">暗号化・最小権限</td></tr>
+    <tr><td class="t">D サービス妨害<br>Denial of service</td><td class="t">可用性</td><td class="l">大量のリクエストでサービスを止める</td><td class="l">レート制限・冗長化・CDN</td></tr>
+    <tr><td class="t">E 権限昇格<br>Elevation of privilege</td><td class="t">認可</td><td class="l">一般利用者が管理者の操作を行う</td><td class="l">サーバ側での認可の確認</td></tr>
+  </table>
+  <div class="point"><b>区別：</b>STRIDE は脅威の<b>種類</b>の分け方。サイバーキルチェーンや MITRE ATT&amp;CK は攻撃の<b>段階・手口</b>の分け方（#02）。問題文が「設計時に脅威を網羅的に洗い出す」なら STRIDE。</div>
+  <div class="cite">出典：Microsoft「Threat Modeling Tool の脅威」（STRIDE の6分類）／IPA「支援士試験 シラバス（案）」用語例「脅威モデリング（STRIDE など）」</div>
+</section>
+
+<section class="slide">
+  <h1>脅威モデリングの進め方：作る前に脅威を洗い出す</h1>
+  <div class="cols wide-r">
+    <div>
+      <svg width="380" height="230" viewBox="0 0 380 230">
+        <defs><marker id="a2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="90" width="90" height="44" rx="6" fill="#fff" stroke="#1f3a68" stroke-width="2"/><text x="55" y="117">利用者</text>
+          <circle cx="190" cy="112" r="38" fill="#e8eef8" stroke="#1f3a68" stroke-width="2"/><text x="190" y="108">Web</text><text x="190" y="124">アプリ</text>
+          <line x1="300" y1="80" x2="370" y2="80" stroke="#1f3a68" stroke-width="2"/><line x1="300" y1="144" x2="370" y2="144" stroke="#1f3a68" stroke-width="2"/><text x="335" y="117">顧客DB</text>
+          <line x1="100" y1="112" x2="150" y2="112" stroke="#1f3a68" stroke-width="2" marker-end="url(#a2)"/>
+          <line x1="228" y1="112" x2="296" y2="112" stroke="#1f3a68" stroke-width="2" marker-end="url(#a2)"/>
+          <line x1="125" y1="20" x2="125" y2="210" stroke="#b23a2c" stroke-width="2" stroke-dasharray="6 4"/><text x="125" y="226" fill="#b23a2c" font-size="11">信頼境界</text>
+          <line x1="262" y1="20" x2="262" y2="210" stroke="#b23a2c" stroke-width="2" stroke-dasharray="6 4"/><text x="262" y="226" fill="#b23a2c" font-size="11">信頼境界</text>
+          <text x="125" y="40" fill="#b23a2c" font-size="11">S・T・I・D</text><text x="262" y="40" fill="#b23a2c" font-size="11">T・I・E</text>
+        </g>
+      </svg>
+      <div class="mini">データフロー図（DFD）。境界をまたぐ流れが、脅威を当てはめる場所。図は Claude が作った例。</div>
+    </div>
+    <ol class="steps">
+      <li><b>図にする：</b>データの流れ・保存場所・外部の相手・信頼境界を DFD に描く</li>
+      <li><b>洗い出す：</b>境界をまたぐ流れと要素ごとに STRIDE を当てはめる</li>
+      <li><b>評価する：</b>起こりやすさと影響で優先順位を付ける（リスク評価は #06）</li>
+      <li><b>対策を決める：</b>要件に落とし込む（認証・暗号化・入力検証・ログなど）</li>
+      <li><b>確かめる：</b>実装後のレビューやテストで、対策が効いているかを検証する</li>
+    </ol>
+  </div>
+  <div class="point"><b>セキュリティ・バイ・デザイン：</b>脆弱性は作ったあとで直すほど費用がかかる。だから要件定義・設計の段階で脅威モデリングを行う。科目Bでも「設計書を読んで不足している対策を指摘する」形で問われる。</div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」中分類23 用語例「脅威モデリング」「脅威シナリオ」、中分類24 小分類1「セキュリティ・バイ・デザイン」、目標とする技能 2-1「脅威分析の結果からセキュリティ要件を定義する能力」</div>
+</section>
+
+<section class="slide">
+  <h1>情報セキュリティ10大脅威 2026［組織］</h1>
+  <div class="cols wide-r">
+    <table class="mx">
+      <tr><th style="width:12%">順位</th><th>脅威</th><th style="width:28%">初選出</th></tr>
+      <tr><td class="t">1</td><td class="l">ランサム攻撃による被害</td><td>2016年（11年連続）</td></tr>
+      <tr><td class="t">2</td><td class="l">サプライチェーンや委託先を狙った攻撃</td><td>2019年</td></tr>
+      <tr><td class="x">3</td><td class="l"><b>AIの利用をめぐるサイバーリスク</b></td><td class="x">2026年 初選出</td></tr>
+      <tr><td class="t">4</td><td class="l">システムの脆弱性を悪用した攻撃</td><td>2016年</td></tr>
+      <tr><td class="t">5</td><td class="l">機密情報を狙った標的型攻撃</td><td>2016年</td></tr>
+      <tr><td class="t">6</td><td class="l">地政学的リスクに起因するサイバー攻撃（情報戦を含む）</td><td>2025年</td></tr>
+      <tr><td class="t">7</td><td class="l">内部不正による情報漏えい等</td><td>2016年</td></tr>
+      <tr><td class="t">8</td><td class="l">リモートワーク等の環境や仕組みを狙った攻撃</td><td>2021年</td></tr>
+      <tr><td class="t">9</td><td class="l">DDoS攻撃（分散型サービス妨害攻撃）</td><td>2016年</td></tr>
+      <tr><td class="t">10</td><td class="l">ビジネスメール詐欺</td><td>2018年</td></tr>
+    </table>
+    <div>
+      <div class="lbl">この教材のどこで扱うか</div>
+      <table class="mx mini">
+        <tr><th>脅威</th><th>分野</th></tr>
+        <tr><td class="l">ランサム・内部不正・BEC</td><td class="t">#01</td></tr>
+        <tr><td class="l">標的型攻撃・リモートワーク</td><td class="t">#02・#13</td></tr>
+        <tr><td class="l">DDoS</td><td class="t">#04</td></tr>
+        <tr><td class="l">AI・サプライチェーン</td><td class="t">#05・#18</td></tr>
+        <tr><td class="l">脆弱性の悪用</td><td class="t">#12・#19</td></tr>
+      </table>
+      <div class="point">順位を覚えるより、<b>それぞれの手口と対策</b>を説明できることが大事。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.ipa.go.jp/security/10threats/10threats2026.html">IPA「情報セキュリティ10大脅威 2026」</a>（「組織」向け脅威の表）</div>
+</section>
+
+<section class="slide">
+  <h1>人をだます脅威：BEC・ソーシャルエンジニアリング・踏み台</h1>
+  <div class="lbl">ビジネスメール詐欺（BEC）の典型的な流れ</div>
+  <div class="flow">
+    <div class="box b1">① 侵入・盗み見<span>取引先や自社のメールアカウントを乗っ取る</span></div><div class="to">→</div>
+    <div class="box b2">② 観察<span>請求のタイミングや文面のくせを学ぶ</span></div><div class="to">→</div>
+    <div class="box b3">③ なりすまし<span>似たドメインや乗っ取った本物のアカウントから送る</span></div><div class="to">→</div>
+    <div class="box" style="background:#b23a2c">④ 送金<span>「口座が変わった」と攻撃者の口座へ</span></div>
+  </div>
+  <div class="cols" style="margin-top:14px">
+    <table class="mx">
+      <tr><th style="width:36%">手口</th><th>中身</th></tr>
+      <tr><td class="t">ソーシャルエンジニアリング</td><td class="l">権威・緊急性・親切心につけこむ。電話、のぞき見（ショルダーハッキング）、ごみあさり（トラッシング）</td></tr>
+      <tr><td class="t">踏み台</td><td class="l">乗っ取った機器を中継に使い、攻撃元を隠す。弱い子会社から親会社へ、など</td></tr>
+      <tr><td class="t">アクセス権の誤設定</td><td class="l">攻撃がなくても漏えいする。クラウドの公開設定ミスが典型</td></tr>
+    </table>
+    <div>
+      <div class="point"><b>BEC の対策：</b>マルウェアを使わないことが多いので、技術だけでは防げない。<b>振込先の変更はメール以外の、前から知っている連絡先で確かめる</b>手順を決める。送信ドメイン認証（SPF・DKIM・DMARC、#14）で、なりすましドメインを減らす。</div>
+      <div class="point warn"><b>ひっかけ：</b>「定義ファイルの更新」「添付の拡張子の確認」は、添付もマルウェアもない BEC には効かない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「情報セキュリティ10大脅威 2026」10位 ビジネスメール詐欺／IPA「支援士試験 シラバス（案）」用語例「ビジネスメール詐欺（BEC），アクセス権の誤設定，ソーシャルエンジニアリング，踏み台」</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>マルウェア・不正プログラム</h1>
+  <p>何をするか（目的）と、どう隠れるか（ステルス技術）の2つの軸で整理する。</p>
+  <div class="foot"><span>支援士 #01 脅威と脆弱性</span><span>23-1</span></div>
+</section>
+
+<section class="slide">
+  <h1>マルウェアを「何をするか」で分ける</h1>
+  <table class="mx">
+    <tr><th style="width:20%">目的</th><th style="width:24%">名前</th><th>動作</th><th style="width:22%">見分けるキーワード</th></tr>
+    <tr><td class="t" rowspan="3">遠隔操作</td><td class="t">ボット／C&amp;C サーバ</td><td class="l">C&amp;C サーバの指令で DDoS・スパム・感染拡大</td><td class="l">指令・ボットネット</td></tr>
+    <tr><td class="t">RAT</td><td class="l">感染した PC を攻撃者が遠隔から自由に操作</td><td class="l">遠隔操作型ウイルス</td></tr>
+    <tr><td class="t">リバースシェル</td><td class="l">内側から攻撃者へ接続してシェルを渡す</td><td class="l">コネクトバック</td></tr>
+    <tr><td class="t" rowspan="2">金銭</td><td class="t">ランサムウェア</td><td class="l">暗号化・ロックして身代金を要求</td><td class="l">暗号化・脅迫</td></tr>
+    <tr><td class="t">クリプトジャッキング</td><td class="l">他人の計算資源で暗号資産をマイニング</td><td class="l">マイニング・CPU</td></tr>
+    <tr><td class="t" rowspan="2">潜伏</td><td class="t">ルートキット</td><td class="l">侵入の痕跡・ツールを隠す</td><td class="l">隠ぺい</td></tr>
+    <tr><td class="t">バックドア</td><td class="l">認証を通らずに再び入れる裏口</td><td class="l">永続化</td></tr>
+    <tr><td class="t" rowspan="2">侵入の道具</td><td class="t">エクスプロイトコード</td><td class="l">脆弱性を悪用するコード（検証にも使う）</td><td class="l">攻撃コード</td></tr>
+    <tr><td class="t">エクスプロイトキット</td><td class="l">複数の攻撃コードと管理機能をまとめた道具箱</td><td class="l">専門知識なしで攻撃</td></tr>
+  </table>
+  <div class="point"><b>過去問の作り：</b>名前を1つ出し、ほかの3つの選択肢には「別のマルウェアの説明」を並べる。この表の右端の言葉で見分ける。</div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」中分類23 小分類1 用語例（マルウェア・不正プログラム）／IPA 午前Ⅱ 令和7年度春期 問5・問7・問8、令和3年度秋期 問14、令和元年度秋期 問15</div>
+</section>
+
+<section class="slide">
+  <h1>C&amp;C とコネクトバック：なぜ「内から外」が危ないか</h1>
+  <svg width="856" height="210" viewBox="0 0 856 210">
+    <defs><marker id="a3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker><marker id="a4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#b23a2c"/></marker></defs>
+    <g font-size="12.5" text-anchor="middle">
+      <rect x="10" y="20" width="330" height="180" rx="12" fill="#e8eef8" stroke="#1f3a68"/><text x="175" y="42" fill="#1f3a68" font-weight="700">社内ネットワーク</text>
+      <rect x="60" y="80" width="150" height="60" rx="10" fill="#1f3a68"/><text x="135" y="106" fill="#fff" font-weight="700">感染したPC</text><text x="135" y="124" fill="#fff" font-size="11">ボット／RAT</text>
+      <rect x="380" y="20" width="60" height="180" rx="6" fill="#5b80bf"/><text x="410" y="105" fill="#fff" font-weight="700">FW</text>
+      <rect x="640" y="80" width="200" height="60" rx="10" fill="#b23a2c"/><text x="740" y="106" fill="#fff" font-weight="700">攻撃者の C&amp;C サーバ</text><text x="740" y="124" fill="#fff" font-size="11">HTTPS(443)で待つ</text>
+      <line x1="636" y1="60" x2="446" y2="60" stroke="#b23a2c" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#a4)"/><text x="548" y="52" fill="#b23a2c">外 → 内：FW で止まる ✕</text>
+      <line x1="210" y1="110" x2="636" y2="110" stroke="#1f3a68" stroke-width="3" marker-end="url(#a3)"/><text x="548" y="102" font-size="12" fill="#1f3a68" font-weight="700">内 → 外：Web 閲覧と同じに見えて通る</text>
+      <line x1="636" y1="150" x2="214" y2="150" stroke="#b23a2c" stroke-width="2" marker-end="url(#a4)"/><text x="548" y="170" fill="#b23a2c">同じ接続の上で命令が返ってくる</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>コネクトバック</b>＝侵害したシステムから攻撃者のサーバへ通信を始めること（令和7年度春期 問8）。リバースシェルやボットの C&amp;C 通信がこの形。</div>
+    <div class="point"><b>対策：</b>出口（外向き通信）を絞る。プロキシ経由だけを許し、認証を求める。宛先の評判（脅威インテリジェンス、#09）で不審な通信先を止め、ログで定期的な通信（ビーコン）を探す。</div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ 令和7年度春期 問8（コネクトバック）／IPA「支援士試験 シラバス（案）」中分類23 用語例「リバースシェル」「C2（Command and Control）」</div>
+</section>
+
+<section class="slide">
+  <h1>ステルス技術：見つからないための工夫</h1>
+  <table class="mx">
+    <tr><th style="width:22%">技術</th><th>何が変わる・何が残らない</th><th style="width:30%">対抗する検知</th></tr>
+    <tr><td class="t">ポリモーフィック型</td><td class="l">感染のたびに<b>暗号化の鍵や復号部</b>を変える。復号後の本体は同じ</td><td class="l">ビヘイビア法（振る舞い）、メモリ上での検査</td></tr>
+    <tr><td class="t">メタモーフィック型</td><td class="l">感染のたびに<b>本体のコードそのもの</b>を書き換える（命令の並べ替え、無意味な命令の挿入）</td><td class="l">ビヘイビア法、ヒューリスティック法</td></tr>
+    <tr><td class="t">ファイルレス</td><td class="l">実行ファイルをディスクに<b>残さず</b>、PowerShell・WMI など正規ツールでメモリ上だけで動く</td><td class="l">EDR、PowerShell のログ、メモリフォレンジック</td></tr>
+    <tr><td class="t">ルートキット</td><td class="l">侵入後のツールやプロセス・ログを<b>隠す</b>（OS のカーネルやコマンドを改変）</td><td class="l">別の起動媒体からの検査、OS の再インストール</td></tr>
+    <tr><td class="t">パッカー・難読化</td><td class="l">圧縮や暗号化でコードを読みにくくし、静的解析を妨げる</td><td class="l">アンパックしてから解析（#19）</td></tr>
+  </table>
+  <div class="cols" style="margin-top:6px">
+    <div class="point"><b>パターンマッチング</b>（定義ファイルと照合）は、見た目が変わる・ファイルがない相手に弱い。だから振る舞いで見る方式（#12）と組み合わせる。</div>
+    <div class="point warn"><b>ひっかけ：</b>「メモリ上だけで動く」はファイルレス、「痕跡を隠す」はルートキット。ポリモーフィックとメタモーフィックの違いは「本体まで変えるか」。</div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」中分類23 用語例「ステルス技術（ポリモーフィック型，メタモーフィック型 など），ファイルレスマルウェア」、中分類26 小分類2「解析やセキュリティ検知を回避する技術（パッカー，難読化…）」</div>
+</section>
+
+<section class="slide">
+  <h1>いまのランサムウェア攻撃：侵入してから暗号化する</h1>
+  <div class="flow">
+    <div class="box b1">① 侵入<span>VPN 機器の脆弱性・盗んだ認証情報（IAB から購入）</span></div><div class="to">→</div>
+    <div class="box b2">② 権限昇格・横展開<span>管理者権限を奪い、AD やサーバに広がる</span></div><div class="to">→</div>
+    <div class="box b3">③ 持ち出し<span>機密データを外部へ送る</span></div><div class="to">→</div>
+    <div class="box b3">④ 妨害<span>バックアップを消す・セキュリティ製品を止める</span></div><div class="to">→</div>
+    <div class="box" style="background:#b23a2c">⑤ 暗号化と脅迫<span>復号と非公開の両方で身代金</span></div>
+  </div>
+  <div class="cols" style="margin-top:14px">
+    <table class="mx">
+      <tr><th style="width:32%">段階</th><th>止める対策の例</th></tr>
+      <tr><td class="t">①</td><td class="l">VPN 機器のパッチ、多要素認証、公開範囲の最小化</td></tr>
+      <tr><td class="t">②</td><td class="l">特権アカウントの管理（PAM）、ネットワークの分離、EDR</td></tr>
+      <tr><td class="t">③</td><td class="l">外向き通信の監視、DLP</td></tr>
+      <tr><td class="t">④⑤</td><td class="l">オフライン・イミュータブルなバックアップ、3-2-1 ルール（#12）、復旧手順の訓練</td></tr>
+    </table>
+    <div>
+      <div class="point"><b>二重恐喝：</b>③で盗んでいるので、バックアップから戻せても「公開する」という脅しは残る。</div>
+      <div class="point"><b>クリプトジャッキングとの違い：</b>あちらはデータを壊さず、計算資源だけを盗む（令和7年度春期 問5）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「情報セキュリティ10大脅威 2026」1位 ランサム攻撃による被害／IPA「支援士試験 シラバス（案）」中分類25 小分類5〔ランサムウェア対策〕（バックアップ分離，3-2-1 ルール，イミュータブルバックアップ など）</div>
+</section>
+
+<section class="slide">
+  <h1>Mirai：初期パスワードの IoT 機器をボットにする</h1>
+  <div class="cols">
+    <ol class="steps">
+      <li><b>探す：</b>ランダムな宛先 IP アドレスに、Telnet（TCP 23番など）で接続を試みる</li>
+      <li><b>ログインする：</b>よくある初期設定の ID・パスワードの一覧を順に試す</li>
+      <li><b>感染する：</b>ログインできた機器に本体を送り込み、ボットにする</li>
+      <li><b>増える：</b>感染した機器がさらに①から繰り返す</li>
+      <li><b>攻撃する：</b>C&amp;C サーバの指令で、標的に一斉に DDoS 攻撃</li>
+    </ol>
+    <div>
+      <div class="lbl">午前Ⅱの選択肢の見分け方（令和7年度春期 問7）</div>
+      <table class="mx">
+        <tr><th>選択肢の特徴</th><th style="width:30%">判定</th></tr>
+        <tr><td class="l">ランダムな宛先・C&amp;C の指令で DDoS</td><td class="t">Mirai</td></tr>
+        <tr><td class="l">Web サーバの脆弱性・決められた日時に DDoS</td><td class="x">別物</td></tr>
+        <tr><td class="l">Web ページに JavaScript を挿入して誘導</td><td class="x">改ざん</td></tr>
+        <tr><td class="l">ファイル共有ソフトで情報を公開</td><td class="x">暴露ウイルス</td></tr>
+      </table>
+      <div class="point"><b>対策：</b>初期パスワードの変更、Telnet など不要なポートを閉じる、ファームウェアの更新。総務省・NICT の NOTICE（#07）は、こうした機器を調べて注意喚起する取組。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ 令和7年度春期 問7（令和5年度秋期 問6）・令和3年度秋期 問11（TCP 23番への攻撃）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>脆弱性</h1>
+  <p>作り方の不備（技術）と、人・組織の不備。どれも CWE や OWASP の分類で名前が付いている。</p>
+  <div class="foot"><span>支援士 #01 脅威と脆弱性</span><span>23-1</span></div>
+</section>
+
+<section class="slide">
+  <h1>シラバス案に並ぶ脆弱性と、その正体</h1>
+  <table class="mx">
+    <tr><th style="width:24%">脆弱性</th><th>どんな不備か</th><th style="width:18%">CWE</th><th style="width:24%">根本的な対策</th></tr>
+    <tr><td class="t">認可・アクセス制御の不備</td><td class="l">ログイン後に他人のデータや管理機能に手が届く（ID の書き換え＝IDOR）</td><td>CWE-862 ほか</td><td class="l">要求のたびにサーバ側で権限を確認</td></tr>
+    <tr><td class="t">認証バイパス</td><td class="l">認証そのものを経ずに機能に到達できる</td><td>CWE-306</td><td class="l">すべての入口で認証を確認</td></tr>
+    <tr><td class="t">不適切な入力確認</td><td class="l">想定外の入力をそのまま処理に使う</td><td>CWE-20</td><td class="l">入力検証＋出力先に合わせたエスケープ</td></tr>
+    <tr><td class="t">パスワードのハードコード</td><td class="l">認証情報をコードに書き込む。全製品で共通・変更不可になりがち</td><td>CWE-798</td><td class="l">シークレットストアで管理</td></tr>
+    <tr><td class="t">平文での保存・送信</td><td class="l">重要情報を暗号化せずに保存・通信する</td><td>CWE-312／319</td><td class="l">TLS、保存時の暗号化、パスワードはハッシュ</td></tr>
+    <tr><td class="t">レースコンディション</td><td class="l">処理の順序やタイミングのずれをつかれる</td><td>CWE-362／367</td><td class="l">確認と使用を不可分にする</td></tr>
+  </table>
+  <div class="point"><b>認証と認可：</b>認証＝「あなたはだれか」、認可＝「あなたはそれをしてよいか」。ログインしているのに他人の注文が見えるのは<b>認可</b>の不備。ログイン画面を飛ばせるのは<b>認証</b>バイパス。</div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」中分類23 小分類1 用語例（脆弱性）／<a class="src" href="https://cwe.mitre.org/">MITRE「CWE」</a>（CWE-20・306・312・319・362・367・798・862）</div>
+</section>
+
+<section class="slide">
+  <h1>レースコンディション（TOCTOU）：確認と使用のすきま</h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <defs><marker id="a5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#6e6e73"/></marker></defs>
+    <g font-size="12.5" text-anchor="middle">
+      <line x1="40" y1="60" x2="820" y2="60" stroke="#6e6e73" stroke-width="2" marker-end="url(#a5)"/><text x="30" y="64" text-anchor="end" fill="#6e6e73">時間</text>
+      <text x="100" y="40" fill="#1f3a68" font-weight="700">プログラム</text>
+      <rect x="150" y="75" width="190" height="50" rx="8" fill="#1f3a68"/><text x="245" y="97" fill="#fff" font-weight="700">① 確認（Check）</text><text x="245" y="114" fill="#fff" font-size="11">/tmp/report は普通のファイル？</text>
+      <rect x="560" y="75" width="230" height="50" rx="8" fill="#1f3a68"/><text x="675" y="97" fill="#fff" font-weight="700">③ 使用（Use）</text><text x="675" y="114" fill="#fff" font-size="11">管理者権限で書き込む</text>
+      <rect x="360" y="140" width="180" height="50" rx="8" fill="#b23a2c"/><text x="450" y="162" fill="#fff" font-weight="700">② すり替え</text><text x="450" y="179" fill="#fff" font-size="11">/etc/passwd へのリンクに</text>
+      <rect x="345" y="72" width="210" height="56" rx="6" fill="none" stroke="#b23a2c" stroke-width="2" stroke-dasharray="5 4"/><text x="450" y="104" fill="#b23a2c">このすきまが攻撃の窓</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>TOCTOU</b>（Time of Check to Time of Use）＝確認した時点と使う時点のずれ。間に対象を差し替えられると、確認の意味がなくなる。</div>
+    <div class="point"><b>Web での例：</b>クーポンの「使用済みか確認」と「使用済みにする」の間に同じ要求を同時に大量に送り、何度も使う。対策は DB のトランザクションやロックで、確認と更新を1つの不可分な処理にする（#21）。</div>
+  </div>
+  <div class="cite">出典：MITRE「CWE-367 Time-of-check Time-of-use (TOCTOU) Race Condition」／IPA「支援士試験 シラバス（案）」用語例「レースコンディション」。図は Claude が作った例</div>
+</section>
+
+<section class="slide">
+  <h1>OWASP の3つの Top 10</h1>
+  <div class="cols3">
+    <div>
+      <div class="cap">Top 10:2025（Web アプリ）</div>
+      <table class="mx mini">
+        <tr><td class="t">A01</td><td class="l"><b>アクセス制御の不備</b></td></tr>
+        <tr><td class="t">A02</td><td class="l">セキュリティ設定のミス</td></tr>
+        <tr><td class="t">A03</td><td class="l">ソフトウェアサプライチェーンの不備</td></tr>
+        <tr><td class="t">A04</td><td class="l">暗号化の失敗</td></tr>
+        <tr><td class="t">A05</td><td class="l">インジェクション</td></tr>
+        <tr><td class="t">A06</td><td class="l">安全でない設計</td></tr>
+        <tr><td class="t">A07</td><td class="l">認証の不備</td></tr>
+        <tr><td class="t">A08</td><td class="l">ソフトウェアとデータの完全性の不備</td></tr>
+        <tr><td class="t">A09</td><td class="l">ログとアラートの不備</td></tr>
+        <tr><td class="t">A10</td><td class="l">例外的な状況の不適切な処理</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">LLM Applications 2025</div>
+      <table class="mx mini">
+        <tr><td class="t">01</td><td class="l"><b>プロンプトインジェクション</b></td></tr>
+        <tr><td class="t">02</td><td class="l">機密情報の漏えい</td></tr>
+        <tr><td class="t">03</td><td class="l">サプライチェーン</td></tr>
+        <tr><td class="t">04</td><td class="l">データとモデルのポイズニング</td></tr>
+        <tr><td class="t">05</td><td class="l">不適切な出力の処理</td></tr>
+        <tr><td class="t">06</td><td class="l">過剰な権限（エージェンシー）</td></tr>
+        <tr><td class="t">07</td><td class="l">システムプロンプトの漏えい</td></tr>
+        <tr><td class="t">08</td><td class="l">ベクトルと埋め込みの弱点</td></tr>
+        <tr><td class="t">09</td><td class="l">誤情報</td></tr>
+        <tr><td class="t">10</td><td class="l">際限のない資源の消費</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">API Security 2023</div>
+      <table class="mx mini">
+        <tr><td class="t">1</td><td class="l"><b>オブジェクトレベルの認可の不備（BOLA）</b></td></tr>
+        <tr><td class="t">2</td><td class="l">認証の不備</td></tr>
+        <tr><td class="t">3</td><td class="l">プロパティレベルの認可の不備</td></tr>
+        <tr><td class="t">4</td><td class="l">際限のない資源の消費</td></tr>
+        <tr><td class="t">5</td><td class="l">機能レベルの認可の不備</td></tr>
+        <tr><td class="t">6</td><td class="l">重要な業務フローへの無制限のアクセス</td></tr>
+        <tr><td class="t">7</td><td class="l">SSRF</td></tr>
+        <tr><td class="t">8</td><td class="l">セキュリティ設定のミス</td></tr>
+        <tr><td class="t">9</td><td class="l">不適切なインベントリ管理</td></tr>
+        <tr><td class="t">10</td><td class="l">安全でない API の利用</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="point"><b>共通点：</b>Web も API も1位は<b>認可の不備</b>。LLM の1位はプロンプトインジェクション（攻撃は #05、対策は #18）。日本語は Claude の訳。</div>
+  <div class="cite">出典：<a class="src" href="https://owasp.org/Top10/2025/">OWASP Top 10:2025</a>／<a class="src" href="https://genai.owasp.org/llm-top-10/">OWASP Top 10 for LLM Applications 2025</a>／<a class="src" href="https://owasp.org/API-Security/editions/2023/en/0x11-t10/">OWASP API Security Top 10 2023</a></div>
+</section>
+
+<section class="slide">
+  <h1>人と組織の脆弱性</h1>
+  <div class="cols3">
+    <div class="ex"><span class="lbl">人的脆弱性</span><br>不注意・知識不足・心理的な弱さ。添付を確認せず開く、パスワードを付箋に書く。<br><b>対策：</b>教育・訓練（標的型メール訓練、#09）、一人の判断に頼らない手順</div>
+    <div class="ex"><span class="lbl">シャドーIT</span><br>情報システム部門が把握していないクラウドや機器を業務に使う。生成 AI への機密の入力も。<br><b>対策：</b>CASB で見える化（#13）、使ってよいサービスと規程を用意（#08）</div>
+    <div class="ex"><span class="lbl">内部統制の不備</span><br>職務の分離・承認・ログの確認がない。一人で申請も承認もできる。<br><b>対策：</b>職務の分離、アクセス権の定期的な見直し、ログの監視</div>
+  </div>
+  <div class="point" style="margin-top:18px"><b>なぜ「脆弱性」に入っているか：</b>リスクは「脅威が脆弱性につけこんで資産に損害を与える可能性」。技術の穴をふさいでも、人と組織の穴が残れば同じように攻撃される。支援士は技術だけでなく、規程・教育・体制の指導・助言も役割（科目Bの技能 1-8 人的管理）。</div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」中分類23 用語例「人的脆弱性，内部統制の不備，シャドーIT」、目標とする技能 1-8「人的管理」</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>不正の動機とメカニズム</h1>
+  <p>内部の人はなぜ不正をするのか。外部の攻撃者はどう分業し、どこで稼ぐのか。</p>
+  <div class="foot"><span>支援士 #01 脅威と脆弱性</span><span>23-1</span></div>
+</section>
+
+<section class="slide">
+  <h1>不正のトライアングルと内部不正防止の5原則</h1>
+  <div class="cols wide-r">
+    <svg width="380" height="250" viewBox="0 0 380 250">
+      <g font-size="13" text-anchor="middle">
+        <polygon points="190,20 360,220 20,220" fill="#e8eef8" stroke="#1f3a68" stroke-width="2"/>
+        <rect x="120" y="6" width="140" height="44" rx="8" fill="#1f3a68"/><text x="190" y="26" fill="#fff" font-weight="700">動機・プレッシャー</text><text x="190" y="42" fill="#fff" font-size="11">借金・過大なノルマ</text>
+        <rect x="6" y="196" width="130" height="48" rx="8" fill="#b23a2c"/><text x="71" y="216" fill="#fff" font-weight="700">機会</text><text x="71" y="233" fill="#fff" font-size="11">一人で持ち出せる権限</text>
+        <rect x="244" y="196" width="130" height="48" rx="8" fill="#2f5596"/><text x="309" y="216" fill="#fff" font-weight="700">正当化</text><text x="309" y="233" fill="#fff" font-size="11">「正当な評価がない」</text>
+        <text x="190" y="150" fill="#1f3a68" font-weight="700">3つそろうと</text><text x="190" y="170" fill="#1f3a68" font-weight="700">不正が起きる</text>
+      </g>
+    </svg>
+    <div>
+      <div class="lbl">IPA「組織における内部不正防止ガイドライン」の5つの基本原則（状況的犯罪予防）</div>
+      <table class="mx">
+        <tr><th style="width:42%">原則</th><th>対策の例</th></tr>
+        <tr><td class="t">犯行を難しくする</td><td class="l">アクセス権の最小化、職務の分離</td></tr>
+        <tr><td class="t">捕まるリスクを高める</td><td class="l">ログの取得と監視、その周知</td></tr>
+        <tr><td class="t">犯行の見返りを減らす</td><td class="l">データの暗号化、持ち出しても使えなくする</td></tr>
+        <tr><td class="t">犯行の誘因を減らす</td><td class="l">公平な評価、職場環境の改善</td></tr>
+        <tr><td class="t">犯罪の弁明をさせない</td><td class="l">ルールの周知、誓約書</td></tr>
+      </table>
+      <div class="point">組織が直接減らしやすいのは<b>機会</b>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.ipa.go.jp/security/guide/insider.html">IPA「組織における内部不正防止ガイドライン」</a>／IPA「支援士試験 シラバス（案）」用語例「不正のトライアングル」、中分類25 小分類2「組織における内部不正防止ガイドライン」</div>
+</section>
+
+<section class="slide">
+  <h1>攻撃者の分業：IAB・RaaS・二重恐喝</h1>
+  <svg width="856" height="180" viewBox="0 0 856 180">
+    <defs><marker id="a6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12.5" text-anchor="middle">
+      <rect x="10" y="20" width="190" height="70" rx="10" fill="#5b80bf"/><text x="105" y="48" fill="#fff" font-weight="700">イニシャルアクセス</text><text x="105" y="66" fill="#fff" font-weight="700">ブローカー（IAB）</text><text x="105" y="82" fill="#fff" font-size="11">侵入口を売る</text>
+      <rect x="330" y="20" width="190" height="70" rx="10" fill="#2f5596"/><text x="425" y="48" fill="#fff" font-weight="700">アフィリエイト</text><text x="425" y="66" fill="#fff" font-size="11">攻撃を実行する</text><text x="425" y="82" fill="#fff" font-size="11">（侵入・持ち出し・暗号化）</text>
+      <rect x="650" y="20" width="196" height="70" rx="10" fill="#1f3a68"/><text x="748" y="48" fill="#fff" font-weight="700">RaaS の運営者</text><text x="748" y="66" fill="#fff" font-size="11">ランサムウェア・交渉基盤・</text><text x="748" y="82" fill="#fff" font-size="11">リークサイトを提供</text>
+      <line x1="200" y1="55" x2="326" y2="55" stroke="#1f3a68" stroke-width="2" marker-end="url(#a6)"/><text x="263" y="47">アクセス権</text>
+      <line x1="646" y1="55" x2="524" y2="55" stroke="#1f3a68" stroke-width="2" marker-end="url(#a6)"/><text x="585" y="47">道具</text>
+      <rect x="250" y="120" width="350" height="50" rx="10" fill="#b23a2c"/><text x="425" y="142" fill="#fff" font-weight="700">被害組織：二重恐喝（暗号化＋公開の脅し）</text><text x="425" y="160" fill="#fff" font-size="11">身代金を運営者とアフィリエイトで分け合う</text>
+      <line x1="425" y1="90" x2="425" y2="116" stroke="#1f3a68" stroke-width="2" marker-end="url(#a6)"/>
+    </g>
+  </svg>
+  <div class="cols">
+    <table class="mx">
+      <tr><th style="width:34%">用語</th><th>ひとことで</th></tr>
+      <tr><td class="t">ダークウェブ</td><td class="l">Tor などでしか見られない匿名のサイト。侵入口・盗んだ情報の売買、リークサイト</td></tr>
+      <tr><td class="t">ハクティビズム</td><td class="l">金銭でなく、政治的・社会的な主張のための攻撃（改ざん・DDoS）</td></tr>
+      <tr><td class="t">多重恐喝</td><td class="l">二重恐喝に、DDoS や顧客・取引先への連絡を加える</td></tr>
+    </table>
+    <div class="point"><b>なぜ被害が増えたか：</b>分業によって、高い技術がなくても攻撃に加われるようになった。防御側は「侵入口（認証情報・VPN）」「持ち出し（外向き通信）」「復旧（バックアップ）」のそれぞれで手を打つ。</div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」用語例「ダークウェブ，ハクティビズム，RaaS，イニシャルアクセスブローカー，二重恐喝（多重恐喝）」／IPA「情報セキュリティ10大脅威 2026」</div>
+</section>
+
+<section class="slide">
+  <h1>試験で狙われやすい比較10選</h1>
+  <table class="mx">
+    <tr><th style="width:34%">比べるもの</th><th>見分けるポイント</th></tr>
+    <tr><td class="t">攻撃ベクトル ↔ 攻撃対象領域</td><td class="l">1本の道 ↔ 入口の総和（最小化するのはこちら）</td></tr>
+    <tr><td class="t">STRIDE ↔ サイバーキルチェーン</td><td class="l">脅威の種類 ↔ 攻撃の段階</td></tr>
+    <tr><td class="t">BEC ↔ フィッシング</td><td class="l">送金させる ↔ 偽サイトで認証情報を盗む</td></tr>
+    <tr><td class="t">RAT ↔ ボット</td><td class="l">1台を遠隔操作 ↔ 多数を C&amp;C の指令でまとめて動かす</td></tr>
+    <tr><td class="t">ランサムウェア ↔ クリプトジャッキング</td><td class="l">暗号化して身代金 ↔ 計算資源でマイニング</td></tr>
+    <tr><td class="t">ポリモーフィック ↔ メタモーフィック</td><td class="l">暗号化の部分だけ変える ↔ 本体のコードまで変える</td></tr>
+    <tr><td class="t">ファイルレス ↔ ルートキット</td><td class="l">ディスクに残さずメモリで動く ↔ 痕跡を隠す</td></tr>
+    <tr><td class="t">エクスプロイトコード ↔ エクスプロイトキット</td><td class="l">1つの攻撃コード ↔ 複数の攻撃コード＋管理機能の道具箱</td></tr>
+    <tr><td class="t">認可の不備 ↔ 認証バイパス</td><td class="l">ログイン後に権限を超える ↔ ログインそのものを飛ばす</td></tr>
+    <tr><td class="t">RaaS ↔ IAB</td><td class="l">ランサムウェアを貸す ↔ 侵入口を売る</td></tr>
+  </table>
+  <div class="point">次の #02 では、攻撃の流れ（サイバーキルチェーン・MITRE ATT&amp;CK）と、パスワードやセッションをねらう攻撃を扱う。</div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
+</html>

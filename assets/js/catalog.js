@@ -85,6 +85,51 @@ window.SITE_CATALOG = {
       desc: "全23分野を、PDF・一覧・カード・クイズの用語集にまとめ直した。",
       exams: [{ label: "試験日", date: "2026-10-03" }],
     },
+    sc: {
+      name: "情報処理安全確保支援士試験",
+      short: "支援士",
+      icon: "SC",
+      status: "次の資格",
+      active: false,
+      desc: "IPA の新試験制度（2027年度〜）の支援士シラバス案の中分類を、24の小分野に分けて積み上げる。",
+      exams: [],
+      // 情報処理安全確保支援士試験 シラバス（案）Ver.0.1（IPA、2026-08-31）の【目標とする知識（専門知識）】＝科目A-2の出題範囲。
+      // major はシラバスの中分類と小分類の番号
+      groups: [
+        { id: "threat", name: "1 情報セキュリティの脅威", en: "中分類23" },
+        { id: "mgmt", name: "2 情報セキュリティマネジメント", en: "中分類24" },
+        { id: "measure", name: "3 情報セキュリティ対策", en: "中分類25" },
+        { id: "impl", name: "4 セキュリティ実装技術・評価", en: "中分類26" },
+        { id: "related", name: "5 関連する技術とマネジメント", en: "中分類16・17・20・21・4・12" },
+        { id: "caseb", name: "6 科目B（事例問題）", en: "目標とする技能" },
+      ],
+      fields: [
+        { no: 1, group: "threat", major: "23-1", name: "脅威と脆弱性" },
+        { no: 2, group: "threat", major: "23-2", name: "攻撃の流れと認証への攻撃" },
+        { no: 3, group: "threat", major: "23-2", name: "Webアプリケーションへの攻撃" },
+        { no: 4, group: "threat", major: "23-2", name: "ネットワーク・DNS・DoSの攻撃" },
+        { no: 5, group: "threat", major: "23-2", name: "AI・サプライチェーン・特殊な攻撃" },
+        { no: 6, group: "mgmt", major: "24-1・24-2", name: "セキュリティの考え方とリスクマネジメント" },
+        { no: 7, group: "mgmt", major: "24-3・24-4", name: "組織・機関と制度・基準" },
+        { no: 8, group: "mgmt", major: "24-5・24-6", name: "ISMSと管理策" },
+        { no: 9, group: "measure", major: "25-1〜25-3", name: "インシデント対応と脅威インテリジェンス" },
+        { no: 10, group: "measure", major: "25-4", name: "アクセス制御と利用者認証" },
+        { no: 11, group: "measure", major: "25-4", name: "ID連携とシングルサインオン" },
+        { no: 12, group: "measure", major: "25-5", name: "マルウェア対策・脆弱性管理・監視" },
+        { no: 13, group: "measure", major: "25-6", name: "ネットワークセキュリティの方式と製品" },
+        { no: 14, group: "measure", major: "25-6", name: "セキュアプロトコルとメールのセキュリティ" },
+        { no: 15, group: "measure", major: "25-7", name: "暗号技術" },
+        { no: 16, group: "measure", major: "25-4・25-7", name: "デジタル署名とPKI" },
+        { no: 17, group: "impl", major: "26-1", name: "セキュア開発とWebの防御" },
+        { no: 18, group: "impl", major: "26-1", name: "ゼロトラスト・クラウド・AI・IoTのセキュリティ" },
+        { no: 19, group: "impl", major: "26-2・26-3", name: "フォレンジックとセキュリティ評価" },
+        { no: 20, group: "related", major: "16", name: "ネットワーク" },
+        { no: 21, group: "related", major: "17", name: "データベース" },
+        { no: 22, group: "related", major: "20・21", name: "システム開発と運用" },
+        { no: 23, group: "related", major: "4・12", name: "サービスマネジメントとシステム監査" },
+        { no: 24, group: "caseb", major: "技能1・2", name: "科目B 事例演習" },
+      ],
+    },
     ccna: {
       name: "CCNA（200-301）",
       short: "CCNA",
@@ -208,6 +253,9 @@ window.SITE_CATALOG = {
   },
 
   materials: {
+    sc: [
+      { type: "terms", file: "terms/01.html", title: "脅威と脆弱性 用語集", desc: "攻撃ベクトル・攻撃対象領域・脅威モデリング・STRIDE・脅威シナリオ・10大脅威2026・BEC・ソーシャルエンジニアリング・踏み台、ボットと C&C・RAT・リバースシェル（コネクトバック）・ルートキット・ランサムウェア・クリプトジャッキング・ポリモーフィック／メタモーフィック・ファイルレス・エクスプロイトコード／キット・Mirai、認可の不備・入力確認・ハードコード・認証バイパス・平文・レースコンディション・OWASP の3つの Top 10、不正のトライアングル・ハクティビズム・RaaS・IAB・二重恐喝・ダークウェブ。42語と問題27問（過去の午前Ⅱ 8問を含む）", fields: [1], pdf: "terms/01.pdf" },
+    ],
     aws: [
       { type: "terms", file: "terms/01.html", title: "IAMとポリシー 用語集", desc: "ルートユーザー・IAM ユーザー・グループ・ロール・インスタンスプロファイル・STS の一時的な認証情報・アクセスキー・MFA、ID ベースとリソースベースのポリシー・AWS 管理／カスタマー管理／インライン・Effect・Action・NotAction・Resource・Principal・Condition とグローバル条件キー・ポリシー変数・ARN、暗黙的な拒否と明示的な拒否・アクセス許可の境界・セッションポリシー・クロスアカウントアクセス・外部 ID・iam:PassRole・IAM Access Analyzer・認証情報レポート。38語と問題30問（タスク 1.1）", fields: [1], pdf: "terms/01.pdf" },
       { type: "terms", file: "terms/02.html", title: "マルチアカウントとフェデレーション 用語集", desc: "Organizations の管理アカウント・メンバーアカウント・OU・ルート・すべての機能と一括請求・委任管理者・タグポリシー・AWS RAM、SCP（FullAWSAccess・評価のしかた）と RCP、Control Tower のランディングゾーン・コントロール（予防・検出・プロアクティブ）・Account Factory、責任共有モデル、ID フェデレーション・SAML 2.0・OIDC・IAM Identity Center と権限セット・ID ソース、AWS Managed Microsoft AD・AD Connector・Simple AD、Cognito のユーザープールと ID プール。30語と問題30問（タスク 1.1）", fields: [2], pdf: "terms/02.pdf" },
