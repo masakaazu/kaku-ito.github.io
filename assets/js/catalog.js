@@ -232,6 +232,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/21.html", title: "データの移行と転送 用語集", desc: "DataSync のエージェント・検証・変更分の転送・帯域幅制限・スケジュール、Transfer Family、S3 Transfer Acceleration、Storage Gateway（S3 ファイル・FSx ファイル・ボリュームのキャッシュ型と保管型・テープ）、Snowball Edge の提供終了と Data Transfer Terminal、DMS のレプリケーションインスタンス・全ロード・CDC・Schema Conversion と SCT・同種データ移行・Serverless・マルチ AZ、AWS Transform MGN、Migration Hub", fields: [21], pdf: "terms/21.pdf" },
       { type: "terms", file: "terms/22.html", title: "料金と購入オプション 用語集", desc: "オンデマンド・Savings Plans（Compute・EC2 Instance・Database）・RI（スタンダードとコンバーティブル、リージョンとゾーン）・スポット・専有ホスト・ハードウェア専有インスタンス・キャパシティ予約、スポットの中断と混合インスタンスグループ、Fargate Spot、Compute Optimizer、T インスタンス、Lambda の arm64、リザーブド DB、Aurora serverless", fields: [22], pdf: "terms/22.pdf" },
       { type: "terms", file: "terms/23.html", title: "コストの見える化と管理 用語集", desc: "Cost Explorer（予測・適切なサイズ設定・予約の有効期限切れアラート）、コストと使用状況レポートと Data Exports（CUR 2.0）、料金見積りツール、AWS Budgets（コスト・使用量・使用率・カバレッジの予算、予算アクション）、コスト異常検出、Cost Optimization Hub、Trusted Advisor、EC2 の休止、コスト配分タグとアクティブ化、タグポリシー、Cost Categories、一括請求と割引共有", fields: [23], pdf: "terms/23.pdf" },
+      { type: "terms", file: "terms/24.html", title: "ストレージとネットワークのコスト 用語集", desc: "S3 の最小ストレージ期間・取り出し料金・ライフサイクル、gp3、スナップショットのアーカイブ、データ転送、NAT ゲートウェイとエンドポイント", fields: [24], pdf: "terms/24.pdf" },
     ],
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },
