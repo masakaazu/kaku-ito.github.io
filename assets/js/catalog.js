@@ -346,6 +346,7 @@ window.SITE_CATALOG = {
     ],
     jgold: [
       { type: "terms", file: "terms/01.html", title: "コレクション・フレームワーク 用語集", desc: "オートボクシングとキャッシュ・アンボクシングの NPE・remove(int) と remove(Object)、Collection と Map の関係、List・Set（HashSet・LinkedHashSet・TreeSet）・Map（HashMap・LinkedHashMap・TreeMap）と null、NavigableSet の探索と部分ビュー、put・putIfAbsent・merge・computeIfAbsent、Queue・Deque の例外版と特別な値版・ArrayDeque、ConcurrentModificationException、List.of・Arrays.asList・List.copyOf・変更できないビュー。38語と問題30問", fields: [1], pdf: "terms/01.pdf" },
+      { type: "terms", file: "terms/02.html", title: "ジェネリクス 用語集", desc: "ジェネリッククラス・ジェネリックメソッドと型引数の明示、ダイヤモンドと var、ジェネリック型の実装とブリッジメソッド、境界（extends・&・再帰的な境界）、ワイルドカード（?・? extends・? super）と PECS、不変性と配列の共変性、型消去・原型・ヒープ汚染、new T()・static T・instanceof・ジェネリック配列・同じイレイジャの制限。22語と問題30問", fields: [2], pdf: "terms/02.pdf" },
     ],
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },
