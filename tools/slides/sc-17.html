@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>支援士 #17 セキュア開発とWebの防御 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">情報処理安全確保支援士試験　科目A-2　中分類26 セキュリティ実装技術・評価　#17</div>
+  <h1>セキュア開発とWebの防御</h1>
+  <p>作り込まない、ブラウザに守らせる、部品と鍵を管理する</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（IPA の支援士試験シラバス案、IPA「安全なウェブサイトの作り方」、OWASP、RFC 6265・6797・9111、W3C CSP・SRI、OpenSSF SLSA など）を書いた。過去問は IPA 公開の午前Ⅱ。例の場面は Claude が作った</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>シラバス案 中分類26 小分類1「アプリケーション開発のセキュリティ」</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 開発の進め方と実装上の対策<span>SAST・DAST・ファジング、エスケープ・プレースホルダ・CSRF トークン・BOF 対策・ソルトとストレッチング</span></div>
+      <div class="box b2">2 ブラウザの防御機構<span>同一オリジン・CORS、Secure・HttpOnly・SameSite、HSTS・CSP・SRI・Cache-Control</span></div>
+      <div class="box b3">3 サプライチェーンと実行環境<span>シークレット管理・依存ライブラリ・署名付きコミット・成果物の署名・SLSA・要塞化</span></div>
+    </div>
+    <div>
+      <div class="lbl">過去の午前Ⅱでの出方（7回出題）</div>
+      <table class="mx">
+        <tr><th>テーマ</th><th style="width:40%">出た回</th></tr>
+        <tr><td class="l">cookie の Secure 属性</td><td class="t">R1秋・R2・R3秋</td></tr>
+        <tr><td class="l">HSTS</td><td class="t">R3春・R4春・R6春</td></tr>
+        <tr><td class="l">Cache-Control: no-store</td><td class="t">R6春</td></tr>
+      </table>
+      <div class="point warn">XSS・SQL インジェクション・CSRF などの攻撃の手口は #03。ここは「どう作れば防げるか」。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）Ver.0.1」中分類26 小分類1／IPA 午前Ⅱ 各回（このPDFの問題演習を参照）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>セキュア開発の進め方と実装上の対策</h1>
+  <p>見つける検査と、作り込まない書き方。</p>
+  <div class="foot"><span>支援士 #17 セキュア開発とWebの防御</span><span>26-1</span></div>
+</section>
+
+<section class="slide">
+  <h1>脆弱性の検査技術</h1>
+  <div class="flow" style="gap:4px">
+    <div class="box b5">設計<span>脅威モデリング</span></div><div class="to">→</div>
+    <div class="box b1">実装<span><b>SAST</b>・SCA</span></div><div class="to">→</div>
+    <div class="box b2">テスト<span><b>DAST</b>・<b>ファジング</b></span></div><div class="to">→</div>
+    <div class="box b3">リリース前<span>ペネトレーションテスト</span></div><div class="to">→</div>
+    <div class="box b4">運用<span>脆弱性情報の監視</span></div>
+  </div>
+  <table class="mx" style="margin-top:12px">
+    <tr><th style="width:16%">方法</th><th>見るもの</th><th>得意</th><th>苦手</th></tr>
+    <tr><td class="t">SAST</td><td class="l">ソースコード（動かさない）</td><td class="l">入力から危険な処理への流れを網羅</td><td class="l">誤検知、設定・環境の問題</td></tr>
+    <tr><td class="t">DAST</td><td class="l">動くアプリ（外から攻撃を模す）</td><td class="l">実際に通るか、設定の不備</td><td class="l">通らない画面、原因の場所</td></tr>
+    <tr><td class="t">ファジング</td><td class="l">異常な入力への反応</td><td class="l">クラッシュ・メモリ破壊</td><td class="l">論理的な欠陥</td></tr>
+  </table>
+  <div class="point" style="margin-top:8px">早い段階で見つけるほど直すのが安い（<b>シフトレフト</b>）。指針は IPA「安全なウェブサイトの作り方」、NIST SSDF。</div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」用語例〔セキュア開発の進め方〕／IPA「ファジング活用の手引き」／NIST SP 800-218</div>
+</section>
+
+<section class="slide">
+  <h1>根本的な対策の書き方</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">SQL インジェクション：プレースホルダ</div>
+      <div class="code small"><span class="ng">// 危険：文字列連結</span>
+"SELECT * FROM users WHERE id='" + id + "'"
+<span class="ok">// 安全：構造を確定してから値を渡す</span>
+ps = conn.prepareStatement(
+  "SELECT * FROM users WHERE id = ?");
+ps.setString(1, id);</div>
+      <div class="lbl">XSS：文脈に合ったエスケープ</div>
+      <table class="mx">
+        <tr><td class="t">HTML 本文</td><td class="l">&lt; &gt; &amp; を文字参照に</td></tr>
+        <tr><td class="t">属性値</td><td class="l">引用符で囲み " も変換</td></tr>
+        <tr><td class="t">href</td><td class="l">http・https だけ許可</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">CSRF：推測できないトークン</div>
+      <div class="code small">&lt;input type="hidden" name="csrf"
+  value="Zx81kQ...（セッションごとの乱数）"&gt;</div>
+      <div class="lbl">パスワードの保存</div>
+      <div class="stack">
+        <div class="box b2">ソルト<span>利用者ごとの乱数。レインボーテーブル対策</span></div>
+        <div class="box b1">ストレッチング<span>計算を重く。Argon2id・scrypt・bcrypt・PBKDF2</span></div>
+      </div>
+      <div class="point warn">SHA-256 を1回、共通の固定値、可逆な暗号化・Base64 は不可。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「安全なウェブサイトの作り方」1.1・1.5・1.6／OWASP「Password Storage Cheat Sheet」</div>
+</section>
+
+<section class="slide">
+  <h1>バッファオーバーフローの対策</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">スタックのイメージ</div>
+      <div class="stack">
+        <div class="box b4">戻り先アドレス<span>ここを書き換えられると攻撃者のコードへ</span></div>
+        <div class="box b3">カナリア値<span>壊されたら異常終了</span></div>
+        <div class="box b2">ローカル変数 char buf[16]<span>ここから溢れる</span></div>
+      </div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>対策</th><th>しくみ</th><th style="width:20%">誰が</th></tr>
+        <tr><td class="x">長さの確認</td><td class="l">strcpy → 長さを指定できる関数、入力長の検査</td><td class="l">開発者</td></tr>
+        <tr><td class="x">メモリ安全な言語</td><td class="l">Rust・Java・Go など</td><td class="l">開発者</td></tr>
+        <tr><td class="t">スタックカナリア</td><td class="l">戻り先の手前の値の改ざんを検知</td><td class="l">コンパイラ</td></tr>
+        <tr><td class="t">DEP・NX</td><td class="l">データ領域のコードを実行させない</td><td class="l">OS・CPU</td></tr>
+        <tr><td class="t">ASLR</td><td class="l">メモリ配置をランダムにしアドレスを推測させない</td><td class="l">OS</td></tr>
+      </table>
+      <div class="point warn">緩和策は回避されることもある（ROP など）。根本は長さを確かめること。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「セキュア・プログラミング講座」／IPA「支援士試験 シラバス（案）」用語例「バッファオーバーフロー対策」</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>ブラウザが備える防御機構と指示</h1>
+  <p>ヘッダと属性で、ブラウザに守らせる。</p>
+  <div class="foot"><span>支援士 #17 セキュア開発とWebの防御</span><span>26-1</span></div>
+</section>
+
+<section class="slide">
+  <h1>cookie の属性（R1秋・R2・R3秋）</h1>
+  <div class="code small">Set-Cookie: SID=4f9a...; Secure; HttpOnly; SameSite=Lax; Path=/; Max-Age=1800</div>
+  <table class="mx" style="margin-top:10px">
+    <tr><th style="width:18%">属性</th><th>動作</th><th style="width:30%">防ぐもの</th></tr>
+    <tr><td class="x">Secure</td><td class="l">スキームが <b>https のときだけ</b>送る。値はもたない</td><td class="l">平文の通信での盗聴</td></tr>
+    <tr><td class="t">HttpOnly</td><td class="l">JavaScript から読めない</td><td class="l">XSS での cookie 盗用</td></tr>
+    <tr><td class="t">SameSite</td><td class="l">他サイト発の要求で送らない（Strict・Lax）</td><td class="l">CSRF</td></tr>
+    <tr><td class="t">Path・Domain</td><td class="l">送るパス・ホストを決める</td><td class="l">ー</td></tr>
+    <tr><td class="t">Expires・Max-Age</td><td class="l">有効期限。なければブラウザ終了で消える</td><td class="l">ー</td></tr>
+  </table>
+  <div class="point warn" style="margin-top:8px">過去問の誤りの選択肢：有効期間で無効化＝Expires、JavaScript の読出し禁止＝HttpOnly、パスのプレフィックス＝Path、「Secure=時間」「Secure=ホスト名」は存在しない書き方。</div>
+  <div class="cite">出典：RFC 6265 HTTP State Management Mechanism 4.1.2／IPA 午前Ⅱ 令和3年度秋期 問10・令和2年度 問12</div>
+</section>
+
+<section class="slide">
+  <h1>同一オリジンポリシーと CORS</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">オリジン＝スキーム＋ホスト＋ポート</div>
+      <table class="mx">
+        <tr><th>https://app.example.jp と比べて</th><th style="width:28%">同一？</th></tr>
+        <tr><td class="l">https://app.example.jp/x</td><td class="t">同一</td></tr>
+        <tr><td class="l">http://app.example.jp</td><td class="x">別（スキーム）</td></tr>
+        <tr><td class="l">https://api.example.jp</td><td class="x">別（ホスト）</td></tr>
+        <tr><td class="l">https://app.example.jp:8443</td><td class="x">別（ポート）</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">CORS で読取りを許可する</div>
+      <div class="code small">Access-Control-Allow-Origin: https://app.example.jp
+Access-Control-Allow-Credentials: true</div>
+      <div class="point warn">「*」や、要求の Origin をそのまま返すのは危険。認証情報つきでは「*」は使えない。</div>
+      <div class="point">CORS は「読める相手」を広げる仕組み。CSRF の対策ではない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：RFC 6454 The Web Origin Concept／WHATWG「Fetch Standard」CORS protocol</div>
+</section>
+
+<section class="slide">
+  <h1>HSTS・CSP・SRI・Cache-Control</h1>
+  <table class="mx">
+    <tr><th style="width:16%">指示</th><th>書き方の例</th><th style="width:34%">効果</th></tr>
+    <tr><td class="x">HSTS</td><td class="l">Strict-Transport-Security: max-age=31536000; includeSubDomains; preload</td><td class="l">以降の期間、全て HTTPS で接続（R3春・R4春・R6春）</td></tr>
+    <tr><td class="t">CSP</td><td class="l">Content-Security-Policy: script-src 'self' 'nonce-r4nd0m'; frame-ancestors 'none'</td><td class="l">許可外のスクリプトを実行させない、枠表示を禁止</td></tr>
+    <tr><td class="t">SRI</td><td class="l">script src="https://cdn…/lib.js" integrity="sha384-…"</td><td class="l">改ざんされた外部ファイルを実行しない</td></tr>
+    <tr><td class="x">no-store</td><td class="l">Cache-Control: no-store</td><td class="l">どのキャッシュにも保存させない（R6春 問20）</td></tr>
+  </table>
+  <div class="cols" style="margin-top:12px">
+    <div class="point warn"><b>HSTS の誤りの選択肢：</b>他のオリジンにアクセスさせない＝同一オリジン、EV 証明書の表示、秘密情報を判定できない圧縮、再ハンドシェイク。</div>
+    <div class="point"><b>no-cache</b> は「保存してよいが毎回確認」、<b>private</b> はブラウザだけ保存可。混同に注意。</div>
+  </div>
+  <div class="cite">出典：RFC 6797（HSTS）・RFC 9111（HTTP Caching）／W3C「CSP Level 3」「Subresource Integrity」／IPA 午前Ⅱ 令和6年度春期 問13・問20</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>ソフトウェアサプライチェーンと実行環境</h1>
+  <p>部品・鍵・ビルドの過程まで守る。</p>
+  <div class="foot"><span>支援士 #17 セキュア開発とWebの防御</span><span>26-1</span></div>
+</section>
+
+<section class="slide">
+  <h1>ソースからデプロイまでの守り方</h1>
+  <div class="flow" style="gap:4px">
+    <div class="box b5">ソース<span><b>署名付きコミット</b><br>シークレットを書かない</span></div><div class="to">→</div>
+    <div class="box b2">依存<span>SCA・SBOM で把握<br>版数とハッシュを固定</span></div><div class="to">→</div>
+    <div class="box b1">ビルド<span><b>SLSA</b>：来歴を記録<br>改ざんに強い環境</span></div><div class="to">→</div>
+    <div class="box b3">成果物<span><b>署名</b>して配布<br>使う前に検証</span></div><div class="to">→</div>
+    <div class="box b4">実行環境<span><b>要塞化</b><br>最小のイメージ・非 root</span></div>
+  </div>
+  <div class="cols" style="margin-top:12px">
+    <div>
+      <div class="point warn"><b>シークレットを push してしまったら：</b>消しても履歴に残る → <b>直ちに無効化して再発行</b>、不正利用を確認、シークレットストアへ。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>SLSA v1.0</th><th>ビルドの段階</th></tr>
+        <tr><td class="t">L1</td><td class="l">来歴（プロヴナンス）がある</td></tr>
+        <tr><td class="t">L2</td><td class="l">ホスト型のビルド環境が署名した来歴</td></tr>
+        <tr><td class="t">L3</td><td class="l">改ざんに強いビルド環境</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：OpenSSF「SLSA v1.0」／OWASP「Secrets Management Cheat Sheet」／IPA「支援士試験 シラバス（案）」用語例〔ソフトウェアサプライチェーン及び実行環境の保護〕</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ：本番での問われ方</h1>
+  <div class="cols">
+    <div>
+      <div class="point"><b>検査：</b>SAST＝動かさずコード、DAST＝動かして外から、ファジング＝異常な入力を大量に。</div>
+      <div class="point"><b>根本対策：</b>SQLi＝プレースホルダ、XSS＝出力時のエスケープ、CSRF＝トークン、BOF＝長さの確認、パスワード＝ソルト＋ストレッチング。</div>
+      <div class="point"><b>サプライチェーン：</b>シークレットのハードコード禁止、署名付きコミット、成果物の署名、SLSA、要塞化。</div>
+    </div>
+    <div>
+      <div class="point warn"><b>cookie：</b>Secure＝https のときだけ送る、HttpOnly＝JS から読めない、SameSite＝他サイト発では送らない。</div>
+      <div class="point warn"><b>HSTS：</b>以降の指定期間、全て HTTPS で接続。<b>no-store：</b>どのキャッシュにも保存させない。</div>
+      <div class="point"><b>CSP</b>＝実行してよいスクリプト、<b>SRI</b>＝外部ファイルのハッシュ、<b>CORS</b>＝読ませてよいオリジン。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ（このPDFの問題演習）／IPA「支援士試験 シラバス（案）Ver.0.1」</div>
+</section>
+
+</body>
+</html>
