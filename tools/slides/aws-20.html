@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS SAA #20 データ分析 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+
+<section class="slide title">
+  <div class="k">AWS SAA（SAA-C03）　分野3 高パフォーマンス　#20</div>
+  <h1>データ分析</h1>
+  <p>Kinesis Data Streams のシャード・パーティションキー・容量モード・保持期間・拡張ファンアウト、Data Firehose の配信と形式変換、Managed Service for Apache Flink、MSK、Glue のクローラー・Data Catalog・ETL ジョブ・ブックマーク・DataBrew、Lake Formation、EMR のノードと一時的なクラスター、Athena のパーティション・列指向形式・CTAS・フェデレーティッドクエリ、Redshift と Spectrum・Serverless・同時実行スケーリング、Quick Sight と SPICE、OpenSearch Service</p>
+  <div class="refs-legend">各ページの下に、根拠にした AWS の公式ドキュメント（Kinesis Data Streams・Data Firehose・Managed Service for Apache Flink・MSK・Glue・DataBrew・Lake Formation・EMR・Athena・Redshift・Amazon Quick・OpenSearch Service の各ガイド）を書いた（青い文字を押すと開く）。「」の中はドキュメントの原文どおり（日本語版は機械翻訳のため、語順が不自然なところもそのまま）。データの名前・量・場面は Claude が作った例。数字は 2026-11 時点のドキュメントによる</div>
+</section>
+
+<section class="slide">
+  <h1>全体像：データ分析のパイプライン<small>試験ガイド タスク 3.5</small></h1>
+  <svg width="856" height="220" viewBox="0 0 856 220">
+    <defs><marker id="a1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <text x="80" y="18" fill="#4a5a78" font-weight="700">① 取り込む</text>
+      <rect x="10" y="28" width="140" height="34" rx="6" fill="#b25000"/><text x="80" y="50" fill="#fff">Kinesis Data Streams</text>
+      <rect x="10" y="70" width="140" height="34" rx="6" fill="#b25000"/><text x="80" y="92" fill="#fff">Data Firehose</text>
+      <rect x="10" y="112" width="140" height="34" rx="6" fill="#b25000"/><text x="80" y="134" fill="#fff">MSK（Kafka）</text>
+      <rect x="10" y="154" width="140" height="34" rx="6" fill="#b25000"/><text x="80" y="176" fill="#fff">Flink（流しながら処理）</text>
+      <text x="265" y="18" fill="#4a5a78" font-weight="700">② ためる</text>
+      <rect x="195" y="40" width="140" height="130" rx="10" fill="#e3eefc" stroke="#1f5fa8"/><text x="265" y="70" fill="#1f5fa8" font-weight="700">S3</text><text x="265" y="90" fill="#1f5fa8">データレイク</text><text x="265" y="120">Parquet・ORC</text><text x="265" y="140">パーティション</text>
+      <text x="450" y="18" fill="#4a5a78" font-weight="700">③ 整える・守る</text>
+      <rect x="380" y="28" width="140" height="34" rx="6" fill="#3a7d44"/><text x="450" y="50" fill="#fff">Glue クローラー</text>
+      <rect x="380" y="70" width="140" height="34" rx="6" fill="#3a7d44"/><text x="450" y="92" fill="#fff">Glue Data Catalog</text>
+      <rect x="380" y="112" width="140" height="34" rx="6" fill="#3a7d44"/><text x="450" y="134" fill="#fff">Glue ETL・DataBrew・EMR</text>
+      <rect x="380" y="154" width="140" height="34" rx="6" fill="#6a3d9a"/><text x="450" y="176" fill="#fff">Lake Formation（権限）</text>
+      <text x="630" y="18" fill="#4a5a78" font-weight="700">④ 分析する</text>
+      <rect x="565" y="28" width="130" height="34" rx="6" fill="#1f3a68"/><text x="630" y="50" fill="#fff">Athena</text>
+      <rect x="565" y="70" width="130" height="34" rx="6" fill="#1f3a68"/><text x="630" y="92" fill="#fff">Redshift・Spectrum</text>
+      <rect x="565" y="112" width="130" height="34" rx="6" fill="#1f3a68"/><text x="630" y="134" fill="#fff">EMR</text>
+      <rect x="565" y="154" width="130" height="34" rx="6" fill="#1f3a68"/><text x="630" y="176" fill="#fff">OpenSearch</text>
+      <text x="785" y="18" fill="#4a5a78" font-weight="700">⑤ 見せる</text>
+      <rect x="730" y="70" width="116" height="76" rx="8" fill="#1f5fa8"/><text x="788" y="100" fill="#fff" font-weight="700">Quick Sight</text><text x="788" y="120" fill="#fff">ダッシュボード</text>
+      <g stroke="#1f3a68" stroke-width="2"><line x1="150" y1="105" x2="193" y2="105" marker-end="url(#a1)"/><line x1="335" y1="105" x2="378" y2="105" marker-end="url(#a1)"/><line x1="520" y1="105" x2="563" y2="105" marker-end="url(#a1)"/><line x1="695" y1="105" x2="728" y2="105" marker-end="url(#a1)"/></g>
+      <text x="428" y="210" fill="#4a5a78">Athena・Redshift Spectrum・EMR は、同じ Glue Data Catalog のテーブル定義を使う</text>
+    </g>
+  </svg>
+  <div class="point"><b>本番の見分け方：</b>「リアルタイム」「自分で処理するアプリ」→ Kinesis Data Streams。「アプリを書かずに S3 へ」→ Firehose。「S3 にそのまま SQL・サーバーレス」→ Athena。「データウェアハウス・複雑なレポート」→ Redshift。「Spark・Hadoop を自由に」→ EMR。「列・行の権限」→ Lake Formation。「ダッシュボード」→ Quick Sight。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/glue/latest/dg/catalog-and-crawler.html">AWS Glue でのデータ検出とカタログ化</a>（「データカタログは、AWS Lake Formation、Amazon Athena、Amazon Redshift Spectrum、Amazon EMR などの他の AWS サービスとシームレスに統合されます。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>ストリーミングデータの取り込み</h1>
+  <p>Kinesis Data Streams のシャードとパーティションキー、容量モード、保持期間、拡張ファンアウト。Data Firehose のバッファ・形式変換・動的パーティショニング。Managed Service for Apache Flink と MSK。</p>
+  <div class="foot"><span>AWS SAA #20 データ分析</span><span>タスク 3.5</span></div>
+</section>
+
+<section class="slide">
+  <h1>Kinesis Data Streams のしくみ</h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <defs><marker id="a2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="30" width="140" height="140" rx="10" fill="#f6f8fb" stroke="#4a5a78"/><text x="80" y="52" fill="#4a5a78" font-weight="700">プロデューサー</text><text x="80" y="80">ウェブサーバー</text><text x="80" y="100">アプリのログ</text><text x="80" y="120">センサー</text><text x="80" y="150" fill="#b25000">パーティションキーを付ける</text>
+      <rect x="230" y="10" width="300" height="180" rx="10" fill="#e3eefc" stroke="#1f5fa8"/><text x="380" y="30" fill="#1f5fa8" font-weight="700">データストリーム（保持 24 時間〜365 日）</text>
+      <rect x="250" y="44" width="260" height="36" rx="6" fill="#1f5fa8"/><text x="380" y="67" fill="#fff">シャード 1：user=A, C…（順番つき）</text>
+      <rect x="250" y="90" width="260" height="36" rx="6" fill="#1f5fa8"/><text x="380" y="113" fill="#fff">シャード 2：user=B, D…</text>
+      <rect x="250" y="136" width="260" height="36" rx="6" fill="#1f5fa8"/><text x="380" y="159" fill="#fff">シャード 3：user=E…</text>
+      <rect x="610" y="30" width="236" height="40" rx="8" fill="#3a7d44"/><text x="728" y="55" fill="#fff">集計アプリ（KCL・EC2）</text>
+      <rect x="610" y="80" width="236" height="40" rx="8" fill="#3a7d44"/><text x="728" y="105" fill="#fff">Lambda・Flink</text>
+      <rect x="610" y="130" width="236" height="40" rx="8" fill="#3a7d44"/><text x="728" y="155" fill="#fff">Firehose → S3 にアーカイブ</text>
+      <g stroke="#1f3a68" stroke-width="2"><line x1="150" y1="100" x2="228" y2="100" marker-end="url(#a2)"/><line x1="530" y1="60" x2="608" y2="50" marker-end="url(#a2)"/><line x1="530" y1="100" x2="608" y2="100" marker-end="url(#a2)"/><line x1="530" y1="140" x2="608" y2="150" marker-end="url(#a2)"/></g>
+      <text x="728" y="192" fill="#4a5a78">コンシューマー：複数が独立して読む</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:22%">1 シャードの上限</th><th>書き込み</th><th>読み取り</th></tr>
+    <tr><td class="t">データ量</td><td class="l">毎秒 1 MB</td><td class="l">毎秒 2 MB（共有。拡張ファンアウトならコンシューマーごとに 2 MB）</td></tr>
+    <tr><td class="t">回数</td><td class="l">毎秒 1,000 レコード</td><td class="l">毎秒 5 トランザクション</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/streams/latest/dev/key-concepts.html">Amazon Kinesis Data Streams の用語と概念</a>（「各シャードは、読み取りで最大 5 トランザクション/秒、最大合計データ読み取り速度 2 MB/秒、書き込みで最大 1,000 レコード/秒、最大合計データ書き込み速度 1 MB/秒をサポートできます (パーティションキーを含む)。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/streams/latest/dev/introduction.html">Amazon Kinesis Data Streams とは</a>（「レコードがストリームに取り込まれてから取得されるまでの遅延 (入力から取得までの遅延) は通常、1 秒未満です。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Kinesis Data Streams の設定 4 つ</h1>
+  <table class="mx">
+    <tr><th style="width:20%">設定</th><th>決まり</th><th style="width:34%">本番で狙われる点</th></tr>
+    <tr><td class="t">パーティションキー</td><td class="l">レコードの行き先のシャードを決める。同じキーは同じシャードで順番が付く</td><td class="l">偏ったキーは 1 つのシャードの上限を超えて例外になる。値が散らばるキーを使う</td></tr>
+    <tr><td class="t">容量モード</td><td class="l">オンデマンド：シャードを自動で管理し、使った分に課金。プロビジョンド：シャード数を自分で決め、時間料金</td><td class="l">予測できない・変動が大きい → オンデマンド</td></tr>
+    <tr><td class="t">保持期間</td><td class="l">既定 24 時間、最大 8,760 時間（365 日）。24 時間を超えると追加料金</td><td class="l">「過去のデータを読み直したい」→ 保持期間を延ばす</td></tr>
+    <tr><td class="t">拡張ファンアウト</td><td class="l">コンシューマーごとにシャードあたり毎秒 2 MB を専用に。HTTP/2 でプッシュ。平均 70 ミリ秒</td><td class="l">共有だと 2 MB を分け合い、5 つで平均約 1,000 ミリ秒まで遅くなる</td></tr>
+  </table>
+  <div class="point warn"><b>ひっかけ：</b>シャードを増やしても保持期間は変わらない。拡張ファンアウトは読み取り側の話で、書き込みの偏りは直らない。暗号化は KMS キーによるサーバー側の暗号化。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/streams/latest/dev/how-do-i-size-a-stream.html">適切なストリームモードを選ぶ</a>（「オンデマンドモードは、予測不能で変動性の高いトラフィックパターンを持つワークロードに適しています。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/streams/latest/dev/kinesis-extended-retention.html">データ保持期間を変更する</a>（「Kinesis data stream は、デフォルトでは 24 時間レコードを保持し、最大値は 8,760 時間 (365 日) です。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/streams/latest/dev/enhanced-consumers.html">専用スループットを備えた拡張ファンアウトを開発する</a>（「この機能により、コンシューマーは、シャードあたり 1 秒間に最大 2 MB のデータのスループットで、ストリームからレコードを受け取ることができます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Data Firehose：アプリを書かずに宛先へ</h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <defs><marker id="a3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="40" width="130" height="50" rx="8" fill="#f6f8fb" stroke="#4a5a78"/><text x="75" y="62" fill="#4a5a78" font-weight="700">プロデューサー</text><text x="75" y="80" fill="#4a5a78">ログなど</text>
+      <rect x="10" y="110" width="130" height="50" rx="8" fill="#f6f8fb" stroke="#4a5a78"/><text x="75" y="132" fill="#4a5a78" font-weight="700">Kinesis</text><text x="75" y="150" fill="#4a5a78">データストリーム</text>
+      <rect x="200" y="20" width="360" height="160" rx="10" fill="#fde7cf" stroke="#b25000"/><text x="380" y="40" fill="#b25000" font-weight="700">Firehose ストリーム</text>
+      <rect x="215" y="54" width="100" height="56" rx="6" fill="#b25000"/><text x="265" y="78" fill="#fff">バッファ</text><text x="265" y="96" fill="#fff">サイズ・間隔</text>
+      <rect x="330" y="54" width="100" height="56" rx="6" fill="#b25000"/><text x="380" y="78" fill="#fff">Lambda で</text><text x="380" y="96" fill="#fff">変換（任意）</text>
+      <rect x="445" y="54" width="100" height="56" rx="6" fill="#b25000"/><text x="495" y="78" fill="#fff">JSON →</text><text x="495" y="96" fill="#fff">Parquet・ORC</text>
+      <text x="380" y="140" fill="#b25000">動的パーティショニング：customer_id などで</text><text x="380" y="158" fill="#b25000">S3 のプレフィックスを分ける</text>
+      <rect x="640" y="20" width="206" height="34" rx="6" fill="#1f5fa8"/><text x="743" y="42" fill="#fff">S3（データレイク）</text>
+      <rect x="640" y="62" width="206" height="34" rx="6" fill="#1f5fa8"/><text x="743" y="84" fill="#fff">Redshift（S3 経由で COPY）</text>
+      <rect x="640" y="104" width="206" height="34" rx="6" fill="#1f5fa8"/><text x="743" y="126" fill="#fff">OpenSearch Service</text>
+      <rect x="640" y="146" width="206" height="34" rx="6" fill="#1f5fa8"/><text x="743" y="168" fill="#fff">Splunk・HTTP エンドポイント</text>
+      <g stroke="#1f3a68" stroke-width="2"><line x1="140" y1="65" x2="198" y2="80" marker-end="url(#a3)"/><line x1="140" y1="135" x2="198" y2="115" marker-end="url(#a3)"/><line x1="560" y1="100" x2="638" y2="37" marker-end="url(#a3)"/><line x1="560" y1="100" x2="638" y2="79" marker-end="url(#a3)"/><line x1="560" y1="100" x2="638" y2="121" marker-end="url(#a3)"/><line x1="560" y1="100" x2="638" y2="163" marker-end="url(#a3)"/></g>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>形式変換：</b>Parquet と ORC は列指向で、容量が減り、JSON よりクエリが速い。CSV などは先に Lambda で JSON にする。Lambda の呼び出しは最大 5 分。</div>
+    <div class="point warn"><b>ひっかけ：</b>Firehose は「届いたら配る」サービスで、複数のアプリが読み直すしくみはない。配信は最低 1 回で、重複することがある。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/firehose/latest/dev/what-is-this-service.html">Amazon Data Firehose とは何ですか?</a>（「Amazon Data Firehose を使用すると、アプリケーションを記述したり、リソースを管理したりする必要はありません。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/firehose/latest/dev/record-format-conversion.html">Amazon Data Firehose で入力データ形式を変換する</a>（「Parquet と ORC は列指向のデータ形式であり、容量を節約するだけでなく、JSON のような行指向の形式と比較してより高速なクエリを可能にします。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/firehose/latest/dev/dynamic-partitioning.html">Amazon Data Firehose のストリーミングデータのパーティショニング</a>（「データをパーティショニングすることで、スキャンされるデータ量が最小限に抑えられ、パフォーマンスが最適化され、Amazon S3 での分析クエリのコストが削減されます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>ストリーミングの 4 つを見分ける</h1>
+  <table class="mx">
+    <tr><th style="width:18%"></th><th>Kinesis Data Streams</th><th>Data Firehose</th><th>Managed Service for Apache Flink</th><th>Amazon MSK</th></tr>
+    <tr><td class="t">役割</td><td class="l">ためて、複数のアプリに読ませる</td><td class="l">宛先へ自動で配信</td><td class="l">流しながら処理・分析</td><td class="l">Apache Kafka を動かす</td></tr>
+    <tr><td class="t">自分で書くもの</td><td class="l">コンシューマーのアプリ</td><td class="l">なし（変換の Lambda は任意）</td><td class="l">Java・Scala・Python・SQL の処理</td><td class="l">Kafka のアプリ</td></tr>
+    <tr><td class="t">読み直し</td><td class="l">保持期間の中ならできる</td><td class="l">しくみはない</td><td class="l">チェックポイントで状態を持つ</td><td class="l">Kafka の機能で</td></tr>
+    <tr><td class="t">選ぶ言葉</td><td class="l">リアルタイム・独自の処理・複数のコンシューマー</td><td class="l">アプリなしで S3・Redshift・OpenSearch へ</td><td class="l">時系列分析・リアルタイムのダッシュボード</td><td class="l">いまの Kafka をそのまま移す</td></tr>
+  </table>
+  <div class="point"><b>組み合わせ：</b>Kinesis Data Streams のデータを Flink で集計し、Firehose で S3 にためる、のように重ねて使える。MSK にはクラスターの容量を管理しない MSK Serverless もある。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/managed-flink/latest/java/what-is.html">Amazon Managed Service for Apache Flink とは?</a>（「Amazon Managed Service for Apache Flink を使用すると、Java、Scala、Python、SQL のいずれかを使用してストリーミングデータを処理および分析できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/msk/latest/developerguide/what-is-msk.html">Amazon MSK デベロッパーガイドへようこそ</a>（「Amazon Managed Streaming for Apache Kafka (Amazon MSK) は、Apache Kafka を使ってストリーミングデータを処理するアプリケーションの構築および実行を可能にする、フルマネージドサービスです。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>データの変換とカタログ・データレイク</h1>
+  <p>Glue のクローラー・Data Catalog・ETL ジョブ・ジョブのブックマーク、DataBrew、Lake Formation のきめ細かな権限と LF タグ、EMR のノードタイプとスポット、一時的なクラスターと EMRFS。</p>
+  <div class="foot"><span>AWS SAA #20 データ分析</span><span>タスク 3.5</span></div>
+</section>
+
+<section class="slide">
+  <h1>AWS Glue：見つけて、登録して、変換する</h1>
+  <svg width="856" height="170" viewBox="0 0 856 170">
+    <defs><marker id="a4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="40" width="130" height="80" rx="10" fill="#e3eefc" stroke="#1f5fa8"/><text x="75" y="70" fill="#1f5fa8" font-weight="700">S3・RDS など</text><text x="75" y="92" fill="#1f5fa8">スキーマ不明の</text><text x="75" y="108" fill="#1f5fa8">データ</text>
+      <rect x="190" y="50" width="130" height="60" rx="8" fill="#3a7d44"/><text x="255" y="74" fill="#fff" font-weight="700">クローラー</text><text x="255" y="92" fill="#fff">スキャンして推測</text>
+      <rect x="370" y="30" width="170" height="100" rx="8" fill="#1f3a68"/><text x="455" y="56" fill="#fff" font-weight="700">Glue Data Catalog</text><text x="455" y="78" fill="#fff">場所・スキーマ</text><text x="455" y="96" fill="#fff">リージョンごとに 1 つ</text><text x="455" y="114" fill="#fff">Hive メタストアの代わり</text>
+      <rect x="590" y="10" width="256" height="40" rx="6" fill="#b25000"/><text x="718" y="35" fill="#fff">ETL ジョブ（サーバーレス Spark）</text>
+      <rect x="590" y="60" width="256" height="40" rx="6" fill="#1f5fa8"/><text x="718" y="85" fill="#fff">Athena・Redshift Spectrum・EMR</text>
+      <rect x="590" y="110" width="256" height="40" rx="6" fill="#6a3d9a"/><text x="718" y="135" fill="#fff">Lake Formation（権限）</text>
+      <g stroke="#1f3a68" stroke-width="2"><line x1="140" y1="80" x2="188" y2="80" marker-end="url(#a4)"/><line x1="320" y1="80" x2="368" y2="80" marker-end="url(#a4)"/><line x1="540" y1="70" x2="588" y2="30" marker-end="url(#a4)"/><line x1="540" y1="80" x2="588" y2="80" marker-end="url(#a4)"/><line x1="540" y1="90" x2="588" y2="130" marker-end="url(#a4)"/></g>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%">機能</th><th>何をするか</th><th style="width:30%">選ぶ言葉</th></tr>
+    <tr><td class="t">ETL ジョブ</td><td class="l">Scala・PySpark のスクリプトを自動生成。Glue Studio で視覚的に作れる。スケジュール・トリガーで実行</td><td class="l">サーバーレスで変換・形式変換</td></tr>
+    <tr><td class="t">ジョブのブックマーク</td><td class="l">処理した状態を持ち、古いデータを処理し直さない</td><td class="l">前回の続きの新しいデータだけ</td></tr>
+    <tr><td class="t">Glue DataBrew</td><td class="l">コードを書かずにデータをきれいにして正規化するビジュアルなツール</td><td class="l">アナリストがコードなしで</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/glue/latest/dg/what-is-glue.html">AWS Glue とは</a>（「**データを自動的に検出** – AWS Glue クローラーを使用して自動的にスキーマ情報を推測し、AWS Glue Data Catalog のスキーマ情報に統合します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/glue/latest/dg/monitor-continuations.html">ジョブのブックマークを使用した処理済みデータの追跡</a>（「ジョブのブックマークは、AWS Glue で状態情報を保持して、古いデータを再処理しないために役立ちます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/databrew/latest/dg/what-is.html">AWS Glue DataBrew とは</a>（「AWS Glue DataBrewは、ユーザーがコードを記述せずにデータをクリーンアップおよび正規化できるようにするビジュアルデータ準備ツールです。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Lake Formation：データレイクのきめ細かな権限</h1>
+  <svg width="856" height="180" viewBox="0 0 856 180">
+    <defs><marker id="a5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="11" text-anchor="middle">
+      <rect x="10" y="60" width="120" height="60" rx="10" fill="#f6f8fb" stroke="#4a5a78"/><text x="70" y="86" fill="#4a5a78" font-weight="700">分析チーム</text><text x="70" y="104" fill="#4a5a78">SQL を送る</text>
+      <rect x="180" y="55" width="150" height="70" rx="8" fill="#1f3a68"/><text x="255" y="80" fill="#fff" font-weight="700">分析エンジン</text><text x="255" y="98" fill="#fff">Athena・Redshift</text><text x="255" y="114" fill="#fff">Spectrum・EMR・Glue</text>
+      <rect x="400" y="10" width="190" height="60" rx="8" fill="#6a3d9a"/><text x="495" y="34" fill="#fff" font-weight="700">Lake Formation</text><text x="495" y="54" fill="#fff">① 権限を確認 ② 一時的なアクセス</text>
+      <rect x="400" y="110" width="190" height="60" rx="8" fill="#3a7d44"/><text x="495" y="136" fill="#fff" font-weight="700">Data Catalog</text><text x="495" y="154" fill="#fff">見てよいメタデータだけ</text>
+      <rect x="660" y="40" width="186" height="100" rx="10" fill="#e3eefc" stroke="#1f5fa8"/><text x="753" y="64" fill="#1f5fa8" font-weight="700">S3 のデータレイク</text><text x="753" y="88">列・行・セルで</text><text x="753" y="106">絞った結果だけ返る</text>
+      <g stroke="#1f3a68" stroke-width="2"><line x1="130" y1="90" x2="178" y2="90" marker-end="url(#a5)"/><line x1="330" y1="80" x2="398" y2="45" marker-end="url(#a5)"/><line x1="330" y1="100" x2="398" y2="135" marker-end="url(#a5)"/><line x1="590" y1="40" x2="658" y2="80" marker-end="url(#a5)"/></g>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:26%">しくみ</th><th>内容</th></tr>
+    <tr><td class="t">RDBMS のような権限</td><td class="l">データベース・テーブル・列・行・セルの単位で許可と取り消し。IAM の許可モデルを補強する</td></tr>
+    <tr><td class="t">LF タグ（タグベース）</td><td class="l">カスタムのラベルで、数百・数千の権限をまとめて管理</td></tr>
+    <tr><td class="t">共有</td><td class="l">ほかのアカウントや組織全体と、メタデータとデータを共有</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/lake-formation/latest/dg/what-is-lake-formation.html">AWS Lake Formation とは</a>（「AWS Lake Formation は、分析と機械学習のためにデータを一元管理、保護、グローバルに共有できるようにします。」「データベース、テーブル、列、行、およびセルレベルでデータへのアクセスを制限するセキュリティポリシーを定義できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/lake-formation/latest/dg/how-it-works.html">AWS Lake Formation: 仕組み</a>（「**許可の確認** — Data Catalog は Lake Formation でユーザーのアクセス許可を確認し、ユーザーがテーブルにアクセスする権限を持っている場合は、ユーザーが表示できるメタデータをエンジンに返します。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Amazon EMR：Spark・Hadoop を自由に</h1>
+  <div class="cols">
+    <svg width="410" height="230" viewBox="0 0 410 230">
+      <g font-size="11" text-anchor="middle">
+        <rect x="10" y="10" width="390" height="210" rx="10" fill="#f6f8fb" stroke="#4a5a78"/><text x="205" y="30" fill="#4a5a78" font-weight="700">EMR クラスター</text>
+        <rect x="130" y="42" width="150" height="46" rx="6" fill="#1f3a68"/><text x="205" y="62" fill="#fff" font-weight="700">プライマリノード</text><text x="205" y="78" fill="#fff">管理。止まると全体が終了</text>
+        <rect x="30" y="110" width="160" height="56" rx="6" fill="#1f5fa8"/><text x="110" y="132" fill="#fff" font-weight="700">コアノード</text><text x="110" y="150" fill="#fff">HDFS にデータ＋計算</text>
+        <rect x="220" y="110" width="160" height="56" rx="6" fill="#3a7d44"/><text x="300" y="132" fill="#fff" font-weight="700">タスクノード</text><text x="300" y="150" fill="#fff">計算だけ・HDFS なし</text>
+        <text x="110" y="186" fill="#1f5fa8">オンデマンド向き</text><text x="300" y="186" fill="#3a7d44" font-weight="700">スポット向き</text>
+        <text x="205" y="210" fill="#4a5a78">EMRFS：S3 をデータの層にして計算と保存を分ける</text>
+        <line x1="205" y1="88" x2="110" y2="110" stroke="#1f3a68" stroke-width="2"/><line x1="205" y1="88" x2="300" y2="110" stroke="#1f3a68" stroke-width="2"/>
+      </g>
+    </svg>
+    <table class="mx">
+      <tr><th style="width:36%">項目</th><th>内容</th></tr>
+      <tr><td class="t">向く処理</td><td class="l">カスタムのコード・機械学習・グラフ分析・データ変換・ストリーミング</td></tr>
+      <tr><td class="t">一時的なクラスター</td><td class="l">すべてのステップが終わると自動で終了</td></tr>
+      <tr><td class="t">長時間のクラスター</td><td class="l">自分で終了するまで動き続ける</td></tr>
+      <tr><td class="t">障害</td><td class="l">ノードを監視し、障害のインスタンスを自動で置き換え</td></tr>
+    </table>
+  </div>
+  <div class="point warn"><b>ひっかけ：</b>コアノードをスポットにすると、中断で HDFS のデータを失うおそれがある。プライマリをスポットにするのは、全体をスポットで動かして突然の終了も困らないときだけ。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/emr/latest/ManagementGuide/emr-master-core-task-nodes.html">Amazon EMR のノードタイプ (プライマリノード、コアノード、タスクノード) について理解する</a>（「タスクノードは、Hadoop MapReduce タスクや Spark 実行プログラムなど、データに対して並行計算タスクを実行するための能力を追加するために使用できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/emr/latest/ManagementGuide/emr-overview-benefits.html">Amazon EMR を使用する利点</a>（「クラスターが自動的に終了されるように設定した場合、すべてのステップが完了すると終了されます。」）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>クエリと可視化</h1>
+  <p>Athena のパーティション・列指向形式・CTAS・フェデレーティッドクエリ、Redshift の MPP と列指向ストレージ・Spectrum・Serverless・同時実行スケーリング、Quick Sight と SPICE、OpenSearch Service。</p>
+  <div class="foot"><span>AWS SAA #20 データ分析</span><span>タスク 3.5</span></div>
+</section>
+
+<section class="slide">
+  <h1>Athena：スキャン量を減らすと速く安くなる</h1>
+  <svg width="856" height="160" viewBox="0 0 856 160">
+    <g font-size="11" text-anchor="middle">
+      <text x="140" y="16" fill="#b25000" font-weight="700">そのまま（CSV・1 か所）</text>
+      <rect x="20" y="26" width="240" height="100" rx="6" fill="#fde7cf" stroke="#b25000"/><text x="140" y="70" fill="#b25000">全部の行 × 全部の列を読む</text><text x="140" y="90" fill="#b25000">（スキャン 100%）</text>
+      <text x="430" y="16" fill="#1f5fa8" font-weight="700">日付でパーティション</text>
+      <rect x="310" y="26" width="240" height="100" rx="6" fill="#f6f8fb" stroke="#4a5a78"/>
+      <rect x="310" y="26" width="240" height="20" fill="#e3eefc"/><text x="430" y="40" fill="#4a5a78">date=2026-11-05</text>
+      <rect x="310" y="46" width="240" height="20" fill="#e3eefc"/><text x="430" y="60" fill="#4a5a78">date=2026-11-06</text>
+      <rect x="310" y="66" width="240" height="20" fill="#1f5fa8"/><text x="430" y="80" fill="#fff">date=2026-11-07 ← WHERE で指定</text>
+      <text x="430" y="110" fill="#1f5fa8">そのパーティションだけ読む</text>
+      <text x="720" y="16" fill="#3a7d44" font-weight="700">さらに Parquet・ORC</text>
+      <rect x="600" y="26" width="240" height="100" rx="6" fill="#f6f8fb" stroke="#4a5a78"/>
+      <rect x="600" y="26" width="40" height="100" fill="#e8f3ea"/><rect x="640" y="26" width="40" height="100" fill="#3a7d44"/><rect x="680" y="26" width="40" height="100" fill="#e8f3ea"/><rect x="720" y="26" width="40" height="100" fill="#3a7d44"/><rect x="760" y="26" width="40" height="100" fill="#e8f3ea"/><rect x="800" y="26" width="40" height="100" fill="#e8f3ea"/>
+      <text x="720" y="146" fill="#3a7d44">使う列（濃い緑）のブロックだけ読む</text>
+      <text x="140" y="146" fill="#4a5a78">データ量の比率は Claude が作った例</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:24%">方法</th><th>効果</th><th style="width:30%">注意</th></tr>
+    <tr><td class="t">パーティション</td><td class="l">WHERE で指定したパーティションのデータだけをスキャン</td><td class="l">クエリの単位より細かく分けすぎない。多いときはパーティション射影</td></tr>
+    <tr><td class="t">列指向形式</td><td class="l">述語プッシュダウンで必要なブロックだけ。データの分割で並列に読む</td><td class="l">小さなファイルが大量にあると逆効果</td></tr>
+  </table>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/athena/latest/ug/partitions.html">データのパーティション化</a>（「データをパーティションすることで、各クエリによってスキャンされるデータの量を制限できるようになるため、パフォーマンスが向上し、コストが削減されます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/athena/latest/ug/columnar-storage.html">列指向ストレージ形式を使用する</a>（「Parquet および ORC での述語プッシュダウンにより、Athena クエリが必要なブロックのみを取得できるようになり、クエリパフォーマンスが向上します。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/athena/latest/ug/performance-tuning-data-optimization-techniques.html">データを最適化する</a>（「小さなファイルの場合、列指向ファイル形式のオーバーヘッドの方がメリットよりも重要です。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Athena の便利な機能と使いどころ</h1>
+  <table class="mx">
+    <tr><th style="width:22%">機能</th><th>何をするか</th><th style="width:32%">選ぶ言葉</th></tr>
+    <tr><td class="t">ふつうのクエリ</td><td class="l">標準 SQL で S3 のデータを直接分析。サーバーレス、実行したクエリにだけ課金。CSV・JSON・Parquet・ORC</td><td class="l">ときどき・アドホック・インフラなし</td></tr>
+    <tr><td class="t">CTAS</td><td class="l">SELECT の結果から新しいテーブルを作り、データを S3 に書く。Parquet・ORC にも変換できる</td><td class="l">Athena だけで形式を変換・必要なデータだけのコピー</td></tr>
+    <tr><td class="t">フェデレーティッドクエリ</td><td class="l">S3 以外のリレーショナル・非リレーショナルなどのデータソースに、コネクタ（多くは Lambda）で SQL</td><td class="l">データを移さずに結合</td></tr>
+    <tr><td class="t">Glue Data Catalog</td><td class="l">テーブル定義（メタデータ）の置き場所</td><td class="l">クローラーで登録してクエリ</td></tr>
+  </table>
+  <div class="point warn"><b>Athena が向かない場面：</b>多くのソースを共通の形にまとめて長く持ち、複雑なレポートを作る → Redshift。独自の Spark のプログラムや細かいフレームワークの設定 → EMR。</div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/athena/latest/ug/what-is.html">Amazon Athena とは</a>（「Amazon Athena は、標準的な[ SQL](ddl-sql-reference.md) を使用して Amazon Simple Storage Service (Amazon S3) 内のデータを直接分析することを容易にするインタラクティブなクエリサービスです。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/athena/latest/ug/ctas.html">クエリ結果からテーブルを作成する (CTAS)</a>（「クエリ結果を Parquet や ORC などのストレージ形式に変換する。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/athena/latest/ug/federated-queries.html">Amazon Athena フェデレーティッドクエリを使用する</a>（「Athena のフェデレーティッドクエリでは、リレーショナル、非リレーショナル、オブジェクト、およびカスタムデータソースに保存されているデータの全体で SQL クエリを実行することができます。」）</div>
+</section>
+
+<section class="slide">
+  <h1>Amazon Redshift：データウェアハウス</h1>
+  <div class="cols">
+    <svg width="410" height="200" viewBox="0 0 410 200">
+      <defs><marker id="a6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+      <g font-size="11" text-anchor="middle">
+        <rect x="10" y="10" width="270" height="130" rx="10" fill="#e3eefc" stroke="#1f5fa8"/><text x="145" y="30" fill="#1f5fa8" font-weight="700">Redshift（MPP）</text>
+        <rect x="25" y="44" width="75" height="40" rx="6" fill="#1f5fa8"/><text x="62" y="68" fill="#fff">ノード 1</text>
+        <rect x="108" y="44" width="75" height="40" rx="6" fill="#1f5fa8"/><text x="145" y="68" fill="#fff">ノード 2</text>
+        <rect x="191" y="44" width="75" height="40" rx="6" fill="#1f5fa8"/><text x="228" y="68" fill="#fff">ノード 3</text>
+        <text x="145" y="106">行をノードに分けて並列に処理</text><text x="145" y="124">列指向ストレージで I/O を減らす</text>
+        <rect x="300" y="10" width="100" height="130" rx="10" fill="#e8f3ea" stroke="#3a7d44"/><text x="350" y="60" fill="#3a7d44" font-weight="700">S3</text><text x="350" y="80" fill="#3a7d44">古いデータ</text>
+        <line x1="280" y1="75" x2="298" y2="75" stroke="#1f3a68" stroke-width="2" marker-end="url(#a6)"/>
+        <text x="205" y="162" fill="#3a7d44" font-weight="700">Spectrum：ロードせずに S3 をクエリ</text>
+        <text x="205" y="186" fill="#4a5a78">売上の期間の分け方は Claude が作った例</text>
+      </g>
+    </svg>
+    <table class="mx">
+      <tr><th style="width:38%">機能</th><th>選ぶ言葉</th></tr>
+      <tr><td class="t">Redshift</td><td class="l">多くのソースを共通の形で長く保存・履歴から高度なレポート</td></tr>
+      <tr><td class="t">Redshift Spectrum</td><td class="l">ロードせずに S3 のデータも一緒にクエリ</td></tr>
+      <tr><td class="t">Redshift Serverless</td><td class="l">容量を用意しない・予測できない負荷・使った分だけ</td></tr>
+      <tr><td class="t">同時実行スケーリング</td><td class="l">数千の同時ユーザー・同時クエリの集中に自動で容量を足す</td></tr>
+    </table>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/redshift/latest/mgmt/welcome.html">Amazon Redshift とは</a>（「Amazon Redshift は、クラウド内でのフルマネージド型、ペタバイトスケールのデータウェアハウスサービスです。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/c-using-spectrum.html">Amazon Redshift Spectrum</a>（「Amazon Redshift Spectrum を使用すると、効率的にクエリを実行し、Amazon Redshift テーブルにデータをロードすることなく、Amazon S3 のファイルから構造化および半構造化されたデータを取得できます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/concurrency-scaling.html">同時実行スケーリング</a>（「同時実行スケーリング機能を使用すると、一貫した高速のクエリパフォーマンスで、数千の同時ユーザーと同時クエリをサポートできます。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/redshift/latest/dg/c_columnar_storage_disk_mem_mgmnt.html">列指向ストレージ</a>（「データベーステーブルの列指向ストレージは、ディスク全体の必要な I/O を大幅に減らすため、分析クエリのパフォーマンスの最適化の重要な要因となっています。」）</div>
+</section>
+
+<section class="slide">
+  <h1>見せる・探す：Quick Sight と OpenSearch Service</h1>
+  <table class="mx">
+    <tr><th style="width:18%"></th><th>Amazon Quick Sight</th><th>Amazon OpenSearch Service</th></tr>
+    <tr><td class="t">何をするか</td><td class="l">対話的なデータの可視化と BI。ダッシュボードを作り、アプリに埋め込める</td><td class="l">OpenSearch クラスター（ドメイン）のデプロイ・運用・スケーリングを簡単にする</td></tr>
+    <tr><td class="t">速さのしくみ</td><td class="l">SPICE（インメモリの計算エンジン）に取り込む</td><td class="l">検索と分析のエンジン。障害のノードは自動で置き換え</td></tr>
+    <tr><td class="t">選ぶ言葉</td><td class="l">ダッシュボード・BI・経営層向けのレポート</td><td class="l">ログ分析・リアルタイムのアプリ監視・クリックストリーム分析・検索</td></tr>
+    <tr><td class="t">データの入れ方</td><td class="l">Athena・Redshift などのデータソースに接続</td><td class="l">Firehose の宛先にできる</td></tr>
+  </table>
+  <div class="cols">
+    <div class="point"><b>SPICE の良さ：</b>分析が速くなり、直接クエリを待たなくてよい。取り込んだデータは何度使っても追加のコストがかからない（クエリごとに課金されるデータソースでも）。</div>
+    <div class="point warn"><b>名前の変化：</b>QuickSight は Amazon Quick の機能「Amazon Quick Sight」になった。既存の API はそのまま動く。試験ガイドの QuickSight と同じもの。</div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://docs.aws.amazon.com/ja_jp/quick/latest/userguide/spice.html">SPICE へのデータのインポート</a>（「SPICE に保存されたデータは、追加コストを発生させることなく複数回再利用できる。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/quick/latest/userguide/what-is.html">Amazon Quick とは</a>（「Amazon Quick は Amazon QuickSight から進化しました。」）／<a class="src" href="https://docs.aws.amazon.com/ja_jp/opensearch-service/latest/developerguide/what-is.html">Amazon OpenSearch Service とは？</a>（「Amazon OpenSearch Service は、 AWS クラウドでの OpenSearch クラスターのデプロイ、運用、スケーリングを容易にするマネージドサービスです。」）</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">取り込む<span>Kinesis Data Streams（シャード・キー・保持・拡張ファンアウト）、Firehose（アプリなしで配信・Parquet 変換）、Flink、MSK</span></div>
+      <div class="box b2">整える・守る<span>Glue（クローラー・Data Catalog・ETL・ブックマーク）、DataBrew、Lake Formation（列・行・セル、LF タグ）</span></div>
+      <div class="box b3">分析する<span>Athena（パーティション・列指向・CTAS・フェデレーティッド）、Redshift（Spectrum・Serverless・同時実行スケーリング）、EMR</span></div>
+      <div class="box b4">見せる・探す<span>Quick Sight と SPICE、OpenSearch Service</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:54%">ひっかけ</th><th>正しくは</th></tr>
+        <tr><td class="l">読み直したいのでシャードを増やす</td><td class="x">保持期間を延ばす</td></tr>
+        <tr><td class="l">書き込みの偏りに拡張ファンアウト</td><td class="x">散らばるキー</td></tr>
+        <tr><td class="l">アプリなしで S3 へ Data Streams</td><td class="x">Firehose</td></tr>
+        <tr><td class="l">EMR のコアノードをスポットに</td><td class="x">タスクノード</td></tr>
+        <tr><td class="l">列の権限を S3 バケットポリシーで</td><td class="x">Lake Formation</td></tr>
+        <tr><td class="l">S3 を Redshift にロードしてから</td><td class="x">Spectrum</td></tr>
+      </table>
+      <div class="point">次の #21 では、データの移行と転送（DataSync・Storage Gateway・DMS など）を学ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
