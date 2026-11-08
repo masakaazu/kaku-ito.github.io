@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Gold #02 ジェネリクス 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">Java SE 17 Programmer II（1Z0-826-JPN）　試験内容 1 コレクションとジェネリクス　#02</div>
+  <h1>ジェネリクス</h1>
+  <p>型をパラメータにして、まちがいをコンパイル時に見つける</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（Oracle の試験内容チェックリスト、Java 言語仕様 JLS、The Java Tutorials の Generics）を書いた。コードの結果は JDK 17（Eclipse Temurin 17.0.21）で実行して確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像</h1>
+  <div class="cols3">
+    <div class="box b1">1 宣言と使い方<span>ジェネリッククラス・メソッド、型引数、ダイヤモンド、型推論</span></div>
+    <div class="box b2">2 境界とワイルドカード<span>extends・&amp;・? extends・? super・?、PECS、不変性</span></div>
+    <div class="box b3">3 イレイジャと制限<span>型消去、原型、new T()・static T・instanceof・配列ができない理由</span></div>
+  </div>
+  <div class="cols" style="margin-top:14px">
+    <div class="code">List&lt;String&gt; list = new ArrayList&lt;&gt;();
+list.add("a");
+String s = list.get(0);  <span class="c">// キャスト不要</span>
+list.add(1);             <span class="c">// コンパイルエラー</span></div>
+    <div class="point">ジェネリクスの価値は「型のまちがいを実行前に止める」こと。実行時には型引数は消えている（イレイジャ）。</div>
+  </div>
+  <div class="cite">出典：Oracle 試験内容チェックリスト 1「総称型の使用」／The Java Tutorials: Generics「Why Use Generics?」</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>宣言と使い方</h1>
+  <p>型パラメータを宣言し、使うときに型引数を当てはめる。</p>
+  <div class="foot"><span>Java Gold #02 ジェネリクス</span><span>試験内容 1</span></div>
+</section>
+
+<section class="slide">
+  <h1>ジェネリッククラスとジェネリックメソッド</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">class Box&lt;<span class="k">T</span>&gt; {            <span class="c">// T：型パラメータ</span>
+  private T value;
+  Box(T value) { this.value = value; }
+  T get() { return value; }
+}
+Box&lt;<span class="k">String</span>&gt; b = new Box&lt;&gt;("hi"); <span class="c">// String：型引数</span></div>
+      <div class="point">慣習の名前：T 型・E 要素・K キー・V 値・R 結果。型引数は参照型だけ。</div>
+    </div>
+    <div>
+      <div class="code small">static <span class="k">&lt;T&gt;</span> List&lt;T&gt; twice(T t) {
+  return List.of(t, t);
+}
+Main.&lt;String&gt;twice("x"); <span class="c">// 明示はメソッド名の前</span>
+twice(5);                <span class="c">// T = Integer と推論</span></div>
+      <table class="mx" style="margin-top:6px">
+        <tr><td class="l"><code>var l = new ArrayList&lt;&gt;();</code></td><td class="t">ArrayList&lt;Object&gt;</td></tr>
+        <tr><td class="l"><code>new ArrayList&lt;?&gt;()</code></td><td class="t">エラー</td></tr>
+        <tr><td class="l"><code>show()</code>（T... 引数なし）</td><td class="t">Object[0]</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：JLS 8.1.2・8.4.4・15.9.1・15.12.4.2／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>ジェネリック型を実装する</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">interface Animal&lt;T&gt; { T speak(T t); }
+class Dog implements Animal&lt;String&gt; {
+  public String speak(String s) {   <span class="c">// ○</span>
+    return s + s;
+  }
+}</div>
+      <div class="point">型引数を当てはめた形 speak(String) で書く。speak(Object) との橋渡しはコンパイラのブリッジメソッド。</div>
+    </div>
+    <div>
+      <div class="code small">class Dog implements Animal&lt;String&gt; {
+  public Object speak(Object s) { ... } <span class="c">// ×</span>
+}</div>
+      <div class="point warn">speak(String) を実装していない＋同じイレイジャで衝突（name clash）の 2 つのエラー。</div>
+      <div class="code small" style="margin-top:8px">record Pair&lt;K, V&gt;(K first, V second) {
+  Pair&lt;V, K&gt; swap() { return new Pair&lt;&gt;(second, first); }
+}</div>
+    </div>
+  </div>
+  <div class="cite">出典：JLS 8.4.8・8.10、The Java Tutorials「Effects of Type Erasure and Bridge Methods」／JDK 17 でのコンパイル結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>境界とワイルドカード</h1>
+  <p>読むなら extends、入れるなら super。</p>
+  <div class="foot"><span>Java Gold #02 ジェネリクス</span><span>試験内容 1</span></div>
+</section>
+
+<section class="slide">
+  <h1>不変性と、配列の共変性</h1>
+  <div class="cols">
+    <div>
+      <div class="flow" style="gap:6px">
+        <div class="box b2">Integer</div><div class="to">は子 →</div><div class="box b1">Number</div>
+      </div>
+      <div class="flow" style="gap:6px;margin-top:6px">
+        <div class="box b4">List&lt;Integer&gt;</div><div class="to">× 子ではない</div><div class="box b4">List&lt;Number&gt;</div>
+      </div>
+      <div class="code small" style="margin-top:8px">List&lt;Number&gt; ln = li;          <span class="c">// エラー</span>
+List&lt;? extends Number&gt; l = li; <span class="c">// ○</span>
+List&lt;?&gt; l2 = li;                <span class="c">// ○</span></div>
+    </div>
+    <div>
+      <div class="lbl">配列は共変（実行時に確かめる）</div>
+      <div class="code small">Object[] arr = new String[1]; <span class="c">// コンパイル○</span>
+arr[0] = 1;  <span class="c">// ArrayStoreException</span></div>
+      <div class="point">もし List&lt;Integer&gt; を List&lt;Number&gt; として扱えたら、Double を入れられてしまう。ジェネリクスはそれをコンパイル時に止める。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JLS 4.10.2・10.5／The Java Tutorials「Generics, Inheritance, and Subtypes」／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>ワイルドカードでできること</h1>
+  <table class="mx">
+    <tr><th style="width:26%">型</th><th>add できるもの</th><th>get の型</th><th style="width:30%">代入できる List</th></tr>
+    <tr><td class="t">List&lt;Number&gt;</td><td class="l">Number とその子</td><td class="t">Number</td><td class="l">List&lt;Number&gt; だけ</td></tr>
+    <tr><td class="t">List&lt;? extends Number&gt;</td><td class="l"><b>null だけ</b></td><td class="t">Number</td><td class="l">List&lt;Integer&gt;・List&lt;Double&gt;…</td></tr>
+    <tr><td class="t">List&lt;? super Integer&gt;</td><td class="l">Integer とその子</td><td class="t"><b>Object</b></td><td class="l">List&lt;Integer&gt;・&lt;Number&gt;・&lt;Object&gt;</td></tr>
+    <tr><td class="t">List&lt;?&gt;</td><td class="l">null だけ</td><td class="t">Object</td><td class="l">どの List でも</td></tr>
+  </table>
+  <div class="cols" style="margin-top:12px">
+    <div class="code small">static void copy(List&lt;? super Number&gt; dst,
+                 List&lt;? extends Number&gt; src) {
+  dst.addAll(src);
+}</div>
+    <div class="point"><b>PECS</b>：Producer Extends, Consumer Super。値を出す引数は extends、値を入れる引数は super。両方するなら List&lt;T&gt;。</div>
+  </div>
+  <div class="cite">出典：JLS 4.5.1・5.1.10、The Java Tutorials「Wildcards」「Guidelines for Wildcard Use」／JDK 17 でのコンパイル結果</div>
+</section>
+
+<section class="slide">
+  <h1>境界のある型パラメータ</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">static &lt;T extends Comparable&lt;T&gt;&gt; T max(List&lt;T&gt; list) {
+  T best = list.get(0);
+  for (T t : list)
+    if (t.compareTo(best) &gt; 0) best = t;
+  return best;
+}
+max(List.of("pear", "apple", "fig")) <span class="c">// pear</span></div>
+      <div class="point">境界の型のメソッド（compareTo・doubleValue）を T に呼べる。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>宣言</th><th style="width:30%">結果</th></tr>
+        <tr><td class="l"><code>&lt;T extends Number &amp; Comparable&lt;T&gt;&gt;</code></td><td class="t">○</td></tr>
+        <tr><td class="l"><code>&lt;T extends Comparable&lt;T&gt; &amp; Number&gt;</code></td><td class="t">× クラスは先頭</td></tr>
+        <tr><td class="l"><code>&lt;T implements Comparable&lt;T&gt;&gt;</code></td><td class="t">× extends で書く</td></tr>
+        <tr><td class="l"><code>Shelf&lt;String&gt;</code>（T extends Number）</td><td class="t">× not within bounds</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：JLS 4.4 Type Variables・4.5／JDK 17 でのコンパイルと実行の結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>イレイジャと制限</h1>
+  <p>実行時に型引数は残らない。だからできないことがある。</p>
+  <div class="foot"><span>Java Gold #02 ジェネリクス</span><span>試験内容 1</span></div>
+</section>
+
+<section class="slide">
+  <h1>型消去（イレイジャ）</h1>
+  <div class="cols">
+    <div>
+      <div class="flow" style="gap:6px">
+        <div class="box b2">List&lt;String&gt;<span>コンパイル時</span></div><div class="to">→</div><div class="box b4">List<span>実行時（型引数は消える）</span></div>
+      </div>
+      <div class="flow" style="gap:6px;margin-top:6px">
+        <div class="box b2">T extends Number</div><div class="to">→</div><div class="box b4">Number<span>境界の型に</span></div>
+      </div>
+      <div class="code small" style="margin-top:8px">new ArrayList&lt;String&gt;().getClass()
+  == new ArrayList&lt;Integer&gt;().getClass() <span class="c">// true</span></div>
+    </div>
+    <div>
+      <div class="lbl">原型（raw type）とヒープ汚染</div>
+      <div class="code small">List raw = new ArrayList();
+raw.add("x"); raw.add(1);
+List&lt;String&gt; strs = raw;  <span class="c">// 警告だけ</span>
+strs.size();              <span class="c">// 2</span>
+String s = strs.get(1);   <span class="c">// ClassCastException</span></div>
+      <div class="point warn">エラーは入れたときでなく、取り出したときに出る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JLS 4.6 Type Erasure・4.8 Raw Types・4.12.2／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>ジェネリクスでできないこと</h1>
+  <table class="mx">
+    <tr><th style="width:40%">コード</th><th>JDK 17 のエラー</th></tr>
+    <tr><td class="l"><code>new T()</code></td><td class="l">unexpected type（required: class）</td></tr>
+    <tr><td class="l"><code>static T shared;</code></td><td class="l">non-static type variable T cannot be referenced from a static context</td></tr>
+    <tr><td class="l"><code>o instanceof T</code>／Object に <code>instanceof List&lt;String&gt;</code></td><td class="l">Object cannot be safely cast to …</td></tr>
+    <tr><td class="l"><code>new List&lt;String&gt;[3]</code></td><td class="l">generic array creation</td></tr>
+    <tr><td class="l"><code>print(List&lt;String&gt;)</code> と <code>print(List&lt;Integer&gt;)</code></td><td class="l">name clash: … have the same erasure</td></tr>
+  </table>
+  <div class="cols" style="margin-top:10px">
+    <div class="point">できるもの：<code>new List&lt;?&gt;[3]</code>、<code>o instanceof List&lt;?&gt;</code>、<code>(T[]) new Object[3]</code>（unchecked の警告）。</div>
+    <div class="point warn">推論：<code>var x = pick("a", 1)</code> は通るが、<code>String s = pick("a", 1)</code> はエラー。</div>
+  </div>
+  <div class="cite">出典：The Java Tutorials「Restrictions on Generics」／JLS 15.10.1・15.20.2・8.4.2／JDK 17 でのコンパイル結果</div>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Gold #13 ExecutorServiceと並行コレクション 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">Java SE 17 Programmer II（1Z0-826-JPN）　試験内容 5 並列処理　#13</div>
+  <h1>ExecutorServiceと並行コレクション</h1>
+  <p>ExecutorService・Future・Callable、CopyOnWriteArrayList・ConcurrentHashMap・BlockingQueue、CountDownLatch・CyclicBarrier・Flow</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（Oracle の試験内容チェックリスト、Java SE 17 API の java.util.concurrent パッケージ（ExecutorService・Executors・Future・CopyOnWriteArrayList・ConcurrentHashMap・BlockingQueue・CountDownLatch・CyclicBarrier・Flow・SubmissionPublisher）、The Java Tutorials の Executors・Concurrent Collections）を書いた。コードの結果は JDK 17（Eclipse Temurin 17.0.21）で実行して確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>スレッドを自分で作らない</small></h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">タスク<span>Runnable（値なし）・Callable&lt;V&gt;（値あり・throws Exception）</span></div>
+      <div class="arrow">↓ execute／submit／invokeAll／invokeAny</div>
+      <div class="box b1">ExecutorService<span>キュー＋スレッドプール（Executors で作る）</span></div>
+      <div class="arrow">↓ submit の戻り値</div>
+      <div class="box b2">Future&lt;V&gt;<span>get・cancel・isDone で結果を受け取る</span></div>
+      <div class="arrow">↓ 最後に</div>
+      <div class="box b3">shutdown<span>しないと JVM が終わらない</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>部品</th><th>代表</th></tr>
+        <tr><td class="t">実行のしくみ</td><td class="l">ExecutorService・ScheduledExecutorService</td></tr>
+        <tr><td class="t">並行コレクション</td><td class="l">CopyOnWriteArrayList・ConcurrentHashMap・ConcurrentSkipListMap・BlockingQueue</td></tr>
+        <tr><td class="t">同期の道具</td><td class="l">CountDownLatch・CyclicBarrier</td></tr>
+        <tr><td class="t">フロー制御</td><td class="l">Flow（Publisher・Subscriber・Subscription）・SubmissionPublisher</td></tr>
+      </table>
+      <div class="point">すべて java.util.concurrent パッケージ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：試験内容チェックリスト 5／API java.util.concurrent パッケージの説明</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>ExecutorService と Future</h1>
+  <p>タスクを出して、結果を受け取る。</p>
+  <div class="foot"><span>Java Gold #13 ExecutorServiceと並行コレクション</span><span>試験内容 5</span></div>
+</section>
+
+<section class="slide">
+  <h1>Executors で作る</h1>
+  <table class="mx">
+    <tr><th>メソッド</th><th>スレッド</th><th>使いどころ</th></tr>
+    <tr><td class="t">newSingleThreadExecutor()</td><td class="l">1 つ</td><td class="l">出した順に 1 つずつ実行</td></tr>
+    <tr><td class="t">newFixedThreadPool(n)</td><td class="l">n 個で固定</td><td class="l">同時に n 個まで、残りはキューで待つ</td></tr>
+    <tr><td class="t">newCachedThreadPool()</td><td class="l">必要なだけ作る</td><td class="l">空いたスレッドを再利用（60 秒使わないと消える）</td></tr>
+    <tr><td class="t">newScheduledThreadPool(n)</td><td class="l">n 個</td><td class="l">遅らせて・くり返し実行</td></tr>
+  </table>
+  <div class="cols">
+    <div class="point">スレッド名は「pool-プール番号-thread-番号」（例：pool-2-thread-1）。</div>
+    <div class="point warn">プールのスレッドはデーモンでない。shutdown しないと main が終わっても JVM が終わらない。</div>
+  </div>
+  <div class="cite">出典：API Executors・Executors.defaultThreadFactory／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>execute と submit</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">ExecutorService es = Executors.newSingleThreadExecutor();
+es.execute(() -&gt; print("A"));          <span class="c">// void</span>
+Future&lt;?&gt; f = es.submit(() -&gt; print("B"));
+Future&lt;Integer&gt; g = es.submit(() -&gt; 42);
+Future&lt;String&gt; h = es.submit(() -&gt; {}, "R");
+f.get()  <span class="c">// null</span>
+g.get()  <span class="c">// 42</span>
+h.get()  <span class="c">// R</span>
+<span class="c">// 表示：AB</span>
+
+Callable&lt;Integer&gt; c = () -&gt; 1;
+es.execute(c);
+<span class="c">// × Callable&lt;Integer&gt; cannot be converted to Runnable</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>メソッド</th><th>戻り値</th></tr>
+        <tr><td class="t">execute(Runnable)</td><td class="l">void</td></tr>
+        <tr><td class="t">submit(Runnable)</td><td class="l">Future&lt;?&gt;（get は null）</td></tr>
+        <tr><td class="t">submit(Runnable, T)</td><td class="l">Future&lt;T&gt;（get は T）</td></tr>
+        <tr><td class="t">submit(Callable&lt;T&gt;)</td><td class="l">Future&lt;T&gt;</td></tr>
+        <tr><td class="t">invokeAll(タスクの集まり)</td><td class="l">List&lt;Future&lt;T&gt;&gt;（全部終わってから・渡した順）</td></tr>
+        <tr><td class="t">invokeAny(タスクの集まり)</td><td class="l">T（どれか 1 つの結果）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：API Executor.execute・ExecutorService.submit・invokeAll・invokeAny／JDK 17 でのコンパイルと実行の結果</div>
+</section>
+
+<section class="slide">
+  <h1>Future で結果を受け取る</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">Future&lt;Integer&gt; f = es.submit(() -&gt; {
+  throw new IllegalStateException("bad"); });
+try { f.get(); }
+catch (ExecutionException e) {
+  e.getCause()  <span class="c">// IllegalStateException: bad</span>
+}
+
+Future&lt;String&gt; s = es.submit(() -&gt; {
+  Thread.sleep(2000); return "done"; });
+s.get(100, TimeUnit.MILLISECONDS); <span class="c">// TimeoutException</span>
+s.cancel(true);  <span class="c">// true（実行中なら割り込み）</span>
+s.isCancelled(); <span class="c">// true</span>
+s.isDone();      <span class="c">// true</span>
+s.get();         <span class="c">// CancellationException</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>例外</th><th>いつ</th></tr>
+        <tr><td class="t">ExecutionException</td><td class="l">タスクの中で例外（getCause で元の例外）</td></tr>
+        <tr><td class="t">TimeoutException</td><td class="l">get(時間, 単位) が時間切れ</td></tr>
+        <tr><td class="t">CancellationException</td><td class="l">中止したタスクの get</td></tr>
+        <tr><td class="t">InterruptedException</td><td class="l">get で待っている間に割り込み</td></tr>
+      </table>
+      <div class="point">isDone は、正常・例外・中止のどれで終わっても true。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API Future.get・cancel・isDone、ExecutionException・CancellationException・TimeoutException／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>終わらせ方と時間指定</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>メソッド</th><th>中身</th></tr>
+        <tr><td class="t">shutdown()</td><td class="l">新しいタスクを断る。受け付け済みは最後まで実行。待たない</td></tr>
+        <tr><td class="t">shutdownNow()</td><td class="l">実行中に割り込み、始まっていないタスクを List&lt;Runnable&gt; で返す</td></tr>
+        <tr><td class="t">awaitTermination(t, 単位)</td><td class="l">終わるまで待つ（終われば true、時間切れは false）</td></tr>
+        <tr><td class="t">isShutdown()</td><td class="l">shutdown を呼んだら true</td></tr>
+        <tr><td class="t">isTerminated()</td><td class="l">shutdown のあと全タスクが終わったら true</td></tr>
+      </table>
+      <div class="point warn">shutdown のあとの execute・submit は RejectedExecutionException。</div>
+    </div>
+    <div>
+      <div class="code small">ScheduledExecutorService s =
+  Executors.newScheduledThreadPool(1);
+s.schedule(() -&gt; "later", 50, MILLISECONDS)
+ .get();                <span class="c">// later（1 回だけ）</span>
+s.scheduleAtFixedRate(r, 0, 10, MILLISECONDS);
+<span class="c">// 開始から開始までを一定に</span>
+s.scheduleWithFixedDelay(r, 0, 10, MILLISECONDS);
+<span class="c">// 終わりから次の開始までを一定に</span>
+<span class="c">// くり返しの 2 つは Runnable だけ</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：API ExecutorService.shutdown・shutdownNow・awaitTermination、ScheduledExecutorService／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>並行コレクション</h1>
+  <p>走査中に変更しても壊れない。</p>
+  <div class="foot"><span>Java Gold #13 ExecutorServiceと並行コレクション</span><span>試験内容 5</span></div>
+</section>
+
+<section class="slide">
+  <h1>CopyOnWriteArrayList</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">List&lt;String&gt; l = new ArrayList&lt;&gt;(List.of("a","b","c"));
+for (String s : l) if (s.equals("a")) l.add("d");
+<span class="c">// ConcurrentModificationException</span>
+
+List&lt;String&gt; c = new CopyOnWriteArrayList&lt;&gt;(List.of("a","b","c"));
+for (String s : c) if (s.equals("a")) c.add("d");
+c   <span class="c">// [a, b, c, d]（d は走査に出ない）</span>
+
+Iterator&lt;Integer&gt; it = list123.iterator();
+list123.add(4);
+<span class="c">// it で数えると 3、size は 4</span>
+list123.iterator().remove();
+<span class="c">// UnsupportedOperationException</span></div>
+    </div>
+    <div>
+      <div class="box b1">書き込みのたびに配列をコピー<span>add・set・remove は重い</span></div>
+      <div class="box b2">イテレータはスナップショット<span>作ったときの配列を見る。例外にならない</span></div>
+      <div class="point">読み込みが多く、書き込みが少ないときに向く。CopyOnWriteArraySet もある。</div>
+      <div class="point warn">Collections.synchronizedList は各メソッドを同期するだけ。拡張 for の途中で add すると ConcurrentModificationException。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API CopyOnWriteArrayList・Collections.synchronizedList／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>ConcurrentHashMap</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">ConcurrentMap&lt;String,Integer&gt; m = new ConcurrentHashMap&lt;&gt;();
+<span class="c">// 4 スレッド × 1 万回</span>
+m.merge("k", 1, Integer::sum);
+m.get("k")              <span class="c">// 40000（原子的）</span>
+m.putIfAbsent("k", 0)   <span class="c">// 40000（変えない）</span>
+m.putIfAbsent("z", 9)   <span class="c">// null（入れた）</span>
+
+m.put(null, 1);    <span class="c">// NullPointerException</span>
+m.put("a", null);  <span class="c">// NullPointerException</span>
+new HashMap&lt;&gt;().put(null, null);  <span class="c">// OK</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>メソッド</th><th>キーがない</th><th>キーがある</th></tr>
+        <tr><td class="t">putIfAbsent</td><td class="l">入れて null</td><td class="l">今の値を返す</td></tr>
+        <tr><td class="t">computeIfAbsent</td><td class="l">関数で入れる</td><td class="l">何もしない</td></tr>
+        <tr><td class="t">computeIfPresent</td><td class="l">何もしない</td><td class="l">関数で更新</td></tr>
+        <tr><td class="t">compute</td><td class="l">v は null</td><td class="l">関数で更新</td></tr>
+        <tr><td class="t">merge</td><td class="l">値を入れる</td><td class="l">関数で合わせる</td></tr>
+      </table>
+      <div class="point">走査中に put しても例外にならない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API ConcurrentHashMap・ConcurrentMap／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>BlockingQueue と SkipList</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>動き</th><th>例外</th><th>特別な値</th><th>待つ</th><th>時間まで待つ</th></tr>
+        <tr><td class="t">追加</td><td class="l">add</td><td class="l">offer（false）</td><td class="l">put</td><td class="l">offer(e, t, 単位)</td></tr>
+        <tr><td class="t">取り出し</td><td class="l">remove</td><td class="l">poll（null）</td><td class="l">take</td><td class="l">poll(t, 単位)</td></tr>
+      </table>
+      <div class="code small">BlockingQueue&lt;String&gt; q = new ArrayBlockingQueue&lt;&gt;(1);
+q.offer("a") q.offer("b") q.poll() q.poll()
+<span class="c">// true false a null</span>
+q.add(x) <span class="c">// 満杯なら IllegalStateException</span></div>
+    </div>
+    <div>
+      <div class="code small">new ConcurrentSkipListSet&lt;&gt;(List.of("b","c","a"))
+<span class="c">// [a, b, c]</span>
+new ConcurrentSkipListMap&lt;&gt;(Map.of(3,"c",1,"a"))
+<span class="c">// {1=a, 3=c}、firstKey() は 1</span></div>
+      <div class="point">SkipList は TreeSet・TreeMap の並行版（自然順序で並ぶ）。</div>
+      <div class="point">ArrayBlockingQueue は大きさ固定、LinkedBlockingQueue は指定しなければほぼ無制限。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API BlockingQueue・ArrayBlockingQueue・LinkedBlockingQueue・ConcurrentSkipListSet・ConcurrentSkipListMap／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>同期の道具と Flow</h1>
+  <p>待ち合わせと、受ける側に合わせた流れ。</p>
+  <div class="foot"><span>Java Gold #13 ExecutorServiceと並行コレクション</span><span>試験内容 5</span></div>
+</section>
+
+<section class="slide">
+  <h1>CountDownLatch と CyclicBarrier</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">CountDownLatch(3)<span>countDown で 1 ずつ減らす。0 になるまで await で待つ</span></div>
+      <div class="code small">CountDownLatch l = new CountDownLatch(3);
+<span class="c">// 3 つのタスクが l.countDown()</span>
+l.await(1, TimeUnit.SECONDS)  <span class="c">// true</span>
+l.getCount()                   <span class="c">// 0</span></div>
+      <div class="point warn">0 になったら戻せない（1 回きり）。</div>
+    </div>
+    <div>
+      <div class="box b2">CyclicBarrier(2, action)<span>2 つのスレッドが await でそろうまで待つ</span></div>
+      <div class="code small">CyclicBarrier b = new CyclicBarrier(2,
+  () -&gt; println("all arrived"));
+<span class="c">// 2 つのタスクが b.await()</span>
+<span class="c">// → all arrived（1 回）→ 両方が進む</span></div>
+      <div class="point">そろうたびに使い回せる（cyclic）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API CountDownLatch・CyclicBarrier／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>Flow のしくみ</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">Publisher&lt;T&gt;<span>subscribe(subscriber)</span></div>
+      <div class="arrow">↓ onSubscribe(subscription)（1 回）</div>
+      <div class="box b1">Subscriber&lt;T&gt;<span>subscription.request(n)「n 個まで受けられる」</span></div>
+      <div class="arrow">↓ onNext(item)（要求した数まで）</div>
+      <div class="box b2">onComplete() か onError(t)<span>どちらか 1 回</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>インタフェース</th><th>役割</th></tr>
+        <tr><td class="t">Publisher</td><td class="l">データを出す</td></tr>
+        <tr><td class="t">Subscriber</td><td class="l">データを受ける</td></tr>
+        <tr><td class="t">Subscription</td><td class="l">request(n)・cancel()</td></tr>
+        <tr><td class="t">Processor&lt;T,R&gt;</td><td class="l">受けて変換して出す（両方）</td></tr>
+      </table>
+      <div class="point">受ける側が量を決める＝背圧（back pressure）。request しなければ onNext は来ない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API Flow・Flow.Publisher・Subscriber・Subscription・Processor</div>
+</section>
+
+<section class="slide">
+  <h1>SubmissionPublisher</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">try (SubmissionPublisher&lt;Integer&gt; p = new SubmissionPublisher&lt;&gt;()) {
+  p.subscribe(new Flow.Subscriber&lt;&gt;() {
+    Flow.Subscription sub;
+    public void onSubscribe(Flow.Subscription s) {
+      sub = s; print("sub "); s.request(1); }
+    public void onNext(Integer i) {
+      got.add(i); sub.request(1); }
+    public void onError(Throwable t) {}
+    public void onComplete() {
+      print("complete "); done.countDown(); }
+  });
+  p.submit(1); p.submit(2); p.submit(3);
+}   <span class="c">// close → 残りが届いてから onComplete</span>
+done.await();
+<span class="c">// sub complete [1, 2, 3]</span></div>
+    </div>
+    <div>
+      <div class="box b1">submit で出す・close で終わり<span>AutoCloseable なので try-with-resources</span></div>
+      <div class="box b2">配信は別スレッド<span>既定は ForkJoinPool.commonPool()</span></div>
+      <div class="point warn">onSubscribe で request(2) だけなら、5 個 submit しても届くのは [1, 2]。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API SubmissionPublisher・Flow.Subscription.request／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">execute と submit</td><td class="l">execute に Callable はコンパイルエラー、submit(Runnable) の get は null</td></tr>
+    <tr><td class="t">Future の例外</td><td class="l">ExecutionException の getCause、TimeoutException、cancel 後の CancellationException</td></tr>
+    <tr><td class="t">終わらせ方</td><td class="l">shutdown 後は RejectedExecutionException、shutdownNow の戻り値、isTerminated</td></tr>
+    <tr><td class="t">走査中の変更</td><td class="l">ArrayList・synchronizedList は CME、CopyOnWriteArrayList はスナップショット</td></tr>
+    <tr><td class="t">ConcurrentHashMap</td><td class="l">null 不可、merge・compute は原子的、putIfAbsent の戻り値</td></tr>
+    <tr><td class="t">Flow</td><td class="l">呼ばれる順、request した数だけ届く</td></tr>
+  </table>
+  <div class="cite">出典：試験内容チェックリスト 5／本資料の問題演習（全 30 問、JDK 17 で確認）</div>
+</section>
+
+</body>
+</html>

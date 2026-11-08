@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>支援士 #19 フォレンジックとセキュリティ評価 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">情報処理安全確保支援士試験　科目A-2　中分類26 セキュリティ実装技術・評価　#19</div>
+  <h1>フォレンジックとセキュリティ評価</h1>
+  <p>消える順に証拠を守る、共通の物差しで脆弱性と製品を測る</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（IPA の支援士試験シラバス案、RFC 3227、NIST SP 800-86、ISO/IEC 15408、FIPS 140-3、FIRST CVSS・EPSS、MITRE CVE・CWE、NIST SCAP、CRYPTREC など）を書いた。過去問は IPA 公開の午前Ⅱ。例の場面は Claude が作った</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>シラバス案 中分類26 小分類2 フォレンジック・小分類3 セキュリティ評価</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 デジタルフォレンジック<span>揮発性の順序・ディスクイメージと書込み防止・ハッシュ値・Chain of Custody・タイムライン・メモリ</span></div>
+      <div class="box b2">2 マルウェア解析<span>サンドボックス・ハニーポット・逆アセンブル・アンパック、パッカー・難読化・アンチデバッグ</span></div>
+      <div class="box b3">3 脆弱性の評価<span>CVE・CWE・CVSS・EPSS・KEV・SSVC・SCAP・SBOM・JVN・ペネトレーションテスト</span></div>
+      <div class="box b5">4 製品と暗号の評価<span>ISO/IEC 15408・PP・EAL・JISEC、FIPS 140-3・JCMVP・CRYPTREC 暗号リスト</span></div>
+    </div>
+    <div>
+      <div class="lbl">過去の午前Ⅱでの出方（16回出題）</div>
+      <table class="mx">
+        <tr><th>テーマ</th><th style="width:44%">出た回</th></tr>
+        <tr><td class="l">揮発性の順序</td><td class="t">R3秋・R5春・R7春</td></tr>
+        <tr><td class="l">CRYPTREC 暗号リスト</td><td class="t">H31・R1秋・R5春・R7秋</td></tr>
+        <tr><td class="l">CVSS・CVE・CWE・SCAP</td><td class="t">R1秋・R3春・R5秋・R6春</td></tr>
+        <tr><td class="l">SBOM・15408・FIPS 140-3</td><td class="t">R4秋・R6春</td></tr>
+        <tr><td class="l">フォレンジック・IoT のペネトレ</td><td class="t">R2・R5春</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）Ver.0.1」中分類26 小分類2・3／IPA 午前Ⅱ 各回（このPDFの問題演習を参照）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>デジタルフォレンジック</h1>
+  <p>消えやすい順に、変えずに、記録を残して。</p>
+  <div class="foot"><span>支援士 #19 フォレンジックとセキュリティ評価</span><span>26-2</span></div>
+</section>
+
+<section class="slide">
+  <h1>揮発性の順序</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b4">レジスタ・キャッシュ<span>最も消えやすい</span></div>
+      <div class="box b4">ルーティングテーブル・ARP キャッシュ・プロセス表・メモリ</div>
+      <div class="box b2">一時ファイル</div>
+      <div class="box b2">ディスク</div>
+      <div class="box b1">遠隔のログ・監視データ</div>
+      <div class="box b5">物理的な構成・保管用の媒体<span>最も残りやすい</span></div>
+    </div>
+    <div>
+      <div class="lbl">R3秋 問12 の答え（エ）</div>
+      <div class="flow" style="gap:4px">
+        <div class="box b4">d<span>ルーティング<br>テーブル</span></div><div class="to">→</div>
+        <div class="box b2">c<span>ディスクの<br>表計算ファイル</span></div><div class="to">→</div>
+        <div class="box b1">a<span>遠隔の<br>ログサーバ</span></div><div class="to">→</div>
+        <div class="box b5">b<span>インストール<br>用 CD</span></div>
+      </div>
+      <div class="point" style="margin-top:10px">R5春・R7春：ARP キャッシュの次は<b>ルーティングテーブル</b>（同じメモリ上の情報）。</div>
+      <div class="point warn">遠隔のログサーバは PC の電源を切っても消えないので後でよい。</div>
+    </div>
+  </div>
+  <div class="cite">出典：RFC 3227 2.1 Order of Volatility／IPA 令和3年度秋期 午前Ⅱ 問12・令和7年度春期 問15</div>
+</section>
+
+<section class="slide">
+  <h1>証拠を変えずに守る</h1>
+  <div class="flow" style="gap:4px">
+    <div class="box b5">原本ディスク</div><div class="to">→</div>
+    <div class="box b2">ライトブロッカ<span>書込み防止</span></div><div class="to">→</div>
+    <div class="box b1">ディスクイメージ<span>空き領域も含め<br>1ビットずつ複製</span></div><div class="to">→</div>
+    <div class="box b3">ハッシュ値を記録<span>SHA-256 など</span></div><div class="to">→</div>
+    <div class="box b1">複製で解析<span>前後で再計算し一致</span></div>
+  </div>
+  <table class="mx" style="margin-top:12px">
+    <tr><th style="width:26%">手段</th><th>示せること</th></tr>
+    <tr><td class="t">ハッシュ値</td><td class="l">中身が1ビットも変わっていない（同一性）</td></tr>
+    <tr><td class="t">Chain of Custody</td><td class="l">いつ・誰が取得し、誰に渡し、どう保管・分析したか（証拠保全の連鎖）</td></tr>
+    <tr><td class="t">タイムライン分析</td><td class="l">作成・更新・アクセスの日時やログを並べ、攻撃者の行動を再構成</td></tr>
+    <tr><td class="t">メモリフォレンジック</td><td class="l">動いていたプロセス・通信・メモリだけにあるマルウェア</td></tr>
+  </table>
+  <div class="point warn">原本に直接触る・ファイル単位でコピーする・すぐ電源を切る、は証拠を損なう。</div>
+  <div class="cite">出典：NIST SP 800-86 3 Performing the Forensic Process／RFC 3227 4 Archiving Procedure</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>マルウェア解析</h1>
+  <p>動かして見る、読んで見る、隠す技術を外す。</p>
+  <div class="foot"><span>支援士 #19 フォレンジックとセキュリティ評価</span><span>26-2</span></div>
+</section>
+
+<section class="slide">
+  <h1>解析の環境と手法</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th style="width:34%">仕組み</th><th>目的</th></tr>
+        <tr><td class="t">サンドボックス</td><td class="l">隔離した環境で検体を動かし振る舞いを観察（動的）</td></tr>
+        <tr><td class="t">ハニーポット</td><td class="l">わざと攻撃させるおとり。手口を集める</td></tr>
+        <tr><td class="t">ハニーネット</td><td class="l">ハニーポットをつないだおとりのネットワーク</td></tr>
+        <tr><td class="t">パケットキャプチャ</td><td class="l">C&amp;C との通信を記録・分析</td></tr>
+        <tr><td class="t">逆アセンブル</td><td class="l">機械語をアセンブリ言語に戻して読む（静的）</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">解析を妨げる技術</div>
+      <div class="stack">
+        <div class="box b4">パッカー<span>圧縮・暗号化して実行時に自分で展開。パターンで検知されにくい → アンパックして解析</span></div>
+        <div class="box b4">難読化<span>名前を無意味に、処理を複雑に、文字列を暗号化</span></div>
+        <div class="box b4">アンチデバッグ<span>デバッガ・仮想環境を検知して止まる・動きを変える</span></div>
+        <div class="box b4">対策ソフトの停止・スリープ<span>検知を外す、サンドボックスの観察時間をやり過ごす</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」用語例〔マルウェア解析〕</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>脆弱性の評価</h1>
+  <p>名前を付け、種類で分け、深刻さと悪用されやすさを測る。</p>
+  <div class="foot"><span>支援士 #19 フォレンジックとセキュリティ評価</span><span>26-3</span></div>
+</section>
+
+<section class="slide">
+  <h1>脆弱性の共通の物差し</h1>
+  <table class="mx">
+    <tr><th style="width:12%">名前</th><th>何か</th><th style="width:30%">例・管理</th></tr>
+    <tr><td class="t">CVE</td><td class="l">個々の脆弱性の識別子（R3春）</td><td class="l">CVE-2021-44228／MITRE</td></tr>
+    <tr><td class="t">CWE</td><td class="l">脆弱性の<b>種類</b>の一覧（R6春）</td><td class="l">CWE-79 XSS／MITRE</td></tr>
+    <tr><td class="t">CPE</td><td class="l">製品を識別するプラットフォーム名の一覧</td><td class="l">NIST</td></tr>
+    <tr><td class="t">CCE</td><td class="l">セキュリティ設定項目の識別子</td><td class="l">NIST</td></tr>
+    <tr><td class="t">CVSS</td><td class="l">深刻度 0.0〜10.0（R1秋）</td><td class="l">FIRST</td></tr>
+    <tr><td class="t">SCAP</td><td class="l">上をまとめて脆弱性管理を自動化（R5秋）</td><td class="l">NIST</td></tr>
+  </table>
+  <div class="point">CWE の問題では、CPE・CCE・CVSS の説明が誤りの選択肢に並ぶ。</div>
+  <div class="cite">出典：MITRE「CVE」「CWE」／NIST「SCAP」／IPA 午前Ⅱ R1秋 問9・R3春 問8・R5秋 問12・R6春 問9</div>
+</section>
+
+<section class="slide">
+  <h1>CVSS と優先順位付け</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>版</th><th>評価基準</th></tr>
+        <tr><td class="t">v3.1</td><td class="l"><b>基本</b>・<b>現状</b>・<b>環境</b>（三つ）</td></tr>
+        <tr><td class="t">v4.0</td><td class="l">基本・脅威・環境・補足</td></tr>
+      </table>
+      <div class="stack" style="margin-top:8px">
+        <div class="box b1">基本<span>脆弱性そのもの。時間で変わらない</span></div>
+        <div class="box b2">現状（脅威）<span>攻撃コードの有無など。時間で変わる</span></div>
+        <div class="box b3">環境<span>利用者の環境に合わせて利用者が評価</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="lbl">深刻さだけでなく悪用の状況も見る</div>
+      <table class="mx">
+        <tr><th>名前</th><th>答える問い</th></tr>
+        <tr><td class="t">CVSS</td><td class="l">どれだけ深刻か</td></tr>
+        <tr><td class="t">EPSS</td><td class="l">30日以内に悪用される確率は</td></tr>
+        <tr><td class="t">KEV</td><td class="l">実際に悪用されたか</td></tr>
+        <tr><td class="t">SSVC</td><td class="l">決定木で、どう対応するか</td></tr>
+      </table>
+      <div class="point">#12 の脆弱性管理と合わせて使う。</div>
+    </div>
+  </div>
+  <div class="cite">出典：FIRST「CVSS v3.1 Specification」「CVSS v4.0 Specification」「EPSS」／CISA「KEV Catalog」「SSVC」</div>
+</section>
+
+<section class="slide">
+  <h1>SBOM・JVN・検査</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">SBOM（ソフトウェアの部品表、R6春）</div>
+      <div class="code small">製品 A 2.3
+ ├ ライブラリ X 1.4.2（Apache-2.0）
+ │  └ ライブラリ Y 2.0.1
+ └ ライブラリ Z 3.1.0（MIT）</div>
+      <div class="point">Y に脆弱性 → SBOM を検索すれば A が影響を受けるとすぐ分かる。形式は SPDX・CycloneDX、作る検査は SCA。</div>
+      <div class="lbl">JVN</div>
+      <div class="box b2">JPCERT/CC と IPA の脆弱性対策情報ポータル<span>CVE・CVSS・CWE を採用。データベースは JVN iPedia</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th style="width:36%">検査</th><th>何をするか</th></tr>
+        <tr><td class="t">脆弱性診断</td><td class="l">脆弱性を網羅的に洗い出す</td></tr>
+        <tr><td class="t">ペネトレーションテスト</td><td class="l">実際に攻撃・侵入を試みる。IoT はネットワーク・バス・デバッグ IF（R5春）</td></tr>
+        <tr><td class="t">バグバウンティ</td><td class="l">見つけた外部の研究者に報奨金</td></tr>
+      </table>
+      <div class="point warn">R5春の誤り：仕様どおりかのテスト＝システムテスト、内部構造を見る＝ホワイトボックス、温湿度＝環境試験。</div>
+    </div>
+  </div>
+  <div class="cite">出典：経済産業省「ソフトウェア管理に向けた SBOM の導入に関する手引」／JVN「JVN について」／IPA 午前Ⅱ R5春 問22・R6春 問17</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>製品と暗号の評価・認証</h1>
+  <p>第三者が同じ方法で評価するから、比べられる。</p>
+  <div class="foot"><span>支援士 #19 フォレンジックとセキュリティ評価</span><span>26-3</span></div>
+</section>
+
+<section class="slide">
+  <h1>ISO/IEC 15408（コモンクライテリア）</h1>
+  <div class="flow" style="gap:4px">
+    <div class="box b5">PP<span>製品の種類ごとの要件<br>（調達者側）</span></div><div class="to">→</div>
+    <div class="box b2">ST<span>個々の製品の対象と要件<br>（開発者が書く）</span></div><div class="to">→</div>
+    <div class="box b1">評価機関<span>ISO/IEC 18045（CEM）<br>の方法で評価</span></div><div class="to">→</div>
+    <div class="box b3">認証機関<span>日本は IPA の JISEC<br>CCRA で相互承認</span></div>
+  </div>
+  <table class="mx" style="margin-top:12px">
+    <tr><th>EAL</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th></tr>
+    <tr><td class="t">保証の深さ</td><td class="t" colspan="7">浅い　→→→→→　深い（設計の文書や検査をどこまで確かめたか）</td></tr>
+  </table>
+  <div class="point">R4秋：「調達者が判断する際に役立つ評価結果を提供し、評価結果間の比較を可能に」→ <b>15408</b>。27002＝管理策、27017＝クラウドの管理策、30147＝IoT の信頼性。</div>
+  <div class="point warn">EAL は機能の多さ・強さではない。</div>
+  <div class="cite">出典：JIS X 5070（ISO/IEC 15408）／IPA「IT セキュリティ評価及び認証制度（JISEC）」／IPA 令和4年度秋期 午前Ⅱ 問9</div>
+</section>
+
+<section class="slide">
+  <h1>暗号モジュールと CRYPTREC 暗号リスト</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">暗号モジュールの評価</div>
+      <table class="mx">
+        <tr><td class="t">FIPS 140-3</td><td class="l">NIST の暗号モジュールのセキュリティ要求事項。レベル1〜4（R6春）</td></tr>
+        <tr><td class="t">ISO/IEC 19790</td><td class="l">同じ内容の国際規格</td></tr>
+        <tr><td class="t">JCMVP</td><td class="l">日本の試験・認証制度（IPA）</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">CRYPTREC 暗号リスト（4回出題）</div>
+      <div class="stack">
+        <div class="box b1">電子政府推奨暗号リスト<span>安全性・実装性能を確認、利用実績が十分か普及見込み → 利用を推奨</span></div>
+        <div class="box b2">推奨候補暗号リスト<span>安全性・実装性能は確認。今後推奨リストに載る可能性</span></div>
+        <div class="box b4">運用監視暗号リスト<span>解読リスクが高まった。互換性維持のためだけに利用</span></div>
+      </div>
+      <div class="point warn">「証明書失効リスト」はこのリストにない（PKI の CRL）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：NIST FIPS 140-3／IPA「JCMVP」／CRYPTREC「電子政府における調達のために参照すべき暗号のリスト」／IPA 午前Ⅱ R1秋 問8・R7秋 問1</div>
+</section>
+
+</body>
+</html>

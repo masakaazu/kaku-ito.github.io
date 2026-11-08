@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Gold #03 ソートと便利なメソッド 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">Java SE 17 Programmer II（1Z0-826-JPN）　試験内容 1 コレクションとジェネリクス　#03</div>
+  <h1>ソートと便利なメソッド</h1>
+  <p>Comparable・Comparator と、Collections・Arrays の道具</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（Oracle の試験内容チェックリスト、Java SE 17 の API ドキュメント、Java 言語仕様 JLS）を書いた。コードの結果は JDK 17（Eclipse Temurin 17.0.21）で実行して確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>2 つの比べ方</small></h1>
+  <table class="mx">
+    <tr><th></th><th>Comparable&lt;T&gt;</th><th>Comparator&lt;T&gt;</th></tr>
+    <tr><td class="t">パッケージ</td><td class="l">java.lang</td><td class="l">java.util</td></tr>
+    <tr><td class="t">メソッド</td><td class="l">int compareTo(T o)</td><td class="l">int compare(T a, T b)</td></tr>
+    <tr><td class="t">どこに書く</td><td class="l">並べたいクラス自身（自然順序）</td><td class="l">別のクラス・ラムダ式・メソッド参照</td></tr>
+    <tr><td class="t">使い方</td><td class="l">Collections.sort(list)・list.sort(null)・new TreeSet&lt;&gt;()</td><td class="l">list.sort(c)・new TreeSet&lt;&gt;(c)・Arrays.sort(arr, c)</td></tr>
+  </table>
+  <div class="cols" style="margin-top:12px">
+    <div class="point">戻り値は「負・0・正」だけに意味がある。String は文字コードの差（"A".compareTo("a") は −32）、Integer は −1・0・1。</div>
+    <div class="point warn">TreeSet・TreeMap は compare が 0 なら「同じ要素」。equals では違っても捨てられる。</div>
+  </div>
+  <div class="cite">出典：API Comparable・Comparator・String.compareTo・Integer.compareTo／The Java Tutorials「Object Ordering」</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>Comparable と自然順序</h1>
+  <p>クラス自身が持つ、ただ 1 つの標準の並び順。</p>
+  <div class="foot"><span>Java Gold #03 ソートと便利なメソッド</span><span>試験内容 1</span></div>
+</section>
+
+<section class="slide">
+  <h1>Comparable を実装する</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">record Item(String name, int price)
+    implements Comparable&lt;Item&gt; {
+  public int compareTo(Item o) {
+    return Integer.compare(price, o.price);
+  }
+}
+Collections.sort(list); <span class="c">// price の安い順</span></div>
+      <div class="point warn">Comparable でない要素の List を Collections.sort に渡すと<b>コンパイルエラー</b>、TreeSet に add すると<b>実行時に</b> ClassCastException。</div>
+    </div>
+    <div>
+      <div class="lbl">equals と一貫していないと</div>
+      <div class="code small">pen(100)・cup(100)・box(50)
+TreeSet → 2 個  <span class="c">// pen と cup は compareTo が 0</span>
+HashSet → 3 個  <span class="c">// equals は name も見る</span></div>
+      <div class="lbl" style="margin-top:8px">null を含む List</div>
+      <div class="code small">Collections.sort([b, null, a]) <span class="c">// NullPointerException</span>
+nullsFirst(naturalOrder())    <span class="c">// [null, a, b]</span>
+nullsLast(reverseOrder())     <span class="c">// [b, a, null]</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：API Comparable（consistent with equals）・Collections.sort・TreeSet・Comparator.nullsFirst／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>Comparator の作り方とつなぎ方</h1>
+  <p>キーを取り出し、つなぎ、必要なら逆にする。</p>
+  <div class="foot"><span>Java Gold #03 ソートと便利なメソッド</span><span>試験内容 1</span></div>
+</section>
+
+<section class="slide">
+  <h1>Comparator のメソッド</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>メソッド</th><th>種類</th></tr>
+        <tr><td class="l">comparing(キー[, 比較器])</td><td class="t">static</td></tr>
+        <tr><td class="l">comparingInt・Long・Double</td><td class="t">static</td></tr>
+        <tr><td class="l">naturalOrder()・reverseOrder()</td><td class="t">static</td></tr>
+        <tr><td class="l">nullsFirst(c)・nullsLast(c)</td><td class="t">static</td></tr>
+        <tr><td class="l">thenComparing(…)</td><td class="t">default</td></tr>
+        <tr><td class="l">reversed()</td><td class="t">default</td></tr>
+        <tr><td class="l">compare(a, b)</td><td class="t">抽象</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="code small">Comparator&lt;String&gt; c = Comparator.naturalOrder();
+c.reverseOrder();          <span class="c">// エラー</span>
+<span class="c">// illegal static interface method call</span>
+c.reversed();              <span class="c">// ○ default</span>
+Comparator.reverseOrder(); <span class="c">// ○ 型名で呼ぶ</span></div>
+      <div class="code small" style="margin-top:8px">list.sort(Integer::compare);   <span class="c">// 小さい順</span>
+list.sort((a, b) -&gt; b - a);     <span class="c">// 大きい順</span>
+comparing(String::valueOf)     <span class="c">// "10" &lt; "2" &lt; "3"</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：API Comparator／JLS 15.12.3／JDK 17 でのコンパイルと実行の結果</div>
+</section>
+
+<section class="slide">
+  <h1>つなぐ順と reversed のかかり方</h1>
+  <div class="lbl">["bb", "a", "ccc", "dd"] を並べる</div>
+  <table class="mx">
+    <tr><th style="width:56%">Comparator</th><th>結果</th></tr>
+    <tr><td class="l">comparing(String::length).thenComparing(reverseOrder())</td><td class="t">[a, dd, bb, ccc]</td></tr>
+    <tr><td class="l">comparing(String::length).thenComparing(naturalOrder())<b>.reversed()</b></td><td class="t">[ccc, dd, bb, a]（全体が逆）</td></tr>
+  </table>
+  <div class="cols" style="margin-top:10px">
+    <div>
+      <div class="lbl">Sato 30・Ito 25・Abe 30</div>
+      <div class="code small">comparingInt(P::age).reversed()
+  .thenComparing(P::name)
+<span class="c">// [Abe, Sato, Ito]  名前は逆にならない</span></div>
+    </div>
+    <div>
+      <div class="lbl">型が推論されない</div>
+      <div class="code small">comparing(s -&gt; s.length()).reversed()
+<span class="c">// s は Object → cannot find symbol</span>
+comparing((String s) -&gt; s.length()).reversed() <span class="c">// ○</span></div>
+    </div>
+  </div>
+  <div class="point">reversed() は「それまでにつないだ全体」を逆にする。後ろに足した thenComparing にはかからない。</div>
+  <div class="cite">出典：API Comparator.reversed・thenComparing／JLS 15.12.2・18.5.2／JDK 17 でのコンパイルと実行の結果</div>
+</section>
+
+<section class="slide">
+  <h1>ソートの道具と、安定なソート</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>呼び方</th><th>順</th></tr>
+        <tr><td class="l">list.sort(null)</td><td class="l">自然順序</td></tr>
+        <tr><td class="l">list.sort(String.CASE_INSENSITIVE_ORDER)</td><td class="l">大小文字を区別しない</td></tr>
+        <tr><td class="l">Arrays.sort(a, 1, 3)</td><td class="l">添字 1・2 だけ</td></tr>
+        <tr><td class="l">Arrays.sort(int[], Comparator)</td><td class="l">コンパイルエラー</td></tr>
+        <tr><td class="l">List.of(...) を sort</td><td class="l">UnsupportedOperationException</td></tr>
+        <tr><td class="l">Arrays.asList(...) を sort</td><td class="l">できる（set だけ使う）</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">安定（stable）：同じ順位は元の順を保つ</div>
+      <div class="code small">[b, C, a, B].sort(null)
+<span class="c">// [B, C, a, b]</span>
+.sort(CASE_INSENSITIVE_ORDER)
+<span class="c">// [a, B, b, C]  B と b は元の順</span></div>
+      <div class="lbl" style="margin-top:8px">TreeSet に Comparator</div>
+      <div class="code small">new TreeSet&lt;&gt;(comparing(String::length))
+addAll(ab, cd, e, fgh) <span class="c">// [e, ab, fgh]</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：API List.sort（guaranteed to be stable）・Arrays.sort・String.CASE_INSENSITIVE_ORDER・TreeSet(Comparator)／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>Collections と Arrays の便利なメソッド</h1>
+  <p>探す・数える・並べる・作る。</p>
+  <div class="foot"><span>Java Gold #03 ソートと便利なメソッド</span><span>試験内容 1</span></div>
+</section>
+
+<section class="slide">
+  <h1>探す・数える</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">binarySearch（昇順の List で）</div>
+      <div class="flow" style="gap:4px">
+        <div class="box b5">1<span>[0]</span></div><div class="box b5">3<span>[1]</span></div><div class="box b1">5<span>[2]</span></div><div class="box b5">7<span>[3]</span></div>
+      </div>
+      <table class="mx" style="margin-top:8px">
+        <tr><td class="l">binarySearch(list, 5)</td><td class="t">2</td></tr>
+        <tr><td class="l">binarySearch(list, 4)（挿入位置 2）</td><td class="t">−2 − 1 ＝ −3</td></tr>
+        <tr><td class="l">binarySearch(list, 9)（挿入位置 4）</td><td class="t">−4 − 1 ＝ −5</td></tr>
+      </table>
+      <div class="point warn">並んでいない List では結果は保証されない。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>メソッド</th><th>例</th></tr>
+        <tr><td class="l">frequency(list, "a")</td><td class="t">a の個数</td></tr>
+        <tr><td class="l">disjoint(c1, c2)</td><td class="t">共通なし → true</td></tr>
+        <tr><td class="l">max(list)</td><td class="t">自然順序の最大</td></tr>
+        <tr><td class="l">min(list, reverseOrder())</td><td class="t">自然順序の最大</td></tr>
+      </table>
+      <div class="point">[3, 1, 2] を reverse → [2, 1, 3]（逆に並べるだけ）。大きい順は sort(list, reverseOrder())。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API Collections.binarySearch・frequency・disjoint・max・min・reverse／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>並べる・作る・包む</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">list = [a, b, c]
+Collections.swap(list, 0, 2);     <span class="c">// [c, b, a]</span>
+Collections.addAll(list, "d", "e"); <span class="c">// [c, b, a, d, e]</span>
+Collections.fill(list.subList(0, 2), "x");
+                       <span class="c">// [x, x, a, d, e]</span>
+Collections.nCopies(3, "z");      <span class="c">// [z, z, z]</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>メソッド</th><th>返すもの</th></tr>
+        <tr><td class="l">emptyList()</td><td class="l">空の変更できない List（add で UOE）</td></tr>
+        <tr><td class="l">unmodifiableList(l)</td><td class="l">読み取り専用の<b>ビュー</b></td></tr>
+        <tr><td class="l">synchronizedList(l)</td><td class="l">同期化した<b>ビュー</b></td></tr>
+      </table>
+      <div class="point">ビューは元とつながる。syn に add した "c" は un からも見える。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API Collections.swap・addAll・fill・nCopies・emptyList・unmodifiableList・synchronizedList、List.subList／JDK 17 での実行結果</div>
+</section>
+
+</body>
+</html>

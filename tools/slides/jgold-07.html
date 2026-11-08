@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Gold #07 リダクションとCollectors 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">Java SE 17 Programmer II（1Z0-826-JPN）　試験内容 3 Java ストリーム API　#07</div>
+  <h1>リダクションとCollectors</h1>
+  <p>reduce・collect・toMap・joining・groupingBy・partitioningBy と下流のCollectors</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（Oracle の試験内容チェックリスト、Java SE 17 API の java.util.stream パッケージの説明・Stream・Collectors・IntSummaryStatistics、The Java Tutorials の Reduction）を書いた。コードの結果は JDK 17（Eclipse Temurin 17.0.21）で実行して確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>要素を 1 つの結果にまとめる</small></h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">リダクション（終端操作）</div>
+      <div class="arrow">↓</div>
+      <div class="cols" style="gap:8px">
+        <div class="box b2">reduce<span>値どうしを組み合わせる（不変）</span></div>
+        <div class="box b3">collect<span>入れ物にためる（可変）</span></div>
+      </div>
+      <div class="arrow">↓ collect に渡す</div>
+      <div class="box b3">Collectors の static メソッド<span>toList・toMap・joining・groupingBy …</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>書き方</th><th>戻り値</th><th>0 個のとき</th></tr>
+        <tr><td class="t">reduce(op)</td><td class="l">Optional&lt;T&gt;</td><td class="l">empty</td></tr>
+        <tr><td class="t">reduce(id, op)</td><td class="l">T</td><td class="l">id</td></tr>
+        <tr><td class="t">reduce(id, acc, comb)</td><td class="l">U</td><td class="l">id</td></tr>
+        <tr><td class="t">collect(Collector)</td><td class="l">Collector 次第</td><td class="l">空の入れ物</td></tr>
+        <tr><td class="t">collect(sup, acc, comb)</td><td class="l">R</td><td class="l">sup が作ったもの</td></tr>
+      </table>
+      <div class="point warn">Collector（インタフェース）と Collectors（ユーティリティクラス）を区別。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API java.util.stream パッケージの説明「Reduction operations」「Mutable reduction」、Stream.reduce・collect</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>reduce と collect</h1>
+  <p>単位元・アキュムレータ・コンバイナ。</p>
+  <div class="foot"><span>Java Gold #07 リダクションとCollectors</span><span>試験内容 3</span></div>
+</section>
+
+<section class="slide">
+  <h1>reduce の 3 つの形</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">Stream.of(1,2,3).reduce(10, (x, y) -&gt; x + y)  <span class="c">// 16（10 も足す）</span>
+Stream.of(1,2,3).reduce((x, y) -&gt; x + y)      <span class="c">// Optional[6]</span>
+Stream.&lt;Integer&gt;empty().reduce((x, y) -&gt; x + y) <span class="c">// Optional.empty</span>
+Stream.&lt;Integer&gt;empty().reduce(0, Integer::sum)  <span class="c">// 0</span>
+
+Integer o = Stream.of(1,2,3).reduce((x, y) -&gt; x + y);
+<span class="c">// × Optional&lt;Integer&gt; cannot be converted to Integer</span></div>
+      <div class="lbl">3 引数：要素と結果の型が違う</div>
+      <div class="code small">Stream.of("a","bb","ccc")
+  .reduce(0, (n, s) -&gt; n + s.length(), Integer::sum)  <span class="c">// 6</span></div>
+    </div>
+    <div>
+      <div class="box b2">単位元 identity<span>足し算 0・掛け算 1・連結 ""</span></div>
+      <div class="arrow">↓ accumulator：途中の結果 ＋ 要素</div>
+      <div class="box b3">途中の結果<span>逐次ならこれが答え</span></div>
+      <div class="arrow">↓ combiner：途中の結果どうし（並列のときだけ）</div>
+      <div class="box b1">最終の結果</div>
+      <div class="point warn">単位元でない値（10）を渡すと、並列では何回も足されて結果が変わる（#09）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API Stream.reduce（3 つの版）／JDK 17 でのコンパイルと実行の結果</div>
+</section>
+
+<section class="slide">
+  <h1>collect の 3 引数版</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">StringBuilder sb = Stream.of("a","b","c")
+  .collect(StringBuilder::new,      <span class="c">// supplier：入れ物を作る</span>
+           StringBuilder::append,   <span class="c">// accumulator：要素を入れる</span>
+           StringBuilder::append);  <span class="c">// combiner：入れ物どうし</span>
+<span class="c">// abc</span>
+List&lt;Integer&gt; r = Stream.of(1,2,3)
+  .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+<span class="c">// [1, 2, 3]</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>引数</th><th>型</th></tr>
+        <tr><td class="t">supplier</td><td class="l">Supplier&lt;R&gt;</td></tr>
+        <tr><td class="t">accumulator</td><td class="l">BiConsumer&lt;R, ? super T&gt;</td></tr>
+        <tr><td class="t">combiner</td><td class="l">BiConsumer&lt;R, R&gt;</td></tr>
+      </table>
+      <div class="point">accumulator と combiner は値を返さない（BiConsumer）。ArrayList::add は boolean を返すが、戻り値を捨てて使える。</div>
+      <div class="point">reduce で List を作ると毎回新しい List が要る。入れ物にためるなら collect。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API Stream.collect(Supplier, BiConsumer, BiConsumer)、java.util.stream パッケージの説明「Mutable reduction」／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>集める Collectors</h1>
+  <p>コレクション・Map・文字列・数。</p>
+  <div class="foot"><span>Java Gold #07 リダクションとCollectors</span><span>試験内容 3</span></div>
+</section>
+
+<section class="slide">
+  <h1>toMap の 4 つの形</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">Stream.of("a","bb","cc").collect(toMap(String::length, s -&gt; s));
+<span class="c">// IllegalStateException:
+//   Duplicate key 2 (attempted merging values bb and cc)</span>
+Stream.of("a","bb","cc")
+  .collect(toMap(String::length, s -&gt; s, (x, y) -&gt; x + "+" + y));
+<span class="c">// {1=a, 2=bb+cc}（x が先の値）</span>
+Stream.of("b","a","b")
+  .collect(toMap(s -&gt; s, s -&gt; 1, Integer::sum, TreeMap::new));
+<span class="c">// {a=1, b=2}</span>
+Stream.of("a","b").collect(toMap(s -&gt; s, s -&gt; null));
+<span class="c">// NullPointerException</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>引数</th><th>役割</th></tr>
+        <tr><td class="t">1 つ目</td><td class="l">キーを作る関数</td></tr>
+        <tr><td class="t">2 つ目</td><td class="l">値を作る関数</td></tr>
+        <tr><td class="t">3 つ目</td><td class="l">キーが重複したときのマージ（BinaryOperator）</td></tr>
+        <tr><td class="t">4 つ目</td><td class="l">Map の Supplier（TreeMap::new）</td></tr>
+      </table>
+      <div class="point warn">重複で例外になるのはキー。値が同じなのは問題ない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API Collectors.toMap（4 つの版）／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>コレクションと文字列に集める</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>メソッド</th><th>結果</th><th>注意</th></tr>
+        <tr><td class="t">toList()・toSet()</td><td class="l">List・Set</td><td class="l">実装・変更可否は保証なし</td></tr>
+        <tr><td class="t">toUnmodifiableList()</td><td class="l">変更不可の List</td><td class="l">null で NPE（Java 10〜）</td></tr>
+        <tr><td class="t">toCollection(TreeSet::new)</td><td class="l">TreeSet</td><td class="l">重複なし・並ぶ</td></tr>
+        <tr><td class="t">collectingAndThen(toList(), Collections::unmodifiableList)</td><td class="l">変更不可の List</td><td class="l">集めたあと finisher</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="code small">Stream.of("a","b","c").collect(joining(",", "[", "]"))
+<span class="c">// [a,b,c]</span>
+Stream.&lt;String&gt;empty().collect(joining(",", "[", "]"))
+<span class="c">// []（0 個でも前後は付く）</span>
+Stream.of("a", null).collect(toList())             <span class="c">// [a, null]</span>
+Stream.of("a", null).collect(toUnmodifiableList()) <span class="c">// NPE</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：API Collectors.toList・toSet・toUnmodifiableList・toCollection・collectingAndThen・joining／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>数を求める Collectors</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>メソッド</th><th>結果の型</th><th>1, 2, 4 の結果</th></tr>
+        <tr><td class="t">counting()</td><td class="l">Long</td><td class="l">3</td></tr>
+        <tr><td class="t">summingInt</td><td class="l">Integer</td><td class="l">7</td></tr>
+        <tr><td class="t">averagingInt</td><td class="l">Double</td><td class="l">2.3333333333333335</td></tr>
+        <tr><td class="t">summarizingInt</td><td class="l">IntSummaryStatistics</td><td class="l">count=3, sum=7, min=1, max=4</td></tr>
+        <tr><td class="t">maxBy・minBy</td><td class="l">Optional&lt;T&gt;</td><td class="l">Optional[4]・Optional[1]</td></tr>
+      </table>
+      <div class="point warn">counting は Long。Map&lt;K, Integer&gt; には入らない。</div>
+    </div>
+    <div>
+      <div class="lbl">teeing（Java 12〜）：2 つに分けて合わせる</div>
+      <div class="code small">Stream.of(1,2,3,4).collect(teeing(
+    summingInt(n -&gt; n),     <span class="c">// 10</span>
+    counting(),             <span class="c">// 4</span>
+    (s, c) -&gt; (double) s / c))
+<span class="c">// 2.5</span></div>
+      <div class="point">IntSummaryStatistics：getCount・getSum は long、getAverage は double、getMin・getMax は int。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API Collectors.counting・summingInt・averagingInt・summarizingInt・maxBy・minBy・teeing（@since 12）、IntSummaryStatistics／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>グループ化と下流の Collectors</h1>
+  <p>groupingBy・partitioningBy と、グループごとのまとめ方。</p>
+  <div class="foot"><span>Java Gold #07 リダクションとCollectors</span><span>試験内容 3</span></div>
+</section>
+
+<section class="slide">
+  <h1>groupingBy と partitioningBy</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">Stream.of("a","bb","cc","d").collect(groupingBy(String::length))
+<span class="c">// {1=[a, d], 2=[bb, cc]}</span>
+Stream.of("a","bb","cc","d","eee")
+  .collect(groupingBy(String::length, TreeMap::new, counting()))
+<span class="c">// {1=2, 2=2, 3=1}（TreeMap）</span>
+Stream.of(2,4,6).collect(partitioningBy(n -&gt; n &gt; 10))
+<span class="c">// {false=[2, 4, 6], true=[]}</span>
+Stream.of(1,2,3,4,5).collect(partitioningBy(n -&gt; n % 2 == 0, counting()))
+<span class="c">// {false=3, true=2}</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th></th><th>groupingBy</th><th>partitioningBy</th></tr>
+        <tr><td class="t">キー</td><td class="l">分類関数の結果</td><td class="l">Boolean</td></tr>
+        <tr><td class="t">要素がないキー</td><td class="l">入らない</td><td class="l">必ずある（空の List）</td></tr>
+        <tr><td class="t">Map の Supplier</td><td class="l">3 引数版で指定</td><td class="l">指定できない</td></tr>
+        <tr><td class="t">下流なしの値</td><td class="l" colspan="2">List&lt;T&gt;</td></tr>
+      </table>
+      <div class="point warn"><code>Map&lt;Integer, Integer&gt; m = …groupingBy(n -&gt; n % 2)</code> はコンパイルエラー（値は List）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API Collectors.groupingBy（3 つの版）・partitioningBy（2 つの版）／JDK 17 でのコンパイルと実行の結果</div>
+</section>
+
+<section class="slide">
+  <h1>下流の Collectors</h1>
+  <table class="mx">
+    <tr><th>下流</th><th>例</th><th>結果</th></tr>
+    <tr><td class="t">mapping</td><td class="l">groupingBy(String::length, TreeMap::new, mapping(s -&gt; s.charAt(0), toCollection(TreeSet::new)))<br>"ab","cd","e"</td><td class="l">{1=[e], 2=[a, c]}</td></tr>
+    <tr><td class="t">filtering（Java 9〜）</td><td class="l">groupingBy(String::length, filtering(s -&gt; !s.startsWith("b"), toList()))<br>"a","bb","cc","ddd"</td><td class="l">{1=[a], 2=[cc], 3=[ddd]}</td></tr>
+    <tr><td class="t">flatMapping（Java 9〜）</td><td class="l">groupingBy(List::size, flatMapping(List::stream, toList()))<br>[1,2], [3]</td><td class="l">{1=[3], 2=[1, 2]}</td></tr>
+    <tr><td class="t">joining</td><td class="l">groupingBy(s -&gt; s.charAt(0), joining("/"))<br>"apple","avocado","banana"</td><td class="l">{a=apple/avocado, b=banana}</td></tr>
+    <tr><td class="t">reducing</td><td class="l">groupingBy(String::length, reducing((p, q) -&gt; p + q))<br>"ab","x","cd"</td><td class="l">{1=Optional[x], 2=Optional[abcd]}</td></tr>
+    <tr><td class="t">入れ子</td><td class="l">partitioningBy(s -&gt; s.length() &gt; 1, groupingBy(String::length, counting()))<br>"a","bb","cc","ddd"</td><td class="l">{false={1=1}, true={2=2, 3=1}}</td></tr>
+  </table>
+  <div class="point">filtering は、全部外れたグループもキーとして残る（先に filter すると残らない）。</div>
+  <div class="cite">出典：API Collectors.mapping・filtering・flatMapping・joining・reducing・groupingBy・partitioningBy／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">reduce の結果</td><td class="l">単位元も計算に入る、単位元なしは Optional、0 個なら単位元か empty</td></tr>
+    <tr><td class="t">toMap</td><td class="l">キー重複で IllegalStateException、マージ関数の引数の順、値 null で NPE</td></tr>
+    <tr><td class="t">結果の型</td><td class="l">counting は Long、averagingInt は Double、maxBy は Optional、下流なし groupingBy は List</td></tr>
+    <tr><td class="t">partitioningBy</td><td class="l">true・false が必ずある、表示は false が先</td></tr>
+    <tr><td class="t">変更できるか</td><td class="l">toUnmodifiableList・collectingAndThen(…, unmodifiableList) は add で例外</td></tr>
+    <tr><td class="t">文字列</td><td class="l">joining の前後は全体に 1 回、0 個でも付く</td></tr>
+  </table>
+  <div class="cite">出典：試験内容チェックリスト 3／本資料の問題演習（全 30 問、JDK 17 で確認）</div>
+</section>
+
+</body>
+</html>

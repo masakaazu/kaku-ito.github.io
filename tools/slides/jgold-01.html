@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Gold #01 コレクション・フレームワーク 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">Java SE 17 Programmer II（1Z0-826-JPN）　試験内容 1 コレクションとジェネリクス　#01</div>
+  <h1>コレクション・フレームワーク</h1>
+  <p>List・Set・Map・Deque と、オートボクシングの落とし穴</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（Oracle の試験内容チェックリスト、Java 言語仕様 JLS、Java SE 17 の API ドキュメント）を書いた。コードの結果は JDK 17（Eclipse Temurin 17.0.21）で実行して確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>java.util のインタフェース</small></h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">Iterable<span>拡張 for で回せる</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b1">Collection<span>add・remove・contains・size</span></div>
+      <div class="arrow">↓</div>
+      <div class="cols3" style="gap:6px">
+        <div class="box b2">List<span>順序・重複あり</span></div>
+        <div class="box b2">Set<span>重複なし</span></div>
+        <div class="box b2">Queue → Deque<span>両端から出し入れ</span></div>
+      </div>
+      <div class="box b4" style="margin-top:12px">Map（Collection を継承しない）<span>keySet()・values()・entrySet() で中身を見る</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>インタフェース</th><th>主な実装</th></tr>
+        <tr><td class="t">List</td><td class="l">ArrayList・LinkedList</td></tr>
+        <tr><td class="t">Set</td><td class="l">HashSet・LinkedHashSet・TreeSet</td></tr>
+        <tr><td class="t">Deque</td><td class="l">ArrayDeque・LinkedList</td></tr>
+        <tr><td class="t">Map</td><td class="l">HashMap・LinkedHashMap・TreeMap</td></tr>
+      </table>
+      <div class="point warn"><code>Collection&lt;String&gt; c = new HashMap&lt;&gt;();</code> はコンパイルエラー。</div>
+      <div class="point">変数はインタフェース型、new のところだけ実装クラス。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Oracle 試験内容チェックリスト 1／Java SE 17 API java.util.Collection・Map／The Java Tutorials: Collections</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>オートボクシング</h1>
+  <p>int と Integer は自動で行き来するが、null と == に注意。</p>
+  <div class="foot"><span>Java Gold #01 コレクション・フレームワーク</span><span>試験内容 1</span></div>
+</section>
+
+<section class="slide">
+  <h1>ボクシングとアンボクシング</h1>
+  <div class="cols">
+    <div>
+      <div class="flow" style="gap:4px">
+        <div class="box b4">int 10</div><div class="to">ボクシング →</div><div class="box b1">Integer</div>
+      </div>
+      <div class="flow" style="gap:4px;margin-top:6px">
+        <div class="box b1">Integer</div><div class="to">アンボクシング →</div><div class="box b4">int</div>
+      </div>
+      <div class="code small" style="margin-top:10px">Integer a = 127, b = 127;  <span class="c">// a == b → true</span>
+Integer c = 128, d = 128;  <span class="c">// c == d → false</span>
+c.equals(d)                <span class="c">// true</span></div>
+      <div class="point">-128〜127 は同じオブジェクト（JLS 5.1.7）。値は equals で比べる。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>コード</th><th style="width:42%">結果</th></tr>
+        <tr><td class="l"><code>Long l = 5;</code></td><td class="t">コンパイルエラー</td></tr>
+        <tr><td class="l"><code>Integer i = 5; long l = i;</code></td><td class="t">OK（5）</td></tr>
+        <tr><td class="l"><code>int n = map.get("無いキー");</code></td><td class="t">NullPointerException</td></tr>
+        <tr><td class="l"><code>i.equals(10L)</code></td><td class="t">false（型が違う）</td></tr>
+        <tr><td class="l"><code>l == 10</code>（Long l = 10L）</td><td class="t">true（数で比較）</td></tr>
+      </table>
+      <div class="point warn">ボクシングは対応する型だけ。int → Long はできない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JLS 5.1.7 Boxing Conversion・5.1.8 Unboxing Conversion・5.2 Assignment Contexts／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>remove(int) と remove(Object)</h1>
+  <div class="cols">
+    <div>
+      <div class="code">List&lt;Integer&gt; list =
+  new ArrayList&lt;&gt;(List.of(10, 20, 30, 1));
+list.remove(1);                 <span class="c">// 添字1の20を消す</span>
+list.remove(Integer.valueOf(1)); <span class="c">// 値1を消す</span>
+System.out.println(list);       <span class="c">// [10, 30]</span></div>
+    </div>
+    <div>
+      <div class="lbl">オーバーロードの解決の順（JLS 15.12.2）</div>
+      <div class="stack">
+        <div class="box b1">1 ボクシングも可変長引数も使わずに合う</div>
+        <div class="box b2">2 ボクシングを使って合う</div>
+        <div class="box b3">3 可変長引数を使って合う</div>
+      </div>
+      <div class="point">remove(1) は段階1で remove(int) が見つかるので、remove(Object) は候補にならない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JLS 15.12.2 Compile-Time Step 2／API List.remove(int)・remove(Object)／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>List と Set</h1>
+  <p>順番を持つか、重複を許すか、並べ替えるか。</p>
+  <div class="foot"><span>Java Gold #01 コレクション・フレームワーク</span><span>試験内容 1</span></div>
+</section>
+
+<section class="slide">
+  <h1>List と equals</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th></th><th>ArrayList</th><th>LinkedList</th></tr>
+        <tr><td class="t">しくみ</td><td class="l">配列</td><td class="l">前後の参照でつなぐ</td></tr>
+        <tr><td class="t">添字で取得</td><td class="l">速い</td><td class="l">先頭からたどる</td></tr>
+        <tr><td class="t">先頭の出し入れ</td><td class="l">ずらすので遅い</td><td class="l">速い（Deque も実装）</td></tr>
+        <tr><td class="t">null</td><td class="l">入る</td><td class="l">入る</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="code small">a: ArrayList  [1, 2]
+b: LinkedList [1, 2]
+c: HashSet    [1, 2]
+d: TreeSet    [1, 2]
+a.equals(b) <span class="c">// true  同じ順・同じ要素の List</span>
+a.equals(c) <span class="c">// false List と Set</span>
+c.equals(d) <span class="c">// true  同じ要素の Set</span></div>
+      <div class="point">型引数は参照型だけ。<code>List&lt;int&gt;</code> はエラー、<code>List&lt;int[]&gt;</code> は OK。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API List.equals・Set.equals・ArrayList・LinkedList／JLS 4.5.1／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>Set の三つの実装</h1>
+  <table class="mx">
+    <tr><th style="width:18%">実装</th><th>並び順</th><th style="width:22%">同じかの判断</th><th style="width:22%">null</th></tr>
+    <tr><td class="t">HashSet</td><td class="l">決まらない</td><td class="l">equals と hashCode</td><td class="l">1 つ入る</td></tr>
+    <tr><td class="t">LinkedHashSet</td><td class="l">入れた順</td><td class="l">equals と hashCode</td><td class="l">1 つ入る</td></tr>
+    <tr><td class="t">TreeSet</td><td class="l">自然順序か Comparator の順</td><td class="l">compareTo が 0</td><td class="l">自然順序では NPE</td></tr>
+  </table>
+  <div class="cols" style="margin-top:12px">
+    <div>
+      <div class="code small">class Item { String name; }   <span class="c">// equals なし</span>
+record Tag(String name) {}    <span class="c">// 自動で作られる</span>
+HashSet に Item("a") を2回 → size 2
+HashSet に Tag("a") を2回  → size 1
+TreeSet に Item を add     → ClassCastException</div>
+    </div>
+    <div>
+      <div class="lbl">文字列の自然順序（文字コード順）</div>
+      <div class="box b5">[10, 9, A, B, a, b]<span>数字 → 大文字 → 小文字。"10" は '1' で比べて "9" より前</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：API HashSet・LinkedHashSet・TreeSet・Object.hashCode／JLS 8.10.3／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>並んだ Set と Map を探す</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">{10, 20, 30, 40} で</div>
+      <table class="mx">
+        <tr><th>メソッド</th><th>意味</th><th>例</th></tr>
+        <tr><td class="t">lower(x)</td><td class="l">x 未満の最大</td><td class="t">lower(10) → null</td></tr>
+        <tr><td class="t">floor(x)</td><td class="l">x 以下の最大</td><td class="t">floor(25) → 20</td></tr>
+        <tr><td class="t">ceiling(x)</td><td class="l">x 以上の最小</td><td class="t">ceiling(25) → 30</td></tr>
+        <tr><td class="t">higher(x)</td><td class="l">x より大きい最小</td><td class="t">higher(30) → 40</td></tr>
+      </table>
+      <div class="point">TreeMap は floorKey・ceilingKey など。</div>
+    </div>
+    <div>
+      <div class="lbl">{1, 3, 5, 7, 9} の部分のビュー</div>
+      <table class="mx">
+        <tr><td class="t">subSet(3, 7)</td><td class="l">[3, 5]（始まり含む・終わり含まない）</td></tr>
+        <tr><td class="t">headSet(5)</td><td class="l">[1, 3]</td></tr>
+        <tr><td class="t">headSet(5, true)</td><td class="l">[1, 3, 5]</td></tr>
+        <tr><td class="t">tailSet(5)</td><td class="l">[5, 7, 9]</td></tr>
+        <tr><td class="t">descendingSet().first()</td><td class="l">9</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：API NavigableSet・NavigableMap／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>Map</h1>
+  <p>キーと値の組。戻り値は「前の値」。</p>
+  <div class="foot"><span>Java Gold #01 コレクション・フレームワーク</span><span>試験内容 1</span></div>
+</section>
+
+<section class="slide">
+  <h1>Map の実装と null</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>実装</th><th>順番</th><th>null キー</th></tr>
+        <tr><td class="t">HashMap</td><td class="l">決まらない</td><td class="l">1 つ OK</td></tr>
+        <tr><td class="t">LinkedHashMap</td><td class="l">入れた順</td><td class="l">1 つ OK</td></tr>
+        <tr><td class="t">TreeMap</td><td class="l">キーの順</td><td class="l">NPE（値は OK）</td></tr>
+        <tr><td class="t">Map.of</td><td class="l">決まらない</td><td class="l">NPE・重複キーは IAE</td></tr>
+      </table>
+      <div class="point">LinkedHashMap に同じキーを put し直しても順番は変わらない。</div>
+    </div>
+    <div>
+      <div class="lbl">ビュー（元の Map とつながっている）</div>
+      <div class="stack">
+        <div class="box b2">keySet()<span>remove するとエントリも消える</span></div>
+        <div class="box b2">values()<span>値の Collection</span></div>
+        <div class="box b2">entrySet()<span>Map.Entry の setValue で値を書き換え</span></div>
+      </div>
+      <div class="point warn">get が null → 「キーがない」か「値が null」か。containsKey で区別。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API HashMap・LinkedHashMap・TreeMap・Map.of・Map.keySet・Map.Entry／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>Map の便利なメソッド</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>メソッド</th><th>キーがない</th><th>キーがある</th></tr>
+        <tr><td class="t">put</td><td class="l">入れて null</td><td class="l">上書きして前の値</td></tr>
+        <tr><td class="t">putIfAbsent</td><td class="l">入れて null</td><td class="l">何もせず今の値</td></tr>
+        <tr><td class="t">getOrDefault</td><td class="l">既定値</td><td class="l">値</td></tr>
+        <tr><td class="t">merge(k, v, f)</td><td class="l">v を入れる</td><td class="l">f(前, v)。null なら削除</td></tr>
+        <tr><td class="t">computeIfAbsent</td><td class="l">f(k) を入れて返す</td><td class="l">今の値を返す</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="code small"><span class="c">// 数え上げ</span>
+count.merge(w, 1, Integer::sum);
+<span class="c">// "b a b c b a" → {a=2, b=3, c=1}</span>
+
+<span class="c">// グループ分け</span>
+byLen.computeIfAbsent(w.length(),
+    k -&gt; new ArrayList&lt;&gt;()).add(w);
+<span class="c">// {3=[ant, bee, cat], 4=[deer]}</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：API Map.put・putIfAbsent・getOrDefault・merge・computeIfAbsent／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>Queue と Deque</h1>
+  <p>例外を投げる版と、null を返す版がある。</p>
+  <div class="foot"><span>Java Gold #01 コレクション・フレームワーク</span><span>試験内容 1</span></div>
+</section>
+
+<section class="slide">
+  <h1>Queue と Deque のメソッド</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>操作</th><th>失敗で例外</th><th>失敗で特別な値</th></tr>
+        <tr><td class="t">入れる</td><td class="l">add</td><td class="l">offer → false</td></tr>
+        <tr><td class="t">取り出す</td><td class="l">remove</td><td class="l">poll → null</td></tr>
+        <tr><td class="t">見る</td><td class="l">element</td><td class="l">peek → null</td></tr>
+      </table>
+      <div class="point">空のとき remove・element・pop は NoSuchElementException。</div>
+      <div class="point warn">ArrayDeque は null を入れられない（offer でも NPE）。LinkedList は入る。</div>
+    </div>
+    <div>
+      <div class="lbl">スタックとして（先頭を使う）</div>
+      <div class="code small">d.push(1); d.push(2); d.push(3); <span class="c">// [3, 2, 1]</span>
+d.pop()      <span class="c">// 3</span>
+d.peek()     <span class="c">// 2（peekFirst）</span>
+d.peekLast() <span class="c">// 1</span></div>
+      <div class="lbl" style="margin-top:8px">キューとして（末尾に入れ先頭から出す）</div>
+      <div class="code small">q.offer("A"); q.offer("B"); q.add("C");
+q.poll()          <span class="c">// "A"</span>
+d.offerFirst("Z") <span class="c">// [Z, B, C]</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：API Queue・Deque（メソッドの要約表）・ArrayDeque／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第5章</div>
+  <h1>イテレータと変更できないコレクション</h1>
+  <p>回しながら消すときと、変えられない List の見分け方。</p>
+  <div class="foot"><span>Java Gold #01 コレクション・フレームワーク</span><span>試験内容 1</span></div>
+</section>
+
+<section class="slide">
+  <h1>回しながら消す</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">for (String s : list) {          <span class="c">// [a, b, c]</span>
+  if (s.equals("a")) list.remove(s);
+}  <span class="c">// → ConcurrentModificationException</span>
+
+for (String s : list) {
+  if (s.equals("b")) list.remove(s);
+}  <span class="c">// → [a, c]（例外なし）</span></div>
+      <div class="point warn">最後から2番目を消すと hasNext が false になり、next が呼ばれない。フェイルファストは保証ではない。</div>
+    </div>
+    <div>
+      <div class="lbl">安全な消し方</div>
+      <div class="code small">Iterator&lt;Integer&gt; it = list.iterator();
+while (it.hasNext()) {
+  if (it.next() % 2 == 0) it.remove();
+}
+list.removeIf(n -&gt; n &gt; 4);</div>
+      <div class="point">[1, 2, 3, 4, 5] → 偶数を消して [1, 3, 5] → 4 より大きいものを消して [1, 3]。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API Iterator・ConcurrentModificationException・Collection.removeIf／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>変更できないコレクション</h1>
+  <table class="mx">
+    <tr><th style="width:30%">作り方</th><th>set</th><th>add・remove</th><th>null</th><th>元の変更</th></tr>
+    <tr><td class="t">List.of(...)</td><td class="t">UOE</td><td class="t">UOE</td><td class="t">NPE</td><td class="t">―</td></tr>
+    <tr><td class="t">Arrays.asList(...)</td><td class="t">○</td><td class="t">UOE</td><td class="t">○</td><td class="t">配列と共有</td></tr>
+    <tr><td class="t">List.copyOf(c)</td><td class="t">UOE</td><td class="t">UOE</td><td class="t">NPE</td><td class="t">見えない（コピー）</td></tr>
+    <tr><td class="t">Collections.unmodifiableList(c)</td><td class="t">UOE</td><td class="t">UOE</td><td class="t">○</td><td class="t">見える（ビュー）</td></tr>
+  </table>
+  <div class="cols" style="margin-top:12px">
+    <div class="point">Set.of・Map.of に重複を渡すと IllegalArgumentException（duplicate element／duplicate key）。</div>
+    <div class="point warn">UOE＝UnsupportedOperationException、NPE＝NullPointerException。</div>
+  </div>
+  <div class="cite">出典：API List.of（Unmodifiable Lists）・Arrays.asList・List.copyOf・Collections.unmodifiableList・Set.of／JDK 17 での実行結果</div>
+</section>
+
+</body>
+</html>

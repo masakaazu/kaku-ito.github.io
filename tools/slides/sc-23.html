@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>支援士 #23 サービスマネジメントとシステム監査 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">情報処理安全確保支援士試験　科目A-2　関連分野　中分類4・12 サービスマネジメントとシステム監査　#23</div>
+  <h1>サービスマネジメントとシステム監査</h1>
+  <p>約束したサービスを守り、統制が働いているかを確かめる</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（IPA の支援士試験シラバス案、JIS Q 20000-1:2020、金融庁 内部統制の基準・実施基準（令和5年）、経済産業省 システム監査基準（令和5年）など）を書いた。過去問は IPA 公開の午前Ⅱ。例の場面は Claude が作った</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>シラバス案 中分類4 サービスマネジメント・中分類12 ガバナンス・監査</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 サービスマネジメント<span>SLA・SLO・SLI、可用性の計算、インシデント管理と問題管理、エスカレーション、変更・構成管理、BIA、継続的改善</span></div>
+      <div class="box b2">2 内部統制<span>六つの基本的要素、限界、J-SOX、IT 全般統制と業務処理統制、IT の統制目標</span></div>
+      <div class="box b3">3 システム監査<span>監査基準、保証型と助言型、リスクアプローチ、監査証拠と監査調書、CSA、指摘事項</span></div>
+    </div>
+    <div>
+      <div class="lbl">過去の午前Ⅱでの出方（問24・25、H31〜R7 で 21 問）</div>
+      <table class="mx">
+        <tr><th>テーマ</th><th style="width:40%">出た回</th></tr>
+        <tr><td class="l">可用性の計算</td><td class="t">R4春・R7春・R7秋</td></tr>
+        <tr><td class="l">JIS Q 20000・問題管理</td><td class="t">R5春・R5秋・R6秋</td></tr>
+        <tr><td class="l">IT 全般統制・業務処理統制</td><td class="t">R4春・R6春・R6秋・R7春</td></tr>
+        <tr><td class="l">監査（調書・指摘・計画）</td><td class="t">ほぼ毎回</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）Ver.0.1」中分類4・12／IPA 午前Ⅱ 各回（このPDFの問題演習を参照）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>サービスマネジメント</h1>
+  <p>測って、約束して、止まったら戻し、原因を断つ。</p>
+  <div class="foot"><span>支援士 #23 サービスマネジメントとシステム監査</span><span>4・12</span></div>
+</section>
+
+<section class="slide">
+  <h1>サービスレベルと可用性</h1>
+  <div class="cols">
+    <div>
+      <div class="flow" style="gap:4px">
+        <div class="box b5">SLI<span>測る指標</span></div><div class="to">→</div>
+        <div class="box b2">SLO<span>目標の値</span></div><div class="to">→</div>
+        <div class="box b1">SLA<span>顧客と文書で合意</span></div>
+      </div>
+      <div class="lbl" style="margin-top:8px">稼働率</div>
+      <div class="box b3">MTBF ÷（MTBF ＋ MTTR）<span>例 480 ÷（480＋20）＝ 0.96</span></div>
+      <div class="point">MTBF を延ばす＝信頼性、MTTR を縮める＝保守性。</div>
+    </div>
+    <div>
+      <div class="lbl">サービス可用性（R7秋）</div>
+      <table class="mx">
+        <tr><td class="l">4〜6 月、毎日 0〜24 時</td><td class="t">91 × 24 ＝ 2,184 h</td></tr>
+        <tr><td class="l">合意した計画停止を除く</td><td class="t">− 84 h → 2,100 h</td></tr>
+        <tr><td class="l">故障による停止</td><td class="t">10 h</td></tr>
+        <tr><td class="l">可用性</td><td class="t"><b>2,090 ÷ 2,100 ＝ 99.52%</b></td></tr>
+      </table>
+      <div class="lbl">R7春：毎日 6〜20 時 × 30 日</div>
+      <div class="box b1">420 h のうち提供時間内の停止 7 h → 98.3%<span>提供時間外の修復 3 h・メンテナンス 8 h は数えない</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：JIS Q 20000-1:2020／IPA 午前Ⅱ R4春 問24・R7春 問24・R7秋 問24</div>
+</section>
+
+<section class="slide">
+  <h1>運用のプロセス</h1>
+  <table class="mx">
+    <tr><th style="width:20%">管理</th><th>目的</th><th style="width:30%">ポイント</th></tr>
+    <tr><td class="t">インシデント管理</td><td class="l">できるだけ早く元に戻す</td><td class="l">暫定復旧・記録・連絡</td></tr>
+    <tr><td class="t">問題管理</td><td class="l">根本原因を特定し恒久策（R5春）</td><td class="l">既知の誤り・傾向分析</td></tr>
+    <tr><td class="t">変更管理</td><td class="l">RFC を評価・承認して変更</td><td class="l">標準・通常・緊急の変更</td></tr>
+    <tr><td class="t">構成管理</td><td class="l">CI と版・関係を CMDB に</td><td class="l">脆弱性の影響範囲の特定</td></tr>
+    <tr><td class="t">サービス継続管理</td><td class="l">災害でもサービスを続ける</td><td class="l">BIA で RTO・RPO を決める</td></tr>
+  </table>
+  <div class="cols" style="margin-top:10px">
+    <div class="box b2">機能的エスカレーション<span>専門の担当チームへ引き継ぐ</span></div>
+    <div class="box b4">階層的エスカレーション<span>上位の管理者へ報告し判断を求める</span></div>
+  </div>
+  <div class="cite">出典：JIS Q 20000-1:2020 8 章／ITIL 4／IPA 令和5年度春期 午前Ⅱ 問24</div>
+</section>
+
+<section class="slide">
+  <h1>JIS Q 20000-1 の言葉</h1>
+  <table class="mx">
+    <tr><th style="width:22%">用語</th><th>定義（要約）</th><th style="width:16%">出た回</th></tr>
+    <tr><td class="t">継続的改善</td><td class="l">パフォーマンスを向上するために繰り返し行われる活動</td><td class="t">R6秋</td></tr>
+    <tr><td class="t">プロセス</td><td class="l">インプットを使って意図した結果を得る、相互に関連する一連の活動</td><td class="t">R6秋の誤り</td></tr>
+    <tr><td class="t">サービスマネジメント</td><td class="l">サービスの計画・設計・移行・提供・改善の活動と資源を指揮・管理する能力とプロセス</td><td class="t">R6秋の誤り</td></tr>
+    <tr><td class="t">内部監査</td><td class="l">SMS が要求事項に適合しているかを、定めた間隔で確かめる</td><td class="t">R5秋</td></tr>
+    <tr><td class="t">マネジメントレビュー</td><td class="l">トップが SMS の適切性・妥当性・有効性を見直す</td><td class="t">R5秋の誤り</td></tr>
+  </table>
+  <div class="point" style="margin-top:8px">ISMS（JIS Q 27001、#08）と同じ「附属書 SL」の共通の構造。内部監査とマネジメントレビューの違いはどちらでも問われる。</div>
+  <div class="cite">出典：JIS Q 20000-1:2020 3 用語及び定義・9.2・9.3／IPA 午前Ⅱ R5秋 問24・R6秋 問24</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>内部統制</h1>
+  <p>全般統制が土台、業務処理統制が個々の処理を守る。</p>
+  <div class="foot"><span>支援士 #23 サービスマネジメントとシステム監査</span><span>4・12</span></div>
+</section>
+
+<section class="slide">
+  <h1>内部統制の枠組み</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">四つの目的</div>
+      <div class="box b5">業務の有効性・効率性／報告の信頼性／法令等の遵守／資産の保全</div>
+      <div class="lbl" style="margin-top:6px">六つの基本的要素</div>
+      <table class="mx">
+        <tr><td class="t">統制環境</td><td class="t">リスクの評価と対応</td><td class="t">統制活動</td></tr>
+        <tr><td class="t">情報と伝達</td><td class="t">モニタリング</td><td class="t"><b>IT への対応</b></td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">内部統制の限界</div>
+      <div class="stack">
+        <div class="box b4">共謀で無効になりうる</div>
+        <div class="box b4">経営者が無視・無効化しうる</div>
+        <div class="box b4">想定外の事態・判断の誤り</div>
+        <div class="box b1">→ 保証は「合理的」で、絶対ではない</div>
+      </div>
+      <div class="point">J-SOX：上場企業の経営者が財務報告に係る内部統制を評価し、監査を受ける。</div>
+    </div>
+  </div>
+  <div class="cite">出典：金融庁「財務報告に係る内部統制の評価及び監査の基準（令和5年）」Ⅰ 1〜3</div>
+</section>
+
+<section class="slide">
+  <h1>IT 全般統制と業務処理統制</h1>
+  <div class="cols">
+    <div>
+      <div class="box b2">IT 全般統制（土台）<span>システムの開発・保守に係る管理（R6春）／運用・管理／アクセスなどの安全性の確保／外部委託の管理</span></div>
+      <div class="box b1" style="margin-top:8px">IT 業務処理統制（個々の処理）<span>入力情報の完全性・正確性・正当性／エラーの修正と再処理／マスタデータの維持管理／アプリの利用者認証と権限（R4春・R6秋）</span></div>
+      <div class="point warn">規程・方針の策定や教育は、IT の統制ではなく全社的な統制の選択肢。</div>
+    </div>
+    <div>
+      <div class="lbl">IT の統制目標</div>
+      <table class="mx">
+        <tr><td class="t">有効性・効率性</td><td class="l">業務に役立ち、無駄なく</td></tr>
+        <tr><td class="t">準拠性</td><td class="l">法令・規程に従う</td></tr>
+        <tr><td class="t">信頼性</td><td class="l">正確・完全。<b>取引に漏れ・重複がない</b>（R7春）</td></tr>
+        <tr><td class="t">可用性</td><td class="l">必要なときに使える</td></tr>
+        <tr><td class="t">機密性</td><td class="l">権限のない者に開示しない</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：金融庁「財務報告に係る内部統制の評価及び監査に関する実施基準（令和5年）」／IPA 午前Ⅱ R4春 問25・R6春 問25・R6秋 問25・R7春 問25</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>システム監査</h1>
+  <p>リスクに重点を置き、証拠で結論を支える。</p>
+  <div class="foot"><span>支援士 #23 サービスマネジメントとシステム監査</span><span>4・12</span></div>
+</section>
+
+<section class="slide">
+  <h1>監査の流れ</h1>
+  <div class="flow" style="gap:4px">
+    <div class="box b5">監査計画<span>リスクアプローチ</span></div><div class="to">→</div>
+    <div class="box b2">予備調査<span>概要把握・手続書</span></div><div class="to">→</div>
+    <div class="box b1">本調査<span>証拠の入手と評価</span></div><div class="to">→</div>
+    <div class="box b3">報告<span>指摘・改善提案</span></div><div class="to">→</div>
+    <div class="box b5">フォローアップ</div>
+  </div>
+  <table class="mx" style="margin-top:12px">
+    <tr><th style="width:20%">用語</th><th>意味</th></tr>
+    <tr><td class="t">監査調書</td><td class="l">監査人が実施した監査のプロセスを記録したもの。結論の根拠（H31）</td></tr>
+    <tr><td class="t">監査証拠</td><td class="l">運用・保守の記録、アクセスログ、トランザクションログ、監査証跡</td></tr>
+    <tr><td class="t">保証型／助言型</td><td class="l">適切であることを保証する／問題を指摘し改善を助言する</td></tr>
+    <tr><td class="t">CSA</td><td class="l">担当者が自らの統制を評価。監査人は参考にできる</td></tr>
+  </table>
+  <div class="cite">出典：経済産業省「システム監査基準（令和5年）」／IPA 平成31年度春期 午前Ⅱ 問25</div>
+</section>
+
+<section class="slide">
+  <h1>リスクアプローチ</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">監査リスク ＝ 固有リスク × 統制リスク × 発見リスク</div>
+      <div class="stack">
+        <div class="box b4">固有リスク<span>統制がないとした場合の誤りの起きやすさ</span></div>
+        <div class="box b4">統制リスク<span>統制で防げない・見つけられない</span></div>
+        <div class="box b2">発見リスク<span>監査手続で見逃す（監査人が調整できる）</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="lbl">R5春・R7秋で問われた考え方</div>
+      <div class="stack">
+        <div class="box b1">リスクは変化する → 変化と影響に留意し、計画を見直す ← 正解</div>
+        <div class="box b4">監査リスクを完全に回避 → できない</div>
+        <div class="box b4">全対象に一律・均等に資源 → リスクに応じて配分</div>
+        <div class="box b4">「統制リスクと残存リスク」の二つに大別 → 基準にない</div>
+      </div>
+    </div>
+  </div>
+  <div class="cite">出典：経済産業省「システム監査基準（令和5年）」／IPA 午前Ⅱ R5春 問25・R7秋 問25</div>
+</section>
+
+<section class="slide">
+  <h1>指摘事項になるもの</h1>
+  <table class="mx">
+    <tr><th style="width:26%">場面</th><th>指摘事項</th><th style="width:34%">適切な管理（指摘しない）</th></tr>
+    <tr><td class="t">DB の直接修正（R5秋）</td><td class="l">ログ上はアプリ経由の更新として記録</td><td class="l">事前・事後の承認、作業後に特権 ID を無効化</td></tr>
+    <tr><td class="t">個人情報管理台帳（R2）</td><td class="l">見直しは新たな取得のときだけ</td><td class="l">概数での記載、保管場所・期限の記載</td></tr>
+    <tr><td class="t">本番移行（R1秋）</td><td class="l">—</td><td class="l">役割と責任を明確にした移行計画がチェックポイント</td></tr>
+    <tr><td class="t">クラウド導入（R3秋）</td><td class="l">—</td><td class="l">情報の保全には事業者の信頼性・継続性を確認</td></tr>
+    <tr><td class="t">SaaS（R4秋）</td><td class="l">—</td><td class="l">利用者が評価できるのはアプリの利用者 ID</td></tr>
+  </table>
+  <div class="point" style="margin-top:10px">「記録が実態と違う」「定期的でない」「責任がない」は指摘。チェックポイントは、そのリスクに直接効くコントロールを選ぶ。</div>
+  <div class="cite">出典：IPA 午前Ⅱ R1秋 問25・R2 問25・R3秋 問25・R4秋 問25・R5秋 問25</div>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Gold #06 ストリームの生成と中間操作 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">Java SE 17 Programmer II（1Z0-826-JPN）　試験内容 3 Java ストリーム API　#06</div>
+  <h1>ストリームの生成と中間操作</h1>
+  <p>パイプラインと遅延評価・ストリームの作り方・filter／map／flatMap／sorted／peek など</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（Oracle の試験内容チェックリスト、Java SE 17 API の java.util.stream パッケージの説明と各メソッド、The Java Tutorials の Aggregate Operations）を書いた。コードの結果は JDK 17（Eclipse Temurin 17.0.21）で実行して確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>ソース → 中間操作 → 終端操作</small></h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">ソース<span>list.stream()・Stream.of・IntStream.range</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">中間操作（0 個以上）<span>filter・map・flatMap・sorted・peek・limit … Stream を返す</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b3">終端操作（1 つ）<span>forEach・collect・count・findFirst … ここで初めて動く</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>性質</th><th>中身</th></tr>
+        <tr><td class="t">遅延評価</td><td class="l">終端操作がなければ中間操作のラムダ式は呼ばれない</td></tr>
+        <tr><td class="t">1 回だけ</td><td class="l">使用済みの Stream を使うと IllegalStateException</td></tr>
+        <tr><td class="t">保存しない</td><td class="l">元のコレクションは変わらない</td></tr>
+        <tr><td class="t">短絡</td><td class="l">limit・findFirst などで無限ストリームも終わる</td></tr>
+      </table>
+      <div class="point warn">エラー文：stream has already been operated upon or closed</div>
+    </div>
+  </div>
+  <div class="cite">出典：API java.util.stream パッケージの説明「Stream operations and pipelines」／試験内容チェックリスト 3</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>ストリームのしくみ</h1>
+  <p>いつ、どの順に動くか。</p>
+  <div class="foot"><span>Java Gold #06 ストリームの生成と中間操作</span><span>試験内容 3</span></div>
+</section>
+
+<section class="slide">
+  <h1>遅延評価と、要素の流れる順</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">終端操作なし</div>
+      <div class="code small">Stream.of("a","bb","ccc")
+  .filter(x -&gt; { print("f"+x); return x.length() &gt; 1; })
+  .map(x -&gt; { print("m"+x); return x; });
+println("end");
+<span class="c">// end だけ（filter も map も動かない）</span></div>
+      <div class="lbl">終端操作あり：要素ごとに縦に流れる</div>
+      <div class="code small">Stream.of("a","bb","ccc")
+  .peek(x -&gt; print("p"+x))
+  .filter(x -&gt; x.length() &gt; 1)
+  .forEach(x -&gt; print("F"+x));
+<span class="c">// pa pbb Fbb pccc Fccc</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>要素</th><th>peek</th><th>filter</th><th>forEach</th></tr>
+        <tr><td class="t">"a"</td><td class="l">pa</td><td class="l">落ちる</td><td class="l">―</td></tr>
+        <tr><td class="t">"bb"</td><td class="l">pbb</td><td class="l">通る</td><td class="l">Fbb</td></tr>
+        <tr><td class="t">"ccc"</td><td class="l">pccc</td><td class="l">通る</td><td class="l">Fccc</td></tr>
+      </table>
+      <div class="point">「全部 peek → 全部 filter」ではなく、1 要素ずつ最後まで流れる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API java.util.stream パッケージの説明「Laziness」、Stream.peek／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>短絡操作と、状態を持つ操作</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">Stream.of(1,2,3,4)
+  .filter(n -&gt; { print("f"+n); return n % 2 == 0; })
+  .map(n -&gt; { print("m"+n); return n; })
+  .findFirst();
+<span class="c">// f1f2m2 → 3 と 4 は触らない</span></div>
+      <div class="code small">Stream.of("b","a","c").sorted()
+  .peek(System.out::print).limit(1).forEach(...);
+<span class="c">// a!  sorted が全部集めて並べ、先頭だけ流す</span>
+Stream.of("b","a","c")
+  .peek(System.out::print).limit(1).forEach(...);
+<span class="c">// b!</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>分類</th><th>中間操作</th></tr>
+        <tr><td class="t">状態を持たない</td><td class="l">filter・map・flatMap・peek</td></tr>
+        <tr><td class="t">状態を持つ</td><td class="l">distinct・sorted・limit・skip</td></tr>
+        <tr><td class="t">短絡（中間）</td><td class="l">limit・takeWhile</td></tr>
+        <tr><td class="t">短絡（終端）</td><td class="l">findFirst・findAny・anyMatch・allMatch・noneMatch</td></tr>
+      </table>
+      <div class="point warn">無限ストリーム＋sorted は、終端操作を呼ぶと終わらない（組み立てるだけなら何も起きない）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API java.util.stream パッケージの説明「Stateless behaviors」「Short-circuiting」／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>使用済みのストリーム</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">Stream&lt;String&gt; s = Stream.of("a","b");
+s.forEach(System.out::print);   <span class="c">// ab</span>
+s.forEach(System.out::print);   <span class="c">// IllegalStateException</span></div>
+      <div class="code small">Stream&lt;String&gt; s = Stream.of("a","b");
+s.map(String::toUpperCase);     <span class="c">// 戻り値を捨てた</span>
+s.forEach(System.out::print);   <span class="c">// IllegalStateException</span></div>
+      <div class="code small">Stream&lt;Integer&gt; t = s.filter(n -&gt; n &gt; 1);
+t.count();   <span class="c">// ○</span>
+s.count();   <span class="c">// × s は filter した時点で使用済み</span></div>
+    </div>
+    <div>
+      <div class="lbl">遅延バインディング</div>
+      <div class="code small">List&lt;String&gt; src = new ArrayList&lt;&gt;(List.of("a","b"));
+Stream&lt;String&gt; s = src.stream();
+src.add("c");
+s.count();   <span class="c">// 3（終端操作の開始時点の中身）</span></div>
+      <div class="point">終端操作の<b>途中</b>でソースを変えるのは干渉（non-interference 違反）で、ConcurrentModificationException などになりうる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API java.util.stream パッケージの説明「Non-interference」、Stream／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>ストリームの生成</h1>
+  <p>有限・無限、参照型・基本データ型。</p>
+  <div class="foot"><span>Java Gold #06 ストリームの生成と中間操作</span><span>試験内容 3</span></div>
+</section>
+
+<section class="slide">
+  <h1>ストリームの作り方</h1>
+  <table class="mx">
+    <tr><th>書き方</th><th>中身</th><th>注意</th></tr>
+    <tr><td class="t">list.stream()</td><td class="l">コレクションの要素</td><td class="l">parallelStream は並列（#09）</td></tr>
+    <tr><td class="t">Stream.of(1, 2, 3)</td><td class="l">1, 2, 3</td><td class="l">int[] を渡すと要素 1 つの Stream&lt;int[]&gt;</td></tr>
+    <tr><td class="t">Arrays.stream(arr, 1, 3)</td><td class="l">arr[1], arr[2]</td><td class="l">int[] なら IntStream、終わりは含まない</td></tr>
+    <tr><td class="t">IntStream.range(1, 5)／rangeClosed(1, 5)</td><td class="l">1〜4／1〜5</td><td class="l">range(5, 1) は 0 個</td></tr>
+    <tr><td class="t">Stream.iterate(1, n -&gt; n * 2)</td><td class="l">1, 2, 4, 8 …</td><td class="l">無限。limit で止める</td></tr>
+    <tr><td class="t">Stream.iterate(1, n -&gt; n &lt; 20, n -&gt; n * 3)</td><td class="l">1, 3, 9</td><td class="l">Java 9〜。for 文と同じ</td></tr>
+    <tr><td class="t">Stream.generate(() -&gt; "x")</td><td class="l">x, x, x …</td><td class="l">無限</td></tr>
+    <tr><td class="t">Stream.empty()・Stream.ofNullable(null)</td><td class="l">0 個</td><td class="l">Stream.of((String) null) は 1 個</td></tr>
+    <tr><td class="t">Stream.concat(a, b)・Stream.builder()</td><td class="l">a のあと b・add した順</td><td class="l">concat は static で引数 2 つ</td></tr>
+    <tr><td class="t">"abc".chars()</td><td class="l">97, 98, 99</td><td class="l">IntStream（Stream&lt;Character&gt; ではない）</td></tr>
+  </table>
+  <div class="cite">出典：API Collection.stream・Stream.of・iterate・generate・empty・ofNullable・concat・builder、Arrays.stream、IntStream.range・rangeClosed、CharSequence.chars／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>配列とストリーム</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">int[] arr = {1, 2, 3, 4, 5};
+Arrays.stream(arr, 1, 3).sum()  <span class="c">// 2+3 = 5</span>
+Arrays.asList(arr).size()       <span class="c">// 1（List&lt;int[]&gt;）</span>
+Stream.of(arr).count()          <span class="c">// 1（Stream&lt;int[]&gt;）</span>
+IntStream.of(arr).count()       <span class="c">// 5</span></div>
+      <div class="point warn">int[] は T... に展開されない。配列 1 つが要素になる。</div>
+    </div>
+    <div>
+      <div class="box b2">Stream&lt;T&gt;<span>参照型</span></div>
+      <div class="arrow">mapToInt ↓　↑ boxed・mapToObj</div>
+      <div class="box b3">IntStream・LongStream・DoubleStream<span>sum・average・max（OptionalInt）・range</span></div>
+      <div class="point">Stream に mapToObj はない、IntStream の map は int → int。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API Arrays.stream・Arrays.asList・Stream.of・IntStream.of・mapToObj・boxed、Stream.mapToInt／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>中間操作</h1>
+  <p>変換・展開・選別・並べ替え。</p>
+  <div class="foot"><span>Java Gold #06 ストリームの生成と中間操作</span><span>試験内容 3</span></div>
+</section>
+
+<section class="slide">
+  <h1>map と flatMap と mapMulti</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">map：1 対 1</div>
+      <div class="code small">Stream.of("a","bb").map(String::length)  <span class="c">// 1, 2</span></div>
+      <div class="lbl">flatMap：1 対多（平らにつなぐ）</div>
+      <div class="code small">Stream.of(List.of(1,2), List.of(3), List.&lt;Integer&gt;of())
+  .flatMap(List::stream).map(n -&gt; n * 10)
+<span class="c">// [10, 20, 30]（空の List からは何も出ない）</span>
+Stream.of(1,2).flatMap(n -&gt; Stream.of(n, n))  <span class="c">// [1, 1, 2, 2]</span>
+Stream.of("x","yy").flatMapToInt(String::chars).count() <span class="c">// 3</span></div>
+      <div class="lbl">mapMulti（Java 16〜）</div>
+      <div class="code small">Stream.of(1,2,3).&lt;String&gt;mapMulti((n, sink) -&gt; {
+  if (n != 2) { sink.accept(n+"a"); sink.accept(n+"b"); }
+})   <span class="c">// 1a1b3a3b</span></div>
+    </div>
+    <div>
+      <div class="box b2">[[1, 2], [3], []]</div>
+      <div class="arrow">↓ map(List::stream)</div>
+      <div class="box b3">Stream&lt;Stream&lt;Integer&gt;&gt;<span>入れ子のまま</span></div>
+      <div class="arrow">↓ flatMap(List::stream)</div>
+      <div class="box b1">Stream&lt;Integer&gt;: 1, 2, 3</div>
+    </div>
+  </div>
+  <div class="cite">出典：API Stream.map・flatMap・flatMapToInt・mapMulti（@since 16）／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>選別：distinct・limit・skip・takeWhile・dropWhile</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">Stream.of(3,1,3,2,1).distinct()        <span class="c">// 3, 1, 2</span>
+  .sorted(Comparator.reverseOrder())    <span class="c">// 3, 2, 1</span>
+Stream.of("a","b","c","d","e").skip(1).limit(3)  <span class="c">// bcd</span>
+Stream.iterate(1, n -&gt; n + 1).filter(n -&gt; n % 2 == 0).limit(3)
+<span class="c">// 2, 4, 6（無限でも limit で終わる）</span></div>
+    </div>
+    <div>
+      <div class="lbl">[1, 2, 3, 10, 1, 2] に n &lt; 5</div>
+      <table class="mx">
+        <tr><th>操作</th><th>結果</th></tr>
+        <tr><td class="t">filter</td><td class="l">[1, 2, 3, 1, 2]</td></tr>
+        <tr><td class="t">takeWhile</td><td class="l">[1, 2, 3]（10 で止まる）</td></tr>
+        <tr><td class="t">dropWhile</td><td class="l">[10, 1, 2]（10 から後ろ全部）</td></tr>
+      </table>
+      <div class="point">takeWhile・dropWhile は Java 9〜。条件が一度 false になったら切り替わる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API Stream.distinct・skip・limit・takeWhile・dropWhile／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>sorted と toList</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">Stream.of("aa","b","cc","d")
+  .sorted(Comparator.comparing(String::length)
+          .thenComparing(Comparator.reverseOrder()))
+<span class="c">// [d, b, cc, aa]</span></div>
+      <div class="point">引数なしの sorted は自然順序。Comparable でない要素なら実行時に ClassCastException。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th></th><th>stream.toList()</th><th>collect(Collectors.toList())</th></tr>
+        <tr><td class="t">導入</td><td class="l">Java 16</td><td class="l">Java 8</td></tr>
+        <tr><td class="t">変更</td><td class="l">できない（add で UnsupportedOperationException）</td><td class="l">仕様上の保証なし（実装は ArrayList）</td></tr>
+      </table>
+      <div class="code small">IntStream.of(3,1,2).sorted().boxed()
+  .collect(Collectors.toList())   <span class="c">// [1, 2, 3]</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：API Stream.sorted・toList（@since 16）、Collectors.toList、Comparator.comparing・thenComparing／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">何が表示されるか</td><td class="l">終端操作があるか（なければ peek・map は動かない）</td></tr>
+    <tr><td class="t">出力の順</td><td class="l">要素ごとに縦に流れる。sorted は全部集めてから。findFirst・limit で途中で止まる</td></tr>
+    <tr><td class="t">例外</td><td class="l">同じ Stream の 2 回使用は IllegalStateException、toList() に add は UnsupportedOperationException</td></tr>
+    <tr><td class="t">生成</td><td class="l">range と rangeClosed、iterate の 3 引数版、Stream.of(int[])、ofNullable</td></tr>
+    <tr><td class="t">型</td><td class="l">IntStream の map は int → int、Stream に mapToObj はない、boxed</td></tr>
+    <tr><td class="t">展開</td><td class="l">flatMap と map の違い、takeWhile・dropWhile と filter の違い</td></tr>
+  </table>
+  <div class="cite">出典：試験内容チェックリスト 3／本資料の問題演習（全 30 問、JDK 17 で確認）</div>
+</section>
+
+</body>
+</html>

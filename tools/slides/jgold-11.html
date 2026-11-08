@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Java Gold #11 モジュールの移行とサービス 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">Java SE 17 Programmer II（1Z0-826-JPN）　試験内容 4 Java モジュール・システム　#11</div>
+  <h1>モジュールの移行とサービス</h1>
+  <p>名前付き・自動・無名モジュール、ボトムアップとトップダウン、jdeps、ServiceLoader</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（Oracle の試験内容チェックリスト、JEP 261、Java SE 17 API の ModuleFinder・ServiceLoader、JLS 7.7.3・7.7.4、JDK 17 Tool Specifications の jdeps・jar）を書いた。jar・モジュールの結果は JDK 17（Eclipse Temurin 17.0.21）で実行して確かめた</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>どこに置くかで、モジュールの種類が決まる</small></h1>
+  <table class="mx">
+    <tr><th></th><th>名前付きモジュール</th><th>自動モジュール</th><th>無名モジュール</th></tr>
+    <tr><td class="t">置く場所</td><td class="l">モジュール・パス</td><td class="l">モジュール・パス</td><td class="l">クラスパス</td></tr>
+    <tr><td class="t">module-info</td><td class="l">ある</td><td class="l">ない</td><td class="l">ない（あっても無視）</td></tr>
+    <tr><td class="t">名前</td><td class="l">module-info の名前</td><td class="l">Automatic-Module-Name かファイル名</td><td class="l">なし（getName() は null）</td></tr>
+    <tr><td class="t">公開</td><td class="l">exports したものだけ</td><td class="l">すべて</td><td class="l">すべて</td></tr>
+    <tr><td class="t">読む</td><td class="l">requires したものだけ</td><td class="l">すべて（無名も）</td><td class="l">すべて</td></tr>
+    <tr><td class="t">requires できるか</td><td class="l">○</td><td class="l">○</td><td class="l">×（名前がない）</td></tr>
+    <tr><td class="t">jlink</td><td class="l">○</td><td class="l">×</td><td class="l">×</td></tr>
+  </table>
+  <div class="point warn">名前付きモジュールはクラスパスを読めない：package legacy.util does not exist。</div>
+  <div class="cite">出典：JEP 261（Automatic modules・Unnamed modules）、API Module.getName・isNamed／JDK 17 でのコンパイルと実行の結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>自動モジュールと無名モジュール</h1>
+  <p>名前の決まり方と、読める範囲。</p>
+  <div class="foot"><span>Java Gold #11 モジュールの移行とサービス</span><span>試験内容 4</span></div>
+</section>
+
+<section class="slide">
+  <h1>自動モジュールの名前</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>jar のファイル名</th><th>名前@バージョン</th></tr>
+        <tr><td class="t">commons-lang3-3.12.0.jar</td><td class="l">commons.lang3@3.12.0</td></tr>
+        <tr><td class="t">my-util.jar</td><td class="l">my.util</td></tr>
+        <tr><td class="t">my_util-2.0-SNAPSHOT.jar</td><td class="l">my.util@2.0-SNAPSHOT</td></tr>
+        <tr><td class="t">legacy.tools-1.0.jar</td><td class="l">legacy.tools@1.0</td></tr>
+        <tr><td class="t">x--y-1.jar</td><td class="l">x.y@1</td></tr>
+        <tr><td class="t">named-1.0.jar＋Automatic-Module-Name: com.example.legacy</td><td class="l">com.example.legacy@1.0</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="box b1">ファイル名から作る手順</div>
+      <div class="box b2">① .jar を取る</div>
+      <div class="box b2">② 末尾の「-数字…」をバージョンとして外す</div>
+      <div class="box b2">③ 英数字以外をドットに</div>
+      <div class="box b2">④ ドットの連続を 1 つに、前後のドットを取る</div>
+      <div class="point">マニフェストの Automatic-Module-Name があれば、そちらが優先。</div>
+    </div>
+  </div>
+  <div class="cite">出典：API ModuleFinder.of（automatic module の名前）／jar --describe-module の結果（No module descriptor found. Derived automatic module.）</div>
+</section>
+
+<section class="slide">
+  <h1>読める範囲</h1>
+  <div class="cols">
+    <div>
+      <div class="box b2">名前付き com.three<span>requires bridge;</span></div>
+      <div class="arrow">↓ requires</div>
+      <div class="box b3">自動モジュール bridge<span>bridge.jar（モジュール・パス）</span></div>
+      <div class="arrow">↓ 自動モジュールは無名モジュールも読む</div>
+      <div class="box b1">無名モジュール<span>-cp depout の other.O</span></div>
+      <div class="code small">java -p out3:mp3 -cp depout -m com.three/com.three.Main
+<span class="c">// other</span>
+java -p out3:mp3 -m com.three/com.three.Main
+<span class="c">// NoClassDefFoundError: other/O</span></div>
+    </div>
+    <div>
+      <div class="lbl">分割パッケージ</div>
+      <div class="code small">mp/my-util.jar              legacy.util
+mp/commons-lang3-3.12.0.jar legacy.util
+<span class="c">// error: module com.app reads package legacy.util
+//   from both my.util and commons.lang3</span></div>
+      <div class="lbl">クラスパスのクラス</div>
+      <div class="code small">Hello.class.getModule()          <span class="c">// unnamed module @58dc58f9</span>
+Hello.class.getModule().isNamed() <span class="c">// false</span>
+Hello.class.getModule().getName() <span class="c">// null</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：JEP 261、API Module／JDK 17 でのコンパイルと実行の結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>移行と jdeps</h1>
+  <p>下から進めるか、上から進めるか。</p>
+  <div class="foot"><span>Java Gold #11 モジュールの移行とサービス</span><span>試験内容 4</span></div>
+</section>
+
+<section class="slide">
+  <h1>ボトムアップとトップダウン</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">ボトムアップ（依存される側から）</div>
+      <div class="box b3">app.jar<span>まだ → クラスパス（無名）</span></div>
+      <div class="arrow">↓ 使う</div>
+      <div class="box b2">service<span>module-info を足した → モジュール・パス</span></div>
+      <div class="arrow">↓ 使う</div>
+      <div class="box b1">util<span>最初にモジュール化</span></div>
+      <div class="point">無名はすべてを読めるので、上の層はクラスパスのままでよい。</div>
+    </div>
+    <div>
+      <div class="lbl">トップダウン（アプリから）</div>
+      <div class="box b1">com.app<span>module-info を足した</span></div>
+      <div class="arrow">↓ requires my.util;</div>
+      <div class="box b3">my-util.jar<span>まだ → モジュール・パスに置いて自動モジュール</span></div>
+      <div class="point">自分で直せないライブラリがあるときに向く。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JEP 261、The State of the Module System（Migration）</div>
+</section>
+
+<section class="slide">
+  <h1>jdeps</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">jdeps -s cpout plainout
+<span class="c">cpout -> java.base
+cpout -> plainout
+plainout -> java.base</span>
+jdeps --module-path mp2 -s out/com.app
+<span class="c">com.app -> java.base
+com.app -> my.util</span>
+jdeps --generate-module-info gen my-util.jar
+<span class="c">module my.util {
+    exports legacy.util;
+}</span></div>
+    </div>
+    <div>
+      <div class="code small">jdeps --jdk-internals jiout
+<span class="c">jiout -> jdk.unsupported
+  Int -> sun.misc.Unsafe  JDK internal API (jdk.unsupported)
+JDK Internal API     Suggested Replacement
+sun.misc.Unsafe      See http://openjdk.java.net/jeps/260</span></div>
+      <table class="mx">
+        <tr><th>オプション</th><th>中身</th></tr>
+        <tr><td class="t">-s（-summary）</td><td class="l">まとまり単位の依存</td></tr>
+        <tr><td class="t">--jdk-internals</td><td class="l">JDK 内部 API の利用と代替</td></tr>
+        <tr><td class="t">--generate-module-info</td><td class="l">module-info.java のひな形</td></tr>
+        <tr><td class="t">--generate-open-module</td><td class="l">open module のひな形</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：JDK 17 Tool Specifications jdeps、JEP 260／JDK 17 での実行結果</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>サービス</h1>
+  <p>uses・provides と ServiceLoader。</p>
+  <div class="foot"><span>Java Gold #11 モジュールの移行とサービス</span><span>試験内容 4</span></div>
+</section>
+
+<section class="slide">
+  <h1>3 つのモジュールの役割</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">module svc.api {                <span class="c">// SPI</span>
+  exports svc.api;
+}
+module svc.impl {               <span class="c">// プロバイダ</span>
+  requires svc.api;
+  provides svc.api.Greeter
+      with svc.impl.Polite, svc.impl.Casual;
+}
+module svc.app {                <span class="c">// 使う側</span>
+  requires svc.api;
+  uses svc.api.Greeter;
+}</div>
+    </div>
+    <div>
+      <div class="box b1">svc.api<span>Greeter（インタフェース）</span></div>
+      <div class="cols" style="gap:8px">
+        <div class="box b2">svc.impl<span>実装を provides</span></div>
+        <div class="box b3">svc.app<span>uses して ServiceLoader で取り出す</span></div>
+      </div>
+      <div class="point">svc.app は svc.impl を requires しない。svc.impl は実装のパッケージを exports しない（contains svc.impl）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JLS 7.7.3 Service Consumption・7.7.4 Service Provision／java --describe-module の結果</div>
+</section>
+
+<section class="slide">
+  <h1>ServiceLoader</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">ServiceLoader&lt;Greeter&gt; sl = ServiceLoader.load(Greeter.class);
+for (Greeter g : sl) println(g.greet("A") + " " + simpleName);
+<span class="c">// Hello, A Polite
+// [provider]Hi A Casual   ← provider() が呼ばれた</span>
+sl.stream().map(p -&gt; p.type().getSimpleName()).toList()
+<span class="c">// [Polite, Casual]   ← type() はインスタンスを作らない</span>
+ServiceLoader.load(Greeter.class).findFirst()  <span class="c">// Optional</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>状況</th><th>結果</th></tr>
+        <tr><td class="t">実装がない</td><td class="l">空（stream は []、findFirst は empty）</td></tr>
+        <tr><td class="t">uses がない</td><td class="l">ServiceConfigurationError（does not declare `uses`）</td></tr>
+        <tr><td class="t">実装が private コンストラクタだけ</td><td class="l">コンパイルエラー（not public）</td></tr>
+        <tr><td class="t">インタフェースを実装していない</td><td class="l">コンパイルエラー（must be a subtype …）</td></tr>
+        <tr><td class="t">public static provider() がある</td><td class="l">それが呼ばれる（コンストラクタは private でよい）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：API ServiceLoader・ServiceLoader.Provider・ServiceConfigurationError、JLS 7.7.4／JDK 17 でのコンパイルと実行の結果</div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">モジュールの種類</td><td class="l">置く場所（-p か -cp）と module-info の有無</td></tr>
+    <tr><td class="t">自動モジュールの名前</td><td class="l">Automatic-Module-Name 優先、ハイフン → ドット、末尾のバージョンを外す</td></tr>
+    <tr><td class="t">読めるか</td><td class="l">名前付きは無名を読めない、自動はすべてを読む、分割パッケージはエラー</td></tr>
+    <tr><td class="t">移行</td><td class="l">ボトムアップは下から＋残りはクラスパス、トップダウンは上から＋ライブラリは自動モジュール</td></tr>
+    <tr><td class="t">jdeps</td><td class="l">-s・--jdk-internals・--generate-module-info</td></tr>
+    <tr><td class="t">サービス</td><td class="l">uses は使う側、provides … with は実装側、API は exports、使う側は実装を requires しない</td></tr>
+  </table>
+  <div class="cite">出典：試験内容チェックリスト 4／本資料の問題演習（全 30 問、JDK 17 で確認）</div>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>支援士 #02 攻撃の流れと認証への攻撃 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">情報処理安全確保支援士試験　科目A-2　中分類23 情報セキュリティの脅威　#02</div>
+  <h1>攻撃の流れと認証への攻撃</h1>
+  <p>攻撃者はどんな順で動くのか。パスワードとセッションはどう狙われるのか</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（IPA の支援士試験シラバス案・安全なウェブサイトの作り方、Lockheed Martin、MITRE ATT&amp;CK など）を書いた。過去問は IPA 公開の午前Ⅱ。例の会社や場面は Claude が作った</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>シラバス案 中分類23 小分類2「攻撃手法」のうち前半</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 攻撃のライフサイクルとフレームワーク<span>サイバーキルチェーン・MITRE ATT&amp;CK（TTP）・偵察・初期侵入・権限昇格・永続化・横展開・C2・持ち出し</span></div>
+      <div class="box b2">2 パスワードと資格情報への攻撃<span>総当たり・辞書・リバース・スプレー・クレデンシャルスタッフィング・レインボーテーブル・Pass the Hash・MFA 疲労</span></div>
+      <div class="box b3">3 セッションと通信への攻撃<span>セッションハイジャック・固定化・リプレイ・中間者・MITB とトランザクション署名</span></div>
+    </div>
+    <div>
+      <div class="lbl">この分野の過去問（令和元〜7年度）</div>
+      <table class="mx">
+        <tr><th>テーマ</th><th style="width:34%">出た回</th></tr>
+        <tr><td class="l">Pass the Hash</td><td class="t">R3秋・R5春・R7秋</td></tr>
+        <tr><td class="l">MITB とトランザクション署名</td><td class="t">H31春・R2・R4春・R5秋</td></tr>
+        <tr><td class="l">サイバーキルチェーン</td><td class="t">R3秋・R4春</td></tr>
+        <tr><td class="l">パスワードスプレー・総数の式</td><td class="t">R4秋・R4春</td></tr>
+        <tr><td class="l">MITRE ATT&amp;CK・ドメインフロンティング</td><td class="t">R6秋・R7秋</td></tr>
+      </table>
+      <div class="point"><b>同じ問題が何度も出る</b>のが午前Ⅱの特徴。Pass the Hash は3回とも同じ選択肢。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」中分類23 小分類2／IPA 午前Ⅱ 各回（このPDFの問題演習を参照）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>攻撃のライフサイクルとフレームワーク</h1>
+  <p>攻撃を「段階」で見るのがキルチェーン、「手口の辞書」として見るのが ATT&amp;CK。</p>
+  <div class="foot"><span>支援士 #02 攻撃の流れと認証への攻撃</span><span>23-2</span></div>
+</section>
+
+<section class="slide">
+  <h1>サイバーキルチェーン：7つの段階のどこかで鎖を断つ</h1>
+  <div class="flow" style="gap:4px">
+    <div class="box b5">① 偵察<span>公開情報・SNS・ポートスキャン</span></div><div class="to">→</div>
+    <div class="box b4">② 武器化<span>攻撃コード入りの文書を作る</span></div><div class="to">→</div>
+    <div class="box b3">③ 配送<span>標的型メール・改ざんサイト</span></div><div class="to">→</div>
+    <div class="box b3">④ 攻撃<span>脆弱性をつく（エクスプロイト）</span></div><div class="to">→</div>
+    <div class="box b2">⑤ インストール<span>マルウェアを住みつかせる</span></div><div class="to">→</div>
+    <div class="box b1">⑥ 遠隔操作<span>C&amp;C と通信</span></div><div class="to">→</div>
+    <div class="box" style="background:#b23a2c">⑦ 目的の実行<span>窃取・破壊・暗号化</span></div>
+  </div>
+  <div class="cols" style="margin-top:14px">
+    <table class="mx">
+      <tr><th style="width:22%">段階</th><th>断つ対策の例</th></tr>
+      <tr><td class="t">①</td><td class="l">公開する情報を絞る（攻撃対象領域の最小化）</td></tr>
+      <tr><td class="t">③</td><td class="l">メールの添付・URL の検査、送信ドメイン認証、訓練</td></tr>
+      <tr><td class="t">④⑤</td><td class="l">パッチ、マクロの無効化、EDR</td></tr>
+      <tr><td class="t">⑥</td><td class="l">外向き通信の制限・監視（コネクトバック対策）</td></tr>
+      <tr><td class="t">⑦</td><td class="l">アクセス権の最小化、DLP、バックアップ</td></tr>
+    </table>
+    <div>
+      <div class="point warn"><b>R4春 問5 のひっかけ：</b>「インターネットに公開されていない社内ポータルから組織図を入手」は、もう侵入したあと（偵察ではない）。偵察は<b>侵入する前に外から</b>集める。</div>
+      <div class="point"><b>R3秋 問5：</b>「チェーン」の言葉から、サプライチェーン・中間者攻撃・ブロックチェーンの説明を並べてくる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Lockheed Martin「Cyber Kill Chain」（7段階）／IPA 午前Ⅱ 令和4年度春期 問5・令和3年度秋期 問5。日本語の段階名は Claude の訳</div>
+</section>
+
+<section class="slide">
+  <h1>MITRE ATT&amp;CK：実際の攻撃の手口を集めた辞書</h1>
+  <div class="cols wide-r">
+    <div>
+      <div class="lbl">Enterprise 版の14の戦術（攻撃者の目的）</div>
+      <table class="mx mini">
+        <tr><td class="t">偵察</td><td class="t">リソース開発</td><td class="t">初期アクセス</td><td class="t">実行</td></tr>
+        <tr><td class="t">永続化</td><td class="t">権限昇格</td><td class="t">防御回避</td><td class="t">認証情報アクセス</td></tr>
+        <tr><td class="t">探索</td><td class="x">横展開</td><td class="t">収集</td><td class="t">C&amp;C</td></tr>
+        <tr><td class="t">持ち出し</td><td class="t">影響</td><td></td><td></td></tr>
+      </table>
+      <div class="lbl" style="margin-top:12px">TTP の3つの階層</div>
+      <div class="stack">
+        <div class="box b1">戦術（Tactics）<span>何のために：例）認証情報アクセス</span></div>
+        <div class="box b2">技術（Techniques）<span>どうやって：例）OS の認証情報のダンプ</span></div>
+        <div class="box b3">手順（Procedures）<span>具体的に：例）あるツールでメモリからハッシュ値を取り出す</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="lbl">R6秋 問3 の選択肢の正体</div>
+      <table class="mx">
+        <tr><th style="width:38%">名前</th><th>正体</th></tr>
+        <tr><td class="t">MITRE ATT&amp;CK</td><td class="l"><b>攻撃手法を分類したナレッジベース</b>（正解）</td></tr>
+        <tr><td class="t">CVSS</td><td class="l">脆弱性の深刻度の評価方法（#19）</td></tr>
+        <tr><td class="t">STIX／TAXII</td><td class="l">脅威情報の記述形式／交換手順（#09）</td></tr>
+        <tr><td class="t">キルチェーン</td><td class="l">攻撃の7段階のモデル</td></tr>
+      </table>
+      <div class="point"><b>なぜ TTP か：</b>IP アドレスやハッシュ値（IoC）は攻撃者がすぐ変えられる。行動のくせ（TTP）は変えにくいので、TTP に基づく検知は長く効く。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://attack.mitre.org/tactics/enterprise/">MITRE「ATT&amp;CK Enterprise Tactics」</a>／IPA 午前Ⅱ 令和6年度秋期 問3。日本語の戦術名は Claude の訳</div>
+</section>
+
+<section class="slide">
+  <h1>侵入してから目的を果たすまで</h1>
+  <svg width="856" height="200" viewBox="0 0 856 200">
+    <defs><marker id="b1" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12" text-anchor="middle">
+      <rect x="10" y="20" width="836" height="170" rx="12" fill="#f5f5f7" stroke="#d2d2d7"/><text x="60" y="40" fill="#6e6e73">社内ネットワーク</text>
+      <rect x="30" y="70" width="130" height="56" rx="8" fill="#5b80bf"/><text x="95" y="94" fill="#fff" font-weight="700">① 初期侵入</text><text x="95" y="112" fill="#fff" font-size="11">メール・VPN 機器</text>
+      <rect x="200" y="70" width="130" height="56" rx="8" fill="#2f5596"/><text x="265" y="94" fill="#fff" font-weight="700">② 権限昇格</text><text x="265" y="112" fill="#fff" font-size="11">管理者権限を奪う</text>
+      <rect x="370" y="70" width="130" height="56" rx="8" fill="#2f5596"/><text x="435" y="94" fill="#fff" font-weight="700">③ 永続化</text><text x="435" y="112" fill="#fff" font-size="11">自動起動・裏口</text>
+      <rect x="540" y="70" width="140" height="56" rx="8" fill="#1f3a68"/><text x="610" y="94" fill="#fff" font-weight="700">④ 横展開</text><text x="610" y="112" fill="#fff" font-size="11">Pass the Hash など</text>
+      <rect x="716" y="70" width="120" height="56" rx="8" fill="#b23a2c"/><text x="776" y="94" fill="#fff" font-weight="700">⑤ 持ち出し</text><text x="776" y="112" fill="#fff" font-size="11">外部へ送信</text>
+      <line x1="160" y1="98" x2="196" y2="98" stroke="#1f3a68" stroke-width="2" marker-end="url(#b1)"/>
+      <line x1="330" y1="98" x2="366" y2="98" stroke="#1f3a68" stroke-width="2" marker-end="url(#b1)"/>
+      <line x1="500" y1="98" x2="536" y2="98" stroke="#1f3a68" stroke-width="2" marker-end="url(#b1)"/>
+      <line x1="680" y1="98" x2="712" y2="98" stroke="#1f3a68" stroke-width="2" marker-end="url(#b1)"/>
+      <text x="428" y="160" fill="#1f3a68" font-weight="700">この間ずっと C2 通信（外向きの HTTPS・DNS にまぎれる）</text>
+    </g>
+  </svg>
+  <div class="cols">
+    <div class="point"><b>ドメインフロンティング（R7秋 問8）：</b>CDN を通るとき、外から見える接続先（TLS の SNI）は有名な正規ドメイン、暗号化された中身（HTTP の Host ヘッダ）は攻撃者のサーバ。URL フィルタでは止めにくい C2 の隠し方。</div>
+    <div class="point warn"><b>R7秋 問8 のひっかけ：</b>偽の DNS 情報を蓄積させる＝DNS キャッシュポイズニング、送信元を偽装した DNS 要求＝DNS リフレクション、ドメイン情報の書換え＝ドメイン名ハイジャック（#04）。</div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」用語例「初期侵入，権限昇格，永続化，ラテラルムーブメント，C2，持ち出し（Exfiltration）」／IPA 午前Ⅱ 令和7年度秋期 問8</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>パスワードと資格情報への攻撃</h1>
+  <p>「何を固定して、何を変えるか」で見分ける。ハッシュ値は解読しなくても使われることがある。</p>
+  <div class="foot"><span>支援士 #02 攻撃の流れと認証への攻撃</span><span>23-2</span></div>
+</section>
+
+<section class="slide">
+  <h1>パスワードを当てる攻撃：何を固定し、何を変えるか</h1>
+  <table class="mx">
+    <tr><th style="width:24%">攻撃</th><th style="width:20%">固定</th><th>変えて試す</th><th style="width:24%">ロックは効く？</th></tr>
+    <tr><td class="t">ブルートフォース</td><td>1つの ID</td><td class="l">すべての文字の組合せ</td><td class="t">効く</td></tr>
+    <tr><td class="t">辞書攻撃</td><td>1つの ID</td><td class="l">辞書の単語・人名・その組合せ</td><td class="t">効く</td></tr>
+    <tr><td class="t">リバースブルートフォース</td><td>1つのパスワード</td><td class="l">多数の ID</td><td class="x">効かない（各 ID は1回）</td></tr>
+    <tr><td class="t">パスワードスプレー</td><td>よく使われるパスワード</td><td class="l">多数の ID に、時刻と接続元 IP を変えて少しずつ</td><td class="x">回避される</td></tr>
+    <tr><td class="t">クレデンシャルスタッフィング</td><td>漏れた ID とパスワードの組</td><td class="l">別のサイトで試す</td><td class="x">失敗が少なく気付きにくい</td></tr>
+  </table>
+  <div class="cols" style="margin-top:10px">
+    <div class="ex"><span class="lbl">R4春 問4</span>文字の種類 M、文字数 n のパスワードの総数は <b>Mⁿ</b>（同じ文字を何度使ってもよく、順番も区別する）。<br>M!/(M−n)! は「同じ文字を使わない並べ方」、M!/(n!(M−n)!) は「組合せ」なので誤り。</div>
+    <div class="point"><b>共通の切り札は MFA。</b>加えて、スプレーやリバースは「1つの ID の失敗回数」では見えないので、<b>組織全体のログイン失敗の傾向</b>や接続元を監視する。スタッフィングは使い回しの禁止と、漏えいしたパスワードの利用の拒否。</div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ 令和4年度秋期 問6（パスワードスプレー）・令和4年度春期 問4（総数の式）／IPA「支援士試験 シラバス（案）」用語例「ブルートフォース攻撃，リバースブルートフォース攻撃，クレデンシャルスタッフィング」</div>
+</section>
+
+<section class="slide">
+  <h1>ハッシュ値をねらう攻撃：解読するか、そのまま使うか</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">レインボーテーブル攻撃（解読する）</div>
+      <svg width="400" height="150" viewBox="0 0 400 150">
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="20" width="120" height="44" rx="6" fill="#b23a2c"/><text x="70" y="47" fill="#fff">盗んだハッシュ値</text>
+          <rect x="150" y="10" width="110" height="64" rx="6" fill="#fff" stroke="#1f3a68"/><text x="205" y="36">事前計算した表</text><text x="205" y="54" font-size="11">ハッシュ → 平文</text>
+          <rect x="280" y="20" width="110" height="44" rx="6" fill="#1f3a68"/><text x="335" y="47" fill="#fff">平文パスワード</text>
+          <text x="140" y="46">→</text><text x="270" y="46">→</text>
+          <rect x="10" y="94" width="380" height="46" rx="6" fill="#e8eef8"/><text x="200" y="114" fill="#1f3a68" font-weight="700">対策：ソルト（利用者ごとの乱数）</text><text x="200" y="131" font-size="11">同じパスワードでもハッシュ値が変わり、表が使えない</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="cap">Pass the Hash（解読しない）</div>
+      <svg width="400" height="150" viewBox="0 0 400 150">
+        <g font-size="12" text-anchor="middle">
+          <rect x="10" y="20" width="120" height="44" rx="6" fill="#b23a2c"/><text x="70" y="40" fill="#fff">メモリから盗んだ</text><text x="70" y="56" fill="#fff">ハッシュ値</text>
+          <rect x="250" y="20" width="140" height="44" rx="6" fill="#1f3a68"/><text x="320" y="40" fill="#fff">ファイルサーバ</text><text x="320" y="56" fill="#fff" font-size="11">NTLM 認証</text>
+          <text x="190" y="46">そのまま送る →</text>
+          <rect x="10" y="94" width="380" height="46" rx="6" fill="#e8eef8"/><text x="200" y="114" fill="#1f3a68" font-weight="700">ハッシュ値だけで認証できるしくみの悪用</text><text x="200" y="131" font-size="11">横展開の定番。Kerberos のチケット版が Pass the Ticket</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="ex"><span class="lbl">R7秋 問2（R5春・R3秋と同じ）</span>「ハッシュ値から導出された平文パスワードを使う」は<b>解読してから使う</b>ので Pass the Hash ではない。正解は「パスワードのハッシュ値だけでログインできる仕組みを悪用してログインする」。</div>
+  <div class="point"><b>Pass the Hash の対策：</b>管理者アカウントを端末ごとに分ける（同じパスワードの使い回しをしない）、特権アカウントの利用を絞る（PAM）、メモリからの認証情報の窃取を防ぐ OS の機能、NTLM より強い認証方式に移す。</div>
+  <div class="cite">出典：IPA 午前Ⅱ 令和7年度秋期 問2／IPA「支援士試験 シラバス（案）」用語例「レインボーテーブル攻撃」、中分類26「パスワードクラック対策（ソルト，ストレッチング など）」</div>
+</section>
+
+<section class="slide">
+  <h1>多要素認証をすり抜ける攻撃</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">MFA 疲労攻撃（プッシュ通知爆撃）</div>
+      <ol class="steps">
+        <li>攻撃者は ID とパスワードをすでに持っている</li>
+        <li>ログインを何度も試し、承認の通知を大量に送る</li>
+        <li>利用者が根負けや誤操作で「承認」を押す</li>
+      </ol>
+      <div class="point"><b>対策：</b>番号照合（ログイン画面の数字を入力させる）、通知に地域やアプリ名を表示、短時間の繰り返しを制限、パスキーへの移行。</div>
+    </div>
+    <div>
+      <div class="cap">AiTM フィッシング（中継型）</div>
+      <svg width="400" height="120" viewBox="0 0 400 120">
+        <g font-size="12" text-anchor="middle">
+          <rect x="5" y="35" width="90" height="44" rx="6" fill="#1f3a68"/><text x="50" y="62" fill="#fff">利用者</text>
+          <rect x="150" y="35" width="100" height="44" rx="6" fill="#b23a2c"/><text x="200" y="55" fill="#fff">偽サイト</text><text x="200" y="71" fill="#fff" font-size="10.5">（中継プロキシ）</text>
+          <rect x="305" y="35" width="90" height="44" rx="6" fill="#3a7d44"/><text x="350" y="62" fill="#fff">本物</text>
+          <text x="122" y="30" font-size="10.5">ID・PW・コード</text><text x="122" y="52">⇄</text><text x="277" y="52">⇄</text>
+          <text x="277" y="100" font-size="10.5" fill="#b23a2c">セッション cookie を盗む</text>
+        </g>
+      </svg>
+      <div class="point"><b>ワンタイムコードは中継されると防げない。</b>パスキー（FIDO2）はブラウザが接続先のオリジンを確かめて署名するので、偽ドメインでは成り立たない＝<b>フィッシング耐性</b>（#10）。</div>
+    </div>
+  </div>
+  <div class="point warn"><b>ひっかけ：</b>「パスワードを長くする」「有効期限を短くする」は、攻撃者がすでにパスワードを持っている／その場で中継している攻撃には効かない。</div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」用語例「MFA 疲労攻撃（…プッシュ通知爆撃（Push Bombing））」、中分類25「フィッシング耐性のある認証」「FIDO（FIDO2，WebAuthn，CTAP，パスキー）」</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>セッションと通信への攻撃</h1>
+  <p>ログインのあとは「セッション ID」が本人の証明になる。そこと、通信の途中が狙われる。</p>
+  <div class="foot"><span>支援士 #02 攻撃の流れと認証への攻撃</span><span>23-2</span></div>
+</section>
+
+<section class="slide">
+  <h1>セッションハイジャックとセッション固定化</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">セッションハイジャック（あとから盗む）</div>
+      <table class="mx">
+        <tr><th style="width:40%">盗まれ方</th><th>対策</th></tr>
+        <tr><td class="t">推測（連番・時刻）</td><td class="l">暗号論的な乱数で十分長い ID</td></tr>
+        <tr><td class="t">盗聴</td><td class="l">HTTPS、cookie の Secure 属性</td></tr>
+        <tr><td class="t">XSS で cookie を読む</td><td class="l">XSS 対策、HttpOnly 属性</td></tr>
+        <tr><td class="t">URL に埋め込んだ ID の漏えい</td><td class="l">ID は cookie で受け渡す</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="cap">セッション固定化（先に渡しておく）</div>
+      <ol class="steps">
+        <li>攻撃者がサイトから正規のセッション ID を手に入れる</li>
+        <li>その ID を利用者に使わせる（細工したリンクなど）</li>
+        <li>利用者がその ID のままログインする</li>
+        <li>攻撃者が同じ ID で、ログイン済みとして入る</li>
+      </ol>
+      <div class="point"><b>対策：ログインに成功したら新しい ID を発行</b>し、古い ID を無効にする。ID を URL で受け渡さない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：<a class="src" href="https://www.ipa.go.jp/security/vuln/websecurity/index.html">IPA「安全なウェブサイトの作り方」</a>（セッション管理の不備）／IPA「支援士試験 シラバス（案）」用語例「セッションハイジャック，セッション固定化攻撃（Session Fixation），リプレイ攻撃」</div>
+</section>
+
+<section class="slide">
+  <h1>リプレイ攻撃と中間者攻撃</h1>
+  <div class="cols">
+    <div>
+      <div class="cap">リプレイ攻撃：盗聴したものを再送する</div>
+      <svg width="400" height="140" viewBox="0 0 400 140">
+        <g font-size="12" text-anchor="middle">
+          <rect x="5" y="15" width="90" height="40" rx="6" fill="#1f3a68"/><text x="50" y="40" fill="#fff">利用者</text>
+          <rect x="305" y="15" width="90" height="40" rx="6" fill="#3a7d44"/><text x="350" y="40" fill="#fff">サーバ</text>
+          <line x1="95" y1="35" x2="305" y2="35" stroke="#1f3a68" stroke-width="2"/><text x="200" y="28">認証データ X</text>
+          <rect x="155" y="80" width="90" height="40" rx="6" fill="#b23a2c"/><text x="200" y="105" fill="#fff">攻撃者</text>
+          <line x1="200" y1="40" x2="200" y2="78" stroke="#b23a2c" stroke-dasharray="4 3"/><text x="232" y="64" fill="#b23a2c" font-size="11">盗聴</text>
+          <line x1="245" y1="100" x2="330" y2="58" stroke="#b23a2c" stroke-width="2"/><text x="320" y="96" fill="#b23a2c" font-size="11">X を再送</text>
+        </g>
+      </svg>
+      <div class="point"><b>対策：</b>毎回変わる値を混ぜる。チャレンジレスポンス、ナンス、タイムスタンプ、シーケンス番号、ワンタイムパスワード。「毎回同じハッシュ値を送る」は再送されれば通る。</div>
+    </div>
+    <div>
+      <div class="cap">中間者攻撃（MITM）：間に入り込む</div>
+      <table class="mx">
+        <tr><th style="width:42%">入り込み方</th><th>防ぎ方</th></tr>
+        <tr><td class="t">偽の Wi-Fi アクセスポイント</td><td class="l">TLS とサーバ証明書の検証</td></tr>
+        <tr><td class="t">ARP スプーフィング</td><td class="l">DHCP スヌーピング・動的 ARP 検査（#13）</td></tr>
+        <tr><td class="t">DNS の偽の応答</td><td class="l">DNSSEC（#14）</td></tr>
+        <tr><td class="t">HTTPS を HTTP に下げる</td><td class="l">HSTS（#17）</td></tr>
+      </table>
+      <div class="point warn">証明書の<b>警告を無視</b>して接続すると、TLS を使っていても中間者攻撃は防げない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」用語例「リプレイ攻撃」／中分類25「TLS」「DHCP スヌーピング」、中分類26「HSTS」</div>
+</section>
+
+<section class="slide">
+  <h1>MITB 攻撃：ブラウザの中で取引を書き換える</h1>
+  <svg width="856" height="170" viewBox="0 0 856 170">
+    <defs><marker id="b2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1f3a68"/></marker></defs>
+    <g font-size="12.5" text-anchor="middle">
+      <rect x="10" y="20" width="420" height="140" rx="12" fill="#f5f5f7" stroke="#d2d2d7"/><text x="60" y="40" fill="#6e6e73">利用者の PC</text>
+      <rect x="30" y="60" width="160" height="70" rx="8" fill="#1f3a68"/><text x="110" y="88" fill="#fff" font-weight="700">画面の表示</text><text x="110" y="108" fill="#fff" font-size="11">振込先：A社 10万円</text>
+      <rect x="240" y="60" width="170" height="70" rx="8" fill="#b23a2c"/><text x="325" y="84" fill="#fff" font-weight="700">ブラウザ内のマルウェア</text><text x="325" y="104" fill="#fff" font-size="11">送る直前に</text><text x="325" y="120" fill="#fff" font-size="11">攻撃者の口座 100万円に</text>
+      <line x1="190" y1="95" x2="236" y2="95" stroke="#1f3a68" stroke-width="2" marker-end="url(#b2)"/>
+      <line x1="410" y1="95" x2="606" y2="95" stroke="#1f3a68" stroke-width="2.5" marker-end="url(#b2)"/><text x="508" y="86">TLS（本物のサイトへ）</text>
+      <rect x="610" y="60" width="230" height="70" rx="8" fill="#3a7d44"/><text x="725" y="88" fill="#fff" font-weight="700">本物の銀行</text><text x="725" y="108" fill="#fff" font-size="11">正しいログイン・正しい通信</text>
+    </g>
+  </svg>
+  <table class="mx">
+    <tr><th style="width:38%">対策（R4春 問11 の選択肢）</th><th style="width:12%">効く？</th><th>理由</th></tr>
+    <tr><td class="l">EV SSL サーバ証明書で接続先を確認</td><td class="x">✕</td><td class="l">接続先は本物の銀行</td></tr>
+    <tr><td class="l">ログインのワンタイムパスワード</td><td class="x">✕</td><td class="l">ログインは本人が正しく行う。書き換えはログイン後</td></tr>
+    <tr><td class="l">SSL ではなく TLS で暗号化</td><td class="x">✕</td><td class="l">書き換えは暗号化の前（ブラウザの中）</td></tr>
+    <tr><td class="l"><b>トランザクション署名</b></td><td class="t">○</td><td class="l">取引内容そのものを、PC と別の機器で検証する</td></tr>
+  </table>
+  <div class="cite">出典：IPA 午前Ⅱ 令和4年度春期 問11（令和2年度10月 問10）。図の口座や金額は Claude が作った例</div>
+</section>
+
+<section class="slide">
+  <h1>トランザクション署名のしくみ</h1>
+  <div class="cols wide-r">
+    <ol class="steps">
+      <li><b>別の機器で計算：</b>ハードウェアトークン（またはスマホ）に振込先口座番号と金額を入力し、MAC を作る</li>
+      <li><b>送る：</b>振込画面に振込先・金額・MAC を入力して銀行に送る</li>
+      <li><b>銀行で計算：</b>受け取った振込先・金額から、同じ手順で MAC を作る</li>
+      <li><b>照合：</b>②の MAC と③の MAC が一致すれば、振込先と金額は<b>改ざんされていない</b></li>
+    </ol>
+    <div>
+      <div class="ex"><span class="lbl">H31春 問8</span>④でできるのは「振込先口座番号と振込金額が改ざんされていないことを確認できる」。<br>盗聴されていないこと・盗聴者の特定・改ざん箇所の訂正は、MAC ではできない。</div>
+      <div class="ex" style="margin-top:10px"><span class="lbl">R5秋 問7</span>トランザクション署名＝「送金操作を行う PC とは別のデバイスに振込先口座番号などの取引情報を入力して表示された値」を送る。<br><b>取引内容に結び付かない</b>ワンタイムパスワード（メール・ログイン用）は誤り。</div>
+    </div>
+  </div>
+  <div class="point"><b>2つの条件：</b>①PC とは別の機器で計算する（PC のマルウェアが触れない）、②取引の内容（振込先・金額）を入力して計算する。どちらが欠けても MITB は防げない。MAC のしくみは #16。</div>
+  <div class="cite">出典：IPA 午前Ⅱ 平成31年度春期 問8・令和5年度秋期 問7</div>
+</section>
+
+<section class="slide">
+  <h1>試験で狙われやすい比較10選</h1>
+  <table class="mx">
+    <tr><th style="width:36%">比べるもの</th><th>見分けるポイント</th></tr>
+    <tr><td class="t">キルチェーン ↔ ATT&amp;CK</td><td class="l">7つの段階のモデル ↔ 戦術・技術・手順のナレッジベース</td></tr>
+    <tr><td class="t">偵察 ↔ 目的の実行</td><td class="l">侵入前に外の公開情報を集める ↔ 侵入後に社内の情報を集める</td></tr>
+    <tr><td class="t">配送 ↔ 攻撃（エクスプロイト）</td><td class="l">メールなどで届ける ↔ 脆弱性をついて動かす</td></tr>
+    <tr><td class="t">ブルートフォース ↔ リバース</td><td class="l">ID 固定でパスワードを変える ↔ パスワード固定で ID を変える</td></tr>
+    <tr><td class="t">リバース ↔ スプレー</td><td class="l">スプレーは時刻と接続元も変えてロックと検知を避ける</td></tr>
+    <tr><td class="t">辞書攻撃 ↔ スタッフィング</td><td class="l">よくある単語を試す ↔ 他サイトで漏れた正しい組を試す</td></tr>
+    <tr><td class="t">レインボーテーブル ↔ Pass the Hash</td><td class="l">ハッシュ値を解読する ↔ 解読せずそのまま使う</td></tr>
+    <tr><td class="t">ハイジャック ↔ 固定化</td><td class="l">あとから盗む ↔ 先に渡しておく（対策はログイン時の ID の再発行）</td></tr>
+    <tr><td class="t">中間者攻撃 ↔ MITB</td><td class="l">通信路の途中 ↔ ブラウザの中（TLS も証明書も効かない）</td></tr>
+    <tr><td class="t">ワンタイムパスワード ↔ トランザクション署名</td><td class="l">「だれか」を確かめる ↔ 「取引の内容」を確かめる</td></tr>
+  </table>
+  <div class="point">次の #03 では、Web アプリケーションの不備をねらう攻撃（SQL インジェクション・XSS・CSRF など）を扱う。</div>
+  <div class="cite">出典：このPDFの各ページの資料</div>
+</section>
+
+</body>
+</html>

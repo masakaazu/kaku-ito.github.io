@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>支援士 #08 ISMSと管理策 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">情報処理安全確保支援士試験　科目A-2　中分類24 情報セキュリティマネジメント　#08</div>
+  <h1>ISMSと管理策</h1>
+  <p>JIS Q 27001 の「しなければならない」と、JIS Q 27002 の 93 の管理策</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（IPA の支援士試験シラバス案、JIS Q 27001:2023・27002:2024・27014・27017、ISMS-AC など）を書いた。規格の本文は有料のため、箇条と管理策の名前をもとに Claude が要約した。過去問は IPA 公開の午前Ⅱ</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>シラバス案 中分類24 小分類5「ISMS」・小分類6「情報セキュリティ管理策」</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 ISMS の要求事項と認証<span>箇条4〜10・適用範囲・目的・適用宣言書・内部監査・マネジメントレビュー・是正処置、適合性評価制度、27014・27017</span></div>
+      <div class="box b2">2 管理策のしくみ<span>4つのテーマ（組織・人・物理・技術）、属性、管理策タイプ（予防・検知・是正）、2022年版の新しい11の管理策</span></div>
+      <div class="box b3">3 主な管理策<span>職務の分離・関係当局・脅威インテリジェンス・分類とラベル・人的管理策・クリアデスク・処分・特権・マスキング・DLP・クロック・環境の分離</span></div>
+    </div>
+    <div>
+      <div class="lbl">過去の午前Ⅱでの出方</div>
+      <table class="mx">
+        <tr><th>テーマ</th><th style="width:30%">出た回</th></tr>
+        <tr><td class="l">27014 のガバナンスプロセス</td><td class="t">R1秋</td></tr>
+        <tr><td class="l">27017 にだけある管理策</td><td class="t">R3秋</td></tr>
+        <tr><td class="l">附属書 A に照らした監査の指摘</td><td class="t">R3春</td></tr>
+      </table>
+      <div class="point warn">シラバス案は<b>管理策の名前を約120個</b>並べている。科目B では「どの管理策が不足しているか」を問われやすい。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）Ver.0.1」中分類24 小分類5・6／IPA 午前Ⅱ 令和元年度秋期 問7・令和3年度秋期 問9・令和3年度春期 問25</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>ISMS の要求事項と認証</h1>
+  <p>箇条4〜10 を PDCA に重ねて覚える。</p>
+  <div class="foot"><span>支援士 #08 ISMSと管理策</span><span>24-5・24-6</span></div>
+</section>
+
+<section class="slide">
+  <h1>JIS Q 27001:2023 の箇条と PDCA</h1>
+  <div class="cols wide-r">
+    <div class="stack">
+      <div class="box b5">Plan<span>4 組織の状況／5 リーダーシップ／6 計画</span></div>
+      <div class="box b2">Do<span>7 支援／8 運用</span></div>
+      <div class="box b1">Check<span>9 パフォーマンス評価</span></div>
+      <div class="box b4">Act<span>10 改善</span></div>
+    </div>
+    <table class="mx">
+      <tr><th style="width:24%">箇条</th><th>主な要求</th></tr>
+      <tr><td class="t">4 組織の状況</td><td class="l">内外の課題、利害関係者のニーズ、<b>ISMS の適用範囲</b>（4.3）</td></tr>
+      <tr><td class="t">5 リーダーシップ</td><td class="l">トップのコミットメント、<b>情報セキュリティ方針</b>、役割・責任・権限</td></tr>
+      <tr><td class="t">6 計画</td><td class="l">リスクアセスメント（6.1.2）・リスク対応（6.1.3、<b>適用宣言書</b>）、<b>目的</b>（6.2）、変更の計画</td></tr>
+      <tr><td class="t">7 支援</td><td class="l">資源、力量、認識、コミュニケーション、文書化した情報</td></tr>
+      <tr><td class="t">8 運用</td><td class="l">運用の計画と管理、アセスメントと対応を<b>実施</b></td></tr>
+      <tr><td class="x">9 評価</td><td class="l">監視・測定（9.1）、<b>内部監査</b>（9.2）、<b>マネジメントレビュー</b>（9.3）</td></tr>
+      <tr><td class="t">10 改善</td><td class="l">継続的改善（10.1）、<b>不適合と是正処置</b>（10.2）</td></tr>
+    </table>
+  </div>
+  <div class="point">附属書 A に 93 の管理策の一覧。2013年版の114から整理された。本文は他のマネジメントシステム規格と<b>共通の構造</b>（調和構造）。</div>
+  <div class="cite">出典：JIS Q 27001:2023（ISO/IEC 27001:2022）の箇条構成。表の要約は Claude</div>
+</section>
+
+<section class="slide">
+  <h1>適用宣言書・内部監査・マネジメントレビュー・是正処置</h1>
+  <div class="cols">
+    <table class="mx">
+      <tr><th style="width:26%">言葉</th><th>だれが・何を</th></tr>
+      <tr><td class="t">適用宣言書（SoA）</td><td class="l">附属書 A の各管理策の<b>採否・理由・実施状況</b>。全部採用しなくてよい</td></tr>
+      <tr><td class="t">情報セキュリティ目的</td><td class="l">方針と整合し、測定可能な目標。何を・だれが・いつまでに・どう評価</td></tr>
+      <tr><td class="t">内部監査</td><td class="l"><b>監査員</b>が、規格と自組織のルールへの適合と有効性を確かめる。自分の仕事は監査しない</td></tr>
+      <tr><td class="t">マネジメントレビュー</td><td class="l"><b>トップ</b>が、ISMS が適切・妥当・有効かを見直し、改善や変更を決める</td></tr>
+      <tr><td class="t">是正処置</td><td class="l">不適合の<b>原因を除いて再発を防ぐ</b>。有効性もレビュー</td></tr>
+    </table>
+    <div>
+      <div class="lbl">不適合への対応の順番</div>
+      <div class="steps">
+        <li>不適合を管理し、<b>修正</b>する（目の前の問題を直す）</li>
+        <li>原因を明確にし、似た不適合がないか調べる</li>
+        <li><b>是正処置</b>（原因を除き再発を防ぐ）を実施</li>
+        <li>是正処置の<b>有効性をレビュー</b>し、必要なら ISMS を変更</li>
+      </div>
+      <div class="point warn">担当者を罰しても、原因が仕組みにあれば再発する。2013年版の「予防処置」は箇条 6.1（リスクと機会）に吸収された。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JIS Q 27001:2023 6.1.3 d)・6.2・9.2・9.3・10.2</div>
+</section>
+
+<section class="slide">
+  <h1>ISMS 適合性評価制度と関連規格</h1>
+  <div class="cols">
+    <div>
+      <div class="stack">
+        <div class="box b1">認定機関（ISMS-AC）<span>認証機関を審査して認定</span></div>
+        <div class="arrow">↓</div>
+        <div class="box b2">認証機関<span>組織の ISMS を審査して認証</span></div>
+        <div class="arrow">↓</div>
+        <div class="box b3">組織<span>初回審査 → 毎年サーベイランス → 3年で再認証</span></div>
+      </div>
+      <div class="point warn">認証は「仕組みが規格に合う」ことの証明で、事故が起きないことの保証ではない。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>規格</th><th>中身</th></tr>
+        <tr><td class="t">JIS Q 27000</td><td class="l">用語（#06）</td></tr>
+        <tr><td class="t">JIS Q 27001</td><td class="l">要求事項（認証の基準）</td></tr>
+        <tr><td class="t">JIS Q 27002</td><td class="l">管理策の手引（認証の基準ではない）</td></tr>
+        <tr><td class="t">JIS Q 27014</td><td class="l">情報セキュリティガバナンス</td></tr>
+        <tr><td class="x">JIS Q 27017</td><td class="l">クラウドの管理策（利用者・提供者の対、<b>固有の管理策を追加</b>）</td></tr>
+      </table>
+      <div class="point"><b>R3秋 問9：</b>27002 になく 27017 にあるのは「<b>クラウドサービス固有の</b>管理策」。BCMS（22301）、ガバナンス（27014）、制御システム（IEC 62443）は違う。</div>
+    </div>
+  </div>
+  <div class="cite">出典：ISMS-AC「ISMS 適合性評価制度の概要」／IPA 午前Ⅱ 令和3年度秋期 問9</div>
+</section>
+
+<section class="slide">
+  <h1>情報セキュリティガバナンス（JIS Q 27014）</h1>
+  <div class="cols">
+    <div>
+      <div class="flow" style="gap:4px">
+        <div class="box b1">評価<span>現状と将来を評価</span></div><div class="to">→</div>
+        <div class="box b2">指示<span>目的・戦略を示す</span></div><div class="to">→</div>
+        <div class="box b3">モニタ<span>達成を評価できるようにする</span></div>
+      </div>
+      <div class="flow" style="gap:4px;margin-top:8px">
+        <div class="box b5">コミュニケーション<span>利害関係者と情報を交換</span></div>
+        <div class="box b4">保証（2015年版）<span>独立した監査・レビュー・認証を委託</span></div>
+      </div>
+      <div class="point">2020年版（JIS Q 27014:2021）は評価・指示・モニタ・コミュニケーションの4つに整理。</div>
+    </div>
+    <div>
+      <div class="lbl">R1秋 問7「モニタ」はどれか</div>
+      <table class="mx">
+        <tr><th>選択肢</th><th>プロセス</th></tr>
+        <tr><td class="l">目的・戦略について指示を与える</td><td class="t">指示</td></tr>
+        <tr><td class="l"><b>戦略的目的の達成を評価することを可能にする</b></td><td class="x">モニタ</td></tr>
+        <tr><td class="l">独立した監査・レビュー・認証を委託</td><td class="t">保証</td></tr>
+        <tr><td class="l">利害関係者と情報を交換</td><td class="t">コミュニケーション</td></tr>
+      </table>
+      <div class="point warn">ガバナンス（経営陣が方向付ける）と、マネジメント（管理層が実行する）を区別する。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JIS Q 27014:2015・JIS Q 27014:2021／IPA 午前Ⅱ 令和元年度秋期 問7</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>管理策のしくみ（JIS Q 27002）</h1>
+  <p>4つのテーマと、並べ替えに使う属性。</p>
+  <div class="foot"><span>支援士 #08 ISMSと管理策</span><span>24-5・24-6</span></div>
+</section>
+
+<section class="slide">
+  <h1>93 の管理策：4つのテーマと5つの属性</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>テーマ（箇条）</th><th style="width:22%">数</th></tr>
+        <tr><td class="l">5 組織的管理策</td><td class="t">37</td></tr>
+        <tr><td class="l">6 人的管理策</td><td class="t">8</td></tr>
+        <tr><td class="l">7 物理的管理策</td><td class="t">14</td></tr>
+        <tr><td class="l">8 技術的管理策</td><td class="t">34</td></tr>
+      </table>
+      <div class="lbl" style="margin-top:8px">管理策タイプ</div>
+      <div class="flow" style="gap:4px">
+        <div class="box b1">予防<span>起きる前に防ぐ</span></div>
+        <div class="box b2">検知<span>起きたら見つける</span></div>
+        <div class="box b3">是正<span>被害を抑え戻す</span></div>
+      </div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>属性</th><th>値</th></tr>
+        <tr><td class="x">管理策タイプ</td><td class="l">予防・検知・是正</td></tr>
+        <tr><td class="t">情報セキュリティ特性</td><td class="l">機密性・完全性・可用性</td></tr>
+        <tr><td class="t">サイバーセキュリティ概念</td><td class="l">識別・防御・検知・対応・復旧（CSF と同じ）</td></tr>
+        <tr><td class="t">運用能力</td><td class="l">資産管理・ID とアクセス管理など</td></tr>
+        <tr><td class="t">セキュリティドメイン</td><td class="l">ガバナンスとエコシステム・防御・防衛・回復力</td></tr>
+      </table>
+      <div class="point">例：ログの監視＝検知、教育＝予防、バックアップからの復元＝是正。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JIS Q 27002:2024（ISO/IEC 27002:2022）4.2 テーマ及び属性・附属書 A</div>
+</section>
+
+<section class="slide">
+  <h1>2022年版で新しく加わった 11 の管理策</h1>
+  <table class="mx">
+    <tr><th style="width:12%">番号</th><th style="width:32%">管理策</th><th>ねらい</th></tr>
+    <tr><td class="t">5.7</td><td class="l">脅威インテリジェンス</td><td class="l">脅威の情報を集めて分析し、使える知見に（#09）</td></tr>
+    <tr><td class="t">5.23</td><td class="l">クラウドサービスの利用</td><td class="l">取得・利用・管理・終了の手順（#06 責任共有）</td></tr>
+    <tr><td class="t">5.30</td><td class="l">事業継続のための ICT の備え</td><td class="l">RTO・RPO を決め、復旧を試験（#22）</td></tr>
+    <tr><td class="t">7.4</td><td class="l">物理的セキュリティの監視</td><td class="l">監視カメラ・侵入検知で施設を見張る</td></tr>
+    <tr><td class="t">8.9</td><td class="l">構成管理</td><td class="l">ハード・ソフト・ネットワークの安全な設定を維持</td></tr>
+    <tr><td class="t">8.10</td><td class="l">情報の削除</td><td class="l">不要になった情報を消す</td></tr>
+    <tr><td class="t">8.11</td><td class="l">データマスキング</td><td class="l">機密データを隠す・置き換える</td></tr>
+    <tr><td class="t">8.12</td><td class="l">データ漏えい防止</td><td class="l">DLP・外部送信の監視</td></tr>
+    <tr><td class="t">8.16</td><td class="l">監視活動</td><td class="l">ネットワーク・システムの異常なふるまいを監視</td></tr>
+    <tr><td class="t">8.23</td><td class="l">ウェブ・フィルタリング</td><td class="l">悪意のあるサイトへのアクセスを制限</td></tr>
+    <tr><td class="t">8.28</td><td class="l">セキュリティに配慮したコーディング</td><td class="l">セキュアコーディングの原則を適用（#17）</td></tr>
+  </table>
+  <div class="cite">出典：JIS Q 27002:2024 附属書 B／IPA「支援士試験 シラバス（案）」中分類24 小分類6 用語例（11 すべてが含まれる）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>主な管理策</h1>
+  <p>似た名前の管理策を、目的で区別する。</p>
+  <div class="foot"><span>支援士 #08 ISMSと管理策</span><span>24-5・24-6</span></div>
+</section>
+
+<section class="slide">
+  <h1>組織的管理策と人的管理策</h1>
+  <div class="cols">
+    <table class="mx">
+      <tr><th style="width:34%">管理策</th><th>ポイント</th></tr>
+      <tr><td class="t">職務の分離</td><td class="l">申請と承認、開発と本番導入を別の人に</td></tr>
+      <tr><td class="x">関係当局との連絡</td><td class="l">警察・監督官庁・個人情報保護委員会</td></tr>
+      <tr><td class="x">専門組織との連絡</td><td class="l">業界フォーラム・ISAC・CSIRT 協議会</td></tr>
+      <tr><td class="t">情報の分類・ラベル付け</td><td class="l">極秘・社外秘・公開と、表示</td></tr>
+      <tr><td class="t">資産の目録・許容される利用・返却</td><td class="l">何があるか・どう使うか・退職時に返す</td></tr>
+      <tr><td class="t">情報の転送</td><td class="l">手段ごとの規則・相手との合意</td></tr>
+      <tr><td class="t">供給者関係</td><td class="l">委託先との合意・ICT サプライチェーン・監視</td></tr>
+    </table>
+    <div>
+      <div class="lbl">人的管理策（8つ）は時間の順に</div>
+      <div class="flow" style="gap:4px">
+        <div class="box b5">採用前<span>選考・雇用条件・秘密保持契約</span></div><div class="to">→</div>
+        <div class="box b2">在職中<span>意識向上・教育・訓練、懲戒、リモートワーク、事象の報告</span></div><div class="to">→</div>
+        <div class="box b1">退職・異動後<span>雇用の終了・変更後の責任</span></div>
+      </div>
+      <div class="point warn"><b>事象の報告</b>は「だれでも、気付いたらすぐ」。報告した人を責めない雰囲気づくりも大切。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JIS Q 27002:2024 箇条5・6／IPA「支援士試験 シラバス（案）」中分類24 小分類6 用語例</div>
+</section>
+
+<section class="slide">
+  <h1>物理的管理策と技術的管理策</h1>
+  <div class="cols">
+    <table class="mx">
+      <tr><th style="width:38%">物理的管理策</th><th>ポイント</th></tr>
+      <tr><td class="t">物理的セキュリティ境界・入退</td><td class="l">区画を決め、入れる人を限る</td></tr>
+      <tr><td class="t">クリアデスク・クリアスクリーン</td><td class="l">机に放置しない、離席時は画面ロック</td></tr>
+      <tr><td class="t">サポートユーティリティ</td><td class="l">電源・空調・通信（UPS・自家発電）</td></tr>
+      <tr><td class="t">ケーブル配線</td><td class="l">盗聴・切断から守る</td></tr>
+      <tr><td class="x">処分又は再利用</td><td class="l">復元できない消去を確かめて記録</td></tr>
+    </table>
+    <table class="mx">
+      <tr><th style="width:38%">技術的管理策</th><th>ポイント</th></tr>
+      <tr><td class="t">特権的アクセス権</td><td class="l">必要な人に必要な間だけ、別アカウント</td></tr>
+      <tr><td class="t">ソースコードへのアクセス</td><td class="l">読み書きを制限し、変更を記録</td></tr>
+      <tr><td class="x">クロックの同期</td><td class="l">ログを突き合わせるため時刻をそろえる</td></tr>
+      <tr><td class="t">ログ取得・監視活動</td><td class="l">記録して守り、異常を見つける</td></tr>
+      <tr><td class="t">ネットワークの分離</td><td class="l">セグメントで分ける（#13）</td></tr>
+      <tr><td class="t">暗号の利用</td><td class="l">鍵の管理も含めて規則化（#15）</td></tr>
+    </table>
+  </div>
+  <div class="cite">出典：JIS Q 27002:2024 箇条7・8</div>
+</section>
+
+<section class="slide">
+  <h1>開発の管理策：R3春 問25 を読み解く</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>監査で見つかった状況</th><th style="width:26%">判断</th></tr>
+        <tr><td class="l">セキュリティ機能の試験を<b>開発期間の終了後</b>に実施</td><td class="x">指摘（正解）</td></tr>
+        <tr><td class="l">セキュリティに配慮した開発環境で開発</td><td class="t">適合</td></tr>
+        <tr><td class="l">外部委託先の監督でセキュリティの観点を考慮</td><td class="t">適合</td></tr>
+        <tr><td class="l">パッケージの変更は必要なものに限定</td><td class="t">適合</td></tr>
+      </table>
+      <div class="point warn">試験は<b>開発の途中</b>で行う（開発及び受入れにおけるセキュリティテスト）。</div>
+    </div>
+    <div>
+      <div class="lbl">開発の管理策（2022年版）</div>
+      <table class="mx mini">
+        <tr><td class="l">セキュリティに配慮した開発のライフサイクル</td></tr>
+        <tr><td class="l">アプリケーションセキュリティの要求事項</td></tr>
+        <tr><td class="l">セキュリティに配慮したコーディング（新）</td></tr>
+        <tr><td class="l">開発及び受入れにおけるセキュリティテスト</td></tr>
+        <tr><td class="l">外部委託による開発</td></tr>
+        <tr><td class="x">開発・テスト・本番環境の分離</td></tr>
+        <tr><td class="l">変更管理</td></tr>
+        <tr><td class="x">テスト用情報（本番の個人情報を使わない・マスキング）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ 令和3年度春期 問25／JIS Q 27002:2024 8.25〜8.34</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ：本番での問われ方</h1>
+  <div class="cols">
+    <div>
+      <div class="point"><b>箇条の場所：</b>適用範囲＝4、方針＝5、リスク・SoA・目的＝6、運用で実施＝8、内部監査・マネジメントレビュー＝9、是正処置＝10。</div>
+      <div class="point"><b>規格の役割：</b>27000 用語、27001 要求事項、27002 管理策の手引、27014 ガバナンス、27017 クラウド、27701 プライバシー（#07）。</div>
+    </div>
+    <div>
+      <div class="point"><b>管理策を当てる：</b>場面（申請と承認が同じ人、ログの時刻がずれる、テストに本番データ、PC の返却）から管理策の名前を選ぶ。</div>
+      <div class="point warn"><b>タイプ：</b>予防・検知・是正。属性の「サイバーセキュリティ概念」は CSF の5つ（GOVERN は含まない）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ（このPDFの問題演習）／JIS Q 27001:2023・JIS Q 27002:2024</div>
+</section>
+
+</body>
+</html>

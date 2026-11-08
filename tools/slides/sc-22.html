@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>支援士 #22 システム開発と運用 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">情報処理安全確保支援士試験　科目A-2　関連分野　中分類20・21 システム開発と運用　#22</div>
+  <h1>システム開発と運用</h1>
+  <p>作り方・確かめ方・回し方・権利の扱い</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（IPA の支援士試験シラバス案、JIS X 0160・25010・0161、スクラムガイド、Google SRE 本、GoF、著作権法、GPL など）を書いた。過去問は IPA 公開の午前Ⅱ。例の場面は Claude が作った</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>シラバス案 中分類20 システムライフサイクルプロセス・中分類21 開発・運用の方法論</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 開発プロセスと設計<span>SLCP・修整・ペルソナ・品質特性・マイクロサービス・サーキットブレーカー・マッシュアップ・GoF・SOLID・フェールソフト</span></div>
+      <div class="box b2">2 テストとレビュー<span>ファジング・探索的テスト・分岐網羅・トップダウン／ボトムアップ・ウォークスルー・形式手法・SonarQube</span></div>
+      <div class="box b3">3 アジャイルと DevOps<span>スクラム・TDD・レトロスペクティブ・KPT・SRE・エラーバジェット・カオスエンジニアリング・CI/CD</span></div>
+      <div class="box b5">4 運用・保守と権利<span>保守の種類・FTA/FMEA・AIOps・請負の著作権・プロテクト・GPL</span></div>
+    </div>
+    <div>
+      <div class="lbl">過去の午前Ⅱでの出方（H31〜R7 で 25 問）</div>
+      <table class="mx">
+        <tr><th>テーマ</th><th style="width:30%">問数</th></tr>
+        <tr><td class="l">テスト・レビュー</td><td class="t">8</td></tr>
+        <tr><td class="l">アジャイル・DevOps</td><td class="t">7</td></tr>
+        <tr><td class="l">設計の考え方・品質・パターン</td><td class="t">7</td></tr>
+        <tr><td class="l">著作権</td><td class="t">2</td></tr>
+        <tr><td class="l">状態遷移図</td><td class="t">1</td></tr>
+      </table>
+      <div class="point">支援士の午前Ⅱでは問22・23 付近。毎回 2 問。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）Ver.0.1」中分類20・21／IPA 午前Ⅱ 各回（このPDFの問題演習を参照）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>開発プロセスと設計</h1>
+  <p>共通の物差しで作業を決め、壊れ方まで設計する。</p>
+  <div class="foot"><span>支援士 #22 システム開発と運用</span><span>20・21</span></div>
+</section>
+
+<section class="slide">
+  <h1>障害と誤りへの設計</h1>
+  <table class="mx">
+    <tr><th style="width:22%">考え方</th><th>何をするか</th><th style="width:28%">例・出た回</th></tr>
+    <tr><td class="t">フールプルーフ</td><td class="l">誤った操作・入力を受け付けない</td><td class="l">無効な入力に再入力を促す（R4春）</td></tr>
+    <tr><td class="t">フェールセーフ</td><td class="l">安全な側に倒して止める</td><td class="l">暴走を避けて安全に停止</td></tr>
+    <tr><td class="t">フェールソフト</td><td class="l">性能・機能を落としても続ける</td><td class="l">構成を縮小して運転継続（R1秋・R3秋）</td></tr>
+    <tr><td class="t">フォールトトレランス</td><td class="l">冗長化して止めない</td><td class="l">二重化・クラスタ</td></tr>
+    <tr><td class="t">フォールトアボイダンス</td><td class="l">故障そのものを減らす</td><td class="l">高信頼の部品</td></tr>
+  </table>
+  <div class="cols" style="margin-top:10px">
+    <div class="box b2">マイクロサービス<span>小さなサービスを API でつなぐ。通信の暗号化と相互認証、サービスメッシュ</span></div>
+    <div class="box b1">サーキットブレーカー<span>失敗が続いたら呼出しを止めてすぐエラー。障害の連鎖を防ぐ</span></div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」用語例〔システム処理方式〕／IPA 午前Ⅱ R3秋 問24・R4春 問22</div>
+</section>
+
+<section class="slide">
+  <h1>品質特性（JIS X 25010）</h1>
+  <table class="mx">
+    <tr><th style="width:18%">特性</th><th>定義（要約）</th></tr>
+    <tr><td class="t">機能適合性</td><td class="l">明示的・暗黙のニーズを満たす機能を提供する度合い（R3春 正解）</td></tr>
+    <tr><td class="t">性能効率性</td><td class="l">使用する資源の量に関係する性能の度合い</td></tr>
+    <tr><td class="t">使用性</td><td class="l">利用者が有効性・効率性・満足性をもって目標を達成できる度合い</td></tr>
+    <tr><td class="t">信頼性</td><td class="l">決められた時間帯・条件で機能を実行する度合い</td></tr>
+    <tr><td class="t">セキュリティ</td><td class="l">機密性・インテグリティ・否認防止性・責任追跡性・真正性</td></tr>
+    <tr><td class="t">保守性・互換性・移植性</td><td class="l">修正のしやすさ／他と共存・連携／別の環境への移しやすさ</td></tr>
+  </table>
+  <div class="point warn" style="margin-top:8px">R3春の誤り：信頼性⇔性能効率性、性能効率性⇔使用性、保守性⇔信頼性の説明が入れ替わっている。</div>
+  <div class="cite">出典：JIS X 25010:2013／IPA 令和3年度春期 午前Ⅱ 問22</div>
+</section>
+
+<section class="slide">
+  <h1>プロセス・要件・パターン</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>用語</th><th>意味</th></tr>
+        <tr><td class="t">SLCP</td><td class="l">構想〜廃棄の作業の枠組み（JIS X 0160・共通フレーム）</td></tr>
+        <tr><td class="t">修整（テーラリング）</td><td class="l">プロセスを修正・新たに定義（R4春）</td></tr>
+        <tr><td class="t">ペルソナ</td><td class="l">利用者の典型の架空の人物（R2）</td></tr>
+        <tr><td class="t">マッシュアップ</td><td class="l">公開された複数のサービスを組み合わせる（H31・R1秋）</td></tr>
+      </table>
+      <div class="point">マッシュアップの誤り：仕様を導く＝リバースエンジニアリング、ページを切り替えずスクロール＝Ajax。</div>
+    </div>
+    <div>
+      <div class="lbl">GoF（R6秋）</div>
+      <div class="stack">
+        <div class="box b1">生成<span>Singleton・Factory Method・Builder</span></div>
+        <div class="box b2">構造<span>Adapter・Proxy・Composite</span></div>
+        <div class="box b3">振る舞い<span>Observer・Strategy・Template Method</span></div>
+      </div>
+      <div class="point warn">Layers・Broker は POSA のアーキテクチャパターン。</div>
+      <div class="point">SOLID：単一責任・開放閉鎖・リスコフ置換・インタフェース分離・依存性逆転。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JIS X 0160:2021／GoF『デザインパターン』／IPA 午前Ⅱ H31 問23・R1秋 問23・R2 問22・R4春 問23・R6秋 問22</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>テストとレビュー</h1>
+  <p>動かして確かめ、読んで確かめ、論理で確かめる。</p>
+  <div class="foot"><span>支援士 #22 システム開発と運用</span><span>20・21</span></div>
+</section>
+
+<section class="slide">
+  <h1>テストの方法</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>方法</th><th>何をするか</th></tr>
+        <tr><td class="t">ファジング</td><td class="l">異常データを大量に入力して挙動を監視（H31）</td></tr>
+        <tr><td class="t">探索的テスト</td><td class="l">動きを学びながら次のテストをその場で決める（R3秋）</td></tr>
+        <tr><td class="t">限界値分析</td><td class="l">境界の値をテストケースに</td></tr>
+        <tr><td class="t">状態遷移テスト</td><td class="l">状態遷移図・表からケースを作る</td></tr>
+        <tr><td class="t">モデルベースド</td><td class="l">振る舞いのモデルからケースを導く</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">判定条件網羅（R4秋）</div>
+      <div class="flow" style="gap:4px">
+        <div class="box b5">処理 1</div><div class="to">→</div>
+        <div class="box b2">A＞6 or B＝0 ?</div><div class="to">Yes →</div>
+        <div class="box b1">処理 2</div>
+      </div>
+      <table class="mx" style="margin-top:6px">
+        <tr><th>ケース</th><th>判定</th></tr>
+        <tr><td class="t">(A=1, B=1)</td><td class="t">偽 → No</td></tr>
+        <tr><td class="t">(A=7, B=1)</td><td class="t">真 → Yes</td></tr>
+      </table>
+      <div class="point">真と偽を一つずつ通れば分岐網羅（ア）。他の選択肢はどちらか一方しか通らない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JSTQB「シラバス」用語／IPA 午前Ⅱ H31 問22・R3秋 問22・R4秋 問22</div>
+</section>
+
+<section class="slide">
+  <h1>結合テストとレビュー</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">R7秋：上位が先にできた</div>
+      <div class="stack">
+        <div class="box b1">アプリケーション層 ✓</div>
+        <div class="box b1">ミドルウェア層 ✓</div>
+        <div class="box b4">デバイスドライバ層 未 → <b>スタブ</b>で代用</div>
+        <div class="box b5">ハードウェア</div>
+      </div>
+      <div class="point">上から結合する<b>トップダウンテスト</b>。下からはドライバを使うボトムアップ。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>手法</th><th>しくみ</th></tr>
+        <tr><td class="t">ウォークスルー</td><td class="l">作成者を含む複数人で机上でたどる（R6春）</td></tr>
+        <tr><td class="t">インスペクション</td><td class="l">モデレーター・記録役を決めた公式レビュー</td></tr>
+        <tr><td class="t">形式手法</td><td class="l">厳密な言語で仕様を書き論理的に検証（R6春）</td></tr>
+        <tr><td class="t">ブラックボックス</td><td class="l">内部構造を見ず仕様どおりか</td></tr>
+        <tr><td class="t">ホワイトボックス</td><td class="l">内部構造に着目</td></tr>
+      </table>
+      <div class="point">R7春：バグ・重複・脆弱性を自動検出する OSS ＝ <b>SonarQube</b>（Git・Jenkins・Snort は違う）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ R6春 問22・23・R7春 問22・R7秋 問22</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>アジャイルと DevOps</h1>
+  <p>短く回して振り返り、壊して確かめ、数字で釣り合いを取る。</p>
+  <div class="foot"><span>支援士 #22 システム開発と運用</span><span>20・21</span></div>
+</section>
+
+<section class="slide">
+  <h1>アジャイル開発</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">スクラム（R5秋）</div>
+      <table class="mx">
+        <tr><td class="t">役割</td><td class="l">プロダクトオーナー・スクラムマスター・開発者</td></tr>
+        <tr><td class="t">イベント</td><td class="l">スプリント・プランニング・デイリースクラム・レビュー・レトロスペクティブ</td></tr>
+        <tr><td class="t">作成物</td><td class="l">プロダクトバックログ・スプリントバックログ・インクリメント</td></tr>
+      </table>
+      <div class="point warn">五つの価値＋TDD・ペアプロ＝XP、推測・協調・学習＝ASD、フィーチャ単位＝FDD。</div>
+    </div>
+    <div>
+      <div class="lbl">TDD（R3春・R6秋）</div>
+      <div class="flow" style="gap:4px">
+        <div class="box b4">テストを書く<span>失敗（Red）</span></div><div class="to">→</div>
+        <div class="box b1">通るコード<span>成功（Green）</span></div><div class="to">→</div>
+        <div class="box b2">整理<span>Refactor</span></div>
+      </div>
+      <div class="lbl" style="margin-top:8px">レトロスペクティブ</div>
+      <div class="box b3">各イテレーションの最後（R2）<span>KPT ＝ Keep・Problem・Try（R7春）</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：スクラムガイド 2020／Kent Beck『テスト駆動開発』／IPA 午前Ⅱ R2 問23・R3春 問23・R5秋 問23・R6秋 問23・R7春 問23</div>
+</section>
+
+<section class="slide">
+  <h1>DevOps と SRE</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">エラーバジェット</div>
+      <div class="flow" style="gap:4px">
+        <div class="box b5">100%</div><div class="to">−</div>
+        <div class="box b2">SLO 99.9%</div><div class="to">＝</div>
+        <div class="box b1">0.1%<span>月約 43 分</span></div>
+      </div>
+      <div class="point">残っていれば新機能を出す。使い切ったら信頼性を優先。</div>
+      <div class="box b3">カオスエンジニアリング<span>本番・ステージングで意図的に障害を起こし、挙動を観察して直す（R5秋）</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>用語</th><th>意味</th></tr>
+        <tr><td class="t">CI</td><td class="l">頻繁に統合し自動でビルド・テスト</td></tr>
+        <tr><td class="t">CD</td><td class="l">いつでもリリースできる状態を保つ</td></tr>
+        <tr><td class="t">継続的デプロイ</td><td class="l">本番反映まで自動</td></tr>
+        <tr><td class="t">DevSecOps</td><td class="l">パイプラインに SAST・SCA・IaC スキャン</td></tr>
+        <tr><td class="t">オブザーバビリティ</td><td class="l">ログ・メトリクス・トレースで内部を把握</td></tr>
+        <tr><td class="t">AIOps</td><td class="l">運用データを AI で分析し検知・自動化</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：Google『SRE サイトリライアビリティエンジニアリング』3 章／Principles of Chaos Engineering／IPA 令和5年度秋期 午前Ⅱ 問22</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>運用・保守と権利</h1>
+  <p>直す理由を分け、原因をたどり、権利を確かめる。</p>
+  <div class="foot"><span>支援士 #22 システム開発と運用</span><span>20・21</span></div>
+</section>
+
+<section class="slide">
+  <h1>保守と信頼性の解析</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>保守</th><th>きっかけ</th></tr>
+        <tr><td class="t">是正保守</td><td class="l">見つかった障害を直す</td></tr>
+        <tr><td class="t">予防保守</td><td class="l">障害になる前の欠陥を直す</td></tr>
+        <tr><td class="t">適応保守</td><td class="l">法改正・OS 更新など環境の変化</td></tr>
+        <tr><td class="t">完全化保守</td><td class="l">性能・保守性の改善</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">FTA（トップダウン）</div>
+      <div class="code small">顧客情報の漏えい
+  └ OR ┬ 外部からの侵入
+       │   └ AND ┬ 脆弱性あり
+       │         └ パッチ未適用
+       └ 内部不正</div>
+      <div class="point">FMEA は逆に、部品の故障モード → 全体への影響（ボトムアップ）。攻撃木は FTA の応用。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JIS X 0161（ISO/IEC 14764）／JIS C 5750-4-4（IEC 61025）・IEC 60812</div>
+</section>
+
+<section class="slide">
+  <h1>著作権と OSS ライセンス</h1>
+  <table class="mx">
+    <tr><th style="width:36%">場面</th><th>どうなるか</th></tr>
+    <tr><td class="l">請負で開発、契約に取決めなし</td><td class="l"><b>請負人</b>に帰属（R7秋）。注文者が得るには譲渡の契約</td></tr>
+    <tr><td class="l">プロテクトを外してバックアップ</td><td class="l"><b>不適切</b>（R5春）。技術的保護手段の回避は例外にならない</td></tr>
+    <tr><td class="l">公開プロトコルで同等機能を独自開発</td><td class="l">問題ない</td></tr>
+    <tr><td class="l">正当に入手し、研究のため逆コンパイル</td><td class="l">問題ない</td></tr>
+  </table>
+  <div class="cols" style="margin-top:10px">
+    <div class="box b4">GPL（コピーレフト）<span>改変・組込み品を配布するなら、同じ GPL でソースも提供。社内利用だけなら義務なし</span></div>
+    <div class="box b1">許容型（MIT・BSD・Apache）<span>著作権表示などを守れば、ソースの公開は不要</span></div>
+  </div>
+  <div class="cite">出典：著作権法 第 2 条・第 15 条・第 30 条・第 30 条の 4・第 47 条の 3／FSF「GNU GPL v3」／IPA 午前Ⅱ R5春 問23・R7秋 問23</div>
+</section>
+
+</body>
+</html>

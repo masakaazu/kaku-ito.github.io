@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>支援士 #03 Webアプリケーションへの攻撃 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">情報処理安全確保支援士試験　科目A-2　中分類23 情報セキュリティの脅威　#03</div>
+  <h1>Webアプリケーションへの攻撃</h1>
+  <p>入力が「命令」に化けるとき、何が起きるのか。根本的な対策と保険的な対策を分けて覚える</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（IPA の支援士試験シラバス案・安全なウェブサイトの作り方、OWASP など）を書いた。過去問は IPA 公開の午前Ⅱ。例のサイトや URL は Claude が作った</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>シラバス案 中分類23 小分類2「攻撃手法」アプリケーションの不備を狙った攻撃</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 サーバ側で命令に化ける<span>SQL インジェクション・OS コマンドインジェクション・HTTP ヘッダインジェクション・ディレクトリトラバーサル・バッファオーバーフロー・SSRF</span></div>
+      <div class="box b2">2 ブラウザを巻き込む<span>XSS（反射型・格納型・DOM 型）・CSRF・クリックジャッキング・オープンリダイレクト・ドライブバイダウンロード</span></div>
+      <div class="box b3">3 根本的な対策と保険的な対策<span>静的プレースホルダ・エスケープ・CSRF トークン・X-Frame-Options</span></div>
+    </div>
+    <div>
+      <div class="lbl">過去の午前Ⅱでの出方（令和元〜7年度）</div>
+      <table class="mx">
+        <tr><th>テーマ</th><th style="width:40%">出た回</th></tr>
+        <tr><td class="l">CSRF の対策で効果がないもの</td><td class="t">H31春・R6春・R7秋</td></tr>
+        <tr><td class="l">ログから OS コマンドインジェクション</td><td class="t">R2・R4春・R5秋</td></tr>
+        <tr><td class="l">クリックジャッキング → X-Frame-Options</td><td class="t">R4秋・R6秋</td></tr>
+        <tr><td class="l">SQLi の実装／実装以外の対策</td><td class="t">R1秋・R5春</td></tr>
+        <tr><td class="l">攻撃と対策の組合せ</td><td class="t">R3春</td></tr>
+      </table>
+      <div class="point"><b>対策の取り違え</b>を突く選択肢が定番。「その対策はどの攻撃のものか」を言えるようにする。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）Ver.0.1」中分類23 小分類2／IPA 午前Ⅱ 各回（このPDFの問題演習を参照）</div>
+</section>
+
+<section class="slide">
+  <h1>インジェクションの共通点：データの中に「区切り」を入れる</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">アプリが文字列をつないで命令を作ると…</div>
+      <div class="code">命令の型　 SELECT * FROM users WHERE id='<span class="ok">入力</span>'
+入力　　　 <span class="ng">' OR '1'='1' --</span>
+できる命令 SELECT * FROM users WHERE id='<span class="ng">' OR '1'='1' --</span>'</div>
+      <div class="point warn" style="margin-top:10px">入力の中の <code>'</code> が「データの終わり」と読まれ、そのあとが<b>命令</b>として動く。</div>
+    </div>
+    <table class="mx">
+      <tr><th>攻撃</th><th>区切りになる文字</th><th>どこで命令になるか</th></tr>
+      <tr><td class="l">SQL インジェクション</td><td class="t"><code>'</code> <code>;</code> <code>--</code></td><td class="t">データベース</td></tr>
+      <tr><td class="l">OS コマンドインジェクション</td><td class="t"><code>;</code> <code>|</code> <code>&amp;&amp;</code> <code>`</code></td><td class="t">シェル</td></tr>
+      <tr><td class="l">HTTP ヘッダインジェクション</td><td class="t">改行 <code>%0d%0a</code></td><td class="t">HTTP 応答</td></tr>
+      <tr><td class="l">メールヘッダインジェクション</td><td class="t">改行</td><td class="t">メールのヘッダ</td></tr>
+      <tr><td class="l">XSS</td><td class="t"><code>&lt;</code> <code>&gt;</code> <code>"</code></td><td class="t">閲覧者のブラウザ</td></tr>
+    </table>
+  </div>
+  <div class="cite">出典：IPA「安全なウェブサイトの作り方 改訂第7版」1.1〜1.7／OWASP「OWASP Top 10:2025」A05 Injection</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>サーバ側で命令に化ける</h1>
+  <p>ログに残った文字列から、攻撃の種類を当てられるようにする。</p>
+  <div class="foot"><span>支援士 #03 Webアプリケーションへの攻撃</span><span>23-2</span></div>
+</section>
+
+<section class="slide">
+  <h1>SQL インジェクション：認証の回避から情報の窃取まで</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">よくある入力と結果</div>
+      <table class="mx">
+        <tr><th>入力</th><th>起きること</th></tr>
+        <tr><td class="l"><code>' OR '1'='1' --</code></td><td class="l">条件が常に真。パスワードなしでログイン</td></tr>
+        <tr><td class="l"><code>' UNION SELECT id,pass FROM users --</code></td><td class="l">別の表の中身を画面に出す</td></tr>
+        <tr><td class="l"><code>'; DROP TABLE orders; --</code></td><td class="l">表を削除（複文が通る環境）</td></tr>
+        <tr><td class="l"><code>' AND SUBSTRING(pass,1,1)='a</code></td><td class="l">ブラインド：応答の差で1文字ずつ推測</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="point warn"><b>ブラインド SQL インジェクション：</b>結果が画面に出なくても、ページの違いや応答時間の差で情報を抜ける。<b>エラーを隠すだけでは防げない</b>。</div>
+      <div class="point"><b>R5春 問17：</b>実装の対策＝プレースホルダ、実装以外の対策＝<b>DB アカウントの権限を最小限に</b>。ほかの選択肢は OS コマンド（シェルを起動しない・chroot）、セッション（乱数の ID・TLS）、トラバーサル（ファイル名を受け取らない）の対策。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「安全なウェブサイトの作り方」1.1 SQL インジェクション／IPA 午前Ⅱ 令和5年度春期 問17（令和元年度秋期 問17 と同じ）</div>
+</section>
+
+<section class="slide">
+  <h1>静的プレースホルダ：値が命令にならないしくみ</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b4">文字列連結（危ない）<span>"... WHERE id='" + 入力 + "'" → 入力しだいで構造が変わる</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">動的プレースホルダ<span>ライブラリが値をエスケープして SQL 文を組み立てる。ライブラリの不備が残りうる</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b1">静的プレースホルダ（推奨）<span>① SQL の型を DB に送って構造を確定 → ② 値だけを送る。値は構造に影響しない</span></div>
+    </div>
+    <div>
+      <div class="code"><span class="c">-- ① 先に構造を確定させる</span>
+<span class="k">PREPARE</span> q <span class="k">FROM</span>
+ <span class="s">'SELECT * FROM users WHERE id = ?'</span>;
+<span class="c">-- ② 値だけを渡す</span>
+<span class="k">EXECUTE</span> q <span class="k">USING</span> <span class="ok">@input</span>;</div>
+      <div class="point" style="margin-top:10px"><b>根本的な対策</b>＝脆弱性そのものをなくす。<b>保険的な対策</b>＝攻撃されたときの被害を減らす（エラーを出さない、権限の最小化、WAF）。</div>
+      <div class="point warn">R3春 問12 の正解は「SQL インジェクション＝<b>静的</b>プレースホルダ」。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「安全なウェブサイトの作り方」1.1・別冊「安全な SQL の呼び出し方」／IPA 午前Ⅱ 令和3年度春期 問12</div>
+</section>
+
+<section class="slide">
+  <h1>OS コマンドインジェクション：ログから見抜く</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">R4春 問1（R2 問1 とほぼ同じ）のログ</div>
+      <div class="code small">GET /cgi-bin/submit.cgi?user=<span class="ng">;cat%20/etc/passwd</span> HTTP/1.1
+Accept: */*
+Accept-Language: ja
+Host: test.example.com</div>
+      <div class="steps" style="margin-top:10px">
+        <li><code>%20</code> は空白 → <code>;cat /etc/passwd</code></li>
+        <li><code>;</code> でコマンドを区切り、<code>cat</code>（ファイルを表示）を実行</li>
+        <li>SQL の断片も <code>&lt;script&gt;</code> も改行もない → <b>OS コマンドインジェクション</b></li>
+      </div>
+    </div>
+    <div>
+      <div class="point"><b>R5秋 問1：</b>入力が PHP の <b>exec 関数</b>に渡されて、シェルスクリプトが動く → OS コマンドインジェクション。</div>
+      <table class="mx">
+        <tr><th>対策</th><th style="width:28%">種類</th></tr>
+        <tr><td class="l">シェルを起動する関数（exec・system・Perl の open など）を使わない</td><td class="t">根本</td></tr>
+        <tr><td class="l">どうしても使うなら、引数に入る値を許可リストで検査</td><td class="t">根本</td></tr>
+        <tr><td class="l">実行権限の最小化、chroot、WAF</td><td class="t">保険</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ 令和4年度春期 問1・令和5年度秋期 問1／IPA「安全なウェブサイトの作り方」1.2 OS コマンド・インジェクション</div>
+</section>
+
+<section class="slide">
+  <h1>ヘッダインジェクションとディレクトリトラバーサル</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">HTTP ヘッダインジェクション（HTTP レスポンス分割）</div>
+      <div class="code small">入力 lang=ja<span class="ng">%0d%0aSet-Cookie:%20sid=attacker</span>
+↓ 応答
+Location: /top?lang=ja
+<span class="ng">Set-Cookie: sid=attacker</span>   ← 偽のヘッダが増える</div>
+      <div class="point">改行で<b>ヘッダや本文を追加</b>。偽の cookie（セッション固定化）、偽ページ、キャッシュ汚染。対策は<b>ヘッダ出力用の API</b>を使い改行を許さない。メールフォームで同じことをすると<b>メールヘッダインジェクション</b>（Bcc を足して迷惑メールの踏み台に）。</div>
+    </div>
+    <div>
+      <div class="lbl">ディレクトリトラバーサル（パストラバーサル）</div>
+      <div class="code small">download.php?file=<span class="ng">..%2F..%2F..%2Fetc%2Fpasswd</span>
+/var/www/files/<span class="ng">../../../</span>etc/passwd
+→ /etc/passwd を読み出される</div>
+      <table class="mx" style="margin-top:8px">
+        <tr><th>対策</th><th style="width:22%">種類</th></tr>
+        <tr><td class="l">ファイル名を直接受け取らない（番号で指定）</td><td class="t">根本</td></tr>
+        <tr><td class="l">ファイル名からディレクトリ部分を取り除く</td><td class="t">根本</td></tr>
+        <tr><td class="l">重要なファイルを公開領域に置かない</td><td class="t">保険</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「安全なウェブサイトの作り方」1.3 パス名パラメータの未チェック／ディレクトリ・トラバーサル・1.7 HTTP ヘッダ・インジェクション・1.8 メールヘッダ・インジェクション</div>
+</section>
+
+<section class="slide">
+  <h1>バッファオーバーフロー：戻り先を書き換える</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">スタックのイメージ（上ほど後から積む）</div>
+      <table class="mx">
+        <tr><th>領域</th><th>正常</th><th>攻撃後</th></tr>
+        <tr><td class="l">ローカル変数 buf[16]</td><td class="t">名前</td><td class="x">AAAA…（16字超）</td></tr>
+        <tr><td class="l">カナリア（あれば）</td><td class="t">0x5e9a…</td><td class="x">壊れる → 検出</td></tr>
+        <tr><td class="l">戻り先アドレス</td><td class="t">呼び出し元</td><td class="x">攻撃コードの位置</td></tr>
+      </table>
+      <div class="point warn" style="margin-top:10px">C 言語の <code>strcpy</code>・<code>gets</code> のように長さを確かめない関数が原因になりやすい。</div>
+    </div>
+    <table class="mx">
+      <tr><th>OS・コンパイラ側の緩和策</th><th>何を邪魔するか</th></tr>
+      <tr><td class="l">DEP（NX ビット）</td><td class="l">データ領域に置いたコードの実行</td></tr>
+      <tr><td class="l">ASLR</td><td class="l">攻撃コード・ライブラリの位置の予測</td></tr>
+      <tr><td class="l">スタックカナリア</td><td class="l">戻り先を書き換えたまま戻ること</td></tr>
+      <tr><td class="l">安全な関数・境界の確認</td><td class="l">そもそもあふれさせない（根本）</td></tr>
+    </table>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」中分類23 用語例「バッファオーバーフロー」・中分類26「バッファオーバーフロー対策」。スタックの図は Claude が単純化して作成</div>
+</section>
+
+<section class="slide">
+  <h1>SSRF：サーバに内部へ取りに行かせる</h1>
+  <div class="flow">
+    <div class="box b4">攻撃者<span>url=http://169.254.169.254/…</span></div><div class="to">→</div>
+    <div class="box b2">公開 Web サーバ<span>指定 URL の画像を取りに行く機能</span></div><div class="to">→</div>
+    <div class="box b1">内部の資源<span>メタデータサービス・管理画面・DB</span></div>
+  </div>
+  <div class="cols" style="margin-top:14px">
+    <div>
+      <div class="point warn">ファイアウォールの内側にいる<b>サーバ自身</b>がリクエストを送るので、外からは届かない資源に届く。クラウドではメタデータサービスから<b>一時的な認証情報</b>が盗まれる。</div>
+      <div class="point">OWASP Top 10:2025 では <b>A01 アクセス制御の不備</b>に統合された。</div>
+    </div>
+    <table class="mx">
+      <tr><th>対策</th></tr>
+      <tr><td class="l">取りに行く先を許可リストで限る</td></tr>
+      <tr><td class="l">プライベートアドレス・リンクローカル（169.254.0.0/16）への接続を拒否</td></tr>
+      <tr><td class="l">リダイレクトをたどらない、名前解決後の IP でも確認</td></tr>
+      <tr><td class="l">メタデータにトークン必須の方式（AWS の IMDSv2 など、#18）</td></tr>
+    </table>
+  </div>
+  <div class="cite">出典：OWASP「Server Side Request Forgery Prevention Cheat Sheet」「OWASP Top 10:2025」／IPA「支援士試験 シラバス（案）」中分類26「インスタンスメタデータサービスの保護」</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>ブラウザを巻き込む攻撃</h1>
+  <p>被害者のブラウザが、攻撃の道具にされる。</p>
+  <div class="foot"><span>支援士 #03 Webアプリケーションへの攻撃</span><span>23-2</span></div>
+</section>
+
+<section class="slide">
+  <h1>XSS の3つの型：スクリプトはどこから来るか</h1>
+  <table class="mx">
+    <tr><th style="width:14%">型</th><th>スクリプトの通り道</th><th style="width:20%">サーバに保存</th><th style="width:22%">被害者がすること</th></tr>
+    <tr><td class="t">反射型</td><td class="l">罠のリンク → サーバの応答にそのまま返る → 実行</td><td class="t">されない</td><td class="t">罠のリンクを開く</td></tr>
+    <tr><td class="t">格納型</td><td class="l">掲示板などに投稿 → DB に保存 → 見た人全員に配られる</td><td class="x">される</td><td class="t">ページを見るだけ</td></tr>
+    <tr><td class="t">DOM 型</td><td class="l">ブラウザの JavaScript が URL の一部を innerHTML に書き込む</td><td class="t">されない（<code>#</code>以降は送られない）</td><td class="t">罠のリンクを開く</td></tr>
+  </table>
+  <div class="cols" style="margin-top:12px">
+    <div class="code small"><span class="c">// DOM 型の例（危ない）</span>
+el.innerHTML = <span class="ng">location.hash.slice(1)</span>;
+<span class="c">// 安全：HTML として解釈しない</span>
+el.textContent = <span class="ok">location.hash.slice(1)</span>;</div>
+    <div class="point">できること：<b>cookie（セッション ID）の窃取</b>、偽の入力フォーム、画面の書き換え。<b>そのサイトの権限</b>で動くのが怖さ。</div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」用語例「クロスサイトスクリプティング（反射型，格納型，DOM 型）」／OWASP「DOM based XSS Prevention Cheat Sheet」</div>
+</section>
+
+<section class="slide">
+  <h1>XSS の対策：出力の直前に、出力先に合わせてエスケープ</h1>
+  <div class="cols">
+    <table class="mx">
+      <tr><th>文字</th><th>置き換え後</th></tr>
+      <tr><td class="t"><code>&lt;</code></td><td class="t"><code>&amp;lt;</code></td></tr>
+      <tr><td class="t"><code>&gt;</code></td><td class="t"><code>&amp;gt;</code></td></tr>
+      <tr><td class="t"><code>"</code></td><td class="t"><code>&amp;quot;</code></td></tr>
+      <tr><td class="t"><code>'</code></td><td class="t"><code>&amp;#39;</code></td></tr>
+      <tr><td class="t"><code>&amp;</code></td><td class="t"><code>&amp;amp;</code></td></tr>
+    </table>
+    <div>
+      <table class="mx">
+        <tr><th>対策</th><th style="width:22%">種類</th></tr>
+        <tr><td class="l">出力するすべての値をエスケープ（属性値は <code>"</code> で囲む）</td><td class="t">根本</td></tr>
+        <tr><td class="l">URL は http/https で始まるものだけ出力</td><td class="t">根本</td></tr>
+        <tr><td class="l">外部のスタイルシートを取り込まない</td><td class="t">根本</td></tr>
+        <tr><td class="l">cookie に HttpOnly（JavaScript から読めない）</td><td class="t">保険</td></tr>
+        <tr><td class="l">CSP でスクリプトの読み込み元を制限（#17）</td><td class="t">保険</td></tr>
+        <tr><td class="l">入力値の検証</td><td class="t">保険</td></tr>
+      </table>
+      <div class="point warn"><b>R3春 問12：</b>「XSS の対策＝任意の外部サイトのスタイルシートを取り込めるようにする」は逆。危険が増える。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「安全なウェブサイトの作り方」1.5 クロスサイト・スクリプティング／IPA 午前Ⅱ 令和3年度春期 問12</div>
+</section>
+
+<section class="slide">
+  <h1>CSRF：ログイン中のブラウザに送らせる</h1>
+  <div class="flow">
+    <div class="box b1">① 利用者が正規サイトにログイン<span>cookie にセッション ID</span></div><div class="to">→</div>
+    <div class="box b4">② 罠のページを開く<span>自動で送信するフォームが仕込まれている</span></div><div class="to">→</div>
+    <div class="box b2">③ 正規サイトへ送金リクエスト<span>ブラウザが cookie を自動で付ける</span></div><div class="to">→</div>
+    <div class="box" style="background:#b23a2c">④ 本人の操作として処理<span>送金・書き込み・設定変更</span></div>
+  </div>
+  <div class="cols" style="margin-top:12px">
+    <table class="mx">
+      <tr><th>R7秋 問16 の選択肢</th><th style="width:22%">効果</th></tr>
+      <tr><td class="l">重要な操作の都度パスワードを入力させる</td><td class="t">ある</td></tr>
+      <tr><td class="l">レスポンスボディの秘密の値と送付値を照合</td><td class="t">ある</td></tr>
+      <tr><td class="l">Referer で正しいリンク元か確認</td><td class="t">ある</td></tr>
+      <tr><td class="l"><code>&lt;</code> → <code>&amp;lt;</code> などの置き換え</td><td class="x">ない（XSS の対策）</td></tr>
+    </table>
+    <div>
+      <div class="point warn">CSRF のリクエストには<b>特殊文字がいらない</b>。だからエスケープは効かない。H31春・R6春・R7秋の3回とも正解はこれ。</div>
+      <div class="point">SameSite 属性の cookie は、ほかのサイトからのリクエストに cookie を付けないので有効（#17）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ 令和7年度秋期 問16（令和6年度春期 問1・平成31年度春期 問10 とほぼ同じ）／IPA「安全なウェブサイトの作り方」1.6 CSRF</div>
+</section>
+
+<section class="slide">
+  <h1>CSRF トークンが効く理由</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">正規のフォーム<span>&lt;input type="hidden" name="token" value="9f3c…（乱数）"&gt;</span></div>
+      <div class="arrow">↓ 送信</div>
+      <div class="box b2">サーバ<span>セッションに覚えた値と一致？ → 処理する</span></div>
+      <div class="box b4" style="margin-top:12px">罠のページ<span>正規ページの中身を読めない（同一オリジンポリシー）→ token を付けられない → 拒否</span></div>
+    </div>
+    <div>
+      <div class="point"><b>条件：</b>推測できない乱数で作る、セッションごと（または操作ごと）に発行、GET の URL に載せない（Referer やログから漏れる）。</div>
+      <div class="point warn"><b>R3春 問12：</b>「CSRF の対策＝リクエストに GET を使う」は逆。GET は画像タグやリンクで簡単に送らせられる。重要な操作は POST＋トークン。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「安全なウェブサイトの作り方」1.6 CSRF 根本的解決／IPA「支援士試験 シラバス（案）」中分類26 用語例「CSRF トークン」</div>
+</section>
+
+<section class="slide">
+  <h1>クリックジャッキングとオープンリダイレクト</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">クリックジャッキング</div>
+      <div class="stack">
+        <div class="box b4">上：正規サイトの「退会する」ボタン（透明な iframe）</div>
+        <div class="box b2">下：罠の「プレゼントを受け取る」ボタン</div>
+      </div>
+      <table class="mx" style="margin-top:8px">
+        <tr><th>R6秋 問14 の選択肢</th><th style="width:30%">効く攻撃</th></tr>
+        <tr><td class="l">cookie に HttpOnly</td><td class="t">XSS の cookie 窃取</td></tr>
+        <tr><td class="l">cookie に Secure</td><td class="t">盗聴</td></tr>
+        <tr><td class="l">Strict-Transport-Security</td><td class="t">HTTP への格下げ</td></tr>
+        <tr><td class="l"><b>X-Frame-Options</b></td><td class="t"><b>クリックジャッキング</b></td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">オープンリダイレクトの悪用</div>
+      <div class="code small">https://<span class="ok">bank.example.jp</span>/login?next=<span class="ng">https://evil.example.net/</span></div>
+      <div class="point">ドメインは本物なので信用されやすく、<b>フィッシング</b>に使われる。対策は転送先を固定するか許可リストで限る。</div>
+      <div class="lbl" style="margin-top:8px">ドライブバイダウンロード</div>
+      <div class="point warn">サイトを<b>見ただけ</b>でマルウェアが入る。改ざんされた正規サイト・悪意のある広告 → エクスプロイトキット（#01）→ ブラウザやプラグインの脆弱性。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ 令和6年度秋期 問14（令和4年度秋期 問11 と同じ）／IPA「安全なウェブサイトの作り方」1.9 クリックジャッキング／IPA「支援士試験 シラバス（案）」用語例</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>攻撃と対策の組合せ</h1>
+  <p>選択肢のひっかけは「別の攻撃の対策」。表で整理する。</p>
+  <div class="foot"><span>支援士 #03 Webアプリケーションへの攻撃</span><span>23-2</span></div>
+</section>
+
+<section class="slide">
+  <h1>攻撃 × 対策の対応表</h1>
+  <table class="mx">
+    <tr><th style="width:20%">攻撃</th><th>根本的な対策</th><th>保険的な対策</th><th style="width:18%">取り違えやすい対策</th></tr>
+    <tr><td class="t">SQL インジェクション</td><td class="l">静的プレースホルダ</td><td class="l">エラーを出さない・DB 権限の最小化・WAF</td><td class="t">エスケープだけ</td></tr>
+    <tr><td class="t">OS コマンド</td><td class="l">シェルを起動しない</td><td class="l">実行権限の最小化・chroot</td><td class="t">プレースホルダ</td></tr>
+    <tr><td class="t">トラバーサル</td><td class="l">ファイル名を直接受け取らない</td><td class="l">重要ファイルを公開領域に置かない</td><td class="t">chroot</td></tr>
+    <tr><td class="t">HTTP ヘッダ</td><td class="l">ヘッダ出力用 API・改行を許さない</td><td class="l">—</td><td class="t">HSTS</td></tr>
+    <tr><td class="t">XSS</td><td class="l">出力時のエスケープ</td><td class="l">HttpOnly・CSP・入力の検証</td><td class="t">CSRF トークン</td></tr>
+    <tr><td class="t">CSRF</td><td class="l">秘密のトークン・再認証</td><td class="l">Referer・SameSite</td><td class="x">特殊文字の置換</td></tr>
+    <tr><td class="t">クリックジャッキング</td><td class="l">X-Frame-Options・frame-ancestors</td><td class="l">重要操作の再確認</td><td class="x">HttpOnly・Secure・HSTS</td></tr>
+    <tr><td class="t">セッションハイジャック</td><td class="l">乱数の ID・ログイン時に再発行・TLS</td><td class="l">Secure・HttpOnly</td><td class="x">固定の ID（R3春）</td></tr>
+  </table>
+  <div class="cite">出典：IPA「安全なウェブサイトの作り方 改訂第7版」第1章 各節の「根本的解決」「保険的対策」を Claude が表にまとめた</div>
+</section>
+
+<section class="slide">
+  <h1>過去問の問われ方のまとめ</h1>
+  <div class="cols">
+    <div>
+      <div class="point"><b>ログを読む：</b><code>;cat</code> → OS コマンド、<code>../</code> → トラバーサル、<code>%0d%0a</code> → ヘッダ、<code>' OR</code> → SQLi、<code>&lt;script&gt;</code> → XSS。</div>
+      <div class="point"><b>効果がないものを選ぶ：</b>CSRF に特殊文字の置換。答えは毎回同じ。</div>
+      <div class="point"><b>組合せ：</b>4つとも「攻撃」は正しく、「対策」の正誤を見る。逆効果の対策（外部 CSS を許す・GET を使う・固定 ID）を混ぜてくる。</div>
+    </div>
+    <div>
+      <div class="point warn"><b>科目B（午後）での出方：</b>脆弱性診断の結果表、ソースコードの一部、ログから「どの脆弱性か」「どう直すか」を答える。プレースホルダへの書き換えやエスケープ箇所の指摘が定番（#24 事例演習）。</div>
+      <div class="point">ブラウザ側の防御（SameSite・CSP・CORS・HSTS・同一オリジンポリシー）は <b>#17 セキュア開発と Web の防御</b>で詳しく。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ 令和元〜7年度（このPDFの問題演習）／IPA「情報処理安全確保支援士試験 科目B サンプル問題」</div>
+</section>
+
+</body>
+</html>

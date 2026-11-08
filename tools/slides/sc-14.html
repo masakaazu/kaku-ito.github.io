@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>支援士 #14 セキュアプロトコルとメールのセキュリティ 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">情報処理安全確保支援士試験　科目A-2　中分類25 情報セキュリティ対策　#14</div>
+  <h1>セキュアプロトコルとメールのセキュリティ</h1>
+  <p>午前Ⅱで最も多く出る分野。同じ問題がくり返し出る</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（IPA の支援士試験シラバス案、IEEE 802.1X、Wi-Fi Alliance、各 RFC、迷惑メール対策推進協議会など）を書いた。過去問は IPA 公開の午前Ⅱ。例の場面は Claude が作った</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>シラバス案 中分類25 小分類6「技術規格・プロトコル」</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 無線 LAN と 802.1X<span>サプリカント・オーセンティケータ・EAP-TLS・RADIUS・AAA、WPA3・Enhanced Open・プライバシーセパレータ</span></div>
+      <div class="box b2">2 TLS・IPsec・SSH・DNS<span>TLS 1.3 の暗号スイート・常時 TLS・DTLS・QUIC、IPsec、SSH、DNSSEC・DoH</span></div>
+      <div class="box b3">3 電子メール<span>OP25B・IP25B・SMTP-AUTH、SPF・DKIM・DMARC、STARTTLS・S/MIME・PGP・IMAPS、無害化</span></div>
+    </div>
+    <div>
+      <div class="lbl">平成31〜令和7年度で41問（全体で一番多い）</div>
+      <table class="mx">
+        <tr><th>テーマ</th><th style="width:22%">回数</th></tr>
+        <tr><td class="l">OP25B・IP25B</td><td class="x">5回</td></tr>
+        <tr><td class="l">802.1X・EAP-TLS・RADIUS</td><td class="x">8回</td></tr>
+        <tr><td class="l">DNSSEC</td><td class="t">4回</td></tr>
+        <tr><td class="l">無線 LAN の規格・Enhanced Open</td><td class="t">6回</td></tr>
+        <tr><td class="l">SPF・DKIM・DMARC・SMTP-AUTH</td><td class="t">7回</td></tr>
+        <tr><td class="l">TLS・DTLS・IPsec・SSH</td><td class="t">7回</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）Ver.0.1」中分類25 小分類6／IPA 午前Ⅱ 平成31年度春期〜令和7年度秋期（このPDFの問題演習を参照）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>無線 LAN と IEEE 802.1X</h1>
+  <p>3つの役割と、RADIUS のどちら側か。</p>
+  <div class="foot"><span>支援士 #14 セキュアプロトコルとメールのセキュリティ</span><span>25-6</span></div>
+</section>
+
+<section class="slide">
+  <h1>802.1X の3つの役割と RADIUS</h1>
+  <div class="flow" style="gap:4px">
+    <div class="box b5">サプリカント<span>PC・スマホ<br>認証を要求する側</span></div><div class="to">⇄ EAP ⇄</div>
+    <div class="box b2">オーセンティケータ<span>アクセスポイント・スイッチ<br><b>RADIUS クライアント</b></span></div><div class="to">⇄ RADIUS ⇄</div>
+    <div class="box b1">認証サーバ<span><b>RADIUS サーバ</b><br>利用者情報を管理</span></div>
+  </div>
+  <div class="cols" style="margin-top:12px">
+    <table class="mx">
+      <tr><th>R4春・R6秋 問17 の選択肢</th><th style="width:20%">判定</th></tr>
+      <tr><td class="l">PC にサプリカント＋RADIUS クライアント</td><td class="t">PC は RADIUS を話さない</td></tr>
+      <tr><td class="l">AP にオーセンティケータ＋RADIUS クライアント</td><td class="x">正解</td></tr>
+      <tr><td class="l">AP にサプリカント＋RADIUS サーバ</td><td class="t">×</td></tr>
+      <tr><td class="l">サーバにオーセンティケータ＋RADIUS サーバ</td><td class="t">×</td></tr>
+    </table>
+    <div>
+      <div class="point"><b>EAP-TLS：</b>証明書で<b>サーバとクライアントの相互認証</b>（R1秋・R3秋）。PEAP はサーバ証明書＋パスワード。</div>
+      <div class="point"><b>AAA：</b>Authentication・Authorization・<b>Accounting</b>（R6秋 問1）。</div>
+      <div class="point warn">EAP は認証の<b>枠組み</b>。暗号化の規格ではない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IEEE 802.1X-2020／RFC 3748・RFC 5216・RFC 2865／IPA 午前Ⅱ 令和6年度春期 問14・秋期 問17、令和7年度秋期 問17</div>
+</section>
+
+<section class="slide">
+  <h1>無線 LAN の方式を見分ける</h1>
+  <table class="mx">
+    <tr><th style="width:20%">方式</th><th style="width:22%">認証</th><th>暗号化と特徴</th></tr>
+    <tr><td class="t">WPA2-Personal</td><td class="l">共通のパスフレーズ（PSK）</td><td class="l">盗聴したハンドシェイクからパスフレーズを総当たりされうる</td></tr>
+    <tr><td class="t">WPA3-Personal</td><td class="l">パスフレーズ（<b>SAE</b>）</td><td class="l">オフライン辞書攻撃に強い・前方秘匿性</td></tr>
+    <tr><td class="x">WPA2/3-Enterprise</td><td class="l"><b>802.1X</b> で利用者ごと</td><td class="l">認証後に<b>動的に配布される鍵</b>で暗号化（H31春・R3秋・R5春）</td></tr>
+    <tr><td class="x">Enhanced Open</td><td class="l"><b>なし</b></td><td class="l">パスワード入力なしで<b>暗号化</b>（RFC 8110 の OWE）。偽 AP は防げない</td></tr>
+  </table>
+  <div class="cols" style="margin-top:12px">
+    <div class="point warn"><b>R6春 問12：</b>Enhanced Open で「新規に」できたのは「入力なしで<b>暗号化</b>」。入力なしの<b>接続</b>は前からある。</div>
+    <div class="point"><b>プライバシーセパレータ（R4秋 問17）：</b>同じ AP の端末同士の通信を禁止。SSID 隠し・MAC フィルタとは別。</div>
+  </div>
+  <div class="cite">出典：Wi-Fi Alliance「WPA3 Specification」「Enhanced Open」／RFC 8110／IPA 午前Ⅱ 令和3年度春期 問17・令和6年度春期 問12</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>TLS・IPsec・SSH・DNS の保護</h1>
+  <p>どの層で、何を守るか。</p>
+  <div class="foot"><span>支援士 #14 セキュアプロトコルとメールのセキュリティ</span><span>25-6</span></div>
+</section>
+
+<section class="slide">
+  <h1>層ごとの暗号化プロトコル</h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b5">アプリケーション層<span>SSH（遠隔ログイン・TCP 22）、S/MIME・PGP（メール本文）</span></div>
+      <div class="box b3">トランスポート層の上<span>TLS（TCP）、<b>DTLS（UDP）</b>、QUIC（UDP に TLS 1.3 内蔵）</span></div>
+      <div class="box b2">ネットワーク層<span><b>IPsec</b>：ESP（暗号化＋認証）、AH（認証だけ）、IKE（鍵交換）</span></div>
+      <div class="box b1">データリンク層<span>WPA2/3（無線）、MACsec（有線）</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>過去問</th><th style="width:28%">答え</th></tr>
+        <tr><td class="l">IPv6 をネットワーク層で暗号化</td><td class="x">IPsec</td></tr>
+        <tr><td class="l">UDP のペイロードを暗号化</td><td class="x">DTLS</td></tr>
+        <tr><td class="l">暗号化と認証つきの遠隔ログイン</td><td class="x">SSH</td></tr>
+        <tr><td class="l">認証とアカウンティングの情報</td><td class="x">RADIUS</td></tr>
+      </table>
+      <div class="point warn">L2TP はトンネルだけで暗号化しない（IPsec と組み合わせる）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：RFC 4301〜4303・RFC 9147・RFC 9000・RFC 4251／IPA 午前Ⅱ 令和4年度秋期 問13・令和5年度秋期 問15・令和6年度秋期 問15</div>
+</section>
+
+<section class="slide">
+  <h1>TLS 1.3 で何が変わったか</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th></th><th>TLS 1.2</th><th>TLS 1.3</th></tr>
+        <tr><td class="t">鍵交換</td><td class="l">RSA も可</td><td class="l">（EC）DHE だけ → <b>常に前方秘匿性</b></td></tr>
+        <tr><td class="t">暗号</td><td class="l">CBC・RC4 も</td><td class="l"><b>AEAD だけ</b>（AES-GCM・ChaCha20-Poly1305）</td></tr>
+        <tr><td class="t">暗号スイート</td><td class="l">鍵交換＋署名＋暗号＋MAC</td><td class="x">AEAD＋ハッシュ</td></tr>
+        <tr><td class="t">往復</td><td class="l">2往復</td><td class="l">1往復（0-RTT もある）</td></tr>
+      </table>
+      <div class="code small">TLS_AES_128_GCM_SHA256
+     └AEAD──────┘ └ハッシュ┘</div>
+    </div>
+    <div>
+      <div class="point warn">SSL 3.0・TLS 1.0・TLS 1.1 は<b>廃止</b>（RFC 8996、2021年）。</div>
+      <div class="point"><b>R4春 問15：</b>クライアント証明書は <b>IC カードに入れられ</b>、PC を限定しなくてよい（正解）。サーバ証明書に IP アドレスは必須ではない。</div>
+      <div class="point"><b>常時 TLS（R1秋 問14）：</b>中間者の盗聴・改ざんを防ぎ、証明書で偽サイトを見分けやすく。SQL インジェクションは防げない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：RFC 8446 TLS 1.3・RFC 8996 Deprecating TLS 1.0 and TLS 1.1／IPA 午前Ⅱ 令和5年度秋期 問2・令和4年度春期 問15・令和元年度秋期 問14</div>
+</section>
+
+<section class="slide">
+  <h1>DNSSEC と DoT・DoH</h1>
+  <div class="cols">
+    <div>
+      <div class="flow" style="gap:4px">
+        <div class="box b1">権威 DNS サーバ<span>ゾーンの秘密鍵で<b>署名</b>（RRSIG）</span></div><div class="to">→</div>
+        <div class="box b2">リゾルバ<span>公開鍵（DNSKEY）で<b>検証</b><br>上位の DS で信頼の連鎖</span></div>
+      </div>
+      <table class="mx" style="margin-top:8px">
+        <tr><th>DNSSEC で</th><th style="width:30%">判定</th></tr>
+        <tr><td class="l">応答の作成元の正当性と完全性</td><td class="x">できる</td></tr>
+        <tr><td class="l">通信の暗号化・盗聴防止</td><td class="t">できない</td></tr>
+        <tr><td class="l">DoS 攻撃の防止</td><td class="t">できない</td></tr>
+        <tr><td class="l">似た文字・入力ミスのドメイン</td><td class="t">できない</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="point warn"><b>R5秋 問13：</b>署名するのは<b>権威サーバ</b>、受信時に検証するのは<b>リゾルバ</b>。「暗号化」の選択肢は全部誤り。</div>
+      <div class="point"><b>DoT（TCP 853）・DoH（443）：</b>問合せを暗号化して盗聴を防ぐ。DNSSEC とは目的が違い、併用できる。</div>
+      <div class="point">DoH は Web に紛れて組織の DNS フィルタを迂回されうる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：RFC 4033〜4035（DNSSEC）・RFC 7858（DoT）・RFC 8484（DoH）／IPA 午前Ⅱ 令和4年度春期 問13・令和5年度秋期 問13</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>電子メールのセキュリティ</h1>
+  <p>出口で止め、送信元を確かめ、中身を守る。</p>
+  <div class="foot"><span>支援士 #14 セキュアプロトコルとメールのセキュリティ</span><span>25-6</span></div>
+</section>
+
+<section class="slide">
+  <h1>OP25B・IP25B と SMTP-AUTH</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">ISP A の利用者の PC から</div>
+      <div class="flow" style="gap:4px;flex-direction:column;align-items:stretch">
+        <div class="box b4">感染 PC → 外部のメールサーバ:25<span>✕ <b>OP25B</b>（ISP A の出口で止める）</span></div>
+        <div class="box b1">正規の利用者 → ISP A のメールサーバ:587<span>○ <b>SMTP-AUTH</b> で認証して送信（サブミッションポート）</span></div>
+        <div class="box b2">他社 ISP の動的 IP → ISP A のメールサーバ:25<span>✕ <b>IP25B</b>（入口で止める）</span></div>
+      </div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>説明</th><th style="width:34%">正体</th></tr>
+        <tr><td class="l">管理下の動的 IP から管理外の 25 番を禁止</td><td class="x">OP25B</td></tr>
+        <tr><td class="l">送信時に ID とパスワードで認証</td><td class="x">SMTP-AUTH</td></tr>
+        <tr><td class="l">POP で認証済みなら送信を許可</td><td class="t">POP before SMTP</td></tr>
+        <tr><td class="l">送信元サーバが DNS に登録されているか</td><td class="t">SPF</td></tr>
+      </table>
+      <div class="point warn">OP25B の誤りの選択肢は「ICMP」「外から来るスパム」。止めるのは<b>外向きの 25 番</b>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：迷惑メール対策推進協議会「迷惑メール対策ハンドブック」／RFC 4954・RFC 6409／IPA 午前Ⅱ 令和7年度春期 問17・令和2年度 問16・問17・令和4年度秋期 問14</div>
+</section>
+
+<section class="slide">
+  <h1>送信ドメイン認証：SPF・DKIM・DMARC</h1>
+  <table class="mx">
+    <tr><th style="width:14%">仕組み</th><th>送信側が DNS に置くもの</th><th>受信側が確かめること</th><th style="width:20%">転送に</th></tr>
+    <tr><td class="t">SPF</td><td class="l">送信してよいサーバの IP（SPF レコード）</td><td class="l">接続してきた IP が含まれるか</td><td class="l">弱い</td></tr>
+    <tr><td class="t">DKIM</td><td class="l">署名の<b>公開鍵</b></td><td class="l">ヘッダの署名を公開鍵で検証</td><td class="l">強い（改変には弱い）</td></tr>
+    <tr><td class="x">DMARC</td><td class="l"><b>失敗時の処理方針</b>とレポート先</td><td class="l">SPF/DKIM の結果と From のドメインの一致</td><td class="l">ー</td></tr>
+  </table>
+  <div class="cols" style="margin-top:12px">
+    <div>
+      <div class="code small">_dmarc.example.jp TXT
+"v=DMARC1; p=none; rua=mailto:dmarc@example.jp"</div>
+      <div class="point">p＝none（監視）→ quarantine（隔離）→ reject（拒否）と段階的に。</div>
+    </div>
+    <div class="point warn"><b>過去問：</b>SPF の導入で送信側がすること＝DNS に SPF レコード（H31春・R4秋）。署名して公開鍵で検証＝DKIM（R1秋・R5春）。失敗時の処理方針＝DMARC（R6秋）。</div>
+  </div>
+  <div class="cite">出典：RFC 7208（SPF）・RFC 6376（DKIM）・RFC 7489（DMARC）／IPA 午前Ⅱ 令和4年度秋期 問15・令和5年度春期 問15・令和6年度秋期 問10</div>
+</section>
+
+<section class="slide">
+  <h1>メールの暗号化：どこを守るか</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>方式</th><th>公開鍵の単位</th><th>守る範囲</th></tr>
+        <tr><td class="t">PGP</td><td class="x">メールアドレスごと</td><td class="l">本文（端から端）</td></tr>
+        <tr><td class="t">S/MIME</td><td class="x">メールアドレスごと</td><td class="l">本文（端から端）</td></tr>
+        <tr><td class="t">SMTP over TLS</td><td class="x">メールサーバごと</td><td class="l">サーバ間の通信路</td></tr>
+        <tr><td class="t">IMAPS・POP3S</td><td class="l">メールサーバごと</td><td class="l">受信の通信路（本文含む）</td></tr>
+        <tr><td class="t">APOP</td><td class="l">ー</td><td class="l">パスワードだけ（本文は平文）</td></tr>
+      </table>
+      <div class="point">R4秋・R6春 問16 の組合せは「アドレス・アドレス・サーバ」。</div>
+    </div>
+    <div>
+      <div class="point warn"><b>STARTTLS</b> は平文から切り替える方式。応答を消されると平文に落ちる → <b>MTA-STS・DANE</b> で TLS を強制。</div>
+      <div class="point"><b>無害化（CDR）：</b>添付ファイルのマクロ・スクリプトを除去したり PDF・画像に変換したりして渡す。未知のマルウェアにも効く。</div>
+      <div class="point"><b>R4春・R5秋 問16：</b>スマホの受信を本文ごと暗号化＝<b>IMAPS</b>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：RFC 8551（S/MIME 4.0）・RFC 3207・RFC 8461・RFC 8314／IPA 午前Ⅱ 令和6年度春期 問16・令和5年度秋期 問16</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ：本番での問われ方</h1>
+  <div class="cols">
+    <div>
+      <div class="point warn"><b>802.1X：</b>サプリカント＝PC、オーセンティケータ＝AP（RADIUS クライアント）、認証サーバ＝RADIUS サーバ。EAP-TLS＝証明書で相互認証。</div>
+      <div class="point"><b>無線：</b>Enterprise＝802.1X＋動的な鍵、Enhanced Open＝入力なしで暗号化、プライバシーセパレータ＝端末同士を遮断。</div>
+      <div class="point"><b>TLS 1.3：</b>暗号スイート＝AEAD＋ハッシュ。DTLS＝UDP、IPsec＝ネットワーク層、SSH＝遠隔ログイン。</div>
+    </div>
+    <div>
+      <div class="point"><b>DNSSEC：</b>権威が署名、リゾルバが検証。暗号化はしない。</div>
+      <div class="point warn"><b>メール：</b>OP25B＝外向きの 25 番を止める、SMTP-AUTH＝送信時の認証、SPF＝DNS に IP、DKIM＝署名、DMARC＝失敗時の方針。</div>
+      <div class="point"><b>暗号化：</b>PGP・S/MIME はアドレスごと、SMTP over TLS はサーバごと。受信は IMAPS。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ（このPDFの問題演習）／IPA「支援士試験 シラバス（案）Ver.0.1」</div>
+</section>
+
+</body>
+</html>

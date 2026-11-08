@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>支援士 #13 ネットワークセキュリティの方式と製品 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">情報処理安全確保支援士試験　科目A-2　中分類25 情報セキュリティ対策　#13</div>
+  <h1>ネットワークセキュリティの方式と製品</h1>
+  <p>境界で止める、内側でも分ける、クラウドの使い方も見る</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（IPA の支援士試験シラバス案、NIST SP 800-41・94・113・207、Nmap、Cisco など）を書いた。過去問は IPA 公開の午前Ⅱ。例の場面は Claude が作った</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>シラバス案 中分類25 小分類6「情報システムの適正利用の管理」</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 境界での通信の制御<span>FW 3方式、NIDS・HIDS、SSL-VPN 3方式</span></div>
+      <div class="box b2">2 内部への接続と公開サービス<span>検疫・NAC・MAC フィルタ・DHCP スヌーピング・VLAN・マイクロセグメンテーション、リバースプロキシ・DDoS 対策、ポートスキャン</span></div>
+      <div class="box b3">3 製品とクラウド<span>UTM・WAF・VDI、CASB・CSPM・CWPP・SASE・ZTNA</span></div>
+    </div>
+    <div>
+      <div class="lbl">過去の午前Ⅱでの出方（13回出題）</div>
+      <table class="mx">
+        <tr><th>テーマ</th><th style="width:40%">出た回</th></tr>
+        <tr><td class="l">ステートフル（ダイナミック）の特徴</td><td class="t">H31春・R1秋・R3春・R3秋</td></tr>
+        <tr><td class="l">CASB の効果</td><td class="t">R3春・R4秋・R6春</td></tr>
+        <tr><td class="l">VDI でマルウェアと流出を防ぐ条件</td><td class="t">H31春・R3春</td></tr>
+        <tr><td class="l">DB を内部に移すときの FW ルール</td><td class="t">R2・R5秋</td></tr>
+        <tr><td class="l">CSPM の機能</td><td class="t">R7秋</td></tr>
+        <tr><td class="l">VLAN の効果</td><td class="t">H31春</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）Ver.0.1」中分類25 小分類6／IPA 午前Ⅱ 各回（このPDFの問題演習を参照）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>境界での通信の制御</h1>
+  <p>何を見て、どこまで止めるか。</p>
+  <div class="foot"><span>支援士 #13 ネットワークセキュリティの方式と製品</span><span>25-6</span></div>
+</section>
+
+<section class="slide">
+  <h1>ファイアウォールの3方式</h1>
+  <table class="mx">
+    <tr><th style="width:22%">方式</th><th style="width:18%">見る層</th><th>判断のしかた</th><th style="width:24%">長所・短所</th></tr>
+    <tr><td class="t">パケットフィルタリング型</td><td class="t">L3・L4</td><td class="l">パケット1個ずつ、アドレス・ポート・プロトコルをルールと照合</td><td class="l">速い／戻り用に広く開けがち</td></tr>
+    <tr><td class="x">ステートフルインスペクション型</td><td class="t">L3・L4＋状態</td><td class="l">通過したパケットからセッションを認識し、<b>状態に照らして</b>判断。戻りのパケットだけ自動で通す</td><td class="l">現在の主流</td></tr>
+    <tr><td class="t">アプリケーションゲートウェイ型</td><td class="t">L7</td><td class="l">プロトコルごとのプロキシが接続を受け付け、中身を検査して<b>改めて接続</b></td><td class="l">中身まで見る／遅い・対応プロトコル限定</td></tr>
+  </table>
+  <div class="cols" style="margin-top:12px">
+    <div class="point warn"><b>R3秋 問6 の誤りの選択肢：</b>IP アドレスの変換で隠蔽＝NAT、暗号化されたデータ部を復号＝TLS 復号、データ部を見てアプリ層の不正を防止＝アプリケーションゲートウェイ／WAF。</div>
+    <div class="point"><b>R3春 問6：</b>「リバースプロキシとして動作」＝WAF、「プロトコルごとにプロキシ」＝アプリケーションゲートウェイ。</div>
+  </div>
+  <div class="cite">出典：NIST SP 800-41 Rev.1 Guidelines on Firewalls and Firewall Policy 2.1／IPA 午前Ⅱ 令和3年度春期 問6・秋期 問6</div>
+</section>
+
+<section class="slide">
+  <h1>NIDS と HIDS、SSL-VPN の3方式</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th></th><th>NIDS</th><th>HIDS</th></tr>
+        <tr><td class="t">置き場所</td><td class="l">ネットワーク（ミラーポートなど）</td><td class="l">監視するホストの中</td></tr>
+        <tr><td class="t">見るもの</td><td class="l">流れる通信</td><td class="l">ログ・ファイル改ざん・プロセス</td></tr>
+        <tr><td class="t">暗号化通信</td><td class="x">中身は見えない</td><td class="l">復号後を見られる</td></tr>
+        <tr><td class="t">手間</td><td class="l">1台でセグメント全体</td><td class="l">ホストごとに導入</td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>SSL-VPN</th><th>しくみ</th><th style="width:28%">使えるもの</th></tr>
+        <tr><td class="t">リバースプロキシ方式</td><td class="l">ブラウザ → 装置が中継</td><td class="l">Web だけ</td></tr>
+        <tr><td class="t">ポートフォワーディング方式</td><td class="l">端末のモジュールが特定ポートを転送</td><td class="l">決まった TCP</td></tr>
+        <tr><td class="x">L2 フォワーディング方式</td><td class="l">仮想 NIC でフレームを運ぶ</td><td class="l">UDP 含むほぼ全部</td></tr>
+      </table>
+      <div class="point warn">L2 フォワーディングは LAN にいるのと同じ → 感染端末も社内全体に届く。接続時の端末検査が要る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：NIST SP 800-94 Guide to IDPS／NIST SP 800-113 Guide to SSL VPNs／IPA「支援士試験 シラバス（案）」用語例「VPN（リバースプロキシ方式，ポートフォワーディング方式，L2 フォワーディング方式）」</div>
+</section>
+
+<section class="slide">
+  <h1>DMZ と FW ルール（R2・R5秋 の考え方）</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">変更後の構成（DB サーバを内部へ）</div>
+      <div class="stack">
+        <div class="box b5">インターネット</div>
+        <div class="box b4">FW（ステートフル）</div>
+        <div class="box b2">DMZ：WebAP サーバ</div>
+        <div class="box b1">内部：DB サーバ・運用管理 PC</div>
+      </div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>通信</th><th style="width:26%">ルール</th></tr>
+        <tr><td class="l">インターネット → WebAP（HTTPS）</td><td class="t">許可</td></tr>
+        <tr><td class="l">WebAP → DB（ODBC の特定ポート）</td><td class="x">追加</td></tr>
+        <tr><td class="l">運用管理 PC → 各サーバ（SSH）</td><td class="t">許可</td></tr>
+        <tr><td class="l">インターネット → DB</td><td class="t">不要（拒否）</td></tr>
+        <tr><td class="l">戻りのパケット</td><td class="t">状態で自動許可</td></tr>
+      </table>
+      <div class="point warn">ステートフル型なら、<b>戻りの通信のルールは書かない</b>。必要な「行き」だけを許可。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ 令和2年度 問14・令和5年度秋期 問17 の条件をもとに Claude が整理（図は略図）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>内部への接続の制御と公開サービスの保護</h1>
+  <p>入る端末を選び、中も分け、表の玄関を強くする。</p>
+  <div class="foot"><span>支援士 #13 ネットワークセキュリティの方式と製品</span><span>25-6</span></div>
+</section>
+
+<section class="slide">
+  <h1>内部ネットワークへの接続を制御する</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">検疫ネットワークの流れ</div>
+      <div class="flow" style="gap:4px">
+        <div class="box b5">隔離</div><div class="to">→</div>
+        <div class="box b2">検査<span>パッチ・定義ファイル</span></div><div class="to">→</div>
+        <div class="box b4">治療<span>更新させる</span></div><div class="to">→</div>
+        <div class="box b1">接続</div>
+      </div>
+      <div class="point"><b>NAC：</b>認証＋端末の健全性の検証で接続先 VLAN を決める。仕様の一つが TCG の <b>TNC</b>。</div>
+      <div class="point warn"><b>MAC アドレスフィルタリング</b>は偽装に弱い。単独では不十分。</div>
+    </div>
+    <div>
+      <div class="lbl">DHCP スヌーピング</div>
+      <div class="stack">
+        <div class="box b1">信頼ポート：正規の DHCP サーバ<span>OFFER・ACK を通す</span></div>
+        <div class="box b4">非信頼ポート：偽の DHCP サーバ<span>応答を捨てる</span></div>
+        <div class="box b2">対応表（IP・MAC・ポート）<span>ダイナミック ARP インスペクションにも使う</span></div>
+      </div>
+      <div class="point"><b>VLAN（H31春 問12）：</b>ブロードキャストの届く範囲を制限 → アドレス情報の不要な流出を減らす。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」用語例〔内部ネットワークへの接続の制御〕／TCG「TNC Architecture」／Cisco「DHCP スヌーピングの設定」／IPA 午前Ⅱ 平成31年度春期 問12</div>
+</section>
+
+<section class="slide">
+  <h1>公開サービスを守る：DDoS と Bot</h1>
+  <table class="mx">
+    <tr><th style="width:20%">対策</th><th>しくみ</th><th style="width:30%">効く攻撃</th></tr>
+    <tr><td class="t">リバースプロキシ</td><td class="l">表で受けて中継。TLS 終端・負荷分散・WAF をまとめる</td><td class="l">サーバを直接さらさない</td></tr>
+    <tr><td class="t">CDN</td><td class="l">世界中のキャッシュ拠点で配信</td><td class="l">大量の要求を拠点で吸収</td></tr>
+    <tr><td class="t">Anycast</td><td class="l">同じ IP を多拠点から広告、近い拠点へ</td><td class="l">攻撃を拠点に分散</td></tr>
+    <tr><td class="x">スクラビングセンター</td><td class="l">BGP・DNS で引き込み、攻撃を除いて返す</td><td class="l">回線容量を超える攻撃</td></tr>
+    <tr><td class="t">レート制限</td><td class="l">送信元・利用者ごとの要求数に上限</td><td class="l">L7 の DDoS・パスワードリスト攻撃</td></tr>
+    <tr><td class="t">CAPTCHA</td><td class="l">人か機械かを判定する問題</td><td class="l">Bot の大量登録・購入</td></tr>
+  </table>
+  <div class="point warn" style="margin-top:12px">回線があふれる攻撃は、自社の FW やサーバ増設では防げない。<b>上流で</b>取り除く。</div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」用語例〔公開サービスの保護〕</div>
+</section>
+
+<section class="slide">
+  <h1>マイクロセグメンテーションとポートスキャン</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">横移動を止める</div>
+      <div class="flow" style="gap:4px">
+        <div class="box b4">侵入された Web</div><div class="to">→</div>
+        <div class="box b2">DB（必要なポートだけ許可）</div>
+      </div>
+      <div class="flow" style="gap:4px;margin-top:6px">
+        <div class="box b4">侵入された Web</div><div class="to">✕</div>
+        <div class="box b5">人事・経理のサーバ</div>
+      </div>
+      <div class="point">ワークロード単位で分ける。ゼロトラスト（#18）の実装技術。</div>
+    </div>
+    <div>
+      <div class="lbl">TCP SYN スキャンの判定</div>
+      <table class="mx">
+        <tr><th>応答</th><th style="width:36%">状態</th></tr>
+        <tr><td class="l">SYN/ACK</td><td class="x">open</td></tr>
+        <tr><td class="l">RST</td><td class="t">closed</td></tr>
+        <tr><td class="l">応答なし・ICMP 到達不能</td><td class="t">filtered</td></tr>
+      </table>
+      <div class="point warn">自組織の検査は<b>許可と時間帯</b>を決めて。他人の資産を調べない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：NIST SP 800-207 Zero Trust Architecture 3.1.2／Nmap Reference Guide「Port Scanning Techniques」</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>セキュリティ製品とクラウドのサービス</h1>
+  <p>「設定」「中身」「使い方」のどれを見るか。</p>
+  <div class="foot"><span>支援士 #13 ネットワークセキュリティの方式と製品</span><span>25-6</span></div>
+</section>
+
+<section class="slide">
+  <h1>VDI でインターネットを隔てる（H31春・R3春 問16）</h1>
+  <div class="flow" style="gap:4px">
+    <div class="box b1">内部の PC</div><div class="to">⇄</div>
+    <div class="box b3">画面転送プロトコル<b>だけ</b></div><div class="to">⇄</div>
+    <div class="box b2">DMZ の VDI<span>仮想マシンのブラウザ</span></div><div class="to">⇄</div>
+    <div class="box b5">インターネットの Web</div>
+  </div>
+  <div class="cols" style="margin-top:12px">
+    <table class="mx">
+      <tr><th>選択肢</th><th style="width:36%">判定</th></tr>
+      <tr><td class="l">画面転送＋ファイル転送</td><td class="t">持込み・持出しができる</td></tr>
+      <tr><td class="l">画面転送だけ</td><td class="x">正解</td></tr>
+      <tr><td class="l">VDI が HTTP を中継</td><td class="t">Web の内容が PC に届く</td></tr>
+      <tr><td class="l">VDI が画面転送を中継</td><td class="t">PC との間の制限にならない</td></tr>
+    </table>
+    <div>
+      <div class="point"><b>UTM：</b>FW・IPS・AV・URL フィルタ・VPN を1台に。<b>性能低下と単一障害点</b>に注意。</div>
+      <div class="point"><b>WAF：</b>HTTP の中身で判断。脆弱性を直すまでの<b>仮想パッチ</b>。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ 平成31年度春期 問16・令和3年度春期 問16／IPA「支援士試験 シラバス（案）」用語例「統合脅威管理（UTM），WAF」</div>
+</section>
+
+<section class="slide">
+  <h1>クラウドのセキュリティサービスを見分ける</h1>
+  <table class="mx">
+    <tr><th style="width:14%">名前</th><th style="width:18%">見るもの</th><th>何をするか</th><th style="width:22%">過去問</th></tr>
+    <tr><td class="x">CASB</td><td class="t">使い方</td><td class="l">従業員のクラウド利用を可視化・制御。<b>シャドー IT</b>の特定</td><td class="l">R3春・R4秋・R6春</td></tr>
+    <tr><td class="x">CSPM</td><td class="t">設定</td><td class="l">設定を継続的に監視し、<b>不適切な設定</b>を検知</td><td class="l">R7秋 問15</td></tr>
+    <tr><td class="t">CWPP</td><td class="t">中身</td><td class="l">VM・コンテナ・サーバレスの脆弱性・マルウェア・実行時の動作</td><td class="l">—</td></tr>
+    <tr><td class="t">SASE</td><td class="t">経路</td><td class="l">SD-WAN＋SWG・CASB・ZTNA・FWaaS をクラウドから一体で</td><td class="l">—</td></tr>
+    <tr><td class="t">ZTNA</td><td class="t">接続</td><td class="l">毎回検証し、許可した<b>アプリ単位</b>で接続（VPN の代わり）</td><td class="l">—</td></tr>
+  </table>
+  <div class="point warn" style="margin-top:12px">CASB の誤りの選択肢は「プロバイダが DDoS 対策」「プロバイダが入退室管理」「利用者側が脆弱性診断」。CASB は<b>利用する組織</b>が<b>利用状況</b>を見るもの。</div>
+  <div class="cite">出典：IPA 午前Ⅱ 令和6年度春期 問11・令和7年度秋期 問15／IPA「支援士試験 シラバス（案）」用語例〔クラウド・SaaS〕</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ：本番での問われ方</h1>
+  <div class="cols">
+    <div>
+      <div class="point warn"><b>ステートフル：</b>過去に通過したパケットからセッションを認識 → 戻りのパケットを通す。NAT・復号・アプリ層の検査は別物。</div>
+      <div class="point"><b>NIDS／HIDS：</b>暗号化された中身はホスト側で。<b>SSL-VPN：</b>Web だけ／特定 TCP／ほぼ全部。</div>
+      <div class="point"><b>接続制御：</b>検疫＝隔離→検査→治療→接続。偽 DHCP には DHCP スヌーピング。VLAN でブロードキャストを閉じ込める。</div>
+    </div>
+    <div>
+      <div class="point"><b>DDoS：</b>回線を超えるならスクラビングセンター。分散は Anycast・CDN。L7 はレート制限。</div>
+      <div class="point"><b>VDI：</b>PC との間は画面転送だけ。</div>
+      <div class="point warn"><b>クラウド：</b>CASB＝使い方（シャドー IT）、CSPM＝設定、CWPP＝ワークロード、SASE＝まとめてクラウドから。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ（このPDFの問題演習）／IPA「支援士試験 シラバス（案）Ver.0.1」</div>
+</section>
+
+</body>
+</html>
