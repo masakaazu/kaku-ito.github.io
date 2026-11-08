@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>支援士 #10 アクセス制御と利用者認証 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">情報処理安全確保支援士試験　科目A-2　中分類25 情報セキュリティ対策　#10</div>
+  <h1>アクセス制御と利用者認証</h1>
+  <p>だれに何を許すか（アクセス制御）と、本当にその人か（認証）。パスワードの先へ</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（IPA の支援士試験シラバス案、NIST SP 800-63・800-162、FIDO Alliance、W3C、RFC など）を書いた。過去問は IPA 公開の午前Ⅱ。例の場面は Claude が作った</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>シラバス案 中分類25 小分類4「情報アクセスの管理」</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 アクセス制御のモデルと仕組み<span>DAC・MAC・RBAC・ABAC・最小特権・PAM・セキュア OS・ストレージ／ファイル／DB の暗号化</span></div>
+      <div class="box b2">2 利用者認証の方式<span>多要素・多段階・リスクベース・フィッシング耐性・OTP・チャレンジレスポンス・エンティティ認証・Identity Proofing・3D セキュア</span></div>
+      <div class="box b3">3 生体認証とパスワードレス<span>FRR・FAR・EER・ライブネス検知、FIDO・FIDO2・WebAuthn・CTAP・パスキー</span></div>
+    </div>
+    <div>
+      <div class="lbl">過去の午前Ⅱでの出方</div>
+      <table class="mx">
+        <tr><th>テーマ</th><th style="width:30%">出た回</th></tr>
+        <tr><td class="l">FIDO UAF の認証の流れ</td><td class="t">R1秋</td></tr>
+        <tr><td class="l">パスキーで生体情報を受け取るのは</td><td class="t">R6秋</td></tr>
+        <tr><td class="l">認証デバイス（虹彩・静電容量・IC カード）</td><td class="t">R7秋</td></tr>
+        <tr><td class="l">SP 800-63-3 の Identity Proofing</td><td class="t">R7秋</td></tr>
+        <tr><td class="l">3D セキュア</td><td class="t">R2</td></tr>
+      </table>
+      <div class="point warn">「生体情報はどこにも送られない」が FIDO の核心。R1 と R6 で形を変えて出た。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）Ver.0.1」中分類25 小分類4／IPA 午前Ⅱ 各回（このPDFの問題演習を参照）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>アクセス制御のモデルと仕組み</h1>
+  <p>だれが決めるのか、何をもとに判断するのか。</p>
+  <div class="foot"><span>支援士 #10 アクセス制御と利用者認証</span><span>25-4</span></div>
+</section>
+
+<section class="slide">
+  <h1>アクセス制御の4つのモデル</h1>
+  <table class="mx">
+    <tr><th style="width:18%">モデル</th><th style="width:20%">だれが決める</th><th>判断のもと</th><th style="width:26%">特徴</th></tr>
+    <tr><td class="t">DAC 任意</td><td class="t">資源の所有者</td><td class="l">所有者が付けた ACL・パーミッション</td><td class="l">柔軟／誤って公開しやすい</td></tr>
+    <tr><td class="x">MAC 強制</td><td class="t">システムの方針</td><td class="l">主体と資源のラベル（機密区分）</td><td class="l">所有者も変えられない</td></tr>
+    <tr><td class="t">RBAC ロール</td><td class="t">管理者</td><td class="l">利用者に割り当てた役割</td><td class="l">異動はロールの付け替え</td></tr>
+    <tr><td class="t">ABAC 属性</td><td class="t">管理者のポリシー</td><td class="l">主体・資源・環境（時刻・場所・端末）の属性</td><td class="l">細かい・状況に応じる</td></tr>
+  </table>
+  <div class="cols" style="margin-top:12px">
+    <div>
+      <div class="lbl">Bell-LaPadula（MAC の代表的なモデル）</div>
+      <div class="stack">
+        <div class="box b4">極秘<span>「秘」の人は読めない（no read up）</span></div>
+        <div class="box b2">秘<span>自分の区分</span></div>
+        <div class="box b5">公開<span>「秘」の人は書けない（no write down）＝下へ漏らさない</span></div>
+      </div>
+    </div>
+    <div class="point warn">略語の <b>MAC</b> は3つある：強制アクセス制御（Mandatory Access Control）、メッセージ認証符号（Message Authentication Code、#15）、MAC アドレス（Media Access Control）。文脈で見分ける。</div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」用語例「MAC，DAC，RBAC，ABAC」／NIST SP 800-162</div>
+</section>
+
+<section class="slide">
+  <h1>特権を絞る：最小特権・PAM・セキュア OS</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">特権アクセス管理（PAM）の流れ</div>
+      <div class="flow" style="gap:4px">
+        <div class="box b5">申請・承認</div><div class="to">→</div>
+        <div class="box b2">一時的に貸出し<span>パスワードは見せない</span></div><div class="to">→</div>
+        <div class="box b1">操作を記録・録画</div><div class="to">→</div>
+        <div class="box b3">返却・パスワード自動変更</div>
+      </div>
+      <div class="point">必要なときだけ権限を上げる <b>Just-In-Time</b>。常に管理者権限で動かさない。</div>
+    </div>
+    <div>
+      <div class="lbl">セキュア OS（SELinux・AppArmor・TOMOYO）</div>
+      <div class="point">強制アクセス制御＋最小特権。<b>root でも</b>方針の外は操作できない。</div>
+      <div class="code small"><span class="c"># Web サーバのプロセスに許すのは</span>
+httpd_t → /var/www/html  読み取り <span class="ok">許可</span>
+httpd_t → /etc/shadow    読み取り <span class="ng">拒否</span></div>
+      <div class="point warn">乗っ取られても、<b>被害を方針の範囲に閉じ込める</b>。脆弱性そのものはなくならない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」用語例「最小特権，特権アクセス管理（PAM），セキュア OS」。SELinux の例は Claude が単純化</div>
+</section>
+
+<section class="slide">
+  <h1>保存データの暗号化：何から守れるか</h1>
+  <table class="mx">
+    <tr><th style="width:20%">方式</th><th>単位</th><th style="width:22%">守れる</th><th style="width:28%">守れない</th></tr>
+    <tr><td class="t">ストレージ暗号化</td><td class="l">ディスク全体（BitLocker・FileVault・SED）</td><td class="l">紛失・盗難・廃棄</td><td class="x">起動中の端末の乗っ取り</td></tr>
+    <tr><td class="t">ファイル暗号化</td><td class="l">ファイルごと（IRM・DRM も）</td><td class="l">持ち出し・誤送信</td><td class="x">鍵を持つ人の漏えい</td></tr>
+    <tr><td class="t">DB 暗号化（TDE）</td><td class="l">データファイル全体を DBMS が自動で</td><td class="l">データファイル・バックアップの盗難</td><td class="x">SQL インジェクション・権限のある内部者</td></tr>
+    <tr><td class="t">DB 暗号化（列）</td><td class="l">特定の列だけ（アプリで復号）</td><td class="l">DB 管理者からも隠せる</td><td class="x">アプリの脆弱性</td></tr>
+  </table>
+  <div class="point warn" style="margin-top:12px"><b>TDE はアプリを変えずに入れられる</b>が、正規の SQL で読めば復号された値が返る。「暗号化したから SQL インジェクションでも安全」は誤り。</div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」用語例「ストレージ暗号化，ファイル暗号化，データベース暗号化」。表は Claude がまとめた</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>利用者認証の方式</h1>
+  <p>要素の数、段階の数、状況に応じた強さ。</p>
+  <div class="foot"><span>支援士 #10 アクセス制御と利用者認証</span><span>25-4</span></div>
+</section>
+
+<section class="slide">
+  <h1>多要素と多段階、リスクベース</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>組合せ</th><th style="width:22%">要素</th><th style="width:22%">判定</th></tr>
+        <tr><td class="l">パスワード＋秘密の質問</td><td class="t">知識＋知識</td><td class="t">多段階</td></tr>
+        <tr><td class="l">指紋＋顔</td><td class="t">生体＋生体</td><td class="t">多段階</td></tr>
+        <tr><td class="l">パスワード＋スマホのコード</td><td class="t">知識＋所持</td><td class="x">多要素</td></tr>
+        <tr><td class="l">IC カード＋PIN</td><td class="t">所持＋知識</td><td class="x">多要素</td></tr>
+        <tr><td class="l">パスキー（端末＋生体/PIN）</td><td class="t">所持＋生体/知識</td><td class="x">多要素</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">リスクベース認証</div>
+      <div class="flow" style="gap:4px">
+        <div class="box b5">ログイン<span>端末・場所・時刻・IP・くせ</span></div><div class="to">→</div>
+        <div class="box b2">リスク評価</div><div class="to">→</div>
+        <div class="box b1">低：そのまま<span>高：追加の認証</span></div>
+      </div>
+      <div class="point"><b>3D セキュア（R2 問9）：</b>カード会社に<b>登録したパスワードなど本人しか分からない情報</b>で確認。EMV 3-D セキュアはリスクベースで、低リスクは追加入力なし。日本では 2025年3月末までに EC 加盟店で導入が求められた。</div>
+    </div>
+  </div>
+  <div class="cite">出典：NIST SP 800-63B／IPA 午前Ⅱ 令和2年度 問9／クレジット取引セキュリティ対策協議会「クレジットカード・セキュリティガイドライン 5.0 版」</div>
+</section>
+
+<section class="slide">
+  <h1>ワンタイムパスワードとフィッシング耐性</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>方式</th><th>しくみ</th></tr>
+        <tr><td class="t">TOTP</td><td class="l">共有の秘密鍵＋<b>時刻</b>（30秒ごと、RFC 6238）</td></tr>
+        <tr><td class="t">HOTP</td><td class="l">共有の秘密鍵＋<b>カウンタ</b>（RFC 4226）</td></tr>
+        <tr><td class="t">SMS コード</td><td class="l">電話番号に送る。SIM スワップに弱い</td></tr>
+        <tr><td class="t">チャレンジレスポンス</td><td class="l">サーバの乱数に秘密で計算した応答。秘密は流れない</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">AiTM フィッシング（#02）で中継されるか</div>
+      <table class="mx">
+        <tr><th>方式</th><th style="width:34%">フィッシング耐性</th></tr>
+        <tr><td class="l">パスワード＋SMS/TOTP</td><td class="x">ない（中継される）</td></tr>
+        <tr><td class="l">プッシュ通知の承認</td><td class="x">ない（MFA 疲労も）</td></tr>
+        <tr><td class="l">FIDO2・パスキー</td><td class="t">ある（ドメインに結び付く）</td></tr>
+        <tr><td class="l">クライアント証明書の TLS 相互認証</td><td class="t">ある</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：RFC 4226・RFC 6238／IPA「支援士試験 シラバス（案）」用語例「フィッシング耐性のある認証」／NIST SP 800-63B</div>
+</section>
+
+<section class="slide">
+  <h1>身元確認（Identity Proofing）と当人認証：SP 800-63</h1>
+  <div class="cols">
+    <div>
+      <div class="flow" style="gap:4px">
+        <div class="box b1">登録のとき<span>身元確認＝IAL<br>本人と身分証を照合</span></div><div class="to">→</div>
+        <div class="box b2">ログインのたび<span>当人認証＝AAL<br>認証器で確認</span></div><div class="to">→</div>
+        <div class="box b3">連携のとき<span>FAL<br>IdP からの主張の強さ</span></div>
+      </div>
+      <div class="point">3つの保証レベルを<b>分けて</b>決める。2025年に第4版（SP 800-63-4）が公表された。</div>
+    </div>
+    <div>
+      <div class="lbl">R7秋 問11 Identity Proofing はどれか</div>
+      <table class="mx">
+        <tr><th>選択肢</th><th style="width:30%">正体</th></tr>
+        <tr><td class="l">登録時に<b>本人と写真付き身分証を照合</b></td><td class="x">身元確認（正解）</td></tr>
+        <tr><td class="l">登録時に希望の ID の重複を確認</td><td class="t">ID の管理</td></tr>
+        <tr><td class="l">ログイン後にメールで本人に通知</td><td class="t">ログイン通知</td></tr>
+        <tr><td class="l">ログイン時に ID とパスワードを照合</td><td class="t">当人認証</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：NIST SP 800-63-3（Digital Identity Guidelines）・SP 800-63-4（2025）／IPA 午前Ⅱ 令和7年度秋期 問11</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>生体認証とパスワードレス認証</h1>
+  <p>生体情報は端末から出さない。</p>
+  <div class="foot"><span>支援士 #10 アクセス制御と利用者認証</span><span>25-4</span></div>
+</section>
+
+<section class="slide">
+  <h1>生体認証の精度：FRR・FAR・EER</h1>
+  <div class="cols">
+    <div>
+      <svg viewBox="0 0 420 230" style="width:100%">
+        <line x1="40" y1="200" x2="400" y2="200" stroke="#1d1d1f"/><line x1="40" y1="200" x2="40" y2="20" stroke="#1d1d1f"/>
+        <text x="220" y="224" font-size="12" text-anchor="middle">しきい値（右ほど厳しい）</text>
+        <text x="14" y="110" font-size="12" transform="rotate(-90 14 110)" text-anchor="middle">誤りの割合</text>
+        <path d="M50 30 C 150 60, 230 170, 390 190" fill="none" stroke="#b23a2c" stroke-width="3"/>
+        <path d="M50 190 C 210 170, 290 60, 390 30" fill="none" stroke="#1f3a6b" stroke-width="3"/>
+        <circle cx="220" cy="125" r="5" fill="#1d1d1f"/>
+        <text x="228" y="120" font-size="12">EER（等しくなる点）</text>
+        <text x="60" y="26" font-size="12" fill="#b23a2c">FAR 他人受入率</text>
+        <text x="300" y="26" font-size="12" fill="#1f3a6b">FRR 本人拒否率</text>
+      </svg>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>指標</th><th>意味</th></tr>
+        <tr><td class="t">FRR</td><td class="l">本人を拒否する割合（使いにくさ）</td></tr>
+        <tr><td class="x">FAR</td><td class="l">他人を受け入れる割合（危なさ）</td></tr>
+        <tr><td class="t">EER</td><td class="l">FRR＝FAR の点。小さいほど高精度</td></tr>
+      </table>
+      <div class="point">しきい値を厳しく → FAR↓ FRR↑。緩く → FAR↑ FRR↓。</div>
+      <div class="point warn"><b>R7秋 問10：</b>成人の<b>虹彩</b>は変わらない → 更新ほぼ不要（正解）。静電容量方式の指紋は照明の影響なし。コイルの誘導起電力は<b>非接触型</b> IC カード。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JIS X 8101（ISO/IEC 19795-1）／IPA 午前Ⅱ 令和7年度秋期 問10。グラフは Claude が模式的に描いた</div>
+</section>
+
+<section class="slide">
+  <h1>ライブネス検知と、生体認証の弱点</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>種類</th><th>しくみ</th><th>例</th></tr>
+        <tr><td class="t">アクティブ</td><td class="l">利用者に<b>動作を求める</b></td><td class="l">まばたき、首振り、数字を読む</td></tr>
+        <tr><td class="t">パッシブ</td><td class="l">動作を求めず<b>画像などから判断</b></td><td class="l">質感・奥行き・血流・反射</td></tr>
+      </table>
+      <div class="point">写真・動画・マスク・偽の指、ディープフェイク（#05）への対策。</div>
+    </div>
+    <div>
+      <div class="lbl">特徴の種類</div>
+      <table class="mx">
+        <tr><td class="t">身体的特徴</td><td class="l">指紋・静脈・顔・虹彩・声</td></tr>
+        <tr><td class="t">行動的特徴</td><td class="l">署名の筆跡・筆圧、キーストローク、歩き方</td></tr>
+      </table>
+      <div class="point warn">生体情報は<b>変更できない</b>。だからサーバに送らず、端末の中で照合する方式（FIDO）が望ましい。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」用語例「身体的特徴，行動的特徴，ライブネス検知（アクティブ検知，パッシブ検知）」</div>
+</section>
+
+<section class="slide">
+  <h1>FIDO2・パスキーの認証の流れ</h1>
+  <div class="flow" style="gap:4px">
+    <div class="box b5">① サイト（RP）<span>チャレンジ（乱数）を送る</span></div><div class="to">→</div>
+    <div class="box b3">② ブラウザ（WebAuthn）<span>今のドメインを確かめて渡す</span></div><div class="to">→</div>
+    <div class="box b2">③ 認証器（CTAP）<span>生体/PIN で本人確認 → 秘密鍵で署名</span></div><div class="to">→</div>
+    <div class="box b1">④ サイト<span>登録済みの公開鍵で署名を検証</span></div>
+  </div>
+  <div class="cols" style="margin-top:12px">
+    <table class="mx">
+      <tr><th>R6秋 問7：生体情報を受信するか</th><th style="width:22%">答え</th></tr>
+      <tr><td class="l">利用者 A の Web ブラウザ</td><td class="t">しない</td></tr>
+      <tr><td class="l">Web サーバ B</td><td class="t">しない</td></tr>
+      <tr><td class="l">IdP</td><td class="t">しない</td></tr>
+    </table>
+    <div>
+      <div class="point"><b>R1秋 問1 UAF：</b>「スマホで顔認証 → スマホ内の<b>秘密鍵で署名</b> → 署名を送る」が正解。「指紋情報を認証サーバに送信」は誤り。</div>
+      <div class="point warn">サーバには<b>公開鍵だけ</b>。サーバから漏れても悪用しにくい。鍵はドメインごとなので偽サイトでは使えない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：W3C「Web Authentication Level 2」／FIDO Alliance「CTAP 2.1」「Passkeys」／IPA 午前Ⅱ 令和6年度秋期 問7・令和元年度秋期 問1</div>
+</section>
+
+<section class="slide">
+  <h1>まとめ：本番での問われ方</h1>
+  <div class="cols">
+    <div>
+      <div class="point"><b>モデルを当てる：</b>所有者が決める＝DAC、ラベルで強制＝MAC、役割＝RBAC、属性と状況＝ABAC。</div>
+      <div class="point"><b>要素を数える：</b>知識・所持・生体の<b>種類が違えば</b>多要素。同じ種類を重ねても多段階。</div>
+      <div class="point"><b>暗号化の限界：</b>TDE は媒体の盗難に効くが、SQL インジェクションや内部者には効かない。</div>
+    </div>
+    <div>
+      <div class="point warn"><b>FIDO の核心：</b>生体情報と秘密鍵は端末から出ない。送るのは署名。サーバは公開鍵で検証。</div>
+      <div class="point"><b>言葉の区別：</b>Identity Proofing（登録時の身元確認）と Authentication（ログイン時の当人認証）。FRR（本人拒否）と FAR（他人受入）。</div>
+      <div class="point">SSO・SAML・OIDC・OAuth・Kerberos は <b>#11</b> で。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA 午前Ⅱ（このPDFの問題演習）／IPA「支援士試験 シラバス（案）Ver.0.1」</div>
+</section>
+
+</body>
+</html>
