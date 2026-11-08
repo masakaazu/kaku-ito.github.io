@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>支援士 #21 データベース 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">情報処理安全確保支援士試験　科目A-2　関連分野　中分類17 データベース　#21</div>
+  <h1>データベース</h1>
+  <p>整合性を守る設計、確実なトランザクション、見せる範囲の制御</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（IPA の支援士試験シラバス案、JIS X 3005（SQL）、ANSI/SPARC、Gray・Reuter『Transaction Processing』、DAMA-DMBOK、PostgreSQL などの公式マニュアル）を書いた。過去問は IPA 公開の午前Ⅱ。例の場面は Claude が作った</div>
+</section>
+
+<section class="slide">
+  <h1>全体像<small>シラバス案 中分類17 データベース（午前Ⅱの関連分野、毎回 1〜2 問）</small></h1>
+  <div class="cols">
+    <div class="stack">
+      <div class="box b1">1 方式と設計<span>3 層スキーマ・ドキュメント型・グラフ型・制約・主キーと外部キー・サロゲートキー・正規化・データディクショナリ・データリネージ</span></div>
+      <div class="box b2">2 データ操作と権限<span>関係演算・外部結合・NOT EXISTS・DDL/DML/DCL・GRANT・ビュー・TDE・監査ログ</span></div>
+      <div class="box b3">3 トランザクションと障害回復<span>ACID・2 相ロック・デッドロック・2 相コミット・ログ・チェックポイント・ロールフォワード</span></div>
+      <div class="box b5">4 分散データベース<span>レプリケーション・水平/垂直分散・シャーディング・結果整合性</span></div>
+    </div>
+    <div>
+      <div class="lbl">過去の午前Ⅱでの出方（H31〜R7 で 14 問）</div>
+      <table class="mx">
+        <tr><th>テーマ</th><th style="width:40%">出た回</th></tr>
+        <tr><td class="l">参照制約・外部キー</td><td class="t">H31・R3秋・R6秋</td></tr>
+        <tr><td class="l">SQL の結果・GRANT</td><td class="t">R4秋・R5春・R7春</td></tr>
+        <tr><td class="l">コミット・回復・デッドロック</td><td class="t">H31・R2・R3春・R7秋</td></tr>
+        <tr><td class="l">メタデータ・NoSQL</td><td class="t">R1秋・R4春・R5秋</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）Ver.0.1」中分類17／IPA 午前Ⅱ 各回（このPDFの問題演習を参照）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>データベースの方式と設計</h1>
+  <p>データに合った器を選び、制約で整合性を守る。</p>
+  <div class="foot"><span>支援士 #21 データベース</span><span>17</span></div>
+</section>
+
+<section class="slide">
+  <h1>データベースの種類と 3 層スキーマ</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>種類</th><th>向くデータ</th></tr>
+        <tr><td class="t">関係（RDB）</td><td class="l">項目が決まった表。結合・整合性</td></tr>
+        <tr><td class="t">ドキュメント型</td><td class="l">JSON。項目がデータごとに違う（R1秋）</td></tr>
+        <tr><td class="t">グラフ型</td><td class="l">つながり（SNS・不正の連鎖）</td></tr>
+        <tr><td class="t">キーバリュー型</td><td class="l">キーで高速に読み書き（セッション）</td></tr>
+      </table>
+      <div class="point">取得元が変わり項目が予測できない商品データ → ドキュメント型で商品単位に格納。</div>
+    </div>
+    <div>
+      <div class="lbl">ANSI/SPARC 3 層スキーマ</div>
+      <div class="stack">
+        <div class="box b5">外部スキーマ<span>利用者・アプリから見た形（ビュー）</span></div>
+        <div class="to" style="text-align:center">↕ 論理的データ独立性</div>
+        <div class="box b2">概念スキーマ<span>データ全体の論理構造（表の定義）</span></div>
+        <div class="to" style="text-align:center">↕ 物理的データ独立性</div>
+        <div class="box b1">内部スキーマ<span>記憶装置への格納方法</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="cite">出典：ANSI/X3/SPARC Study Group on DBMS（1975）／IPA 令和元年度秋期 午前Ⅱ 問21</div>
+</section>
+
+<section class="slide">
+  <h1>制約と参照の整合性</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">製品（<u>製品番号</u>, 製品名, 型, 単価）
+在庫（<u>在庫管理番号</u>, 製品番号→製品, 在庫量）</div>
+      <table class="mx" style="margin-top:6px">
+        <tr><th>操作</th><th>参照制約で拒否？</th></tr>
+        <tr><td class="l">在庫へ行追加（製品にない番号）</td><td class="t"><b>拒否</b>（R3秋）</td></tr>
+        <tr><td class="l">在庫の行削除・表削除</td><td class="t">されない</td></tr>
+        <tr><td class="l">製品へ行追加</td><td class="t">されない</td></tr>
+        <tr><td class="l">製品の行削除（在庫が参照中）</td><td class="t">拒否されうる</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="lbl">外部キーの性質（R6秋）</div>
+      <div class="stack">
+        <div class="box b1">一つの表に複数あってよい ← 正解</div>
+        <div class="box b4">値は重複してよい（一意でなくてよい）</div>
+        <div class="box b4">参照先の候補キーと比較可能でなければならない</div>
+        <div class="box b4">一致する値が参照先に必要（NULL を除く）</div>
+      </div>
+      <div class="point">サロゲートキー＝業務の意味のない連番。業務の変更に強い。連番の露出は IDOR に注意。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JIS X 3005（SQL）参照制約／IPA 午前Ⅱ H31 問21・R3秋 問21・R6秋 問21</div>
+</section>
+
+<section class="slide">
+  <h1>メタデータ</h1>
+  <table class="mx">
+    <tr><th style="width:24%">名前</th><th>中身</th><th style="width:20%">出た回</th></tr>
+    <tr><td class="t">データディクショナリ</td><td class="l">ユーザー情報、データ構造などの管理情報（システムカタログ）</td><td class="t">R5秋</td></tr>
+    <tr><td class="t">データリネージ</td><td class="l">データがどこで発生し、どう変換・加工されて今の形になったか。生成源の特定・障害の影響調査</td><td class="t">R4春</td></tr>
+    <tr><td class="t">アクセス権限の情報</td><td class="l">誰がどのデータを見てよいか</td><td class="t">R4春の誤り</td></tr>
+    <tr><td class="t">データオーナー</td><td class="l">誰が作り管理しているか。問合せ先</td><td class="t">R4春の誤り</td></tr>
+  </table>
+  <div class="point warn" style="margin-top:10px">R5秋の誤り：一時的なソートデータ＝作業領域、DB の複製＝バックアップ、読み書きの記録＝ログ。</div>
+  <div class="point">正規化（第 1〜第 3 正規形）は更新時異常を防ぐ。性能のためわざと戻すのが非正規化。</div>
+  <div class="cite">出典：DAMA International『DAMA-DMBOK』Metadata Management／IPA 午前Ⅱ R4春 問21・R5秋 問21</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>データ操作と権限</h1>
+  <p>SQL の結果を追い、権限とビューで見せる範囲を絞る。</p>
+  <div class="foot"><span>支援士 #21 データベース</span><span>17</span></div>
+</section>
+
+<section class="slide">
+  <h1>外部結合（R4秋）</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th colspan="2">R</th></tr><tr><th>X</th><th>Y</th></tr>
+        <tr><td class="t">A001</td><td class="t">10</td></tr><tr><td class="t">A002</td><td class="t">20</td></tr>
+        <tr><td class="t">A003</td><td class="t">30</td></tr><tr><td class="t">A005</td><td class="t">50</td></tr>
+      </table>
+      <table class="mx" style="margin-top:6px">
+        <tr><th colspan="2">S</th></tr><tr><th>X</th><th>Z</th></tr>
+        <tr><td class="t">A002</td><td class="t">20</td></tr><tr><td class="t">A003</td><td class="t">30</td></tr><tr><td class="t">A004</td><td class="t">40</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="code small">SELECT R.X AS A, R.Y AS B, S.X AS C, S.Z AS D
+  FROM R LEFT OUTER JOIN S ON R.X = S.X</div>
+      <table class="mx" style="margin-top:6px">
+        <tr><th>A</th><th>B</th><th>C</th><th>D</th></tr>
+        <tr><td class="t">A001</td><td class="t">10</td><td class="t">NULL</td><td class="t">NULL</td></tr>
+        <tr><td class="t">A002</td><td class="t">20</td><td class="t">A002</td><td class="t">20</td></tr>
+        <tr><td class="t">A003</td><td class="t">30</td><td class="t">A003</td><td class="t">30</td></tr>
+        <tr><td class="t">A005</td><td class="t">50</td><td class="t">NULL</td><td class="t">NULL</td></tr>
+      </table>
+      <div class="point">左の表は全部残る。S だけの A004 は出ない（出るのは RIGHT・FULL）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JIS X 3005（SQL）joined table／IPA 令和4年度秋期 午前Ⅱ 問21</div>
+</section>
+
+<section class="slide">
+  <h1>NOT EXISTS（R7春）</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>従業員コード</th><th>上司</th><th>名</th></tr>
+        <tr><td class="t">S001</td><td class="t">NULL</td><td class="t">A</td></tr>
+        <tr><td class="t">S002</td><td class="t">S001</td><td class="t">B</td></tr>
+        <tr><td class="t">S003</td><td class="t">S001</td><td class="t">C</td></tr>
+        <tr><td class="t">S004</td><td class="t">S003</td><td class="t">D</td></tr>
+        <tr><td class="t">S005</td><td class="t">NULL</td><td class="t">E</td></tr>
+        <tr><td class="t">S006</td><td class="t">S005</td><td class="t">F</td></tr>
+        <tr><td class="t">S007</td><td class="t">S006</td><td class="t">G</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="code small">SELECT 従業員コード FROM 従業員 X
+ WHERE NOT EXISTS
+  (SELECT * FROM 従業員 Y
+    WHERE X.従業員コード = Y.上司)</div>
+      <div class="flow" style="gap:4px;margin-top:8px">
+        <div class="box b4">上司の列に出る人<span>S001・S003・S005・S006</span></div><div class="to">→ 除く →</div>
+        <div class="box b1">誰の上司でもない人<span><b>S002・S004・S007</b></span></div>
+      </div>
+      <div class="point">相関副問合せ：外側の行 X ごとに中を実行。EXISTS は 1 行でもあれば真。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JIS X 3005（SQL）exists predicate／IPA 令和7年度春期 午前Ⅱ 問21</div>
+</section>
+
+<section class="slide">
+  <h1>権限とデータベースのセキュリティ</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>種類</th><th>文</th></tr>
+        <tr><td class="t">DDL</td><td class="l">CREATE・ALTER・DROP</td></tr>
+        <tr><td class="t">DML</td><td class="l">SELECT・INSERT・UPDATE・DELETE</td></tr>
+        <tr><td class="t">DCL</td><td class="l">GRANT・REVOKE（・COMMIT・ROLLBACK）</td></tr>
+      </table>
+      <div class="code small" style="margin-top:6px">GRANT ALL PRIVILEGES ON A TO B
+  WITH GRANT OPTION</div>
+      <div class="point">全ての権限＋それを他人に与える付与権（R5春 ア）。</div>
+    </div>
+    <div class="stack">
+      <div class="box b1">ビュー<span>必要な行・列だけの仮想表に権限を与え、見せる範囲を絞る</span></div>
+      <div class="box b2">最小権限<span>アプリの DB アカウントは必要な表・操作だけ。SQL インジェクションの被害を限る</span></div>
+      <div class="box b3">透過的データ暗号化（TDE）<span>媒体・バックアップの盗難に有効。正規の SQL では見える</span></div>
+      <div class="box b5">監査ログ<span>誰が・いつ・どの SQL か。別サーバに保管</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：JIS X 3005（SQL）GRANT／PostgreSQL 文書「GRANT」「CREATE VIEW」／Oracle Database「Transparent Data Encryption」／IPA 令和5年度春期 午前Ⅱ 問21</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>トランザクションと障害回復</h1>
+  <p>同時に動いても壊れず、落ちても失わない。</p>
+  <div class="foot"><span>支援士 #21 データベース</span><span>17</span></div>
+</section>
+
+<section class="slide">
+  <h1>同時実行制御</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>ACID</th><th>意味</th></tr>
+        <tr><td class="t">原子性</td><td class="l">全部か、全くなしか</td></tr>
+        <tr><td class="t">一貫性</td><td class="l">前後で制約が守られる</td></tr>
+        <tr><td class="t">独立性</td><td class="l">同時でも影響しない</td></tr>
+        <tr><td class="t">耐久性</td><td class="l">コミット後は障害でも失わない</td></tr>
+      </table>
+      <div class="lbl">2 相ロッキング</div>
+      <div class="flow" style="gap:4px">
+        <div class="box b2">成長相<span>掛けるだけ</span></div><div class="to">→</div>
+        <div class="box b5">縮退相<span>外すだけ</span></div>
+      </div>
+      <div class="point">直列化可能になる。デッドロックは防げない。</div>
+    </div>
+    <div>
+      <div class="lbl">デッドロックの回避（R3春）</div>
+      <div class="stack">
+        <div class="box b1">ロックを掛ける順番を全処理でそろえる ← 正解</div>
+        <div class="box b4">参照にも専有ロック → 待ちが増える</div>
+        <div class="box b4">大量データを一つのトランザクションに → ロックを長く持つ</div>
+        <div class="box b4">最初に全部ロック、失敗したら待って再試行 → 待ち合いが残る</div>
+      </div>
+    </div>
+  </div>
+  <div class="cite">出典：Gray・Reuter『Transaction Processing: Concepts and Techniques』／IPA 令和3年度春期 午前Ⅱ 問21</div>
+</section>
+
+<section class="slide">
+  <h1>コミットと 2 相コミットメント</h1>
+  <div class="cols">
+    <div>
+      <div class="lbl">コミットの完了（R2・R7秋）</div>
+      <div class="flow" style="gap:4px">
+        <div class="box b5">更新命令</div><div class="to">→</div>
+        <div class="box b4">ログバッファ<span>メモリ。まだ失う</span></div><div class="to">→</div>
+        <div class="box b1">ログファイル<span>書けたら<b>完了</b></span></div>
+      </div>
+      <div class="point">DB 本体への反映（チェックポイント）は後でよい。ログがあればロールフォワードで戻せる（ログ先行書込み）。</div>
+    </div>
+    <div>
+      <div class="lbl">2 相コミットメント（分散 DB）</div>
+      <div class="stack">
+        <div class="box b2">第 1 相：調整役「コミットできる？」<span>各サイトが可／否を返す</span></div>
+        <div class="box b1">第 2 相：全員「可」→ コミット<span>一つでも「否」→ ロールバック</span></div>
+        <div class="box b4">「可」と答えたサイトは指示待ち<span>自分では決められない。調整役の故障で止まる</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="cite">出典：Gray・Reuter『Transaction Processing』／IPA 午前Ⅱ R2 問21・R7秋 問21</div>
+</section>
+
+<section class="slide">
+  <h1>障害回復</h1>
+  <table class="mx">
+    <tr><th style="width:26%">障害</th><th>回復の方法</th></tr>
+    <tr><td class="t">トランザクションの異常終了</td><td class="l">更新前ログで<b>ロールバック</b></td></tr>
+    <tr><td class="t">システム障害（電源断）</td><td class="l">チェックポイントから、未完了はロールバック、完了済みはロールフォワード</td></tr>
+    <tr><td class="t">媒体障害（ディスク）</td><td class="l">バックアップを戻し、更新後ログで<b>ロールフォワード</b>（R3春 問24）</td></tr>
+  </table>
+  <div class="flow" style="gap:4px;margin-top:12px">
+    <div class="box b5">フルバックアップ</div><div class="to">＋</div>
+    <div class="box b2">それ以降の更新後ログ</div><div class="to">→</div>
+    <div class="box b1">障害直前の状態</div>
+  </div>
+  <div class="point" style="margin-top:10px">H31：フルバックアップの間隔を 2 倍 → 反映するログが約 2 倍 → 復旧時間が延びる（ア）。テープの量・取得時間は DB の大きさで決まり変わらない。</div>
+  <div class="cite">出典：Gray・Reuter『Transaction Processing』／IPA 午前Ⅱ H31 問24・R3春 問24</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>分散データベース</h1>
+  <p>分けて速く、複製して止めない。ただし整合性に注意。</p>
+  <div class="foot"><span>支援士 #21 データベース</span><span>17</span></div>
+</section>
+
+<section class="slide">
+  <h1>分散の方式</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>方式</th><th>しくみ</th></tr>
+        <tr><td class="t">水平分散</td><td class="l">行を条件ごとに別サーバ（地域ごと等）</td></tr>
+        <tr><td class="t">垂直分散</td><td class="l">列を別サーバ</td></tr>
+        <tr><td class="t">シャーディング</td><td class="l">キーで行を多数のシャードに振り分け、書込みと容量を分散</td></tr>
+        <tr><td class="t">レプリケーション</td><td class="l">同じデータの複製。読取り分散・障害時の切替え</td></tr>
+      </table>
+      <div class="point">シャードをまたぐ結合・トランザクションは難しい。</div>
+    </div>
+    <div>
+      <div class="lbl">同期と非同期のレプリケーション</div>
+      <table class="mx">
+        <tr><th></th><th>同期</th><th>非同期</th></tr>
+        <tr><td class="t">速さ</td><td class="t">遅い</td><td class="t">速い</td></tr>
+        <tr><td class="t">障害時</td><td class="t">失わない</td><td class="t">直前を失いうる</td></tr>
+        <tr><td class="t">読める値</td><td class="t">最新</td><td class="t">結果整合性</td></tr>
+      </table>
+      <div class="point warn">誤った削除やランサムウェアの暗号化も複製に伝わる。バックアップの代わりにならない（#12）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：IPA「支援士試験 シラバス（案）」用語例〔分散データベース〕</div>
+</section>
+
+</body>
+</html>
