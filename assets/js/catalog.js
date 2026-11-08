@@ -357,6 +357,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/10.html", title: "モジュールの宣言と実行 用語集", desc: "強いカプセル化と読み取り、module-info.java の requires／transitive／static・exports／to・opens／open module、循環・重複などのコンパイルエラー、javac --module-source-path・java -p -m・--describe-module・--list-modules・--show-module-resolution・--add-modules、jar --main-class・jlink。22語と問題30問", fields: [10], pdf: "terms/10.pdf" },
       { type: "terms", file: "terms/11.html", title: "モジュールの移行とサービス 用語集", desc: "名前付き・自動・無名モジュールの違い（置く場所・公開・読み取り）、自動モジュールの名前の決まり方と Automatic-Module-Name、分割パッケージ、ボトムアップとトップダウンの移行、jdeps -s／--jdk-internals／--generate-module-info、uses・provides … with・ServiceLoader・provider() メソッド。16語と問題30問", fields: [11], pdf: "terms/11.pdf" },
       { type: "terms", file: "terms/12.html", title: "スレッドと同期 用語集", desc: "Thread の継承と Runnable、start と run・IllegalThreadStateException、6 つの状態（BLOCKED・WAITING・TIMED_WAITING）、join・sleep・interrupt、デーモン、競合状態と synchronized（this と Class のロック）・volatile・デッドロック、wait／notify・ReentrantLock・ReadWriteLock・AtomicInteger。20語と問題30問", fields: [12], pdf: "terms/12.pdf" },
+      { type: "terms", file: "terms/13.html", title: "ExecutorServiceと並行コレクション 用語集", desc: "ExecutorService・Future・Callable・shutdown、CopyOnWriteArrayList・ConcurrentHashMap・BlockingQueue、CountDownLatch・CyclicBarrier・Flow。20語と問題30問", fields: [13], pdf: "terms/13.pdf" },
     ],
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },
