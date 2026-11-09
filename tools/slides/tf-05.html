@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Terraform #05 plan・apply・destroy 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">HashiCorp Certified: Terraform Associate（004）　目標 3d・3e・3f　#05</div>
+  <h1>plan・apply・destroy</h1>
+  <p>実行計画のしくみと読み方（記号・known after apply）、投機的プランとプランファイル、3 つのモード、-refresh=false・-replace・-target・-var、リソースグラフと並列、apply の 2 つの動き、destroy</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（HashiCorp の Exam Content List（004）、Terraform ドキュメント v1.12.x の Command: plan・Command: apply・Command: destroy・Command: graph・Dependency Graph、チュートリアル Create a Terraform plan）を書いた。英語の原文は『』で引用した</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>実行計画を作って読む</h1>
+  <p>変える前に、見る。</p>
+  <div class="foot"><span>Terraform #05 plan・apply・destroy</span><span>目標 3d・3e・3f</span></div>
+</section>
+
+<section class="slide">
+  <h1>terraform plan がすること</h1>
+  <div class="cols">
+    <div>
+      <div class="box b2">① 実物を読む<span>ステートを最新にする（refresh）</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b1">② 設定と前のステートを比べる<span>ちがいを見つける</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b3">③ 変更を提案する<span>実物を設定に合わせるための作る・変える・消す</span></div>
+      <div class="point warn">『The plan command alone does not actually carry out the proposed changes』</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>書き方</th><th>計画</th></tr>
+        <tr><td class="t">terraform plan</td><td class="l">投機的プラン。見るだけ（『without any intent to actually apply it』）</td></tr>
+        <tr><td class="t">plan -out=tfplan</td><td class="l">保存した計画。apply tfplan でそのとおり実行（自動化向け）</td></tr>
+        <tr><td class="t">plan -detailed-exitcode</td><td class="l">0＝変更なし・1＝エラー・2＝変更あり</td></tr>
+      </table>
+      <div class="point warn">プランファイルには設定全体・変数・sensitive な値が平文で入る。名前は tfplan（.tf で終わらせない）。中身は terraform show tfplan。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Command: plan（Introduction／Other Options）／Command: apply</div>
+</section>
+
+<section class="slide">
+  <h1>計画の読み方</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">Resource actions are indicated with the following symbols:
+-/+ destroy and then create replacement
+
+  <span class="c"># module.hello.random_pet.server must be replaced</span>
+-/+ resource "random_pet" "server" {
+      ~ id      = "more-swan" -&gt; (known after apply)
+      ~ keepers = { <span class="c"># forces replacement</span>
+          ~ "secret_key" = (sensitive value)
+        }
+    }
+
+Plan: 1 to add, 0 to change, 1 to destroy.</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>記号</th><th>意味</th></tr>
+        <tr><td class="t">+</td><td class="l">作る</td></tr>
+        <tr><td class="t">-</td><td class="l">消す</td></tr>
+        <tr><td class="t">~</td><td class="l">その場で変える</td></tr>
+        <tr><td class="t">-/+</td><td class="l">消してから作り直す</td></tr>
+        <tr><td class="t">+/-</td><td class="l">作ってから消す（create_before_destroy）</td></tr>
+        <tr><td class="t">&lt;=</td><td class="l">データソースを読む</td></tr>
+      </table>
+      <div class="point">(known after apply)＝適用まで分からない値。# forces replacement＝作り直しの原因。</div>
+    </div>
+  </div>
+  <div class="cite">出典：チュートリアル Create a Terraform plan</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>モードとオプション</h1>
+  <p>何を目ざすか、どこまでやるか。</p>
+  <div class="foot"><span>Terraform #05 plan・apply・destroy</span><span>目標 3d・3e・3f</span></div>
+</section>
+
+<section class="slide">
+  <h1>3 つのモードと主なオプション<small>plan と apply で共通</small></h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">ノーマル（指定なし）<span>実物を設定に合わせる</span></div>
+      <div class="box b1">-destroy<span>管理しているもの全部を消す（＝ terraform destroy）</span></div>
+      <div class="box b2">-refresh-only<span>外での変更に合わせてステートと出力値だけ更新（#13）</span></div>
+      <div class="point">モードは『mutually-exclusive』。同時に 2 つは選べない。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>オプション</th><th>何をするか・注意</th></tr>
+        <tr><td class="t">-refresh=false</td><td class="l">速いが外の変更を無視 → 不完全な計画のおそれ</td></tr>
+        <tr><td class="t">-replace=ADDR</td><td class="l">こわれた実物を同じ設定で作り直す（taint の代わり）</td></tr>
+        <tr><td class="t">-target=ADDR</td><td class="l">そのインスタンス＋依存先だけ。例外のときだけ</td></tr>
+        <tr><td class="t">-var 'n=v'</td><td class="l">= の前後に空白を入れない</td></tr>
+        <tr><td class="t">-var-file=x.tfvars</td><td class="l">多くの場合こちらがおすすめ</td></tr>
+        <tr><td class="t">-parallelism=n</td><td class="l">同時に処理する数（既定 10）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：Command: plan（Planning Modes／Planning Options／Resource Targeting）</div>
+</section>
+
+<section class="slide">
+  <h1>-target はなぜ例外だけ？</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>書き方</th><th>選ばれるもの</th></tr>
+        <tr><td class="t">aws_instance.web[0]</td><td class="l">そのインスタンスだけ</td></tr>
+        <tr><td class="t">aws_instance.web</td><td class="l">count・for_each の全インスタンス</td></tr>
+        <tr><td class="t">module.vpc</td><td class="l">そのモジュールと子モジュールの全部</td></tr>
+        <tr><td class="t">（どれでも）</td><td class="l">＋直接・間接に依存するもの</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="point warn">『It is not recommended to use -target for routine operations, since this can lead to undetected configuration drift』</div>
+      <div class="box b3">こうする<span>大きな設定は小さな設定に分け、データソースで情報をやりとりする</span></div>
+      <div class="box b2">使ってよい場面<span>まちがいからの復旧・Terraform の制限の回避</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：Command: plan（Resource Targeting）</div>
+</section>
+
+<section class="slide">
+  <h1>リソースグラフ</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">ノードを作る<span>リソース・プロバイダー設定・orphan（ステートにだけあるもの）</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b1">辺を作る<span>depends_on と式の参照から</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">作り直しは 2 つに分ける<span>消す順番と作る順番がちがうため</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b3">循環がないか確かめる<span>あればエラー</span></div>
+    </div>
+    <div>
+      <div class="point">『a node is walked as soon as all of its dependencies are walked』＝依存がないものは並列。</div>
+      <div class="point">既定で 10 個まで同時（-parallelism）。API の回数制限はプロバイダーがリトライで扱う。</div>
+      <div class="code small">$ terraform graph | dot -Tsvg &gt; graph.svg
+<span class="c"># DOT 言語 → Graphviz で画像に</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：Dependency Graph／Command: graph</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>apply と destroy</h1>
+  <p>承認して、作る。終わったら、片づける。</p>
+  <div class="foot"><span>Terraform #05 plan・apply・destroy</span><span>目標 3d・3e・3f</span></div>
+</section>
+
+<section class="slide">
+  <h1>apply の 2 つの動き</h1>
+  <table class="mx">
+    <tr><th></th><th>terraform apply</th><th>terraform apply tfplan</th></tr>
+    <tr><td class="t">計画</td><td class="l">その場で新しく作る（automatic plan mode）</td><td class="l">保存した計画をそのまま（saved plan mode）</td></tr>
+    <tr><td class="t">承認</td><td class="l">yes を入力（-auto-approve で省略）</td><td class="l">聞かれない（ファイルを渡すことが承認）</td></tr>
+    <tr><td class="t">モード・オプション</td><td class="l">-destroy・-refresh-only・-replace・-var など使える</td><td class="l">付けられない（もう決まっている）</td></tr>
+    <tr><td class="t">-auto-approve</td><td class="l">承認を省く</td><td class="l">無視される</td></tr>
+  </table>
+  <div class="point warn">-auto-approve を使うなら、Terraform の外で変更できないようにする（ドリフト対策）。</div>
+  <div class="point warn">-input=false だけだと承認を聞けず『assume that you do not wish to apply the plan』→ 失敗。</div>
+  <div class="cite">出典：Command: apply（Automatic Plan Mode／Saved Plan Mode／Apply Options）</div>
+</section>
+
+<section class="slide">
+  <h1>terraform destroy</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">$ terraform destroy                <span class="c"># ＝ terraform apply -destroy</span>
+$ terraform plan -destroy           <span class="c"># 消す計画を見るだけ</span>
+$ terraform destroy -target aws_instance.example
+                                    <span class="c"># そのリソースと依存するもの</span></div>
+      <div class="point">開発用の一時的な環境を、作業のあとにまとめて片づける。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>やりたいこと</th><th>使うもの</th></tr>
+        <tr><td class="t">全部消す</td><td class="l">terraform destroy</td></tr>
+        <tr><td class="t">1 つを作り直す</td><td class="l">apply -replace</td></tr>
+        <tr><td class="t">1 つを消す</td><td class="l">設定から消して apply（例外なら destroy -target）</td></tr>
+        <tr><td class="t">管理から外すだけ</td><td class="l">state rm・removed ブロック（#13・#14）</td></tr>
+      </table>
+      <div class="point">消す順番は、作るときの逆。設定から消したものは orphan として消す計画になる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Command: destroy／Dependency Graph</div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">plan</td><td class="l">refresh → 比較 → 提案、変更はしない、投機的プランとプランファイル</td></tr>
+    <tr><td class="t">計画を読む</td><td class="l">+ - ~ -/+、known after apply、forces replacement、-detailed-exitcode</td></tr>
+    <tr><td class="t">モードとオプション</td><td class="l">-destroy・-refresh-only、-replace、-target は例外、-var の書き方</td></tr>
+    <tr><td class="t">グラフ</td><td class="l">依存から順番、並列 10、terraform graph は DOT</td></tr>
+    <tr><td class="t">apply</td><td class="l">プランファイルあり・なしのちがい、-auto-approve、-input=false</td></tr>
+    <tr><td class="t">destroy</td><td class="l">apply -destroy の別名、plan -destroy、-target、orphan</td></tr>
+  </table>
+  <div class="cite">出典：Exam Content List（004）3d・3e・3f／本資料の問題演習（全 30 問）</div>
+</section>
+
+</body>
+</html>

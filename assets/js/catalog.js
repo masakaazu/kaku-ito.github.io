@@ -406,6 +406,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/02.html", title: "プロバイダー 用語集", desc: "プラグインのしくみ・required_providers とソースアドレス・バージョン制約と ~>・ロックファイル・alias。19語と問題30問", fields: [2], pdf: "terms/02.pdf" },
       { type: "terms", file: "terms/03.html", title: "ステートのしくみ 用語集", desc: "ステートの4つの目的・terraform.tfstate と JSON・refresh・show と state list/show/pull・機密データとリモートステート。17語と問題30問", fields: [3], pdf: "terms/03.pdf" },
       { type: "terms", file: "terms/04.html", title: "ワークフローとinit・validate・fmt 用語集", desc: "Write・Plan・Apply（一人・チーム・HCP）・init の3段階とオプション・validate が見るもの・fmt とスタイル。20語と問題30問", fields: [4], pdf: "terms/04.pdf" },
+      { type: "terms", file: "terms/05.html", title: "plan・apply・destroy 用語集", desc: "実行計画の読み方・投機的プランとプランファイル・3つのモード・-replace と -target・リソースグラフ・apply の2つの動き・destroy。18語と問題30問", fields: [5], pdf: "terms/05.pdf" },
     ],
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },
