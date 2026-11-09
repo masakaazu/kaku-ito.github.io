@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Terraform #04 ワークフローとinit・validate・fmt 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">HashiCorp Certified: Terraform Associate（004）　目標 3a・3b・3c・3g　#04</div>
+  <h1>ワークフローとinit・validate・fmt</h1>
+  <p>Write・Plan・Apply（一人・チーム・HCP Terraform）、投機的プラン、terraform init の 3 つの段階とオプション、validate が見るもの・見ないもの、fmt とスタイルの規則</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（HashiCorp の Exam Content List（004）、Terraform ドキュメント v1.12.x の Core Terraform Workflow Overview・Command: init・Command: validate・Command: fmt・Style Guide）を書いた。英語の原文は『』で引用した</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>コアワークフロー</h1>
+  <p>書く、見る、作る。そしてくり返す。</p>
+  <div class="foot"><span>Terraform #04 ワークフローとinit・validate・fmt</span><span>目標 3a・3b・3c・3g</span></div>
+</section>
+
+<section class="slide">
+  <h1>Write → Plan → Apply<small>変更のたびにくり返すループ</small></h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">Write<span>『Author infrastructure as code.』エディタで書き、plan をくり返す</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b1">Plan<span>『Preview changes before applying.』</span></div>
+      <div class="arrow">↓ 承認（yes）</div>
+      <div class="box b2">Apply<span>『Provision reproducible infrastructure.』</span></div>
+      <div class="arrow">↺ 次の変更へ</div>
+    </div>
+    <div>
+      <div class="code small">$ git init my-infra &amp;&amp; cd my-infra
+$ vim main.tf
+$ terraform init        <span class="c"># 最初に 1 回</span>
+$ terraform plan        <span class="c"># 書きながらくり返す</span>
+$ git commit -am '...'
+$ terraform apply       <span class="c"># 計画を見て yes</span>
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+$ git push origin main</div>
+      <div class="point">一人のときは apply が出す計画が『final review』。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Core Terraform Workflow Overview（Working as an Individual Practitioner）</div>
+</section>
+
+<section class="slide">
+  <h1>一人・チーム・HCP Terraform</h1>
+  <table class="mx">
+    <tr><th>段階</th><th>一人</th><th>チーム</th><th>HCP Terraform</th></tr>
+    <tr><td class="t">Write</td><td class="l">エディタ＋VCS、plan をくり返す</td><td class="l">ブランチで書く。秘密の変数が増えたら共有の CI で実行</td><td class="l">変数とステートを中央に。CLI からリモートで投機的プラン</td></tr>
+    <tr><td class="t">Plan</td><td class="l">apply の計画を見る</td><td class="l">PR に投機的プランを付けてレビュー。今やるか（メンテナンス時間）も判断</td><td class="l">PR を作ると自動でプラン。結果が PR の状態に出る</td></tr>
+    <tr><td class="t">Apply</td><td class="l">yes で実行し push</td><td class="l">マージ後、最新ステートでの最終計画をもう一度確認</td><td class="l">計画を承認してから実行、進み具合を共有</td></tr>
+  </table>
+  <div class="point warn">PR で見た計画と、マージ後の計画はちがうことがある（『merge order or recent infrastructural changes』）。</div>
+  <div class="cite">出典：Core Terraform Workflow Overview（Working as a Team／The Core Workflow Enhanced by HCP Terraform）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>terraform init</h1>
+  <p>まず最初に、何回でも。</p>
+  <div class="foot"><span>Terraform #04 ワークフローとinit・validate・fmt</span><span>目標 3a・3b・3c・3g</span></div>
+</section>
+
+<section class="slide">
+  <h1>init がすること<small>『the first command you should run』</small></h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">① バックエンドの初期化<span>ルートの backend 設定を読む</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b1">② 子モジュールのインストール<span>module の source から取ってくる</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">③ プラグインのインストール<span>直接・間接に参照するプロバイダー → ロックファイルに記録</span></div>
+    </div>
+    <div>
+      <div class="point">『always safe to run multiple times』『will never delete your existing configuration or state』</div>
+      <div class="code small">.
+├── main.tf
+├── .terraform/          <span class="c"># プロバイダー・モジュール（コミットしない）</span>
+└── .terraform.lock.hcl  <span class="c"># コミットする</span></div>
+      <div class="point">リソースは作らない（作るのは apply）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Command: init</div>
+</section>
+
+<section class="slide">
+  <h1>init のオプション</h1>
+  <table class="mx">
+    <tr><th>オプション</th><th>段階</th><th>何をするか</th></tr>
+    <tr><td class="t">-migrate-state</td><td class="l">バックエンド</td><td class="l">今のステートを新しいバックエンドへコピー（-force-copy で確認なし）</td></tr>
+    <tr><td class="t">-reconfigure</td><td class="l">バックエンド</td><td class="l">今の設定を無視。ステートは移さない</td></tr>
+    <tr><td class="t">-backend-config=…</td><td class="l">バックエンド</td><td class="l">部分設定。秘密・動的な値を外から渡す</td></tr>
+    <tr><td class="t">-backend=false</td><td class="l">バックエンド</td><td class="l">バックエンドを飛ばす（validate の準備など）</td></tr>
+    <tr><td class="t">-upgrade</td><td class="l">モジュール・プラグイン</td><td class="l">制約に合う最新へ。ロックファイルを無視</td></tr>
+    <tr><td class="t">-get=false</td><td class="l">モジュール</td><td class="l">子モジュールのインストールを飛ばす</td></tr>
+    <tr><td class="t">-lockfile=readonly</td><td class="l">プラグイン</td><td class="l">ロックファイルを変えず照合だけ（-upgrade と併用不可）</td></tr>
+    <tr><td class="t">-plugin-dir=PATH</td><td class="l">プラグイン</td><td class="l">そのディレクトリからだけ入れる（開発中のプロバイダーなど）</td></tr>
+  </table>
+  <div class="point">もう一度 init：新しいモジュールだけ入る。入っているものは -upgrade まで変わらない。</div>
+  <div class="cite">出典：Command: init（Backend Initialization／Child Module Installation／Plugin Installation）</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>validate と fmt</h1>
+  <p>正しさと、見た目。</p>
+  <div class="foot"><span>Terraform #04 ワークフローとinit・validate・fmt</span><span>目標 3a・3b・3c・3g</span></div>
+</section>
+
+<section class="slide">
+  <h1>terraform validate</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>見る</th><th>見ない</th></tr>
+        <tr><td class="l">文法（syntactically valid）</td><td class="l">リモートのステート</td></tr>
+        <tr><td class="l">中の整合性（internally consistent）</td><td class="l">プロバイダーの API</td></tr>
+        <tr><td class="l">属性名・値の型</td><td class="l">値がプロバイダーにとって正しいか</td></tr>
+        <tr><td class="l">参照先があるか</td><td class="l">変数の値・今のステート</td></tr>
+      </table>
+      <div class="point">『safe to run automatically』：エディタの保存時・CI・pre-commit。</div>
+    </div>
+    <div>
+      <div class="code small">$ terraform init -backend=false   <span class="c"># バックエンドなしで準備</span>
+$ terraform validate
+Success! The configuration is valid.
+
+$ terraform validate -json
+{ "valid": true, "error_count": 0,
+  "warning_count": 2, "diagnostics": [ … ] }</div>
+      <div class="point">警告だけなら valid は true。</div>
+      <div class="point">特定の変数・ワークスペースで確かめるなら plan（validate をふくむ）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Command: validate／Style Guide（Code validation）</div>
+</section>
+
+<section class="slide">
+  <h1>terraform fmt とスタイル</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>オプション</th><th>動き</th></tr>
+        <tr><td class="t">（なし）</td><td class="l">今のディレクトリを整えて上書き</td></tr>
+        <tr><td class="t">-check</td><td class="l">書きかえず確認。整っていなければ終了コード 0 以外</td></tr>
+        <tr><td class="t">-diff</td><td class="l">差分を表示</td></tr>
+        <tr><td class="t">-recursive</td><td class="l">サブディレクトリも</td></tr>
+        <tr><td class="t">-write=false</td><td class="l">上書きしない</td></tr>
+      </table>
+      <div class="point warn">『intentionally opinionated and has no customization options』。版を上げたら fmt をかけ直す。</div>
+    </div>
+    <div>
+      <div class="code small">resource "aws_instance" "example" {
+  count = 2                    <span class="c"># メタ引数が最初</span>
+
+  ami           = "abc123"     <span class="c"># = をそろえる</span>
+  instance_type = "t2.micro"   <span class="c"># 2 スペース</span>
+
+  network_interface {          <span class="c"># 引数のあとにブロック</span>
+    # ...
+  }
+
+  lifecycle {                  <span class="c"># メタ引数のブロックは最後</span>
+    create_before_destroy = true
+  }
+}</div>
+      <div class="point">コミット前に fmt と validate。組織の規則は TFLint。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Command: fmt／Style Guide（Code style／Code formatting）</div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">ワークフロー</td><td class="l">Write → Plan → Apply の順、チームではブランチ・PR・最終計画の再確認</td></tr>
+    <tr><td class="t">HCP Terraform</td><td class="l">PR で自動の投機的プラン、変数とステートを中央に</td></tr>
+    <tr><td class="t">init</td><td class="l">最初に実行、何回でも安全、3 つの段階、リソースは作らない</td></tr>
+    <tr><td class="t">init のオプション</td><td class="l">-migrate-state と -reconfigure、-upgrade、-backend-config、-lockfile=readonly</td></tr>
+    <tr><td class="t">validate</td><td class="l">文法と型は見る、API・ステート・値の妥当性は見ない、-backend=false で準備</td></tr>
+    <tr><td class="t">fmt</td><td class="l">-check は CI、-recursive、設定項目なし、2 スペースと = のそろえ</td></tr>
+  </table>
+  <div class="cite">出典：Exam Content List（004）3a・3b・3c・3g／本資料の問題演習（全 30 問）</div>
+</section>
+
+</body>
+</html>
