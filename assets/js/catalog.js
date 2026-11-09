@@ -408,6 +408,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/04.html", title: "ワークフローとinit・validate・fmt 用語集", desc: "Write・Plan・Apply（一人・チーム・HCP）・init の3段階とオプション・validate が見るもの・fmt とスタイル。20語と問題30問", fields: [4], pdf: "terms/04.pdf" },
       { type: "terms", file: "terms/05.html", title: "plan・apply・destroy 用語集", desc: "実行計画の読み方・投機的プランとプランファイル・3つのモード・-replace と -target・リソースグラフ・apply の2つの動き・destroy。18語と問題30問", fields: [5], pdf: "terms/05.pdf" },
       { type: "terms", file: "terms/06.html", title: "resourceとdata・参照 用語集", desc: "resource と data のちがい・データソースを読むタイミング・名前つきの値・属性の参照とスプラット・リソースアドレス・暗黙の依存関係。18語と問題30問", fields: [6], pdf: "terms/06.pdf" },
+      { type: "terms", file: "terms/07.html", title: "変数・出力と型 用語集", desc: "variable の引数・値の渡し方と優先順位・output と terraform output・ローカル値・コレクション型と構造型・型の変換と optional。19語と問題30問", fields: [7], pdf: "terms/07.pdf" },
     ],
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },
