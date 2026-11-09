@@ -402,6 +402,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/17.html", title: "ローカライズ 用語集", desc: "Locale・Locale.Category、ResourceBundle の探す順、NumberFormat・DecimalFormat・CompactNumberFormat、DateTimeFormatter・MessageFormat。19語と問題30問", fields: [17], pdf: "terms/17.pdf" },
     ],
     tf: [
+      { type: "terms", file: "terms/01.html", title: "IaCとTerraformのしくみ 用語集", desc: "IaC と宣言型・バージョン管理・不変のインフラ・構成管理ツールとのちがい、Terraform と API・プロバイダー・Terraform Registry・HCL・Write／Plan／Apply・実行計画・リソースグラフ・ステート、マルチクラウド・ハイブリッドクラウド・サービス非依存・並行環境、Community Edition・HCP Terraform・Terraform Enterprise・Sentinel。21語と問題30問", fields: [1], pdf: "terms/01.pdf" },
     ],
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },
