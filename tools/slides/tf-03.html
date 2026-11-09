@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Terraform #03 ステートのしくみ 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">HashiCorp Certified: Terraform Associate（004）　目標 2d　#03</div>
+  <h1>ステートのしくみ</h1>
+  <p>ステートの 4 つの目的（対応づけ・メタデータ・性能・同期）、terraform.tfstate と JSON、refresh、show・state list・state show・state pull、lineage と serial、機密データ・リモートステート・ロック</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（HashiCorp の Exam Content List（004）、Terraform ドキュメント v1.12.x の State・Purpose of Terraform State・Remote State・State Storage and Locking・State Locking・Manage sensitive data・Backend Type: local・Command: show・state list・state pull・refresh）を書いた。英語の原文は『』で引用した</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>ステートの役割</h1>
+  <p>設定と現実をつなぐ台帳。</p>
+  <div class="foot"><span>Terraform #03 ステートのしくみ</span><span>目標 2d</span></div>
+</section>
+
+<section class="slide">
+  <h1>ステートは設定と実物の対応表<small>『a necessary requirement for Terraform to function』</small></h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">設定（.tf）<span>resource "aws_instance" "foo"</span></div>
+      <div class="arrow">↕ ステート（terraform.tfstate）が対応づける</div>
+      <div class="box b2">実物（AWS）<span>インスタンス ID i-abcd1234</span></div>
+      <div class="point">『The primary purpose of Terraform state is to store bindings between objects in a remote system and resource instances declared in your configuration.』</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>なぜタグではだめ？</th><th>答え</th></tr>
+        <tr><td class="t">初期の試作</td><td class="l">ステートなしで AWS のタグを使っていた</td></tr>
+        <tr><td class="t">問題</td><td class="l">タグに対応しないリソース・クラウドがある</td></tr>
+        <tr><td class="t">結論</td><td class="l">Terraform 独自のステートで対応づける</td></tr>
+      </table>
+      <div class="point warn">1 つの実物は 1 つのリソースインスタンスだけに。import で 2 か所に取りこむと、対応があいまいになる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：State／Purpose of Terraform State（Mapping to the Real World）</div>
+</section>
+
+<section class="slide">
+  <h1>ステートの 4 つの目的</h1>
+  <table class="mx">
+    <tr><th>目的</th><th>中身</th><th>ないとどうなるか</th></tr>
+    <tr><td class="t">対応づけ</td><td class="l">設定のインスタンス ⇔ 実物の ID</td><td class="l">どれを変える・消すのか分からない</td></tr>
+    <tr><td class="t">メタデータ</td><td class="l">最新の依存関係・最後に使ったプロバイダー設定（alias）</td><td class="l">設定から消したリソースを消す順番が分からない</td></tr>
+    <tr><td class="t">性能</td><td class="l">全リソースの属性のキャッシュ（『the most optional feature』）</td><td class="l">大きな環境で -refresh=false が使えない</td></tr>
+    <tr><td class="t">同期</td><td class="l">チームで同じステート → リモートステート＋ロック</td><td class="l">各自が別のステートで、同時に実行してしまう</td></tr>
+  </table>
+  <div class="point">大きな環境：API は 1 件ずつで数百ミリ秒・回数制限もある → 『-refresh=false … -target』を使い、キャッシュしたステートを正とみなす。</div>
+  <div class="cite">出典：Purpose of Terraform State（Metadata／Performance／Syncing）</div>
+</section>
+
+<section class="slide">
+  <h1>refresh：ステートを実物に合わせる</h1>
+  <div class="cols">
+    <div>
+      <div class="box b2">実物を読む<span>プロバイダーが API で今の設定を取る</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b1">ステートを更新<span>実物は変えない。ステートだけを変える</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b3">設定と比べて計画<span>作る・変える・消す</span></div>
+    </div>
+    <div>
+      <div class="point">『Prior to any operation, Terraform does a refresh to update the state with the real infrastructure.』</div>
+      <table class="mx">
+        <tr><th>書き方</th><th>扱い</th></tr>
+        <tr><td class="t">plan・apply</td><td class="l">自動で refresh する（ふつうはこれで足りる）</td></tr>
+        <tr><td class="t">terraform refresh</td><td class="l">非推奨。確認なしでステートを書きかえる</td></tr>
+        <tr><td class="t">apply -refresh-only</td><td class="l">変化を見てから承認できる（#13）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：State／Command: refresh</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>ステートの中身と見方</h1>
+  <p>JSON だけど、手では書かない。</p>
+  <div class="foot"><span>Terraform #03 ステートのしくみ</span><span>目標 2d</span></div>
+</section>
+
+<section class="slide">
+  <h1>ステートファイルの中身</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">{
+  "version": 4,
+  "terraform_version": "1.12.0",
+  "serial": 7,            <span class="c"># 書くたびに増える</span>
+  "lineage": "3f1c…",     <span class="c"># 作ったときの一意な ID</span>
+  "outputs": { … },
+  "resources": [{
+    "type": "aws_instance", "name": "foo",
+    "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+    "instances": [{ "attributes": { "id": "i-abcd1234", … },
+                    "dependencies": [ "aws_subnet.a" ] }]
+  }]
+}</div>
+    </div>
+    <div>
+      <div class="point warn">『direct file editing of the state is discouraged』→ terraform state コマンドで。</div>
+      <div class="point">形式は版で変わりうる。外部のソフトには show -json・output -json の出力を渡す。</div>
+      <div class="point">state push は、lineage がちがう・行き先の serial が大きいと止まる（-force で押し切る前に state pull でバックアップ）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：State（Inspection and Modification／Format）／State Storage and Locking（Manual State Pull/Push）</div>
+</section>
+
+<section class="slide">
+  <h1>ステートを読むコマンド</h1>
+  <table class="mx">
+    <tr><th>コマンド</th><th>何が出るか</th><th>注意</th></tr>
+    <tr><td class="t">terraform show</td><td class="l">最新のステート（プランファイルを渡せばその計画）を人向けに</td><td class="l">-json では sensitive も平文</td></tr>
+    <tr><td class="t">terraform state list</td><td class="l">リソースのアドレスの一覧（ルート → モジュールの順）</td><td class="l">パターンで絞りこめる</td></tr>
+    <tr><td class="t">terraform state show ADDR</td><td class="l">1 つのリソースのくわしい属性</td><td class="l">アドレスは state list で調べる</td></tr>
+    <tr><td class="t">terraform output -json</td><td class="l">ルートモジュールの出力値</td><td class="l">自動化で apply の直後に保存</td></tr>
+    <tr><td class="t">terraform state pull</td><td class="l">ステートをそのまま標準出力に（jq と組み合わせ）</td><td class="l">反対の push はとても危険</td></tr>
+  </table>
+  <div class="point">plan・apply 以外でステートを変えると『lose track of managed resources』。変える前にバックアップ。</div>
+  <div class="cite">出典：Command: show／Command: state list／Inspect Terraform State／Command: state pull／Update Terraform state manually overview</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>守る・共有する</h1>
+  <p>秘密が入る。だからリモートとロック。</p>
+  <div class="foot"><span>Terraform #03 ステートのしくみ</span><span>目標 2d</span></div>
+</section>
+
+<section class="slide">
+  <h1>ステートには秘密が入る</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">variable "db_password" {
+  type      = string
+  sensitive = true   <span class="c"># 表示は隠れる</span>
+}
+resource "aws_db_instance" "main" {
+  password = var.db_password
+}
+<span class="c"># → ステートには平文で残る</span></div>
+      <div class="point warn">sensitive は『redacts those values from CLI output』だけ。ステートに残さないのは ephemeral・write-only（#10）。</div>
+    </div>
+    <div>
+      <div class="box b1">Store your state remotely<span>リモートに置く</span></div>
+      <div class="box b1">Encrypt your state at rest<span>HCP Terraform・S3（encrypt）・GCS</span></div>
+      <div class="box b3">Use access controls<span>見られる人を限る</span></div>
+      <div class="box b3">Use audit logs<span>だれが見たかを残す</span></div>
+      <div class="point">ローカルでは平文のファイル → Git に入れない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Manage sensitive data（Background／State security best practices）</div>
+</section>
+
+<section class="slide">
+  <h1>リモートステートとロック</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>ローカル（既定）</th><th>リモート</th></tr>
+        <tr><td class="l">terraform.tfstate（local バックエンド）</td><td class="l">HCP Terraform・S3・Azure Blob・GCS・Consul …</td></tr>
+        <tr><td class="l">最新か・同時に動かしていないかを各自が確認</td><td class="l">全員で共有。出力値をほかの設定へ読み取り専用で</td></tr>
+        <tr><td class="l">ディスクに残る</td><td class="l">失敗したとき以外ディスクに残さない</td></tr>
+      </table>
+      <div class="point">リモートでも console・state・taint などはローカルと同じように動く。</div>
+    </div>
+    <div>
+      <div class="box b2">ステートのロック<span>書きこむおそれのある操作で自動。メッセージは出ない</span></div>
+      <div class="point">ロックに失敗したら『Terraform does not continue』。対応しないバックエンドもある。</div>
+      <div class="point">HCP Terraform は操作を中央のキューに並べ、承認待ちの計画があるのに新しい計画を作ろうとしたことも見つける。</div>
+      <div class="point">local バックエンドも、システムの API でロックする。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Remote State／State Storage and Locking／State Locking／Backend Type: local</div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">ステートは何のため</td><td class="l">対応づけがいちばんの目的。必須。タグでは代われない</td></tr>
+    <tr><td class="t">メタデータと性能</td><td class="l">消したリソースの削除順、キャッシュと -refresh=false</td></tr>
+    <tr><td class="t">置き場所と形式</td><td class="l">既定は terraform.tfstate、JSON、直接編集しない</td></tr>
+    <tr><td class="t">読むコマンド</td><td class="l">show・state list・state show・state pull のちがい</td></tr>
+    <tr><td class="t">機密データ</td><td class="l">平文で入る、sensitive は表示だけ、リモート＋暗号化、Git に入れない</td></tr>
+    <tr><td class="t">チーム</td><td class="l">リモートステートで共有、ロックは自動、失敗したら止まる</td></tr>
+  </table>
+  <div class="cite">出典：Exam Content List（004）2d／本資料の問題演習（全 30 問）</div>
+</section>
+
+</body>
+</html>

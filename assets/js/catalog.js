@@ -404,6 +404,7 @@ window.SITE_CATALOG = {
     tf: [
       { type: "terms", file: "terms/01.html", title: "IaCとTerraformのしくみ 用語集", desc: "IaC と宣言型・バージョン管理・不変のインフラ・構成管理ツールとのちがい、Terraform と API・プロバイダー・Terraform Registry・HCL・Write／Plan／Apply・実行計画・リソースグラフ・ステート、マルチクラウド・ハイブリッドクラウド・サービス非依存・並行環境、Community Edition・HCP Terraform・Terraform Enterprise・Sentinel。21語と問題30問", fields: [1], pdf: "terms/01.pdf" },
       { type: "terms", file: "terms/02.html", title: "プロバイダー 用語集", desc: "プラグインのしくみ・required_providers とソースアドレス・バージョン制約と ~>・ロックファイル・alias。19語と問題30問", fields: [2], pdf: "terms/02.pdf" },
+      { type: "terms", file: "terms/03.html", title: "ステートのしくみ 用語集", desc: "ステートの4つの目的・terraform.tfstate と JSON・refresh・show と state list/show/pull・機密データとリモートステート。17語と問題30問", fields: [3], pdf: "terms/03.pdf" },
     ],
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },
