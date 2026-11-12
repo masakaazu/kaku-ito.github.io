@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS DevOps #03 アーティファクトとイメージの構築 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">AWS Certified DevOps Engineer – Professional（DOP-C02）　タスク 1.3　#03</div>
+  <h1>アーティファクトとイメージの構築</h1>
+  <p>CodeArtifact のドメイン・リポジトリ・アップストリーム・外部接続・認可トークン・ポリシー・オリジンコントロール、ECR の認証・タグのイミュータビリティ・ライフサイクルポリシー・基本／拡張スキャン・レプリケーション・プルスルーキャッシュ、EC2 Image Builder のレシピ・コンポーネント・AWSTOE・インフラストラクチャ設定・配布設定・パイプライン</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（AWS の DOP-C02 試験ガイド、AWS CodeArtifact・Amazon ECR・EC2 Image Builder のユーザーガイドの各ページ）を書いた。『』の中は日本語版ドキュメントの原文どおり</div>
+</section>
+
+<section class="slide">
+  <h1>何をどこに置くか</h1>
+  <table class="mx">
+    <tr><th>置くもの</th><th>サービス</th><th>認証・取り出し</th><th>寿命の管理</th></tr>
+    <tr><td class="t">npm・Maven・PyPI・NuGet</td><td class="l">CodeArtifact</td><td class="l">aws codeartifact login（既定 12 時間）</td><td class="l">パッケージバージョンの削除</td></tr>
+    <tr><td class="t">コンテナイメージ</td><td class="l">Amazon ECR</td><td class="l">aws ecr get-login-password（12 時間）</td><td class="l">ライフサイクルポリシー</td></tr>
+    <tr><td class="t">ビルドの出力（zip）</td><td class="l">Amazon S3</td><td class="l">IAM・バケットポリシー</td><td class="l">S3 ライフサイクルルール</td></tr>
+    <tr><td class="t">AMI</td><td class="l">EC2（Image Builder で作る）</td><td class="l">起動権限</td><td class="l">Image Builder のライフサイクル</td></tr>
+  </table>
+  <div class="point">試験ガイド 1.3：アーティファクトリポジトリの作成と設定（CodeArtifact・S3・ECR）、EC2 とコンテナイメージの構築の自動化（Image Builder）。</div>
+  <div class="cite">出典：DOP-C02 試験ガイド タスク 1.3／AWS CodeArtifact とは／Amazon Elastic Container Registry とは／Image Builder とは</div>
+  <div class="foot"><span>AWS DevOps #03 アーティファクトとイメージの構築</span><span>タスク 1.3</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>CodeArtifact</h1>
+  <p>パッケージは社内のリポジトリから取る。</p>
+  <div class="foot"><span>AWS DevOps #03 アーティファクトとイメージの構築</span><span>タスク 1.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>ドメイン・リポジトリ・外部接続</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">npmjs.com・Maven Central<span>公開リポジトリ</span></div>
+      <div class="arrow">↓ 外部接続（1 リポジトリに 1 つ）</div>
+      <div class="box b2">npm-store（外部接続を持つリポジトリ）<span>取ったパッケージは保存される</span></div>
+      <div class="arrow">↓ アップストリーム（最大 10 個）</div>
+      <div class="box b3">team-a-repo ／ team-b-repo<span>パッケージマネージャーの接続先は 1 つ</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>単位</th><th>役目</th></tr>
+        <tr><td class="t">ドメイン</td><td class="l">アセットを 1 回だけ保存（重複排除）・1 つの KMS キーで暗号化・組織のポリシー</td></tr>
+        <tr><td class="t">リポジトリ</td><td class="l">ポリグロット。どの形式も入る。別のドメインに移せない</td></tr>
+        <tr><td class="t">パッケージ</td><td class="l">＞ パッケージバージョン ＞ アセット（.tgz・JAR）</td></tr>
+      </table>
+      <div class="point">外部接続はドメインに 1 つのリポジトリに付け、他はそれをアップストリームに。</div>
+    </div>
+  </div>
+  <div class="cite">出典：AWS CodeArtifact の概念／ドメインの概要／CodeArtifact でアップストリームリポジトリを操作する／CodeArtifact リポジトリをパブリックリポジトリに接続する</div>
+  <div class="foot"><span>AWS DevOps #03 アーティファクトとイメージの構築</span><span>タスク 1.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>認証とアクセスの制御</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">aws codeartifact login --tool npm \
+  --domain corp --domain-owner 111122223333 \
+  --repository team-a-repo   <span class="c"># 既定 12 時間</span>
+<span class="c"># login 非対応のツールは</span>
+aws codeartifact get-authorization-token ...</div>
+      <div class="point">トークンは 15 分〜12 時間。切れたら取り直す（ビルドのたびに login）。</div>
+      <div class="point warn">ルートユーザーは GetAuthorizationToken を呼べない。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>ポリシー</th><th>決めること</th></tr>
+        <tr><td class="t">ドメインポリシー</td><td class="l">別アカウントに GetAuthorizationToken・CreateRepository</td></tr>
+        <tr><td class="t">リポジトリポリシー</td><td class="l">読み取り・公開の許可（既定は所有者だけ）</td></tr>
+        <tr><td class="t">オリジンコントロール</td><td class="l">直接の公開・アップストリームからの取り込みを許可／ブロック</td></tr>
+      </table>
+      <div class="point">社内名と同じ公開パッケージが混ざる → オリジンコントロールで取り込みをブロック。</div>
+    </div>
+  </div>
+  <div class="cite">出典：AWS CodeArtifact 認証とトークン／ドメインポリシー／リポジトリポリシー／AWS CodeArtifact の概念</div>
+  <div class="foot"><span>AWS DevOps #03 アーティファクトとイメージの構築</span><span>タスク 1.3</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>Amazon ECR</h1>
+  <p>イメージを守り、片付け、配る。</p>
+  <div class="foot"><span>AWS DevOps #03 アーティファクトとイメージの構築</span><span>タスク 1.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>ECR の困りごとと機能</h1>
+  <table class="mx">
+    <tr><th>困りごと</th><th>機能</th><th>覚えどころ</th></tr>
+    <tr><td class="t">タグが上書きされる</td><td class="l">タグのイミュータビリティ</td><td class="l">同じタグでプッシュ → ImageTagAlreadyExistsException</td></tr>
+    <tr><td class="t">古いイメージがたまる</td><td class="l">ライフサイクルポリシー</td><td class="l">数値が小さいほど優先。適用前にプレビュー</td></tr>
+    <tr><td class="t">OS の脆弱性</td><td class="l">基本スキャン</td><td class="l">CVE データベース。手動・プッシュ時</td></tr>
+    <tr><td class="t">言語パッケージも継続的に</td><td class="l">拡張スキャン</td><td class="l">Amazon Inspector。プッシュ時・継続的</td></tr>
+    <tr><td class="t">別リージョン・別アカウント</td><td class="l">レプリケーション</td><td class="l">設定後のプッシュだけ複製。送信先のレジストリポリシー</td></tr>
+    <tr><td class="t">Docker Hub の制限</td><td class="l">プルスルーキャッシュ</td><td class="l">定期的に最新化。認証は Secrets Manager</td></tr>
+    <tr><td class="t">別アカウントから取る</td><td class="l">リポジトリポリシー</td><td class="l">ecr:BatchGetImage などを許可</td></tr>
+  </table>
+  <div class="cite">出典：Amazon ECR ユーザーガイド（イメージタグの上書きの防止／ライフサイクルポリシー／イメージをスキャン／プライベートイメージレプリケーション／アップストリームレジストリと同期／プライベートリポジトリポリシー）</div>
+  <div class="foot"><span>AWS DevOps #03 アーティファクトとイメージの構築</span><span>タスク 1.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>ビルドから ECR へ</h1>
+  <div class="cols">
+    <div>
+      <div class="code small"><span class="c"># buildspec の pre_build</span>
+aws ecr get-login-password --region $R \
+ | docker login --username AWS \
+   --password-stdin $ACCT.dkr.ecr.$R.amazonaws.com
+<span class="c"># build：コミット ID でタグ</span>
+docker build -t $REPO:$CODEBUILD_RESOLVED_SOURCE_VERSION .
+<span class="c"># post_build</span>
+docker push $REPO:$CODEBUILD_RESOLVED_SOURCE_VERSION</div>
+      <div class="point">トークンは 12 時間・取ったプリンシパルと同じ権限。</div>
+    </div>
+    <div>
+      <div class="box b3">プッシュ<span>イミュータブルなタグ</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b1">拡張スキャン（Inspector）<span>結果は EventBridge へ → 通知・止める</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">レプリケーション<span>大阪（DR）・本番アカウント</span></div>
+      <div class="point warn">クロスアカウント：ポリシーは送信先だけ（ecr:ReplicateImage）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Amazon ECR でのプライベートレジストリ認証／Amazon ECR でのプライベートイメージレプリケーション</div>
+  <div class="foot"><span>AWS DevOps #03 アーティファクトとイメージの構築</span><span>タスク 1.3</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>EC2 Image Builder</h1>
+  <p>ゴールデンイメージを自動で作り直す。</p>
+  <div class="foot"><span>AWS DevOps #03 アーティファクトとイメージの構築</span><span>タスク 1.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>イメージパイプラインの部品</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">レシピ<span>ベースイメージ＋コンポーネント。イメージレシピ＝AMI、コンテナレシピ＝ECR へ</span></div>
+      <div class="box b1">インフラストラクチャ設定<span>インスタンスタイプ・サブネット・SG・インスタンスプロファイル・ログ</span></div>
+      <div class="box b2">配布設定<span>リージョン・アカウント・起動権限（全リージョンに伝わる）</span></div>
+      <div class="box b1">パイプライン<span>スケジュールビルダー／cron。変更がなければビルドを飛ばす</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>ステージ</th><th>コンポーネントのフェーズ</th></tr>
+        <tr><td class="t">ビルド（スナップショット前）</td><td class="l">build・validate</td></tr>
+        <tr><td class="t">テスト（スナップショット後）</td><td class="l">test（スナップショットから起動したインスタンス）</td></tr>
+      </table>
+      <div class="point">AWSTOE が YAML のコンポーネントを実行。validate コマンドで文法を確認。</div>
+      <div class="point">例：毎週パッチ済み AMI → ID を Parameter Store → 起動テンプレート。</div>
+    </div>
+  </div>
+  <div class="cite">出典：EC2 Image Builder の仕組み／Image Builder のレシピの管理／コンポーネントを使用した Image Builder イメージのカスタマイズ／AWSTOE／反復可能なパイプラインプロセス</div>
+  <div class="foot"><span>AWS DevOps #03 アーティファクトとイメージの構築</span><span>タスク 1.3</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">置き場所</td><td class="l">パッケージ＝CodeArtifact、イメージ＝ECR、ビルドの出力＝S3、AMI＝Image Builder</td></tr>
+    <tr><td class="t">CodeArtifact</td><td class="l">ドメイン（重複排除・KMS）、アップストリーム 10・外部接続 1、トークン既定 12 時間、ドメインポリシーで別アカウント、オリジンコントロール</td></tr>
+    <tr><td class="t">ECR</td><td class="l">タグのイミュータビリティ、ライフサイクルの優先度、基本と拡張（Inspector）、レプリケーションは設定後だけ・送信先のポリシー、プルスルーキャッシュ</td></tr>
+    <tr><td class="t">Image Builder</td><td class="l">レシピの種類、コンポーネントと AWSTOE、ステージとフェーズ、インフラストラクチャ設定と配布設定、スケジュールと変更検出</td></tr>
+  </table>
+  <div class="cite">出典：DOP-C02 試験ガイド タスク 1.3／本資料の問題演習（全 30 問）</div>
+</section>
+
+</body>
+</html>
