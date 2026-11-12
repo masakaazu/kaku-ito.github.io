@@ -512,6 +512,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/02.html", title: "探索・推論と知識表現 用語集", desc: "幅優先・深さ優先探索・STRIPS・SHRDLU・Mini-Max法・αβ法・モンテカルロ法、意味ネットワーク・is-a・オントロジー・Cyc・セマンティックWeb、エキスパートシステム・DENDRAL・MYCIN・ELIZA・ワトソン・東ロボくん。25語と問題30問", fields: [2], pdf: "terms/02.pdf" },
       { type: "terms", file: "terms/03.html", title: "機械学習とディープラーニングの歩み 用語集", desc: "機械学習の定義・特徴量・ビッグデータ・次元の呪い・スパムフィルタ・レコメンド、形式ニューロン・パーセプトロン・ネオコグニトロン・LeNet・ImageNet・ILSVRC・AlexNet・アルファ碁・生成AI。18語と問題30問", fields: [3], pdf: "terms/03.pdf" },
       { type: "terms", file: "terms/04.html", title: "教師あり学習 用語集", desc: "回帰と分類・多クラス分類、線形回帰・ロジスティック回帰、SVM・マージン最大化・カーネルトリック・決定木、バギング・ランダムフォレスト・ブースティング・勾配ブースティング、ARとVARモデル。19語と問題30問", fields: [4], pdf: "terms/04.pdf" },
+      { type: "terms", file: "terms/05.html", title: "教師なし学習 用語集", desc: "k-means法・ウォード法・デンドログラム、主成分分析・特異値分解・多次元尺度構成法・t-SNE、協調フィルタリング・コンテンツベース・コールドスタート問題、トピックモデル・LDA。15語と問題30問", fields: [5], pdf: "terms/05.pdf" },
     ],
     dop: [
       { type: "terms", file: "terms/01.html", title: "CI/CDパイプラインとCodePipeline 用語集", desc: "CI・継続的デリバリー・継続的デプロイ、ステージ・アクション・トランジション・アーティファクト・変数・手動承認、V1 と V2、実行モード、トリガー、再試行とロールバック、接続、クロスアカウント・クロスリージョン。23語と問題30問", fields: [1], pdf: "terms/01.pdf" },
