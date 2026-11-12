@@ -414,6 +414,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/10.html", title: "機密データとVault 用語集", desc: "sensitive とステートの守り方・ephemeral な変数と出力・ephemeral ブロック・write-only 引数とバージョン引数・Vault プロバイダーと一時的な資格情報・HCP Terraform の動的な資格情報（目標 4h）。15語と問題30問", fields: [10], pdf: "terms/10.pdf" },
       { type: "terms", file: "terms/11.html", title: "モジュール 用語集", desc: "ルートと子・module ブロックと source（ローカル・Registry・プライベート・Git と ref・サブディレクトリ）・入力と出力とスコープ・モジュールの中のプロバイダー・平らな構成・version と init -upgrade・標準モジュール構造と公開（目標 5a〜5d）。20語と問題30問", fields: [11], pdf: "terms/11.pdf" },
       { type: "terms", file: "terms/12.html", title: "バックエンドとロック 用語集", desc: "backend ブロックの決まり・local バックエンド・移行と部分設定・ステートのロックと force-unlock・S3 の use_lockfile・terraform_remote_state と公開用の場所・CLI のワークスペース（目標 6a〜6c）。17語と問題30問", fields: [12], pdf: "terms/12.pdf" },
+      { type: "terms", file: "terms/13.html", title: "ドリフトとステートの整理 用語集", desc: "ドリフトへの対応・refresh-only と非推奨の terraform refresh・HCP Terraform のドリフト検出・moved ブロックと state mv・removed ブロックと state rm・ステートの分割と削除してインポート（目標 6d）。16語と問題30問", fields: [13], pdf: "terms/13.pdf" },
     ],
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },
