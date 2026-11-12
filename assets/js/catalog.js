@@ -477,6 +477,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/13.html", title: "災害対策とバックアップ 用語集", desc: "RTO・RPO と 4 つの DR 戦略、AWS Backup、サービスごとの復旧。28語と問題30問", fields: [13], pdf: "terms/13.pdf" },
       { type: "terms", file: "terms/14.html", title: "CloudWatchのメトリクスとアラーム 用語集", desc: "メトリクスの集め方、アラームの評価と欠落データ・複合・異常検出、ダッシュボードと代表的なメトリクス。26語と問題30問", fields: [14], pdf: "terms/14.pdf" },
       { type: "terms", file: "terms/15.html", title: "CloudWatch Logsとログの分析 用語集", desc: "ロググループの保護、メトリクスフィルターとサブスクリプション、CloudTrail・フローログ・アクセスログと分析。25語と問題30問", fields: [15], pdf: "terms/15.pdf" },
+      { type: "terms", file: "terms/16.html", title: "X-Rayとヘルスチェック 用語集", desc: "X-Rayのトレース・注釈・サンプリング・ADOT・Application Signals・SLO・RUM・EC2/ASG/ECS/EKSのヘルスチェック・AWS Health。29語と問題30問", fields: [16], pdf: "terms/16.pdf" },
     ],
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },
