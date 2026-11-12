@@ -417,6 +417,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/13.html", title: "ドリフトとステートの整理 用語集", desc: "ドリフトへの対応・refresh-only と非推奨の terraform refresh・HCP Terraform のドリフト検出・moved ブロックと state mv・removed ブロックと state rm・ステートの分割と削除してインポート（目標 6d）。16語と問題30問", fields: [13], pdf: "terms/13.pdf" },
       { type: "terms", file: "terms/14.html", title: "インポート・stateコマンド・ログ 用語集", desc: "import ブロックと terraform import、-generate-config-out、terraform state の各サブコマンド、TF_LOG などのログ（目標 7a〜7c）。17語と問題30問", fields: [14], pdf: "terms/14.pdf" },
       { type: "terms", file: "terms/15.html", title: "HCP Terraformでの実行と連携 用語集", desc: "HCP Terraform のワークスペースとリモート実行、実行モード、3 つのワークフロー、cloud ブロックと terraform login、ステートの移行（目標 8a・8d）。22語と問題30問", fields: [15], pdf: "terms/15.pdf" },
+      { type: "terms", file: "terms/16.html", title: "HCP Terraformの共同作業とガバナンス 用語集", desc: "プロジェクト・変数セット・run trigger、チームと権限、動的な資格情報、Sentinel・OPA のポリシー、ヘルス評価・プライベートレジストリ・Explorer（目標 8b・8c）。20語と問題30問", fields: [16], pdf: "terms/16.pdf" },
     ],
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },
