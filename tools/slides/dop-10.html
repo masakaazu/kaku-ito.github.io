@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS DevOps #10 AWS ConfigとAppConfig 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">AWS Certified DevOps Engineer – Professional（DOP-C02）　タスク 2.1・2.3・5.2　#10</div>
+  <h1>AWS Config と AppConfig</h1>
+  <p>設定レコーダー・設定項目・設定履歴・スナップショット・配信チャネル、マネージドルール・カスタム Lambda ルール・カスタムポリシールール（Guard）・トリガー・評価モード、修復アクション（自動・手動）・コンフォーマンスパック・組織のルール・アグリゲータ・高度なクエリ、AppConfig の機能フラグ・環境・デプロイ戦略・ベイク時間・バリデータ・エージェント</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（AWS の DOP-C02 試験ガイド、AWS Config デベロッパーガイド・AWS AppConfig ユーザーガイドの各ページ）を書いた。『』の中は日本語版ドキュメントの原文どおり</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>Config の記録と評価</h1>
+  <p>「設定が何だったか」を残し、ルールに照らす。</p>
+  <div class="foot"><span>AWS DevOps #10 AWS ConfigとAppConfig</span><span>タスク 2.1・2.3・5.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>記録のしくみ</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">AWS のリソース<span>作成・変更・削除</span></div>
+      <div class="arrow">↓ 設定レコーダー（記録するリソースタイプを選ぶ）</div>
+      <div class="box b1">設定項目（CI）<span>ある時点の属性・関係・設定</span></div>
+      <div class="arrow">↓ 配信チャネル</div>
+      <div class="box b2">S3：設定履歴ファイル（6 時間ごと）・スナップショット<span>SNS：設定ストリーム・コンプライアンスの変化</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>知りたいこと</th><th>使うもの</th></tr>
+        <tr><td class="t">1 つのリソースの変化</td><td class="l">設定履歴（タイムライン）</td></tr>
+        <tr><td class="t">全リソースのある瞬間</td><td class="l">設定スナップショット</td></tr>
+        <tr><td class="t">変わったらすぐ</td><td class="l">設定ストリーム（SNS → SQS）</td></tr>
+        <tr><td class="t">誰が変えたか</td><td class="l">CloudTrail（Config ではない）</td></tr>
+      </table>
+      <div class="point warn">S3 の古いファイルは消さない → S3 のライフサイクルで。</div>
+    </div>
+  </div>
+  <div class="cite">出典：AWS Config の仕組み／AWS Config の用語と概念 『設定スナップショットには、AWS アカウント で AWS Config が記録したすべてのリソースの設定詳細が含まれています。』</div>
+  <div class="foot"><span>AWS DevOps #10 AWS ConfigとAppConfig</span><span>タスク 2.1・2.3・5.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>ルールの種類・トリガー・評価モード</h1>
+  <table class="mx">
+    <tr><th>ルール</th><th>書き方</th><th>選ぶとき</th></tr>
+    <tr><td class="t">マネージドルール</td><td class="l">AWS が用意。パラメータで調整</td><td class="l">まずこれ（encrypted-volumes、required-tags など）</td></tr>
+    <tr><td class="t">カスタム Lambda ルール</td><td class="l">Lambda（Java・Python）</td><td class="l">複雑な判断。スコープを絞らないと全リソースで呼ばれる</td></tr>
+    <tr><td class="t">カスタムポリシールール</td><td class="l">CloudFormation Guard</td><td class="l">Lambda を書かずに独自のルール</td></tr>
+  </table>
+  <div class="cols">
+    <div>
+      <div class="box b1">トリガー<span>設定変更（スコープ内が変わったら）／定期的（24 時間ごとなど）／ハイブリッド</span></div>
+      <div class="point">時間がたつだけで非準拠（キーの期限など）→ 定期的。</div>
+    </div>
+    <div>
+      <div class="box b2">評価モード<span>検出（デプロイ済み）／プロアクティブ（デプロイ前、StartResourceEvaluation）</span></div>
+      <div class="point warn">プロアクティブは結果を返すだけ。デプロイを止めない・直さない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：AWS Config ルールを使用したリソースの評価／マネージドルール／カスタムルール／カスタムポリシールールの作成／プロアクティブな評価を有効にする</div>
+  <div class="foot"><span>AWS DevOps #10 AWS ConfigとAppConfig</span><span>タスク 2.1・2.3・5.2</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>修復と組織への展開</h1>
+  <p>直す・まとめて配る・集めて見る。</p>
+  <div class="foot"><span>AWS DevOps #10 AWS ConfigとAppConfig</span><span>タスク 2.1・2.3・5.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>修復アクション</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">Config ルール<span>NON_COMPLIANT</span></div>
+      <div class="arrow">↓ 関連付けた修復アクション</div>
+      <div class="box b1">SSM Automation ドキュメント<span>マネージド（AWS-EnableS3BucketEncryption など）か自作。サービスロールを渡す</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">リソースが直る</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th></th><th>自動修復</th><th>手動修復</th></tr>
+        <tr><td class="t">いつ動く</td><td class="l">非準拠になったら自動</td><td class="l">人が「修復」を押したら</td></tr>
+        <tr><td class="t">向く場面</td><td class="l">すぐ直したい</td><td class="l">本番で影響を確かめてから</td></tr>
+        <tr><td class="t">設定</td><td class="l">再試行（例 300 秒で 5 回）</td><td class="l">手順だけ決めておく</td></tr>
+      </table>
+      <div class="point warn">古いコンプライアンスのデータで、準拠済みのリソースにも動くことがある → 何度実行しても同じ結果になる手順に。</div>
+    </div>
+  </div>
+  <div class="cite">出典：を使用した非準拠リソースの修正 AWS Config／の自動修復の設定 AWS Config／の手動修復のセットアップ AWS Config</div>
+  <div class="foot"><span>AWS DevOps #10 AWS ConfigとAppConfig</span><span>タスク 2.1・2.3・5.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>配る・集める・探す</h1>
+  <table class="mx">
+    <tr><th>機能</th><th>何をする</th><th>ポイント</th></tr>
+    <tr><td class="t">コンフォーマンスパック</td><td class="l">ルール＋修復を YAML テンプレートで 1 単位に</td><td class="l">サンプルテンプレートあり。SSM ドキュメントに保存して配れる。組織全体にも</td></tr>
+    <tr><td class="t">組織のルール</td><td class="l">管理アカウント・委任された管理者から全アカウントへ</td><td class="l">メンバーは変更不可。API・CLI のみ。リージョンごと。新アカウントにも自動</td></tr>
+    <tr><td class="t">アグリゲータ</td><td class="l">複数アカウント・リージョンのデータを 1 か所に</td><td class="l">見るだけ。ルールは配れない</td></tr>
+    <tr><td class="t">高度なクエリ</td><td class="l">SQL の SELECT で今の設定を検索</td><td class="l">アグリゲータと組み合わせて全体を検索。記録していないタイプは対象外</td></tr>
+  </table>
+  <div class="point warn">組織のルールは相手に設定レコーダーが要る。ないと 7 時間しか再試行しない。</div>
+  <div class="cite">出典：のコンフォーマンスパック AWS Config／組織内のすべてのアカウントでの AWS Config ルールの管理／マルチアカウントマルチリージョンのデータ集約／現在の設定状態のクエリ 『アグリゲータでは、ソースアカウントまたはリージョンへの変更アクセスを提供しません。』</div>
+  <div class="foot"><span>AWS DevOps #10 AWS ConfigとAppConfig</span><span>タスク 2.1・2.3・5.2</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>AppConfig で設定を安全に配る</h1>
+  <p>コードを出し直さずに、検証して少しずつ。</p>
+  <div class="foot"><span>AWS DevOps #10 AWS ConfigとAppConfig</span><span>タスク 2.1・2.3・5.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>AppConfig の部品と流れ</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">アプリケーション</div>
+      <div class="arrow">↓</div>
+      <div class="box b1">設定プロファイル<span>機能フラグ（hosted）／フリーフォーム（ホストされたストア・S3・Parameter Store・Secrets Manager）。バリデータ最大 2 つ</span></div>
+      <div class="arrow">↓ StartDeployment（デプロイ戦略を指定）</div>
+      <div class="box b2">環境（Beta・Production）<span>CloudWatch アラーム＋読み取り用 IAM ロール。ALARM ならロールバック</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>バリデータ</th><th>調べること</th></tr>
+        <tr><td class="t">JSON スキーマ</td><td class="l">型・必須項目などの形</td></tr>
+        <tr><td class="t">Lambda 関数</td><td class="l">中身の判断（素数か など）。appconfig.amazonaws.com に呼び出しを許可</td></tr>
+      </table>
+      <div class="point">機能フラグ：無効にするだけで新機能を止められる。マルチバリアントで出し分け。</div>
+      <div class="point warn">1 つの環境に同時に配れる設定は 1 つ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：とは AWS AppConfig／での設定プロファイルの作成／バリデータを理解する／環境の作成／構成のデプロイ</div>
+  <div class="foot"><span>AWS DevOps #10 AWS ConfigとAppConfig</span><span>タスク 2.1・2.3・5.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>デプロイ戦略と取り出し方</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>値</th><th>意味</th></tr>
+        <tr><td class="t">線形</td><td class="l">同じ割合ずつ（10%→20%→30%）</td></tr>
+        <tr><td class="t">指数</td><td class="l">G×2^N（2%→4%→8%）</td></tr>
+        <tr><td class="t">ステップの割合</td><td class="l">増加係数</td></tr>
+        <tr><td class="t">デプロイ時間</td><td class="l">配っていく時間の幅</td></tr>
+        <tr><td class="t">ベイク時間</td><td class="l">100% 後もアラームを見る時間</td></tr>
+      </table>
+      <div class="point">事前定義：AllAtOnce・Linear50PercentEvery30Seconds・Canary10Percent20Minutes。</div>
+    </div>
+    <div>
+      <div class="box b3">アプリ<span>localhost:2772 に HTTP GET</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b1">AppConfig エージェント<span>ECS・EKS ではサイドカー、Lambda では拡張機能（レイヤー）。キャッシュして裏でポーリング</span></div>
+      <div class="arrow">↓ StartConfigurationSession・GetLatestConfiguration</div>
+      <div class="box b2">AppConfig Data</div>
+    </div>
+  </div>
+  <div class="cite">出典：デプロイ戦略の使用／で機能フラグと設定データを取得する／AWS AppConfig エージェントとは／での AWS AppConfig エージェントの使用 AWS Lambda</div>
+  <div class="foot"><span>AWS DevOps #10 AWS ConfigとAppConfig</span><span>タスク 2.1・2.3・5.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">記録</td><td class="l">設定履歴・スナップショット・ストリームの違い、レコーダーの範囲、CloudTrail との分担、S3 のライフサイクル</td></tr>
+    <tr><td class="t">評価</td><td class="l">マネージド → Guard → Lambda、スコープ、設定変更と定期的、プロアクティブは止めない</td></tr>
+    <tr><td class="t">修復</td><td class="l">SSM Automation、自動（再試行）と手動</td></tr>
+    <tr><td class="t">組織</td><td class="l">配る＝コンフォーマンスパック・組織のルール、見る＝アグリゲータ、探す＝高度なクエリ</td></tr>
+    <tr><td class="t">AppConfig</td><td class="l">再デプロイなしで設定変更、機能フラグ、バリデータ、環境のアラームでロールバック、ベイク時間、エージェント・Lambda 拡張機能</td></tr>
+  </table>
+  <div class="cite">出典：AWS Certified DevOps Engineer - Professional (DOP-C02) 試験ガイド タスク 2.1・2.3・5.2</div>
+</section>
+
+</body>
+</html>
