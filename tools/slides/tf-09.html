@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Terraform #09 依存関係とカスタム条件 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">HashiCorp Certified: Terraform Associate（004）　目標 4f・4g　#09</div>
+  <h1>依存関係とカスタム条件</h1>
+  <p>暗黙の依存と depends_on、依存グラフと terraform graph、lifecycle（create_before_destroy・prevent_destroy・ignore_changes・replace_triggered_by）と terraform_data、変数の validation・precondition・postcondition・check ブロック、検証の順番、継続的検証</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（HashiCorp の Exam Content List（004）、Terraform ドキュメント v1.12.x の depends_on meta-argument reference・lifecycle meta-argument reference・Dependency Graph・Command: graph・terraform_data resource reference・Validate your configuration・check block reference、HCP Terraform の Health assessments）を書いた。英語の原文は『』で引用した</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>依存関係</h1>
+  <p>ふつうは参照で。depends_on は最後の手段。</p>
+  <div class="foot"><span>Terraform #09 依存関係とカスタム条件</span><span>目標 4f・4g</span></div>
+</section>
+
+<section class="slide">
+  <h1>暗黙の依存と depends_on</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">resource "aws_iam_instance_profile" "example" {
+  role = aws_iam_role.example.name   <span class="c"># 参照 → 暗黙の依存</span>
+}
+resource "aws_instance" "example" {
+  ami                  = "ami-a1b2c3d4"
+  instance_type        = "t2.micro"
+  iam_instance_profile = aws_iam_instance_profile.example
+  <span class="c"># 起動時に S3 を使う → ポリシーへの依存は参照に出てこない</span>
+  depends_on = [
+    aws_iam_role_policy.example
+  ]
+}</div>
+    </div>
+    <div>
+      <div class="box b3">暗黙の依存関係<span>引数がほかのリソースを参照 → 自動で順番が決まる（推奨）</span></div>
+      <div class="box b2">depends_on（明示）<span>相手のふるまいに頼るが、データは使っていないとき</span></div>
+      <div class="point">値は同じモジュールのリソース・子モジュールへの参照のリスト。任意の式は不可。</div>
+      <div class="point">書けるブロック：resource・data・module・output・check・ephemeral。</div>
+      <div class="point warn">『You should only use depends_on as a last resort』：保守的な計画になり、known after apply や余計な置きかえが増える（module に付けると特に）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：depends_on meta-argument reference</div>
+  <div class="foot"><span>Terraform #09 依存関係とカスタム条件</span><span>目標 4f・4g</span></div>
+</section>
+
+<section class="slide">
+  <h1>依存グラフと terraform graph</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">1. 設定からリソースのノード</div>
+      <div class="arrow">↓</div>
+      <div class="box b3">2. depends_on と参照から辺</div>
+      <div class="arrow">↓</div>
+      <div class="box b1">3. ステートだけにある「孤児」も追加（消す対象）</div>
+      <div class="arrow">↓</div>
+      <div class="box b2">4. 循環がないことを確かめる</div>
+      <div class="arrow">↓</div>
+      <div class="box b2">5. 依存が済んだノードから並列に処理（既定 10）</div>
+    </div>
+    <div>
+      <div class="code small">$ terraform graph                 <span class="c"># resource・data の順番だけ</span>
+$ terraform graph -type=plan | dot -Tpng >graph.png
+$ terraform graph -type=apply -draw-cycles
+$ terraform apply -parallelism=5   <span class="c"># 同時に処理する数</span></div>
+      <div class="point">出力は DOT 言語のテキスト。画像は Graphviz の dot で作る。</div>
+      <div class="point">-type は plan・plan-refresh-only・plan-destroy・apply。</div>
+      <div class="point warn">-parallelism はふつう変えない。API のレート制限はプロバイダー側のリトライで対処する。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Dependency Graph／Command: graph</div>
+  <div class="foot"><span>Terraform #09 依存関係とカスタム条件</span><span>目標 4f・4g</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>lifecycle のルール</h1>
+  <p>作る・消す・置きかえるときのふるまいを変える。</p>
+  <div class="foot"><span>Terraform #09 依存関係とカスタム条件</span><span>目標 4f・4g</span></div>
+</section>
+
+<section class="slide">
+  <h1>4 つのルール</h1>
+  <table class="mx">
+    <tr><th>ルール</th><th>何をするか</th><th>覚えどころ</th></tr>
+    <tr><td class="t">create_before_destroy</td><td class="l">置きかえで「作ってから消す」</td><td class="l">既定は消してから作る。opt-in（名前の衝突に注意）。依存先にも伝わり false にできない</td></tr>
+    <tr><td class="t">prevent_destroy</td><td class="l">消す計画をエラーに</td><td class="l">DB を守る。destroy もできない。ブロックごと消すと守れない</td></tr>
+    <tr><td class="t">ignore_changes</td><td class="l">指定した属性の更新を無視</td><td class="l">作るときは使う。all ＝更新しない。メタ引数は不可</td></tr>
+    <tr><td class="t">replace_triggered_by</td><td class="l">参照先が変わったら置きかえ</td><td class="l">管理リソースのアドレスだけ。変数は terraform_data 経由</td></tr>
+  </table>
+  <div class="code small">resource "aws_appautoscaling_target" "ecs_target" {
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes        = [tags]
+    replace_triggered_by  = [aws_ecs_service.svc.id]
+  }
+}</div>
+  <div class="point warn">『only literal values can be used』：lifecycle の値はリテラルだけ（変数・式は不可）。</div>
+  <div class="cite">出典：lifecycle meta-argument reference</div>
+  <div class="foot"><span>Terraform #09 依存関係とカスタム条件</span><span>目標 4f・4g</span></div>
+</section>
+
+<section class="slide">
+  <h1>terraform_data と -replace</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">variable "revision" {
+  default = 1
+}
+resource "terraform_data" "replacement" {
+  input = var.revision
+}
+resource "example_database" "test" {
+  lifecycle {
+    replace_triggered_by = [terraform_data.replacement]
+  }
+}</div>
+      <div class="point">terraform_data はプロバイダー不要（terraform.io/builtin/terraform）。input が変わると変更を計画する。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>やりたいこと</th><th>使うもの</th></tr>
+        <tr><td class="t">一度だけ作り直す</td><td class="l">terraform apply -replace=ADDR（#05）</td></tr>
+        <tr><td class="t">ある変更のたびに作り直す</td><td class="l">replace_triggered_by</td></tr>
+        <tr><td class="t">変数の変化で作り直す</td><td class="l">terraform_data の input ＋ replace_triggered_by</td></tr>
+        <tr><td class="t">ステートから外すだけ</td><td class="l">removed ブロックの lifecycle { destroy = false }（#13）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：terraform_data resource reference／lifecycle meta-argument reference</div>
+  <div class="foot"><span>Terraform #09 依存関係とカスタム条件</span><span>目標 4f・4g</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>カスタム条件</h1>
+  <p>止める検証と、止めない検証。</p>
+  <div class="foot"><span>Terraform #09 依存関係とカスタム条件</span><span>目標 4f・4g</span></div>
+</section>
+
+<section class="slide">
+  <h1>4 つの検証と順番</h1>
+  <table class="mx">
+    <tr><th>順</th><th>検証</th><th>書く場所</th><th>いつ</th><th>失敗したら</th></tr>
+    <tr><td class="t">1</td><td class="l">validation</td><td class="l">variable</td><td class="l">計画の前（すぐ）</td><td class="l">エラーで止まる</td></tr>
+    <tr><td class="t">2</td><td class="l">precondition</td><td class="l">resource・data・ephemeral の lifecycle、output</td><td class="l">計画のあと、作る前</td><td class="l">エラーで止まる</td></tr>
+    <tr><td class="t">3</td><td class="l">postcondition</td><td class="l">resource・data・ephemeral の lifecycle</td><td class="l">計画・適用のあと</td><td class="l">下流を止める（済んだことは戻さない）</td></tr>
+    <tr><td class="t">4</td><td class="l">check の assert</td><td class="l">トップレベルの check</td><td class="l">plan・apply の最後</td><td class="l">警告だけで続ける</td></tr>
+  </table>
+  <div class="point">どれも condition と error_message が必須。error_message は文字列になる式なら何でも（テンプレート・ヒアドキュメント）。</div>
+  <div class="point">値が apply まで分からなければ（EC2 のルートボリューム ID など）、apply のときに評価する。</div>
+  <div class="cite">出典：Validate your configuration（Order of validation）</div>
+  <div class="foot"><span>Terraform #09 依存関係とカスタム条件</span><span>目標 4f・4g</span></div>
+</section>
+
+<section class="slide">
+  <h1>precondition と postcondition</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">resource "aws_instance" "example" {
+  instance_type = "t3.micro"
+  ami           = data.aws_ami.example.id
+  lifecycle {
+    precondition {      <span class="c"># 前提：作る前</span>
+      condition     = data.aws_ami.example.architecture == "x86_64"
+      error_message = "The selected AMI must be for the x86_64 architecture."
+    }
+    postcondition {     <span class="c"># 保証：作ったあと</span>
+      condition     = self.public_dns != ""
+      error_message = "EC2 instance must be in a VPC that has public DNS hostnames enabled."
+    }
+  }
+}</div>
+    </div>
+    <div>
+      <div class="box b3">precondition ＝ 前提（assumption）<span>プロバイダーの引数エラーより先に出る。count.index・each.key も使える</span></div>
+      <div class="box b2">postcondition ＝ 保証（guarantee）<span>self で自分の属性を参照（名前で参照すると循環）</span></div>
+      <div class="point">output には precondition だけ書ける（外に出す・ステートに保存する前）。</div>
+      <div class="point">依存先が多いなら、そのリソースに postcondition を 1 つ書くほうが分かりやすいことも。</div>
+    </div>
+  </div>
+  <div class="cite">出典：lifecycle meta-argument reference／Validate your configuration</div>
+  <div class="foot"><span>Terraform #09 依存関係とカスタム条件</span><span>目標 4f・4g</span></div>
+</section>
+
+<section class="slide">
+  <h1>check ブロックと継続的検証</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">check "health_check" {
+  data "http" "terraform_io" {      <span class="c"># スコープ付き</span>
+    url = "https://www.terraform.io"
+  }
+  assert {                          <span class="c"># 1 つ以上必須</span>
+    condition     = data.http.terraform_io.status_code == 200
+    error_message = "${data.http.terraform_io.url} returned an unhealthy status code"
+  }
+}</div>
+      <div class="point">中の data はその check の中だけで参照でき、最後に読む。プロバイダーのエラーは警告に。</div>
+    </div>
+    <div>
+      <div class="point warn">『The check block is the only validation that does not block operations』</div>
+      <div class="point">最初の apply でうその警告が出るなら、中の data に depends_on（ロードバランサーなど）。data がそのリソースを直接参照していると効かない。</div>
+      <div class="box b1">HCP Terraform のヘルス評価<span>ドリフト検出＋継続的検証（check・precondition・postcondition を定期的に評価）</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：check block reference／depends_on meta-argument reference／Health assessments</div>
+  <div class="foot"><span>Terraform #09 依存関係とカスタム条件</span><span>目標 4f・4g</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">依存関係</td><td class="l">参照で暗黙の依存、depends_on はかくれた依存だけ・最後の手段、書けるブロック</td></tr>
+    <tr><td class="t">グラフ</td><td class="l">並列 10、-parallelism、terraform graph は DOT</td></tr>
+    <tr><td class="t">lifecycle</td><td class="l">4 つのルールの使い分け、値はリテラルだけ、変数は terraform_data 経由</td></tr>
+    <tr><td class="t">カスタム条件</td><td class="l">前提＝precondition・保証＝postcondition、self、output には precondition</td></tr>
+    <tr><td class="t">check</td><td class="l">止めない唯一の検証、スコープ付きデータ、継続的検証</td></tr>
+  </table>
+  <div class="cite">出典：Exam Content List（004）4f・4g／本資料の問題演習（全 30 問）</div>
+</section>
+
+</body>
+</html>
