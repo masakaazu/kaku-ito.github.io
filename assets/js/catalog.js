@@ -472,6 +472,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/08.html", title: "OrganizationsとControl Tower 用語集", desc: "SCP・組織のポリシー・ランディングゾーン・コントロール。20語と問題30問", fields: [8], pdf: "terms/08.pdf" },
       { type: "terms", file: "terms/09.html", title: "Systems Manager 用語集", desc: "Session Manager・Run Command・Automation・Patch Manager。24語と問題30問", fields: [9], pdf: "terms/09.pdf" },
       { type: "terms", file: "terms/10.html", title: "AWS ConfigとAppConfig 用語集", desc: "設定の記録と評価、修復と組織への展開、AppConfig で設定を安全に配る。29語と問題30問", fields: [10], pdf: "terms/10.pdf" },
+      { type: "terms", file: "terms/11.html", title: "高可用性とマルチリージョン 用語集", desc: "Route 53 の切り替え、計算層を複数の AZ に、RDS・Aurora・DynamoDB・S3 の複製。26語と問題30問", fields: [11], pdf: "terms/11.pdf" },
     ],
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },
