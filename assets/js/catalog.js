@@ -475,6 +475,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/11.html", title: "高可用性とマルチリージョン 用語集", desc: "Route 53 の切り替え、計算層を複数の AZ に、RDS・Aurora・DynamoDB・S3 の複製。26語と問題30問", fields: [11], pdf: "terms/11.pdf" },
       { type: "terms", file: "terms/12.html", title: "スケーリングと疎結合 用語集", desc: "Auto Scaling のポリシー、Lambda・API Gateway・データ層のスケーリング、SQS・SNS・Kinesis で疎結合。29語と問題30問", fields: [12], pdf: "terms/12.pdf" },
       { type: "terms", file: "terms/13.html", title: "災害対策とバックアップ 用語集", desc: "RTO・RPO と 4 つの DR 戦略、AWS Backup、サービスごとの復旧。28語と問題30問", fields: [13], pdf: "terms/13.pdf" },
+      { type: "terms", file: "terms/14.html", title: "CloudWatchのメトリクスとアラーム 用語集", desc: "メトリクスの集め方、アラームの評価と欠落データ・複合・異常検出、ダッシュボードと代表的なメトリクス。26語と問題30問", fields: [14], pdf: "terms/14.pdf" },
     ],
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },
