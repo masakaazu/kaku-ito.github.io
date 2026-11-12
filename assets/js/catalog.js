@@ -466,6 +466,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/02.html", title: "CodeBuildとテストの自動化 用語集", desc: "ビルドプロジェクトと buildspec・ビルドフェーズ・on-failure と finally・VPC 内のビルド・キャッシュ・サービスロール、環境変数の優先順位・Parameter Store と Secrets Manager・exported-variables、テストのピラミッド・テストレポート・コードカバレッジ・ウェブフック。24語と問題30問", fields: [2], pdf: "terms/02.pdf" },
       { type: "terms", file: "terms/03.html", title: "アーティファクトとイメージの構築 用語集", desc: "CodeArtifact・ECR・EC2 Image Builder。28語と問題30問", fields: [3], pdf: "terms/03.pdf" },
       { type: "terms", file: "terms/04.html", title: "CodeDeployとデプロイ戦略 用語集", desc: "CodeDeploy・フック・ロールバック・ブルー/グリーン。23語と問題30問", fields: [4], pdf: "terms/04.pdf" },
+      { type: "terms", file: "terms/05.html", title: "コンテナとサーバーレスのデプロイ 用語集", desc: "ECS・EKS・Lambda・SAM・API Gateway のデプロイ。20語と問題30問", fields: [5], pdf: "terms/05.pdf" },
     ],
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },
