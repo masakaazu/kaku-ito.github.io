@@ -514,6 +514,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/04.html", title: "教師あり学習 用語集", desc: "回帰と分類・多クラス分類、線形回帰・ロジスティック回帰、SVM・マージン最大化・カーネルトリック・決定木、バギング・ランダムフォレスト・ブースティング・勾配ブースティング、ARとVARモデル。19語と問題30問", fields: [4], pdf: "terms/04.pdf" },
       { type: "terms", file: "terms/05.html", title: "教師なし学習 用語集", desc: "k-means法・ウォード法・デンドログラム、主成分分析・特異値分解・多次元尺度構成法・t-SNE、協調フィルタリング・コンテンツベース・コールドスタート問題、トピックモデル・LDA。15語と問題30問", fields: [5], pdf: "terms/05.pdf" },
       { type: "terms", file: "terms/06.html", title: "強化学習 用語集", desc: "エージェントと環境・方策・マルコフ決定過程・割引率、探索と活用・バンディット・ε-greedy・UCB、状態価値と行動価値・Q学習とSARSA・方策勾配法・REINFORCE・Actor-Critic。18語と問題30問", fields: [6], pdf: "terms/06.pdf" },
+      { type: "terms", file: "terms/07.html", title: "モデルの選択・評価 用語集", desc: "過学習・バイアスとバリアンス・交差検証・混同行列・適合率と再現率・ROC/AUC・MSE・AIC/BIC。29語と問題30問", fields: [7], pdf: "terms/07.pdf" },
     ],
     dop: [
       { type: "terms", file: "terms/01.html", title: "CI/CDパイプラインとCodePipeline 用語集", desc: "CI・継続的デリバリー・継続的デプロイ、ステージ・アクション・トランジション・アーティファクト・変数・手動承認、V1 と V2、実行モード、トリガー、再試行とロールバック、接続、クロスアカウント・クロスリージョン。23語と問題30問", fields: [1], pdf: "terms/01.pdf" },
