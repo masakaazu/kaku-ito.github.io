@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS DevOps #20 IAMとマルチアカウントのアクセス 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">AWS Certified DevOps Engineer – Professional（DOP-C02）　タスク 6.1　#20</div>
+  <h1>IAM とマルチアカウントのアクセス</h1>
+  <p>ロール・一時的な認証情報・インスタンスプロファイル・サービスにリンクされたロール・iam:PassRole、ポリシーの評価・クロスアカウント・信頼ポリシー・外部 ID、アクセス許可の境界・セッションポリシー・ABAC・MFA の条件・最終アクセス情報・IAM Access Analyzer、OIDC・SAML・IAM Roles Anywhere・実行ロール・EKS Pod Identity・IRSA・認証情報レポート・ローテーション・SCP</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（AWS の DOP-C02 試験ガイド、IAM・EKS・Organizations・Secrets Manager の各ガイド、IAM Roles Anywhere〔英語版〕）を書いた。『』の中はドキュメントの原文どおり</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>IAM のしくみとアカウントをまたぐアクセス</h1>
+  <p>許可を与えるポリシーと、上限を決めるポリシー。</p>
+  <div class="foot"><span>AWS DevOps #20 IAMとマルチアカウントのアクセス</span><span>タスク 6.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>ポリシーの種類と評価</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>ポリシー</th><th>はたらき</th></tr>
+        <tr><td class="t">アイデンティティベース</td><td class="l">許可を与える（ユーザー・グループ・ロール）</td></tr>
+        <tr><td class="t">リソースベース</td><td class="l">許可を与える（S3・SQS・KMS…他アカウントも指定可）</td></tr>
+        <tr><td class="t">SCP・RCP</td><td class="l">上限（組織・OU・アカウント）</td></tr>
+        <tr><td class="t">アクセス許可の境界</td><td class="l">上限（ユーザー・ロール）</td></tr>
+        <tr><td class="t">セッションポリシー</td><td class="l">上限（そのセッション）</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="box b3">リクエスト</div>
+      <div class="arrow">↓</div>
+      <div class="box b1">明示的な拒否がある？ → 拒否</div>
+      <div class="arrow">↓ なし</div>
+      <div class="box b1">上限（SCP・境界・セッション）の外？ → 拒否</div>
+      <div class="arrow">↓ 中</div>
+      <div class="box b2">許可がある？ → 許可 ／ ない → 暗黙的な拒否</div>
+    </div>
+  </div>
+  <div class="cite">出典：ポリシーとアクセス許可『セッションポリシーでは、作成したセッションのアクセス許可が制限されますが、アクセス許可は付与されません。』／アイデンティティベースおよびリソースベースのポリシー／ポリシーの評価論理</div>
+  <div class="foot"><span>AWS DevOps #20 IAMとマルチアカウントのアクセス</span><span>タスク 6.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>ロールとアカウントをまたぐアクセス</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">アカウント A の運用者<span>ポリシー：sts:AssumeRole（OpsRole）</span></div>
+      <div class="arrow">↓ AssumeRole（第三者なら sts:ExternalId を付ける）</div>
+      <div class="box b1">アカウント B の OpsRole<span>信頼ポリシー：A を信頼（アクセス許可の半分）</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">一時的な認証情報（数分〜数時間）</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>用語</th><th>ポイント</th></tr>
+        <tr><td class="t">インスタンスプロファイル</td><td class="l">EC2 にロールを渡す入れ物</td></tr>
+        <tr><td class="t">サービスにリンクされたロール</td><td class="l">サービスが前もって決めた権限。編集しない</td></tr>
+        <tr><td class="t">iam:PassRole</td><td class="l">サービスにロールを渡す権限。ロールの ARN で絞る</td></tr>
+        <tr><td class="t">外部 ID</td><td class="l">混乱した代理を防ぐ</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：IAM ロール『信頼ポリシーは、信頼するアカウントのロールにアタッチされ、アクセス許可の半分です。』／第三者が所有するアカウントへのアクセス／インスタンスプロファイル／サービスにリンクされたロール／ロールを渡す</div>
+  <div class="foot"><span>AWS DevOps #20 IAMとマルチアカウントのアクセス</span><span>タスク 6.1</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>最小権限の設計と見直し</h1>
+  <p>上限で守り、タグで広げ、使っていないものを削る。</p>
+  <div class="foot"><span>AWS DevOps #20 IAMとマルチアカウントのアクセス</span><span>タスク 6.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>上限・属性・条件</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">アクセス許可の境界<span>アイデンティティのポリシー ∩ 境界 だけ使える。開発者にロール作成を任せるとき iam:PermissionsBoundary で強制</span></div>
+      <div class="box b2">例：ポリシー s3:*・ec2:*、境界 s3:* → S3 だけ</div>
+      <div class="box b3">セッションポリシー<span>ロールは変えずに、その実行だけ絞る</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>条件キー</th><th>使い道</th></tr>
+        <tr><td class="t">aws:ResourceTag と aws:PrincipalTag</td><td class="l">ABAC：タグが一致したら許可</td></tr>
+        <tr><td class="t">aws:MultiFactorAuthPresent</td><td class="l">MFA の後だけ許可</td></tr>
+        <tr><td class="t">aws:RequestedRegion</td><td class="l">リージョンを絞る（SCP で）</td></tr>
+        <tr><td class="t">aws:PrincipalOrgID</td><td class="l">組織の中だけ</td></tr>
+      </table>
+      <div class="point">RBAC は役割ごとにポリシー → 増えるたびに直す。ABAC は増えても直さない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：アクセス許可境界『エンティティのアクセス許可の境界により、エンティティは、アイデンティティベースのポリシーとそのアクセス許可の境界の両方で許可されているアクションのみを実行できます。』／ABAC／MFA を使用した安全な API アクセス</div>
+  <div class="foot"><span>AWS DevOps #20 IAMとマルチアカウントのアクセス</span><span>タスク 6.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>見直す道具</h1>
+  <table class="mx">
+    <tr><th>道具</th><th>わかること</th><th>使い道</th></tr>
+    <tr><td class="t">最終アクセス情報</td><td class="l">各サービスを最後に使った日</td><td class="l">使っていないサービスを外す</td></tr>
+    <tr><td class="t">Access Analyzer：外部アクセス</td><td class="l">組織の外と共有されたリソース</td><td class="l">公開の S3・外部に開いたロールを見つける</td></tr>
+    <tr><td class="t">Access Analyzer：未使用のアクセス</td><td class="l">使われていないロール・キー・権限</td><td class="l">組織全体を続けて見張る</td></tr>
+    <tr><td class="t">Access Analyzer：ポリシー生成</td><td class="l">CloudTrail から実際に使ったアクション</td><td class="l">最小のポリシーのひな形</td></tr>
+    <tr><td class="t">認証情報レポート</td><td class="l">全 IAM ユーザーのパスワード・キー・MFA</td><td class="l">監査</td></tr>
+  </table>
+  <div class="cite">出典：最終アクセス情報『IAM は、未使用のアクセス許可を特定して削除できるようにするために、最終アクセス情報を提供します。』／Access Analyzer の使用・検出結果・ポリシーの生成／認証情報レポート</div>
+  <div class="foot"><span>AWS DevOps #20 IAMとマルチアカウントのアクセス</span><span>タスク 6.1</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>人とマシンの認証情報</h1>
+  <p>長期のアクセスキーを置かない。</p>
+  <div class="foot"><span>AWS DevOps #20 IAMとマルチアカウントのアクセス</span><span>タスク 6.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>だれが、どうやって入るか</h1>
+  <table class="mx">
+    <tr><th>だれが</th><th>しくみ</th><th>ポイント</th></tr>
+    <tr><td class="t">社員</td><td class="l">IAM Identity Center ／ SAML フェデレーション → ロール</td><td class="l">IAM ユーザーを作らない</td></tr>
+    <tr><td class="t">GitHub Actions などの CI</td><td class="l">IAM の OIDC プロバイダー → AssumeRoleWithWebIdentity</td><td class="l">信頼ポリシーでリポジトリ・ブランチを絞る</td></tr>
+    <tr><td class="t">EC2・Lambda・ECS</td><td class="l">インスタンスプロファイル・実行ロール・タスクロール</td><td class="l">SDK が一時的な認証情報を自動で使う</td></tr>
+    <tr><td class="t">EKS の Pod</td><td class="l">Pod Identity（エージェント）／IRSA（クラスターの OIDC）</td><td class="l">ノードのロールに全部付けない</td></tr>
+    <tr><td class="t">オンプレミス</td><td class="l">IAM Roles Anywhere（X.509 証明書・トラストアンカー）</td><td class="l">長期のキーをやめる</td></tr>
+    <tr><td class="t">アプリの秘密の値</td><td class="l">Secrets Manager の自動ローテーション</td><td class="l">DB パスワード・外部 API キー</td></tr>
+  </table>
+  <div class="cite">出典：セキュリティのベストプラクティス『人間のユーザーが AWS にアクセスする際は、一時的な認証情報の使用が必要です。』／OIDC ID プロバイダー／SAML 2.0 フェデレーション／IAM Roles Anywhere（英語版）／EKS Pod Identity・IRSA／Secrets Manager のローテーション</div>
+  <div class="foot"><span>AWS DevOps #20 IAMとマルチアカウントのアクセス</span><span>タスク 6.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">評価</td><td class="l">明示的な拒否が勝つ、SCP・境界・セッションポリシーは許可を与えない</td></tr>
+    <tr><td class="t">アカウントをまたぐ</td><td class="l">信頼ポリシー＋sts:AssumeRole の両方、リソースベースのポリシー、外部 ID</td></tr>
+    <tr><td class="t">最小権限</td><td class="l">境界で委任、ABAC、MFA の条件、PassRole を絞る</td></tr>
+    <tr><td class="t">見直し</td><td class="l">最終アクセス情報、Access Analyzer（外部・未使用・ポリシー生成）、認証情報レポート</td></tr>
+    <tr><td class="t">認証情報</td><td class="l">フェデレーション、CI は OIDC、Roles Anywhere、Pod Identity・IRSA、Secrets Manager のローテーション</td></tr>
+  </table>
+  <div class="cite">出典：AWS Certified DevOps Engineer - Professional (DOP-C02) 試験ガイド タスク 6.1</div>
+</section>
+
+</body>
+</html>

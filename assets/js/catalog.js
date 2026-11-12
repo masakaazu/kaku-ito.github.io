@@ -481,6 +481,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/17.html", title: "EventBridgeとイベント駆動 用語集", desc: "イベントバス・パターン・入力トランスフォーマー・API送信先・Scheduler・DLQ・アーカイブと再生・Pipes・SNSファンアウト・SQS・Lambdaの非同期と送信先・Step FunctionsのRetry/Catch。22語と問題30問", fields: [17], pdf: "terms/17.pdf" },
       { type: "terms", file: "terms/18.html", title: "自動修復と設定の変更 用語集", desc: "インスタンスの更新・自動ロールバック・Image Builder・スタンバイ・プロセスの中断・EventBridgeからAutomation・パラメータポリシー・Security Hub・Change Calendar・Configの修復・簡易自動復旧。25語と問題30問", fields: [18], pdf: "terms/18.pdf" },
       { type: "terms", file: "terms/19.html", title: "障害のトラブルシューティング 用語集", desc: "CodeDeploy・CodeBuild・CodePipeline・CloudFormationの失敗の調べ方、ECSの停止理由・CannotPullContainerError・ECS Exec、EKS、Lambda、OpsCenter・CloudWatch調査・Reachability Analyzer。25語と問題30問", fields: [19], pdf: "terms/19.pdf" },
+      { type: "terms", file: "terms/20.html", title: "IAMとマルチアカウントのアクセス 用語集", desc: "ポリシーの種類と評価・クロスアカウント・外部ID・PassRole・アクセス許可の境界・セッションポリシー・ABAC・MFA・Access Analyzer・OIDC/SAML・Roles Anywhere・Pod Identity・IRSA。25語と問題30問", fields: [20], pdf: "terms/20.pdf" },
     ],
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },
