@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>G検定 #02 探索・推論と知識表現 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">G検定（JDLA ジェネラリスト検定）　シラバス2024　3・4　#02</div>
+  <h1>探索・推論と知識表現</h1>
+  <p>探索木・幅優先探索・深さ優先探索・ハノイの塔・ブルートフォース・STRIPS・SHRDLU・Mini-Max 法・αβ法・モンテカルロ法、意味ネットワーク・is-a／has-a／part-of・オントロジー・Cyc・セマンティック Web・データマイニング・ウェブマイニング、エキスパートシステム・DENDRAL・MYCIN・インタビューシステム・ELIZA・質問応答・ワトソン・東ロボくん</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（JDLA のシラバス、ウィキペディア日本語版・英語版）を書いた。『』の中は原文どおり</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>探索・推論</h1>
+  <p>第1次AIブームの道具。状態を木に並べて、ゴールを探す。</p>
+  <div class="foot"><span>G検定 #02 探索・推論と知識表現</span><span>シラバス 3・4</span></div>
+</section>
+
+<section class="slide">
+  <h1>幅優先探索と深さ優先探索</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">探索木<span>状態＝ノード、移り変わり＝枝。迷路やハノイの塔を木で表す</span></div>
+      <table class="mx">
+        <tr><th></th><th>幅優先</th><th>深さ優先</th></tr>
+        <tr><td class="t">進み方</td><td class="l">近い順に横へ</td><td class="l">深く進んで、行き止まりで戻る</td></tr>
+        <tr><td class="t">最短の解</td><td class="l">必ず見つかる</td><td class="l">とは限らない</td></tr>
+        <tr><td class="t">メモリ</td><td class="l">多い</td><td class="l">少ない</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="box b1">ブルートフォース<span>解の候補を全部数え上げて確かめる。組み合わせが増えると爆発</span></div>
+      <div class="box b2">STRIPS（1971）<span>前提条件・追加・削除で行動を書き、初期状態 → 目標状態の行動の順番を作る（自動計画）</span></div>
+      <div class="box b3">SHRDLU（1968〜70）<span>ウィノグラード。積み木の世界を英語の指示で動かす</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア「幅優先探索」『アルゴリズムは根ノードで始まり隣接した全てのノードを探索する。』／「深さ優先探索」／「力まかせ探索」／「STRIPS」／「SHRDLU」</div>
+  <div class="foot"><span>G検定 #02 探索・推論と知識表現</span><span>シラバス 3・4</span></div>
+</section>
+
+<section class="slide">
+  <h1>ゲームの探索</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">Mini-Max 法<span>局面に点数（評価関数）。自分の番は最大、相手の番は最小を選ぶと考えてさかのぼる</span></div>
+      <div class="arrow">↓ 同じ答えのまま速く</div>
+      <div class="box b1">αβ法<span>結果が変わらない枝を刈る（αカット・βカット）</span></div>
+    </div>
+    <div>
+      <div class="box b2">モンテカルロ法<span>乱数で近似。ゲームではランダムに最後まで打つ（プレイアウト）をくり返して勝率で評価</span></div>
+      <div class="point">評価関数を作りにくい囲碁で威力。モンテカルロ木探索は AlphaGo にも。</div>
+      <div class="point warn">αβ法は Mini-Max 法より「強く」はならない。速くなるだけ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア「アルファ・ベータ法」『基本的にミニマックス法と同じであり、同じ計算結果が得られるが、ゲーム木において、計算しなくても同じ計算結果になる部分を枝刈りしている。』／「ミニマックス法」／「モンテカルロ法」／「モンテカルロ木探索」</div>
+  <div class="foot"><span>G検定 #02 探索・推論と知識表現</span><span>シラバス 3・4</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>知識表現</h1>
+  <p>第2次AIブームの道具。知識をコンピュータが扱える形にする。</p>
+  <div class="foot"><span>G検定 #02 探索・推論と知識表現</span><span>シラバス 3・4</span></div>
+</section>
+
+<section class="slide">
+  <h1>意味ネットワークとオントロジー</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">動物</div>
+      <div class="arrow">↑ is-a（一種である）＝ 性質を継承</div>
+      <div class="box b1">犬</div>
+      <div class="arrow">↑ part-of（一部である）</div>
+      <div class="box b2">しっぽ</div>
+      <div class="point">is-a は推移律が成り立つ。part-of は成り立たないこともある。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>言葉</th><th>中身</th></tr>
+        <tr><td class="t">オントロジー</td><td class="l">分野の概念と関係を明示的に決めた仕様（存在論から）</td></tr>
+        <tr><td class="t">Cyc</td><td class="l">一般常識を全部入れる長期プロジェクト（1984〜）</td></tr>
+        <tr><td class="t">セマンティック Web</td><td class="l">ページに意味の情報（RDF・OWL）。バーナーズ＝リー</td></tr>
+        <tr><td class="t">データマイニング</td><td class="l">大量のデータから知識を取り出す</td></tr>
+        <tr><td class="t">ウェブマイニング</td><td class="l">ウェブのデータで行うデータマイニング</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア「意味ネットワーク」『リンクには「である（is-a）」、「もつ（has-a）」などがある。』／「オントロジー (情報科学)」／Wikipedia「Cyc」／「セマンティック・ウェブ」／「データマイニング」／「ウェブマイニング」</div>
+  <div class="foot"><span>G検定 #02 探索・推論と知識表現</span><span>シラバス 3・4</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>エキスパートシステムと知識の応用</h1>
+  <p>知識ベース＋推論エンジン。そして言葉で答えるシステムへ。</p>
+  <div class="foot"><span>G検定 #02 探索・推論と知識表現</span><span>シラバス 3・4</span></div>
+</section>
+
+<section class="slide">
+  <h1>エキスパートシステム</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">専門家 → インタビューシステム<span>質問して知識を引き出す</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b1">知識ベース（入れ替えできる）<span>「もし…ならば…」のルール</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">推論エンジン（共通）→ 判断</div>
+      <div class="point warn">壁：知識を集めて書き切れない（知識獲得のボトルネック）。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>システム</th><th>中身</th></tr>
+        <tr><td class="t">DENDRAL（1960年代）</td><td class="l">質量分析から有機化合物を推定。最初のエキスパートシステム</td></tr>
+        <tr><td class="t">MYCIN（1970年代）</td><td class="l">感染症を診断し抗生物質を勧める。正しさ65%（専門医80%）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア「エキスパートシステム」『エキスパートシステムでは、知識ベースは「もし…ならば…」という形式の自然言語の規則で表現される。』／「Mycin」／Wikipedia「Dendral」</div>
+  <div class="foot"><span>G検定 #02 探索・推論と知識表現</span><span>シラバス 3・4</span></div>
+</section>
+
+<section class="slide">
+  <h1>言葉で答えるシステム</h1>
+  <table class="mx">
+    <tr><th>システム</th><th>年</th><th>中身</th></tr>
+    <tr><td class="t">ELIZA</td><td class="l">1964〜66</td><td class="l">ワイゼンバウム。パターンマッチで返事（DOCTOR）。意味を理解していないのに人は本気で話す（イライザ効果）</td></tr>
+    <tr><td class="t">質問応答（QA）</td><td class="l">—</td><td class="l">自然言語の質問に自然言語で答える仕組みと研究分野</td></tr>
+    <tr><td class="t">ワトソン</td><td class="l">2011</td><td class="l">IBM。「ジェパディ!」で人間に勝つ。「拡張知能」と紹介</td></tr>
+    <tr><td class="t">東ロボくん</td><td class="l">2011〜16</td><td class="l">国立情報学研究所。偏差値57.8まで上がったが、読解力の壁で凍結</td></tr>
+  </table>
+  <div class="point warn">チェスのディープ・ブルー（1997・IBM）、囲碁のアルファ碁（2016・DeepMind）、クイズのワトソン（2011・IBM）を区別する。</div>
+  <div class="cite">出典：ウィキペディア「ELIZA」『単純なパターンマッチ技法を使っているが、一部のユーザーはワイゼンバウムがその仕組みを説明しても納得せず、ELIZAの応答を真剣に受け止めた。』／「質問応答システム」／「ワトソン (コンピュータ)」／「東ロボくん」</div>
+  <div class="foot"><span>G検定 #02 探索・推論と知識表現</span><span>シラバス 3・4</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">探索</td><td class="l">幅優先と深さ優先の違い（最短・メモリ）、ブルートフォース、STRIPS と SHRDLU</td></tr>
+    <tr><td class="t">ゲーム</td><td class="l">Mini-Max 法、αβ法は同じ答えで速い、モンテカルロ法はプレイアウト</td></tr>
+    <tr><td class="t">知識表現</td><td class="l">is-a・has-a・part-of と推移律、オントロジー、Cyc、セマンティック Web</td></tr>
+    <tr><td class="t">システム名</td><td class="l">DENDRAL＝化合物、MYCIN＝感染症、ELIZA＝対話、ワトソン＝クイズ、東ロボくん＝入試</td></tr>
+  </table>
+  <div class="cite">出典：JDLA「G検定の試験出題範囲（シラバス）G2024#6～」3. 探索・推論・4. 知識表現とエキスパートシステム</div>
+</section>
+
+</body>
+</html>
