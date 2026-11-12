@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS DevOps #07 CDK・SAM・Service Catalog 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">AWS Certified DevOps Engineer – Professional（DOP-C02）　タスク 2.1　#07</div>
+  <h1>CDK・SAM・Service Catalog</h1>
+  <p>AWS CDK のコンストラクト（L1・L2・L3）・ブートストラップ・アセット・コンテキスト・アスペクト・テスト・synth と diff・hotswap・CDK Pipelines、SAM CLI の build・local・deploy・sync、Service Catalog の製品・ポートフォリオ・起動制約・テンプレート制約・共有・TagOption</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（AWS の DOP-C02 試験ガイド、AWS CDK v2 デベロッパーガイド・AWS SAM 開発者ガイド・AWS Service Catalog 管理者ガイドの各ページ）を書いた。『』の中は日本語版ドキュメントの原文どおり</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>AWS CDK</h1>
+  <p>コードで書いて、CloudFormation で出す。</p>
+  <div class="foot"><span>AWS DevOps #07 CDK・SAM・Service Catalog</span><span>タスク 2.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>コンストラクトのレベルとコマンド</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>レベル</th><th>中身</th><th>例</th></tr>
+        <tr><td class="t">L1（CFN リソース）</td><td class="l">CFn のリソースそのまま。抽象化なし</td><td class="l">CfnBucket</td></tr>
+        <tr><td class="t">L2（キュレーション）</td><td class="l">よい既定値・最小権限の grant</td><td class="l">s3.Bucket</td></tr>
+        <tr><td class="t">L3（パターン）</td><td class="l">複数リソースでユースケース全体</td><td class="l">ApplicationLoadBalancedFargateService</td></tr>
+      </table>
+      <div class="point">アスペクト：スコープ内の全コンストラクトにタグ付け・チェック。</div>
+    </div>
+    <div>
+      <div class="box b3">cdk bootstrap<span>環境ごとに S3（アセット）・ECR（イメージ）・IAM ロール</span></div>
+      <div class="box b1">cdk synth → cdk.out<span>コンテキストは cdk.context.json にキャッシュ（コミット）</span></div>
+      <div class="box b1">cdk diff<span>デプロイ済みとの差</span></div>
+      <div class="box b2">cdk deploy<span>CloudFormation で出す</span></div>
+      <div class="point warn">--hotswap はわざとドリフトを生む。本番では使わない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：AWS CDK とは／AWS CDK コンストラクト／AWS CDK ブートストラップ／コンテキスト値／側面／cdk synthesize／cdk diff／cdk deploy</div>
+  <div class="foot"><span>AWS DevOps #07 CDK・SAM・Service Catalog</span><span>タスク 2.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>テストと CDK Pipelines</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>テスト</th><th>調べること</th></tr>
+        <tr><td class="t">きめ細かなアサーション</td><td class="l">このリソースにこのプロパティ（最もよく使う）</td></tr>
+        <tr><td class="t">スナップショット</td><td class="l">保存したテンプレート全体と比べる（リファクタリング）</td></tr>
+      </table>
+      <div class="code small">template.hasResourceProperties(
+  "AWS::S3::Bucket", {
+  BucketEncryption: Match.anyValue() })</div>
+    </div>
+    <div>
+      <div class="box b3">ソース（GitHub など）</div>
+      <div class="arrow">↓</div>
+      <div class="box b1">Synth → UpdatePipeline（自動更新）<span>パイプラインが自分を作り直す</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">ステージ：Staging → 承認 → Prod<span>ステージ＝スタックのまとまり。別アカウントに（--trust でブートストラップ）</span></div>
+      <div class="point">依存関係のあるスタックは正しい順に自動で並ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：AWS CDK アプリケーションのテスト／CDK Pipelines を使用した継続的インテグレーションと継続的デリバリー (CI/CD)</div>
+  <div class="foot"><span>AWS DevOps #07 CDK・SAM・Service Catalog</span><span>タスク 2.1</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>AWS SAM CLI</h1>
+  <p>手元で動かし、開発はすばやく、本番は確実に。</p>
+  <div class="foot"><span>AWS DevOps #07 CDK・SAM・Service Catalog</span><span>タスク 2.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>SAM CLI のコマンド</h1>
+  <table class="mx">
+    <tr><th>コマンド</th><th>すること</th><th>使う場面</th></tr>
+    <tr><td class="t">sam init</td><td class="l">ひな形を作る</td><td class="l">はじめ</td></tr>
+    <tr><td class="t">sam build</td><td class="l">依存関係を入れて .aws-sam にまとめる（--use-container）</td><td class="l">local・deploy の前</td></tr>
+    <tr><td class="t">sam local invoke／start-api</td><td class="l">Docker で関数・API を手元で動かす</td><td class="l">手元のテスト</td></tr>
+    <tr><td class="t">sam deploy --guided</td><td class="l">設定を聞いて samconfig.toml に保存、変更セットでデプロイ</td><td class="l">初回・本番</td></tr>
+    <tr><td class="t">sam sync --watch</td><td class="l">変更をすぐにクラウドへ（コードは直接更新）</td><td class="l">開発環境だけ</td></tr>
+    <tr><td class="t">sam pipeline init</td><td class="l">CI/CD パイプラインのひな形</td><td class="l">本番の自動化</td></tr>
+  </table>
+  <div class="point warn">sam sync は開発向け。本番は sam deploy か CI/CD パイプライン。</div>
+  <div class="cite">出典：を使用した の構築の概要 AWS SAM／sam local コマンドを使用したテストの概要／を使用したデプロイの概要 AWS SAM／を使用して sam sync に同期する方法の概要</div>
+  <div class="foot"><span>AWS DevOps #07 CDK・SAM・Service Catalog</span><span>タスク 2.1</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>AWS Service Catalog</h1>
+  <p>承認済みのものだけを、セルフサービスで。</p>
+  <div class="foot"><span>AWS DevOps #07 CDK・SAM・Service Catalog</span><span>タスク 2.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>Service Catalog の部品</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">管理者：製品（CFn テンプレート・バージョン）</div>
+      <div class="arrow">↓ まとめる</div>
+      <div class="box b1">ポートフォリオ<span>だれが使えるか（IAM ユーザー・グループ・ロール）</span></div>
+      <div class="arrow">↓ 起動</div>
+      <div class="box b2">プロビジョニングされた製品＝スタック<span>更新・終了も利用者が行う</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>制約など</th><th>決めること</th></tr>
+        <tr><td class="t">起動制約</td><td class="l">Service Catalog が引き受ける IAM ロール。利用者の権限は最小に</td></tr>
+        <tr><td class="t">テンプレート制約</td><td class="l">パラメータの選択肢（インスタンスタイプなど）</td></tr>
+        <tr><td class="t">通知の制約</td><td class="l">スタックのイベントを SNS へ</td></tr>
+        <tr><td class="t">TagOption</td><td class="l">付けるタグのひな形</td></tr>
+        <tr><td class="t">共有</td><td class="l">アカウント間・Organizations（同期した参照を相手がインポート）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：Service Catalog とは／Service Catalog の概要／制約の使用／起動の制限／テンプレートの制限／ポートフォリオの共有とインポート／TagOption ライブラリ</div>
+  <div class="foot"><span>AWS DevOps #07 CDK・SAM・Service Catalog</span><span>タスク 2.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">CDK の部品</td><td class="l">L1・L2・L3 の違い、アスペクトでまとめて操作、コンテキストのキャッシュ</td></tr>
+    <tr><td class="t">CDK の運用</td><td class="l">ブートストラップ（S3・ECR・IAM）、synth・diff、hotswap は本番不可、アサーションとスナップショット</td></tr>
+    <tr><td class="t">CDK Pipelines</td><td class="l">自動更新、ステージで別環境、依存の順番</td></tr>
+    <tr><td class="t">SAM CLI</td><td class="l">build・local・deploy --guided（samconfig.toml）・sync（開発だけ）</td></tr>
+    <tr><td class="t">Service Catalog</td><td class="l">権限を渡さず承認済みだけ → 起動制約、選択肢を絞る → テンプレート制約、共有、TagOption</td></tr>
+  </table>
+  <div class="cite">出典：DOP-C02 試験ガイド タスク 2.1／本資料の問題演習（全 30 問）</div>
+</section>
+
+</body>
+</html>
