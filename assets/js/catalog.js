@@ -516,6 +516,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/06.html", title: "強化学習 用語集", desc: "エージェントと環境・方策・マルコフ決定過程・割引率、探索と活用・バンディット・ε-greedy・UCB、状態価値と行動価値・Q学習とSARSA・方策勾配法・REINFORCE・Actor-Critic。18語と問題30問", fields: [6], pdf: "terms/06.pdf" },
       { type: "terms", file: "terms/07.html", title: "モデルの選択・評価 用語集", desc: "過学習・バイアスとバリアンス・交差検証・混同行列・適合率と再現率・ROC/AUC・MSE・AIC/BIC。29語と問題30問", fields: [7], pdf: "terms/07.pdf" },
       { type: "terms", file: "terms/08.html", title: "ニューラルネットワークと活性化関数 用語集", desc: "パーセプトロンと多層化・CPU/GPU/TPU・シグモイド/tanh/ReLU/ソフトマックス・勾配消失。21語と問題30問", fields: [8], pdf: "terms/08.pdf" },
+      { type: "terms", file: "terms/09.html", title: "誤差関数と正則化 用語集", desc: "MSE・交差エントロピー・KL情報量・Contrastive/Triplet Loss・L1/L2正則化・ドロップアウト・早期終了。16語と問題30問", fields: [9], pdf: "terms/09.pdf" },
     ],
     dop: [
       { type: "terms", file: "terms/01.html", title: "CI/CDパイプラインとCodePipeline 用語集", desc: "CI・継続的デリバリー・継続的デプロイ、ステージ・アクション・トランジション・アーティファクト・変数・手動承認、V1 と V2、実行モード、トリガー、再試行とロールバック、接続、クロスアカウント・クロスリージョン。23語と問題30問", fields: [1], pdf: "terms/01.pdf" },
