@@ -510,6 +510,7 @@ window.SITE_CATALOG = {
     gk: [
       { type: "terms", file: "terms/01.html", title: "人工知能の定義と議論される問題 用語集", desc: "人工知能の定義・4つのレベル・AI効果・3回のAIブーム、ダートマス会議・チューリングテスト・中国語の部屋・強いAIと弱いAI、フレーム問題・シンボルグラウンディング問題・身体性・シンギュラリティ。21語と問題30問", fields: [1], pdf: "terms/01.pdf" },
       { type: "terms", file: "terms/02.html", title: "探索・推論と知識表現 用語集", desc: "幅優先・深さ優先探索・STRIPS・SHRDLU・Mini-Max法・αβ法・モンテカルロ法、意味ネットワーク・is-a・オントロジー・Cyc・セマンティックWeb、エキスパートシステム・DENDRAL・MYCIN・ELIZA・ワトソン・東ロボくん。25語と問題30問", fields: [2], pdf: "terms/02.pdf" },
+      { type: "terms", file: "terms/03.html", title: "機械学習とディープラーニングの歩み 用語集", desc: "機械学習の定義・特徴量・ビッグデータ・次元の呪い・スパムフィルタ・レコメンド、形式ニューロン・パーセプトロン・ネオコグニトロン・LeNet・ImageNet・ILSVRC・AlexNet・アルファ碁・生成AI。18語と問題30問", fields: [3], pdf: "terms/03.pdf" },
     ],
     dop: [
       { type: "terms", file: "terms/01.html", title: "CI/CDパイプラインとCodePipeline 用語集", desc: "CI・継続的デリバリー・継続的デプロイ、ステージ・アクション・トランジション・アーティファクト・変数・手動承認、V1 と V2、実行モード、トリガー、再試行とロールバック、接続、クロスアカウント・クロスリージョン。23語と問題30問", fields: [1], pdf: "terms/01.pdf" },
