@@ -412,6 +412,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/08.html", title: "式と関数 用語集", desc: "条件式・for 式・スプラット式・文字列テンプレート・dynamic ブロック・組みこみ関数のしくみ・よく使う関数（目標 4e）。22語と問題30問", fields: [8], pdf: "terms/08.pdf" },
       { type: "terms", file: "terms/09.html", title: "依存関係とカスタム条件 用語集", desc: "暗黙の依存と depends_on・依存グラフと terraform graph・lifecycle（create_before_destroy・prevent_destroy・ignore_changes・replace_triggered_by）と terraform_data・validation・precondition・postcondition・check ブロック（目標 4f・4g）。21語と問題30問", fields: [9], pdf: "terms/09.pdf" },
       { type: "terms", file: "terms/10.html", title: "機密データとVault 用語集", desc: "sensitive とステートの守り方・ephemeral な変数と出力・ephemeral ブロック・write-only 引数とバージョン引数・Vault プロバイダーと一時的な資格情報・HCP Terraform の動的な資格情報（目標 4h）。15語と問題30問", fields: [10], pdf: "terms/10.pdf" },
+      { type: "terms", file: "terms/11.html", title: "モジュール 用語集", desc: "ルートと子・module ブロックと source（ローカル・Registry・プライベート・Git と ref・サブディレクトリ）・入力と出力とスコープ・モジュールの中のプロバイダー・平らな構成・version と init -upgrade・標準モジュール構造と公開（目標 5a〜5d）。20語と問題30問", fields: [11], pdf: "terms/11.pdf" },
     ],
     java: [
       { type: "terms", file: "terms/01.html", title: "プログラムの実行とパッケージ 用語集", desc: "JDK・JVM・バイトコード、main メソッドとコマンドライン引数、javac・java・クラスパス・ソースファイルモード、パッケージとインポートなど42語と問題30問", fields: [1], pdf: "terms/01.pdf" },
