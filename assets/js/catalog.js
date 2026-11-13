@@ -521,6 +521,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/11.html", title: "畳み込み・正規化・プーリング・スキップ結合 用語集", desc: "全結合層と畳み込み層・パラメータ数と出力サイズ・Dilated/Depthwise Separable・4つの正規化・プーリング・ResNet。22語と問題30問", fields: [11], pdf: "terms/11.pdf" },
       { type: "terms", file: "terms/12.html", title: "RNNとAttention 用語集", desc: "RNN・エルマン/ジョルダン・BPTT・教師強制・LSTM/GRU・Seq2Seq・Attention・Transformer。22語と問題30問", fields: [12], pdf: "terms/12.pdf" },
       { type: "terms", file: "terms/13.html", title: "オートエンコーダとデータ拡張 用語集", desc: "オートエンコーダの使い方・VAE・β-VAE/VQ-VAE/InfoVAE・データ拡張（Cutout/Random Erasing/Mixup/CutMix/RandAugment）。24語と問題30問", fields: [13], pdf: "terms/13.pdf" },
+      { type: "terms", file: "terms/14.html", title: "画像認識 用語集", desc: "検出・セグメンテーション・姿勢推定、AlexNet〜ViT、R-CNN系・YOLO・SSD・FPN、FCN・U-Net・DeepLab・OpenPose。32語と問題30問", fields: [14], pdf: "terms/14.pdf" },
     ],
     dop: [
       { type: "terms", file: "terms/01.html", title: "CI/CDパイプラインとCodePipeline 用語集", desc: "CI・継続的デリバリー・継続的デプロイ、ステージ・アクション・トランジション・アーティファクト・変数・手動承認、V1 と V2、実行モード、トリガー、再試行とロールバック、接続、クロスアカウント・クロスリージョン。23語と問題30問", fields: [1], pdf: "terms/01.pdf" },
