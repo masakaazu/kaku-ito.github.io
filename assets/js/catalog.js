@@ -525,6 +525,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/15.html", title: "自然言語処理と音声処理 用語集", desc: "TF-IDF・word2vec・BERT・GPT・MFCC・CTC・WaveNet。35語と問題30問", fields: [15], pdf: "terms/15.pdf" },
       { type: "terms", file: "terms/16.html", title: "深層強化学習とデータ生成 用語集", desc: "DQN系・A3C・PPO・RLHF・sim2real・GAN・拡散モデル・NeRF。29語と問題30問", fields: [16], pdf: "terms/16.pdf" },
       { type: "terms", file: "terms/17.html", title: "転移学習・マルチモーダル・解釈性・軽量化 用語集", desc: "ファインチューニング・CLIP・VQA・Grad-CAM・SHAP・蒸留・量子化。30語と問題30問", fields: [17], pdf: "terms/17.pdf" },
+      { type: "terms", file: "terms/18.html", title: "AIプロジェクトとデータ 用語集", desc: "PoC・CRISP-DM・アジャイル・MLOps・アノテーション・データリーケージ。24語と問題30問", fields: [18], pdf: "terms/18.pdf" },
     ],
     dop: [
       { type: "terms", file: "terms/01.html", title: "CI/CDパイプラインとCodePipeline 用語集", desc: "CI・継続的デリバリー・継続的デプロイ、ステージ・アクション・トランジション・アーティファクト・変数・手動承認、V1 と V2、実行モード、トリガー、再試行とロールバック、接続、クロスアカウント・クロスリージョン。23語と問題30問", fields: [1], pdf: "terms/01.pdf" },
