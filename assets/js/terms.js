@@ -20,6 +20,9 @@
     - ポイント：…
     - 例：… ／ 注：… ／ ⚠要確認：…
     - 語の意味：Robotic＝ロボットによる／Process＝業務の手順／Automation＝自動化（略語のとき）
+    - たとえ：身近なものにたとえた説明（初めての言葉をつかむため。意味のすぐ下に出す）
+
+  用語・問題・分野にはメモを書ける（study-sync.js の StudyNotes。端末に保存し、ログイン中は同期する）。
 
   略語（見出しに English の正式名称があるもの）のカードは、
   1回目のタップで正式名称だけ、2回目のタップで用語の意味と語の意味を出す。
@@ -90,7 +93,7 @@
 
   /* ---------- md を読み取る ---------- */
 
-  const LABELS = { 意味: "meaning", ポイント: "point", 例: "example", 注: "note", "⚠要確認": "caution", 語の意味: "words" };
+  const LABELS = { 意味: "meaning", ポイント: "point", 例: "example", 注: "note", "⚠要確認": "caution", 語の意味: "words", たとえ: "analogy" };
 
   const parseHeading = (raw) => {
     let text = raw.trim();
@@ -219,7 +222,7 @@
       if (/^####\s/.test(line)) {
         inMeta = false;
         summary = null;
-        term = { ...parseHeading(line.replace(/^####\s+/, "")), meaning: "", point: "", example: "", note: "", caution: "", words: "", extra: [] };
+        term = { ...parseHeading(line.replace(/^####\s+/, "")), meaning: "", point: "", example: "", note: "", caution: "", words: "", analogy: "", extra: [] };
         term.section = ensureSection().title;
         ensureGroup().terms.push(term);
         return;
@@ -272,7 +275,7 @@
       // 「### テーマ」の下に「- 用語名」だけが並ぶ形（解説なしの用語一覧）
       if ((!term || term.nameOnly) && group && /^\s*-\s+/.test(line)) {
         const body = line.replace(/^\s*-\s+/, "");
-        if (!/^(意味|ポイント|例|注|⚠要確認|語の意味)[：:]/.test(body)) {
+        if (!/^(意味|ポイント|例|注|⚠要確認|語の意味|たとえ)[：:]/.test(body)) {
           term = { ...parseHeading(body), meaning: "", point: "", example: "", note: "", caution: "", extra: [], nameOnly: true };
           term.section = section.title;
           group.terms.push(term);
@@ -281,7 +284,7 @@
       }
       if (term && /^\s*-\s+/.test(line)) {
         const body = line.replace(/^\s*-\s+/, "");
-        const m = body.match(/^(意味|ポイント|例|注|⚠要確認|語の意味)[：:]\s*(.*)$/);
+        const m = body.match(/^(意味|ポイント|例|注|⚠要確認|語の意味|たとえ)[：:]\s*(.*)$/);
         if (m) {
           const key = LABELS[m[1]];
           term[key] = term[key] ? `${term[key]} ${m[2]}` : m[2];
@@ -347,14 +350,69 @@
 
   const wordsLine = (term) => (term.words ? `<p class="term-line"><span class="term-label">語の意味</span>${inline(term.words)}</p>` : "");
 
-  const termBody = (term) => `
+  /* ---------- メモ ---------- */
+
+  const notes = window.StudyNotes || null;
+
+  // メモの箱。書いてあれば本文を、なければ「メモを書く」を出す。押すと入力欄になる
+  const memoInner = (key) => {
+    const body = notes ? notes.get(key) : "";
+    return body
+      ? `<p class="memo-text">${escapeHtml(body).replace(/\n/g, "<br>")}</p><button type="button" class="memo-edit" data-memo-edit>メモを直す</button>`
+      : `<button type="button" class="memo-edit" data-memo-edit>メモを書く</button>`;
+  };
+  const memoBlock = (key, extraClass = "") =>
+    notes ? `<div class="memo ${extraClass}" data-memo-key="${escapeHtml(key)}">${memoInner(key)}</div>` : "";
+
+  const refreshMemos = () => {
+    main.querySelectorAll("[data-memo-key]").forEach((box) => {
+      if (box.querySelector("textarea")) return; // 書いている途中の欄は触らない
+      box.innerHTML = memoInner(box.dataset.memoKey);
+    });
+  };
+
+  const setupMemos = () => {
+    if (!notes) return;
+    const close = (box, save) => {
+      const area = box.querySelector("textarea");
+      if (area && save) notes.set(box.dataset.memoKey, area.value);
+      box.innerHTML = memoInner(box.dataset.memoKey);
+    };
+    main.addEventListener("click", (e) => {
+      const box = e.target.closest("[data-memo-key]");
+      if (!box) return;
+      if (e.target.closest("[data-memo-edit]")) {
+        box.innerHTML = `
+          <textarea class="memo-input" rows="3" placeholder="気づいたこと・覚え方・自分の言葉での説明など">${escapeHtml(notes.get(box.dataset.memoKey))}</textarea>
+          <div class="memo-actions">
+            <button type="button" class="terms-button is-primary" data-memo-save>保存</button>
+            <button type="button" class="terms-button" data-memo-cancel>やめる</button>
+            <span class="memo-where">${notes.synced() ? "ほかの端末にも同期されます" : "この端末に保存されます"}</span>
+          </div>`;
+        const area = box.querySelector("textarea");
+        area.focus();
+        area.setSelectionRange(area.value.length, area.value.length);
+      } else if (e.target.closest("[data-memo-save]")) close(box, true);
+      else if (e.target.closest("[data-memo-cancel]")) close(box, false);
+    });
+    // 入力中に Ctrl+Enter（Macは ⌘+Enter）で保存
+    main.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" || !(e.ctrlKey || e.metaKey) || !e.target.matches(".memo-input")) return;
+      close(e.target.closest("[data-memo-key]"), true);
+    });
+    notes.onChange(refreshMemos);
+  };
+
+  const termBody = (term, { memo = true } = {}) => `
     ${term.meaning ? `<p class="term-meaning">${inline(term.meaning)}</p>` : ""}
+    ${term.analogy ? `<p class="term-line term-analogy"><span class="term-label">たとえ</span>${inline(term.analogy)}</p>` : ""}
     ${wordsLine(term)}
     ${term.point ? `<p class="term-line"><span class="term-label">ポイント</span>${inline(term.point)}</p>` : ""}
     ${term.example ? `<p class="term-line"><span class="term-label">例</span>${inline(term.example)}</p>` : ""}
     ${term.note ? `<p class="term-line"><span class="term-label">注</span>${inline(term.note)}</p>` : ""}
     ${term.extra.map((e) => `<p class="term-line">${inline(e)}</p>`).join("")}
-    ${term.caution ? `<p class="term-line term-caution"><span class="term-label">要確認</span>${inline(term.caution)}</p>` : ""}`;
+    ${term.caution ? `<p class="term-line term-caution"><span class="term-label">要確認</span>${inline(term.caution)}</p>` : ""}
+    ${memo && term.meaning ? memoBlock(termId(term)) : ""}`;
 
   const termHead = (term, tag = "h4", { sub = true } = {}) => `
     <${tag} class="term-name">${escapeHtml(term.name)}${term.flags
@@ -400,12 +458,15 @@
   /* 前回間違えたままの用語（回答記録から読む。ログインしていなければ空） */
   const WRONG = "__wrong";
   const wrongIds = new Set();
+  /* 今日の復習（間違えたまま＋正解してから日がたった問題。間隔は study-sync.js の REVIEW_DAYS） */
+  const REVIEW = "__review";
+  const reviewIds = new Set();
+  const inRange = (range, id, section) =>
+    range === WRONG ? wrongIds.has(id) : range === REVIEW ? reviewIds.has(id) : !range || section === range;
 
-  const pool = (doc, range) =>
-    doc.studyTerms.filter((t) => (range === WRONG ? wrongIds.has(termId(t)) : !range || t.section === range));
+  const pool = (doc, range) => doc.studyTerms.filter((t) => inRange(range, termId(t), t.section));
 
-  const questionPool = (doc, range) =>
-    doc.questions.filter((q) => (range === WRONG ? wrongIds.has(q.id) : !range || q.section === range));
+  const questionPool = (doc, range) => doc.questions.filter((q) => inRange(range, q.id, q.section));
 
   /* クイズに出す範囲。kind は terms（用語の4択）／questions（問題演習）／mix（まぜる）
      docs は出題する分野の用語集（応用情報は複数の分野をまぜられる） */
@@ -503,7 +564,7 @@
         <button type="button" class="terms-button" data-move="1">次へ →</button>
       </div>`;
     box.querySelector(".flash").addEventListener("click", (e) => {
-      if (e.target.closest("a")) return;
+      if (e.target.closest("a, .memo")) return;
       // 応用情報は、意味まで出たカードをもう一度タップすると次の用語へ進む
       if (tapToNext && open) return moveCard(doc, 1);
       cards.stage = cards.stage >= last ? 0 : cards.stage + 1;
@@ -599,6 +660,7 @@
         else quiz.missed.push(q);
         if (ok) wrongIds.delete(termId(q.term));
         else wrongIds.add(termId(q.term));
+        reviewIds.delete(termId(q.term));
         updateWrongOption(doc);
 
         box.querySelectorAll("[data-choice]").forEach((b) => {
@@ -691,6 +753,7 @@
         else quiz.missed.push(item);
         if (ok) wrongIds.delete(q.id);
         else wrongIds.add(q.id);
+        reviewIds.delete(q.id);
         updateWrongOption(doc);
 
         box.querySelectorAll("[data-choice]").forEach((b) => {
@@ -712,6 +775,7 @@
               : ""
           }
           ${q.source ? `<p class="quiz-source">出典：${escapeHtml(q.source)}</p>` : ""}
+          ${memoBlock(`q:${q.id}`)}
           <div class="terms-controls"><button type="button" class="terms-button is-primary" data-next>次へ →</button></div>`;
         feedback.querySelector("[data-next]").addEventListener("click", () => nextQuestion(doc, box));
 
@@ -736,21 +800,27 @@
 
   /* 範囲の選択肢に「前に間違えた用語」を足す（1語以上あるときだけ） */
   const updateWrongOption = (doc) => {
-    const wrongCount = (docs) => docs.reduce((n, d) => n + pool(d, WRONG).length + questionPool(d, WRONG).length, 0);
+    const countOf = (docs, range) => docs.reduce((n, d) => n + pool(d, range).length + questionPool(d, range).length, 0);
     main.querySelectorAll("[data-quiz-range], [data-card-range]").forEach((select) => {
-      const count = wrongCount(select.matches("[data-quiz-range]") && multiField ? quizDocs() : [doc]);
-      let option = select.querySelector(`option[value="${WRONG}"]`);
-      if (!count) {
-        if (option && select.value !== WRONG) option.remove();
-        if (option && select.value === WRONG) option.textContent = "前に間違えた問題（0問）";
-        return;
-      }
-      if (!option) {
-        option = document.createElement("option");
-        option.value = WRONG;
-        select.insertBefore(option, select.options[1] || null);
-      }
-      option.textContent = `前に間違えた問題（${count}問）`;
+      const docs = select.matches("[data-quiz-range]") && multiField ? quizDocs() : [doc];
+      [
+        [WRONG, "前に間違えた問題"],
+        [REVIEW, "今日の復習"],
+      ].forEach(([value, label]) => {
+        const count = countOf(docs, value);
+        let option = select.querySelector(`option[value="${value}"]`);
+        if (!count) {
+          if (option && select.value !== value) option.remove();
+          if (option && select.value === value) option.textContent = `${label}（0問）`;
+          return;
+        }
+        if (!option) {
+          option = document.createElement("option");
+          option.value = value;
+          select.insertBefore(option, select.options[1] || null);
+        }
+        option.textContent = `${label}（${count}問）`;
+      });
     });
   };
 
@@ -761,7 +831,9 @@
     const questionIds = new Set(doc.questions.map((q) => q.id));
     statsRows.forEach((row) => {
       const id = row.question_id;
-      if ((id.startsWith(prefix) || questionIds.has(id)) && row.last_answer_correct === false) wrongIds.add(id);
+      if (!id.startsWith(prefix) && !questionIds.has(id)) return;
+      if (row.last_answer_correct === false) wrongIds.add(id);
+      if (window.StudySync.reviewState && window.StudySync.reviewState(row)) reviewIds.add(id);
     });
   };
 
@@ -778,9 +850,11 @@
     }
     updateWrongOption(doc);
 
-    // 復習ページから ?mode=wrong で来たら、間違えた用語だけのクイズを始める
-    if (new URLSearchParams(location.search).get("mode") === "wrong" && (pool(doc, WRONG).length || questionPool(doc, WRONG).length)) {
-      main.querySelector("[data-quiz-range]").value = WRONG;
+    // ?mode=wrong で来たら間違えた問題だけ、?mode=review（温室の「今日の水やり」）で来たら今日の復習だけのクイズを始める
+    const urlMode = new URLSearchParams(location.search).get("mode");
+    const startRange = urlMode === "wrong" ? WRONG : urlMode === "review" ? REVIEW : "";
+    if (startRange && (pool(doc, startRange).length || questionPool(doc, startRange).length)) {
+      main.querySelector("[data-quiz-range]").value = startRange;
       if (main.querySelector("[data-quiz-kind]")) main.querySelector("[data-quiz-kind]").value = "mix";
       main.querySelector("[data-quiz-count]").value = "0";
       setMode("quiz");
@@ -853,10 +927,10 @@
             .map((s) => `<option value="${escapeHtml(s.title)}">${escapeHtml(s.title)}</option>`)
             .join("")
     }`;
-    if (keep === WRONG || [...select.options].some((o) => o.value === keep)) {
-      if (keep === WRONG) {
+    if (keep === WRONG || keep === REVIEW || [...select.options].some((o) => o.value === keep)) {
+      if (keep === WRONG || keep === REVIEW) {
         const option = document.createElement("option");
-        option.value = WRONG;
+        option.value = keep;
         select.insertBefore(option, select.options[1] || null);
       }
       select.value = keep;
@@ -906,6 +980,7 @@
         <h1>${escapeHtml(doc.title.replace(/^(応用|基本)情報技術者試験\s*用語集\s*/, "").replace(/^#\d+\s*/, "").replace(/\s*（[^（）]*シラバス[^（）]*）$/, "").replace(/\s*用語(集|まとめ|一覧)?\s*(（\d+語）)?$/, "").replace(/\s*（\d+語）$/, ""))}</h1>
         <p class="terms-stats">${doc.terms.filter((t) => !t.flags.includes("重複")).length}語${doc.questions.length ? `・問題 ${doc.questions.length}問` : ""}${doc.terms.some((t) => t.flags.includes("要確認")) ? `・⚠要確認 ${doc.terms.filter((t) => t.flags.includes("要確認")).length}語` : ""}</p>
         ${pdf ? `<p><a class="terms-button" href="${escapeHtml(pdf)}" target="_blank" rel="noopener">図解スライド（PDF）を開く</a></p>` : ""}
+        ${memoBlock(`field:${topic}:${Number(field) || src}`, "is-field")}
         ${doc.meta.length ? `<details class="terms-meta"><summary>出典・書式</summary><ul>${doc.meta.map((m) => `<li>${inline(m)}</li>`).join("")}</ul></details>` : ""}
       </header>
 
@@ -961,6 +1036,7 @@
       </div>`;
 
     main.querySelectorAll("[data-mode]").forEach((b) => b.addEventListener("click", () => setMode(b.dataset.mode)));
+    setupMemos();
 
     const cardRange = main.querySelector("[data-card-range]");
     cardRange.addEventListener("change", () => resetCards(doc));

@@ -41,6 +41,17 @@
     addHead("meta", { name: "apple-mobile-web-app-status-bar-style", content: "default" });
   }
 
+  // ブラウザの上の帯の色を、ページの背景（theme.css の --theme-bg）に合わせる
+  const syncThemeColor = () => {
+    const bg = getComputedStyle(document.documentElement).getPropertyValue("--theme-bg").trim();
+    const match = bg.match(/#[0-9a-fA-F]{3,8}/);
+    if (!match) return;
+    const meta = document.querySelector('meta[name="theme-color"]') || addHead("meta", { name: "theme-color" });
+    meta.setAttribute("content", match[0]);
+  };
+  if (document.readyState === "complete") syncThemeColor();
+  else window.addEventListener("load", syncThemeColor);
+
   // オフラインでも一度開いたページを見られるようにする（公開URLでのみ動く）
   if ("serviceWorker" in navigator && location.protocol === "https:") {
     window.addEventListener("load", () => {
@@ -127,6 +138,7 @@
     add("index.html", site.siteName, null);
     add("index.html#common", "共通教材", "index.html");
     add("login.html", "ログイン", "index.html");
+    add("garden.html", "温室", "index.html");
 
     Object.entries(site.topics).forEach(([topic, info]) => {
       add(`${topic}/index.html`, info.short, "index.html");
@@ -184,6 +196,9 @@
     .site-nav-seq a:hover { background: var(--theme-bg-alt, #f5f5f7); }
     .site-nav-off { color: var(--theme-line, #d2d2d7); }
     .site-nav-count { color: var(--theme-muted, #6e6e73); font-variant-numeric: tabular-nums; }
+    .site-nav .site-nav-garden { display: inline-flex; align-items: center; gap: 5px; color: var(--theme-link, #2a6a49); cursor: pointer; }
+    .site-nav .site-nav-garden::before { content: ''; display: inline-block; width: 9px; height: 9px; border-radius: 0 100% 0 100%; background: var(--theme-leaf, #4f9a6a); }
+    .site-nav .site-nav-garden:hover { text-decoration: underline; text-underline-offset: 3px; }
     .site-nav .site-nav-login { color: var(--theme-link, #0066cc); }
     .site-nav .site-nav-login:hover { color: var(--theme-link, #0066cc); text-decoration: underline; text-underline-offset: 3px; }
     .site-nav .site-nav-login.is-in { color: var(--theme-good, #248a3d); }
@@ -217,6 +232,8 @@
     }
     @media print { .site-nav, .site-pager { display: none; } }
   `;
+
+  let navTopicOk = () => false;
 
   const loginLinks = [];
   const updateLoginLinks = (user) => {
@@ -259,6 +276,12 @@
     }
 
     const login = path === "login.html" ? "" : `<a class="site-nav-login" href="${url("login.html")}">ログイン</a>`;
+    // 温室（弱い分野と今日の復習）への入口。資格のページからは、その資格の温室を開く
+    const navTopic = path.split("/")[0];
+    const garden =
+      path === "garden.html"
+        ? ""
+        : `<a class="site-nav-garden" href="${url(`garden.html${navTopicOk(navTopic) ? `?t=${navTopic}` : ""}`)}">温室</a>`;
 
     const style = document.createElement("style");
     style.textContent = NAV_STYLE;
@@ -267,7 +290,7 @@
     const nav = document.createElement("nav");
     nav.className = "site-nav";
     nav.setAttribute("aria-label", "サイト内の現在地");
-    nav.innerHTML = `<div class="site-nav-inner"><ol>${crumbs}</ol><div class="site-nav-side">${seq}${login}</div></div>`;
+    nav.innerHTML = `<div class="site-nav-inner"><ol>${crumbs}</ol><div class="site-nav-side">${seq}${garden}${login}</div></div>`;
     document.body.prepend(nav);
     loginLinks.push(...nav.querySelectorAll(".site-nav-login"));
 
@@ -519,7 +542,53 @@
     return { setup };
   })();
 
+  /* ---------- 育つ鉢植え（正答率で5段階に育つ） ---------- */
+
+  const GROWTH = ["種", "芽", "若葉", "茂り", "開花"];
+
+  // 回答が少ないうちは芽。正答率 50%で若葉、65%で茂り、80%で花が咲く
+  const growthOf = (s) => {
+    const total = s ? s.correct + s.wrong : 0;
+    if (!total) return 0;
+    const rate = s.correct / total;
+    if (total < 5 || rate < 0.5) return 1;
+    if (rate < 0.65) return 2;
+    if (rate < 0.8) return 3;
+    return 4;
+  };
+
+  const plant = (stage) => {
+    const leaf = (cx, cy, rot, rx, ry, deep) =>
+      `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" transform="rotate(${rot} ${cx} ${cy})" fill="var(--theme-leaf${deep ? "-deep" : ""})"/>`;
+    const stem = (top) => `<path d="M24 33V${top}" stroke="var(--theme-leaf-deep)" stroke-width="1.8" stroke-linecap="round" fill="none"/>`;
+    const tall =
+      stem(13) +
+      leaf(18.4, 27.4, 25, 6, 3) +
+      leaf(29.6, 25.4, -25, 6, 3, true) +
+      leaf(18.8, 20.2, 32, 5.6, 2.8, true) +
+      leaf(29.2, 18.4, -32, 5.6, 2.8) +
+      leaf(20.6, 13.4, 42, 4.4, 2.3) +
+      leaf(27.4, 12.2, -42, 4.4, 2.3, true);
+    const petals = [0, 72, 144, 216, 288]
+      .map((a) => {
+        const r = (a * Math.PI) / 180;
+        return `<circle cx="${(24 + 3.6 * Math.sin(r)).toFixed(1)}" cy="${(8.6 - 3.6 * Math.cos(r)).toFixed(1)}" r="2.7" fill="var(--theme-bloom)"/>`;
+      })
+      .join("");
+    const growth = [
+      `<ellipse cx="24" cy="30.6" rx="2.6" ry="1.6" fill="var(--theme-soil)"/>`,
+      stem(26) + leaf(20.4, 24.4, 35, 4, 2.1) + leaf(27.6, 24.4, -35, 4, 2.1, true),
+      stem(20) + leaf(19.4, 27, 30, 5.2, 2.6) + leaf(28.6, 25, -30, 5.2, 2.6, true) + leaf(20.6, 19.4, 40, 4.2, 2.2, true) + leaf(27.4, 18.6, -40, 4.2, 2.2),
+      tall,
+      tall + petals + `<circle cx="24" cy="8.6" r="2.2" fill="var(--theme-bloom-core)"/>`,
+    ][stage];
+    return `<svg class="plant" viewBox="0 0 48 48" role="img" aria-label="${GROWTH[stage]}">${growth}<path d="M14 36h20l-2.5 9.6a1.6 1.6 0 0 1-1.6 1.2H18.1a1.6 1.6 0 0 1-1.6-1.2z" fill="var(--theme-pot)"/><rect x="12" y="31.6" width="24" height="5" rx="1.8" fill="var(--theme-pot-deep)"/></svg>`;
+  };
+
   const lists = {
+    /* 温室：ログイン後に renderGarden が中身を入れる */
+    garden: () => `<p class="empty">記録を読み込んでいます…</p>`,
+
     /* トップ：資格カード */
     topics: (site) =>
       `<div class="grid">${Object.entries(site.topics)
@@ -559,7 +628,10 @@
               const body = `
             <span class="field-tile-head">
               <span class="field-no">${pad2(field.no)}</span>
-              <span class="rate" data-rate-field="${topic}:${field.no}" hidden></span>
+              <span class="field-growth">
+                <span class="rate" data-rate-field="${topic}:${field.no}" hidden></span>
+                ${inField.length ? `<span class="field-plant" data-plant-field="${topic}:${field.no}">${plant(0)}</span>` : ""}
+              </span>
             </span>
             <span class="field-major">${escapeHtml(field.major)}</span>
             <span class="field-name">${escapeHtml(field.name)}</span>
@@ -751,6 +823,7 @@
     const byItem = {};
     const byField = {};
     const wrongByItem = {}; // 最後の回答が不正解の問題ID（教材ごと）
+    const rowsByField = {}; // 分野ごとの回答記録（温室で復習の数を数える）
     const add = (bucket, key, row) => {
       const s = (bucket[key] ||= { correct: 0, wrong: 0 });
       s.correct += row.correct_count || 0;
@@ -766,10 +839,15 @@
         prefixed.find((m) => id.startsWith(m.qid));
       if (item) add(byItem, item.path, row);
       if (item && row.last_answer_correct === false) (wrongByItem[item.path] ||= []).push(row);
-      if (direct && site.topics[direct[1]]) add(byField, `${direct[1]}:${Number(direct[2])}`, row);
-      else if (item && item.fields.length === 1) add(byField, `${item.topic}:${item.fields[0]}`, row);
+      let fieldKey = "";
+      if (direct && site.topics[direct[1]]) fieldKey = `${direct[1]}:${Number(direct[2])}`;
+      else if (item && item.fields.length === 1) fieldKey = `${item.topic}:${item.fields[0]}`;
+      if (fieldKey) {
+        add(byField, fieldKey, row);
+        (rowsByField[fieldKey] ||= []).push(row);
+      }
     });
-    return { byItem, byField, wrongByItem };
+    return { byItem, byField, wrongByItem, rowsByField };
   };
 
   /*
@@ -805,6 +883,132 @@
     });
   };
 
+  /*
+    温室（garden.html）。資格ごとに、分野を鉢植えとして並べる。
+    - 今日の水やり：間違えたままの問題と、そろそろ忘れるころの問題（間隔は study-sync.js の REVIEW_DAYS）
+    - 弱い分野：正答率の低い順に3つ
+    - 鉢植えの棚：全分野の正答率と育ち具合
+  */
+  const gardenTopic = (site) => {
+    const t = query.get("t");
+    if (t && site.topics[t]) return t;
+    const active = Object.entries(site.topics).find(([, info]) => info.active);
+    return active ? active[0] : Object.keys(site.topics)[0];
+  };
+
+  const rateOf = (s) => (s && s.correct + s.wrong ? Math.round((s.correct / (s.correct + s.wrong)) * 100) : null);
+
+  const rateBar = (rate) =>
+    `<span class="rate-bar${rate !== null && rate < 60 ? " is-low" : ""}" role="img" aria-label="${rate === null ? "記録なし" : `正答率 ${rate}%`}"><i style="width:${rate === null ? 0 : rate}%"></i></span>`;
+
+  const renderGarden = (site, stats, sync) => {
+    const el = document.querySelector('[data-site-list="garden"]');
+    if (!el) return;
+    const topic = gardenTopic(site);
+    const info = site.topics[topic];
+    document.querySelectorAll("[data-garden-name]").forEach((n) => (n.textContent = info.name));
+    document.title = `${info.short}の温室｜${site.siteName}`;
+
+    const chips = `<nav class="garden-topics" aria-label="資格を選ぶ">${Object.entries(site.topics)
+      .map(([key, t]) => `<a href="${url(`garden.html?t=${key}`)}"${key === topic ? ' aria-current="page"' : ""}>${escapeHtml(t.short)}</a>`)
+      .join("")}</nav>`;
+
+    if (!stats) {
+      el.innerHTML = `${chips}<div class="garden-empty">${plant(0)}<p>ログインすると、解いた問題の記録から鉢植えが育ちます。</p><a class="button" href="${url("login.html")}">ログイン</a></div>`;
+      return;
+    }
+
+    const now = Date.now();
+    const pots = site.fieldsOf(topic).map((field) => {
+      const key = `${topic}:${field.no}`;
+      const s = stats.byField[key] || { correct: 0, wrong: 0 };
+      const rows = stats.rowsByField[key] || [];
+      const states = rows.map((r) => sync.reviewState(r, now));
+      const terms = itemsOf(site, topic, (m) => m.type === "terms" && m.fields[0] === field.no)[0];
+      return {
+        field,
+        s,
+        rate: rateOf(s),
+        answered: rows.length,
+        wrong: states.filter((x) => x === "wrong").length,
+        due: states.filter((x) => x === "due").length,
+        stage: growthOf(s),
+        href: url(terms ? terms.path : fieldPath(topic, field.no)),
+        reviewHref: terms ? url(`${terms.path}?mode=review`) : "",
+      };
+    });
+
+    const answered = pots.reduce((n, p) => n + p.answered, 0);
+    const total = pots.reduce((n, p) => ({ correct: n.correct + p.s.correct, wrong: n.wrong + p.s.wrong }), { correct: 0, wrong: 0 });
+    const water = pots.filter((p) => p.wrong + p.due > 0 && p.reviewHref).sort((a, b) => b.wrong + b.due - (a.wrong + a.due));
+    const waterCount = water.reduce((n, p) => n + p.wrong + p.due, 0);
+    const bloom = pots.filter((p) => p.stage === 4).length;
+    const weak = pots
+      .filter((p) => p.s.correct + p.s.wrong >= 5 && p.rate < 80)
+      .sort((a, b) => a.rate - b.rate)
+      .slice(0, 3);
+
+    const stat = (value, unit, label) => `<div class="garden-stat"><b>${value}<small>${unit}</small></b><span>${label}</span></div>`;
+
+    const waterHtml = !answered
+      ? `<p class="empty">まだ記録がありません。<a href="${url(`${topic}/index.html`)}">分野マップ</a>から問題を解くと、ここに鉢が育ちます。</p>`
+      : !water.length
+        ? `<p class="empty">今日の水やりは終わりです。次に忘れそうなころに、また出てきます。</p>`
+        : `<div class="list">${water
+            .map((p) =>
+              row({
+                href: p.reviewHref,
+                label: fieldLabel(p.field),
+                title: `${p.wrong + p.due}問を解き直す`,
+                desc: [p.wrong ? `間違えたまま ${p.wrong}問` : "", p.due ? `そろそろ忘れるころ ${p.due}問` : ""].filter(Boolean).join("・"),
+                extraClass: "is-water",
+              })
+            )
+            .join("")}</div>`;
+
+    const potCard = (p, big) => `
+      <a class="pot-card${big ? " is-big" : ""}${p.answered ? "" : " is-seed"}" href="${big && p.reviewHref && p.wrong + p.due ? p.reviewHref : p.href}">
+        <span class="pot-plant">${plant(p.stage)}</span>
+        <span class="pot-main">
+          <span class="pot-no">${pad2(p.field.no)}・${GROWTH[p.stage]}</span>
+          <span class="pot-name">${escapeHtml(p.field.name)}</span>
+          ${rateBar(p.rate)}
+          <span class="pot-meta">${p.rate === null ? "まだ解いていない" : `正答率 ${p.rate}%・${p.answered}問`}${p.wrong ? `・間違えたまま ${p.wrong}問` : ""}</span>
+        </span>
+      </a>`;
+
+    el.innerHTML = `
+      ${chips}
+      <div class="garden-stats">
+        ${stat(answered, "問", "解いた問題")}
+        ${stat(rateOf(total) === null ? "–" : rateOf(total), "%", "全体の正答率")}
+        ${stat(waterCount, "問", "今日の水やり")}
+        ${stat(bloom, `<i>/ ${pots.length}</i>`, "花が咲いた分野")}
+      </div>
+
+      <section class="section">
+        <div class="section-title"><h2>今日の水やり</h2><span>復習する問題</span></div>
+        <p class="legend">間違えたままの問題と、正解してから日がたって忘れそうな問題を出す。正解が続くほど、次に出るまでの間が 1日・3日・7日・14日・30日 と空いていく。</p>
+        ${waterHtml}
+      </section>
+
+      ${
+        weak.length
+          ? `<section class="section">
+        <div class="section-title"><h2>弱い分野</h2><span>正答率の低い順</span></div>
+        <div class="pot-grid is-big">${weak.map((p) => potCard(p, true)).join("")}</div>
+      </section>`
+          : ""
+      }
+
+      <section class="section">
+        <div class="section-title"><h2>鉢植えの棚</h2><span>${pots.length}分野</span></div>
+        <p class="legend">正答率で育つ。${GROWTH.map((g, i) => `<span class="growth-key">${plant(i)}${g}</span>`).join("")}<br>芽は回答が5回未満か正答率50%未満、若葉は50%から、茂りは65%から、開花は80%から。</p>
+        <div class="pot-grid">${pots.map((p) => potCard(p, false)).join("")}</div>
+      </section>`;
+    revealOnScroll();
+  };
+
   const showRate = (el, s) => {
     const total = s.correct + s.wrong;
     if (!total) return;
@@ -816,16 +1020,30 @@
   };
 
   const renderRates = async (site) => {
-    if (!document.querySelector("[data-rate-item], [data-rate-field]") && !loginLinks.length) return;
+    if (!document.querySelector("[data-rate-item], [data-rate-field], [data-site-list='garden']") && !loginLinks.length) return;
     const sync = await loadStudySync();
-    if (!sync) return;
+    if (!sync) {
+      renderGarden(site, null, sync);
+      return;
+    }
     sync.onChange(updateLoginLinks);
     const user = await sync.ready;
     updateLoginLinks(user);
-    if (!user) return;
+    if (!user) {
+      renderGarden(site, null, sync);
+      return;
+    }
     try {
-      const { byItem, byField, wrongByItem } = aggregate(site, await sync.fetchAllStats());
+      const stats = aggregate(site, await sync.fetchAllStats());
+      const { byItem, byField, wrongByItem } = stats;
       renderWrong(site, wrongByItem);
+      renderGarden(site, stats, sync);
+      // 分野マップの鉢植えを、正答率に合わせて育てる
+      document.querySelectorAll("[data-plant-field]").forEach((el) => {
+        const stage = growthOf(byField[el.dataset.plantField]);
+        el.innerHTML = plant(stage);
+        el.title = `${GROWTH[stage]}（正答率が上がると育つ）`;
+      });
       document.querySelectorAll("[data-rate-item]").forEach((el) => byItem[el.dataset.rateItem] && showRate(el, byItem[el.dataset.rateItem]));
       document.querySelectorAll("[data-rate-field]").forEach((el) => byField[el.dataset.rateField] && showRate(el, byField[el.dataset.rateField]));
       document.querySelectorAll("[data-rate-note]").forEach((el) => (el.hidden = false));
@@ -862,6 +1080,7 @@
   const init = () => {
     if (!window.SITE_CATALOG) return;
     const site = prepare(window.SITE_CATALOG);
+    navTopicOk = (topic) => Boolean(site.topics[topic]);
     renderPlaceholders(site);
     renderNav(buildPages(site), currentPath());
     // 一覧ページは正答率を、教材ページはログイン表示だけを更新する
