@@ -144,6 +144,7 @@
       add(`${topic}/index.html`, info.short, "index.html");
       site.fieldsOf(topic).forEach((field) => add(fieldPath(topic, field.no), fieldLabel(field), `${topic}/index.html`));
       add(`${topic}/notes/index.html`, "ノート一覧", `${topic}/index.html`);
+      add(`${topic}/read.html`, "図解を読む", `${topic}/index.html`);
       if (topic === "ap") add(`${topic}/exam.html`, "午前の模擬試験", `${topic}/index.html`);
 
       if (info.days) {
