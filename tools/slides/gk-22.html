@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>G検定 #22 開発・提供契約 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">G検定（JDLA ジェネラリスト検定）　シラバス2024　法律・倫理 6・7　#22</div>
+  <h1>開発・提供契約</h1>
+  <p>AI・データの利用に関する契約ガイドライン、探索的段階型、アセスメント・PoC・開発・追加学習、NDA・請負契約・準委任契約・善管注意義務、精度保証・契約不適合責任・保守契約、学習済みモデル・知的財産の帰属と利用条件、SaaS・利用規約・データ利用権</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（民法の条文、ウィキペディア日本語版、G検定シラバス）を書いた。経済産業省の契約ガイドラインは原文を取得できなかったため、内容を要約した。『』の中は原文どおり</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>AI 開発の進め方と契約の形</h1>
+  <p>やってみないと分からないから、段階に区切って、作業をまかせる。</p>
+  <div class="foot"><span>G検定 #22 開発・提供契約</span><span>法律・倫理 6・7</span></div>
+</section>
+
+<section class="slide">
+  <h1>探索的段階型の開発</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">1 アセスメント<span>少しのデータで、AI で解けそうかを調べる（NDA＋準委任）</span></div>
+      <div class="arrow">↓ 続けるか判断</div>
+      <div class="box b1">2 PoC<span>試しにモデルを作り、開発できるかを確かめる（準委任）</span></div>
+      <div class="arrow">↓ 続けるか判断</div>
+      <div class="box b2">3 開発<span>本番の学習済みモデルを作る（準委任 または 請負）</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b3">4 追加学習<span>運用しながら学習し直す（保守契約など）</span></div>
+    </div>
+    <div>
+      <div class="point">経済産業省「AI・データの利用に関する契約ガイドライン」（2018年、AI 編・データ編）がすすめる進め方。</div>
+      <div class="point">AI の性能は学習データに左右され、前もって分からない。段階ごとに契約し、うまくいかなければ早く引き返す。</div>
+      <div class="point warn">ガイドラインに法的な拘束力はない。契約を考えるときの参考。</div>
+    </div>
+  </div>
+  <div class="cite">出典：JDLA シラバス 法律・倫理 6『AI 開発の各フェーズの内容とそれらのフェーズが置かれている趣旨を理解している』</div>
+  <div class="foot"><span>G検定 #22 開発・提供契約</span><span>法律・倫理 6・7</span></div>
+</section>
+
+<section class="slide">
+  <h1>請負と準委任</h1>
+  <table class="mx">
+    <tr><th></th><th>請負契約</th><th>準委任契約</th></tr>
+    <tr><td class="t">義務</td><td class="l">仕事の完成</td><td class="l">善良な管理者の注意で作業する（善管注意義務）</td></tr>
+    <tr><td class="t">報酬</td><td class="l">仕事の結果に対して払う</td><td class="l">特約で決める（工数・期間。成果完成型もある）</td></tr>
+    <tr><td class="t">結果が出ないとき</td><td class="l">完成していなければ債務を果たしていない</td><td class="l">善管注意を尽くしていれば原則として責任なし</td></tr>
+    <tr><td class="t">不適合</td><td class="l">契約不適合責任（追完・減額・賠償・解除）</td><td class="l">—</td></tr>
+    <tr><td class="t">向く場面</td><td class="l">仕様がはっきりしたシステム部分</td><td class="l">アセスメント・PoC・モデルの開発</td></tr>
+  </table>
+  <div class="cite">出典：民法 第六百三十二条『請負は、当事者の一方がある仕事を完成することを約し、相手方がその仕事の結果に対してその報酬を支払うことを約することによって、その効力を生ずる。』</div>
+  <div class="foot"><span>G検定 #22 開発・提供契約</span><span>法律・倫理 6・7</span></div>
+</section>
+
+<section class="slide">
+  <h1>準委任と善管注意義務</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">委任<span>法律行為（契約を結ぶなど）をまかせる</span></div>
+      <div class="box b2">準委任<span>法律行為でない事務（作業）をまかせる。委任の規定を準用</span></div>
+      <div class="box b3">善管注意義務<span>その職業・能力からふつう期待される注意で処理する義務</span></div>
+    </div>
+    <div>
+      <div class="point">民法 第644条『受任者は、委任の本旨に従い、善良な管理者の注意をもって、委任事務を処理する義務を負う。』</div>
+      <div class="point">民法 第648条『受任者は、特約がなければ、委任者に対して報酬を請求することができない。』</div>
+      <div class="point warn">成果完成型：成果の引き渡しが必要なら、報酬は引き渡しと同時（第648条の2）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：民法 第六百五十六条『この節の規定は、法律行為でない事務の委託について準用する。』</div>
+  <div class="foot"><span>G検定 #22 開発・提供契約</span><span>法律・倫理 6・7</span></div>
+</section>
+
+<section class="slide">
+  <h1>NDA（秘密保持契約）</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">いつ<span>アセスメントの前。ユーザーがデータを渡す前に結ぶ</span></div>
+      <div class="box b2">決めること<span>秘密の範囲、目的外利用の禁止、開示してよい相手、返却・消去、期間</span></div>
+    </div>
+    <div>
+      <div class="point">SLA（サービス品質の約束）・利用規約（サービスの利用条件）と混同しない。</div>
+      <div class="point">秘密として管理された情報は、不正競争防止法の営業秘密にもなりうる（#21）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア日本語版「秘密保持契約」『営業秘密や個人情報など業務に関して知った秘密』</div>
+  <div class="foot"><span>G検定 #22 開発・提供契約</span><span>法律・倫理 6・7</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>精度と責任</h1>
+  <p>精度は前もって保証しにくい。不適合なら追完・減額・賠償・解除。</p>
+  <div class="foot"><span>G検定 #22 開発・提供契約</span><span>法律・倫理 6・7</span></div>
+</section>
+
+<section class="slide">
+  <h1>精度保証と契約不適合責任</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">精度保証<span>モデルの正解率などを約束すること。データ次第なので前もって保証するのは難しい</span></div>
+      <div class="box b2">契約不適合責任<span>引き渡したものが種類・品質・数量で契約に合わない（2020年改正で瑕疵担保責任から変更）</span></div>
+      <div class="box b3">保守契約<span>納品後の監視・不具合の対応・再学習</span></div>
+    </div>
+    <div>
+      <div class="point">注文者は不適合を知ってから1年以内に通知（第637条）。</div>
+      <div class="point warn">注文者が出した材料（学習データ）や指図が原因の不適合は、原則として請負人の責任にならない（第636条）。</div>
+      <div class="point">運用中はデータが変わって精度が落ちる（コンセプトドリフト、#18）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：民法 第五百六十二条『引き渡された目的物が種類、品質又は数量に関して契約の内容に適合しないものであるときは』</div>
+  <div class="foot"><span>G検定 #22 開発・提供契約</span><span>法律・倫理 6・7</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>知的財産とデータの扱い</h1>
+  <p>だれのものかより、だれがどう使えるか。</p>
+  <div class="foot"><span>G検定 #22 開発・提供契約</span><span>法律・倫理 6・7</span></div>
+</section>
+
+<section class="slide">
+  <h1>成果物と決めておくこと</h1>
+  <table class="mx">
+    <tr><th>成果物</th><th>中身</th><th>決めておくこと</th></tr>
+    <tr><td class="t">生データ</td><td class="l">ユーザーが持つ元のデータ</td><td class="l">ベンダーが使ってよい目的・範囲</td></tr>
+    <tr><td class="t">学習用データセット</td><td class="l">前処理・アノテーションしたもの</td><td class="l">帰属、ほかの開発への流用</td></tr>
+    <tr><td class="t">学習済みモデル</td><td class="l">パラメータ＋推論プログラム</td><td class="l">帰属、ほかの顧客への流用、派生モデル</td></tr>
+    <tr><td class="t">ノウハウ</td><td class="l">開発で得た知見</td><td class="l">別の案件で使ってよいか</td></tr>
+  </table>
+  <div class="point">パラメータが著作物かははっきりしない。データには所有権がない。だから帰属だけで争わず、利用条件（目的・範囲・流用・対価）をきめ細かく決める。</div>
+  <div class="cite">出典：JDLA シラバス 法律・倫理 6『知的財産の帰属と利用条件について理解している』</div>
+  <div class="foot"><span>G検定 #22 開発・提供契約</span><span>法律・倫理 6・7</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>AI サービス提供契約</h1>
+  <p>SaaS は利用規約で一律に決まる。入力データの使われ方を確かめる。</p>
+  <div class="foot"><span>G検定 #22 開発・提供契約</span><span>法律・倫理 6・7</span></div>
+</section>
+
+<section class="slide">
+  <h1>SaaS 型の特殊性</h1>
+  <table class="mx">
+    <tr><th>項目</th><th>SaaS 型では</th></tr>
+    <tr><td class="t">契約の形</td><td class="l">多くの利用者に同じサービス → 利用規約（約款）で決める</td></tr>
+    <tr><td class="t">精度保証</td><td class="l">利用者ごとのデータに合わせて保証しにくい → 免責が多い</td></tr>
+    <tr><td class="t">保守</td><td class="l">ベンダーがいつでもモデルを更新 → 出力が変わりうる</td></tr>
+    <tr><td class="t">データ利用権</td><td class="l">入力データをベンダーが改善・学習に使ってよいか</td></tr>
+  </table>
+  <div class="point">NIST の定義では、SaaS は IaaS・PaaS と並ぶ3つのサービスモデルの1つ。</div>
+  <div class="cite">出典：ウィキペディア日本語版「Software as a Service」『必要な機能を必要な分だけサービスとして利用できるようにしたソフトウェア（主にアプリケーションソフトウェア）もしくはその提供形態のこと』</div>
+  <div class="foot"><span>G検定 #22 開発・提供契約</span><span>法律・倫理 6・7</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">進め方</td><td class="l">探索的段階型の順番（アセスメント → PoC → 開発 → 追加学習）、ガイドラインに拘束力はない</td></tr>
+    <tr><td class="t">契約の形</td><td class="l">請負＝完成、準委任＝善管注意義務。PoC は準委任、NDA は最初</td></tr>
+    <tr><td class="t">責任</td><td class="l">精度保証は難しい、契約不適合責任（旧 瑕疵担保責任）、保守</td></tr>
+    <tr><td class="t">知財・SaaS</td><td class="l">帰属より利用条件、利用規約、データ利用権</td></tr>
+  </table>
+  <div class="cite">出典：JDLA「G検定の試験出題範囲（シラバス）G2024#6～」法律・倫理分野 6・7</div>
+</section>
+
+</body>
+</html>
