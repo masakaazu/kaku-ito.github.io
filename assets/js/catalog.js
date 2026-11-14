@@ -530,6 +530,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/20.html", title: "個人情報保護法 用語集", desc: "個人情報の定義・要配慮個人情報・第三者提供・オプトアウト・仮名／匿名加工情報・GDPR。23語と問題30問", fields: [20], pdf: "terms/20.pdf" },
       { type: "terms", file: "terms/21.html", title: "知的財産と競争法 用語集", desc: "著作権と第30条の4・生成AIと著作権・特許・営業秘密・限定提供データ・独占禁止法。21語と問題30問", fields: [21], pdf: "terms/21.pdf" },
       { type: "terms", file: "terms/22.html", title: "開発・提供契約 用語集", desc: "探索的段階型・PoC・請負と準委任・善管注意義務・精度保証・契約不適合責任・知財の利用条件・SaaS・データ利用権。16語と問題30問", fields: [22], pdf: "terms/22.pdf" },
+      { type: "terms", file: "terms/23.html", title: "ガイドラインとAIガバナンス 用語集", desc: "AI事業者ガイドライン・EU AI法・ハードローとソフトロー・リスクベースアプローチ・基本理念・3つの主体・アジャイル・ガバナンス・倫理アセスメント。29語と問題30問", fields: [23], pdf: "terms/23.pdf" },
     ],
     dop: [
       { type: "terms", file: "terms/01.html", title: "CI/CDパイプラインとCodePipeline 用語集", desc: "CI・継続的デリバリー・継続的デプロイ、ステージ・アクション・トランジション・アーティファクト・変数・手動承認、V1 と V2、実行モード、トリガー、再試行とロールバック、接続、クロスアカウント・クロスリージョン。23語と問題30問", fields: [1], pdf: "terms/01.pdf" },
