@@ -527,6 +527,7 @@ window.SITE_CATALOG = {
       { type: "terms", file: "terms/17.html", title: "転移学習・マルチモーダル・解釈性・軽量化 用語集", desc: "ファインチューニング・CLIP・VQA・Grad-CAM・SHAP・蒸留・量子化。30語と問題30問", fields: [17], pdf: "terms/17.pdf" },
       { type: "terms", file: "terms/18.html", title: "AIプロジェクトとデータ 用語集", desc: "PoC・CRISP-DM・アジャイル・MLOps・アノテーション・データリーケージ。24語と問題30問", fields: [18], pdf: "terms/18.pdf" },
       { type: "terms", file: "terms/19.html", title: "数理・統計 用語集", desc: "代表値・分散・相関係数・確率分布・正規分布・最尤法・仮説検定（計算問題つき）。30語と問題30問", fields: [19], pdf: "terms/19.pdf" },
+      { type: "terms", file: "terms/20.html", title: "個人情報保護法 用語集", desc: "個人情報の定義・要配慮個人情報・第三者提供・オプトアウト・仮名／匿名加工情報・GDPR。23語と問題30問", fields: [20], pdf: "terms/20.pdf" },
     ],
     dop: [
       { type: "terms", file: "terms/01.html", title: "CI/CDパイプラインとCodePipeline 用語集", desc: "CI・継続的デリバリー・継続的デプロイ、ステージ・アクション・トランジション・アーティファクト・変数・手動承認、V1 と V2、実行モード、トリガー、再試行とロールバック、接続、クロスアカウント・クロスリージョン。23語と問題30問", fields: [1], pdf: "terms/01.pdf" },

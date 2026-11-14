@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>G検定 #20 個人情報保護法 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">G検定（JDLA ジェネラリスト検定）　シラバス2024　法律・倫理 1　#20</div>
+  <h1>個人情報保護法</h1>
+  <p>個人情報・個人識別符号・要配慮個人情報・個人データ・保有個人データ・個人関連情報、利用目的・目的外利用・安全管理・委託・漏えい報告・第三者提供・オプトアウト・共同利用・外国への提供・開示請求、仮名加工情報・匿名加工情報、GDPR・十分性認定・消去権</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（個人情報保護法の条文、JDLA のシラバス、ウィキペディア）を書いた。『』の中は原文どおり</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>言葉の定義</h1>
+  <p>どの情報に、どのルールがかかるか。</p>
+  <div class="foot"><span>G検定 #20 個人情報保護法</span><span>法律・倫理 1</span></div>
+</section>
+
+<section class="slide">
+  <h1>情報の種類</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">個人情報<span>生存する個人＋識別できる（照合しやすいものもふくむ）か個人識別符号</span></div>
+      <div class="arrow">↓ データベース等に整理</div>
+      <div class="box b2">個人データ<span>安全管理・第三者提供の制限</span></div>
+      <div class="arrow">↓ 開示・訂正などの権限がある</div>
+      <div class="box b3">保有個人データ<span>本人が開示などを請求できる</span></div>
+    </div>
+    <div>
+      <div class="box b2">個人識別符号<span>顔・指紋のデータ、旅券番号・マイナンバー</span></div>
+      <div class="box b2">要配慮個人情報<span>人種・信条・病歴・犯罪の経歴 → 取得に同意</span></div>
+      <div class="box b3">個人関連情報<span>どれにもあたらない個人の情報（Cookie など）</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：個人情報保護法 第二条第一項『この法律において「個人情報」とは、生存する個人に関する情報であって、次の各号のいずれかに該当するものをいう。』</div>
+  <div class="foot"><span>G検定 #20 個人情報保護法</span><span>法律・倫理 1</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>事業者の義務</h1>
+  <p>取得 → 利用 → 保管 → 提供 → 本人の請求。</p>
+  <div class="foot"><span>G検定 #20 個人情報保護法</span><span>法律・倫理 1</span></div>
+</section>
+
+<section class="slide">
+  <h1>場面ごとの義務</h1>
+  <table class="mx">
+    <tr><th>場面</th><th>義務</th></tr>
+    <tr><td class="t">取得</td><td class="l">利用目的をできる限り特定（17条）、不正な取得の禁止・要配慮は同意（20条）</td></tr>
+    <tr><td class="t">利用</td><td class="l">目的外は本人の同意（18条）、不適正な利用の禁止（19条）</td></tr>
+    <tr><td class="t">保管</td><td class="l">安全管理（23条）、従業者・委託先の監督（24・25条）、漏えいは委員会に報告・本人に通知（26条）</td></tr>
+    <tr><td class="t">提供</td><td class="l">第三者提供は原則同意（27条）、外国の第三者は外国への提供の同意（28条）</td></tr>
+    <tr><td class="t">本人</td><td class="l">開示（33条）・訂正・利用停止などの請求</td></tr>
+  </table>
+  <div class="cite">出典：個人情報保護法 第十八条第一項『個人情報取扱事業者は、あらかじめ本人の同意を得ないで、前条の規定により特定された利用目的の達成に必要な範囲を超えて、個人情報を取り扱ってはならない。』</div>
+  <div class="foot"><span>G検定 #20 個人情報保護法</span><span>法律・倫理 1</span></div>
+</section>
+
+<section class="slide">
+  <h1>第三者提供の例外</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">原則：前もって本人の同意</div>
+      <div class="box b2">法令にもとづく・生命などの保護で同意を得にくい など</div>
+      <div class="box b2">オプトアウト<span>停止できるようにし、通知＋委員会に届け出。要配慮個人情報は不可</span></div>
+    </div>
+    <div>
+      <div class="point">そもそも「第三者」にあたらないもの：</div>
+      <div class="box b3">委託<span>委託先を監督する義務</span></div>
+      <div class="box b3">事業の承継（合併など）</div>
+      <div class="box b3">共同利用<span>項目・範囲・目的・責任者を前もって知らせる</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：個人情報保護法 第二十七条第一項『個人情報取扱事業者は、次に掲げる場合を除くほか、あらかじめ本人の同意を得ないで、個人データを第三者に提供してはならない。』</div>
+  <div class="foot"><span>G検定 #20 個人情報保護法</span><span>法律・倫理 1</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>加工情報と GDPR</h1>
+  <p>識別できなくして使う／EU のルール。</p>
+  <div class="foot"><span>G検定 #20 個人情報保護法</span><span>法律・倫理 1</span></div>
+</section>
+
+<section class="slide">
+  <h1>仮名加工情報と匿名加工情報</h1>
+  <table class="mx">
+    <tr><th></th><th>仮名加工情報</th><th>匿名加工情報</th></tr>
+    <tr><td class="t">加工</td><td class="l">照合しない限り識別できない</td><td class="l">識別できず、元に戻せない</td></tr>
+    <tr><td class="t">使い方</td><td class="l">社内の分析（AI の学習など）</td><td class="l">社外への提供</td></tr>
+    <tr><td class="t">第三者提供</td><td class="l">原則できない</td><td class="l">同意なしでできる（項目を公表）</td></tr>
+    <tr><td class="t">注意</td><td class="l">削除情報等の安全管理</td><td class="l">識別行為の禁止</td></tr>
+  </table>
+  <div class="cite">出典：個人情報保護法 第二条第六項『特定の個人を識別することができないように個人情報を加工して得られる個人に関する情報であって、当該個人情報を復元することができないようにしたものをいう。』</div>
+  <div class="foot"><span>G検定 #20 個人情報保護法</span><span>法律・倫理 1</span></div>
+</section>
+
+<section class="slide">
+  <h1>GDPR（EU 一般データ保護規則）</h1>
+  <table class="mx">
+    <tr><th>項目</th><th>中身</th></tr>
+    <tr><td class="t">域外適用</td><td class="l">EU 居住者のデータを扱えば、EU の外の会社にも</td></tr>
+    <tr><td class="t">越境移転</td><td class="l">十分性認定の国（日本など）なら追加の措置なし。ほかは標準契約条項など</td></tr>
+    <tr><td class="t">本人の権利</td><td class="l">消去権（忘れられる権利・17条）、データポータビリティ</td></tr>
+    <tr><td class="t">漏えい</td><td class="l">72時間以内に監督機関へ報告（33条）</td></tr>
+  </table>
+  <div class="cite">出典：ウィキペディア日本語版「EU一般データ保護規則」『さらに本規則は、EU居住者の個人データを収集または処理する場合は、EU域外に拠点をおく組織にも適用される。』</div>
+  <div class="foot"><span>G検定 #20 個人情報保護法</span><span>法律・倫理 1</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">あてはめ</td><td class="l">個人情報か（生存・識別・照合・個人識別符号）、要配慮か</td></tr>
+    <tr><td class="t">義務</td><td class="l">利用目的、目的外利用、安全管理、漏えい報告</td></tr>
+    <tr><td class="t">提供</td><td class="l">同意・オプトアウト・委託・共同利用・外国</td></tr>
+    <tr><td class="t">加工と GDPR</td><td class="l">仮名加工と匿名加工のちがい、域外適用・十分性認定・72時間</td></tr>
+  </table>
+  <div class="cite">出典：JDLA「G検定の試験出題範囲（シラバス）G2024#6～」法律・倫理分野 1. 個人情報保護法</div>
+</section>
+
+</body>
+</html>
