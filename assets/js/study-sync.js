@@ -34,6 +34,16 @@
   /* 分野マップの目印の色を保存するテーブル（tools/supabase/field_colors.sql で作る） */
   const FIELD_COLORS_TABLE = "field_colors";
 
+  /* メモを保存するテーブル（tools/supabase/study_notes.sql で作る） */
+  const NOTES_TABLE = "study_notes";
+
+  /*
+    復習の間隔（日）。正解が続くほど、次に出すまでの間を空ける。
+    「正解の回数 − 不正解の回数」が 1 なら1日後、2 なら3日後、3 なら7日後、4 なら14日後、5以上は30日後。
+    最後の回答が不正解の問題は、すぐ復習に出す。
+  */
+  const REVIEW_DAYS = [1, 3, 7, 14, 30];
+
   /* Supabase JavaScript SDKの読み込み先 */
   const SUPABASE_SCRIPT_URL =
     "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
@@ -430,6 +440,76 @@
       }
     },
 
+    /*
+      この問題を今日の復習に出すか。row は回答記録の1行。
+      戻り値は "wrong"（間違えたまま）／"due"（そろそろ忘れるころ）／""（まだ出さない）
+    */
+    reviewState: function (row, now) {
+      if (!row || !row.last_answered_at) {
+        return "";
+      }
+      if (row.last_answer_correct === false) {
+        return "wrong";
+      }
+      if (row.last_answer_correct !== true) {
+        return "";
+      }
+      const level = Math.max(0, (row.correct_count || 0) - (row.wrong_count || 0) - 1);
+      const days = REVIEW_DAYS[Math.min(level, REVIEW_DAYS.length - 1)];
+      const elapsed = (now || Date.now()) - Date.parse(row.last_answered_at);
+      return elapsed >= days * 24 * 60 * 60 * 1000 ? "due" : "";
+    },
+
+    /*
+      メモ。[{ note_key: "ap-6-PLL", body: "…", updated_at }]
+      未ログインなら null、テーブルがまだ無いなどで使えないときは例外を投げる
+    */
+    fetchNotes: async function () {
+      await ready;
+      if (!currentUser || !supabaseClient) {
+        return null;
+      }
+      const rows = [];
+      const pageSize = 1000;
+      for (let from = 0; ; from += pageSize) {
+        const { data, error } = await supabaseClient
+          .from(NOTES_TABLE)
+          .select("note_key, body, updated_at")
+          .eq("user_id", currentUser.id)
+          .range(from, from + pageSize - 1);
+        if (error) {
+          throw error;
+        }
+        rows.push(...(data || []));
+        if (!data || data.length < pageSize) {
+          break;
+        }
+      }
+      return rows;
+    },
+
+    /* メモを保存する。rows は [{ note_key, body, updated_at }]（body が空なら消したこと） */
+    saveNotes: async function (rows) {
+      await ready;
+      if (!currentUser || !supabaseClient || !rows.length) {
+        return;
+      }
+      const { error } = await supabaseClient.from(NOTES_TABLE).upsert(
+        rows.map(function (row) {
+          return {
+            user_id: currentUser.id,
+            note_key: row.note_key,
+            body: row.body,
+            updated_at: row.updated_at,
+          };
+        }),
+        { onConflict: "user_id,note_key" }
+      );
+      if (error) {
+        throw error;
+      }
+    },
+
     /* 自分の全回答記録（正答率の集計に使う）。未ログインなら空 */
     fetchAllStats: async function () {
       await ready;
@@ -456,4 +536,134 @@
       return rows;
     },
   };
+
+/* ---------- メモ（用語・問題・分野に書き込める） ---------- */
+
+  /*
+    window.StudyNotes
+      get(key)        … メモの文字（なければ ""）
+      set(key, body)  … 保存する（空にすると消える）
+      onChange(fn)    … ほかの端末のメモを読み込んだときに呼ばれる
+    - いつもこの端末（localStorage）に保存する
+    - ログイン中で Supabase に study_notes テーブルがあれば、端末間で同期する
+      （新しいほうを残す。テーブルは tools/supabase/study_notes.sql で作る）
+    キーの決まり：用語は回答記録と同じ「ap-6-用語名」、問題は「q:問題ID」、分野は「field:ap:6」
+  */
+  window.StudyNotes = (function () {
+    const STORE = "study-notes";
+    const noteListeners = [];
+    let notes = {}; // { key: { b: "本文", t: "2026-11-14T00:00:00.000Z" } }
+    let cloud = false; // ログイン中でテーブルが使えるとき true
+
+    try {
+      notes = JSON.parse(localStorage.getItem(STORE)) || {};
+    } catch (error) {
+      notes = {};
+    }
+
+    function write() {
+      try {
+        localStorage.setItem(STORE, JSON.stringify(notes));
+      } catch (error) {
+        /* 保存できない環境では、開いている間だけ有効 */
+      }
+    }
+
+    function changed() {
+      noteListeners.forEach(function (listener) {
+        try {
+          listener();
+        } catch (error) {
+          console.error(LOG, error);
+        }
+      });
+    }
+
+    function toRow(key) {
+      return { note_key: key, body: notes[key].b, updated_at: notes[key].t };
+    }
+
+    async function pull() {
+      cloud = false;
+      let rows;
+      try {
+        rows = await window.StudySync.fetchNotes();
+      } catch (error) {
+        console.warn(LOG, "メモの同期は使えません（この端末にだけ保存します）", error);
+        return;
+      }
+      if (!rows) {
+        return; // 未ログイン
+      }
+      const remote = {};
+      rows.forEach(function (row) {
+        remote[row.note_key] = { b: row.body || "", t: new Date(row.updated_at).toISOString() };
+      });
+      Object.keys(remote).forEach(function (key) {
+        if (!notes[key] || remote[key].t > notes[key].t) {
+          notes[key] = remote[key];
+        }
+      });
+      const push = Object.keys(notes)
+        .filter(function (key) {
+          return !remote[key] || notes[key].t > remote[key].t;
+        })
+        .map(toRow);
+      write();
+      cloud = true;
+      changed();
+      if (push.length) {
+        window.StudySync.saveNotes(push).catch(function (error) {
+          console.warn(LOG, "メモを同期できませんでした", error);
+        });
+      }
+    }
+
+    let lastUser;
+    function onUser(user) {
+      const id = user ? user.id : null;
+      if (id === lastUser) {
+        return;
+      }
+      lastUser = id;
+      if (user) {
+        pull();
+      } else {
+        cloud = false;
+      }
+    }
+    window.StudySync.onChange(onUser);
+    window.StudySync.ready.then(onUser);
+
+    return {
+      get: function (key) {
+        return notes[key] ? notes[key].b : "";
+      },
+      set: function (key, body) {
+        const text = String(body || "").trim();
+        if (text === (notes[key] ? notes[key].b : "")) {
+          return;
+        }
+        notes[key] = { b: text, t: new Date().toISOString() };
+        write();
+        if (cloud) {
+          window.StudySync.saveNotes([toRow(key)]).catch(function (error) {
+            console.warn(LOG, "メモを同期できませんでした", error);
+          });
+        }
+      },
+      /* メモのあるキーの一覧（空のものは除く） */
+      keys: function () {
+        return Object.keys(notes).filter(function (key) {
+          return notes[key].b;
+        });
+      },
+      synced: function () {
+        return cloud;
+      },
+      onChange: function (listener) {
+        noteListeners.push(listener);
+      },
+    };
+  })();
 })();

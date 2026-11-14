@@ -8,12 +8,13 @@
 
   中身を大きく変えたときは VERSION を上げると、古い保存分が消える。
 */
-const VERSION = "v29";
+const VERSION = "v30";
 const CACHE = `site-${VERSION}`;
 const CORE = [
   "./",
   "index.html",
   "login.html",
+  "garden.html",
   "manifest.webmanifest",
   "assets/css/theme.css",
   "assets/css/components.css",

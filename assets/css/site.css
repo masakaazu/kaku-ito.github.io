@@ -785,3 +785,373 @@ footer a {
     font-size: 1rem;
   }
 }
+
+/* ==========================================================
+   植物園のデザイン
+   生成りの紙の上に、深い緑の見出しと葉の飾りを置く。
+   色は theme.css の値だけを使う（葉・鉢・花の色もそこにある）。
+   ========================================================== */
+
+/* ページの上のほうに、温室の光のような淡い緑を差す */
+body {
+  background:
+    radial-gradient(1100px 520px at 50% -180px, color-mix(in srgb, var(--theme-leaf-pale) 70%, transparent), transparent 70%),
+    var(--theme-bg);
+  background-repeat: no-repeat;
+}
+
+/* 大見出しは、植物図鑑のラベルのような明朝 */
+.hero h1,
+.section-title h2 {
+  font-family: var(--theme-font-display);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.hero h1 {
+  letter-spacing: 0;
+}
+
+/* 見出しの両わきに枝を置く */
+.hero {
+  position: relative;
+}
+
+.hero::before,
+.hero::after {
+  content: "";
+  position: absolute;
+  top: clamp(40px, 7vw, 96px);
+  z-index: -1;
+  width: clamp(84px, 13vw, 150px);
+  aspect-ratio: 130 / 240;
+  background: var(--theme-leaf-pale);
+  -webkit-mask: var(--theme-sprig) center / contain no-repeat;
+  mask: var(--theme-sprig) center / contain no-repeat;
+  pointer-events: none;
+}
+
+.hero::before {
+  left: clamp(-8px, 1vw, 24px);
+  transform: rotate(-14deg);
+}
+
+.hero::after {
+  right: clamp(-8px, 1vw, 24px);
+  transform: scaleX(-1) rotate(-14deg);
+}
+
+/* 見出しの上のラベルは、標本の名札のように囲む */
+.hero-label {
+  display: inline-block;
+  width: auto;
+  margin-bottom: 18px;
+  padding: 3px 14px;
+  border: 1px solid var(--theme-line);
+  border-radius: var(--theme-radius-pill);
+  color: var(--theme-leaf-deep);
+  background: color-mix(in srgb, var(--theme-bg) 70%, transparent);
+  letter-spacing: 0.12em;
+}
+
+/* セクション見出しの前に小さな葉 */
+.section-title h2::before {
+  content: "";
+  display: inline-block;
+  width: 0.5em;
+  height: 0.5em;
+  margin-right: 0.35em;
+  border-radius: 0 100% 0 100%;
+  background: var(--theme-leaf);
+  transform: translateY(-0.12em) rotate(8deg);
+}
+
+/* タイルは紙のカード。細い線で囲み、触れると少し持ち上がる */
+.card,
+.field-tile,
+.list-item {
+  box-shadow: inset 0 0 0 1px var(--theme-line-soft);
+}
+
+.card.is-active {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--theme-leaf-pale) 55%, transparent), transparent 60%),
+    var(--theme-bg-alt);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--theme-leaf) 45%, transparent);
+}
+
+a.card:hover,
+a.field-tile:hover {
+  box-shadow: inset 0 0 0 1px var(--theme-line), 0 10px 28px -14px color-mix(in srgb, var(--theme-leaf-deep) 55%, transparent);
+}
+
+/* ---------- 分野マップの鉢植え ---------- */
+
+.field-growth {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.field-plant {
+  display: inline-flex;
+}
+
+.plant {
+  display: block;
+  width: 34px;
+  height: 34px;
+  overflow: visible;
+}
+
+.field-tile .plant {
+  margin: -6px -4px -8px 0;
+}
+
+/* 触れると葉がゆれる */
+@media (prefers-reduced-motion: no-preference) {
+  a.field-tile:hover .plant,
+  a.pot-card:hover .plant {
+    animation: plant-sway 1.4s var(--theme-ease) both;
+    transform-origin: 50% 90%;
+  }
+}
+
+@keyframes plant-sway {
+  0%, 100% { transform: rotate(0); }
+  30% { transform: rotate(-5deg); }
+  65% { transform: rotate(4deg); }
+}
+
+/* ---------- 温室（garden.html） ---------- */
+
+.garden-topics {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: clamp(20px, 4vw, 36px) 0 0;
+}
+
+.garden-topics a {
+  padding: 5px 14px;
+  border-radius: var(--theme-radius-pill);
+  color: var(--theme-muted);
+  background: var(--theme-bg-alt);
+  box-shadow: inset 0 0 0 1px var(--theme-line-soft);
+  font-size: var(--theme-size-small);
+  text-decoration: none;
+  transition: background-color var(--theme-transition), color var(--theme-transition);
+}
+
+.garden-topics a:hover {
+  color: var(--theme-heading);
+  background: var(--theme-surface-hover);
+}
+
+.garden-topics a[aria-current="page"] {
+  color: var(--theme-on-accent);
+  background: var(--theme-accent);
+  box-shadow: none;
+  font-weight: 600;
+}
+
+.garden-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: clamp(28px, 5vw, 48px);
+}
+
+.garden-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 18px 20px;
+  border-radius: var(--theme-radius);
+  background: var(--theme-bg-alt);
+  box-shadow: inset 0 0 0 1px var(--theme-line-soft);
+}
+
+.garden-stat b {
+  color: var(--theme-heading);
+  font-family: var(--theme-font-display);
+  font-size: clamp(1.7rem, 4.4vw, 2.4rem);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+}
+
+.garden-stat b small,
+.garden-stat b i {
+  margin-left: 3px;
+  color: var(--theme-muted);
+  font-family: var(--theme-font-ui);
+  font-size: 0.85rem;
+  font-style: normal;
+  font-weight: 500;
+}
+
+.garden-stat span {
+  color: var(--theme-muted);
+  font-size: var(--theme-size-small);
+}
+
+.garden-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-top: clamp(32px, 6vw, 56px);
+  padding: clamp(32px, 6vw, 56px) 24px;
+  border-radius: var(--theme-radius-large);
+  background: var(--theme-bg-alt);
+  box-shadow: inset 0 0 0 1px var(--theme-line-soft);
+  text-align: center;
+}
+
+.garden-empty .plant {
+  width: 72px;
+  height: 72px;
+}
+
+.garden-empty p {
+  margin: 0;
+  color: var(--theme-muted);
+}
+
+.list-item.is-water .list-date {
+  color: var(--theme-leaf-deep);
+}
+
+.pot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.pot-grid.is-big {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.pot-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px 14px 12px;
+  border-radius: var(--theme-radius);
+  color: inherit;
+  text-decoration: none;
+  background: var(--theme-bg-alt);
+  box-shadow: inset 0 0 0 1px var(--theme-line-soft);
+  transition: background-color var(--theme-transition), box-shadow var(--theme-transition);
+}
+
+.pot-card:hover {
+  background: var(--theme-surface-hover);
+}
+
+.pot-card.is-seed {
+  background: transparent;
+}
+
+.pot-card.is-big {
+  padding: 20px 22px 20px 14px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--theme-bad-bg) 80%, transparent), transparent 70%),
+    var(--theme-bg-alt);
+}
+
+.pot-plant .plant {
+  width: 56px;
+  height: 56px;
+}
+
+.pot-card.is-big .pot-plant .plant {
+  width: 76px;
+  height: 76px;
+}
+
+.pot-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.pot-no {
+  color: var(--theme-muted);
+  font-size: var(--theme-size-caption);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.pot-name {
+  color: var(--theme-heading);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.pot-meta {
+  color: var(--theme-muted);
+  font-size: var(--theme-size-caption);
+}
+
+/* 正答率の棒。60%（合格ライン）に細い目印を入れる */
+.rate-bar {
+  position: relative;
+  display: block;
+  height: 6px;
+  margin: 4px 0 2px;
+  border-radius: 3px;
+  background: var(--theme-line-soft);
+  overflow: hidden;
+}
+
+.rate-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--theme-leaf);
+}
+
+.rate-bar.is-low i {
+  background: var(--theme-pot);
+}
+
+.rate-bar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 60%;
+  width: 1.5px;
+  background: var(--theme-bg);
+}
+
+.growth-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 10px;
+  white-space: nowrap;
+}
+
+.growth-key .plant {
+  width: 22px;
+  height: 22px;
+}
+
+@media (max-width: 640px) {
+  .garden-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hero::before,
+  .hero::after {
+    top: 18px;
+    width: 64px;
+    opacity: 0.8;
+  }
+}
