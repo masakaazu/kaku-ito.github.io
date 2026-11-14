@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Terraform #16 HCP Terraformの共同作業とガバナンス 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">HashiCorp Certified: Terraform Associate（004）　目標 8b・8c　#16</div>
+  <h1>HCP Terraformの共同作業とガバナンス</h1>
+  <p>プロジェクトと Default Project、変数セットと優先順位、run trigger、リモートステートの共有と tfe_outputs、チームとワークスペースの権限、動的なプロバイダーの資格情報、ポリシー（Sentinel・OPA）と強制レベル、ヘルス評価、プライベートレジストリ、Explorer、change requests</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（HashiCorp の Exam Content List（004）、HCP Terraform ドキュメントの Projects Overview・Project Best Practices・Run triggers・Variables overview・Workspace settings・Teams overview・Workspace permissions・Dynamic provider credentials・Policy enforcement overview・Manage policy sets・Health assessments・Private registry overview・Explorer・Change requests overview）を書いた。英語の原文は『』で引用した</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>プロジェクトとワークスペースの整理</h1>
+  <p>まとめる・配る・つなぐ。</p>
+  <div class="foot"><span>Terraform #16 HCP Terraformの共同作業とガバナンス</span><span>目標 8b・8c</span></div>
+</section>
+
+<section class="slide">
+  <h1>プロジェクトと変数セット</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">組織（owners チーム）</div>
+      <div class="arrow">↓</div>
+      <div class="box b1">プロジェクト<span>ワークスペースをまとめ、チームの権限の範囲に。Default Project は消せない</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">ワークスペース<span>必ず 1 つのプロジェクトに入る</span></div>
+      <div class="point">本番のネットワークと開発の計算資源は別のプロジェクトに。TFE プロバイダーで自動化、ランディングゾーンのプロジェクト。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>変数セットの範囲</th><th>付く先</th></tr>
+        <tr><td class="t">ワークスペース</td><td class="l">選んだワークスペース</td></tr>
+        <tr><td class="t">プロジェクト</td><td class="l">今と将来の全ワークスペース</td></tr>
+        <tr><td class="t">グローバル</td><td class="l">組織の今と将来の全ワークスペース</td></tr>
+      </table>
+      <div class="point warn">優先順位：priority の変数セット ＞ -var・-var-file ＞ TF_VAR_ ＞ ワークスペース固有 ＞ 範囲つきの変数セット ＞ グローバル ＞ *.auto.tfvars</div>
+      <div class="point">同じ範囲の変数セットどうしは名前の辞書順で先（A_ が B_ に勝つ）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Projects Overview／Project Best Practices／Variables overview</div>
+  <div class="foot"><span>Terraform #16 HCP Terraformの共同作業とガバナンス</span><span>目標 8b・8c</span></div>
+</section>
+
+<section class="slide">
+  <h1>run trigger とステートの共有</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">networking-prod（元）<span>apply 成功</span></div>
+      <div class="arrow">↓ run trigger</div>
+      <div class="box b1">app-prod（自分）<span>実行が自動で積まれる</span></div>
+      <table class="mx">
+        <tr><th>run trigger の決まり</th></tr>
+        <tr><td class="l">元のワークスペースは 20 まで</td></tr>
+        <tr><td class="l">設定はワークスペースの管理者</td></tr>
+        <tr><td class="l">自動 apply は「Auto-apply run triggers」（別の設定）</td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>リモートステートの共有</th></tr>
+        <tr><td class="l">組織のすべて</td></tr>
+        <tr><td class="l">同じプロジェクトのすべて</td></tr>
+        <tr><td class="l">指定したワークスペース（新しいワークスペースの既定・一覧は空）</td></tr>
+      </table>
+      <div class="point">最小権限：必要なワークスペースだけに許す。</div>
+      <div class="point warn">出力を読むなら tfe_outputs がすすめ（terraform_remote_state はステート全体の権限が要る）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Run triggers／Workspace settings（Remote State Sharing）</div>
+  <div class="foot"><span>Terraform #16 HCP Terraformの共同作業とガバナンス</span><span>目標 8b・8c</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>チーム・権限・資格情報</h1>
+  <p>だれが、何を、どの資格情報で。</p>
+  <div class="foot"><span>Terraform #16 HCP Terraformの共同作業とガバナンス</span><span>目標 8b・8c</span></div>
+</section>
+
+<section class="slide">
+  <h1>チームとワークスペースの権限</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>権限</th><th>できること</th></tr>
+        <tr><td class="t">Read</td><td class="l">実行・変数・ステートを読む</td></tr>
+        <tr><td class="t">Plan</td><td class="l">＋ plan を始める（apply は承認が必要な人向け）</td></tr>
+        <tr><td class="t">Write</td><td class="l">＋ apply、変数・ステートの読み書き、ロック（日々の構築）</td></tr>
+        <tr><td class="t">Admin</td><td class="l">＋ 設定（run trigger など）・チームの権限・削除</td></tr>
+      </table>
+      <div class="point">custom で細かく選べる。ステートは「出力だけ読む」にも絞れる。</div>
+    </div>
+    <div>
+      <div class="box b3">チーム<span>組織の中のユーザーのグループ。権限は自分の組織のワークスペースだけ</span></div>
+      <div class="box b1">ユーザー<span>複数の組織の複数のチームに入れる</span></div>
+      <div class="box b2">owners チーム<span>組織の全権。削除も空にもできない</span></div>
+      <div class="point">チームの API トークン：特定のユーザーに結びつかない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Teams overview／Workspace permissions</div>
+  <div class="foot"><span>Terraform #16 HCP Terraformの共同作業とガバナンス</span><span>目標 8b・8c</span></div>
+</section>
+
+<section class="slide">
+  <h1>動的なプロバイダーの資格情報</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">1. HCP がワークロード ID トークンを作る<span>OIDC 準拠。組織・ワークスペース・実行の段階を含む</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b1">2. クラウドに送り、公開鍵で確かめる</div>
+      <div class="arrow">↓</div>
+      <div class="box b2">3. 一時的な資格情報で plan・apply<span>終わったら実行の環境ごと捨てる</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>設定の手順</th></tr>
+        <tr><td class="l">1 クラウドと HCP Terraform の信頼関係</td></tr>
+        <tr><td class="l">2 クラウドのロール・ポリシー</td></tr>
+        <tr><td class="l">3 ワークスペースの環境変数（変数セットでも）</td></tr>
+      </table>
+      <div class="point warn">静的な資格情報は、ローテーションしていても危険。動的なら手での管理・ローテーションが要らない。</div>
+      <div class="point">AWS・Azure・GCP・Vault などに対応。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Dynamic provider credentials</div>
+  <div class="foot"><span>Terraform #16 HCP Terraformの共同作業とガバナンス</span><span>目標 8b・8c</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>ガバナンス</h1>
+  <p>ルールで止める、定期的に見守る、全体を見わたす。</p>
+  <div class="foot"><span>Terraform #16 HCP Terraformの共同作業とガバナンス</span><span>目標 8b・8c</span></div>
+</section>
+
+<section class="slide">
+  <h1>ポリシーと強制レベル</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>Sentinel</th><th>失敗したとき</th></tr>
+        <tr><td class="t">advisory</td><td class="l">止めない（知らせるだけ）</td></tr>
+        <tr><td class="t">soft mandatory</td><td class="l">止める。許された人は override で続行</td></tr>
+        <tr><td class="t">hard mandatory</td><td class="l">直すまで apply しない（セットで許せば上書き可）</td></tr>
+      </table>
+      <table class="mx">
+        <tr><th>OPA（Rego）</th><th>失敗したとき</th></tr>
+        <tr><td class="t">advisory</td><td class="l">止めない</td></tr>
+        <tr><td class="t">mandatory</td><td class="l">止める。Manage Policy Overrides の人は上書き可</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="box b3">ポリシーセット<span>組織全体・プロジェクト・ワークスペースに付ける。1 つのセットに 1 つのフレームワーク</span></div>
+      <div class="box b1">実行ごとに plan を照らす<span>スペキュラティブプランとリモートの apply</span></div>
+      <div class="point">ポリシーは VCS に置く（標準化・セキュリティ・監査）。</div>
+      <div class="point">CLI 駆動の実行で結果が端末に出るのは Sentinel だけ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Policy enforcement overview／Manage policy sets／The CLI-driven remote run workflow</div>
+  <div class="foot"><span>Terraform #16 HCP Terraformの共同作業とガバナンス</span><span>目標 8b・8c</span></div>
+</section>
+
+<section class="slide">
+  <h1>見守る・共有する機能</h1>
+  <table class="mx">
+    <tr><th>機能</th><th>何をするか</th><th>覚えどころ</th></tr>
+    <tr><td class="t">ドリフト検出</td><td class="l">実物が設定と合っているか</td><td class="l">構成のドリフトだけ（ステートのドリフトは見ない）</td></tr>
+    <tr><td class="t">継続的な検証</td><td class="l">precondition・postcondition・check が通りつづけるか</td><td class="l">check ブロックがすすめ。v1.3〜</td></tr>
+    <tr><td class="t">プライベートレジストリ</td><td class="l">組織の中でモジュール・プロバイダーを共有</td><td class="l">版の管理と検索できる一覧</td></tr>
+    <tr><td class="t">Explorer</td><td class="l">組織中のワークスペース・モジュール・プロバイダー・版を一覧</td><td class="l">ドリフトしたもの、古い版、VCS なし</td></tr>
+    <tr><td class="t">change requests</td><td class="l">ワークスペースに「やること」を記録して知らせる</td><td class="l">Explorer の結果から作り、終わればアーカイブ</td></tr>
+  </table>
+  <div class="point">ヘルス評価（ドリフト検出＋継続的な検証）の設定を変えるのはワークスペースの管理者。</div>
+  <div class="cite">出典：Health assessments／Private registry overview／Explorer for workspace visibility／Change requests overview</div>
+  <div class="foot"><span>Terraform #16 HCP Terraformの共同作業とガバナンス</span><span>目標 8b・8c</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">プロジェクト（8c）</td><td class="l">ワークスペースは必ず 1 つ、Default Project、権限の範囲、既定の実行モード</td></tr>
+    <tr><td class="t">変数セット（8c）</td><td class="l">ワークスペース・プロジェクト・グローバル、ワークスペース固有が勝つ、辞書順</td></tr>
+    <tr><td class="t">run trigger（8c）</td><td class="l">元の apply 成功で積む、20 まで、自動 apply は別の設定、tfe_outputs</td></tr>
+    <tr><td class="t">共同作業（8b）</td><td class="l">チームと Read・Plan・Write・Admin、動的な資格情報（OIDC・一時的）</td></tr>
+    <tr><td class="t">ガバナンス（8b）</td><td class="l">Sentinel の 3 段階と OPA の 2 段階、ヘルス評価、プライベートレジストリ、Explorer、change requests</td></tr>
+  </table>
+  <div class="cite">出典：Exam Content List（004）8b・8c／本資料の問題演習（全 30 問）</div>
+</section>
+
+</body>
+</html>

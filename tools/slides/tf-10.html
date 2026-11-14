@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Terraform #10 機密データとVault 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">HashiCorp Certified: Terraform Associate（004）　目標 4h　#10</div>
+  <h1>機密データとVault</h1>
+  <p>sensitive は隠すだけ、ステートの守り方、ephemeral な変数・出力・ブロック、write-only 引数とバージョン引数、Vault プロバイダーの 2 つの使いみちと注意点、一時的な資格情報、HCP Terraform の動的な資格情報と sensitive な変数</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（HashiCorp の Exam Content List（004）、Terraform ドキュメント v1.12.x の Manage sensitive data・Ephemeral values in resources・Use temporary write-only arguments・ephemeral block reference、HCP Terraform の Dynamic provider credentials・Manage variables、Terraform Registry の Vault Provider）を書いた。英語の原文は『』で引用した</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>隠すのか、残さないのか</h1>
+  <p>sensitive は画面、ephemeral はファイル。</p>
+  <div class="foot"><span>Terraform #10 機密データとVault</span><span>目標 4h</span></div>
+</section>
+
+<section class="slide">
+  <h1>sensitive・ephemeral・write-only</h1>
+  <table class="mx">
+    <tr><th>しくみ</th><th>CLI・UI の表示</th><th>ステート・プラン</th><th>バージョン</th></tr>
+    <tr><td class="t">sensitive = true</td><td class="l">(sensitive value)</td><td class="l">平文で残る</td><td class="l">0.15</td></tr>
+    <tr><td class="t">ephemeral = true</td><td class="l">―</td><td class="l">残さない</td><td class="l">1.10</td></tr>
+    <tr><td class="t">sensitive ＋ ephemeral</td><td class="l">隠す</td><td class="l">残さない</td><td class="l">1.10</td></tr>
+    <tr><td class="t">ephemeral ブロック</td><td class="l">―</td><td class="l">残さない</td><td class="l">1.10</td></tr>
+    <tr><td class="t">write-only 引数（_wo）</td><td class="l">―</td><td class="l">残さない（_wo_version だけ残る）</td><td class="l">1.11</td></tr>
+  </table>
+  <div class="cols">
+    <div>
+      <div class="code small">variable "database_password" {
+  type      = string
+  sensitive = true   <span class="c"># 画面で隠す</span>
+  ephemeral = true   <span class="c"># ファイルに残さない</span>
+}</div>
+    </div>
+    <div>
+      <div class="point">sensitive を参照した式（password = var.database_password）も自動で sensitive。</div>
+      <div class="point warn">terraform output -json・-raw では sensitive も平文。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Manage sensitive data in your configuration</div>
+  <div class="foot"><span>Terraform #10 機密データとVault</span><span>目標 4h</span></div>
+</section>
+
+<section class="slide">
+  <h1>ステートを守る</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">リモートに置く<span>使う間だけメモリに置く</span></div>
+      <div class="box b3">保存時に暗号化<span>HCP Terraform は自動。S3 は encrypt。GCS は顧客の鍵</span></div>
+      <div class="box b1">アクセス制御<span>ステートにさわれる人を絞る</span></div>
+      <div class="box b2">監査ログ<span>だれがいつ読んだかを追う</span></div>
+    </div>
+    <div>
+      <div class="point warn">ローカルのステートは平文のファイル。Git のワークフローから外す。</div>
+      <div class="point">設定に秘密を直接書くと、ステートとプランにも残る。</div>
+      <table class="mx">
+        <tr><th>HCP Terraform の変数</th><th>ふるまい</th></tr>
+        <tr><td class="t">Sensitive にチェック</td><td class="l">write-only。本人も UI・API で見られない。値だけ変更可</td></tr>
+        <tr><td class="t">資格情報</td><td class="l">Terraform 変数より環境変数で（実行は Terraform 変数の値をすべて受け取る）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：Manage sensitive data（State security best practices）／Manage variables（Sensitive values）</div>
+  <div class="foot"><span>Terraform #10 機密データとVault</span><span>目標 4h</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>一時的な値</h1>
+  <p>実行中だけあって、どこにも残らない。</p>
+  <div class="foot"><span>Terraform #10 機密データとVault</span><span>目標 4h</span></div>
+</section>
+
+<section class="slide">
+  <h1>ephemeral の 3 つの形と使える場所</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">variable "api_token" {
+  type      = string
+  sensitive = true
+  ephemeral = true
+}
+provider "example" {
+  api_token = var.api_token     <span class="c"># OK：provider ブロック</span>
+}
+<span class="c"># 子モジュールの出力（ルートには付けられない）</span>
+output "session_token" {
+  value     = ephemeral.auth_provider.main.token
+  ephemeral = true
+  sensitive = true
+}</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>参照できる場所</th></tr>
+        <tr><td class="l">locals</td></tr>
+        <tr><td class="l">ephemeral = true の variable・子モジュールの output</td></tr>
+        <tr><td class="l">write-only 引数</td></tr>
+        <tr><td class="l">ephemeral ブロック</td></tr>
+        <tr><td class="l">provider ブロック</td></tr>
+        <tr><td class="l">provisioner・connection ブロック</td></tr>
+      </table>
+      <div class="point warn">ふつうの引数で参照すると plan でエラー。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Manage sensitive data（Omit values from state and plan files）</div>
+  <div class="foot"><span>Terraform #10 機密データとVault</span><span>目標 4h</span></div>
+</section>
+
+<section class="slide">
+  <h1>ephemeral ブロックと write-only 引数</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">ephemeral "random_password" "db_password" {
+  length           = 16
+  override_special = "!#$%&*()-_=+[]{}&lt;&gt;:?"
+}
+resource "aws_secretsmanager_secret_version" "db_password" {
+  secret_id                = aws_secretsmanager_secret.db_password.id
+  secret_string_wo         = ephemeral.random_password.db_password.result
+  secret_string_wo_version = 1
+}
+resource "aws_db_instance" "example" {
+  <span class="c"># …</span>
+  password_wo         = ephemeral.random_password.db_password.result
+  password_wo_version = 1   <span class="c"># 変えるときは 2 に上げる</span>
+}</div>
+    </div>
+    <div>
+      <div class="box b3">open<span>結果が必要になったら開く</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b1">renew<span>期限より長く使うなら延長</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">close<span>依存するプロバイダーの作業が済んだら閉じる</span></div>
+      <div class="point">入力が計画で分からなければ apply まで遅らせる。</div>
+      <div class="point">write-only はふつうの値も受け付けるが、ephemeral な値を渡すのがおすすめ。差分は出せない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Ephemeral values in resources／Use temporary write-only arguments／ephemeral block reference</div>
+  <div class="foot"><span>Terraform #10 機密データとVault</span><span>目標 4h</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>Vault と一時的な資格情報</h1>
+  <p>静的なキーを配らない。</p>
+  <div class="foot"><span>Terraform #10 機密データとVault</span><span>目標 4h</span></div>
+</section>
+
+<section class="slide">
+  <h1>Vault プロバイダー</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">provider "vault" {}   <span class="c"># VAULT_ADDR・VAULT_TOKEN で渡す</span>
+data "vault_aws_access_credentials" "creds" {
+  backend = vault_aws_secret_backend.aws.path
+  role    = vault_aws_secret_backend_role.role.name
+}
+provider "aws" {
+  access_key = data.vault_aws_access_credentials.creds.access_key
+  secret_key = data.vault_aws_access_credentials.creds.secret_key
+}</div>
+      <div class="point">使いみちは 2 つ：① Vault を設定してシークレットを入れる ② Vault から資格情報を借りてほかのプロバイダーに使う。</div>
+    </div>
+    <div>
+      <div class="point warn">『Interacting with Vault from Terraform causes any secrets that you read and write to be persisted in both Terraform's state file and in any generated plan files』</div>
+      <div class="box b3">子トークン（既定 約 20 分）<span>期限で Vault が資格情報を取り消す。plan から時間をおくと apply が失敗しうる</span></div>
+      <div class="box b1">AWS 用の資格情報は renew 不可<span>Terraform が終わるまでもつリースに</span></div>
+      <div class="box b2">ephemeral "vault_kv_secret_v2"<span>ステートに残さず読み、write-only 引数へ</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：Vault Provider／vault_aws_access_credentials／ephemeral vault_kv_secret_v2</div>
+  <div class="foot"><span>Terraform #10 機密データとVault</span><span>目標 4h</span></div>
+</section>
+
+<section class="slide">
+  <h1>HCP Terraform の動的な資格情報</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">1. HCP Terraform が OIDC のワークロード ID トークンを作る<span>組織・ワークスペース・実行の段階を含む</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b1">2. plan・apply の開始時にクラウドへ送る</div>
+      <div class="arrow">↓</div>
+      <div class="box b1">3. クラウドが HCP Terraform の公開鍵で確かめる</div>
+      <div class="arrow">↓</div>
+      <div class="box b2">4. 一時的な資格情報を返し、実行環境に設定</div>
+      <div class="arrow">↓</div>
+      <div class="box b2">5. 実行が終わると環境ごと捨てる</div>
+    </div>
+    <div>
+      <div class="point">『Dynamic provider credentials improve your security posture by letting you provision new, temporary credentials for each run.』</div>
+      <div class="point">静的な資格情報をワークスペースに置かない。ローテーションの手間もない。</div>
+      <div class="point">クラウド側の信頼関係のルールで、ワークスペースや実行の段階ごとに権限を絞れる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Dynamic provider credentials</div>
+  <div class="foot"><span>Terraform #10 機密データとVault</span><span>目標 4h</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">sensitive</td><td class="l">画面で隠すだけ、ステートには平文、参照した式も sensitive、output -json・-raw</td></tr>
+    <tr><td class="t">ステート</td><td class="l">リモート・暗号化・アクセス制御・監査ログ、Git に入れない</td></tr>
+    <tr><td class="t">ephemeral</td><td class="l">残さない、使える場所、ルートの output 不可、open・renew・close</td></tr>
+    <tr><td class="t">write-only</td><td class="l">_wo と _wo_version、更新はバージョンを上げる、差分なし</td></tr>
+    <tr><td class="t">Vault</td><td class="l">2 つの使いみち、読んだ値はステートに残る、短い TTL、環境変数で渡す</td></tr>
+    <tr><td class="t">HCP</td><td class="l">動的な資格情報（OIDC）、sensitive な変数は write-only</td></tr>
+  </table>
+  <div class="cite">出典：Exam Content List（004）4h／本資料の問題演習（全 30 問）</div>
+</section>
+
+</body>
+</html>

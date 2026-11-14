@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>G検定 #10 誤差逆伝播法と最適化手法 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">G検定（JDLA ジェネラリスト検定）　シラバス2024　15・16　#10</div>
+  <h1>誤差逆伝播法と最適化手法</h1>
+  <p>誤差逆伝播法・連鎖律・信用割当問題・勾配消失／爆発、勾配降下法・学習率・SGD・バッチ／ミニバッチ／オンライン学習・エポック・イテレーション・局所最適解・鞍点、モーメンタム・AdaGrad・RMSprop・AdaDelta・Adam・AdaBound・AMSBound、ハイパーパラメータ・グリッドサーチ・ランダムサーチ・二重降下現象・ノーフリーランチ定理</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（JDLA のシラバス、Adam・ADADELTA・AdaBound・Deep Double Descent・Random Search の論文、ウィキペディア）を書いた。『』の中は原文どおり</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>誤差逆伝播法</h1>
+  <p>出力側から勾配をさかのぼって求め、勾配降下法で重みを直す。</p>
+  <div class="foot"><span>G検定 #10 誤差逆伝播法と最適化手法</span><span>シラバス 15・16</span></div>
+</section>
+
+<section class="slide">
+  <h1>順伝播と逆伝播</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">① 順伝播<span>入力 → 隠れ層 → 出力。誤差 L を出す</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b3">② 逆伝播<span>出力側から ∂L/∂w を求める（連鎖律）</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">③ 更新<span>w ← w − 学習率 × ∂L/∂w</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>言葉</th><th>中身</th></tr>
+        <tr><td class="t">連鎖律</td><td class="l">合成関数の微分＝各微分の積</td></tr>
+        <tr><td class="t">信用割当問題</td><td class="l">どの重みが誤差にどれだけ責任があるか → 勾配で答える</td></tr>
+        <tr><td class="t">勾配消失／爆発</td><td class="l">積が重なり、小さく消える／大きく発散（#08）</td></tr>
+      </table>
+      <div class="point warn">逆伝播＝勾配を求める。更新するのは SGD など（まとめて呼ぶことも多い）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア「誤差逆伝播法」『バックプロパゲーションは数理モデルであるニューラルネットワークのパラメータに関する偏微分を計算する手法で、確率的勾配降下法はパラメータを更新する（学習する）手法である。』</div>
+  <div class="foot"><span>G検定 #10 誤差逆伝播法と最適化手法</span><span>シラバス 15・16</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>勾配降下法と学習の単位</h1>
+  <p>傾きの逆へ、学習率の歩幅で少しずつ下る。</p>
+  <div class="foot"><span>G検定 #10 誤差逆伝播法と最適化手法</span><span>シラバス 15・16</span></div>
+</section>
+
+<section class="slide">
+  <h1>バッチ・ミニバッチ・オンライン</h1>
+  <table class="mx">
+    <tr><th>学び方</th><th>1回の更新に使うデータ</th><th>特徴</th></tr>
+    <tr><td class="t">バッチ学習（最急降下法）</td><td class="l">全部</td><td class="l">安定。1回が重い</td></tr>
+    <tr><td class="t">ミニバッチ学習</td><td class="l">数十〜数百件</td><td class="l">いまの標準</td></tr>
+    <tr><td class="t">オンライン学習（SGD）</td><td class="l">1件</td><td class="l">速いがばらつく。局所解から抜けやすい</td></tr>
+  </table>
+  <div class="cols">
+    <div class="point">エポック＝データ全体を1回使う。イテレーション＝1回の更新。<br>6,000件・バッチ100 → 1エポック＝60イテレーション</div>
+    <div class="point warn">学習率：大きすぎると発散、小さすぎると遅い。</div>
+  </div>
+  <div class="cite">出典：ウィキペディア「確率的勾配降下法」『全てではないが複数の訓練データで勾配を計算する方法をミニバッチと言う。』『学習率を大きくしすぎると発散し、小さくしすぎると収束まで遅くなる。』</div>
+  <div class="foot"><span>G検定 #10 誤差逆伝播法と最適化手法</span><span>シラバス 15・16</span></div>
+</section>
+
+<section class="slide">
+  <h1>局所最適解と鞍点</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">大域最適解<span>全体で一番低い点（ほしいもの）</span></div>
+      <div class="box b1">局所最適解<span>近くでは一番低いが、全体では一番でない谷</span></div>
+      <div class="box b2">鞍点<span>ある方向では極小、別の方向では極大。勾配 0 で停滞（プラトー）</span></div>
+    </div>
+    <div>
+      <div class="point warn">勾配降下法は傾きだけを見るので、局所最適解や鞍点で止まりやすい。</div>
+      <div class="point">対策：SGD のばらつき、モーメンタム（慣性で通り抜ける）、学習率の工夫。</div>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア「最急降下法」『勾配法のため、局所的な最小値に捉まり易く、大域的な最小値を求めるのは困難であることが欠点である。』／「鞍点」</div>
+  <div class="foot"><span>G検定 #10 誤差逆伝播法と最適化手法</span><span>シラバス 15・16</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>最適化アルゴリズム</h1>
+  <p>勢いをつける（モーメンタム）か、パラメータごとに歩幅を変える（適応的な方法）か。</p>
+  <div class="foot"><span>G検定 #10 誤差逆伝播法と最適化手法</span><span>シラバス 15・16</span></div>
+</section>
+
+<section class="slide">
+  <h1>SGD の改良の系譜</h1>
+  <table class="mx">
+    <tr><th>名前</th><th>工夫</th><th>弱点・ねらい</th></tr>
+    <tr><td class="t">モーメンタム</td><td class="l">前回の更新を慣性として足す</td><td class="l">谷の振動を抑え、鞍点を抜ける</td></tr>
+    <tr><td class="t">AdaGrad（2011）</td><td class="l">勾配の2乗の合計で割る（パラメータごと）</td><td class="l">学習率がだんだん 0 → 止まる</td></tr>
+    <tr><td class="t">RMSprop（2012）</td><td class="l">勾配の2乗の指数移動平均で割る</td><td class="l">AdaGrad の「止まる」を改良</td></tr>
+    <tr><td class="t">AdaDelta（2012）</td><td class="l">次元ごとに自動調整</td><td class="l">学習率を手で決めなくてよい</td></tr>
+    <tr><td class="t">Adam（2014）</td><td class="l">勾配の移動平均 m ＋ 2乗の移動平均 v</td><td class="l">モーメンタム＋RMSprop。いまの定番</td></tr>
+    <tr><td class="t">AdaBound・AMSBound（2019）</td><td class="l">学習率に狭まる上限・下限</td><td class="l">後半は SGD に近づけ、汎化の差をなくす</td></tr>
+  </table>
+  <div class="cite">出典：英語版ウィキペディア「Stochastic gradient descent」『it keeps not just one, but two running averages for each parameter: m of the gradient, v of the squared gradient.』／Luo ほか（AdaBound）／Zeiler（ADADELTA）</div>
+  <div class="foot"><span>G検定 #10 誤差逆伝播法と最適化手法</span><span>シラバス 15・16</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>ハイパーパラメータの調整</h1>
+  <p>人が決める値は、検証データで探す。</p>
+  <div class="foot"><span>G検定 #10 誤差逆伝播法と最適化手法</span><span>シラバス 15・16</span></div>
+</section>
+
+<section class="slide">
+  <h1>探し方と学習のふしぎ</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>方法</th><th>やり方</th></tr>
+        <tr><td class="t">グリッドサーチ</td><td class="l">候補の全組み合わせ（数が爆発）</td></tr>
+        <tr><td class="t">ランダムサーチ</td><td class="l">範囲からランダムに。同じ計算量でより効率的</td></tr>
+        <tr><td class="t">ベイズ最適化</td><td class="l">結果から次の候補を選ぶ</td></tr>
+      </table>
+      <div class="point">ハイパーパラメータ：学習率・バッチサイズ・エポック数・層の数・正則化の強さ など</div>
+    </div>
+    <div>
+      <div class="box b2">二重降下現象<span>モデルを大きくすると、テスト性能が悪化 → 再び改善。エポック数でも起きる</span></div>
+      <div class="box b1">ノーフリーランチ定理<span>どの問題にも最強の万能アルゴリズムはない</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：Bergstra・Bengio『randomly chosen trials are more efficient for hyper-parameter optimization than trials on a grid.』／Nakkiran ほか「Deep Double Descent」</div>
+  <div class="foot"><span>G検定 #10 誤差逆伝播法と最適化手法</span><span>シラバス 15・16</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">逆伝播</td><td class="l">連鎖律、勾配を求める役と更新する役、信用割当問題、勾配消失・爆発の原因</td></tr>
+    <tr><td class="t">勾配降下法</td><td class="l">学習率、バッチ／ミニバッチ／オンライン、エポックとイテレーションの計算、局所解と鞍点</td></tr>
+    <tr><td class="t">最適化手法</td><td class="l">モーメンタム、AdaGrad→RMSprop→Adam の改良点、AdaDelta、AdaBound・AMSBound</td></tr>
+    <tr><td class="t">ハイパーパラメータ</td><td class="l">グリッドとランダム、二重降下、ノーフリーランチ</td></tr>
+  </table>
+  <div class="cite">出典：JDLA「G検定の試験出題範囲（シラバス）G2024#6～」15. 誤差逆伝播法／16. 最適化手法</div>
+</section>
+
+</body>
+</html>

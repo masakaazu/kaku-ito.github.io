@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Terraform #11 モジュール 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">HashiCorp Certified: Terraform Associate（004）　目標 5a〜5d　#11</div>
+  <h1>モジュール</h1>
+  <p>ルートと子、module ブロックと source（ローカル・Registry・プライベート・Git と ref・サブディレクトリ）、入力と出力とスコープ、モジュールの中のプロバイダー、平らな構成、version と init -upgrade、標準モジュール構造と公開の条件</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（HashiCorp の Exam Content List（004）、Terraform ドキュメント v1.12.x の Modules overview・Creating Modules・module block reference・Module Sources・Use modules in your configuration・Providers Within Modules・Module Composition・Standard Module Structure・Version constraints、Terraform Registry の Publish modules）を書いた。英語の原文は『』で引用した</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>しくみとソース</h1>
+  <p>どこからコードを取ってくるか。</p>
+  <div class="foot"><span>Terraform #11 モジュール</span><span>目標 5a〜5d</span></div>
+</section>
+
+<section class="slide">
+  <h1>ルートモジュールと子モジュール</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">ルートモジュール<span>plan・apply を実行するディレクトリの .tf</span></div>
+      <div class="arrow">↓ module ブロックで呼ぶ</div>
+      <div class="box b1">子モジュール<span>何度でも呼べる。同じ source を別のラベルで</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">入れ子のモジュール<span>子がさらに呼ぶ（深くしすぎない）</span></div>
+      <div class="point">子のリソースもルートと同じステートで管理する。</div>
+    </div>
+    <div>
+      <div class="code small">module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "~> 5.0"          <span class="c"># Registry だけ</span>
+  name    = "main"            <span class="c"># モジュール固有の入力</span>
+  cidr    = "10.0.0.0/16"
+  <span class="c"># count / for_each（どちらか）・providers・depends_on</span>
+}
+resource "aws_security_group" "web" {
+  vpc_id = module.vpc.vpc_id  <span class="c"># 出力を参照</span>
+}</div>
+      <div class="point warn">source はリテラルの文字列だけ。変えたら terraform init（コードは .terraform/modules へ）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Modules overview／module block reference／Use modules in your configuration</div>
+  <div class="foot"><span>Terraform #11 モジュール</span><span>目標 5a〜5d</span></div>
+</section>
+
+<section class="slide">
+  <h1>source の書き方</h1>
+  <table class="mx">
+    <tr><th>ソース</th><th>例</th><th>覚えどころ</th></tr>
+    <tr><td class="t">ローカルパス</td><td class="l">"./consul"・"../modules/vpc"</td><td class="l">./ か ../ で始める。インストールせずそのまま。version 不可</td></tr>
+    <tr><td class="t">公開 Registry</td><td class="l">"hashicorp/consul/aws"</td><td class="l">&lt;NAMESPACE&gt;/&lt;NAME&gt;/&lt;PROVIDER&gt;。version 可</td></tr>
+    <tr><td class="t">プライベート Registry</td><td class="l">"app.terraform.io/example-corp/k8s-cluster/azurerm"</td><td class="l">先頭にホスト名（localterraform.com も可）。トークンで認証</td></tr>
+    <tr><td class="t">GitHub</td><td class="l">"github.com/hashicorp/example"</td><td class="l">Git の別名。HTTPS でクローン</td></tr>
+    <tr><td class="t">一般の Git</td><td class="l">"git::https://example.com/vpc.git?ref=v1.2.0"</td><td class="l">ref なしは既定のブランチ（HEAD）。?depth=1 は浅いクローン</td></tr>
+    <tr><td class="t">HTTP・S3・GCS</td><td class="l">"https://example.com/vpc-module.zip"</td><td class="l">アーカイブを取ってくる</td></tr>
+    <tr><td class="t">サブディレクトリ</td><td class="l">"git::https://example.com/network.git//modules/vpc?ref=v1.2.0"</td><td class="l">// のあとがパッケージの中。クエリは最後</td></tr>
+  </table>
+  <div class="point">すすめ：くり返しをまとめるだけならローカルパス、多くの構成で共有するならレジストリ。/ で始まる絶対パスはすすめない。</div>
+  <div class="cite">出典：Module Sources／module block reference</div>
+  <div class="foot"><span>Terraform #11 モジュール</span><span>目標 5a〜5d</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>値の受け渡しとスコープ</h1>
+  <p>入力と出力だけで外とつながる。</p>
+  <div class="foot"><span>Terraform #11 モジュール</span><span>目標 5a〜5d</span></div>
+</section>
+
+<section class="slide">
+  <h1>入力・出力・カプセル化</h1>
+  <div class="cols">
+    <div>
+      <div class="code small"><span class="c"># 親（ルート）</span>
+module "web" {
+  source  = "./modules/web"
+  servers = 3                  <span class="c"># 親 → 子</span>
+}
+output "web_ip" {
+  value = module.web.instance_ip   <span class="c"># 子 → 親</span>
+}
+
+<span class="c"># 子（modules/web）</span>
+variable "servers" { type = number }   <span class="c"># default なし＝必須</span>
+resource "aws_instance" "this" {
+  count = var.servers
+}
+output "instance_ip" {
+  value = aws_instance.this[*].public_ip
+}</div>
+    </div>
+    <div>
+      <div class="box b3">variable ＝ 引数</div>
+      <div class="box b1">locals・リソース ＝ 中だけ</div>
+      <div class="box b2">output ＝ 戻り値</div>
+      <div class="point warn">子は親の var.・local.・リソースを参照できない。親も module.web.aws_instance.this は参照できない。</div>
+      <div class="point">TF_VAR_・tfvars はルートの変数用。子へは module ブロックの引数で。</div>
+      <div class="point">for_each なら module.web["a"].instance_ip、count なら module.web[0].instance_ip。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Creating Modules／Use modules in your configuration／Output values</div>
+  <div class="foot"><span>Terraform #11 モジュール</span><span>目標 5a〜5d</span></div>
+</section>
+
+<section class="slide">
+  <h1>モジュールの中のプロバイダーと構成</h1>
+  <div class="cols">
+    <div>
+      <div class="code small"><span class="c"># ルートだけに provider ブロック</span>
+provider "aws" { region = "us-east-1" }
+provider "aws" {
+  alias  = "west"
+  region = "us-west-2"
+}
+module "web_west" {
+  source    = "./modules/web"
+  providers = { aws = aws.west }   <span class="c"># 明示して渡す</span>
+}</div>
+      <div class="point">渡さなければ既定の設定が暗黙に継承される。</div>
+      <div class="point warn">呼ばれるモジュールに provider ブロックを書かない（count・for_each・depends_on と両立しない）。required_providers は各モジュールで宣言。</div>
+    </div>
+    <div>
+      <div class="box b3">平らな構成（composition）<span>子は 1 段。ルートで出力 → 入力をつなぐ</span></div>
+      <div class="box b2">深い入れ子<span>使いまわしにくい</span></div>
+      <div class="box b1">薄い包み（1 リソースだけ）<span>すすめない。そのリソースを直接使う</span></div>
+      <div class="point">モジュールの中のリソースの作り直し：terraform apply -replace=module.example.aws_instance.example</div>
+    </div>
+  </div>
+  <div class="cite">出典：Providers Within Modules／Module Composition／Creating Modules</div>
+  <div class="foot"><span>Terraform #11 モジュール</span><span>目標 5a〜5d</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>バージョンと公開</h1>
+  <p>固定して、都合のよいときに上げる。</p>
+  <div class="foot"><span>Terraform #11 モジュール</span><span>目標 5a〜5d</span></div>
+</section>
+
+<section class="slide">
+  <h1>version と init -upgrade</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>制約</th><th>使ってよい版</th></tr>
+        <tr><td class="t">= 1.2.0（演算子なしも）</td><td class="l">1.2.0 だけ</td></tr>
+        <tr><td class="t">&gt;= 1.2.0, &lt; 2.0.0</td><td class="l">1.2.0 以上 2.0.0 未満</td></tr>
+        <tr><td class="t">~&gt; 1.2.0</td><td class="l">1.2.x（1.3.0 は不可）</td></tr>
+        <tr><td class="t">~&gt; 1.2</td><td class="l">1.x（2.0 は不可）</td></tr>
+      </table>
+      <div class="point">version を書かなければ最新版。インストール済みで制約に合う最新を使う。</div>
+    </div>
+    <div>
+      <div class="code small">$ terraform init            <span class="c"># 入っているものが合えばそのまま</span>
+$ terraform init -upgrade   <span class="c"># 制約が許す最新に上げる</span></div>
+      <table class="mx">
+        <tr><th>だれが</th><th>すすめられる制約</th></tr>
+        <tr><td class="t">社外のモジュールを使う</td><td class="l">特定のバージョンを指定</td></tr>
+        <tr><td class="t">社内の semver を守るモジュール</td><td class="l">範囲で指定してよい</td></tr>
+        <tr><td class="t">再利用するモジュールの中</td><td class="l">Terraform・プロバイダーは最低のバージョンだけ（&gt;=）</td></tr>
+        <tr><td class="t">ルートモジュール</td><td class="l">プロバイダーは ~&gt; で上限と下限</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：module block reference（version）／Version constraints／Use modules in your configuration</div>
+  <div class="foot"><span>Terraform #11 モジュール</span><span>目標 5a〜5d</span></div>
+</section>
+
+<section class="slide">
+  <h1>標準モジュール構造と公開</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">terraform-aws-consul/      <span class="c"># terraform-&lt;PROVIDER&gt;-&lt;NAME&gt;</span>
+├── README.md
+├── LICENSE
+├── main.tf               <span class="c"># 入口</span>
+├── variables.tf          <span class="c"># description を書く</span>
+├── outputs.tf
+├── modules/              <span class="c"># 入れ子のモジュール</span>
+│   ├── consul-cluster/
+│   └── consul-security-group/
+└── examples/             <span class="c"># 使い方の例</span></div>
+      <div class="point">必須はルートモジュールだけ。README のある入れ子モジュールは外から使ってよいもの。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>公開 Registry の条件</th></tr>
+        <tr><td class="l">GitHub の公開リポジトリ</td></tr>
+        <tr><td class="l">名前は terraform-&lt;PROVIDER&gt;-&lt;NAME&gt;</td></tr>
+        <tr><td class="l">リポジトリの説明（短い説明になる）</td></tr>
+        <tr><td class="l">標準モジュール構造</td></tr>
+        <tr><td class="l">x.y.z のタグ（v1.0.4・0.9.2）</td></tr>
+      </table>
+      <div class="point">新しい版はタグを push するだけ。プライベートレジストリなら GitHub の公開リポジトリの条件はいらない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Standard Module Structure／Publish modules</div>
+  <div class="foot"><span>Terraform #11 モジュール</span><span>目標 5a〜5d</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">source（5a）</td><td class="l">./ と ../、Registry の 3 部、ホスト名、git:: と ?ref=、//、リテラルだけ、変えたら init</td></tr>
+    <tr><td class="t">スコープ（5b）</td><td class="l">親の変数は見えない、引数で渡す、出力で返す、module.名前.出力</td></tr>
+    <tr><td class="t">使い方（5c）</td><td class="l">providers 引数、provider ブロックはルートだけ、平らな構成、count・for_each、-replace のアドレス</td></tr>
+    <tr><td class="t">バージョン（5d）</td><td class="l">version は Registry だけ、~&gt;、既定は最新、init -upgrade、固定のすすめ</td></tr>
+  </table>
+  <div class="cite">出典：Exam Content List（004）5a〜5d／本資料の問題演習（全 30 問）</div>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS DevOps #11 高可用性とマルチリージョン 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">AWS Certified DevOps Engineer – Professional（DOP-C02）　タスク 3.1　#11</div>
+  <h1>高可用性とマルチリージョン</h1>
+  <p>Route 53 のルーティングポリシー（フェイルオーバー・加重・レイテンシー・位置情報）・エイリアス・ヘルスチェック（計算・CloudWatch アラーム）、Global Accelerator・オリジンフェイルオーバー・ARC ゾーンシフト、クロスゾーン負荷分散・フェールオープン・マルチ AZ の Auto Scaling・単一障害点・SLA、RDS マルチ AZ・マルチ AZ DB クラスター・リードレプリカ・Aurora Global Database・DynamoDB グローバルテーブル・S3 CRR・S3 RTC・マルチリージョンアクセスポイント</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（AWS の DOP-C02 試験ガイド、Route 53・Global Accelerator・CloudFront・ARC・ELB・Auto Scaling・RDS・Aurora・DynamoDB・S3・ElastiCache の各ガイド、Well-Architected 信頼性の柱）を書いた。『』の中は日本語版ドキュメントの原文どおり</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>トラフィックの振り分けと切り替え</h1>
+  <p>DNS で振り分け、ヘルスで切り替える。DNS 以外の入り口も。</p>
+  <div class="foot"><span>AWS DevOps #11 高可用性とマルチリージョン</span><span>タスク 3.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>Route 53 のルーティングポリシー</h1>
+  <table class="mx">
+    <tr><th>ポリシー</th><th>答え方</th><th>使う場面</th></tr>
+    <tr><td class="t">フェイルオーバー</td><td class="l">プライマリが正常ならプライマリ、異常ならセカンダリ</td><td class="l">アクティブ/パッシブの DR</td></tr>
+    <tr><td class="t">加重</td><td class="l">重みの比率（1 と 255 → 1/256）。0 で停止</td><td class="l">新環境に少しずつ（カナリア）</td></tr>
+    <tr><td class="t">レイテンシー</td><td class="l">ユーザーから速いリージョン</td><td class="l">マルチリージョンのアクティブ-アクティブ</td></tr>
+    <tr><td class="t">位置情報</td><td class="l">大陸・国・州で決まった先（デフォルトも作る）</td><td class="l">法令・言語</td></tr>
+    <tr><td class="t">地理的近接性</td><td class="l">リソースの場所とバイアス</td><td class="l">エリアの広さを調整</td></tr>
+    <tr><td class="t">複数値回答</td><td class="l">正常なレコードを最大 8 つ</td><td class="l">簡易な分散</td></tr>
+  </table>
+  <div class="point">エイリアスレコード：ゾーンの頂点（example.com）にも作れる。Evaluate Target Health = Yes で指す先の正常性を見る。</div>
+  <div class="cite">出典：ルーティングポリシーの選択／加重ルーティング／レイテンシーに基づくルーティング／エイリアスレコードと非エイリアスレコードの選択</div>
+  <div class="foot"><span>AWS DevOps #11 高可用性とマルチリージョン</span><span>タスク 3.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>ヘルスチェックと DNS 以外の切り替え</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">エンドポイントのヘルスチェック<span>世界のチェッカーの 18% 超が正常 → 正常</span></div>
+      <div class="box b1">計算されたヘルスチェック<span>子（最大 255）のうち何個正常なら正常か</span></div>
+      <div class="box b2">CloudWatch アラームのヘルスチェック<span>VPC の中・メトリクスで判断（同じアカウントのアラーム）</span></div>
+      <div class="point warn">ヘルスチェックがないとフェイルオーバーは起きない。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>仕組み</th><th>ポイント</th></tr>
+        <tr><td class="t">Global Accelerator</td><td class="l">固定のエニーキャスト IP。DNS キャッシュに左右されず素早く切り替え</td></tr>
+        <tr><td class="t">CloudFront オリジンフェイルオーバー</td><td class="l">オリジングループ。GET・HEAD・OPTIONS だけ切り替わる</td></tr>
+        <tr><td class="t">ARC ゾーンシフト</td><td class="l">1 つの AZ から一時的に外す（悪いデプロイ・AZ 障害）</td></tr>
+        <tr><td class="t">ARC ルーティングコントロール</td><td class="l">リージョンの切り替え・準備状況チェック</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：ヘルスチェックの正常性を判断する方法／ヘルスチェックの種類／AWS Global Accelerator とは／CloudFront オリジンフェイルオーバー／ARC とは</div>
+  <div class="foot"><span>AWS DevOps #11 高可用性とマルチリージョン</span><span>タスク 3.1</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>計算層を複数の AZ に</h1>
+  <p>単一障害点を見つけて、AZ に分ける。</p>
+  <div class="foot"><span>AWS DevOps #11 高可用性とマルチリージョン</span><span>タスク 3.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>クロスゾーン負荷分散とヘルスチェック</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>AZ-A 2 台・AZ-B 8 台</th><th>1 台あたり</th></tr>
+        <tr><td class="t">クロスゾーン 有効</td><td class="l">10 台とも 10%</td></tr>
+        <tr><td class="t">クロスゾーン 無効</td><td class="l">AZ-A は 25%、AZ-B は 6.25%</td></tr>
+      </table>
+      <div class="point">ALB はロードバランサーのレベルで常に有効（ターゲットグループで無効化は可）。</div>
+    </div>
+    <div>
+      <div class="box b1">ターゲットのヘルスチェック<span>UnhealthyThresholdCount 回失敗で外す／HealthyThresholdCount 回成功で戻す</span></div>
+      <div class="point warn">全ターゲットが異常 → フェールオープン（全部に送る）。</div>
+      <div class="box b2">マルチ AZ の Auto Scaling グループ<span>AZ が使えなくなると別の AZ で起動して補う。ELB ヘルスチェックを使う</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：Elastic Load Balancing の仕組み 『クロスゾーン負荷分散が有効な場合、10 個のターゲットのそれぞれがトラフィックの 10% を受け取ります。』／ターゲットグループのヘルスチェック／Auto Scaling の利点</div>
+  <div class="foot"><span>AWS DevOps #11 高可用性とマルチリージョン</span><span>タスク 3.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>単一障害点と SLA</h1>
+  <table class="mx">
+    <tr><th>よくある単一障害点</th><th>直し方</th></tr>
+    <tr><td class="t">1 つの AZ の NAT ゲートウェイ</td><td class="l">AZ ごとに置き、ルートテーブルも AZ ごと</td></tr>
+    <tr><td class="t">シングル AZ の RDS</td><td class="l">マルチ AZ（インスタンス／DB クラスター）</td></tr>
+    <tr><td class="t">EC2 が 1 台</td><td class="l">複数 AZ の Auto Scaling ＋ ALB</td></tr>
+    <tr><td class="t">ElastiCache のプライマリ 1 つ</td><td class="l">マルチ AZ（自動フェイルオーバー、エンドポイントはそのまま）</td></tr>
+    <tr><td class="t">1 つのリージョンだけ</td><td class="l">要件（SLA・RTO・RPO）に応じてマルチリージョン</td></tr>
+  </table>
+  <div class="point">要件を構成に置き換える：DynamoDB は単一リージョン 99.99%、グローバルテーブル 99.999%。</div>
+  <div class="cite">出典：信頼性の柱 – AWS Well-Architected フレームワーク／ElastiCache のマルチ AZ／DynamoDB グローバルテーブルの仕組み</div>
+  <div class="foot"><span>AWS DevOps #11 高可用性とマルチリージョン</span><span>タスク 3.1</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>データ層のレプリケーション</h1>
+  <p>同期か非同期か、読めるか、自動で切り替わるか。</p>
+  <div class="foot"><span>AWS DevOps #11 高可用性とマルチリージョン</span><span>タスク 3.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>RDS と Aurora</h1>
+  <table class="mx">
+    <tr><th>構成</th><th>複製</th><th>読める</th><th>切り替え</th></tr>
+    <tr><td class="t">RDS マルチ AZ DB インスタンス</td><td class="l">同期（スタンバイ 1）</td><td class="l">読めない</td><td class="l">自動・60〜120 秒・DNS が変わる</td></tr>
+    <tr><td class="t">RDS マルチ AZ DB クラスター</td><td class="l">準同期（リーダー 2、3 AZ）</td><td class="l">読める</td><td class="l">自動</td></tr>
+    <tr><td class="t">リードレプリカ（別リージョンも）</td><td class="l">非同期</td><td class="l">読める</td><td class="l">手動で昇格</td></tr>
+    <tr><td class="t">Aurora</td><td class="l">3 AZ に 6 コピー</td><td class="l">レプリカ最大 15</td><td class="l">自動でレプリカへ</td></tr>
+    <tr><td class="t">Aurora Global Database</td><td class="l">専用基盤・通常 1 秒未満</td><td class="l">セカンダリ最大 10</td><td class="l">スイッチオーバー（計画・損失なし）／フェイルオーバー（障害）</td></tr>
+  </table>
+  <div class="point warn">アプリはエンドポイント名でつなぎ、DNS を長くキャッシュしない（JVM の TTL）。書き込み転送でセカンダリからも書ける。</div>
+  <div class="cite">出典：マルチ AZ DB インスタンスデプロイ／フェイルオーバー／マルチ AZ DB クラスターデプロイ／リードレプリカ／Aurora の高可用性／Aurora Global Database</div>
+  <div class="foot"><span>AWS DevOps #11 高可用性とマルチリージョン</span><span>タスク 3.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>DynamoDB と S3</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">DynamoDB グローバルテーブル<span>マルチアクティブ。どのレプリカでも読み書き</span></div>
+      <div class="point">MREC（既定）：非同期・通常 1 秒以内・最終書き込み者優先。</div>
+      <div class="point">MRSC：強力な整合性（同じアカウントのみ）。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>S3</th><th>ポイント</th></tr>
+        <tr><td class="t">CRR／SRR</td><td class="l">両方のバケットでバージョニング必須。既存はバッチレプリケーション</td></tr>
+        <tr><td class="t">S3 RTC</td><td class="l">99.99% を 15 分以内（SLA）。遅れたら通知</td></tr>
+        <tr><td class="t">マルチリージョンアクセスポイント</td><td class="l">1 つのエンドポイント。アクティブ/パッシブ・フェイルオーバーコントロール</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：グローバルテーブル／グローバルテーブルの仕組み／オブジェクトのレプリケート／レプリケーションの要件と考慮事項／S3 RTC／マルチリージョンアクセスポイント</div>
+  <div class="foot"><span>AWS DevOps #11 高可用性とマルチリージョン</span><span>タスク 3.1</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">DNS</td><td class="l">ポリシーの選び分け、ヘルスチェック（18%・計算・CloudWatch アラーム）、エイリアスと Evaluate Target Health</td></tr>
+    <tr><td class="t">DNS 以外</td><td class="l">固定 IP なら Global Accelerator、CloudFront のオリジングループ（GET 系だけ）、1 AZ だけならゾーンシフト</td></tr>
+    <tr><td class="t">計算層</td><td class="l">クロスゾーン、フェールオープン、マルチ AZ の Auto Scaling、AZ ごとの NAT</td></tr>
+    <tr><td class="t">データ層</td><td class="l">スタンバイは読めない、DB クラスターは読める、リードレプリカは手動昇格、Aurora Global Database、グローバルテーブル、CRR とバージョニング、RTC</td></tr>
+  </table>
+  <div class="cite">出典：AWS Certified DevOps Engineer - Professional (DOP-C02) 試験ガイド タスク 3.1</div>
+</section>
+
+</body>
+</html>

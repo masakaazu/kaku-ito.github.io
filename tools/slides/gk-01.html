@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>G検定 #01 人工知能の定義と議論される問題 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">G検定（JDLA ジェネラリスト検定）　シラバス2024　1・2　#01</div>
+  <h1>人工知能の定義と議論される問題</h1>
+  <p>人工知能の定義・4つのレベル・AI効果・エージェント・ロボットとの違い・3回のAIブーム、ダートマス会議・チューリングテスト・ローブナーコンテスト・中国語の部屋・強いAIと弱いAI、トイ・プロブレム・フレーム問題・シンボルグラウンディング問題・身体性・知識獲得のボトルネック・ルールベースと統計的機械翻訳・シンギュラリティ</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（JDLA のシラバス、総務省「平成28年版 情報通信白書」、人工知能学会「人工知能のFAQ」、ダートマス会議の提案書、Stanford Encyclopedia of Philosophy、Harnad・Vinge の論文、ウィキペディア日本語版）を書いた。『』の中は原文どおり</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>人工知能とは</h1>
+  <p>決まった定義はない。だからレベルと歴史で整理する。</p>
+  <div class="foot"><span>G検定 #01 人工知能の定義と議論される問題</span><span>シラバス 1・2</span></div>
+</section>
+
+<section class="slide">
+  <h1>定義と4つのレベル</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">人工知能（AI）<span>知的な機械、特に知的なコンピュータプログラムを作る科学と技術（マッカーシー）</span></div>
+      <div class="point warn">「知能」そのものの定義がないので、研究者ごとに定義が違う。</div>
+      <div class="box b1">AI効果<span>実現できたことは「ただの計算」と見なされ、知能の範囲から外れていく</span></div>
+      <div class="box b2">エージェント<span>環境を感じとり、目的のために行動する主体。体はなくてもよい</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>レベル</th><th>中身</th></tr>
+        <tr><td class="t">1 単純な制御プログラム</td><td class="l">決めたとおりに動く（エアコン）</td></tr>
+        <tr><td class="t">2 古典的な人工知能</td><td class="l">探索・推論・知識（将棋、エキスパートシステム）</td></tr>
+        <tr><td class="t">3 機械学習</td><td class="l">データからルールを学ぶ（スパムフィルタ）</td></tr>
+        <tr><td class="t">4 深層学習</td><td class="l">特徴量も自分で学ぶ（画像認識）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：人工知能学会「人工知能のFAQ」『知的な機械，特に，知的なコンピュータプログラムを作る科学と技術です．』／シラバス 1. 人工知能の定義／ウィキペディア「AI効果」</div>
+  <div class="foot"><span>G検定 #01 人工知能の定義と議論される問題</span><span>シラバス 1・2</span></div>
+</section>
+
+<section class="slide">
+  <h1>3回のAIブームと冬の時代</h1>
+  <table class="mx">
+    <tr><th>ブーム</th><th>時期</th><th>何ができたか</th><th>なぜ冬へ</th></tr>
+    <tr><td class="t">第1次</td><td class="l">1950年代後半〜1960年代</td><td class="l">推論・探索（迷路・定理の証明）、機械翻訳に注力</td><td class="l">トイ・プロブレムしか解けない</td></tr>
+    <tr><td class="t">第2次</td><td class="l">1980年代</td><td class="l">知識を与えたエキスパートシステム、第五世代コンピュータ</td><td class="l">知識を人が書き切れない（知識獲得のボトルネック）→ 1995年ごろ冬</td></tr>
+    <tr><td class="t">第3次</td><td class="l">2000年代〜</td><td class="l">ビッグデータで機械学習 → ディープラーニングが特徴量を自分で学ぶ</td><td class="l">（続いている）</td></tr>
+  </table>
+  <div class="point">過去のブームは、社会の期待が技術の限界を上回り、その差が明らかになって終わった。</div>
+  <div class="point warn">AIとロボットは別の分野。AIはロボットに載っている必要はない。</div>
+  <div class="cite">出典：総務省「平成28年版 情報通信白書」人工知能（AI）研究の歴史『コンピューターによる「推論」や「探索」が可能となり、特定の問題に対して解を提示できるようになったことがブームの要因である。』／人工知能（AI）とは</div>
+  <div class="foot"><span>G検定 #01 人工知能の定義と議論される問題</span><span>シラバス 1・2</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>知能をどう確かめるか</h1>
+  <p>受け答えで判定する立場と、それでは理解とは言えないという立場。</p>
+  <div class="foot"><span>G検定 #01 人工知能の定義と議論される問題</span><span>シラバス 1・2</span></div>
+</section>
+
+<section class="slide">
+  <h1>はじまりとテスト</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">1950 チューリングテスト<span>判定者が文字だけで人間・機械と会話。見分けられなければ知的とみなす</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b1">1956 ダートマス会議<span>マッカーシーが「人工知能」と命名。ミンスキー・シャノンらと構想</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">1991〜 ローブナーコンテスト<span>チューリングテストの形式で会話ボットを競う</span></div>
+    </div>
+    <div>
+      <div class="box b3">ダートマス会議の提案書の前提<span>学習や知能のあらゆる面は、機械がまねできるほど正確に記述できる</span></div>
+      <div class="point warn">名づけ親はマッカーシー。チューリングはテストの提案者。</div>
+    </div>
+  </div>
+  <div class="cite">出典：ダートマス会議の提案書『The study is to proceed on the basis of the conjecture that every aspect of learning or any other feature of intelligence can in principle be so precisely described that a machine can be made to simulate it.』／白書／ウィキペディア「チューリング・テスト」「ローブナー賞」</div>
+  <div class="foot"><span>G検定 #01 人工知能の定義と議論される問題</span><span>シラバス 1・2</span></div>
+</section>
+
+<section class="slide">
+  <h1>中国語の部屋と強いAI・弱いAI</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">質問（中国語）→ 部屋の中の人</div>
+      <div class="arrow">↓ 中国語はわからないが、マニュアルどおりに記号を並べる</div>
+      <div class="box b1">正しい答え（中国語）<span>外からは理解しているように見える</span></div>
+      <div class="point warn">サール（1980）：記号を正しく操作しても、意味を理解しているとは限らない。チューリングテストへの批判。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>立場</th><th>中身</th></tr>
+        <tr><td class="t">強いAI</td><td class="l">正しくプログラムされたコンピュータは本当に理解し、心を持つ</td></tr>
+        <tr><td class="t">弱いAI</td><td class="l">コンピュータは知能のまねをする便利な道具</td></tr>
+      </table>
+      <div class="point">どちらの言葉もサールが考えた。中国語の部屋は強いAIへの反論。</div>
+    </div>
+  </div>
+  <div class="cite">出典：SEP「The Chinese Room Argument」『Strong AI is the view that suitably programmed computers (or the programs themselves) can understand natural language and actually have other mental capabilities similar to the humans whose behavior they mimic.』／ウィキペディア「中国語の部屋」「強いAIと弱いAI」</div>
+  <div class="foot"><span>G検定 #01 人工知能の定義と議論される問題</span><span>シラバス 1・2</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>人工知能の壁と未来</h1>
+  <p>現実の世界は、記号とルールだけでは扱いきれない。</p>
+  <div class="foot"><span>G検定 #01 人工知能の定義と議論される問題</span><span>シラバス 1・2</span></div>
+</section>
+
+<section class="slide">
+  <h1>4つの壁</h1>
+  <table class="mx">
+    <tr><th>問題</th><th>中身</th><th>覚え方</th></tr>
+    <tr><td class="t">トイ・プロブレム</td><td class="l">ルールとゴールがはっきりした簡単な問題しか解けない</td><td class="l">迷路・パズル（第1次ブームの壁）</td></tr>
+    <tr><td class="t">フレーム問題</td><td class="l">無数の出来事から関係あることだけを選んで考えられない</td><td class="l">マッカーシーとヘイズ（1969）。ハンバーガーを買いに行けない</td></tr>
+    <tr><td class="t">シンボルグラウンディング問題</td><td class="l">記号と実世界の意味が結びつかない（記号接地問題）</td><td class="l">ハルナッド。中国語-中国語辞書だけで中国語を学ぶ</td></tr>
+    <tr><td class="t">知識獲得のボトルネック</td><td class="l">専門家の知識を全部書き出すのが大変</td><td class="l">第2次ブームの壁</td></tr>
+  </table>
+  <div class="point">身体性：体を通して世界とやりとりする経験が知能に必要、という考え。シンボルグラウンディング問題の解決の手がかり。</div>
+  <div class="cite">出典：SEP「The Frame Problem」／Harnad『The problem is analogous to trying to learn Chinese from a Chinese/Chinese dictionary alone.』／ウィキペディア「フレーム問題」「シンボルグラウンディング問題」／白書</div>
+  <div class="foot"><span>G検定 #01 人工知能の定義と議論される問題</span><span>シラバス 1・2</span></div>
+</section>
+
+<section class="slide">
+  <h1>機械翻訳の移り変わりとシンギュラリティ</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">1950〜60年代 第1次ブームで機械翻訳に注力</div>
+      <div class="arrow">↓</div>
+      <div class="box b1">1980年代 ルールベース機械翻訳<span>人が文法・辞書のルールを書く</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">1990年代 統計的機械翻訳<span>IBM モデル：対訳データから単語の対応を確率で学ぶ</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b3">2010年代 ニューラル機械翻訳（#15）</div>
+    </div>
+    <div>
+      <div class="box b1">シンギュラリティ（技術的特異点）<span>AIが人間の知能を大幅に超え、進歩が予測できなくなる時点</span></div>
+      <table class="mx">
+        <tr><th>人物</th><th>予想</th></tr>
+        <tr><td class="t">ヴィンジ（1993）</td><td class="l">30年以内に超人的な知能</td></tr>
+        <tr><td class="t">カーツワイル</td><td class="l">2045年ごろ</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア「機械翻訳」『1980年代になると、ルールベースの機械翻訳システムが一定の成果を上げるようになった。』／「技術的特異点」／Vinge『Within thirty years, we will have the technological means to create superhuman intelligence.』</div>
+  <div class="foot"><span>G検定 #01 人工知能の定義と議論される問題</span><span>シラバス 1・2</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">定義</td><td class="l">決まった定義はない、4つのレベル、AI効果、AIとロボットは別</td></tr>
+    <tr><td class="t">歴史</td><td class="l">3回のブームの中身と終わった理由、ダートマス会議（1956・マッカーシー）</td></tr>
+    <tr><td class="t">人物と言葉</td><td class="l">チューリング＝テスト、サール＝中国語の部屋・強いAI、ハルナッド＝シンボルグラウンディング、マッカーシーとヘイズ＝フレーム問題、カーツワイル＝2045年</td></tr>
+    <tr><td class="t">問題の区別</td><td class="l">トイ・プロブレム／フレーム問題／シンボルグラウンディング問題／知識獲得のボトルネックの違い</td></tr>
+  </table>
+  <div class="cite">出典：JDLA「G検定の試験出題範囲（シラバス）G2024#6～」1. 人工知能の定義・2. 人工知能分野で議論される問題</div>
+</section>
+
+</body>
+</html>

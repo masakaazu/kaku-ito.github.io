@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>G検定 #15 自然言語処理と音声処理 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">G検定（JDLA ジェネラリスト検定）　シラバス2024　27・28　#15</div>
+  <h1>自然言語処理と音声処理</h1>
+  <p>形態素解析・構文解析、ワンホット・BoW・n-gram・TF-IDF・分散表現、word2vec（CBOW・skip-gram）・fastText・ELMo・BERT・GPT・LLM・PaLM・GLUE、機械翻訳・感情分析、A-D 変換・PCM・FFT・スペクトル包絡・フォルマント・メル尺度・MFCC・音素・HMM・CTC・WaveNet</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（JDLA のシラバス、原論文の要旨、ウィキペディア）を書いた。『』の中は原文どおり</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>文章を数にする</h1>
+  <p>分ける → 数える → ベクトルにする。</p>
+  <div class="foot"><span>G検定 #15 自然言語処理と音声処理</span><span>シラバス 27・28</span></div>
+</section>
+
+<section class="slide">
+  <h1>前処理の流れ</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">形態素解析<span>最小の単位に分けて品詞を決める</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b1">構文解析<span>修飾・被修飾などの関係</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">意味解析 → 文脈解析</div>
+    </div>
+    <div>
+      <div class="box b3">例：私は走る<span>私（名詞）／は（助詞）／走る（動詞）</span></div>
+      <div class="point">日本語は単語のあいだに空白がないので、まず形態素解析で分ける。</div>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア日本語版「形態素解析」『自然言語の文字列を意味に基づく最小単位へ分割しその品詞を特定する処理である』</div>
+  <div class="foot"><span>G検定 #15 自然言語処理と音声処理</span><span>シラバス 27・28</span></div>
+</section>
+
+<section class="slide">
+  <h1>文章の表し方</h1>
+  <table class="mx">
+    <tr><th>手法</th><th>中身</th><th>弱点</th></tr>
+    <tr><td class="t">ワンホット</td><td class="l">語彙の数の次元で、その単語だけ 1</td><td class="l">次元が巨大。意味の近さを表せない</td></tr>
+    <tr><td class="t">BoW</td><td class="l">単語の出現回数の袋</td><td class="l">語順を無視</td></tr>
+    <tr><td class="t">n-gram</td><td class="l">隣り合う n 個のまとまり</td><td class="l">n が大きいと組み合わせが爆発</td></tr>
+    <tr><td class="t">TF-IDF</td><td class="l">その文書で多く、ほかの文書で少ない語を重く</td><td class="l">意味の近さは表せない</td></tr>
+    <tr><td class="t">分散表現</td><td class="l">低い次元の実数ベクトル。近い意味は近いベクトル</td><td class="l">―</td></tr>
+  </table>
+  <div class="cite">出典：ウィキペディア日本語版「Tf-idf」『ある単語のtf-idfの値は文書内におけるその単語の出現回数に比例して増加し、また、その単語を含むコーパス内の文書数によってその増加が相殺される。』</div>
+  <div class="foot"><span>G検定 #15 自然言語処理と音声処理</span><span>シラバス 27・28</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>単語の埋め込みと言語モデル</h1>
+  <p>1単語1ベクトル → 文脈で変わる表現 → 大規模言語モデル。</p>
+  <div class="foot"><span>G検定 #15 自然言語処理と音声処理</span><span>シラバス 27・28</span></div>
+</section>
+
+<section class="slide">
+  <h1>word2vec：CBOW と skip-gram</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">CBOW<span>周りの単語 → まん中の単語（穴うめ）。速い</span></div>
+      <div class="box b2">skip-gram<span>まん中の単語 → 周りの単語。まれな単語に強い</span></div>
+      <div class="point">負例サンプリングで学習を速くする。</div>
+    </div>
+    <div>
+      <div class="box b3">fastText<span>単語＝文字 n-gram の袋。知らない単語・まれな単語に強い</span></div>
+      <div class="point warn">skip-gram と n-gram は名前が似ているが別物。</div>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア英語版「Word2vec」『In the continuous skip-gram architecture, the model uses the current word to predict the surrounding window of context words.』／Bojanowski ほか（fastText）</div>
+  <div class="foot"><span>G検定 #15 自然言語処理と音声処理</span><span>シラバス 27・28</span></div>
+</section>
+
+<section class="slide">
+  <h1>文脈を使う言語モデル</h1>
+  <table class="mx">
+    <tr><th>モデル</th><th>中身</th></tr>
+    <tr><td class="t">ELMo（2018）</td><td class="l">双方向 LSTM の言語モデル。文脈で変わる表現（多義語）</td></tr>
+    <tr><td class="t">BERT（2018）</td><td class="l">Transformer エンコーダ。左右両方の文脈。MLM・NSP で事前学習 → ファインチューニング</td></tr>
+    <tr><td class="t">GPT</td><td class="l">Transformer デコーダ。次の単語を予測。GPT-3 は few-shot</td></tr>
+    <tr><td class="t">LLM</td><td class="l">億・兆のパラメータ。PaLM は 5,400 億</td></tr>
+    <tr><td class="t">GLUE</td><td class="l">自然言語理解をいろいろなタスクで評価するベンチマーク</td></tr>
+  </table>
+  <div class="cite">出典：Devlin ほか（BERT）『BERT is designed to pre-train deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers.』</div>
+  <div class="foot"><span>G検定 #15 自然言語処理と音声処理</span><span>シラバス 27・28</span></div>
+</section>
+
+<section class="slide">
+  <h1>自然言語処理のタスク</h1>
+  <table class="mx">
+    <tr><th>タスク</th><th>中身</th></tr>
+    <tr><td class="t">機械翻訳</td><td class="l">ルールベース → 統計的機械翻訳 → ニューラル機械翻訳（Seq2Seq・Transformer）</td></tr>
+    <tr><td class="t">感情分析</td><td class="l">肯定的・否定的を判定（オピニオンマイニング）</td></tr>
+    <tr><td class="t">質問応答・要約・検索</td><td class="l">BERT や LLM で性能が大きく上がった</td></tr>
+  </table>
+  <div class="point">LSTM の CEC（定誤差カルーセル）は勾配消失・爆発を防ぐしくみ。CTC（音声）と混同しない。</div>
+  <div class="cite">出典：ウィキペディア英語版「Statistical machine translation」『translations are generated on the basis of statistical models whose parameters are derived from the analysis of bilingual』</div>
+  <div class="foot"><span>G検定 #15 自然言語処理と音声処理</span><span>シラバス 27・28</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>音声処理</h1>
+  <p>デジタル化 → 周波数に分ける → 特徴量 → 認識・合成。</p>
+  <div class="foot"><span>G検定 #15 自然言語処理と音声処理</span><span>シラバス 27・28</span></div>
+</section>
+
+<section class="slide">
+  <h1>音声から特徴量へ</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">A-D 変換・PCM<span>標本化＋量子化で数の列に</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b1">FFT<span>波形 → 周波数のスペクトル</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b3">MFCC<span>メル尺度の上の対数スペクトルをコサイン変換</span></div>
+    </div>
+    <div>
+      <div class="box b2">スペクトル包絡<span>スペクトルの大まかな形（声道の形）</span></div>
+      <div class="box b2">フォルマント<span>包絡の山。第1・第2で母音が決まる</span></div>
+      <div class="box b2">メル尺度<span>人が感じる音の高さの尺度</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア日本語版「フォルマント」『音声の周波数スペクトル上で周囲よりも強度が大きい周波数帯域である』</div>
+  <div class="foot"><span>G検定 #15 自然言語処理と音声処理</span><span>シラバス 27・28</span></div>
+</section>
+
+<section class="slide">
+  <h1>音声認識と音声合成</h1>
+  <table class="mx">
+    <tr><th>用語</th><th>中身</th></tr>
+    <tr><td class="t">音素</td><td class="l">意味を区別する音の最小の単位</td></tr>
+    <tr><td class="t">HMM</td><td class="l">隠れた状態が移り変わる確率モデル。1980年代から音声認識の主流</td></tr>
+    <tr><td class="t">CTC</td><td class="l">入力と出力の時間がそろっていない列を学習する誤差関数（空白記号）</td></tr>
+    <tr><td class="t">WaveNet</td><td class="l">波形を1サンプルずつ自己回帰で生成。自然な音声合成</td></tr>
+    <tr><td class="t">話者識別</td><td class="l">だれの声かを当てる</td></tr>
+  </table>
+  <div class="cite">出典：van den Oord ほか（WaveNet）『The model is fully probabilistic and autoregressive, with the predictive distribution for each audio sample conditioned on all previous ones』</div>
+  <div class="foot"><span>G検定 #15 自然言語処理と音声処理</span><span>シラバス 27・28</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">表現</td><td class="l">ワンホット・BoW・n-gram・TF-IDF・分散表現のちがい</td></tr>
+    <tr><td class="t">埋め込み</td><td class="l">CBOW と skip-gram の予測の向き、fastText・ELMo の工夫</td></tr>
+    <tr><td class="t">言語モデル</td><td class="l">BERT（双方向・エンコーダ）と GPT（一方向・デコーダ）、GLUE</td></tr>
+    <tr><td class="t">音声</td><td class="l">PCM・FFT・フォルマント・メル尺度・MFCC、HMM・CTC・WaveNet</td></tr>
+  </table>
+  <div class="cite">出典：JDLA「G検定の試験出題範囲（シラバス）G2024#6～」27. 自然言語処理・28. 音声処理</div>
+</section>
+
+</body>
+</html>

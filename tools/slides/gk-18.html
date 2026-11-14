@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>G検定 #18 AIプロジェクトとデータ 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">G検定（JDLA ジェネラリスト検定）　シラバス2024　35・36　#18</div>
+  <h1>AIプロジェクトとデータ</h1>
+  <p>AI のビジネス活用・BPR・PoC・CRISP-DM・CRISP-ML・ウォーターフォール・アジャイル・ステークホルダー・データサイエンティスト・オープン・イノベーション・産学連携、Python・Jupyter Notebook・Docker・クラウド・Web API・MLOps・コンセプトドリフト、オープンデータセット・コーパス・アノテーション・データリーケージ・正規化・標準化</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（JDLA のシラバス、論文の要旨、ウィキペディア）を書いた。『』の中は原文どおり</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>AI プロジェクトの進め方</h1>
+  <p>課題を決める → 小さく試す → 作る → 運用する。</p>
+  <div class="foot"><span>G検定 #18 AIプロジェクトとデータ</span><span>シラバス 35・36</span></div>
+</section>
+
+<section class="slide">
+  <h1>プロジェクトの流れ</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">企画<span>課題・ステークホルダーのニーズ。BPR で業務ごと見直す</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b1">PoC（概念実証）<span>簡単で不完全な形で、できるかを確かめる</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">開発<span>アジャイルで短くくり返す</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b3">運用（MLOps）<span>監視・再学習</span></div>
+    </div>
+    <div>
+      <div class="point warn">AI を使うこと自体を目的にしない。</div>
+      <div class="point warn">PoC をくり返して先に進まない「PoC 貧乏」に注意。</div>
+      <div class="point">データ・技術・人材は、オープン・イノベーションや産学連携で補う。</div>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア日本語版「概念実証」『新たな概念やアイデアの実現可能性を示すために、簡単かつ不完全な実現化（または概要）を行うこと。』</div>
+  <div class="foot"><span>G検定 #18 AIプロジェクトとデータ</span><span>シラバス 35・36</span></div>
+</section>
+
+<section class="slide">
+  <h1>CRISP-DM と CRISP-ML</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">1 ビジネスの理解</div>
+      <div class="box b1">2 データの理解</div>
+      <div class="box b1">3 データの準備</div>
+      <div class="box b2">4 モデリング</div>
+      <div class="box b2">5 評価</div>
+      <div class="box b3">6 展開</div>
+    </div>
+    <div>
+      <div class="point">CRISP-DM：データマイニングの標準のプロセス。行き来しながら進める。もっとも広く使われる。</div>
+      <div class="point">CRISP-ML(Q)：機械学習向け。最初にビジネスとデータの理解をまとめ、最後に監視と保守。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Studer ほか『The first phase combines business and data understanding as data availability oftentimes affects the feasibility of the project.』</div>
+  <div class="foot"><span>G検定 #18 AIプロジェクトとデータ</span><span>シラバス 35・36</span></div>
+</section>
+
+<section class="slide">
+  <h1>開発の進め方</h1>
+  <table class="mx">
+    <tr><th></th><th>ウォーターフォール</th><th>アジャイル</th></tr>
+    <tr><td class="t">進め方</td><td class="l">要件 → 設計 → 実装 → テストの順。後戻りしない前提</td><td class="l">短いイテレーションで計画・実装・リリースをくり返す</td></tr>
+    <tr><td class="t">向く場面</td><td class="l">最初に要件を決めきれる</td><td class="l">やってみないと分からない（AI 開発）</td></tr>
+  </table>
+  <div class="cite">出典：ウィキペディア日本語版「アジャイルソフトウェア開発」『その価値を実現する成果物を短いイテレーションの中で計画・実装・デプロイすることで（⇒反復型開発）、迅速にプロダクトを届け価値の実証・学習・適応をおこなう。』</div>
+  <div class="foot"><span>G検定 #18 AIプロジェクトとデータ</span><span>シラバス 35・36</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>開発と運用の環境</h1>
+  <p>試す・まとめる・届ける・見張る。</p>
+  <div class="foot"><span>G検定 #18 AIプロジェクトとデータ</span><span>シラバス 35・36</span></div>
+</section>
+
+<section class="slide">
+  <h1>開発と運用の道具</h1>
+  <table class="mx">
+    <tr><th>道具</th><th>役割</th></tr>
+    <tr><td class="t">Python</td><td class="l">AI 開発の中心の言語。ライブラリが豊富</td></tr>
+    <tr><td class="t">Jupyter Notebook</td><td class="l">コード・文章・数式・図を1つの文書に。対話的に試す</td></tr>
+    <tr><td class="t">Docker</td><td class="l">コンテナで実行環境ごとまとめる。カーネルを共有するので軽い</td></tr>
+    <tr><td class="t">クラウド</td><td class="l">計算資源（GPU）をサービスとして使う</td></tr>
+    <tr><td class="t">Web API</td><td class="l">モデルを HTTP で呼べるようにする</td></tr>
+    <tr><td class="t">MLOps</td><td class="l">本番のモデルを確実に展開・保守。監視 → 再学習</td></tr>
+  </table>
+  <div class="point warn">コンセプトドリフト：時間とともにデータが変わり、モデルが合わなくなる。ヘルスモニタリングで見張る。</div>
+  <div class="cite">出典：ウィキペディア英語版「MLOps」『MLOps or ML Ops is a paradigm that aims to deploy and maintain machine learning models in production reliably and efficiently.』</div>
+  <div class="foot"><span>G検定 #18 AIプロジェクトとデータ</span><span>シラバス 35・36</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>データの収集と加工</h1>
+  <p>集める → ラベルをつける → 整える。漏れに注意。</p>
+  <div class="foot"><span>G検定 #18 AIプロジェクトとデータ</span><span>シラバス 35・36</span></div>
+</section>
+
+<section class="slide">
+  <h1>データの用語</h1>
+  <table class="mx">
+    <tr><th>用語</th><th>中身</th></tr>
+    <tr><td class="t">オープンデータセット</td><td class="l">公開のデータ（ImageNet・MNIST・COCO）。ライセンスを確認</td></tr>
+    <tr><td class="t">コーパス</td><td class="l">言語の分析のための大量の文章のデータ</td></tr>
+    <tr><td class="t">アノテーション</td><td class="l">正解ラベルなどの情報をつける。人・システム・両方</td></tr>
+    <tr><td class="t">正規化</td><td class="l">最小 0・最大 1 に（min-max）</td></tr>
+    <tr><td class="t">標準化</td><td class="l">平均 0・分散 1 に</td></tr>
+  </table>
+  <div class="cite">出典：ウィキペディア英語版「Feature scaling」『Feature standardization makes the values of each feature in the data have zero-mean (when subtracting the mean in the numerator) and unit-variance.』</div>
+  <div class="foot"><span>G検定 #18 AIプロジェクトとデータ</span><span>シラバス 35・36</span></div>
+</section>
+
+<section class="slide">
+  <h1>データリーケージ</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">学習<span>予測の時点では分からない情報が入りこむ</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">テスト：成績がとても良い</div>
+      <div class="arrow">↓</div>
+      <div class="box b3">本番：役に立たない</div>
+    </div>
+    <div>
+      <div class="point">例：解約の予測に「解約の手続きの日」を入れる。</div>
+      <div class="point">例：テストデータもふくめて平均を計算して標準化する。</div>
+      <div class="point warn">「予測のときにその情報はあるか」で確かめる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア英語版「Leakage (machine learning)」『refers to the use of information during model training that would not be available at prediction time.』</div>
+  <div class="foot"><span>G検定 #18 AIプロジェクトとデータ</span><span>シラバス 35・36</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">進め方</td><td class="l">BPR・PoC・CRISP-DM の6段階・CRISP-ML、ウォーターフォールとアジャイル</td></tr>
+    <tr><td class="t">人と組織</td><td class="l">ステークホルダー・データサイエンティスト・オープン・イノベーション・産学連携</td></tr>
+    <tr><td class="t">環境と運用</td><td class="l">Jupyter・Docker・クラウド・Web API・MLOps・コンセプトドリフト</td></tr>
+    <tr><td class="t">データ</td><td class="l">コーパス・アノテーション・データリーケージ・正規化と標準化</td></tr>
+  </table>
+  <div class="cite">出典：JDLA「G検定の試験出題範囲（シラバス）G2024#6～」35・36</div>
+</section>
+
+</body>
+</html>

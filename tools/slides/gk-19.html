@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>G検定 #19 数理・統計 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">G検定（JDLA ジェネラリスト検定）　シラバス2024　37　#19</div>
+  <h1>数理・統計</h1>
+  <p>平均・中央値・最頻値・度数分布・外れ値・分散・標準偏差・移動平均、共分散・相関係数・偏相関係数・疑似相関・相互情報量・ユークリッド距離・コサイン類似度・マハラノビス距離、確率変数・確率分布・確率密度・期待値・条件付き確率・ベルヌーイ分布・二項分布・ポアソン分布・正規分布、最小二乗法・最尤法・帰無仮説・対立仮説・微分・偏微分</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（JDLA のシラバス、ウィキペディア）を書いた。『』の中は原文どおり</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>代表値とばらつき</h1>
+  <p>まん中はどこか、どれくらい散らばるか。</p>
+  <div class="foot"><span>G検定 #19 数理・統計</span><span>シラバス 37</span></div>
+</section>
+
+<section class="slide">
+  <h1>例で計算する：2, 3, 3, 4, 8</h1>
+  <table class="mx">
+    <tr><th>用語</th><th>求め方</th><th>答え</th></tr>
+    <tr><td class="t">平均</td><td class="l">合計 20 ÷ 個数 5</td><td class="l">4</td></tr>
+    <tr><td class="t">中央値</td><td class="l">小さい順のまん中（3番目）</td><td class="l">3</td></tr>
+    <tr><td class="t">最頻値</td><td class="l">いちばん多い値</td><td class="l">3</td></tr>
+    <tr><td class="t">分散</td><td class="l">偏差 −2, −1, −1, 0, 4 の2乗 4, 1, 1, 0, 16 の平均</td><td class="l">22 ÷ 5 ＝ 4.4</td></tr>
+    <tr><td class="t">標準偏差</td><td class="l">分散の平方根</td><td class="l">√4.4 ≒ 2.1</td></tr>
+  </table>
+  <div class="point warn">外れ値（8）に引っぱられるのは平均。中央値は動きにくい。</div>
+  <div class="cite">出典：ウィキペディア日本語版「標準偏差」『データや確率変数の、平均値からの散らばり具合（ばらつき）を表す指標の一つである。』</div>
+  <div class="foot"><span>G検定 #19 数理・統計</span><span>シラバス 37</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>2つの変数の関係と距離</h1>
+  <p>一緒に動くか、どれくらい近いか。</p>
+  <div class="foot"><span>G検定 #19 数理・統計</span><span>シラバス 37</span></div>
+</section>
+
+<section class="slide">
+  <h1>関係の強さ</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">共分散<span>偏差の積の平均。単位に左右される</span></div>
+      <div class="arrow">↓ 標準偏差の積で割る</div>
+      <div class="box b2">相関係数<span>−1〜1。例：6 ÷ (2 × 5) ＝ 0.6</span></div>
+      <div class="box b3">偏相関係数<span>ほかの変数の影響を除く</span></div>
+    </div>
+    <div>
+      <div class="point warn">疑似相関：アイスの売り上げとプールの事故（共通の原因は気温）。相関 ≠ 因果。</div>
+      <div class="point">相互情報量：依存の度合い。独立なら 0。直線でない関係も。</div>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア日本語版「擬似相関」『2つの事象に因果関係がないのに、見えない要因（潜伏変数）によって因果関係があるかのように推測されること。』</div>
+  <div class="foot"><span>G検定 #19 数理・統計</span><span>シラバス 37</span></div>
+</section>
+
+<section class="slide">
+  <h1>距離と類似度</h1>
+  <table class="mx">
+    <tr><th>名前</th><th>中身</th><th>例</th></tr>
+    <tr><td class="t">ユークリッド距離</td><td class="l">定規で測る距離（三平方の定理）</td><td class="l">(1,2) と (4,6) → √(9＋16) ＝ 5</td></tr>
+    <tr><td class="t">コサイン類似度</td><td class="l">向きの近さ。内積 ÷ 長さの積</td><td class="l">(1,0) と (0,1) → 0（直交）</td></tr>
+    <tr><td class="t">マハラノビス距離</td><td class="l">相関とばらつきを考えた距離。尺度によらない</td><td class="l">異常検知</td></tr>
+  </table>
+  <div class="cite">出典：ウィキペディア日本語版「マハラノビス距離」『データの相関を考慮し、また尺度水準によらないという点で、ユークリッド空間で定義される普通のユークリッド距離とは異なる。』</div>
+  <div class="foot"><span>G検定 #19 数理・統計</span><span>シラバス 37</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>確率と確率分布</h1>
+  <p>どの値がどれくらいの確率で出るか。</p>
+  <div class="foot"><span>G検定 #19 数理・統計</span><span>シラバス 37</span></div>
+</section>
+
+<section class="slide">
+  <h1>確率の基本</h1>
+  <table class="mx">
+    <tr><th>用語</th><th>中身</th></tr>
+    <tr><td class="t">確率変数</td><td class="l">起こることに割り当てた値をとる変数（サイコロの目）</td></tr>
+    <tr><td class="t">確率分布</td><td class="l">各値をとる確率の全体。離散型と連続型</td></tr>
+    <tr><td class="t">確率密度</td><td class="l">連続型。範囲で積分すると確率、全体で 1</td></tr>
+    <tr><td class="t">期待値</td><td class="l">確率の重みつきの平均。サイコロ → 3.5</td></tr>
+    <tr><td class="t">条件付き確率</td><td class="l">P(A|B) ＝ P(A かつ B) ÷ P(B)。0.12 ÷ 0.4 ＝ 0.3</td></tr>
+  </table>
+  <div class="cite">出典：ウィキペディア日本語版「期待値」『確率変数を含む関数の実現値に確率の重みをつけた加重平均である』</div>
+  <div class="foot"><span>G検定 #19 数理・統計</span><span>シラバス 37</span></div>
+</section>
+
+<section class="slide">
+  <h1>代表的な分布</h1>
+  <table class="mx">
+    <tr><th>分布</th><th>種類</th><th>中身</th></tr>
+    <tr><td class="t">ベルヌーイ</td><td class="l">離散</td><td class="l">1回の試行。確率 p で 1、1−p で 0</td></tr>
+    <tr><td class="t">二項</td><td class="l">離散</td><td class="l">n 回の成功の回数。期待値 np、分散 np(1−p)</td></tr>
+    <tr><td class="t">ポアソン</td><td class="l">離散</td><td class="l">一定の時間に起こる回数（まれなできごと）</td></tr>
+    <tr><td class="t">正規</td><td class="l">連続</td><td class="l">釣り鐘型。±1σ 68%・±2σ 95%・±3σ 99.7%</td></tr>
+  </table>
+  <div class="cite">出典：ウィキペディア日本語版「ポアソン分布」『ある事象が一定の時間内に発生する回数を表す離散確率分布である。』</div>
+  <div class="foot"><span>G検定 #19 数理・統計</span><span>シラバス 37</span></div>
+</section>
+
+<section class="slide">
+  <h1>推定・検定・微分</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">最小二乗法<span>誤差の2乗の和を最小に（線形回帰）</span></div>
+      <div class="box b1">最尤法<span>データが得られる確率（尤度）を最大に</span></div>
+      <div class="box b2">帰無仮説 H0 → 棄却 → 対立仮説 H1 を採択</div>
+    </div>
+    <div>
+      <div class="box b3">微分<span>接線の傾き。x² → 2x</span></div>
+      <div class="box b3">偏微分<span>ほかの変数は定数。x²＋3xy を x で → 2x＋3y</span></div>
+      <div class="point">勾配降下法は偏微分（勾配）で重みを動かす。</div>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア日本語版「最小二乗法」『その誤差の二乗の和を最小にするようにし、最も確からしい関係式を求める方法である。』</div>
+  <div class="foot"><span>G検定 #19 数理・統計</span><span>シラバス 37</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">計算</td><td class="l">平均・中央値・分散・標準偏差・相関係数・ユークリッド距離・期待値・条件付き確率</td></tr>
+    <tr><td class="t">関係</td><td class="l">共分散と相関係数、偏相関、疑似相関、コサイン類似度とマハラノビス距離</td></tr>
+    <tr><td class="t">分布</td><td class="l">ベルヌーイ・二項・ポアソン・正規のちがい、68–95–99.7</td></tr>
+    <tr><td class="t">推定と検定</td><td class="l">最小二乗法と最尤法、帰無仮説と対立仮説</td></tr>
+  </table>
+  <div class="cite">出典：JDLA「G検定の試験出題範囲（シラバス）G2024#6～」37. AI に必要な数理・統計知識</div>
+</section>
+
+</body>
+</html>

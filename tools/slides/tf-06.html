@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Terraform #06 resourceとdata・参照 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">HashiCorp Certified: Terraform Associate（004）　目標 4a・4b　#06</div>
+  <h1>resourceとdata・参照</h1>
+  <p>resource ブロックの型・名前・引数・メタ引数、data ブロックとデータソースを読むタイミング、terraform_remote_state、名前つきの値、属性の参照・スプラット式・リソースアドレス・暗黙の依存関係</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（HashiCorp の Exam Content List（004）、Terraform ドキュメント v1.12.x の Create and manage resources overview・Configure a resource・Query infrastructure data・Resource Address Reference・References to Named Values・Splat Expressions・Remote State）を書いた。英語の原文は『』で引用した</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>resource と data</h1>
+  <p>作って管理するか、読むだけか。</p>
+  <div class="foot"><span>Terraform #06 resourceとdata・参照</span><span>目標 4a・4b</span></div>
+</section>
+
+<section class="slide">
+  <h1>resource と data のちがい</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">data "aws_ami" "web" {          <span class="c"># 読むだけ</span>
+  most_recent = true
+  owners      = ["self"]
+  filter {
+    name   = "tag:Component"
+    values = ["web"]
+  }
+}
+
+resource "aws_instance" "web" {  <span class="c"># 作って管理</span>
+  ami           = data.aws_ami.web.id
+  instance_type = "t2.micro"
+}</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th></th><th>resource</th><th>data</th></tr>
+        <tr><td class="t">すること</td><td class="l">作る・変える・消す</td><td class="l">読むだけ</td></tr>
+        <tr><td class="t">参照</td><td class="l">aws_instance.web.id</td><td class="l">data.aws_ami.web.id</td></tr>
+        <tr><td class="t">destroy</td><td class="l">実物が消える</td><td class="l">何も消えない</td></tr>
+      </table>
+      <div class="point">『Data sources fetch data from the provider, but do not create or modify resources.』</div>
+    </div>
+  </div>
+  <div class="cite">出典：Configure a resource／Query infrastructure data</div>
+</section>
+
+<section class="slide">
+  <h1>resource ブロックの中身</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">resource "aws_db_instance" "example" {
+  <span class="c"># ↑型（何を・どの引数）  ↑ローカル名 → アドレス aws_db_instance.example</span>
+  count    = 2               <span class="c"># メタ引数（Terraform の管理のしかた）</span>
+  provider = aws.west
+
+  engine         = "postgres" <span class="c"># 引数（プロバイダーが決める）</span>
+  instance_class = "db.t3.micro"
+
+  timeouts {                 <span class="c"># 対応する型だけの子ブロック</span>
+    create = "60m"
+    delete = "2h"
+  }
+  lifecycle {
+    prevent_destroy = true
+  }
+}</div>
+    </div>
+    <div>
+      <div class="box b3">型名の先頭 → プロバイダー<span>aws_instance の aws。別の設定は provider = aws.west</span></div>
+      <div class="box b1">メタ引数<span>count・for_each・provider・depends_on・lifecycle</span></div>
+      <div class="box b2">apply がすること<span>ないものを作る・消えたものを消す・その場で更新・できなければ作り直し・ステート更新</span></div>
+      <div class="point">ローカルだけのリソース：random_id・tls_private_key（ステートにだけ値がある）</div>
+    </div>
+  </div>
+  <div class="cite">出典：Configure a resource／Create and manage resources overview</div>
+</section>
+
+<section class="slide">
+  <h1>データソースはいつ読む？</h1>
+  <div class="cols">
+    <div>
+      <div class="box b2">引数がすべて計画で分かる<span>plan の前の refresh で読む → 計画で値が使える</span></div>
+      <div class="box b1">引数が、この計画で変わるリソース・適用で決まる値に依存<span>apply まで延ばす → 計画では computed（known after apply）</span></div>
+      <div class="point">延ばすと、その値を使うリソースも apply まで決まらない。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>データソース</th><th>何をするか</th></tr>
+        <tr><td class="t">aws_ami・aws_vpc など</td><td class="l">外で作られたものを条件で探す</td></tr>
+        <tr><td class="t">aws_iam_policy_document</td><td class="l">IAM ポリシーの JSON を作る（手元で計算）</td></tr>
+        <tr><td class="t">local_file</td><td class="l">手元のファイルを読む</td></tr>
+        <tr><td class="t">terraform_remote_state</td><td class="l">ほかの設定のステートの出力値を読む</td></tr>
+      </table>
+      <div class="point">data にも count・for_each・provider・depends_on・precondition/postcondition が使える。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Query infrastructure data（Data source behavior／Specialized data sources）／Remote State</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>参照とアドレス</h1>
+  <p>名前で読む。参照が順番を決める。</p>
+  <div class="foot"><span>Terraform #06 resourceとdata・参照</span><span>目標 4a・4b</span></div>
+</section>
+
+<section class="slide">
+  <h1>名前つきの値</h1>
+  <table class="mx">
+    <tr><th>種類</th><th>書き方</th><th>メモ</th></tr>
+    <tr><td class="t">管理するリソース</td><td class="l">aws_instance.web.id</td><td class="l">ほかの形に合わない名前はリソースとみなす</td></tr>
+    <tr><td class="t">データソース</td><td class="l">data.aws_ami.web.id</td><td class="l">data. を付ける</td></tr>
+    <tr><td class="t">入力変数</td><td class="l">var.region</td><td class="l">型の制約に変換された値</td></tr>
+    <tr><td class="t">ローカル値</td><td class="l">local.name</td><td class="l">定義は locals ブロック</td></tr>
+    <tr><td class="t">子モジュールの出力</td><td class="l">module.network.subnet_ids</td><td class="l">count ならリスト、for_each ならマップ</td></tr>
+    <tr><td class="t">ファイル・ワークスペース</td><td class="l">path.module・path.root・path.cwd・terraform.workspace</td><td class="l">path.module 以外はルートだけで</td></tr>
+    <tr><td class="t">ブロックの中だけ</td><td class="l">count.index・each.key・each.value・self</td><td class="l">入力変数とは別のもの</td></tr>
+  </table>
+  <div class="point warn">本物のオブジェクトではない：『you cannot use aws_instance in a for expression to iterate over every AWS instance resource』</div>
+  <div class="cite">出典：References to Named Values</div>
+</section>
+
+<section class="slide">
+  <h1>属性の参照とスプラット</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>リソース</th><th>値の形</th><th>読み方</th></tr>
+        <tr><td class="t">count・for_each なし</td><td class="l">オブジェクト</td><td class="l">aws_instance.web.id</td></tr>
+        <tr><td class="t">count</td><td class="l">リスト</td><td class="l">[0].id・[*].id</td></tr>
+        <tr><td class="t">for_each</td><td class="l">マップ</td><td class="l">["a"].id・for 式・values(…)[*].id</td></tr>
+      </table>
+      <div class="point">引数（ami）も属性（id）も同じ書き方で読める。</div>
+    </div>
+    <div>
+      <div class="code small">var.list[*].id
+<span class="c"># ＝ [for o in var.list : o.id]</span>
+
+aws_instance.example.ebs_block_device[*].device_name
+
+[for v in aws_instance.example : v.id]   <span class="c"># for_each</span>
+values(aws_instance.example)[*].id       <span class="c"># for_each</span></div>
+      <div class="point warn">スプラットはリスト・セット・タプルだけ。マップには for 式。</div>
+    </div>
+  </div>
+  <div class="cite">出典：References to Named Values（References to Resource Attributes）／Splat Expressions</div>
+</section>
+
+<section class="slide">
+  <h1>暗黙の依存関係</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">resource "aws_vpc" "main" {
+  cidr_block = "10.0.0.0/16"
+}
+resource "aws_subnet" "a" {
+  vpc_id     = aws_vpc.main.id   <span class="c"># ← 参照</span>
+  cidr_block = "10.0.1.0/24"
+}</div>
+      <div class="arrow">↓ Terraform が式を読んで</div>
+      <div class="box b1">aws_vpc.main → aws_subnet.a<span>VPC が先。依存しないものは並列</span></div>
+    </div>
+    <div>
+      <div class="point">『an expression in a resource argument that refers to another managed resource creates an implicit dependency』</div>
+      <div class="point">local 値を通した間接の参照でも見つける。</div>
+      <div class="point">参照では分からない依存（IAM ポリシーの付与を待つなど）は depends_on で明示（#09）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：References to Named Values（Named Values and Dependencies）／Configure a resource（Specify resource dependencies）</div>
+</section>
+
+<section class="slide">
+  <h1>リソースアドレス</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">[module path][resource spec]
+
+module.foo[0].module.bar["a"].aws_instance.web[2]
+└ foo の 1 つ目 ┘└ bar のキー a ┘└ web の 3 つ目 ┘</div>
+      <table class="mx">
+        <tr><th>アドレス</th><th>指すもの</th></tr>
+        <tr><td class="t">aws_instance.web[3]</td><td class="l">count の 4 つ目（0 から数える）</td></tr>
+        <tr><td class="t">aws_instance.web["example"]</td><td class="l">for_each のキー example</td></tr>
+        <tr><td class="t">aws_instance.web</td><td class="l">全インスタンス</td></tr>
+        <tr><td class="t">module.foo</td><td class="l">モジュールの中の全部</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="point">モジュールのパスを省くとルートモジュールだけ（0.12 以降）。</div>
+      <div class="point">使う場所：state list・state show・-target・-replace・import・moved など。</div>
+      <div class="point warn">sensitive な属性を output に使うなら、output にも sensitive = true。ステートには平文で残る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Resource Address Reference／References to Named Values（Sensitive Resource Attributes）</div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">resource と data</td><td class="l">作る vs 読むだけ、data. の付け方、外で作ったものは data で読む</td></tr>
+    <tr><td class="t">resource の書き方</td><td class="l">型と名前、アドレス、引数とメタ引数、timeouts</td></tr>
+    <tr><td class="t">データソースのタイミング</td><td class="l">plan で読む・apply まで延ばす条件</td></tr>
+    <tr><td class="t">参照</td><td class="l">var・local・module・data・path、count はリスト、for_each はマップ</td></tr>
+    <tr><td class="t">スプラット</td><td class="l">[*] ＝ for 式、マップには使えない</td></tr>
+    <tr><td class="t">アドレスと依存</td><td class="l">[N] と ["KEY"]、module の入れ子、参照で暗黙の依存</td></tr>
+  </table>
+  <div class="cite">出典：Exam Content List（004）4a・4b／本資料の問題演習（全 30 問）</div>
+</section>
+
+</body>
+</html>

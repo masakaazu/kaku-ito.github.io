@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>G検定 #23 ガイドラインとAIガバナンス 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">G検定（JDLA ジェネラリスト検定）　シラバス2024　法律・倫理 8・18　#23</div>
+  <h1>ガイドラインとAIガバナンス</h1>
+  <p>人間中心の AI 社会原則・OECD AI 原則・広島 AI プロセス・AI 事業者ガイドライン・EU AI 法・AI 推進法、ハードロー・ソフトロー・リスクベースアプローチ・ゴールベース、基本理念・価値原則・アカウンタビリティ、AI 開発者・提供者・利用者、AI ガバナンス・アジャイル・ガバナンス・AI ポリシー・倫理アセスメント・監査・人間の関与・モニタリング・トレーサビリティ・再現性・ダイバーシティ</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（総務省・経済産業省「AI 事業者ガイドライン（第 1.1 版）」、AI 推進法の条文、ウィキペディア日本語版、OECD.AI）を書いた。『』の中は原文どおり</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>国内外のガイドラインと法律</h1>
+  <p>日本はソフトロー中心、EU はハードロー。どちらもリスクベース。</p>
+  <div class="foot"><span>G検定 #23 ガイドラインとAIガバナンス</span><span>法律・倫理 8・18</span></div>
+</section>
+
+<section class="slide">
+  <h1>主なガイドラインと法律の年表</h1>
+  <table class="mx">
+    <tr><th>年</th><th>名前</th><th>性格</th></tr>
+    <tr><td class="t">2019年3月</td><td class="l">人間中心の AI 社会原則（日本）</td><td class="l">原則。ガイドラインの土台</td></tr>
+    <tr><td class="t">2019年5月</td><td class="l">OECD AI 原則（2024年5月改訂）</td><td class="l">政府間の国際原則</td></tr>
+    <tr><td class="t">2023年</td><td class="l">広島 AI プロセス（G7）</td><td class="l">高度な AI の国際指針・行動規範</td></tr>
+    <tr><td class="t">2024年</td><td class="l">AI 事業者ガイドライン（総務省・経産省、第1.1版は2025年3月）</td><td class="l">事業者向けのソフトロー</td></tr>
+    <tr><td class="t">2024年</td><td class="l">EU AI 法（2025年2月2日から段階的に適用）</td><td class="l">リスク別の義務と制裁金（ハードロー）</td></tr>
+    <tr><td class="t">2025年</td><td class="l">AI 推進法（日本）</td><td class="l">推進の基本法、人工知能戦略本部</td></tr>
+  </table>
+  <div class="cite">出典：AI 事業者ガイドライン『「人間中心の AI 社会原則」を土台としつつ、OECD の AI 原則等の海外の諸原則を踏まえ、再構成したものである。』</div>
+  <div class="foot"><span>G検定 #23 ガイドラインとAIガバナンス</span><span>法律・倫理 8・18</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>法の形とリスクベース</h1>
+  <p>拘束力の強さと柔軟さはトレードオフ。対策はリスクの大きさに合わせる。</p>
+  <div class="foot"><span>G検定 #23 ガイドラインとAIガバナンス</span><span>法律・倫理 8・18</span></div>
+</section>
+
+<section class="slide">
+  <h1>ハードローとソフトロー</h1>
+  <table class="mx">
+    <tr><th></th><th>ハードロー</th><th>ソフトロー</th></tr>
+    <tr><td class="t">例</td><td class="l">法律（EU AI 法など）</td><td class="l">ガイドライン・原則・自主規制</td></tr>
+    <tr><td class="t">拘束力</td><td class="l">あり（裁判所で強制、罰則）</td><td class="l">なし（自主的に守る）</td></tr>
+    <tr><td class="t">メリット</td><td class="l">守らせる力が強い、予測しやすい</td><td class="l">速く柔軟に見直せる、イノベーションを妨げにくい</td></tr>
+    <tr><td class="t">デメリット</td><td class="l">作るのに時間、技術の速さに追いつきにくい</td><td class="l">守らない者を止めにくい</td></tr>
+  </table>
+  <div class="point">AI 事業者ガイドラインは、細かい手順ではなく目的を示す「ゴールベース」のソフトロー。</div>
+  <div class="cite">出典：ウィキペディア日本語版「ソフトロー」『関係者に対して拘束力を伴い、裁判所によって法的に執行できる義務的なものをハードロー（英:Hard law）という』</div>
+  <div class="foot"><span>G検定 #23 ガイドラインとAIガバナンス</span><span>法律・倫理 8・18</span></div>
+</section>
+
+<section class="slide">
+  <h1>リスクベースアプローチと EU AI 法</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">許容できないリスク<span>原則禁止（ソーシャルスコアリングなど）</span></div>
+      <div class="box b2">高リスク<span>採用・教育・重要インフラなど：リスク管理・データ品質・記録・人の監視・適合性評価</span></div>
+      <div class="box b1">限定的なリスク<span>チャットボットなど：透明化義務だけ</span></div>
+      <div class="box b1">最小限のリスク<span>スパムフィルタなど：特別な義務なし</span></div>
+    </div>
+    <div>
+      <div class="point">リスク＝被害の重さ×起こりやすさ。対策の程度をリスクの大きさに合わせる。</div>
+      <div class="point">AI 事業者ガイドラインも同じ考え方。AI 先進国で広く共有されている。</div>
+      <div class="point warn">EU 市場で AI を出せば EU の外の事業者も対象。違反には高額の制裁金。</div>
+    </div>
+  </div>
+  <div class="cite">出典：AI 事業者ガイドライン『その対策の程度をリスクの大きさに対応させる「リスクベースアプローチ」が重要となる。』</div>
+  <div class="foot"><span>G検定 #23 ガイドラインとAIガバナンス</span><span>法律・倫理 8・18</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>AI 事業者ガイドラインの中身</h1>
+  <p>基本理念 → 原則 → 3つの主体ごとの取り組み → ガバナンス。</p>
+  <div class="foot"><span>G検定 #23 ガイドラインとAIガバナンス</span><span>法律・倫理 8・18</span></div>
+</section>
+
+<section class="slide">
+  <h1>基本理念と10の共通の指針</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">人間の尊厳（Dignity）<span>AI を道具として使いこなし、人の能力を発揮</span></div>
+      <div class="box b1">多様性・包摂性（Diversity and Inclusion）<span>多様な背景の人が多様な幸せを追求</span></div>
+      <div class="box b1">持続可能性（Sustainability）<span>社会課題の解決、地球規模の持続可能性</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>共通の指針</th></tr>
+        <tr><td class="l">1 人間中心　2 安全性　3 公平性</td></tr>
+        <tr><td class="l">4 プライバシー保護　5 セキュリティ確保</td></tr>
+        <tr><td class="l">6 透明性　7 アカウンタビリティ</td></tr>
+        <tr><td class="l">8 教育・リテラシー　9 公正競争確保　10 イノベーション</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：AI 事業者ガイドライン『多様な背景を持つ人々が多様な幸せを追求できる社会（Diversity and Inclusion）』</div>
+  <div class="foot"><span>G検定 #23 ガイドラインとAIガバナンス</span><span>法律・倫理 8・18</span></div>
+</section>
+
+<section class="slide">
+  <h1>3つの主体</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">AI 開発者<span>AI システムを開発（研究開発をふくむ）：モデル・データ収集・前処理・学習</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">AI 提供者<span>AI をアプリ・製品・業務に組みこみ、サービスとして提供</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b3">AI 利用者<span>事業活動で AI システム・サービスを使う</span></div>
+    </div>
+    <div>
+      <div class="point">1つの事業者が複数を兼ねることもある。</div>
+      <div class="point warn">業務の外で使う一般の消費者（業務外利用者）は AI 利用者にふくまれない。</div>
+      <div class="point">ガイドラインは Living Document として、マルチステークホルダーの関与のもとで更新される。</div>
+    </div>
+  </div>
+  <div class="cite">出典：AI 事業者ガイドライン『「AI 開発者」、「AI 提供者」及び「AI 利用者」の 3 つに大別され』</div>
+  <div class="foot"><span>G検定 #23 ガイドラインとAIガバナンス</span><span>法律・倫理 8・18</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>AI ガバナンスの実践</h1>
+  <p>ルールを固定せず、サイクルを速く回す。人が関わり、記録を残す。</p>
+  <div class="foot"><span>G検定 #23 ガイドラインとAIガバナンス</span><span>法律・倫理 8・18</span></div>
+</section>
+
+<section class="slide">
+  <h1>アジャイル・ガバナンス</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">環境・リスク分析</div>
+      <div class="arrow">↓</div>
+      <div class="box b1">ゴール設定（AI ポリシーなど）</div>
+      <div class="arrow">↓</div>
+      <div class="box b2">システムデザイン</div>
+      <div class="arrow">↓</div>
+      <div class="box b2">運用</div>
+      <div class="arrow">↓</div>
+      <div class="box b3">評価 → 最初にもどる</div>
+    </div>
+    <div>
+      <div class="point">AI ガバナンス：リスクをステークホルダーが受け入れられる水準で管理しつつ、便益を最大にする。</div>
+      <div class="point">前もってルールを固定せず、マルチステークホルダーでサイクルを継続的かつ高速に回す。ゴールも見直す。</div>
+    </div>
+  </div>
+  <div class="cite">出典：AI 事業者ガイドライン『「環境・リスク分析」「ゴール設定」「システムデザイン」「運用」「評価」といったサイクルを』</div>
+  <div class="foot"><span>G検定 #23 ガイドラインとAIガバナンス</span><span>法律・倫理 8・18</span></div>
+</section>
+
+<section class="slide">
+  <h1>ガバナンスの手法</h1>
+  <table class="mx">
+    <tr><th>手法</th><th>中身</th></tr>
+    <tr><td class="t">AI ポリシー</td><td class="l">組織の AI の基本方針（ガバナンス・ゴール）</td></tr>
+    <tr><td class="t">倫理アセスメント</td><td class="l">開発・導入の前に倫理上のリスクを洗い出して評価</td></tr>
+    <tr><td class="t">人間の関与</td><td class="l">利用に人間の判断を介在させる、人が制御できるようにする</td></tr>
+    <tr><td class="t">モニタリング</td><td class="l">運用中の出力・精度・バイアスを定期的・客観的に見張る</td></tr>
+    <tr><td class="t">トレーサビリティ・再現性</td><td class="l">経過をたどれる記録、同じ条件で同じ結果</td></tr>
+    <tr><td class="t">AI に対する監査</td><td class="l">内部・第三者が取り組みの適切さを確かめる</td></tr>
+    <tr><td class="t">ダイバーシティ</td><td class="l">多様な人が参加し、バイアスや見落としに気づく</td></tr>
+  </table>
+  <div class="cite">出典：AI 事業者ガイドライン『定期的かつ客観的なモニタリング及び対処も含めて人間がコントロールできる制御可能性を確保する』</div>
+  <div class="foot"><span>G検定 #23 ガイドラインとAIガバナンス</span><span>法律・倫理 8・18</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">ガイドライン</td><td class="l">人間中心の AI 社会原則・OECD・広島 AI プロセス・AI 事業者ガイドライン・EU AI 法の区別</td></tr>
+    <tr><td class="t">法の形</td><td class="l">ハードローとソフトローのメリット・デメリット、リスクベースアプローチ、EU AI 法の4段階</td></tr>
+    <tr><td class="t">ガイドラインの中身</td><td class="l">基本理念3つ、共通の指針、開発者・提供者・利用者</td></tr>
+    <tr><td class="t">ガバナンス</td><td class="l">アジャイル・ガバナンスのサイクル、倫理アセスメント・監査・人間の関与・モニタリング</td></tr>
+  </table>
+  <div class="cite">出典：JDLA「G検定の試験出題範囲（シラバス）G2024#6～」法律・倫理分野 8・18</div>
+</section>
+
+</body>
+</html>

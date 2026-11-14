@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS DevOps #12 スケーリングと疎結合 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">AWS Certified DevOps Engineer – Professional（DOP-C02）　タスク 3.2　#12</div>
+  <h1>スケーリングと疎結合</h1>
+  <p>ターゲット追跡・ステップ・スケジュール・予測スケーリング・ウォームプール・ライフサイクルフック・インスタンスあたりのバックログ・混合インスタンス、ECS サービスの自動スケーリング・キャパシティプロバイダー・Karpenter、Lambda の同時実行（予約済み・プロビジョニング）・API Gateway のスロットリングとキャッシュ・RDS Proxy・DynamoDB のキャパシティモード・Aurora Auto Scaling・キャッシュ戦略、SQS（可視性タイムアウト・DLQ・ロングポーリング・FIFO）・部分的なバッチレスポンス・SNS ファンアウトとフィルター・Kinesis のシャード・Step Functions</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（AWS の DOP-C02 試験ガイド、EC2 Auto Scaling・ECS・EKS・Lambda・API Gateway・DynamoDB・Aurora・RDS・ElastiCache・SQS・SNS・Kinesis・Step Functions の各ガイド）を書いた。『』の中は日本語版ドキュメントの原文どおり</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>EC2 とコンテナのスケーリング</h1>
+  <p>負荷の形に合わせてポリシーを選ぶ。</p>
+  <div class="foot"><span>AWS DevOps #12 スケーリングと疎結合</span><span>タスク 3.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>Auto Scaling のポリシーの選び方</h1>
+  <table class="mx">
+    <tr><th>負荷の形</th><th>ポリシー</th><th>ポイント</th></tr>
+    <tr><td class="t">ある値に保ちたい</td><td class="l">ターゲット追跡</td><td class="l">CPU 50%・リクエスト数/ターゲット。アラームは自動。まずこれ</td></tr>
+    <tr><td class="t">超え方で増やす量を変える</td><td class="l">ステップ</td><td class="l">シンプル＋クールダウンは非推奨（追いつかない）</td></tr>
+    <tr><td class="t">日時が決まっている</td><td class="l">スケジュール</td><td class="l">月曜 9 時の前に希望キャパシティを上げる</td></tr>
+    <tr><td class="t">日・週のパターン＋起動が遅い</td><td class="l">予測</td><td class="l">履歴から予測して先に起動。動的と併用</td></tr>
+    <tr><td class="t">キューの仕事</td><td class="l">バックログ/台でターゲット追跡</td><td class="l">ApproximateNumberOfMessages ÷ 台数をカスタムメトリクスに</td></tr>
+  </table>
+  <div class="cols">
+    <div class="box b1">ウォームプール<span>初期化済みの控え。停止で置けば EC2 料金なし。起動が非常に遅いときだけ</span></div>
+    <div class="box b2">ライフサイクルフック<span>起動直後・終了直前に待機（既定 1 時間）。ログ退避・導入 → complete-lifecycle-action</span></div>
+  </div>
+  <div class="cite">出典：ターゲットトラッキング／ステップおよび簡易スケーリング／スケジュール／予測スケーリング／ウォームプール／ライフサイクルフック／Amazon SQS に基づくスケーリングポリシー／スケーリングクールダウン</div>
+  <div class="foot"><span>AWS DevOps #12 スケーリングと疎結合</span><span>タスク 3.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>コンテナと購入オプション</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">ECS サービスの自動スケーリング<span>タスク数を増減（Application Auto Scaling：ターゲット追跡・ステップ・予測）</span></div>
+      <div class="arrow">↓ 置き場所が足りない（PENDING）</div>
+      <div class="box b1">キャパシティプロバイダーのマネージドスケーリング<span>EC2 を増減（CapacityProviderReservation でターゲット追跡）</span></div>
+      <div class="box b2">EKS：Karpenter<span>ちょうどよいサイズのノードを 1 分未満で。HPA は Pod の数だけ</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>混合インスタンスグループ</th><th>役割</th></tr>
+        <tr><td class="t">ベース</td><td class="l">オンデマンドで最低限を確保</td></tr>
+        <tr><td class="t">増えた分</td><td class="l">スポットで安く（中断に強い処理）</td></tr>
+        <tr><td class="t">複数タイプ</td><td class="l">スポットの容量を取りやすく</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：Amazon ECS サービスを自動的にスケールする／クラスターの自動スケーリング／Karpenter と Cluster Autoscaler／複数のインスタンスタイプと購入オプション</div>
+  <div class="foot"><span>AWS DevOps #12 スケーリングと疎結合</span><span>タスク 3.2</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>サーバーレスとデータ層のスケーリング</h1>
+  <p>同時実行・接続・キャパシティ・キャッシュ。</p>
+  <div class="foot"><span>AWS DevOps #12 スケーリングと疎結合</span><span>タスク 3.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>Lambda と API Gateway</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>設定</th><th>何をする</th></tr>
+        <tr><td class="t">同時実行の上限</td><td class="l">リージョン全体で既定 1,000。超えるとスロットリング</td></tr>
+        <tr><td class="t">予約済み同時実行</td><td class="l">関数の分を確保し上限にもする（0 で停止）。追加料金なし</td></tr>
+        <tr><td class="t">プロビジョニング</td><td class="l">初期化済みの環境でコールドスタートなし。料金あり</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="box b1">API Gateway のスロットリング<span>トークンバケット（レートとバースト）。超えると 429。使用量プラン＋API キーで利用者ごとのレートとクォータ</span></div>
+      <div class="box b2">API キャッシュ<span>ステージで有効化。TTL 既定 300 秒・最大 3600 秒</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：Lambda 関数のスケーリング／予約済み同時実行数／プロビジョニングされた同時実行数／リクエストをスロットリングする／REST API のキャッシュ設定</div>
+  <div class="foot"><span>AWS DevOps #12 スケーリングと疎結合</span><span>タスク 3.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>データ層</h1>
+  <table class="mx">
+    <tr><th>困りごと</th><th>答え</th><th>ポイント</th></tr>
+    <tr><td class="t">Lambda → RDS の接続が多すぎる</td><td class="l">RDS Proxy</td><td class="l">接続プールを再利用。フェイルオーバーも短く</td></tr>
+    <tr><td class="t">DynamoDB の負荷が読めない</td><td class="l">オンデマンドモード</td><td class="l">推奨の既定。Auto Scaling は 2 分続けて超えてから</td></tr>
+    <tr><td class="t">Aurora の読み取りが増減</td><td class="l">Aurora Auto Scaling</td><td class="l">レプリカの数を増減。リーダーエンドポイント</td></tr>
+    <tr><td class="t">キャッシュが古い</td><td class="l">書き込みスルー＋TTL</td><td class="l">遅延読み込みは要るときだけ読むが古くなりうる</td></tr>
+  </table>
+  <div class="cite">出典：Amazon RDS Proxy／DynamoDB のスループットキャパシティ／DynamoDB Auto Scaling／Aurora Auto Scaling／キャッシュ戦略</div>
+  <div class="foot"><span>AWS DevOps #12 スケーリングと疎結合</span><span>タスク 3.2</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>疎結合とメッセージング</h1>
+  <p>キューとトピックで切り離す。</p>
+  <div class="foot"><span>AWS DevOps #12 スケーリングと疎結合</span><span>タスク 3.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>SQS の設定と Lambda</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>設定</th><th>ポイント</th></tr>
+        <tr><td class="t">可視性タイムアウト</td><td class="l">既定 30 秒・上限 12 時間。処理時間より長く（短いと二重処理）</td></tr>
+        <tr><td class="t">DLQ</td><td class="l">maxReceiveCount を超えたら移す。同じアカウント・リージョン</td></tr>
+        <tr><td class="t">ロングポーリング</td><td class="l">最大 20 秒待つ。空の応答と費用が減る</td></tr>
+        <tr><td class="t">FIFO</td><td class="l">順序・重複なし。メッセージグループごとに並行</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="box b3">SQS</div>
+      <div class="arrow">↓ イベントソースマッピング（バッチ）</div>
+      <div class="box b1">Lambda</div>
+      <div class="point warn">1 件失敗で全件が戻る → ReportBatchItemFailures（部分的なバッチレスポンス）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：可視性タイムアウト／デッドレターキュー／ショートポーリングとロングポーリング／FIFO キュー／Amazon SQS での Lambda の使用</div>
+  <div class="foot"><span>AWS DevOps #12 スケーリングと疎結合</span><span>タスク 3.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>SNS・Kinesis・Step Functions</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">注文サービス → SNS トピック</div>
+      <div class="arrow">↓ ファンアウト（フィルターポリシーで絞る）</div>
+      <div class="box b1">在庫キュー ｜ 配送キュー ｜ メールキュー<span>各自のペースで処理。止まってもキューに残る</span></div>
+      <div class="point">Step Functions：順番・再試行・分岐・戻しを定義で。Lambda どうしの直呼びをほどく。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>Kinesis のシャード</th><th>上限</th></tr>
+        <tr><td class="t">書き込み</td><td class="l">1 MB/秒・1,000 レコード/秒</td></tr>
+        <tr><td class="t">読み取り</td><td class="l">2 MB/秒・5 トランザクション/秒</td></tr>
+        <tr><td class="t">パーティションキー</td><td class="l">偏るとホットシャード → ばらつくキーに</td></tr>
+        <tr><td class="t">オンデマンド</td><td class="l">シャードを自動で管理</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：SNS 通知の SQS キューへのファンアウト／メッセージフィルター処理／Kinesis Data Streams の用語と概念／Step Functions とは</div>
+  <div class="foot"><span>AWS DevOps #12 スケーリングと疎結合</span><span>タスク 3.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">EC2</td><td class="l">ターゲット追跡・ステップ・スケジュール・予測の選び分け、ウォームプール、ライフサイクルフック、バックログ/台、スポット</td></tr>
+    <tr><td class="t">コンテナ</td><td class="l">タスク数（サービス）と置き場所（キャパシティプロバイダー）、Karpenter</td></tr>
+    <tr><td class="t">サーバーレス</td><td class="l">予約済みとプロビジョニングの違い、429、使用量プラン、API キャッシュ、RDS Proxy</td></tr>
+    <tr><td class="t">データ</td><td class="l">オンデマンドモード、Aurora Auto Scaling、書き込みスルー＋TTL</td></tr>
+    <tr><td class="t">疎結合</td><td class="l">可視性タイムアウト、DLQ、ロングポーリング、FIFO とグループ、ファンアウトとフィルター、部分バッチ、シャード、Step Functions</td></tr>
+  </table>
+  <div class="cite">出典：AWS Certified DevOps Engineer - Professional (DOP-C02) 試験ガイド タスク 3.2</div>
+</section>
+
+</body>
+</html>

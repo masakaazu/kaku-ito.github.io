@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Terraform #14 インポート・stateコマンド・ログ 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">HashiCorp Certified: Terraform Associate（004）　目標 7a〜7c　#14</div>
+  <h1>インポート・stateコマンド・ログ</h1>
+  <p>import ブロックと手順、インポート ID、-generate-config-out による設定の生成、terraform import コマンド、terraform state の各サブコマンド（list・show・pull・mv・rm・push・replace-provider）とバックアップ、TF_LOG・TF_LOG_PATH・TF_LOG_CORE・TF_LOG_PROVIDER</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（HashiCorp の Exam Content List（004）、Terraform ドキュメント v1.12.x の Import existing resources・import block reference・Generate configuration・Command: import・Import existing resources overview・terraform state commands・Command: state mv・state rm・state push・state replace-provider・Enable Terraform logs・Environment Variables）を書いた。英語の原文は『』で引用した</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>インポート</h1>
+  <p>外で作ったものを、Terraform の管理に入れる。</p>
+  <div class="foot"><span>Terraform #14 インポート・stateコマンド・ログ</span><span>目標 7a〜7c</span></div>
+</section>
+
+<section class="slide">
+  <h1>import ブロックの手順</h1>
+  <div class="cols">
+    <div>
+      <div class="code small"><span class="c"># imports.tf</span>
+import {
+  to = aws_s3_bucket.this     <span class="c"># 取りこみ先のアドレス</span>
+  id = "example-bucket"       <span class="c"># プロバイダーでの ID</span>
+}
+<span class="c"># main.tf</span>
+resource "aws_s3_bucket" "this" {
+  bucket = "example-bucket"
+}</div>
+      <div class="point">id は plan のときに分かる文字列。identity（属性の組）とは同時に書けない。for_each・provider も書ける。</div>
+    </div>
+    <div>
+      <div class="box b3">1. 取りこみ先の resource を書く</div>
+      <div class="arrow">↓</div>
+      <div class="box b3">2. import ブロックを書く</div>
+      <div class="arrow">↓</div>
+      <div class="box b1">3. terraform plan<span>「1 to import」を確かめる</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">4. terraform apply<span>ステートに入る。import ブロックは履歴として残してよい</span></div>
+      <div class="point warn">resource がないと、次の計画で消そうとする。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Import existing resources／import block reference</div>
+  <div class="foot"><span>Terraform #14 インポート・stateコマンド・ログ</span><span>目標 7a〜7c</span></div>
+</section>
+
+<section class="slide">
+  <h1>設定の生成とインポート ID</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">$ terraform plan -generate-config-out="generated.tf"</div>
+      <table class="mx">
+        <tr><th>決まり</th></tr>
+        <tr><td class="l">import ブロックの to が設定にないときに HCL を書き出す</td></tr>
+        <tr><td class="l">まだないファイルのパス（あるとエラー）</td></tr>
+        <tr><td class="l">『best guess』なので見なおしてから VCS へ</td></tr>
+        <tr><td class="l">v1.5 からの実験的な機能</td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>リソース</th><th>ID の例</th></tr>
+        <tr><td class="t">EC2</td><td class="l">i-abcd1234</td></tr>
+        <tr><td class="t">Route53 ゾーン</td><td class="l">Z12ABC4UGMOZ2N</td></tr>
+        <tr><td class="t">S3 バケット</td><td class="l">バケット名</td></tr>
+      </table>
+      <div class="point">ID の形と、インポートできるかどうかは Registry の各リソースのページの下で確かめる。</div>
+      <div class="point warn">1 つの実物は 1 つのアドレスだけに取りこむ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Generate configuration／Command: import</div>
+  <div class="foot"><span>Terraform #14 インポート・stateコマンド・ログ</span><span>目標 7a〜7c</span></div>
+</section>
+
+<section class="slide">
+  <h1>import ブロックと terraform import</h1>
+  <table class="mx">
+    <tr><th></th><th>import ブロック</th><th>terraform import コマンド</th></tr>
+    <tr><td class="t">書く場所</td><td class="l">設定（imports.tf など）</td><td class="l">CLI：terraform import ADDRESS ID</td></tr>
+    <tr><td class="t">確かめ方</td><td class="l">plan で見てから apply</td><td class="l">すぐステートに入る</td></tr>
+    <tr><td class="t">一度に</td><td class="l">複数（for_each も可）</td><td class="l">1 つ</td></tr>
+    <tr><td class="t">設定の生成</td><td class="l">-generate-config-out</td><td class="l">しない（resource を先に手で書く）</td></tr>
+    <tr><td class="t">CI/CD</td><td class="l">組みこみやすい</td><td class="l">向かない</td></tr>
+    <tr><td class="t">HCP Terraform</td><td class="l">実行の中で動く</td><td class="l">ローカルで動く（ワークスペースの変数をローカルで用意）</td></tr>
+  </table>
+  <div class="point">どちらも、残りのライフサイクルを管理するには resource ブロックが必要。</div>
+  <div class="cite">出典：Command: import／Import existing resources overview</div>
+  <div class="foot"><span>Terraform #14 インポート・stateコマンド・ログ</span><span>目標 7a〜7c</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>state コマンド</h1>
+  <p>ステートを直接いじらずに、見る・直す。</p>
+  <div class="foot"><span>Terraform #14 インポート・stateコマンド・ログ</span><span>目標 7a〜7c</span></div>
+</section>
+
+<section class="slide">
+  <h1>terraform state のサブコマンド</h1>
+  <table class="mx">
+    <tr><th>コマンド</th><th>何をするか</th><th>ステート</th></tr>
+    <tr><td class="t">state list</td><td class="l">リソースのアドレスを一覧</td><td class="l">変えない</td></tr>
+    <tr><td class="t">state show ADDRESS</td><td class="l">1 つのリソースの属性</td><td class="l">変えない</td></tr>
+    <tr><td class="t">state pull</td><td class="l">ステート（JSON）を標準出力へ</td><td class="l">変えない</td></tr>
+    <tr><td class="t">state mv SRC DST</td><td class="l">アドレスを変える（同じ型だけ。今は moved）</td><td class="l">変える</td></tr>
+    <tr><td class="t">state rm ADDRESS</td><td class="l">管理をやめる。実物は残る（今は removed）</td><td class="l">変える</td></tr>
+    <tr><td class="t">state push PATH</td><td class="l">ローカルのステートでバックエンドを上書き</td><td class="l">変える</td></tr>
+    <tr><td class="t">state replace-provider</td><td class="l">プロバイダーのソースを付けかえ</td><td class="l">変える</td></tr>
+  </table>
+  <div class="point warn">ステートを変えるものは必ずバックアップを書き、止められない：『backups for state modification can not be disabled』</div>
+  <div class="cite">出典：terraform state commands</div>
+  <div class="foot"><span>Terraform #14 インポート・stateコマンド・ログ</span><span>目標 7a〜7c</span></div>
+</section>
+
+<section class="slide">
+  <h1>mv・rm・push の注意点</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">$ terraform state mv -dry-run aws_instance.a aws_instance.b
+$ terraform state mv aws_instance.a aws_instance.b
+$ terraform state rm aws_instance.web
+$ terraform state push ./fixed.tfstate
+$ terraform state replace-provider \
+    hashicorp/aws registry.acme.corp/acme/aws</div>
+      <div class="point">-dry-run（mv・rm）：変えずに対象だけ表示。</div>
+    </div>
+    <div>
+      <div class="box b3">state mv<span>型は変えられない。チームでは設定の変更との間にだれも変更しないよう連絡</span></div>
+      <div class="box b1">state rm<span>設定が残っていれば次の plan で「新しく作る」</span></div>
+      <div class="box b2">state push<span>リモートを手で直すときだけ。lineage がちがう・serial が小さいと拒否（-force は危険）</span></div>
+      <div class="point">リモートステートでも同じように使える（毎回ネットワークの往復）。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Command: state mv／state rm／state push／state replace-provider</div>
+  <div class="foot"><span>Terraform #14 インポート・stateコマンド・ログ</span><span>目標 7a〜7c</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>ログ</h1>
+  <p>エラーだけで分からないときに。</p>
+  <div class="foot"><span>Terraform #14 インポート・stateコマンド・ログ</span><span>目標 7a〜7c</span></div>
+</section>
+
+<section class="slide">
+  <h1>TF_LOG とその仲間</h1>
+  <div class="cols">
+    <div>
+      <div class="code small">$ export TF_LOG=TRACE
+$ export TF_LOG_PATH=./terraform.log   <span class="c"># 追記</span>
+$ terraform apply
+
+$ export TF_LOG_PROVIDER=DEBUG         <span class="c"># プロバイダーだけ</span>
+$ unset TF_LOG                         <span class="c"># または TF_LOG=off</span></div>
+      <div class="box b3">くわしい ← TRACE・DEBUG・INFO・WARN・ERROR → くわしくない<span>JSON：TRACE 以上を JSON で（安定した形式ではない）</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>変数</th><th>役割</th></tr>
+        <tr><td class="t">TF_LOG</td><td class="l">有効にする。出力は stderr。どんな値でも有効</td></tr>
+        <tr><td class="t">TF_LOG_PATH</td><td class="l">ファイルに追記（TF_LOG も必要）</td></tr>
+        <tr><td class="t">TF_LOG_CORE</td><td class="l">Terraform 本体だけ</td></tr>
+        <tr><td class="t">TF_LOG_PROVIDER</td><td class="l">プロバイダーのプラグインだけ</td></tr>
+      </table>
+      <div class="point warn">『even when TF_LOG_PATH is set, TF_LOG must be set』</div>
+      <div class="point">使う場面：予期しない動きのデバッグ、バグ報告。ログに機密が入りうる。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Enable Terraform logs／Environment Variables</div>
+  <div class="foot"><span>Terraform #14 インポート・stateコマンド・ログ</span><span>目標 7a〜7c</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">import ブロック（7a）</td><td class="l">to・id、手順、plan で確かめる、resource が必要、-generate-config-out は新しいファイル</td></tr>
+    <tr><td class="t">import コマンド（7a）</td><td class="l">ADDRESS ID、設定は作らない、1 つずつ、HCP ではローカルで動く</td></tr>
+    <tr><td class="t">state（7b）</td><td class="l">list・show・pull は読むだけ、mv・rm・push・replace-provider、バックアップは止められない、-dry-run</td></tr>
+    <tr><td class="t">ログ（7c）</td><td class="l">TF_LOG のレベルの順、stderr、TF_LOG_PATH だけでは出ない、CORE・PROVIDER、JSON、off</td></tr>
+  </table>
+  <div class="cite">出典：Exam Content List（004）7a〜7c／本資料の問題演習（全 30 問）</div>
+</section>
+
+</body>
+</html>

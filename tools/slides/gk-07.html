@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>G検定 #07 モデルの選択・評価 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">G検定（JDLA ジェネラリスト検定）　シラバス2024　10　#07</div>
+  <h1>モデルの選択・評価</h1>
+  <p>汎化性能・訓練誤差・汎化誤差・過学習・未学習・バイアスとバリアンス、訓練／検証／テストデータ・ホールドアウト検証・k分割交差検証・LOOCV・層化、混同行列・正解率・適合率・再現率・F値・ROC曲線・AUC、MSE・RMSE・MAE・AIC・BIC・オッカムの剃刀</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（JDLA のシラバス、scikit-learn User Guide、ウィキペディア日本語版）を書いた。『』の中は原文どおり</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>汎化と過学習</h1>
+  <p>めざすのは訓練データの成績ではなく、未知のデータでの成績（汎化性能）。</p>
+  <div class="foot"><span>G検定 #07 モデルの選択・評価</span><span>シラバス 10</span></div>
+</section>
+
+<section class="slide">
+  <h1>過学習と未学習</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">未学習（過少適合）<span>単純すぎる。訓練誤差も汎化誤差も大きい</span></div>
+      <div class="box b3">ちょうどよい<span>訓練誤差も汎化誤差も小さい</span></div>
+      <div class="box b2">過学習（過剰適合）<span>複雑すぎる。訓練誤差は小さいが汎化誤差が大きい</span></div>
+      <div class="point warn">サイン：訓練誤差は下がり続けるのに、検証誤差が上がり始める。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>原因</th><th>対策</th></tr>
+        <tr><td class="t">データに比べモデルが複雑</td><td class="l">データを増やす・データ拡張（#13）</td></tr>
+        <tr><td class="t">パラメータが多すぎる</td><td class="l">正則化・ドロップアウト・早期終了（#09）</td></tr>
+        <tr><td class="t">評価のしかた</td><td class="l">交差検証で確かめる（第2章）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア「過剰適合」『その原因の一つとして、統計モデルへの適合の媒介変数が多すぎる等、訓練データの個数に比べて、モデルが複雑で自由度が高すぎることがある。』</div>
+  <div class="foot"><span>G検定 #07 モデルの選択・評価</span><span>シラバス 10</span></div>
+</section>
+
+<section class="slide">
+  <h1>バイアスとバリアンス</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">バイアス（かたより）<span>予測の平均が本当の値からずれる。単純すぎると大</span></div>
+      <div class="box b2">バリアンス（ばらつき）<span>データが変わると予測が大きく変わる。複雑すぎると大</span></div>
+      <div class="point">汎化誤差の期待値 ＝ バイアス ＋ バリアンス ＋ ノイズ（ノイズはモデルで減らせない）</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>モデル</th><th>バイアス</th><th>バリアンス</th></tr>
+        <tr><td class="t">単純（次数が低い）</td><td class="l">大</td><td class="l">小 → 未学習</td></tr>
+        <tr><td class="t">複雑（次数が高い）</td><td class="l">小</td><td class="l">大 → 過学習</td></tr>
+      </table>
+      <div class="point warn">片方を減らすと、もう片方が増える＝トレードオフ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア「偏りと分散」『バイアス-バリアンス分解（bias–variance decomposition）とは、汎化誤差の期待値をバイアス＋バリアンス＋ノイズの3つの和に分解することである。』</div>
+  <div class="foot"><span>G検定 #07 モデルの選択・評価</span><span>シラバス 10</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>データの分け方と検証</h1>
+  <p>学習・調整・評価で、使うデータを分ける。</p>
+  <div class="foot"><span>G検定 #07 モデルの選択・評価</span><span>シラバス 10</span></div>
+</section>
+
+<section class="slide">
+  <h1>訓練・検証・テスト</h1>
+  <div class="box b3">訓練データ<span>パラメータを学習する</span></div>
+  <div class="arrow">↓</div>
+  <div class="box b1">検証データ<span>ハイパーパラメータの調整・モデルの選択</span></div>
+  <div class="arrow">↓</div>
+  <div class="box b2">テストデータ<span>最後に1回だけ評価する（調整には使わない）</span></div>
+  <div class="point warn">データリーケージ：テストデータや正解の情報が学習に紛れこむと、評価だけ高く出て本番で性能が出ない。</div>
+  <div class="cite">出典：scikit-learn『training proceeds on the training set, after which evaluation is done on the validation set, and when the experiment seems to be successful, final evaluation can be done on the test set.』</div>
+  <div class="foot"><span>G検定 #07 モデルの選択・評価</span><span>シラバス 10</span></div>
+</section>
+
+<section class="slide">
+  <h1>ホールドアウト検証と交差検証</h1>
+  <table class="mx">
+    <tr><th>方法</th><th>分け方</th><th>特徴</th></tr>
+    <tr><td class="t">ホールドアウト検証</td><td class="l">訓練用と評価用に1回だけ分ける</td><td class="l">簡単。分け方で結果がぶれる。一般に交差検証には入れない</td></tr>
+    <tr><td class="t">k分割交差検証</td><td class="l">k 個に分け、評価用を入れ替えて k 回</td><td class="l">k 回の平均で評価。データを無駄にしにくいが計算は k 倍</td></tr>
+    <tr><td class="t">一個抜き（LOOCV）</td><td class="l">1件だけ評価用、残り全部で訓練</td><td class="l">k＝データ数。計算量が最大</td></tr>
+    <tr><td class="t">層化 k 分割</td><td class="l">各分割のクラスの割合をそろえる</td><td class="l">クラスの数がかたよったデータ向き</td></tr>
+  </table>
+  <div class="point">交差検証をしても、最後の評価用のテストデータは別に取っておく。</div>
+  <div class="cite">出典：ウィキペディア「交差検証」『ただし一般にホールドアウト検証は交差検証には分類されない。』／scikit-learn『A test set should still be held out for final evaluation, but the validation set is no longer needed when doing CV.』</div>
+  <div class="foot"><span>G検定 #07 モデルの選択・評価</span><span>シラバス 10</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>分類の評価指標</h1>
+  <p>指標はすべて混同行列の4つの数から計算する。</p>
+  <div class="foot"><span>G検定 #07 モデルの選択・評価</span><span>シラバス 10</span></div>
+</section>
+
+<section class="slide">
+  <h1>混同行列と指標</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th></th><th>予測：陽性</th><th>予測：陰性</th></tr>
+        <tr><td class="t">実際：陽性</td><td class="l">真陽性 TP</td><td class="l">偽陰性 FN（見逃し）</td></tr>
+        <tr><td class="t">実際：陰性</td><td class="l">偽陽性 FP（誤検知）</td><td class="l">真陰性 TN</td></tr>
+      </table>
+      <div class="point">真/偽＝予測が当たったか。陽性/陰性＝予測した側。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>指標</th><th>式</th></tr>
+        <tr><td class="t">正解率</td><td class="l">(TP＋TN)÷全体</td></tr>
+        <tr><td class="t">適合率</td><td class="l">TP÷(TP＋FP)　誤検知を減らしたい</td></tr>
+        <tr><td class="t">再現率</td><td class="l">TP÷(TP＋FN)　見逃しを減らしたい</td></tr>
+        <tr><td class="t">F値</td><td class="l">適合率と再現率の調和平均</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア「混同行列」『予測分析において、混同表（混同行列と呼ばれることもある）とは、2行2列の表で、真陽性、真陰性、偽陽性、偽陰性の数を表したものである。』</div>
+  <div class="foot"><span>G検定 #07 モデルの選択・評価</span><span>シラバス 10</span></div>
+</section>
+
+<section class="slide">
+  <h1>正解率のわな／ROC曲線と AUC</h1>
+  <div class="cols">
+    <div>
+      <div class="box b2">1,000件中 陽性10件<span>全部「陰性」と答えると…</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b1">正解率 99%<span>でも再現率は 0%</span></div>
+      <div class="point warn">クラスがかたよったデータは、正解率だけで判断しない。</div>
+    </div>
+    <div>
+      <div class="box b3">ROC曲線<span>しきい値を変え、横軸＝偽陽性率、縦軸＝真陽性率</span></div>
+      <div class="box b3">AUC<span>ROC曲線の下の面積。1 が最良、ランダムは 0.5</span></div>
+      <div class="point">偽陽性率＝FP÷(FP＋TN)＝1−特異度</div>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア「受信者操作特性」『AUC が 1 のときが最良であり、ランダムで全く無効なモデルでは 0.5 となる。』</div>
+  <div class="foot"><span>G検定 #07 モデルの選択・評価</span><span>シラバス 10</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第4章</div>
+  <h1>回帰の評価とモデルの選び方</h1>
+  <p>当てはまりだけでなく、複雑さも考えて選ぶ。</p>
+  <div class="foot"><span>G検定 #07 モデルの選択・評価</span><span>シラバス 10</span></div>
+</section>
+
+<section class="slide">
+  <h1>回帰の指標と情報量規準</h1>
+  <table class="mx">
+    <tr><th>名前</th><th>中身</th><th>ポイント</th></tr>
+    <tr><td class="t">MSE</td><td class="l">誤差の2乗の平均</td><td class="l">大きな外れに敏感</td></tr>
+    <tr><td class="t">RMSE</td><td class="l">MSE の平方根</td><td class="l">元のデータと同じ単位</td></tr>
+    <tr><td class="t">MAE</td><td class="l">誤差の絶対値の平均</td><td class="l">外れ値の影響が小さい</td></tr>
+    <tr><td class="t">AIC</td><td class="l">−2×最大対数尤度＋2×パラメータ数</td><td class="l">最小のモデルを選ぶ。パラメータ数を過大に見積もりがち</td></tr>
+    <tr><td class="t">BIC</td><td class="l">−2×最大対数尤度＋パラメータ数×log(データ数)</td><td class="l">罰が重く、より単純なモデルを選ぶ</td></tr>
+  </table>
+  <div class="point">オッカムの剃刀：同じくらい説明できるなら、仮定（パラメータ）の少ない単純なモデルを選ぶ。</div>
+  <div class="cite">出典：ウィキペディア「赤池情報量規準」『具体的にはAIC最小のモデルを選択すれば、多くの場合、良いモデルが選択できる』／「オッカムの剃刀」『「ある事柄を説明するためには、必要より多くを仮定するべきでない」とする指針。』</div>
+  <div class="foot"><span>G検定 #07 モデルの選択・評価</span><span>シラバス 10</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">汎化</td><td class="l">過学習と未学習の見分け、原因、バイアスとバリアンスのトレードオフ</td></tr>
+    <tr><td class="t">検証</td><td class="l">訓練・検証・テストの役割、ホールドアウトと k 分割・LOOCV・層化</td></tr>
+    <tr><td class="t">分類の指標</td><td class="l">混同行列から計算、適合率と再現率の使い分け、F値、ROC曲線と AUC</td></tr>
+    <tr><td class="t">回帰・選択</td><td class="l">MSE・RMSE・MAE の違い、AIC・BIC は小さいほどよい、オッカムの剃刀</td></tr>
+  </table>
+  <div class="cite">出典：JDLA「G検定の試験出題範囲（シラバス）G2024#6～」10. モデルの選択・評価</div>
+</section>
+
+</body>
+</html>

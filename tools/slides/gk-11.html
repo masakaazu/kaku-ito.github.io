@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>G検定 #11 畳み込み・正規化・プーリング・スキップ結合 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">G検定（JDLA ジェネラリスト検定）　シラバス2024　17〜21　#11</div>
+  <h1>畳み込み・正規化・プーリング・スキップ結合</h1>
+  <p>全結合層・畳み込み操作・カーネル・特徴マップ・ストライド・パディング・受容野、Dilated（Atrous）・Depthwise Separable・1×1 畳み込み、バッチ／レイヤー／インスタンス／グループ正規化、最大値・平均値プーリング・GAP、スキップ結合・ResNet</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（JDLA のシラバス、ResNet・Batch／Layer／Group／Instance Normalization・Dilated Convolutions・Xception・MobileNets・NIN の論文、ウィキペディア）を書いた。『』の中は原文どおり</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>全結合層と畳み込み層</h1>
+  <p>全部とつながるか、狭い範囲と同じ重みでつながるか。</p>
+  <div class="foot"><span>G検定 #11 畳み込み・正規化・プーリング・スキップ結合</span><span>シラバス 17〜21</span></div>
+</section>
+
+<section class="slide">
+  <h1>全結合層と畳み込み層のちがい</h1>
+  <table class="mx">
+    <tr><th></th><th>全結合層</th><th>畳み込み層</th></tr>
+    <tr><td class="t">つながり</td><td class="l">前の層の全ユニット（受容野＝全体）</td><td class="l">狭い範囲だけ（局所的な受容野）</td></tr>
+    <tr><td class="t">重み</td><td class="l">組ごとに別</td><td class="l">同じカーネルを全体で共有</td></tr>
+    <tr><td class="t">パラメータ数</td><td class="l">入力×出力＋出力（200→50 なら 10,050）</td><td class="l">K×K×入力ch×出力ch＋出力ch（3×3, 3→16 なら 448）</td></tr>
+    <tr><td class="t">向くデータ</td><td class="l">特徴のベクトル</td><td class="l">画像・音声（近くどうしに関係）</td></tr>
+  </table>
+  <div class="point">畳み込み層のパラメータ数は入力画像の大きさによらない。学習するのはカーネルとバイアス。</div>
+  <div class="cite">出典：英語版ウィキペディア「Convolutional neural network」『In a convolutional layer, each neuron receives input from only a restricted area of the previous layer called the neuron's receptive field.』／日本語版『カーネルとバイアスが学習対象である。』</div>
+  <div class="foot"><span>G検定 #11 畳み込み・正規化・プーリング・スキップ結合</span><span>シラバス 17〜21</span></div>
+</section>
+
+<section class="slide">
+  <h1>畳み込みの計算</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">入力（画像）</div>
+      <div class="arrow">↓ カーネル（フィルタ）をストライドずつずらし、積の和</div>
+      <div class="box b3">特徴マップ<span>カーネル1枚 → 1チャネル</span></div>
+      <div class="point warn">出力の1辺 ＝（入力＋2×パディング−カーネル）÷ストライド＋1</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>入力</th><th>K</th><th>P</th><th>S</th><th>出力</th></tr>
+        <tr><td class="t">28</td><td class="l">3</td><td class="l">0</td><td class="l">1</td><td class="l">26</td></tr>
+        <tr><td class="t">28</td><td class="l">3</td><td class="l">1</td><td class="l">1</td><td class="l">28（同じ大きさ）</td></tr>
+        <tr><td class="t">28</td><td class="l">2</td><td class="l">0</td><td class="l">2</td><td class="l">14（半分）</td></tr>
+      </table>
+      <div class="point">パディング＝ふちに 0 を足す。ストライド大 → 出力が小さく。</div>
+    </div>
+  </div>
+  <div class="cite">出典：英語版ウィキペディア「Convolutional neural network」『In general, setting zero padding to be P=(K−1)/2 when the stride is S=1 ensures that the input volume and output volume will have the same size spatially.』</div>
+  <div class="foot"><span>G検定 #11 畳み込み・正規化・プーリング・スキップ結合</span><span>シラバス 17〜21</span></div>
+</section>
+
+<section class="slide">
+  <h1>いろいろな畳み込み</h1>
+  <table class="mx">
+    <tr><th>名前</th><th>中身</th><th>ねらい・使用例</th></tr>
+    <tr><td class="t">Dilated（Atrous）</td><td class="l">カーネルの要素のあいだに間をあける</td><td class="l">パラメータを増やさず受容野を広げる。解像度を保つ → セグメンテーション</td></tr>
+    <tr><td class="t">Depthwise Separable</td><td class="l">チャネルごとの空間の畳み込み → 1×1 畳み込み</td><td class="l">計算量・パラメータを大きく削減。Xception・MobileNets</td></tr>
+    <tr><td class="t">1×1（pointwise）</td><td class="l">各点でチャネル方向の全結合</td><td class="l">チャネル数を変える。Inception</td></tr>
+  </table>
+  <div class="cite">出典：Yu・Koltun『dilated convolutions support exponential expansion of the receptive field without loss of resolution or coverage.』／Chollet「Xception」『a depthwise convolution followed by a pointwise convolution』</div>
+  <div class="foot"><span>G検定 #11 畳み込み・正規化・プーリング・スキップ結合</span><span>シラバス 17〜21</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>正規化層</h1>
+  <p>どこで平均と分散をとるかで名前が変わる。</p>
+  <div class="foot"><span>G検定 #11 畳み込み・正規化・プーリング・スキップ結合</span><span>シラバス 17〜21</span></div>
+</section>
+
+<section class="slide">
+  <h1>4つの正規化</h1>
+  <table class="mx">
+    <tr><th>正規化</th><th>平均・分散をとる範囲</th><th>向く場面・弱点</th></tr>
+    <tr><td class="t">バッチ正規化</td><td class="l">ミニバッチの全サンプル × チャネルごと</td><td class="l">画像の CNN。小さいバッチで不正確</td></tr>
+    <tr><td class="t">レイヤー正規化</td><td class="l">1サンプル × 層の全部</td><td class="l">RNN・Transformer。バッチによらない</td></tr>
+    <tr><td class="t">インスタンス正規化</td><td class="l">1サンプル × 1チャネル</td><td class="l">スタイル変換</td></tr>
+    <tr><td class="t">グループ正規化</td><td class="l">1サンプル × チャネルのグループ</td><td class="l">小さいバッチ（物体検出など）</td></tr>
+  </table>
+  <div class="point">バッチ正規化：内部共変量シフトを抑える。大きな学習率が使え、初期値に鈍感になり、正則化の効果も。</div>
+  <div class="cite">出典：Ioffe・Szegedy『Batch Normalization allows us to use much higher learning rates and be less careful about initialization.』／Wu・He『GN divides the channels into groups and computes within each group the mean and variance for normalization.』</div>
+  <div class="foot"><span>G検定 #11 畳み込み・正規化・プーリング・スキップ結合</span><span>シラバス 17〜21</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>プーリング層とスキップ結合</h1>
+  <p>小さくまとめて位置ずれに強く。近道を作って深く。</p>
+  <div class="foot"><span>G検定 #11 畳み込み・正規化・プーリング・スキップ結合</span><span>シラバス 17〜21</span></div>
+</section>
+
+<section class="slide">
+  <h1>プーリング層</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">窓 2×2：1, 5, 3, 7</div>
+      <div class="arrow">↓</div>
+      <div class="box b3">最大値プーリング → 7<span>いまの基本形</span></div>
+      <div class="box b2">平均値プーリング → 4<span>ネオコグニトロン・LeNet</span></div>
+    </div>
+    <div>
+      <div class="box b3">グローバルアベレージプーリング（GAP）<span>特徴マップ1枚 → その平均1つ</span></div>
+      <div class="point">平らにして全結合層に入れるかわりに使える → パラメータが大幅に減る（NIN で提案）。</div>
+      <div class="point warn">プーリング層には学習するパラメータがない。位置ずれへの不変性を得る。</div>
+    </div>
+  </div>
+  <div class="cite">出典：日本語版ウィキペディア「畳み込みニューラルネットワーク」『現代では、最大値プーリングが基本形であるが、これも色々なバリエーションがある。』／Lin ほか「Network In Network」</div>
+  <div class="foot"><span>G検定 #11 畳み込み・正規化・プーリング・スキップ結合</span><span>シラバス 17〜21</span></div>
+</section>
+
+<section class="slide">
+  <h1>スキップ結合と ResNet</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">入力 x</div>
+      <div class="arrow">↓ 層（重み → ReLU → 重み）で F(x)</div>
+      <div class="box b3">出力 ＝ F(x) ＋ x<span>x はスキップ結合でそのまま足す</span></div>
+      <div class="point">層は残差 F(x)＝H(x)−x を学ぶ。</div>
+    </div>
+    <div>
+      <div class="point warn">逆伝播で勾配が近道 x を通る → 勾配消失が起きにくい。</div>
+      <div class="box b2">ResNet（He ほか、2015）<span>152層。ILSVRC 2015 分類 1位（誤差 3.57%）</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：He ほか『We explicitly reformulate the layers as learning residual functions with reference to the layer inputs, instead of learning unreferenced functions.』／ウィキペディア「残差ネットワーク」</div>
+  <div class="foot"><span>G検定 #11 畳み込み・正規化・プーリング・スキップ結合</span><span>シラバス 17〜21</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">畳み込み層</td><td class="l">全結合層とのちがい、パラメータ数、出力サイズの計算、ストライドとパディング</td></tr>
+    <tr><td class="t">畳み込みの変種</td><td class="l">Dilated は受容野、Depthwise Separable は軽量化</td></tr>
+    <tr><td class="t">正規化層</td><td class="l">どの範囲で平均・分散をとるか、バッチ正規化の効果と弱点</td></tr>
+    <tr><td class="t">プーリング・スキップ結合</td><td class="l">最大値・平均値・GAP、不変性、残差学習と勾配の近道</td></tr>
+  </table>
+  <div class="cite">出典：JDLA「G検定の試験出題範囲（シラバス）G2024#6～」17. 全結合層〜21. スキップ結合</div>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS DevOps #18 自動修復と設定の変更 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">AWS Certified DevOps Engineer – Professional（DOP-C02）　タスク 5.2　#18</div>
+  <h1>自動修復と設定の変更</h1>
+  <p>起動テンプレートのバージョン・インスタンスの更新（チェックポイント・自動ロールバック・スキップマッチング・ルートボリュームの置き換え）・インスタンスメンテナンスポリシー・Image Builder・AMI のパブリックパラメータ・スタンバイ・プロセスの中断、EventBridge から Automation・Auto Scaling／Parameter Store／Trusted Advisor／Security Hub のイベント・パラメータポリシー・ローテーション・Change Calendar、Config の修復・事前定義のランブック・State Manager・簡易自動復旧・終了のライフサイクルフック</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（AWS の DOP-C02 試験ガイド、EC2 Auto Scaling・EC2・Image Builder・Systems Manager・Secrets Manager・AWS Support・Security Hub・Config の各ガイド）を書いた。『』の中は日本語版ドキュメントの原文どおり</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>フリートの設定を入れ替える</h1>
+  <p>動いているインスタンスは、テンプレートを変えても変わらない。</p>
+  <div class="foot"><span>AWS DevOps #18 自動修復と設定の変更</span><span>タスク 5.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>インスタンスの更新</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">Image Builder のパイプライン（毎月・変更がなければ飛ばす）<span>または AMI のパブリックパラメータ /aws/service/ami-amazon-linux-latest/…</span></div>
+      <div class="arrow">↓ 新しい AMI</div>
+      <div class="box b1">起動テンプレートの新バージョン<span>指定しなければデフォルトバージョン。$Default ／ $Latest ／ 番号</span></div>
+      <div class="arrow">↓ インスタンスの更新を始める</div>
+      <div class="box b2">順に置き換え → 20% でチェックポイント → 続ける<span>アラームが ALARM・失敗 → 自動ロールバック</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>設定</th><th>はたらき</th></tr>
+        <tr><td class="t">最小・最大正常率</td><td class="l">100%・110% なら先に起動してから終了</td></tr>
+        <tr><td class="t">チェックポイント</td><td class="l">指定の割合で一時停止</td></tr>
+        <tr><td class="t">自動ロールバック</td><td class="l">失敗・アラームで元に戻す</td></tr>
+        <tr><td class="t">スキップマッチング</td><td class="l">すでに新しいものは飛ばす</td></tr>
+        <tr><td class="t">ルートボリュームの置き換え</td><td class="l">終了せず ID・IP を保つ</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：インスタンスの更新『変更を含む新しい起動テンプレートを作成し、インスタンスの更新を使用して更新をすぐにロールアウトできます。』／仕組み／ロールバック／スキップマッチング／チェックポイント／インスタンスメンテナンスポリシー／起動テンプレートのバージョン／Image Builder／パブリックパラメータ</div>
+  <div class="foot"><span>AWS DevOps #18 自動修復と設定の変更</span><span>タスク 5.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>止めて調べる</h1>
+  <table class="mx">
+    <tr><th>やりたいこと</th><th>使うもの</th><th>ポイント</th></tr>
+    <tr><td class="t">1 台を通信から外して調べ、戻す</td><td class="l">スタンバイ</td><td class="l">グループには残る。デタッチは外れる</td></tr>
+    <tr><td class="t">調査中に置き換えさせない</td><td class="l">ReplaceUnhealthy を中断</td><td class="l">Launch・Terminate・AZRebalance なども止められる</td></tr>
+    <tr><td class="t">起動に何度も失敗した</td><td class="l">管理上の中断</td><td class="l">Auto Scaling が自分で止める → 直して再開</td></tr>
+    <tr><td class="t">終了の前にログを取る</td><td class="l">終了のライフサイクルフック</td><td class="l">Terminating:Wait の間に Lambda・Run Command</td></tr>
+  </table>
+  <div class="cite">出典：プロセスの中断と再開『プロセスの中断は、スケーリングポリシーやスケジュールされたアクションに干渉されることなく、問題を調査またはトラブルシューティングする必要がある場合に役立ちます。』／インスタンスを一時的に削除する／ライフサイクルフック</div>
+  <div class="foot"><span>AWS DevOps #18 自動修復と設定の変更</span><span>タスク 5.2</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>イベントで設定を変える</h1>
+  <p>起きたことを EventBridge で受けて、すぐに動かす。</p>
+  <div class="foot"><span>AWS DevOps #18 自動修復と設定の変更</span><span>タスク 5.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>イベントと自動の処理</h1>
+  <table class="mx">
+    <tr><th>イベントの元</th><th>例</th><th>つなぐ先</th></tr>
+    <tr><td class="t">EC2</td><td class="l">running になった</td><td class="l">Automation ランブック（ルールに IAM ロール）</td></tr>
+    <tr><td class="t">Auto Scaling</td><td class="l">EC2 Instance Launch Unsuccessful</td><td class="l">SNS で通知</td></tr>
+    <tr><td class="t">Parameter Store</td><td class="l">値の変更・ポリシー（Expiration・ExpirationNotification・NoChangeNotification）</td><td class="l">Lambda で再読み込み・再作成</td></tr>
+    <tr><td class="t">Trusted Advisor</td><td class="l">チェックが緑 → 赤（us-east-1 に届く）</td><td class="l">修正の Lambda</td></tr>
+    <tr><td class="t">Security Hub</td><td class="l">カスタムアクション（人が選ぶ）／Findings - Imported（全部）</td><td class="l">修正の Lambda・Automation</td></tr>
+  </table>
+  <div class="point">Security Hub の自動化ルールは結果（重要度・抑制）を書き換えるだけ。Secrets Manager のローテーションはパスワードと DB を一緒に更新。</div>
+  <div class="cite">出典：EventBridge イベントに基づくオートメーション『ランブックを Amazon EventBridge イベントのターゲットとして指定することで、オートメーションを開始できます。』／Auto Scaling と EventBridge／Parameter Store のイベント・パラメータポリシー／Trusted Advisor／Security Hub のカスタムアクション・自動化ルール／Secrets Manager のローテーション</div>
+  <div class="foot"><span>AWS DevOps #18 自動修復と設定の変更</span><span>タスク 5.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>変更を止める期間</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">Change Calendar<span>DEFAULT_OPEN：イベントの間は CLOSED → 実行を止める<br>DEFAULT_CLOSED：イベントの間だけ OPEN → 実行を許す</span></div>
+      <div class="arrow">↓ 状態を確かめる</div>
+      <div class="box b2">Automation・メンテナンスウィンドウ・State Manager</div>
+    </div>
+    <div>
+      <div class="point warn">繁忙期の変更凍結は Change Calendar。SCP で止めると障害対応までできなくなる。</div>
+      <div class="point">Change Manager（変更の申請と承認の仕組み）は 2025 年 11 月 7 日から新しい利用者を受け付けていない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Change Calendar『イベント中、DEFAULT_OPEN カレンダーの状態は CLOSED となり、イベントの実行がブロックされます。』／Change Manager</div>
+  <div class="foot"><span>AWS DevOps #18 自動修復と設定の変更</span><span>タスク 5.2</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>望ましくない状態を直す</h1>
+  <p>見つけたら直す、ずれたら戻す、壊れたら移す。</p>
+  <div class="foot"><span>AWS DevOps #18 自動修復と設定の変更</span><span>タスク 5.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>直すしくみ</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">Config ルールで非準拠</div>
+      <div class="arrow">↓ 修復アクション（手動／自動＋再試行）</div>
+      <div class="box b1">Systems Manager Automation のドキュメント<span>AWS-DisablePublicAccessForSecurityGroup（SSH・RDP の全開を外す）・AWS-RestartEC2Instance・AWS-CreateImage など</span></div>
+      <div class="point">まず事前定義のランブックを探し、なければ自作する。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>状態</th><th>直し方</th></tr>
+        <tr><td class="t">ソフトの設定がずれる</td><td class="l">State Manager の関連付け（繰り返し適用）</td></tr>
+        <tr><td class="t">ハードウェアの故障</td><td class="l">簡易自動復旧（対応インスタンスは既定で有効）・アラームの復旧アクション</td></tr>
+        <tr><td class="t">復旧されない</td><td class="l">対応していない種類（インスタンスストアなど）</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：非準拠リソースの修正『AWS Config は、修復アクションを含む一連のマネージドオートメーションドキュメントを提供します。』／自動修復の設定／AWS-DisablePublicAccessForSecurityGroup／ランブックのリファレンス／State Manager／インスタンスの自動復旧</div>
+  <div class="foot"><span>AWS DevOps #18 自動修復と設定の変更</span><span>タスク 5.2</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">AMI を入れ替える</td><td class="l">起動テンプレートの新バージョン＋インスタンスの更新、チェックポイント、自動ロールバック、スキップマッチング、最小・最大正常率</td></tr>
+    <tr><td class="t">AMI を作る・選ぶ</td><td class="l">Image Builder のパイプライン、パブリックパラメータ</td></tr>
+    <tr><td class="t">調べる</td><td class="l">スタンバイ、ReplaceUnhealthy の中断、管理上の中断、終了のライフサイクルフック</td></tr>
+    <tr><td class="t">イベントで変える</td><td class="l">EventBridge → Automation、Parameter Store のイベントとポリシー、Trusted Advisor、Security Hub のカスタムアクションと自動化ルール、Change Calendar</td></tr>
+    <tr><td class="t">直す</td><td class="l">Config の修復（Automation・再試行）、事前定義のランブック、State Manager、簡易自動復旧</td></tr>
+  </table>
+  <div class="cite">出典：AWS Certified DevOps Engineer - Professional (DOP-C02) 試験ガイド タスク 5.2</div>
+</section>
+
+</body>
+</html>

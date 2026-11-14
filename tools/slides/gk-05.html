@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>G検定 #05 教師なし学習 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">G検定（JDLA ジェネラリスト検定）　シラバス2024　8　#05</div>
+  <h1>教師なし学習</h1>
+  <p>クラスタリング・k-means 法・ウォード法・デンドログラム、次元削減・主成分分析（PCA）・特異値分解（SVD）・多次元尺度構成法（MDS）・t-SNE、協調フィルタリング・コンテンツベースフィルタリング・コールドスタート問題、トピックモデル・潜在的ディリクレ配分法（LDA）</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（JDLA のシラバス、scikit-learn User Guide、ウィキペディア日本語版・英語版）を書いた。『』の中は原文どおり</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>クラスタリング</h1>
+  <p>正解のないデータを、似たものどうしのグループに分ける。</p>
+  <div class="foot"><span>G検定 #05 教師なし学習</span><span>シラバス 8</span></div>
+</section>
+
+<section class="slide">
+  <h1>k-means 法と階層型クラスタリング</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">① k 個の中心を置く（k は先に決める）</div>
+      <div class="arrow">↓</div>
+      <div class="box b1">② 各データを一番近い中心のクラスタへ</div>
+      <div class="arrow">↓</div>
+      <div class="box b2">③ 中心をクラスタの平均に動かす → ②へ（変わらなくなるまで）</div>
+      <div class="point warn">非階層型。イナーシャ（クラスタ内平方和）を小さく。初期値で結果が変わる（k-means++）。</div>
+    </div>
+    <div>
+      <div class="box b3">階層型：近いクラスタを1つずつ併合</div>
+      <div class="box b1">ウォード法<span>併合後のクラスタ内の2乗誤差の合計が最小の組を選ぶ</span></div>
+      <div class="box b2">デンドログラム（樹形図）<span>根＝全データ、葉＝データ1つ。切る高さでクラスタ数</span></div>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア「k平均法」『本アルゴリズムでは最小値ではなく初期値依存の極小値に収束する。』／「クラスター分析」／scikit-learn「Clustering」</div>
+  <div class="foot"><span>G検定 #05 教師なし学習</span><span>シラバス 8</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>次元削減</h1>
+  <p>情報をなるべく残して、変数の数を減らす。</p>
+  <div class="foot"><span>G検定 #05 教師なし学習</span><span>シラバス 8</span></div>
+</section>
+
+<section class="slide">
+  <h1>次元削減の手法</h1>
+  <table class="mx">
+    <tr><th>手法</th><th>しくみ</th><th>ポイント</th></tr>
+    <tr><td class="t">主成分分析（PCA）</td><td class="l">分散が最大の方向から順に、直交する主成分を作る</td><td class="l">線形。寄与率で情報量を見る</td></tr>
+    <tr><td class="t">特異値分解（SVD）</td><td class="l">どんな形の行列も3つの行列の積に分解</td><td class="l">大きい特異値だけ残して近似。文書×単語なら LSA</td></tr>
+    <tr><td class="t">多次元尺度構成法（MDS）</td><td class="l">距離の関係を保って低次元に並べる</td><td class="l">古典的 MDS＋ユークリッド距離＝PCA</td></tr>
+    <tr><td class="t">t-SNE</td><td class="l">近いものを近くに、t 分布で2・3次元に埋め込む</td><td class="l">非線形。可視化が主な目的</td></tr>
+  </table>
+  <div class="cite">出典：ウィキペディア「主成分分析」『相関のある多数の変数から相関のない少数で全体のばらつきを最もよく表す主成分と呼ばれる変数を合成する多変量解析の一手法』／「特異値分解」「多次元尺度構成法」「t分布型確率的近傍埋め込み法」／scikit-learn</div>
+  <div class="foot"><span>G検定 #05 教師なし学習</span><span>シラバス 8</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>推薦とトピックモデル</h1>
+  <p>行動の似た人から、言葉の出方から、隠れた構造を見つける。</p>
+  <div class="foot"><span>G検定 #05 教師なし学習</span><span>シラバス 8</span></div>
+</section>
+
+<section class="slide">
+  <h1>推薦のしくみ</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">協調フィルタリング<span>好みが似た利用者（行動の相関が高い人）の記録から推薦</span></div>
+      <div class="point warn">コールドスタート問題：新しい利用者・新しい商品・新しいサービスには記録がない。</div>
+    </div>
+    <div>
+      <div class="box b1">コンテンツベースフィルタリング<span>商品の特徴（ジャンル・作者）と利用者の好みを比べる</span></div>
+      <div class="point">記録がなくても使えるので、新商品のコールドスタートを補える。似たものばかりになりやすい。</div>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア「協調フィルタリング」『協調フィルタリング（きょうちょうフィルタリング、Collaborative Filtering、CF）は、多くのユーザの嗜好情報を蓄積し、あるユーザと嗜好の類似した他のユーザの情報を用いて自動的に推論を行う方法論である。』／「推薦システム」／Wikipedia「Cold start (recommender systems)」</div>
+  <div class="foot"><span>G検定 #05 教師なし学習</span><span>シラバス 8</span></div>
+</section>
+
+<section class="slide">
+  <h1>トピックモデルと LDA</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">文書A：犬 骨 散歩 犬 …</div>
+      <div class="box b3">文書B：猫 ニャー 犬 …</div>
+      <div class="arrow">↓ 単語の出方から</div>
+      <div class="box b1">トピック「犬」・トピック「猫」</div>
+    </div>
+    <div>
+      <div class="box b2">潜在的ディリクレ配分法（LDA）<span>1つの文書は複数のトピックの混ざり。単語はトピックから出てくる</span></div>
+      <div class="point warn">線形判別分析（教師あり）も LDA と略す。別物。</div>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア「トピックモデル」／「潜在的ディリクレ配分法」『各文書は複数のトピックから構成され、単語の出現は特定のトピックに基づいていると仮定される。』</div>
+  <div class="foot"><span>G検定 #05 教師なし学習</span><span>シラバス 8</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">クラスタリング</td><td class="l">k-means（非階層・k を先に・初期値依存）、ウォード法とデンドログラム（階層型）</td></tr>
+    <tr><td class="t">次元削減</td><td class="l">PCA（分散最大・直交）、SVD、MDS、t-SNE（非線形・可視化）の違い</td></tr>
+    <tr><td class="t">推薦</td><td class="l">協調フィルタリングとコンテンツベース、コールドスタート問題</td></tr>
+    <tr><td class="t">トピック</td><td class="l">トピックモデル、LDA は1文書に複数トピック</td></tr>
+  </table>
+  <div class="cite">出典：JDLA「G検定の試験出題範囲（シラバス）G2024#6～」8. 教師なし学習</div>
+</section>
+
+</body>
+</html>

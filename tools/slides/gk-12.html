@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>G検定 #12 RNNとAttention 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">G検定（JDLA ジェネラリスト検定）　シラバス2024　22・23　#12</div>
+  <h1>RNNとAttention</h1>
+  <p>RNN・時系列データ・エルマン／ジョルダンネットワーク・双方向 RNN・BPTT・教師強制・勾配消失／爆発、LSTM・ゲート機構・GRU、Seq2Seq・エンコーダ・デコーダ・Attention・クエリ／キー／バリュー・Source-Target Attention、Transformer・Self-Attention・Multi-Head Attention・位置エンコーディング・マスク</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（JDLA のシラバス、Attention Is All You Need・Bahdanau ほか・Seq2Seq・RNN Encoder-Decoder の論文、ウィキペディア）を書いた。『』の中は原文どおり</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>RNN の基本</h1>
+  <p>前の時刻の状態を持ち越して、順番のあるデータを扱う。</p>
+  <div class="foot"><span>G検定 #12 RNNとAttention</span><span>シラバス 22・23</span></div>
+</section>
+
+<section class="slide">
+  <h1>RNN のしくみ</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">入力 x(t)</div>
+      <div class="arrow">↓</div>
+      <div class="box b3">隠れ状態 h(t) ＝ f(x(t), h(t−1))<span>前の時刻の h(t−1) が戻ってくる（循環）</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">出力 y(t)</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>名前</th><th>文脈ユニットに戻すもの</th></tr>
+        <tr><td class="t">エルマン（1990）</td><td class="l">隠れ層の値</td></tr>
+        <tr><td class="t">ジョルダン（1986）</td><td class="l">出力層の値</td></tr>
+      </table>
+      <div class="point">まとめて単純回帰型ネットワーク（SRN）。<br>双方向 RNN＝前から読む RNN＋後ろから読む RNN。</div>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア「回帰型ニューラルネットワーク」『ジョーダン（英語版）ネットワークはエルマンネットワークと似ている。文脈ユニットは隠れ層の代わりに出力層から入力を得る。』</div>
+  <div class="foot"><span>G検定 #12 RNNとAttention</span><span>シラバス 22・23</span></div>
+</section>
+
+<section class="slide">
+  <h1>RNN の学習</h1>
+  <table class="mx">
+    <tr><th>言葉</th><th>中身</th></tr>
+    <tr><td class="t">BPTT</td><td class="l">時刻ごとに展開し、時間をさかのぼって誤差逆伝播法</td></tr>
+    <tr><td class="t">教師強制</td><td class="l">学習時、次の入力に予測ではなく正解を入れる（学習が速い。推論時とずれる）</td></tr>
+    <tr><td class="t">勾配消失</td><td class="l">さかのぼるほど勾配が小さく、遠い過去を学べない → LSTM・GRU</td></tr>
+    <tr><td class="t">勾配爆発</td><td class="l">勾配が大きくなりすぎる → 勾配クリッピング</td></tr>
+  </table>
+  <div class="cite">出典：英語版ウィキペディア「Backpropagation through time」『Backpropagation through time (BPTT) is a gradient-based technique for training certain types of recurrent neural networks, such as Elman networks.』／「Teacher forcing」</div>
+  <div class="foot"><span>G検定 #12 RNNとAttention</span><span>シラバス 22・23</span></div>
+</section>
+
+<section class="slide">
+  <h1>LSTM と GRU</h1>
+  <table class="mx">
+    <tr><th></th><th>LSTM（1997年）</th><th>GRU（2014年）</th></tr>
+    <tr><td class="t">ゲート</td><td class="l">入力・忘却（1999年に追加）・出力</td><td class="l">更新・リセット（出力ゲートなし）</td></tr>
+    <tr><td class="t">記憶</td><td class="l">記憶セル＋隠れ状態</td><td class="l">隠れ状態だけ</td></tr>
+    <tr><td class="t">パラメータ</td><td class="l">多い</td><td class="l">少ない</td></tr>
+  </table>
+  <div class="cols">
+    <div class="point">ゲート＝シグモイドの 0〜1 を掛けて、通す量を調整する。</div>
+    <div class="point warn">セルの中を勾配がほぼそのまま流れる → 勾配消失を部分的に解決。</div>
+  </div>
+  <div class="cite">出典：ウィキペディア「長・短期記憶」『一般的なLSTMユニットは、記憶セル、入力ゲート、出力ゲート、および忘却ゲートから構成される。』／「ゲート付き回帰型ユニット」</div>
+  <div class="foot"><span>G検定 #12 RNNとAttention</span><span>シラバス 22・23</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>Seq2Seq と Attention</h1>
+  <p>文全体を1つのベクトルに押しこむのをやめ、必要なところを見に行く。</p>
+  <div class="foot"><span>G検定 #12 RNNとAttention</span><span>シラバス 22・23</span></div>
+</section>
+
+<section class="slide">
+  <h1>Seq2Seq から Attention へ</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">Seq2Seq（2014）<span>エンコーダの LSTM → 固定長ベクトル → デコーダの LSTM</span></div>
+      <div class="point warn">固定長のベクトルがボトルネック。長い文で性能が落ちる。</div>
+      <div class="arrow">↓ Bahdanau ほか（2014）</div>
+      <div class="box b3">Attention つき<span>出力を作るたびに、入力のどこに注目するかを重みで選ぶ</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>要素</th><th>役割</th></tr>
+        <tr><td class="t">クエリ Q</td><td class="l">何を探しているか</td></tr>
+        <tr><td class="t">キー K</td><td class="l">見出し。Q との一致度 → ソフトマックスで重み</td></tr>
+        <tr><td class="t">バリュー V</td><td class="l">中身。重み付き和をとる</td></tr>
+      </table>
+      <div class="point">重みは入力ごとに変わる「ソフトウェイト」。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Bahdanau ほか『we conjecture that the use of a fixed-length vector is a bottleneck in improving the performance of this basic encoder-decoder architecture』／ウィキペディア「アテンション」</div>
+  <div class="foot"><span>G検定 #12 RNNとAttention</span><span>シラバス 22・23</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>Transformer</h1>
+  <p>Attention だけで作る。並列に計算できて速い。</p>
+  <div class="foot"><span>G検定 #12 RNNとAttention</span><span>シラバス 22・23</span></div>
+</section>
+
+<section class="slide">
+  <h1>Transformer の部品</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">エンコーダ<span>Self-Attention ＋ フィードフォワード層</span></div>
+      <div class="box b1">デコーダ<span>マスク付き Self-Attention ＋ Source-Target Attention ＋ フィードフォワード層</span></div>
+      <div class="point">入力：単語の埋め込み ＋ 位置エンコーディング</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>部品</th><th>役割</th></tr>
+        <tr><td class="t">Self-Attention</td><td class="l">同じ列の中の関係（Q・K・V を同じ列から）</td></tr>
+        <tr><td class="t">Source-Target</td><td class="l">Q はデコーダ、K・V はエンコーダから</td></tr>
+        <tr><td class="t">Multi-Head</td><td class="l">ヘッドを複数並べ、いろいろな関連を同時に</td></tr>
+        <tr><td class="t">位置エンコーディング</td><td class="l">Attention は順番を区別しないので必須</td></tr>
+        <tr><td class="t">マスク</td><td class="l">未来の単語を見ない</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="cite">出典：Vaswani ほか『based solely on attention mechanisms, dispensing with recurrence and convolutions entirely.』／ウィキペディア「Transformer」</div>
+  <div class="foot"><span>G検定 #12 RNNとAttention</span><span>シラバス 22・23</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">RNN</td><td class="l">循環と時系列、エルマンとジョルダン、双方向、BPTT、教師強制、勾配の問題</td></tr>
+    <tr><td class="t">LSTM・GRU</td><td class="l">3つのゲートの役割、GRU との違い（ゲート数・パラメータ）</td></tr>
+    <tr><td class="t">Attention</td><td class="l">固定長ベクトルの問題、クエリ・キー・バリュー、Source-Target</td></tr>
+    <tr><td class="t">Transformer</td><td class="l">並列化、Self-Attention、Multi-Head、位置エンコーディング、マスク</td></tr>
+  </table>
+  <div class="cite">出典：JDLA「G検定の試験出題範囲（シラバス）G2024#6～」22. 回帰結合層／23. Attention</div>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Terraform #07 変数・出力と型 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">HashiCorp Certified: Terraform Associate（004）　目標 4c・4d　#07</div>
+  <h1>変数・出力と型</h1>
+  <p>variable ブロックの引数、値の渡し方と優先順位（-var・tfvars・TF_VAR_・default）、output と terraform output、ローカル値、プリミティブ・コレクション・構造型、optional、型の変換と any</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（HashiCorp の Exam Content List（004）、Terraform ドキュメント v1.12.x の Use input variables to add module arguments・variable block reference・output block reference・Use locals to reuse expressions・Type Constraints・Command: output）を書いた。英語の原文は『』で引用した</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>入力・出力・ローカル</h1>
+  <p>引数、戻り値、関数の中の変数。</p>
+  <div class="foot"><span>Terraform #07 変数・出力と型</span><span>目標 4c・4d</span></div>
+</section>
+
+<section class="slide">
+  <h1>モジュールを関数にたとえると</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">variable ＝ 引数<span>外から値を受け取る。var.NAME</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b1">locals ＝ 関数の中の変数<span>式に名前を付ける。local.NAME（参照は単数形）</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">output ＝ 戻り値<span>親・CLI・remote state・自動化ツールへ。module.M.NAME</span></div>
+    </div>
+    <div>
+      <div class="code small">variable "environment" {
+  type        = string
+  description = "Deployment environment name"
+  default     = "dev"            <span class="c"># リテラルだけ</span>
+  validation {
+    condition     = contains(["dev","staging","prod"], var.environment)
+    error_message = "Environment must be dev, staging, or prod."
+  }
+}
+locals {
+  name = "${var.project}-${var.environment}"
+}
+output "web_ip" {
+  value       = aws_instance.web.public_ip   <span class="c"># 必須</span>
+  description = "Public IP of the web server"
+}</div>
+    </div>
+  </div>
+  <div class="cite">出典：variable block reference／output block reference／Use locals to reuse expressions</div>
+</section>
+
+<section class="slide">
+  <h1>variable ブロックの引数</h1>
+  <table class="mx">
+    <tr><th>引数</th><th>意味</th><th>覚えどころ</th></tr>
+    <tr><td class="t">type</td><td class="l">型の制約</td><td class="l">書かなければ any</td></tr>
+    <tr><td class="t">default</td><td class="l">既定値</td><td class="l">なければ必須（plan の前に入力を求める）。リテラルだけ、参照不可</td></tr>
+    <tr><td class="t">description</td><td class="l">使う人向けの説明</td><td class="l">保守のメモはコメントに</td></tr>
+    <tr><td class="t">validation</td><td class="l">condition・error_message</td><td class="l">計画を作るときに評価、false で止まる</td></tr>
+    <tr><td class="t">sensitive</td><td class="l">CLI の出力で隠す</td><td class="l">使った式も sensitive。ステートには残る</td></tr>
+    <tr><td class="t">nullable</td><td class="l">null を入れてよいか</td><td class="l">既定 true。false なら null 不可</td></tr>
+    <tr><td class="t">ephemeral</td><td class="l">ステート・プランに残さない</td><td class="l">#10</td></tr>
+  </table>
+  <div class="point warn">変数名に使えない：source・version・providers・count・for_each・lifecycle・depends_on・locals</div>
+  <div class="cite">出典：variable block reference</div>
+</section>
+
+<section class="slide">
+  <h1>値の渡し方と優先順位</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">1. -var・-var-file（書いた順）・HCP Terraform<span>いちばん強い</span></div>
+      <div class="box b1">2. *.auto.tfvars・*.auto.tfvars.json<span>名前の順</span></div>
+      <div class="box b3">3. terraform.tfvars.json</div>
+      <div class="box b3">4. terraform.tfvars</div>
+      <div class="box b2">5. 環境変数 TF_VAR_name</div>
+      <div class="box b2">6. default<span>いちばん弱い</span></div>
+    </div>
+    <div>
+      <div class="code small">$ terraform apply -var="instance_type=t3.medium"
+$ terraform apply -var-file="prod.tfvars"   <span class="c"># 自動では読まれない名前</span>
+$ export TF_VAR_environment=staging
+$ export TF_VAR_cfg='{"key": "value", "list": ["a", "b"]}'</div>
+      <div class="point">自動で読まれる：terraform.tfvars・terraform.tfvars.json・*.auto.tfvars・*.auto.tfvars.json</div>
+      <div class="point">子モジュールの変数は、親の module ブロックの引数で渡す。</div>
+      <div class="point warn">秘密の値が入った tfvars は VCS に入れない。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Use input variables to add module arguments（Assign values to variables）</div>
+</section>
+
+<section class="slide">
+  <h1>output と terraform output</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>output の引数</th><th>意味</th></tr>
+        <tr><td class="t">value（必須）</td><td class="l">返す値。ステートに保存</td></tr>
+        <tr><td class="t">description</td><td class="l">使う人向けの説明</td></tr>
+        <tr><td class="t">sensitive</td><td class="l">plan・apply で (sensitive value)</td></tr>
+        <tr><td class="t">ephemeral</td><td class="l">ステートに残さない（子モジュールの出力）</td></tr>
+        <tr><td class="t">depends_on・precondition</td><td class="l">明示の依存・事前の条件</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="code small">$ terraform output              <span class="c"># 全部（sensitive は隠す）</span>
+$ terraform output lb_address   <span class="c"># 1 つ</span>
+$ terraform output -json | jq   <span class="c"># JSON</span>
+$ terraform output -raw lb_address
+<span class="c"># 文字列そのまま（string・number・bool だけ）</span></div>
+      <div class="point warn">-json・-raw では sensitive も平文で出る。</div>
+      <div class="point">sensitive な属性を value に使うと、output にも sensitive = true が必要。</div>
+    </div>
+  </div>
+  <div class="cite">出典：output block reference／Command: output</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>型</h1>
+  <p>同じ型の集まりか、ちがう型の組か。</p>
+  <div class="foot"><span>Terraform #07 変数・出力と型</span><span>目標 4c・4d</span></div>
+</section>
+
+<section class="slide">
+  <h1>型の全体像</h1>
+  <table class="mx">
+    <tr><th>種類</th><th>型</th><th>特徴</th></tr>
+    <tr><td class="t">プリミティブ</td><td class="l">string・number・bool</td><td class="l">number は整数も小数も。15 ⇔ "15"、true ⇔ "true" は自動変換</td></tr>
+    <tr><td class="t">コレクション</td><td class="l">list(T)</td><td class="l">0 からの番号。同じ型の要素</td></tr>
+    <tr><td class="t">コレクション</td><td class="l">map(T)</td><td class="l">文字列のキー。同じ型の値</td></tr>
+    <tr><td class="t">コレクション</td><td class="l">set(T)</td><td class="l">順番もキーもなく、重複しない</td></tr>
+    <tr><td class="t">構造</td><td class="l">object({k = T, …})</td><td class="l">名前付きの属性ごとに型。キーは全部必要（多い分は捨てる）</td></tr>
+    <tr><td class="t">構造</td><td class="l">tuple([T, …])</td><td class="l">位置ごとに型。数はぴったり</td></tr>
+    <tr><td class="t">動的</td><td class="l">any</td><td class="l">型ではなく置き場所。『very rarely the correct type constraint』</td></tr>
+  </table>
+  <div class="point">list・map だけ書くと list(any)・map(any)。新しいコードは完全な形で。</div>
+  <div class="cite">出典：Type Constraints</div>
+</section>
+
+<section class="slide">
+  <h1>型の変換と optional</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>渡した値 → 型</th><th>結果</th></tr>
+        <tr><td class="t">["a", 15, true] → list(string)</td><td class="l">["a", "15", "true"]</td></tr>
+        <tr><td class="t">["b", "a", "b"] → set(string)</td><td class="l">重複が消え、順番もなくなる</td></tr>
+        <tr><td class="t">["a", 1, "b"] → list(any)</td><td class="l">list(string)：["a", "1", "b"]</td></tr>
+        <tr><td class="t">["a", [], "b"] → list(any)</td><td class="l">エラー（そろう型がない）</td></tr>
+        <tr><td class="t">{name = [...], age = 12} → map(string)</td><td class="l">エラー（リストは文字列にならない）</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="code small">variable "with_optional_attribute" {
+  type = object({
+    a = string                 <span class="c"># 必須</span>
+    b = optional(string)       <span class="c"># 省くと null</span>
+    c = optional(number, 127)  <span class="c"># 省くと 127</span>
+  })
+}</div>
+      <div class="point">null でない既定値は、省いても null を渡しても既定値になる。</div>
+      <div class="point">any を使ってよいのは、中を見ずに jsonencode などでそのまま渡すときだけ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：Type Constraints（Conversion of Complex Types／any／Optional Object Type Attributes）</div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">variable</td><td class="l">var. で参照、default がないと必須、type の既定は any、予約語</td></tr>
+    <tr><td class="t">validation・sensitive</td><td class="l">計画で評価して止まる、sensitive は表示だけ</td></tr>
+    <tr><td class="t">優先順位</td><td class="l">-var ＞ auto.tfvars ＞ tfvars.json ＞ tfvars ＞ TF_VAR_ ＞ default</td></tr>
+    <tr><td class="t">output</td><td class="l">value 必須、-json・-raw は平文、-raw は単純な型だけ</td></tr>
+    <tr><td class="t">locals</td><td class="l">locals で定義・local で参照、外から渡せない</td></tr>
+    <tr><td class="t">型</td><td class="l">コレクションと構造のちがい、変換の結果、optional の既定値、any の使いどころ</td></tr>
+  </table>
+  <div class="cite">出典：Exam Content List（004）4c・4d／本資料の問題演習（全 30 問）</div>
+</section>
+
+</body>
+</html>

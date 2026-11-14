@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>G検定 #24 AI倫理の論点 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">G検定（JDLA ジェネラリスト検定）　シラバス2024　法律・倫理 9〜17　#24</div>
+  <h1>AI倫理の論点</h1>
+  <p>プライバシー・バイ・デザイン・カメラ画像利活用ガイドブック、アルゴリズムバイアス・サンプリングバイアス・センシティブ属性・代理変数・公平性の定義、敵対的攻撃・データ汚染・モデル窃取・データ窃取・セキュリティ・バイ・デザイン、ディープフェイク・フェイクニュース、説明可能性・データの来歴、フィルターバブル・エコーチェンバー、電力消費、AI との協働、インクルージョン・軍事利用・死者への敬意・人間の自律性</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（AI 事業者ガイドライン、arXiv の論文、ウィキペディア日本語版・英語版）を書いた。カメラ画像利活用ガイドブックは原文を取得できなかったため要約した。『』の中は原文どおり</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>プライバシーと公平性</h1>
+  <p>集めるときと推論するときを分ける。属性を消してもバイアスは残る。</p>
+  <div class="foot"><span>G検定 #24 AI倫理の論点</span><span>法律・倫理 9〜17</span></div>
+</section>
+
+<section class="slide">
+  <h1>プライバシー：収集と推論</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">データ収集段階<span>知らないうちに顔や行動が撮られる・集められる → 告知・目的の限定・最小限の収集</span></div>
+      <div class="box b2">推論段階<span>購買履歴から妊娠・病気などを推測 → センシティブな推論をしない、結果の扱いを決める</span></div>
+      <div class="box b3">プライバシー・バイ・デザイン<span>設計の段階から組みこむ（アン・カブキアン、7原則）</span></div>
+    </div>
+    <div>
+      <div class="point">7原則：事前に／初期設定で保護／設計に組みこむ／ポジティブサム／全期間のセキュリティ／可視性と透明性／利用者の尊重。</div>
+      <div class="point">カメラ画像利活用ガイドブック：撮影と目的の事前告知、保存期間を限る、目的外に使わない、問い合わせ窓口。</div>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア英語版「Privacy by design」『Proactive not reactive; preventive not remedial』</div>
+  <div class="foot"><span>G検定 #24 AI倫理の論点</span><span>法律・倫理 9〜17</span></div>
+</section>
+
+<section class="slide">
+  <h1>公平性：バイアスの原因</h1>
+  <table class="mx">
+    <tr><th>原因</th><th>中身</th><th>例</th></tr>
+    <tr><td class="t">データの偏り</td><td class="l">過去の差別や不均衡をそのまま学ぶ</td><td class="l">Amazon の採用 AI が女性に不利（2015年に停止）</td></tr>
+    <tr><td class="t">サンプリングバイアス</td><td class="l">データが母集団を代表していない</td><td class="l">顔認識：暗い肌の女性で誤り率34.7%</td></tr>
+    <tr><td class="t">代理変数</td><td class="l">センシティブ属性を消しても別の変数で推測</td><td class="l">郵便番号が人種の代わりになる</td></tr>
+  </table>
+  <div class="point warn">センシティブ属性（人種・性別・宗教など）の列を消すだけでは公平にならない。</div>
+  <div class="cite">出典：AI 事業者ガイドライン『人種や性別等の明らかなセンシティブ属性を取り除いたデータであっても、関連する情報からセンシティブ属性が類推されてしまう場合』</div>
+  <div class="foot"><span>G検定 #24 AI倫理の論点</span><span>法律・倫理 9〜17</span></div>
+</section>
+
+<section class="slide">
+  <h1>公平性の定義と COMPAS</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">ProPublica（2016年）<span>黒人の被告人の誤分類の割合が高い → 人種的な偏り</span></div>
+      <div class="box b2">開発元<span>予測の正確さは人種にかかわらず同じ</span></div>
+      <div class="box b3">結論<span>どちらも正しい。両立しない別々の公平性の定義を見ていた</span></div>
+    </div>
+    <div>
+      <div class="point">主な定義：合格率をそろえる（デモグラフィック・パリティ）、誤り率をそろえる（均等化オッズ）、予測の当たり方をそろえる（較正）。</div>
+      <div class="point warn">複数の定義を同時に満たすことは一般にできない。用途に合わせて選ぶ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：ウィキペディア英語版「COMPAS (software)」『they refer to two mutually exclusive definitions of fairness.』</div>
+  <div class="foot"><span>G検定 #24 AI倫理の論点</span><span>法律・倫理 9〜17</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>安全性・セキュリティ・悪用</h1>
+  <p>学習をねらう攻撃、推論をねらう攻撃。偽物を作る悪用。</p>
+  <div class="foot"><span>G検定 #24 AI倫理の論点</span><span>法律・倫理 9〜17</span></div>
+</section>
+
+<section class="slide">
+  <h1>AI への攻撃</h1>
+  <table class="mx">
+    <tr><th>攻撃</th><th>段階</th><th>中身</th></tr>
+    <tr><td class="t">敵対的攻撃</td><td class="l">推論</td><td class="l">小さく意図的なノイズで、高い確信度の誤認識</td></tr>
+    <tr><td class="t">データ汚染</td><td class="l">学習</td><td class="l">誤りを増やすデータ・バックドアを混ぜる</td></tr>
+    <tr><td class="t">モデル汚染</td><td class="l">学習・配布</td><td class="l">配布モデルや連合学習の更新に細工</td></tr>
+    <tr><td class="t">モデル窃取</td><td class="l">推論</td><td class="l">問い合わせの出力からモデルを再現</td></tr>
+    <tr><td class="t">データ窃取</td><td class="l">推論</td><td class="l">学習データを推測・復元（メンバーシップ推論など）</td></tr>
+  </table>
+  <div class="point">対策の考え方：セキュリティ・バイ・デザイン（設計の段階から組みこむ）。</div>
+  <div class="cite">出典：Goodfellow ほか（arXiv:1412.6572）『inputs formed by applying small but intentionally worst-case perturbations to examples from the dataset』</div>
+  <div class="foot"><span>G検定 #24 AI倫理の論点</span><span>法律・倫理 9〜17</span></div>
+</section>
+
+<section class="slide">
+  <h1>悪用：ディープフェイクとフェイクニュース</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">ディープフェイク<span>深層学習＋偽物。実在しない・改変された人物や出来事の精巧な合成メディア</span></div>
+      <div class="box b2">フェイクニュース<span>事実と異なる情報をニュースのように広める</span></div>
+    </div>
+    <div>
+      <div class="point">悪用：政治家の偽の演説、なりすまし詐欺、同意のない性的な画像、世論の操作。</div>
+      <div class="point">対策：検出技術、電子透かし、来歴の記録、ファクトチェック、AI 生成物の表示、リテラシー教育。</div>
+    </div>
+  </div>
+  <div class="cite">出典：AI 事業者ガイドライン『生成 AI によって、内容が真実・公平であるかのように装った情報を誰でも作ることができるようになり』</div>
+  <div class="foot"><span>G検定 #24 AI倫理の論点</span><span>法律・倫理 9〜17</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>透明性・民主主義・環境・労働・その他</h1>
+  <p>ブラックボックスを開く。情報の泡を割る。人を取り残さない。</p>
+  <div class="foot"><span>G検定 #24 AI倫理の論点</span><span>法律・倫理 9〜17</span></div>
+</section>
+
+<section class="slide">
+  <h1>透明性と民主主義</h1>
+  <div class="cols">
+    <div>
+      <div class="box b1">説明可能性<span>どのように決定がなされたかに答えられる（技術は #17）</span></div>
+      <div class="box b1">データの来歴<span>データの出どころ・集め方・加工の経歴</span></div>
+    </div>
+    <div>
+      <div class="box b2">フィルターバブル<span>アルゴリズムの推薦で、見たい情報ばかりになる</span></div>
+      <div class="box b3">エコーチェンバー<span>似た意見の人の集まりで、意見が肯定され増幅される</span></div>
+      <div class="point warn">原因のちがい：フィルターバブル＝アルゴリズム、エコーチェンバー＝人の集まり。</div>
+    </div>
+  </div>
+  <div class="cite">出典：AI 事業者ガイドライン『説明可能性（システムでどのように決定がなされたかについて答えられること）』</div>
+  <div class="foot"><span>G検定 #24 AI倫理の論点</span><span>法律・倫理 9〜17</span></div>
+</section>
+
+<section class="slide">
+  <h1>環境・労働・その他の価値</h1>
+  <table class="mx">
+    <tr><th>論点</th><th>中身</th></tr>
+    <tr><td class="t">環境保護</td><td class="l">大きなモデルの学習で大量の電力・費用・CO2（Strubell ら 2019）</td></tr>
+    <tr><td class="t">労働政策</td><td class="l">AI との協働、スキルの喪失、労働力不足の補完、学び直し</td></tr>
+    <tr><td class="t">インクルージョン</td><td class="l">障害・年齢・言語にかかわらず恩恵を受けられ、取り残さない</td></tr>
+    <tr><td class="t">軍事利用</td><td class="l">LAWS：人間を介さず標的を判断する兵器。責任と生死の判断</td></tr>
+    <tr><td class="t">死者への敬意</td><td class="l">故人の声や姿の再現：本人の意思・遺族・尊厳</td></tr>
+    <tr><td class="t">人間の自律性</td><td class="l">推薦や操作的なデザインで、選択が気づかずに誘導されない</td></tr>
+  </table>
+  <div class="cite">出典：Strubell ほか（arXiv:1906.02243）『these accuracy improvements depend on the availability of exceptionally large computational resources that necessitate similarly substantial energy consumption.』</div>
+  <div class="foot"><span>G検定 #24 AI倫理の論点</span><span>法律・倫理 9〜17</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">プライバシー</td><td class="l">収集段階と推論段階、プライバシー・バイ・デザイン、カメラ画像の告知</td></tr>
+    <tr><td class="t">公平性</td><td class="l">データの偏り・サンプリングバイアス・代理変数、Amazon・COMPAS、定義は両立しない</td></tr>
+    <tr><td class="t">セキュリティ・悪用</td><td class="l">敵対的攻撃・データ汚染・モデル窃取の区別、ディープフェイクの対策</td></tr>
+    <tr><td class="t">そのほか</td><td class="l">フィルターバブルとエコーチェンバーの区別、電力消費、LAWS、死者への敬意、自律性</td></tr>
+  </table>
+  <div class="cite">出典：JDLA「G検定の試験出題範囲（シラバス）G2024#6～」法律・倫理分野 9〜17</div>
+</section>
+
+</body>
+</html>

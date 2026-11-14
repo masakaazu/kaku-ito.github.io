@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AWS DevOps #04 CodeDeployとデプロイ戦略 図解</title>
+<style>
+@page { size: 960px 540px; margin: 0; }
+:root {
+  --ink: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --soft: #f5f5f7;
+  --navy: #1f3a68; --navy2: #2f5596; --navy3: #5b80bf; --pale: #c9daf2; --paler: #e8eef8;
+  --blue: #0071e3; --warn: #b25000;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "IPAPGothic", "IPA Pゴシック", sans-serif; color: var(--ink); }
+.slide { width: 960px; height: 540px; padding: 40px 52px; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+.slide:last-child { page-break-after: auto; }
+h1 { font-size: 30px; margin: 0 0 22px; color: var(--navy); font-weight: 700; }
+h1 small { font-size: 16px; color: var(--muted); font-weight: 400; margin-left: 10px; }
+.foot { position: absolute; left: 52px; right: 52px; bottom: 18px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.cols.wide-r { grid-template-columns: 0.9fr 1.1fr; }
+.def dt { font-weight: 700; font-size: 14px; color: var(--navy); margin-top: 10px; }
+.def dt:first-child { margin-top: 0; }
+.def dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.55; }
+.box { border-radius: 8px; color: #fff; text-align: center; padding: 8px 10px; font-size: 14px; font-weight: 700; }
+.box span { display: block; font-size: 11.5px; font-weight: 400; margin-top: 2px; opacity: .92; }
+.b1 { background: var(--navy); } .b2 { background: var(--navy2); } .b3 { background: var(--navy3); }
+.b4 { background: var(--pale); color: var(--navy); } .b5 { background: var(--paler); color: var(--navy); border: 1px solid var(--pale); }
+.cap { background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 6px; border-radius: 6px 6px 0 0; }
+.stack { display: grid; gap: 6px; }
+.arrow { text-align: center; color: var(--navy3); font-size: 18px; line-height: 1; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { background: var(--navy); color: #fff; font-weight: 700; padding: 7px 8px; text-align: left; }
+td { border-bottom: 1px solid var(--line); padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+tr:nth-child(even) td { background: var(--soft); }
+.point { margin-top: 14px; background: var(--paler); border-left: 4px solid var(--navy2); padding: 9px 12px; font-size: 13px; line-height: 1.55; border-radius: 0 6px 6px 0; }
+.point b { color: var(--navy); }
+.warn { border-left-color: var(--warn); background: #fdf3ea; }
+.formula { font-size: 19px; font-weight: 700; color: var(--navy); background: var(--soft); border-radius: 8px; padding: 12px 16px; text-align: center; margin: 6px 0 12px; }
+.tag { display: inline-block; background: var(--navy); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 11.5px; margin-right: 6px; }
+.title { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title .k { font-size: 18px; color: var(--muted); margin-bottom: 14px; }
+.title h1 { font-size: 46px; line-height: 1.3; margin: 0; color: var(--ink); }
+.title p { font-size: 19px; color: var(--muted); margin-top: 22px; }
+ol.toc { font-size: 16px; line-height: 1.85; margin: 0; padding-left: 26px; columns: 2; column-gap: 40px; }
+.flow { display: flex; align-items: center; gap: 8px; }
+.flow .box { flex: 1; }
+.flow .to { color: var(--navy3); font-size: 20px; }
+svg text { font-family: "IPAPGothic", sans-serif; }
+
+.chapter { display:flex; flex-direction:column; justify-content:center; background: var(--navy); color:#fff; padding-left:90px; }
+.chapter .k { font-size:18px; opacity:.8; margin-bottom:10px; }
+.slide.chapter h1 { color:#fff; font-size:44px; margin:0; }
+.chapter p { font-size:17px; opacity:.9; margin-top:18px; }
+.chapter .foot { color: rgba(255,255,255,.7); }
+table td, table th { font-size: 12.5px; }
+.point { font-size: 12.5px; padding: 7px 11px; margin-top: 10px; }
+.slide h1 { font-size: 25px; margin-bottom: 16px; }
+.title h1 { font-size: 46px; }
+.flow .box { font-size: 13px; }
+.flow .box span { font-size: 11px; }
+table.vs td { font-size: 13.5px; padding: 9px 8px; }
+
+.ico { width: 26px; height: 26px; vertical-align: -6px; margin-right: 6px; }
+.hero-icons { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: repeat(2, 110px); gap: 18px; }
+.hero-icons img { width: 110px; height: 110px; background: rgba(255,255,255,.92); border-radius: 22px; padding: 16px; }
+.title .icons { margin-top: 26px; display: flex; gap: 22px; justify-content: center; }
+.title .icons img { width: 64px; height: 64px; }
+.box img { width: 30px; height: 30px; display: block; margin: 0 auto 4px; }
+.illust { position: absolute; right: 52px; bottom: 34px; height: 120px; }
+.chapter .hero-icons.ira img { background:#fff; padding: 8px; object-fit: contain; }
+.mono { font-family: "IPAGothic", monospace; letter-spacing: 1px; }
+.kmap td, .kmap th { text-align: center; padding: 5px 0; font-size: 14px; }
+.kmap td.on { background: var(--pale); font-weight: 700; color: var(--navy); }
+.kmap td.on2 { background: #fde7cf; font-weight: 700; color: var(--warn); }
+.mini td { font-size: 12px; padding: 4px 6px; }
+.big { font-size: 15px; line-height: 1.7; }
+.chapter p { max-width: 500px; line-height: 1.7; }
+svg { max-width: 100%; height: auto; }
+/* 例題・手順・出典（2026-11 参考書レベル版で追加） */
+.cite { position: absolute; left: 52px; right: 52px; bottom: 34px; font-size: 10px; line-height: 1.4; color: #6e6e73; }
+.cite a { color: var(--blue); text-decoration: none; }
+.steps { counter-reset: st; list-style: none; padding: 0; margin: 0; }
+.steps li { counter-increment: st; position: relative; padding: 6px 0 6px 32px; font-size: 13px; line-height: 1.5; border-bottom: 1px dashed var(--line); }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; text-align: center; font-weight: 700; font-size: 12px; line-height: 22px; }
+.ex { border: 2px solid var(--navy2); border-radius: 8px; padding: 8px 12px; font-size: 13px; line-height: 1.55; background: #fff; }
+.ex .lbl { display: inline-block; background: var(--navy2); color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 8px; margin-right: 6px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.hl { background: #fde7cf; color: var(--warn); font-weight: 700; padding: 0 3px; border-radius: 3px; }
+.cap a.ref, .ex .lbl a.ref, th a.ref, .box a.ref { color: #fff !important; text-decoration-color: rgba(255,255,255,.7); }
+.box.b4 a.ref, .box.b5 a.ref { color: var(--navy) !important; text-decoration-color: rgba(31,58,104,.45); }
+/* 参照元リンク（tools/slides/addrefs.py が付ける） */
+a.ref, a.src { color: inherit; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 60%, transparent); text-underline-offset: 2px; }
+a.ref.q, a.src { color: var(--blue, #0071e3); }
+.refs { position: absolute; left: 52px; text-align: left; right: 80px; bottom: 14px; font-size: 11px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.refs a.ref { color: var(--blue, #0071e3); }
+.refs-legend { position: absolute; left: 52px; right: 52px; bottom: 22px; font-size: 12px; color: #6e6e73; text-align: center; }
+</style>
+<style>
+/* CCNA 用（コマンドと show の出力） */
+.cli { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.5; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.cli b { color: var(--navy); }
+.cli i { font-style: normal; color: #6e6e73; }
+.cli .hl { font-weight: 700; }
+.cli.small { font-size: 10.5px; }
+.vl10 { fill: #5b80bf; } .vl20 { fill: #e08a2c; }
+.legend span { display: inline-block; margin-right: 14px; font-size: 12px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+.anno { font-size: 12px; line-height: 1.5; }
+.anno li { margin: 3px 0; }
+.mx td, .mx th { text-align: center; font-size: 12.5px; padding: 6px 4px; }
+.mx td.t { background: var(--pale); color: var(--navy); font-weight: 700; }
+.mx td.a { background: #f5f5f7; }
+.mx td.x { background: #fde7cf; color: var(--warn); font-weight: 700; }
+.mx th.rowh { background: var(--navy2); }
+</style>
+<style>
+/* Java 用（コードと端末） */
+.code { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 12px; line-height: 1.55; background: #f5f5f7; border: 1px solid var(--line); border-radius: 8px; padding: 9px 13px; white-space: pre; color: #1d1d1f; margin: 0; }
+.code.small { font-size: 11px; }
+.code .k { color: var(--navy); font-weight: 700; }
+.code .s { color: #8a4a00; }
+.code .c { color: #6e6e73; }
+.code .ng { background: #fde7cf; }
+.code .ok { background: #e3eefc; }
+.sh { font-family: "DejaVu Sans Mono", "IPAGothic", monospace; font-size: 11.5px; line-height: 1.55; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--navy2); border-radius: 0 8px 8px 0; padding: 8px 12px; white-space: pre; color: #1d1d1f; margin: 0; }
+.sh .p { color: var(--navy); font-weight: 700; }
+.sh .o { color: #4a5a78; }
+.sh .e { color: var(--warn); }
+.sh .c { color: #6e6e73; }
+div.mini { font-size: 11.5px; color: #4a5a78; margin-top: 4px; line-height: 1.5; }
+.lbl { font-size: 12px; font-weight: 700; color: var(--navy); margin: 0 0 4px; }
+td code, .point code, div.mini code, .box code { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+.mx td.l { text-align: left; }
+.bs { font-family: "DejaVu Sans Mono", monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<section class="slide title">
+  <div class="k">AWS Certified DevOps Engineer – Professional（DOP-C02）　タスク 1.1・1.4　#04</div>
+  <h1>CodeDeployとデプロイ戦略</h1>
+  <p>CodeDeploy のアプリケーション・デプロイグループ・リビジョン・AppSpec・エージェント、デプロイ設定と正常なホストの最小数、ライフサイクルイベントフック、自動ロールバックとアラーム、Auto Scaling との連携、一括・ローリング・追加バッチ・イミュータブル・Canary・線形・ブルー/グリーン・CNAME スワップ</p>
+  <div class="refs-legend">各ページの下に、根拠にした資料（AWS の DOP-C02 試験ガイド、AWS CodeDeploy ユーザーガイド・AWS Elastic Beanstalk 開発者ガイドの各ページ、ホワイトペーパー「AWS での継続的インテグレーションと継続的デリバリーの実践」）を書いた。『』の中は日本語版ドキュメントの原文どおり</div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第1章</div>
+  <h1>CodeDeploy のしくみ</h1>
+  <p>3 つのプラットフォーム、2 つのデプロイタイプ。</p>
+  <div class="foot"><span>AWS DevOps #04 CodeDeployとデプロイ戦略</span><span>タスク 1.1・1.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>部品とプラットフォーム</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">アプリケーション<span>プラットフォームを選ぶ入れ物</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b1">デプロイグループ<span>タグ・Auto Scaling グループ／デプロイ設定・LB・アラーム・ロールバック</span></div>
+      <div class="arrow">↓ デプロイ</div>
+      <div class="box b2">リビジョン（S3・GitHub）<span>appspec.yml＋アプリのファイル</span></div>
+      <div class="point">エージェントが CodeDeploy をポーリング → S3 から取る（インスタンスプロファイル）。</div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th></th><th>EC2/オンプレ</th><th>Lambda</th><th>ECS</th></tr>
+        <tr><td class="t">インプレース</td><td class="l">○</td><td class="l">×</td><td class="l">×</td></tr>
+        <tr><td class="t">Blue/Green</td><td class="l">EC2 のみ</td><td class="l">トラフィック移行</td><td class="l">タスクセット</td></tr>
+        <tr><td class="t">エージェント</td><td class="l">要る</td><td class="l">不要</td><td class="l">不要</td></tr>
+      </table>
+      <div class="point warn">サービスロール＝CodeDeploy 用。インスタンスプロファイル＝エージェント用。</div>
+    </div>
+  </div>
+  <div class="cite">出典：CodeDeploy とは／CodeDeploy プライマリコンポーネント／CodeDeploy エージェントの使用</div>
+  <div class="foot"><span>AWS DevOps #04 CodeDeployとデプロイ戦略</span><span>タスク 1.1・1.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>デプロイ設定</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>EC2/オンプレミス</th><th>9 台のとき</th></tr>
+        <tr><td class="t">AllAtOnce</td><td class="l">一度に 9 台。1 台でも成功で成功</td></tr>
+        <tr><td class="t">HalfAtATime</td><td class="l">同時に 4 台まで。5 台以上で成功</td></tr>
+        <tr><td class="t">OneAtATime</td><td class="l">1 台ずつ。最も安全で遅い</td></tr>
+        <tr><td class="t">カスタム</td><td class="l">正常なホストの最小数（数・%）、ゾーンごと</td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>Lambda・ECS</th><th>移し方</th></tr>
+        <tr><td class="t">Canary10Percent5Minutes</td><td class="l">10% → 5 分後に残り 90%</td></tr>
+        <tr><td class="t">Linear10PercentEvery1Minute(s)</td><td class="l">毎分 10% ずつ</td></tr>
+        <tr><td class="t">AllAtOnce</td><td class="l">一度にすべて</td></tr>
+      </table>
+      <div class="point warn">ECS で NLB を使うときは ECSAllAtOnce だけ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：CodeDeploy でデプロイ設定を使用する</div>
+  <div class="foot"><span>AWS DevOps #04 CodeDeployとデプロイ戦略</span><span>タスク 1.1・1.4</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第2章</div>
+  <h1>フック・ロールバック・Auto Scaling</h1>
+  <p>確かめて、だめなら戻す。</p>
+  <div class="foot"><span>AWS DevOps #04 CodeDeployとデプロイ戦略</span><span>タスク 1.1・1.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>ライフサイクルイベントフック</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>EC2（インプレース）</th><th>使いみち</th></tr>
+        <tr><td class="t">ApplicationStop</td><td class="l">止める（初回は動かない）</td></tr>
+        <tr><td class="t">DownloadBundle</td><td class="l">エージェント専用</td></tr>
+        <tr><td class="t">BeforeInstall</td><td class="l">復号・バックアップ</td></tr>
+        <tr><td class="t">Install</td><td class="l">エージェント専用</td></tr>
+        <tr><td class="t">AfterInstall</td><td class="l">設定・権限の変更</td></tr>
+        <tr><td class="t">ApplicationStart</td><td class="l">サービスの起動</td></tr>
+        <tr><td class="t">ValidateService</td><td class="l">最後。うまくいったかを確認</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="box b3">LB あり：BeforeBlockTraffic → BlockTraffic → AfterBlockTraffic<span>…インストール… → BeforeAllowTraffic → AllowTraffic → AfterAllowTraffic</span></div>
+      <div class="box b1">ECS<span>BeforeInstall → AfterInstall → AfterAllowTestTraffic → BeforeAllowTraffic → AfterAllowTraffic</span></div>
+      <div class="box b2">Lambda<span>BeforeAllowTraffic → AfterAllowTraffic（検証用の Lambda 関数）</span></div>
+      <div class="point">Block／AllowTraffic・Install・DownloadBundle はスクリプト不可。</div>
+    </div>
+  </div>
+  <div class="cite">出典：AppSpec の「hooks」セクション</div>
+  <div class="foot"><span>AWS DevOps #04 CodeDeployとデプロイ戦略</span><span>タスク 1.1・1.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>止める・戻す・Auto Scaling</h1>
+  <div class="cols">
+    <div>
+      <div class="box b3">CloudWatch アラーム（先に作る）<span>しきい値でデプロイを止める</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b1">自動ロールバック<span>失敗したとき／アラームのしきい値に一致したとき</span></div>
+      <div class="arrow">↓</div>
+      <div class="box b2">前のリビジョンを再デプロイ<span>新しいデプロイ ID（復元ではない）・SNS で通知</span></div>
+    </div>
+    <div>
+      <table class="mx">
+        <tr><th>Auto Scaling</th><th>動き</th></tr>
+        <tr><td class="t">スケールアウト</td><td class="l">新しいインスタンスに最後に成功したリビジョン</td></tr>
+        <tr><td class="t">デプロイ中に増えた</td><td class="l">直後に追加のデプロイで最新に（既定）</td></tr>
+        <tr><td class="t">スケールイン</td><td class="l">終了フックで終了デプロイ（フックだけ）</td></tr>
+      </table>
+      <div class="point warn">1 つの Auto Scaling グループに複数のデプロイグループは避ける。</div>
+    </div>
+  </div>
+  <div class="cite">出典：再デプロイおよびデプロイのロールバック／デプロイグループの詳細オプションの設定／CodeDeploy と Amazon EC2 Auto Scaling の統合</div>
+  <div class="foot"><span>AWS DevOps #04 CodeDeployとデプロイ戦略</span><span>タスク 1.1・1.4</span></div>
+</section>
+
+<section class="slide chapter">
+  <div class="k">第3章</div>
+  <h1>デプロイ戦略</h1>
+  <p>速さ・費用・安全さのどれを取るか。</p>
+  <div class="foot"><span>AWS DevOps #04 CodeDeployとデプロイ戦略</span><span>タスク 1.1・1.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>デプロイ方法の比較</h1>
+  <table class="mx">
+    <tr><th>方法</th><th>失敗の影響</th><th>時間</th><th>無停止</th><th>ロールバック</th><th>出す先</th></tr>
+    <tr><td class="t">一括（インプレース）</td><td class="l">ダウンタイム</td><td class="l">速い</td><td class="l">×</td><td class="l">再デプロイ</td><td class="l">既存</td></tr>
+    <tr><td class="t">ローリング</td><td class="l">1 バッチが止まる</td><td class="l">中</td><td class="l">○</td><td class="l">再デプロイ</td><td class="l">既存</td></tr>
+    <tr><td class="t">追加バッチ付きローリング</td><td class="l">小さい</td><td class="l">中</td><td class="l">○</td><td class="l">再デプロイ</td><td class="l">新＋既存</td></tr>
+    <tr><td class="t">イミュータブル</td><td class="l">最小限</td><td class="l">長い</td><td class="l">○</td><td class="l">新しい方を消す</td><td class="l">新（一時的な ASG）</td></tr>
+    <tr><td class="t">トラフィック分割</td><td class="l">最小限</td><td class="l">長い</td><td class="l">○</td><td class="l">トラフィックを戻す</td><td class="l">新</td></tr>
+    <tr><td class="t">ブルー/グリーン</td><td class="l">最小限</td><td class="l">長い</td><td class="l">○</td><td class="l">切り戻す</td><td class="l">新しい環境</td></tr>
+  </table>
+  <div class="point">ローリングは新旧が並んで動く。ブルーはロールバック用に残す。Canary＝まずごく一部。</div>
+  <div class="cite">出典：ホワイトペーパー「デプロイ方法」／Elastic Beanstalk デプロイポリシーと設定</div>
+  <div class="foot"><span>AWS DevOps #04 CodeDeployとデプロイ戦略</span><span>タスク 1.1・1.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>Elastic Beanstalk のデプロイポリシー</h1>
+  <div class="cols">
+    <div>
+      <table class="mx">
+        <tr><th>ポリシー</th><th>しくみ</th></tr>
+        <tr><td class="t">All at once</td><td class="l">全部に同時。短時間止まる</td></tr>
+        <tr><td class="t">Rolling</td><td class="l">バッチ（% か固定数）ごと。容量が減る</td></tr>
+        <tr><td class="t">Rolling with additional batch</td><td class="l">先に新しいバッチを起動。容量を保つ</td></tr>
+        <tr><td class="t">Immutable</td><td class="l">LB の後ろに 2 つ目の一時的な ASG</td></tr>
+        <tr><td class="t">Traffic splitting</td><td class="l">新しいインスタンスに一部の客を流す Canary</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="box b3">環境 blue（v1）<span>app.example.com</span></div>
+      <div class="arrow">⇅ Swap environment URLs</div>
+      <div class="box b2">環境 green（v2）<span>テストが通ったら CNAME を入れ替え</span></div>
+      <div class="point">戻すときはもう一度スワップ。</div>
+    </div>
+  </div>
+  <div class="cite">出典：デプロイポリシーと設定／変更不可能な環境の更新／Elastic Beanstalk を使用したブルー/グリーンデプロイ</div>
+  <div class="foot"><span>AWS DevOps #04 CodeDeployとデプロイ戦略</span><span>タスク 1.1・1.4</span></div>
+</section>
+
+<section class="slide">
+  <h1>本番での問われ方</h1>
+  <table class="mx">
+    <tr><th>ねらい</th><th>見るところ</th></tr>
+    <tr><td class="t">部品</td><td class="l">デプロイグループ（タグ・ASG）、リビジョン、AppSpec、エージェントは EC2/オンプレだけ、インスタンスプロファイル</td></tr>
+    <tr><td class="t">デプロイ設定</td><td class="l">AllAtOnce・HalfAtATime・OneAtATime の数え方、Canary と線形、NLB は ECSAllAtOnce</td></tr>
+    <tr><td class="t">フック</td><td class="l">各フックの使いみち、ApplicationStop は初回なし、ValidateService は最後、ECS の AfterAllowTestTraffic</td></tr>
+    <tr><td class="t">戻す</td><td class="l">アラーム＋自動ロールバック、新しいデプロイ ID、終了デプロイ、古いインスタンスの自動更新</td></tr>
+    <tr><td class="t">戦略</td><td class="l">失敗の影響・時間・容量・費用で選ぶ。イミュータブル、ブルー/グリーン、CNAME スワップ</td></tr>
+  </table>
+  <div class="cite">出典：DOP-C02 試験ガイド タスク 1.1・1.4／本資料の問題演習（全 30 問）</div>
+</section>
+
+</body>
+</html>
