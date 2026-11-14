@@ -146,6 +146,7 @@
       add(`${topic}/notes/index.html`, "ノート一覧", `${topic}/index.html`);
       add(`${topic}/read.html`, "図解を読む", `${topic}/index.html`);
       if (topic === "ap") add(`${topic}/exam.html`, "午前の模擬試験", `${topic}/index.html`);
+      if (info.pm) add(`${topic}/pm/index.html`, "午後の演習", `${topic}/index.html`);
 
       if (info.days) {
         add(`${topic}/review/index.html`, "日別復習", `${topic}/index.html`);
@@ -156,6 +157,7 @@
         let parent = `${topic}/index.html`;
         if (m.date) parent = `${topic}/review/${m.date}/index.html`;
         else if (m.type === "note") parent = `${topic}/notes/index.html`;
+        else if (m.type === "pm" && info.pm) parent = `${topic}/pm/index.html`;
         else if (m.fields.length) parent = fieldPath(topic, m.fields[0]);
         add(m.path, m.title, parent, `${topic}-${m.type}`);
       });
@@ -819,12 +821,15 @@
     - "ap-20-PoC" のように「資格-中分類番号-」で始まるIDは、その中分類に入れる
     - それ以外は catalog.js の教材（ファイル名-）に当てはめ、
       その教材の中分類が1つだけなら中分類にも入れる（複数分野の教材は教材カードにだけ出す）
+    - 午後演習（type "pm"、問題ID "appm-2024r06a-1-s6-1"）は教材ごとの集計にだけ入れ、分野の鉢には入れない
+      （午後の自己採点で、午前の分野の正答率が変わらないように）。温室の水やり用に rowsByItem に分けておく
   */
   const aggregate = (site, rows) => {
     const byItem = {};
     const byField = {};
     const wrongByItem = {}; // 最後の回答が不正解の問題ID（教材ごと）
     const rowsByField = {}; // 分野ごとの回答記録（温室で復習の数を数える）
+    const rowsByItem = {}; // 午後演習の回答記録（教材ごと。温室の水やりに出す）
     const add = (bucket, key, row) => {
       const s = (bucket[key] ||= { correct: 0, wrong: 0 });
       s.correct += row.correct_count || 0;
@@ -841,6 +846,10 @@
       if (item) add(byItem, item.path, row);
       if (item && row.last_answer_correct === false) (wrongByItem[item.path] ||= []).push(row);
       let fieldKey = "";
+      if (item && item.type === "pm") {
+        (rowsByItem[item.path] ||= []).push(row);
+        return;
+      }
       if (direct && site.topics[direct[1]]) fieldKey = `${direct[1]}:${Number(direct[2])}`;
       else if (item && item.fields.length === 1) fieldKey = `${item.topic}:${item.fields[0]}`;
       if (fieldKey) {
@@ -848,7 +857,7 @@
         (rowsByField[fieldKey] ||= []).push(row);
       }
     });
-    return { byItem, byField, wrongByItem, rowsByField };
+    return { byItem, byField, wrongByItem, rowsByField, rowsByItem };
   };
 
   /*
@@ -873,10 +882,10 @@
       el.innerHTML = `<div class="list">${list
         .map(({ m, rows }) =>
           row({
-            href: url(m.type === "terms" ? `${m.path}?mode=wrong` : m.path),
+            href: url(m.type === "terms" ? `${m.path}?mode=wrong` : m.type === "pm" ? `${m.path}?mode=review` : m.path),
             label: site.types[m.type].label,
             title: m.title,
-            desc: `間違えたまま ${rows.length}${m.type === "terms" ? "語（間違えた用語だけ解く）" : "問"}`,
+            desc: `間違えたまま ${rows.length}${m.type === "terms" ? "語（間違えた用語だけ解く）" : m.type === "pm" ? "設問（見直す設問を開く）" : "問"}`,
             extraClass: "is-wrong",
           })
         )
@@ -939,10 +948,24 @@
       };
     });
 
+    // 午後演習：自己採点で △・× のままの設問と、そろそろ忘れるころの設問（鉢には入れない）
+    const pmShort = (m) => {
+      const key = stem(m.file);
+      const exam = info.pm && info.pm.exams.find((e) => key.startsWith(`${e.id}-`));
+      return exam ? `${exam.short} 問${key.slice(exam.id.length + 1)}` : m.title;
+    };
+    const pmWater = itemsOf(site, topic, (m) => m.type === "pm" && stats.rowsByItem && stats.rowsByItem[m.path])
+      .map((m) => {
+        const states = stats.rowsByItem[m.path].map((r) => sync.reviewState(r, now));
+        return { m, wrong: states.filter((x) => x === "wrong").length, due: states.filter((x) => x === "due").length };
+      })
+      .filter((p) => p.wrong + p.due > 0);
+    const pmAnswered = Object.values(stats.rowsByItem || {}).reduce((n, rows) => n + rows.length, 0);
+
     const answered = pots.reduce((n, p) => n + p.answered, 0);
     const total = pots.reduce((n, p) => ({ correct: n.correct + p.s.correct, wrong: n.wrong + p.s.wrong }), { correct: 0, wrong: 0 });
     const water = pots.filter((p) => p.wrong + p.due > 0 && p.reviewHref).sort((a, b) => b.wrong + b.due - (a.wrong + a.due));
-    const waterCount = water.reduce((n, p) => n + p.wrong + p.due, 0);
+    const waterCount = water.reduce((n, p) => n + p.wrong + p.due, 0) + pmWater.reduce((n, p) => n + p.wrong + p.due, 0);
     const bloom = pots.filter((p) => p.stage === 4).length;
     const weak = pots
       .filter((p) => p.s.correct + p.s.wrong >= 5 && p.rate < 80)
@@ -951,9 +974,9 @@
 
     const stat = (value, unit, label) => `<div class="garden-stat"><b>${value}<small>${unit}</small></b><span>${label}</span></div>`;
 
-    const waterHtml = !answered
+    const waterHtml = !answered && !pmAnswered
       ? `<p class="empty">まだ記録がありません。<a href="${url(`${topic}/index.html`)}">分野マップ</a>から問題を解くと、ここに鉢が育ちます。</p>`
-      : !water.length
+      : !water.length && !pmWater.length
         ? `<p class="empty">今日の水やりは終わりです。次に忘れそうなころに、また出てきます。</p>`
         : `<div class="list">${water
             .map((p) =>
@@ -962,6 +985,16 @@
                 label: fieldLabel(p.field),
                 title: `${p.wrong + p.due}問を解き直す`,
                 desc: [p.wrong ? `間違えたまま ${p.wrong}問` : "", p.due ? `そろそろ忘れるころ ${p.due}問` : ""].filter(Boolean).join("・"),
+                extraClass: "is-water",
+              })
+            )
+            .join("")}${pmWater
+            .map((p) =>
+              row({
+                href: url(`${p.m.path}?mode=review`),
+                label: `午後・${pmShort(p.m)}`,
+                title: `${p.wrong + p.due}設問を見直す`,
+                desc: [p.wrong ? `間違えたまま ${p.wrong}` : "", p.due ? `そろそろ忘れるころ ${p.due}` : ""].filter(Boolean).join("・"),
                 extraClass: "is-water",
               })
             )
@@ -1010,6 +1043,31 @@
     revealOnScroll();
   };
 
+  /*
+    資格ページの「午後（科目B）の演習」の欄。ログイン中は、採点を記録した問の数と「私の4問」を出す。
+    答えは pm_answers（part_id "_" の行の graded_at）、私の4問は StudyNotes のキー pm:choice。
+  */
+  const renderPmSummary = async (sync) => {
+    const els = document.querySelectorAll("[data-pm-summary]");
+    if (!els.length || !sync.fetchPmAnswers) return;
+    let rows = [];
+    try {
+      rows = (await sync.fetchPmAnswers()) || [];
+    } catch (error) {
+      console.warn("[site] 午後の答えを読めませんでした", error);
+    }
+    const done = new Set(rows.filter((r) => r.part_id === "_" && r.graded_at).map((r) => r.question_key)).size;
+    const show = () => {
+      const mine = ((window.StudyNotes && window.StudyNotes.get("pm:choice")) || "").split(",").filter(Boolean);
+      els.forEach((el) => {
+        el.textContent = `採点済み ${done}問${mine.length ? `・私の4問：問${mine.join("・")}` : ""}`;
+        el.hidden = false;
+      });
+    };
+    show();
+    if (window.StudyNotes) window.StudyNotes.onChange(show);
+  };
+
   const showRate = (el, s) => {
     const total = s.correct + s.wrong;
     if (!total) return;
@@ -1039,6 +1097,7 @@
       const { byItem, byField, wrongByItem } = stats;
       renderWrong(site, wrongByItem);
       renderGarden(site, stats, sync);
+      renderPmSummary(sync);
       // 分野マップの鉢植えを、正答率に合わせて育てる
       document.querySelectorAll("[data-plant-field]").forEach((el) => {
         const stage = growthOf(byField[el.dataset.plantField]);
@@ -1082,6 +1141,8 @@
     if (!window.SITE_CATALOG) return;
     const site = prepare(window.SITE_CATALOG);
     navTopicOk = (topic) => Boolean(site.topics[topic]);
+    // 午後の演習の一覧（pm.js）が、温室と同じ数字で分野の正答率を出すために使う
+    window.SiteStats = { site, aggregate: (rows) => aggregate(site, rows), rateOf };
     renderPlaceholders(site);
     renderNav(buildPages(site), currentPath());
     // 一覧ページは正答率を、教材ページはログイン表示だけを更新する

@@ -37,6 +37,9 @@
   /* メモを保存するテーブル（tools/supabase/study_notes.sql で作る） */
   const NOTES_TABLE = "study_notes";
 
+  /* 午後（科目B）の記述の答え・自己採点を保存するテーブル（tools/supabase/pm_answers.sql で作る） */
+  const PM_TABLE = "pm_answers";
+
   /*
     復習の間隔（日）。正解が続くほど、次に出すまでの間を空ける。
     「正解の回数 − 不正解の回数」が 1 なら1日後、2 なら3日後、3 なら7日後、4 なら14日後、5以上は30日後。
@@ -504,6 +507,64 @@
           };
         }),
         { onConflict: "user_id,note_key" }
+      );
+      if (error) {
+        throw error;
+      }
+    },
+
+    /*
+      午後の記述の答え。[{ question_key, part_id, answer, grade, graded_at, elapsed_sec, history, updated_at }]
+      questionKey（"2024r06a-1"）を省くと全部。未ログインなら null、テーブルが無いなどで使えないときは例外を投げる
+    */
+    fetchPmAnswers: async function (questionKey) {
+      await ready;
+      if (!currentUser || !supabaseClient) {
+        return null;
+      }
+      const rows = [];
+      const pageSize = 1000;
+      for (let from = 0; ; from += pageSize) {
+        let request = supabaseClient
+          .from(PM_TABLE)
+          .select("question_key, part_id, answer, grade, graded_at, elapsed_sec, history, updated_at")
+          .eq("user_id", currentUser.id);
+        if (questionKey) {
+          request = request.eq("question_key", questionKey);
+        }
+        const { data, error } = await request.range(from, from + pageSize - 1);
+        if (error) {
+          throw error;
+        }
+        rows.push(...(data || []));
+        if (!data || data.length < pageSize) {
+          break;
+        }
+      }
+      return rows;
+    },
+
+    /* 午後の答えを保存する。rows は fetchPmAnswers と同じ形（user_id は付けなくてよい） */
+    savePmAnswers: async function (rows) {
+      await ready;
+      if (!currentUser || !supabaseClient || !rows.length) {
+        return;
+      }
+      const { error } = await supabaseClient.from(PM_TABLE).upsert(
+        rows.map(function (row) {
+          return {
+            user_id: currentUser.id,
+            question_key: row.question_key,
+            part_id: row.part_id,
+            answer: row.answer || "",
+            grade: row.grade || null,
+            graded_at: row.graded_at || null,
+            elapsed_sec: row.elapsed_sec == null ? null : row.elapsed_sec,
+            history: row.history || [],
+            updated_at: row.updated_at,
+          };
+        }),
+        { onConflict: "user_id,question_key,part_id" }
       );
       if (error) {
         throw error;
