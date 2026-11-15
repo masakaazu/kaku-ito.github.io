@@ -839,15 +839,23 @@
 
     const rec = (pid) => Store.get(key, pid) || { a: "", g: null, ga: null, e: null, h: [] };
 
+    // 空欄の中に自分の答えを出す。折り返さない短い表の欄（is-short）に長い答え（記号で選んだ選択肢の文など）が
+    // 入ったときは、その欄だけ折り返すようにする（is-grown）。そうしないとスマホで表が横にはみ出す
+    const showFill = (el, text) => {
+      el.textContent = text;
+      el.parentElement.classList.toggle("is-filled", Boolean(text));
+      const cell = el.closest(".pm-table .is-short");
+      if (cell) cell.classList.toggle("is-grown", [...cell.textContent.replace(/\s+/g, "")].length > 10);
+    };
+
     const fillBlank = (p) => {
       const b = blankOf(p);
       if (!b) return;
       const a = rec(p.id).a;
       const shown = p.kind === "choice" && a ? choicesOf(p)[a] || a : a;
       doc.querySelectorAll(`[data-blank-fill="${b}"]`).forEach((el) => {
-        el.textContent = shown;
+        showFill(el, shown);
         el.title = isPick(p) && a ? `${a}（自分の答え）` : a ? "自分の答え" : "";
-        el.parentElement.classList.toggle("is-filled", Boolean(a));
       });
     };
 
@@ -965,10 +973,7 @@
       // 本文の空欄には、打っている途中から薄く出す
       const b = blankOf(p);
       if (b) {
-        doc.querySelectorAll(`[data-blank-fill="${b}"]`).forEach((el) => {
-          el.textContent = input.value;
-          el.parentElement.classList.toggle("is-filled", Boolean(input.value));
-        });
+        doc.querySelectorAll(`[data-blank-fill="${b}"]`).forEach((el) => showFill(el, input.value));
       }
       clearTimeout(timers[p.id]);
       timers[p.id] = setTimeout(() => saveAnswer(p.id, input.value), 1000);
