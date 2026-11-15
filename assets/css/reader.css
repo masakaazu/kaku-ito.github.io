@@ -1,0 +1,186 @@
+/*
+  図解を読む画面（reader.js と組み合わせて使う）
+  用語集と同じ部品（ボタン・メモ・たとえ）は terms.css のものを使う。色は theme.css。
+  スライドの中身は PDF と同じ見た目（白地に紺）なので、白い紙を置いたように見せる。
+*/
+@import url("terms.css");
+
+main.reader {
+  width: min(960px, calc(100% - var(--theme-gutter) * 2));
+}
+
+.reader-links,
+.terms-hero-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.reader-toc {
+  margin: 12px 0 0;
+  padding: 12px 16px;
+  border-radius: var(--theme-radius);
+  background: var(--theme-bg-alt);
+  font-size: 0.94rem;
+}
+
+.reader-toc summary {
+  color: var(--theme-heading);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.reader-toc-chapter {
+  margin: 14px 0 4px;
+  font-family: var(--theme-font-display);
+  font-weight: 700;
+}
+
+.reader-toc ol {
+  margin: 0;
+  padding-left: 1.6em;
+  columns: 2 280px;
+  column-gap: 32px;
+}
+
+.reader-toc li {
+  break-inside: avoid;
+  line-height: 1.6;
+}
+
+/* メモを書いたページには、目次に鉢の色の点を付ける */
+.reader-toc a.has-memo::after {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-left: 6px;
+  border-radius: 50%;
+  background: var(--theme-pot);
+}
+
+.reader-pages {
+  display: grid;
+  gap: clamp(28px, 5vw, 48px);
+  margin-top: clamp(24px, 5vw, 40px);
+}
+
+.reader-page {
+  min-width: 0;
+  scroll-margin-top: 72px;
+}
+
+.reader-page-no {
+  margin: 0 0 6px;
+  color: var(--theme-faint);
+  font-size: var(--theme-size-caption);
+}
+
+.reader-slide {
+  overflow: hidden;
+  border: 1px solid var(--theme-line);
+  border-radius: var(--theme-radius);
+  background: #fff; /* スライドの紙の色（PDFと同じ白） */
+  box-shadow: 0 6px 20px -14px var(--theme-heading);
+}
+
+.reader-terms:not(:empty) {
+  margin-top: 12px;
+}
+
+.reader-terms-label {
+  margin: 0 0 6px;
+  color: var(--theme-muted);
+  font-size: var(--theme-size-caption);
+  font-weight: 600;
+}
+
+.reader-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.reader-chip {
+  padding: 4px 12px;
+  border: 1px solid var(--theme-line);
+  border-radius: var(--theme-radius-pill);
+  background: var(--theme-bg);
+  color: var(--theme-text);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background var(--theme-transition), border-color var(--theme-transition);
+}
+
+.reader-chip:hover {
+  background: var(--theme-bg-alt);
+}
+
+.reader-chip[aria-expanded="true"] {
+  border-color: var(--theme-accent);
+  background: var(--theme-good-bg);
+  color: var(--theme-heading);
+  font-weight: 600;
+}
+
+/* たとえがある用語には、小さな葉の印 */
+.reader-chip i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-left: 6px;
+  border-radius: 0 60% 0 60%;
+  background: var(--theme-leaf);
+}
+
+.reader-term-panel {
+  margin-top: 10px;
+  padding: 12px 16px;
+  border-radius: var(--theme-radius);
+  background: var(--theme-bg-alt);
+}
+
+.reader-term-name {
+  margin: 0;
+  color: var(--theme-heading);
+  font-weight: 700;
+}
+
+.reader-term-name span {
+  margin-left: 10px;
+  color: var(--theme-faint);
+  font-size: var(--theme-size-caption);
+  font-weight: 400;
+}
+
+@media (max-width: 600px) {
+  .reader-slide {
+    border-radius: var(--theme-radius-small);
+  }
+}
+
+/* スマホ：スライドを押すと拡大して、横に動かして読める */
+.reader-slide.is-zoom {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.reader-zoom-hint {
+  display: none;
+  margin-left: 10px;
+}
+
+@media (max-width: 800px) {
+  .reader-zoom-hint {
+    display: inline;
+  }
+
+  .reader-slide {
+    cursor: zoom-in;
+  }
+
+  .reader-slide.is-zoom {
+    cursor: zoom-out;
+  }
+}

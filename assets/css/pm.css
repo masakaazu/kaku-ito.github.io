@@ -1,0 +1,1466 @@
+/*
+  午後（科目B）の演習（pm.js と組み合わせて使う）
+
+  1問の画面：reader.css（terms.css・components.css・theme.css を読む）のあとに読む。用語の札・メモ・ボタンはそちらの部品。
+  一覧：site.css のあとに読む。
+  色・書体・角の丸みは theme.css の値だけを使う（ここに色を直接書かない）。
+
+  配置（設計書 §2-3）
+    960px 以上 … 2列（左 56% 問題文・右 44% 設問）。左右がそれぞれスクロールする。最大 1280px
+    641〜959px … 2列 50:50
+    640px 以下 … 1列。下の「問題文｜設問」で切り替える
+*/
+
+/* =====================================================================
+   1問の画面
+   ===================================================================== */
+
+main.pm {
+  --pm-bar-h: 56px;
+  width: min(1280px, calc(100% - var(--theme-gutter) * 2));
+  margin: 0 auto;
+  overflow-wrap: anywhere;
+}
+
+main.pm a:not(.terms-button) {
+  color: var(--theme-link);
+}
+
+.pm-loading,
+.pm-missing {
+  padding: 64px 0;
+  color: var(--theme-muted);
+}
+
+.pm-missing h1 {
+  color: var(--theme-heading);
+  font-size: var(--theme-size-title);
+}
+
+/* 見出しと題名だけ明朝（content.css が書体をそろえるので、ここで上書きする） */
+html body main.pm .pm-title,
+html body main.pm .pm-h,
+html body main.pm .pm-q-title,
+html body main.pm .pm-bar-short,
+html body main.pm .pm-missing h1,
+html body .pm-index .pm-mine-no {
+  font-family: var(--theme-font-display) !important;
+}
+
+html body main.pm .pm-code,
+html body main.pm .pm-code *,
+html body main.pm .is-mono,
+html body main.pm .is-mono * {
+  font-family: var(--theme-font-mono) !important;
+}
+
+/* ---------- 上の帯 ---------- */
+
+.pm-bar {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  min-height: 56px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--theme-line);
+  background: var(--theme-bg);
+}
+
+.pm-bar-title {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+  color: var(--theme-heading);
+}
+
+.pm-bar-short {
+  font-size: 1.1rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.pm-bar-area {
+  overflow: hidden;
+  color: var(--theme-muted);
+  font-size: var(--theme-size-small);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pm-saved {
+  color: var(--theme-faint);
+  font-size: var(--theme-size-caption);
+  opacity: 0;
+  transition: opacity var(--theme-transition);
+}
+
+.pm-saved.is-on {
+  opacity: 1;
+}
+
+.pm-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  font-size: var(--theme-size-small);
+  font-variant-numeric: tabular-nums;
+}
+
+.pm-timer-clock {
+  color: var(--theme-heading);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pm-timer-clock.is-over {
+  color: var(--theme-warn);
+}
+
+.pm-timer-btn {
+  padding: 4px 12px;
+  border: 1px solid var(--theme-line);
+  border-radius: var(--theme-radius-pill);
+  background: var(--theme-bg);
+  color: var(--theme-heading);
+  font: inherit;
+  font-size: var(--theme-size-small);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.pm-timer-btn:hover {
+  background: var(--theme-bg-alt);
+}
+
+.pm-reveal-all {
+  min-height: 34px;
+  padding: 6px 16px;
+}
+
+.pm-narrow {
+  display: none;
+}
+
+/* ---------- 2列 ---------- */
+
+.pm-split {
+  display: grid;
+  grid-template-columns: minmax(0, 56fr) minmax(0, 44fr);
+}
+
+.pm-doc,
+.pm-qs {
+  min-width: 0;
+}
+
+@media (min-width: 641px) {
+  .pm-split {
+    height: calc(100vh - var(--pm-bar-h));
+    height: calc(100dvh - var(--pm-bar-h));
+  }
+
+  .pm-doc,
+  .pm-qs {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 28px 28px 80px;
+  }
+
+  .pm-doc {
+    padding-left: 4px;
+    border-right: 1px solid var(--theme-line);
+  }
+
+  .pm-qs {
+    padding-right: 4px;
+  }
+
+  .pm-switch {
+    display: none !important;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 959px) {
+  .pm-split {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .pm-doc,
+  .pm-qs {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .pm-doc {
+    padding-left: 0;
+  }
+
+  .pm-qs {
+    padding-right: 0;
+  }
+
+  .pm-bar-area,
+  .pm-saved {
+    display: none;
+  }
+}
+
+/* ---------- スマホ：1列と下の切り替え ---------- */
+
+@media (max-width: 640px) {
+  main.pm {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+  }
+
+  .pm-bar {
+    flex-wrap: nowrap;
+    gap: 8px;
+    min-height: 48px;
+    padding: 6px 0;
+  }
+
+  .pm-bar-area,
+  .pm-saved,
+  .pm-wide {
+    display: none;
+  }
+
+  .pm-narrow {
+    display: inline;
+  }
+
+  .pm-timer {
+    gap: 6px;
+  }
+
+  .pm-reveal-all {
+    padding: 6px 12px;
+  }
+
+  .pm-split {
+    display: block;
+  }
+
+  .pm-split[data-pane="doc"] .pm-qs,
+  .pm-split[data-pane="qs"] .pm-doc {
+    display: none;
+  }
+
+  .pm-doc,
+  .pm-qs {
+    padding: 20px 0 32px;
+  }
+}
+
+.pm-switch {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 70;
+  display: flex;
+  gap: 4px;
+  padding: 6px max(12px, env(safe-area-inset-left)) calc(6px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--theme-line);
+  background: var(--theme-nav-bg);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+}
+
+.pm-switch button {
+  flex: 1;
+  min-height: 44px;
+  border: 0;
+  border-radius: var(--theme-radius-small);
+  background: transparent;
+  color: var(--theme-muted);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pm-switch button[aria-pressed="true"] {
+  background: var(--theme-bg-alt);
+  color: var(--theme-heading);
+}
+
+.pm-switch small {
+  margin-left: 4px;
+  color: var(--theme-faint);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 問題文 ---------- */
+
+.pm-head {
+  margin-bottom: 20px;
+}
+
+.pm-kicker {
+  margin: 0 0 8px;
+  color: var(--theme-muted);
+  font-size: var(--theme-size-small);
+  font-weight: 600;
+}
+
+.pm-title {
+  margin: 0;
+  color: var(--theme-heading);
+  font-size: var(--theme-size-reading-h2);
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+}
+
+.pm-title > span {
+  margin-right: 0.6em;
+}
+
+.pm-theme {
+  margin: 8px 0 0;
+  color: var(--theme-muted);
+  font-size: var(--theme-size-small);
+}
+
+.pm-body {
+  line-height: 1.9;
+}
+
+.pm-p,
+.pm-note {
+  margin: 0 0 1em;
+  text-indent: 1em;
+}
+
+.pm-note {
+  color: var(--theme-text);
+}
+
+.pm-h {
+  margin: 1.8em 0 0.6em;
+  color: var(--theme-heading);
+  font-size: 1.12rem;
+  font-weight: 700;
+  scroll-margin-top: 24px;
+}
+
+.pm-list {
+  margin: 0 0 1em;
+  padding-left: 1.2em;
+}
+
+ul.pm-list {
+  list-style: none;
+}
+
+ul.pm-list > li::before {
+  content: "・";
+  margin-left: -1em;
+}
+
+ul.pm-list.is-own > li::before {
+  content: none;
+}
+
+ol.pm-list.is-num {
+  padding-left: 1.8em;
+}
+
+ol.pm-list.is-num > li::before {
+  content: none;
+}
+
+.pm-list.is-sub {
+  margin: 0.2em 0 0.4em;
+}
+
+.pm-li-p {
+  margin: 0.2em 0 0.4em;
+  text-indent: 1em;
+}
+
+.pm-list li {
+  margin: 0.2em 0;
+}
+
+/* 下線①（押すと「設問N で問われる」） */
+.pm-u {
+  position: relative;
+  cursor: pointer;
+}
+
+.pm-u-no {
+  margin-right: 1px;
+  color: var(--theme-heading);
+  font-weight: 700;
+}
+
+.pm-u-text {
+  text-decoration: underline;
+  text-decoration-color: var(--theme-text);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+}
+
+.pm-u:hover .pm-u-text,
+.pm-u:focus-visible .pm-u-text {
+  text-decoration-thickness: 2px;
+}
+
+.pm-u-pop {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-left: 6px;
+  text-indent: 0;
+  vertical-align: baseline;
+}
+
+.pm-u-go {
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--theme-radius-pill);
+  background: var(--theme-accent);
+  color: var(--theme-on-accent);
+  font: inherit;
+  font-size: var(--theme-size-caption);
+  line-height: 1.9;
+  cursor: pointer;
+}
+
+/* 空欄 a（自分の答えを入れると中に薄く出る） */
+.pm-blank {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 3.2em;
+  margin: 0 2px;
+  padding: 0 8px;
+  border: 1.5px solid var(--theme-heading);
+  border-radius: 4px;
+  background: var(--theme-bg);
+  color: var(--theme-heading);
+  font: inherit;
+  line-height: 1.5;
+  text-indent: 0;
+  vertical-align: baseline;
+}
+
+button.pm-blank {
+  cursor: pointer;
+}
+
+.pm-blank-label {
+  font-weight: 700;
+}
+
+.pm-blank-fill {
+  color: var(--theme-faint);
+  font-size: 0.92em;
+}
+
+.pm-blank-fill:empty {
+  display: none;
+}
+
+/* 用語の点線（押すと意味が開く） */
+.pm-term {
+  padding: 0;
+  border: 0;
+  border-bottom: 1.5px dotted var(--theme-leaf-deep);
+  background: none;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  text-indent: 0;
+  cursor: help;
+}
+
+.pm-term.is-word {
+  border-bottom-color: var(--theme-pot);
+}
+
+.pm-term[aria-expanded="true"] {
+  background: var(--theme-good-bg);
+}
+
+.pm-term-open {
+  margin: -0.4em 0 1em;
+  text-indent: 0;
+}
+
+.pm-term-open .reader-term-panel {
+  margin-top: 0;
+}
+
+/* 根拠（考え方を開くと光る）・押して飛んだ先 */
+.pm-g {
+  border-radius: 3px;
+  transition: background-color var(--theme-transition), box-shadow var(--theme-transition);
+}
+
+.pm-g.is-lit,
+tr.pm-g.is-lit td {
+  background: var(--theme-leaf-pale);
+  box-shadow: 0 0 0 2px var(--theme-leaf-pale);
+}
+
+.is-flash {
+  animation: pm-flash 2s var(--theme-ease);
+}
+
+@keyframes pm-flash {
+  0%,
+  40% {
+    background-color: var(--theme-leaf-pale);
+    box-shadow: 0 0 0 4px var(--theme-leaf-pale);
+  }
+}
+
+/* 図・表 */
+.pm-figure {
+  margin: 0.4em 0 1.2em;
+}
+
+.pm-fig-open {
+  display: block;
+  max-width: 100%;
+  padding: 8px;
+  border: 1px solid var(--theme-line);
+  border-radius: var(--theme-radius-small);
+  background: var(--theme-bg);
+  cursor: zoom-in;
+}
+
+.pm-fig-open img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.pm-figure figcaption,
+.pm-table-caption {
+  margin: 6px 0;
+  color: var(--theme-heading);
+  font-size: var(--theme-size-small);
+  font-weight: 600;
+  text-align: center;
+}
+
+.pm-table-block {
+  margin: 0.4em 0 1.2em;
+}
+
+.pm-table {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pm-table table {
+  margin: 0 auto;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.pm-table th,
+.pm-table td {
+  padding: 6px 8px;
+  white-space: nowrap; /* 「T 中」などの短い欄が折り返して行が高くならないように */
+  border: 1px solid var(--theme-line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.pm-table th {
+  background: var(--theme-bg-alt);
+  color: var(--theme-heading);
+  font-weight: 600;
+}
+
+.pm-table .is-mono {
+  padding-inline: 6px;
+  font-size: 0.7rem; /* 64字のハッシュ値が PC の左の列に収まる大きさ */
+  overflow-wrap: normal;
+  white-space: nowrap;
+}
+
+.pm-table-note {
+  margin: 6px 0 0;
+  color: var(--theme-muted);
+  font-size: var(--theme-size-small);
+}
+
+.pm-code {
+  overflow-x: auto;
+  margin: 0.4em 0 1.2em;
+  padding: 12px 14px;
+  border-radius: var(--theme-radius-small);
+  background: var(--theme-bg-deep);
+  font-size: 0.85rem;
+  line-height: 1.7;
+}
+
+.pm-code-line {
+  display: block;
+  white-space: pre;
+}
+
+.pm-code-no {
+  display: inline-block;
+  width: 2.2em;
+  margin-right: 10px;
+  color: var(--theme-faint);
+  text-align: right;
+  user-select: none;
+}
+
+.pm-zoom {
+  max-width: min(96vw, 1100px);
+  max-height: 92vh;
+  padding: 12px;
+  border: 0;
+  border-radius: var(--theme-radius);
+  background: var(--theme-bg);
+}
+
+.pm-zoom::backdrop {
+  background: var(--theme-nav-bg);
+}
+
+.pm-zoom form {
+  margin: 0 0 8px;
+  text-align: right;
+}
+
+.pm-zoom img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* 原本のページ・出題趣旨・出典 */
+.pm-pages,
+.pm-aim {
+  margin: 28px 0 0;
+  padding: 12px 16px;
+  border-radius: var(--theme-radius);
+  background: var(--theme-bg-alt);
+  font-size: 0.94rem;
+}
+
+.pm-pages summary,
+.pm-aim summary {
+  color: var(--theme-heading);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pm-pages-note {
+  margin: 8px 0;
+  color: var(--theme-muted);
+  font-size: var(--theme-size-small);
+}
+
+.pm-pages-list {
+  display: grid;
+  gap: 16px;
+}
+
+.pm-page {
+  margin: 0;
+}
+
+.pm-page img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--theme-line);
+  background: var(--theme-bg);
+}
+
+.pm-page figcaption {
+  color: var(--theme-faint);
+  font-size: var(--theme-size-caption);
+  text-align: center;
+}
+
+.pm-aim p {
+  margin: 6px 0;
+}
+
+.pm-source {
+  margin: 20px 0 0;
+  color: var(--theme-faint);
+  font-size: var(--theme-size-caption);
+}
+
+/* ---------- 設問 ---------- */
+
+.pm-qs-lead {
+  margin: 0 0 20px;
+  color: var(--theme-muted);
+  font-size: var(--theme-size-small);
+}
+
+.pm-q,
+.pm-record,
+.pm-qmemo {
+  margin: 0 0 20px;
+  padding: 18px 20px;
+  border-radius: var(--theme-radius);
+  background: var(--theme-bg-alt);
+  scroll-margin-top: 16px;
+}
+
+.pm-q-title {
+  margin: 0 0 8px;
+  color: var(--theme-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.pm-q-text,
+.pm-part-text {
+  margin: 0 0 10px;
+}
+
+.pm-q-refs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 12px;
+}
+
+.pm-ref,
+.pm-goto,
+.pm-ground-go {
+  padding: 0 4px;
+  border: 0;
+  border-bottom: 1px solid var(--theme-link);
+  background: none;
+  color: var(--theme-link);
+  font: inherit;
+  cursor: pointer;
+}
+
+.pm-goto,
+.pm-ground-go {
+  padding: 2px 12px;
+  border: 1px solid var(--theme-line);
+  border-radius: var(--theme-radius-pill);
+  background: var(--theme-bg);
+  font-size: var(--theme-size-small);
+}
+
+.pm-goto:hover,
+.pm-ground-go:hover {
+  border-color: var(--theme-link);
+}
+
+.pm-choices {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border-radius: var(--theme-radius-small);
+  background: var(--theme-bg);
+}
+
+.pm-choices-label {
+  margin: 0 0 4px;
+  color: var(--theme-muted);
+  font-size: var(--theme-size-caption);
+  font-weight: 600;
+}
+
+.pm-choices dl,
+.pm-others {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 2px 16px;
+  margin: 0;
+}
+
+.pm-others {
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+.pm-choices dl div,
+.pm-others div {
+  display: flex;
+  gap: 8px;
+}
+
+.pm-choices dt,
+.pm-others dt {
+  color: var(--theme-heading);
+  font-weight: 700;
+}
+
+.pm-choices dd,
+.pm-others dd {
+  margin: 0;
+}
+
+.pm-part {
+  padding: 12px 0 4px;
+  border-top: 1px solid var(--theme-line);
+  scroll-margin-top: 16px;
+}
+
+.pm-q-text + .pm-part,
+.pm-q-refs + .pm-part,
+.pm-choices + .pm-part {
+  border-top: 0;
+}
+
+.pm-part-label {
+  margin-right: 8px;
+  color: var(--theme-heading);
+  font-weight: 700;
+}
+
+.pm-review-badge {
+  display: inline-block;
+  margin: 0 0 8px;
+  padding: 1px 10px;
+  border-radius: var(--theme-radius-pill);
+  background: var(--theme-warn-bg);
+  color: var(--theme-warn);
+  font-size: var(--theme-size-caption);
+  font-weight: 600;
+}
+
+.pm-part.is-review {
+  box-shadow: inset 3px 0 0 var(--theme-pot);
+  padding-left: 12px;
+}
+
+.pm-field {
+  display: grid;
+  gap: 4px;
+}
+
+.pm-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid var(--theme-line);
+  border-radius: var(--theme-radius-small);
+  background: var(--theme-bg);
+  color: var(--theme-text);
+  font: inherit;
+  font-size: 16px; /* iPhone で入力時に画面が拡大しない大きさ */
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.pm-input:focus {
+  outline: 2px solid var(--theme-accent);
+  outline-offset: 1px;
+}
+
+.pm-input[readonly] {
+  background: var(--theme-bg-deep);
+  color: var(--theme-muted);
+}
+
+.pm-count {
+  color: var(--theme-faint);
+  font-size: var(--theme-size-caption);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.pm-count.is-over {
+  color: var(--theme-warn);
+  font-weight: 600;
+}
+
+.pm-count.is-exact {
+  color: var(--theme-good);
+}
+
+.pm-choice-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.pm-choice-label {
+  display: inline-grid;
+  place-items: center;
+  min-width: 2em;
+  height: 2em;
+  margin-right: 4px;
+  border: 1.5px solid var(--theme-heading);
+  border-radius: 4px;
+  color: var(--theme-heading);
+  font-weight: 700;
+}
+
+.pm-choice {
+  min-width: 44px;
+  min-height: 40px;
+  padding: 4px 10px;
+  border: 1px solid var(--theme-line);
+  border-radius: var(--theme-radius-small);
+  background: var(--theme-bg);
+  color: var(--theme-heading);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pm-choice:hover:not(:disabled) {
+  background: var(--theme-surface-hover);
+}
+
+.pm-choice[aria-checked="true"] {
+  border-color: var(--theme-accent);
+  background: var(--theme-accent);
+  color: var(--theme-on-accent);
+}
+
+.pm-choice:disabled {
+  cursor: default;
+}
+
+.pm-choice:disabled:not([aria-checked="true"]) {
+  opacity: 0.5;
+}
+
+.pm-locked {
+  margin: 6px 0 0;
+  color: var(--theme-faint);
+  font-size: var(--theme-size-caption);
+}
+
+.pm-prev {
+  margin: 8px 0 0;
+  font-size: var(--theme-size-small);
+}
+
+.pm-prev summary {
+  color: var(--theme-link);
+  cursor: pointer;
+}
+
+.pm-prev-item {
+  margin: 6px 0 0;
+  padding: 6px 10px;
+  border-left: 3px solid var(--theme-line);
+  background: var(--theme-bg);
+}
+
+.pm-prev-meta {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  color: var(--theme-faint);
+  font-size: var(--theme-size-caption);
+}
+
+.pm-prev-answer {
+  margin: 2px 0 0;
+  white-space: pre-wrap;
+}
+
+.pm-q-foot {
+  margin: 14px 0 0;
+}
+
+/* 設問の札は --theme-bg-alt なので、同じ色の副ボタンが地に溶けて押せる物に見えない。地の色と枠で浮かせる */
+.pm-q .terms-button:not(.is-primary),
+.pm-record .terms-button:not(.is-primary),
+.pm-qmemo .terms-button:not(.is-primary) {
+  border: 1px solid var(--theme-line);
+  background: var(--theme-bg);
+}
+
+.pm-q .terms-button:not(.is-primary):hover,
+.pm-record .terms-button:not(.is-primary):hover,
+.pm-qmemo .terms-button:not(.is-primary):hover {
+  background: var(--theme-surface-hover);
+}
+
+/* ---------- 解答例を見たあと ---------- */
+
+.pm-answer {
+  margin: 12px 0 4px;
+}
+
+.pm-ipa {
+  margin: 10px 0;
+  padding: 10px 14px;
+  border: 1px solid var(--theme-line);
+  border-radius: var(--theme-radius-small);
+  background: var(--theme-bg);
+}
+
+.pm-ipa p {
+  margin: 4px 0;
+}
+
+.pm-ipa-label,
+.pm-site-label {
+  margin: 0 0 4px !important;
+  color: var(--theme-muted);
+  font-size: var(--theme-size-caption);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.pm-ipa-label small,
+.pm-site-label small {
+  margin-left: 8px;
+  color: var(--theme-faint);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.pm-ipa-answer {
+  color: var(--theme-heading);
+  font-weight: 600;
+}
+
+.pm-ipa-alt span {
+  margin-right: 8px;
+  color: var(--theme-muted);
+  font-size: var(--theme-size-caption);
+  font-weight: 600;
+}
+
+.pm-ipa.is-comment {
+  border-style: dashed;
+  font-size: 0.94rem;
+}
+
+.pm-points {
+  margin: 10px 0;
+  padding: 10px 14px 6px;
+  border-left: 3px solid var(--theme-leaf);
+  border-radius: 0 var(--theme-radius-small) var(--theme-radius-small) 0;
+  background: var(--theme-bg);
+}
+
+.pm-points ol {
+  margin: 0;
+  padding-left: 1.5em;
+}
+
+.pm-hint {
+  margin: 6px 0 0;
+  color: var(--theme-faint);
+  font-size: var(--theme-size-caption);
+}
+
+.pm-grade {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.pm-grade.is-auto.is-empty {
+  display: none;
+}
+
+.pm-grade-label {
+  color: var(--theme-heading);
+  font-size: var(--theme-size-small);
+  font-weight: 600;
+}
+
+.pm-grade-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1.5px solid var(--theme-line);
+  border-radius: 50%;
+  background: var(--theme-bg);
+  color: var(--theme-muted);
+  font: inherit;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pm-grade-btn:disabled {
+  cursor: default;
+}
+
+.pm-grade-btn:disabled:not([aria-pressed="true"]) {
+  opacity: 0.4;
+}
+
+.pm-grade-btn.is-good[aria-pressed="true"],
+.pm-mark-grade.is-good {
+  border-color: var(--theme-good);
+  background: var(--theme-good-bg);
+  color: var(--theme-good);
+}
+
+.pm-grade-btn.is-fair[aria-pressed="true"],
+.pm-mark-grade.is-fair {
+  border-color: var(--theme-warn);
+  background: var(--theme-warn-bg);
+  color: var(--theme-warn);
+}
+
+.pm-grade-btn.is-bad[aria-pressed="true"],
+.pm-mark-grade.is-bad {
+  border-color: var(--theme-bad);
+  background: var(--theme-bad-bg);
+  color: var(--theme-bad);
+}
+
+.pm-mark-grade {
+  display: inline-grid;
+  place-items: center;
+  width: 1.7em;
+  height: 1.7em;
+  margin-right: 6px;
+  border: 1.5px solid;
+  border-radius: 50%;
+  font-weight: 700;
+}
+
+.pm-grade-state {
+  margin-left: 6px;
+  color: var(--theme-faint);
+  font-size: var(--theme-size-caption);
+}
+
+/* サイトの考え方（IPA の文と見た目で分ける：枝の飾りとラベル） */
+.pm-think {
+  margin: 12px 0;
+  padding: 10px 14px;
+  border-radius: var(--theme-radius-small);
+  background: var(--theme-bg);
+}
+
+.pm-think summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--theme-leaf-deep);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pm-think summary::after {
+  content: "";
+  width: 14px;
+  height: 24px;
+  background: var(--theme-leaf);
+  -webkit-mask: var(--theme-sprig) center / contain no-repeat;
+  mask: var(--theme-sprig) center / contain no-repeat;
+}
+
+.pm-think-row {
+  margin: 10px 0;
+}
+
+.pm-think-row > p,
+.pm-think-row li p {
+  margin: 2px 0;
+}
+
+.pm-think-label {
+  margin: 0 0 2px !important;
+  color: var(--theme-leaf-deep);
+  font-size: var(--theme-size-caption);
+  font-weight: 700;
+}
+
+.pm-ground {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pm-ground li {
+  margin: 6px 0 10px;
+}
+
+.pm-ground blockquote {
+  margin: 0;
+  padding: 4px 10px;
+  border-left: 3px solid var(--theme-leaf-pale);
+  color: var(--theme-heading);
+}
+
+.pm-ground li > p {
+  margin: 4px 0;
+  color: var(--theme-muted);
+  font-size: 0.94rem;
+}
+
+.pm-steps {
+  margin: 0;
+  padding-left: 1.5em;
+}
+
+.pm-terms {
+  margin: 12px 0;
+}
+
+/* ---------- 記録・メモ ---------- */
+
+.pm-record-text {
+  margin: 0 0 10px;
+}
+
+.pm-record-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+}
+
+.pm-record-actions [hidden] {
+  display: none;
+}
+
+/* =====================================================================
+   一覧（ap/pm/index.html）
+   ===================================================================== */
+
+.pm-mine {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 10px;
+}
+
+.pm-mine-chip {
+  display: grid;
+  gap: 2px;
+  padding: 12px 14px;
+  border: 1.5px solid transparent;
+  border-radius: var(--theme-radius);
+  background: var(--theme-bg-alt);
+  color: var(--theme-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--theme-transition), border-color var(--theme-transition);
+}
+
+.pm-mine-chip:hover {
+  background: var(--theme-surface-hover);
+}
+
+.pm-mine-chip[aria-pressed="true"] {
+  border-color: var(--theme-accent);
+  background: var(--theme-good-bg);
+}
+
+.pm-mine-no {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--theme-heading);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.pm-mine-no em {
+  padding: 0 8px;
+  border-radius: var(--theme-radius-pill);
+  background: var(--theme-warn-bg);
+  color: var(--theme-pot-deep);
+  font-family: var(--theme-font-ui);
+  font-size: var(--theme-size-caption);
+  font-style: normal;
+  font-weight: 600;
+}
+
+.pm-mine-name {
+  color: var(--theme-heading);
+  font-weight: 600;
+}
+
+.pm-mine-rate {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  color: var(--theme-faint);
+  font-size: var(--theme-size-caption);
+}
+
+.pm-mine-rate b {
+  color: var(--theme-good);
+}
+
+.pm-mine-rate b.is-low {
+  color: var(--theme-bad);
+}
+
+.pm-mine-status {
+  margin: 12px 0 0;
+  color: var(--theme-muted);
+  font-size: var(--theme-size-small);
+}
+
+.pm-grid-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--theme-radius);
+  background: var(--theme-bg-alt);
+}
+
+.pm-grid {
+  width: 100%;
+  min-width: 940px;
+  border-collapse: collapse;
+  font-size: var(--theme-size-caption);
+  line-height: 1.45;
+}
+
+.pm-grid th,
+.pm-grid td {
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--theme-line-soft);
+  text-align: left;
+  vertical-align: top;
+}
+
+.pm-grid thead th {
+  color: var(--theme-heading);
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.pm-grid th small {
+  display: block;
+  color: var(--theme-faint);
+  font-weight: 400;
+  white-space: normal;
+}
+
+.pm-grid tbody th {
+  color: var(--theme-heading);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.pm-grid th.is-mine,
+.pm-grid td.is-mine {
+  background: var(--theme-bg);
+}
+
+.pm-cell {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.pm-cell.is-todo {
+  display: inline;
+  color: var(--theme-faint);
+}
+
+a.pm-cell {
+  color: var(--theme-link);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+a.pm-cell:hover span:last-child {
+  text-decoration: underline;
+}
+
+.pm-mark {
+  flex: none;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-top: 2px;
+  border: 1.5px solid var(--theme-leaf-deep);
+  border-radius: 50%;
+  vertical-align: -1px;
+}
+
+.pm-mark.is-half {
+  background: linear-gradient(90deg, transparent 50%, var(--theme-leaf-deep) 50%);
+}
+
+.pm-mark.is-done.is-good {
+  border-color: var(--theme-good);
+  background: var(--theme-good);
+}
+
+.pm-mark.is-done.is-warn {
+  border-color: var(--theme-warn);
+  background: var(--theme-warn);
+}
+
+.pm-grid-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 10px 0 0;
+  color: var(--theme-muted);
+  font-size: var(--theme-size-caption);
+}
+
+.pm-grid-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pm-grid-legend .pm-cell.is-todo {
+  margin-right: -10px;
+}
+
+.pm-grid-toggle {
+  display: none;
+  margin: 12px 0 0;
+}
+
+/* スマホ：問1と私の4問の5列だけ。「全部の問を表示」で横に動かせる表 */
+@media (max-width: 640px) {
+  .pm-grid-wrap:not(.is-all) .pm-grid {
+    min-width: 0;
+  }
+
+  .pm-grid-wrap:not(.is-all) .pm-grid th:not(.is-mine):not(.pm-grid-exam),
+  .pm-grid-wrap:not(.is-all) .pm-grid td:not(.is-mine) {
+    display: none;
+  }
+
+  .pm-grid-wrap:not(.is-all) .pm-grid tbody th small {
+    display: none;
+  }
+
+  .pm-grid-toggle {
+    display: block;
+  }
+}
+
+/* hidden を付けた部品は、display を決めていても隠す */
+main.pm [hidden],
+.pm-index [hidden] {
+  display: none !important;
+}
+
+/* 「全部の解答例を見る」を1回押したあと（もう一度押すと開く） */
+.pm-reveal-all.is-armed {
+  border-color: var(--theme-pot);
+  color: var(--theme-pot-deep);
+}
