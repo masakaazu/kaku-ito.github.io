@@ -22,6 +22,15 @@
 
   JSON の文字列の中の飾り（設計書 §3-4）：[u:1]…[/u] 下線①／[blank:a] 空欄／[ref:u1] 設問から下線への参照／
   [g:s1]…[/g] 設問 s1 の根拠／[ruby:漢字|よみ]／[sup:4]／**強調**。文字はすべてエスケープしてから飾りだけを変換する。
+  同じ空欄が本文に2回以上出てもよい（id は pm-blank-a・pm-blank-a-2…。光らせる・飛ぶ・自分の答えの表示は全部に）。
+  表の欄の中は "\n" で改行（「・」で始まる行はぶら下げ）。等幅（mono）でない欄は折り返す。10字以内の短い欄は折り返さない。
+  箇条書きの項目が「①」「(1)」などの番号で始まるときは、その番号をそのまま使い、2行目以降を番号の後ろにそろえる。
+
+  設問の part（questions[].parts[]）
+    kind: "text"（字数つき記述）／"short"（語句・数値）／"choice"（記号を1つ）／"multi"（記号を全て選ぶ。答えは "ア，ウ"）
+    label: 見出し（"(1)" "a" "(2) f"）。blank: その part が埋める本文の空欄（記号の part も同じ。古い形の label "a" だけも読む）
+    choices: 解答群。設問（questions[]）に置けば設問の頭に、part に置けばその小問の中に出す
+    multi の自己採点は自動：答えと全部同じなら ○、合っている記号が1つでもあれば △、無ければ ×
   用語の札は図解を読む画面（reader.js）と同じ作り。用語は ap/terms/NN.md から読む。色は theme.css の値だけを使う。
 */
 (function () {
@@ -367,12 +376,13 @@
     const qid = (pid) => `appm-${key}-${pid}`;
     const pages = Q.pages || [];
 
-    // 空欄 → その空欄に答える part（記号の part は label、語句の part は blank）
-    const partOfBlank = {};
-    allParts.forEach((p) => {
-      if (p.blank) partOfBlank[p.blank] = p;
-      else if (p.kind === "choice" && /^[a-z]$/.test(p.label || "")) partOfBlank[p.label] = p;
-    });
+    // 記号を選ぶ part（choice は1つ、multi は全て選ぶ）
+    const isPick = (p) => p.kind === "choice" || p.kind === "multi";
+    // その part が埋める本文の空欄（blank。古い形の記号の part は label "a" だけで空欄を表していた）
+    const blankOf = (p) => p.blank || (isPick(p) && /^[a-z]$/.test(p.label || "") ? p.label : "");
+    // multi の答え "ア，ウ" ⇔ ["ア", "ウ"]
+    const choicesOf = (p) => p.choices || p.q.choices || {};
+    const splitMarks = (s) => String(s || "").split(/[，,、・\s]+/).filter(Boolean);
     // 下線 → それを問う設問
     const asksOfU = {};
     questions.forEach((q) => {
@@ -402,6 +412,7 @@
     };
 
     // 文字列の飾りを HTML にする。ctx は "body"（問題文）か "q"（設問・考え方）
+    const blankSeen = {}; // 同じ空欄が本文に何回出たか（2回目からは id に -2, -3 を付ける）
     const deco = (text, ctx) => {
       let h = escapeHtml(text);
       h = h.replace(/\[ruby:([^|\]]+)\|([^\]]+)\]/g, "<ruby>$1<rt>$2</rt></ruby>");
@@ -419,7 +430,7 @@
       h = h.replace(/\[\/g\]/g, "</span>");
       h = h.replace(/\[blank:([a-z]+)\]/g, (_, b) =>
         ctx === "body"
-          ? `<span class="pm-blank" id="pm-blank-${b}" data-blank="${b}"><span class="pm-blank-label">${b}</span><span class="pm-blank-fill" data-blank-fill="${b}"></span></span>`
+          ? `<span class="pm-blank" id="pm-blank-${b}${(blankSeen[b] = (blankSeen[b] || 0) + 1) > 1 ? `-${blankSeen[b]}` : ""}" data-blank="${b}"><span class="pm-blank-label">${b}</span><span class="pm-blank-fill" data-blank-fill="${b}"></span></span>`
           : `<button type="button" class="pm-blank is-q" data-goto="${b}" aria-label="空欄 ${b} を本文で見る"><span class="pm-blank-label">${b}</span></button>`
       );
       h = h.replace(/\[ref:([\w-]+)\]/g, (_, r) => `<button type="button" class="pm-ref" data-goto="${r}">${escapeHtml(refLabel(r))}</button>`);
@@ -436,6 +447,19 @@
         ${f.caption ? `<figcaption>${deco(f.caption, "body")}</figcaption>` : ""}
       </figure>`;
 
+    // 表の欄：等幅（is-mono）は折り返さない。10字以内の短い欄（項番・「T 中」など）も折り返さない。
+    // ほかは折り返し、最小幅を持たせる（is-wrap）。"\n" で改行し、「・」で始まる行はぶら下げにする
+    const cellHtml = (tag, c, isMono) => {
+      const text = String(c == null ? "" : c);
+      const lines = text.split("\n");
+      const plainLen = [...text.replace(/\[(?:\/?[a-z]+)(?::[^\]]*)?\]/g, "")].length;
+      const cls = isMono ? "is-mono" : lines.length === 1 && plainLen <= 10 ? "is-short" : "is-wrap";
+      const inner =
+        lines.length === 1
+          ? deco(text, "body")
+          : lines.map((x) => `<span class="pm-cell-line${/^・/.test(x) ? " is-bullet" : ""}">${deco(x, "body")}</span>`).join("");
+      return `<${tag} class="${cls}">${inner}</${tag}>`;
+    };
     const tableHtml = (t) => {
       const mono = new Set(t.mono || []);
       return `
@@ -443,11 +467,11 @@
         ${t.caption ? `<p class="pm-table-caption">${deco(t.caption, "body")}</p>` : ""}
         <div class="pm-table">
           <table>
-            ${t.head ? `<thead><tr>${t.head.map((c, i) => `<th${mono.has(i) ? ' class="is-mono"' : ""}>${deco(c, "body")}</th>`).join("")}</tr></thead>` : ""}
+            ${t.head ? `<thead><tr>${t.head.map((c, i) => cellHtml("th", c, mono.has(i))).join("")}</tr></thead>` : ""}
             <tbody>${(t.rows || [])
               .map((r, ri) => {
                 const g = Object.entries(t.ground || {}).filter(([, rows]) => (rows || []).includes(ri)).map(([pid]) => pid);
-                return `<tr${g.length ? ` class="pm-g" data-g="${escapeHtml(g.join(" "))}"` : ""}>${r.map((c, i) => `<td${mono.has(i) ? ' class="is-mono"' : ""}>${deco(c, "body")}</td>`).join("")}</tr>`;
+                return `<tr${g.length ? ` class="pm-g" data-g="${escapeHtml(g.join(" "))}"` : ""}>${r.map((c, i) => cellHtml("td", c, mono.has(i))).join("")}</tr>`;
               })
               .join("")}</tbody>
           </table>
@@ -461,7 +485,8 @@
     const listHtml = (items, mark, cls, attrs) => {
       const numbered = (mark || "・") !== "・";
       const textOf = (t) => (typeof t === "string" ? t : (t && t.text) || "");
-      const own = items.every((t) => /^\s*[（(]?[0-9０-９]+[)）.．]/.test(textOf(t)));
+      const own = items.every((t) => /^\s*(?:[（(]?[0-9０-９]+[)）.．]|[①-⑳])/.test(textOf(t)));
+      const circled = own && items.every((t) => /^\s*[①-⑳]/.test(textOf(t)));
       const tag = numbered && !own ? "ol" : "ul";
       const item = (t) => {
         if (typeof t === "string") return `<li>${deco(t, "body")}</li>`;
@@ -469,7 +494,7 @@
           t.list && t.list.length ? listHtml(t.list, t.mark, "pm-list is-sub", "") : ""
         }</li>`;
       };
-      return `<${tag} class="${cls}${numbered ? (own ? " is-own" : " is-num") : ""}"${attrs}>${items.map(item).join("")}</${tag}>`;
+      return `<${tag} class="${cls}${numbered ? (own ? " is-own" : " is-num") : ""}${numbered && circled ? " is-circled" : ""}"${attrs}>${items.map(item).join("")}</${tag}>`;
     };
 
     const blockHtml = (b) => {
@@ -524,16 +549,29 @@
 
     /* ----- 設問 ----- */
 
-    const choiceButtons = (p, choices) =>
-      `<div class="pm-choice-row" role="radiogroup" aria-label="${escapeHtml(p.label ? `空欄 ${p.label}` : partName(p.id))}">
-        ${p.label ? `<span class="pm-choice-label">${escapeHtml(p.label)}</span>` : ""}
+    // 解答群（設問の頭、または小問の中）
+    const choicesBlock = (choices) =>
+      choices
+        ? `<div class="pm-choices"><p class="pm-choices-label">解答群</p><dl>${Object.entries(choices)
+            .map(([k, v]) => `<div><dt>${escapeHtml(k)}</dt><dd>${deco(v, "q")}</dd></div>`)
+            .join("")}</dl></div>`
+        : "";
+
+    // 記号のボタン。空欄を埋める part は空欄の名前を前に出す。multi は何個でも押せる
+    const choiceButtons = (p, choices) => {
+      const b = blankOf(p);
+      const multi = p.kind === "multi";
+      return `<div class="pm-choice-row${multi ? " is-multi" : ""}" role="${multi ? "group" : "radiogroup"}" aria-label="${escapeHtml(b ? `空欄 ${b}` : partName(p.id))}">
+        ${b ? `<span class="pm-choice-label">${escapeHtml(b)}</span>` : ""}
         ${Object.keys(choices || {})
-          .map((k) => `<button type="button" class="pm-choice" role="radio" aria-checked="false" data-choice="${escapeHtml(k)}" title="${escapeHtml(choices[k])}">${escapeHtml(k)}</button>`)
+          .map((k) => `<button type="button" class="pm-choice" role="${multi ? "checkbox" : "radio"}" aria-checked="false" data-choice="${escapeHtml(k)}" title="${escapeHtml(choices[k])}">${escapeHtml(k)}</button>`)
           .join("")}
+        ${multi ? `<span class="pm-choice-hint">当てはまるものを全て押す</span>` : ""}
       </div>`;
+    };
 
     const inputHtml = (p) => {
-      if (p.kind === "choice") return choiceButtons(p, p.choices || p.q.choices);
+      if (isPick(p)) return choiceButtons(p, choicesOf(p));
       const label = escapeHtml(`${partName(p.id)} の答え`);
       if (p.kind === "short")
         return `<div class="pm-field"><input type="text" class="pm-input is-short" data-input="${escapeHtml(p.id)}" aria-label="${label}" autocomplete="off" spellcheck="false"${/\[sup:/.test(p.text || "") ? ' placeholder="指数は ^ で（例：2^3）"' : ""}>${
@@ -596,13 +634,19 @@
       const ipa = answers.length
         ? `<div class="pm-ipa">
             <p class="pm-ipa-label">IPA 解答例</p>
-            <p class="pm-ipa-answer">${p.kind === "choice" ? answers.map((a) => `${escapeHtml(a)}（${escapeHtml(((p.choices || p.q.choices) || {})[a] || "")}）`).join("・") : deco(answers[0], "q")}</p>
-            ${answers.length > 1 && p.kind !== "choice" ? answers.slice(1).map((a) => `<p class="pm-ipa-alt"><span>別解</span>${deco(a, "q")}</p>`).join("") : ""}
+            <p class="pm-ipa-answer">${
+              p.kind === "choice"
+                ? answers.map((a) => `${escapeHtml(a)}（${escapeHtml(choicesOf(p)[a] || "")}）`).join("・")
+                : p.kind === "multi"
+                  ? `${escapeHtml(answers[0])}<span class="pm-ipa-marks">${splitMarks(answers[0]).map((a) => `${escapeHtml(a)}（${escapeHtml(choicesOf(p)[a] || "")}）`).join("・")}</span>`
+                  : deco(answers[0], "q")
+            }</p>
+            ${answers.length > 1 && !isPick(p) ? answers.slice(1).map((a) => `<p class="pm-ipa-alt"><span>別解</span>${deco(a, "q")}</p>`).join("") : ""}
             ${p.note ? `<p class="pm-ipa-alt"><span>備考</span>${deco(p.note, "q")}</p>` : ""}
           </div>`
         : "";
       const points =
-        p.kind !== "choice" && p.points && p.points.length
+        !isPick(p) && p.points && p.points.length
           ? `<div class="pm-points">
             <p class="pm-site-label">採点の目安<small>（サイトの判断。IPA は部分点の基準を出していない）</small></p>
             <ol>${p.points.map((x) => `<li>${deco(x, "q")}</li>`).join("")}</ol>
@@ -610,7 +654,7 @@
           </div>`
           : "";
       const grade =
-        p.kind === "choice"
+        isPick(p)
           ? `<p class="pm-grade is-auto" data-grade-auto="${escapeHtml(p.id)}"></p>`
           : `<div class="pm-grade" role="group" aria-label="${escapeHtml(partName(p.id))} の自己採点">
             <span class="pm-grade-label">自己採点</span>
@@ -636,7 +680,8 @@
     const partHtml = (p) => `
       <div class="pm-part" id="pm-part-${escapeHtml(p.id)}" data-part="${escapeHtml(p.id)}">
         <p class="pm-review-badge" hidden>今日の見直し</p>
-        ${p.text || (p.label && p.kind !== "choice") ? `<p class="pm-part-text">${p.label ? `<span class="pm-part-label">${escapeHtml(p.label)}</span>` : ""}${deco(p.text || "", "q")}</p>` : ""}
+        ${p.text || (p.label && p.label !== blankOf(p)) ? `<p class="pm-part-text">${p.label ? `<span class="pm-part-label">${escapeHtml(p.label)}</span>` : ""}${deco(p.text || "", "q")}</p>` : ""}
+        ${p.choices ? choicesBlock(p.choices) : ""}
         ${inputHtml(p)}
         <p class="pm-locked" data-locked hidden>記録済み。書き直すときは下の「もう一度解く」。</p>
         <details class="pm-prev" data-prev hidden><summary>前回の答え</summary><div data-prev-list></div></details>
@@ -656,13 +701,7 @@
         <h2 class="pm-q-title">設問${escapeHtml(q.no)}</h2>
         <p class="pm-q-text">${deco(q.text || "", "q")}</p>
         ${refs.length ? `<p class="pm-q-refs">${refs.map((u) => `<button type="button" class="pm-goto" data-goto="${u}">${escapeHtml(refLabel(u))}を見る</button>`).join("")}</p>` : ""}
-        ${
-          q.choices
-            ? `<div class="pm-choices"><p class="pm-choices-label">解答群</p><dl>${Object.entries(q.choices)
-                .map(([k, v]) => `<div><dt>${escapeHtml(k)}</dt><dd>${deco(v, "q")}</dd></div>`)
-                .join("")}</dl></div>`
-            : ""
-        }
+        ${choicesBlock(q.choices)}
         ${(q.parts || []).map((p) => partHtml(partById.get(p.id))).join("")}
         <p class="pm-q-foot"><button type="button" class="terms-button" data-reveal="${escapeHtml(q.no)}">この設問の解答例を見る</button></p>
       </article>`;
@@ -799,17 +838,17 @@
     /* ----- 答えの状態を画面に出す ----- */
 
     const rec = (pid) => Store.get(key, pid) || { a: "", g: null, ga: null, e: null, h: [] };
-    const choicesOf = (p) => p.choices || p.q.choices || {};
 
     const fillBlank = (p) => {
-      const b = p.blank || (p.kind === "choice" ? p.label : "");
+      const b = blankOf(p);
       if (!b) return;
-      const el = doc.querySelector(`[data-blank-fill="${b}"]`);
-      if (!el) return;
       const a = rec(p.id).a;
-      el.textContent = p.kind === "choice" && a ? choicesOf(p)[a] || a : a;
-      el.title = p.kind === "choice" && a ? `${a}（自分の答え）` : a ? "自分の答え" : "";
-      el.parentElement.classList.toggle("is-filled", Boolean(a));
+      const shown = p.kind === "choice" && a ? choicesOf(p)[a] || a : a;
+      doc.querySelectorAll(`[data-blank-fill="${b}"]`).forEach((el) => {
+        el.textContent = shown;
+        el.title = isPick(p) && a ? `${a}（自分の答え）` : a ? "自分の答え" : "";
+        el.parentElement.classList.toggle("is-filled", Boolean(a));
+      });
     };
 
     const renderCount = (p) => {
@@ -849,8 +888,9 @@
         if (document.activeElement !== input && input.value !== r.a) input.value = r.a || "";
         input.readOnly = locked;
       }
+      const picked = p.kind === "multi" ? splitMarks(r.a) : [r.a];
       box.querySelectorAll("[data-choice]").forEach((b) => {
-        b.setAttribute("aria-checked", String(b.dataset.choice === r.a));
+        b.setAttribute("aria-checked", String(picked.includes(b.dataset.choice)));
         b.disabled = locked;
       });
       box.querySelector("[data-locked]").hidden = !locked;
@@ -865,9 +905,9 @@
       const auto = box.querySelector("[data-grade-auto]");
       if (auto) {
         auto.innerHTML = r.g
-          ? `<span class="pm-mark-grade is-${r.g}">${GRADES[r.g]}</span>${r.g === "good" ? "正解" : `不正解（選んだのは ${escapeHtml(r.a)}）`}<span class="pm-grade-state">${locked ? "記録済み" : "まだ記録していない"}</span>`
+          ? `<span class="pm-mark-grade is-${r.g}">${GRADES[r.g]}</span>${r.g === "good" ? "正解" : `${r.g === "fair" ? "一部だけ正解" : "不正解"}（選んだのは ${escapeHtml(r.a)}）`}<span class="pm-grade-state">${locked ? "記録済み" : "まだ記録していない"}</span>`
           : revealed.has(p.id)
-            ? `<span class="pm-grade-state">記号を選ぶと自動で ○・× が付く（選ばないままなら記録しない）</span>`
+            ? `<span class="pm-grade-state">記号を選ぶと自動で ${p.kind === "multi" ? "○・△・×" : "○・×"} が付く（選ばないままなら記録しない）</span>`
             : "";
         auto.classList.toggle("is-empty", !auto.innerHTML);
       }
@@ -923,13 +963,12 @@
       const p = partById.get(input.dataset.input);
       renderCount(p);
       // 本文の空欄には、打っている途中から薄く出す
-      const b = p.blank;
+      const b = blankOf(p);
       if (b) {
-        const el = doc.querySelector(`[data-blank-fill="${b}"]`);
-        if (el) {
+        doc.querySelectorAll(`[data-blank-fill="${b}"]`).forEach((el) => {
           el.textContent = input.value;
           el.parentElement.classList.toggle("is-filled", Boolean(input.value));
-        }
+        });
       }
       clearTimeout(timers[p.id]);
       timers[p.id] = setTimeout(() => saveAnswer(p.id, input.value), 1000);
@@ -943,11 +982,23 @@
     });
 
     const revealed = new Set();
+    // 全て選ぶ記号：答え（別解があればそのどれか）と全部同じなら ○、合っている記号が1つでもあれば △、無ければ ×
+    const gradeMulti = (p, a) => {
+      const mine = new Set(splitMarks(a));
+      let best = "bad";
+      (p.answers || []).forEach((ans) => {
+        const right = splitMarks(ans);
+        const hit = right.filter((x) => mine.has(x)).length;
+        if (hit === right.length && mine.size === right.length) best = "good";
+        else if (hit && best === "bad") best = "fair";
+      });
+      return best;
+    };
     const autoGrade = (p) => {
       const r = rec(p.id);
-      if (p.kind !== "choice" || r.ga) return;
+      if (!isPick(p) || r.ga) return;
       // 選んでいない記号の設問は採点しない（記録にも送らない）
-      const g = !r.a ? null : (p.answers || []).includes(r.a) ? "good" : "bad";
+      const g = !r.a ? null : p.kind === "multi" ? gradeMulti(p, r.a) : (p.answers || []).includes(r.a) ? "good" : "bad";
       if (r.g !== g) Store.set(key, p.id, { g });
     };
     const reveal = (q, scroll) => {
@@ -992,12 +1043,14 @@
       if (quote && partId) {
         el = [...doc.querySelectorAll(`.pm-g[data-g~="${CSS.escape(partId)}"]`)].find((g) => g.textContent.includes(quote.replace(/\[[^\]]*\]/g, "").slice(0, 12))) || null;
       }
-      el = el || document.getElementById(targetId(ref));
+      const bm = !el && String(ref || "").match(/^(?:blank-)?([a-z])$/);
+      const els = bm ? [...doc.querySelectorAll(`[data-blank="${bm[1]}"]`)] : [];
+      el = el || els[0] || document.getElementById(targetId(ref));
       if (!el) return;
       showPane("doc");
       requestAnimationFrame(() => {
         reveal_into(el);
-        flash(el);
+        (els.length ? els : [el]).forEach(flash);
       });
     };
     const gotoQuestion = (no) => {
@@ -1043,8 +1096,10 @@
             if (!m) continue;
             const rest = n.splitText(m.index + m[1].length);
             rest.splitText(m[2].length);
-            const btn = document.createElement("button");
-            btn.type = "button";
+            // button だと1つの箱になり、表の狭い欄や行末で折り返せないので、span を押せる形にする
+            const btn = document.createElement("span");
+            btn.setAttribute("role", "button");
+            btn.tabIndex = 0;
             btn.className = `pm-term${entry.attr === "data-word" ? " is-word" : ""}`;
             btn.setAttribute(entry.attr, String(entry.i));
             btn.setAttribute("aria-expanded", "false");
@@ -1124,8 +1179,16 @@
         const pid = choice.closest("[data-part]").dataset.part;
         if (rec(pid).ga) return;
         const cur = rec(pid).a;
-        Store.set(key, pid, { a: cur === choice.dataset.choice ? "" : choice.dataset.choice });
         const p = partById.get(pid);
+        const k = choice.dataset.choice;
+        let next;
+        if (p.kind === "multi") {
+          const set = new Set(splitMarks(cur));
+          if (set.has(k)) set.delete(k);
+          else set.add(k);
+          next = Object.keys(choicesOf(p)).filter((x) => set.has(x)).join("，"); // 解答群の順に "ア，ウ"
+        } else next = cur === k ? "" : k;
+        Store.set(key, pid, { a: next });
         if (revealed.has(pid)) autoGrade(p);
         renderPart(p);
         renderRecord();
@@ -1183,7 +1246,10 @@
       }
     });
     main.addEventListener("keydown", (e) => {
-      if ((e.key === "Enter" || e.key === " ") && e.target.matches(".pm-u")) {
+      if ((e.key === "Enter" || e.key === " ") && e.target.matches(".pm-term")) {
+        e.preventDefault();
+        toggleTermPanel(e.target);
+      } else if ((e.key === "Enter" || e.key === " ") && e.target.matches(".pm-u")) {
         e.preventDefault();
         toggleUnderline(e.target);
       }
