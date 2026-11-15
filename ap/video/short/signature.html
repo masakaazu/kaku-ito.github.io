@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#070b08">
+  <title>デジタル署名のしくみ｜ショート動画</title>
+  <link rel="stylesheet" href="../../../assets/css/short.css">
+</head>
+<body>
+<!--
+  縦型ショート動画「デジタル署名のしくみ」（応用情報 R5春 問38）
+  - 声：signature.mp3（VOICEVOX で作った せりふ を1本に混ぜたもの）、字幕と時刻：signature.json
+  - 下の Short.scene(t) が、t 秒の時点の図を描く。動画ファイル（signature.mp4）は tools/short/record.mjs で書き出す
+  - 問題文・選択肢は IPA 令和5年度春期 応用情報技術者試験 午前 問38 の原文（ap/terms/11.md の問題演習と同じ）
+  - ハッシュ値は「3万円を振り込みます」「30万円を振り込みます」の SHA-256 の先頭8桁。署名の値は説明用の例
+-->
+<div class="short-wrap">
+  <div class="short-stage" data-timeline="signature.json" data-audio="signature.mp3" data-cast="../cast/">
+    <div class="sh-bar" data-bar></div>
+
+    <!-- 線・枠（いちばん下の層） -->
+    <svg class="layer" viewBox="0 0 1080 1920" aria-hidden="true">
+      <defs>
+        <filter id="glow" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="7"/></filter>
+      </defs>
+      <!-- 見出しの横の葉 -->
+      <g id="sprig" stroke="var(--theme-leaf)" fill="none" stroke-width="4" stroke-linecap="round">
+        <path d="M900 196 C930 150 960 120 1010 96"/>
+        <path d="M934 152 c-20 -30 -10 -52 14 -64 c10 26 4 48 -14 64z" fill="var(--theme-leaf-pale)"/>
+        <path d="M962 124 c28 -8 48 6 52 32 c-26 4 -44 -6 -52 -32z" fill="var(--theme-leaf-pale)"/>
+      </g>
+      <line x1="64" y1="222" x2="1016" y2="222" stroke="var(--theme-line)" stroke-width="2"/>
+
+      <rect id="boxA" x="40" y="262" width="1000" height="528" rx="36" fill="none" stroke="var(--theme-leaf-deep)" stroke-width="4"/>
+      <rect id="boxB" x="40" y="1032" width="1000" height="540" rx="36" fill="none" stroke="var(--theme-leaf-deep)" stroke-width="4"/>
+
+      <!-- つなぐ線 -->
+      <g fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+        <path id="cA1" d="M400 400 H680" stroke="var(--theme-line)"/>
+        <path id="cA2" d="M845 467 V640 H400" stroke="var(--theme-line)"/>
+        <path id="cNet" d="M540 790 V1032" stroke="var(--theme-line)" stroke-dasharray="4 16"/>
+        <path id="cB1" d="M400 1170 H680" stroke="var(--theme-line)"/>
+        <path id="cB2" d="M400 1390 H680" stroke="var(--theme-line)"/>
+      </g>
+      <!-- ネットワークを流れる点 -->
+      <g id="netDots" fill="var(--theme-leaf)">
+        <circle r="7" cx="540"/><circle r="7" cx="540"/><circle r="7" cx="540"/>
+      </g>
+    </svg>
+
+    <div class="sh-kicker">応用情報 ／ セキュリティ ／ R5春 問38</div>
+    <div class="sh-title">デジタル署名のしくみ</div>
+
+    <div class="sh-tag" style="left:76px;top:238px">送信者 A</div>
+    <div class="sh-tag" style="left:76px;top:1008px">受信者 B</div>
+    <div class="sh-net" id="net">インターネット</div>
+    <div class="sh-note" id="note">※ダイジェストは SHA-256 の先頭8桁、署名は説明用の例</div>
+
+    <!-- 送信者 A -->
+    <div class="sh-card msg" id="aMsg" style="left:70px;top:333px"><span class="lab">メッセージ</span><span class="val">3万円を<br>振り込みます</span></div>
+    <div class="sh-proc hash" id="aHash" style="left:430px;top:348px"><span class="lab">ハッシュ関数</span><span class="sub">SHA-256</span></div>
+    <div class="sh-card dig" id="aDig" style="left:680px;top:333px"><span class="lab">ダイジェスト</span><span class="val mono">b56bc40c</span></div>
+    <div class="sh-proc secret" id="aKey" style="left:430px;top:588px"><span class="lab">Aの秘密鍵</span><span class="sub">＝署名鍵</span></div>
+    <div class="sh-card sig" id="aSig" style="left:70px;top:573px"><span class="lab">デジタル署名</span><span class="val mono">7f3a9e21</span></div>
+
+    <div class="sh-packet" id="packet"><span>メッセージ</span><span class="s">署名</span></div>
+
+    <!-- 受信者 B -->
+    <div class="sh-card sig" id="bSig" style="left:70px;top:1103px"><span class="lab">届いた署名</span><span class="val mono">7f3a9e21</span></div>
+    <div class="sh-proc public" id="bKey" style="left:430px;top:1118px"><span class="lab">Aの公開鍵</span><span class="sub">＝検証鍵</span></div>
+    <div class="sh-card dig" id="bDig1" style="left:680px;top:1103px"><span class="lab">取り出した値</span><span class="val mono">b56bc40c</span></div>
+    <div class="sh-card msg" id="bMsg" style="left:70px;top:1323px"><span class="lab">届いたメッセージ</span><span class="val" id="bMsgVal">3万円を<br>振り込みます</span></div>
+    <div class="sh-proc hash" id="bHash" style="left:430px;top:1338px"><span class="lab">ハッシュ関数</span><span class="sub">SHA-256</span></div>
+    <div class="sh-card dig" id="bDig2" style="left:680px;top:1323px"><span class="lab">計算した値</span><span class="val mono" id="bDig2Val">b56bc40c</span></div>
+    <div class="sh-eq" id="eq" style="left:680px;top:1248px">＝</div>
+    <div class="sh-result good" id="result">一致 → 改ざんなし・送り主はA</div>
+
+    <!-- 動く光（いちばん上の層） -->
+    <svg class="layer" viewBox="0 0 1080 1920" aria-hidden="true" style="pointer-events:none">
+      <path id="pA1" d="M235 400 H845" fill="none"/>
+      <path id="pA2" d="M845 400 V640 H235" fill="none"/>
+      <path id="pB1" d="M235 1170 H845" fill="none"/>
+      <path id="pB2" d="M235 1390 H845" fill="none"/>
+      <g id="dots">
+        <g id="dA1"><circle r="22" fill="var(--theme-bloom-core)" filter="url(#glow)"/><circle r="11" fill="#fff8dc"/></g>
+        <g id="dA2"><circle r="22" fill="var(--theme-pot)" filter="url(#glow)"/><circle r="11" fill="#ffe9dc"/></g>
+        <g id="dB1"><circle r="22" fill="var(--theme-leaf)" filter="url(#glow)"/><circle r="11" fill="#e9fff0"/></g>
+        <g id="dB2"><circle r="22" fill="var(--theme-bloom-core)" filter="url(#glow)"/><circle r="11" fill="#fff8dc"/></g>
+      </g>
+    </svg>
+
+    <!-- 問題（最初と最後に重ねる） -->
+    <div class="sh-quiz" id="quiz">
+      <div class="src">令和5年度春期 午前 問38</div>
+      <div class="q">メッセージにRSA方式のデジタル署名を付与して2者間で送受信する。そのときのデジタル署名の検証鍵と使用方法はどれか。</div>
+      <ol>
+        <li data-c="a"><b>ア</b><span>受信者の公開鍵であり，送信者がメッセージダイジェストからデジタル署名を作成する際に使用する。</span></li>
+        <li data-c="i"><b>イ</b><span>受信者の秘密鍵であり，受信者がデジタル署名からメッセージダイジェストを取り出す際に使用する。</span></li>
+        <li data-c="u"><b>ウ</b><span>送信者の公開鍵であり，受信者がデジタル署名からメッセージダイジェストを取り出す際に使用する。</span></li>
+        <li data-c="e"><b>エ</b><span>送信者の秘密鍵であり，送信者がメッセージダイジェストからデジタル署名を作成する際に使用する。</span></li>
+      </ol>
+      <div class="cite">出典：IPA 令和5年度春期 応用情報技術者試験 午前 問38</div>
+    </div>
+
+    <!-- 字幕 -->
+    <div class="sh-cap" data-cap>
+      <img alt="">
+      <div class="sh-bubble"><div class="who"></div><div class="txt"></div></div>
+    </div>
+    <div class="sh-credit">音声：VOICEVOX:ずんだもん、VOICEVOX:四国めたん　イラスト：東北ずん子・ずんだもんプロジェクト</div>
+  </div>
+</div>
+
+<div class="short-ui">
+  <div class="box">
+    <button class="play" type="button" aria-label="再生">▶</button>
+    <p>約50秒・音が出ます。再生中に画面をタップすると止まります</p>
+    <div class="row">
+      <button class="sub" type="button" data-again>はじめから</button>
+      <a href="signature.mp4" download>動画ファイル（mp4）</a>
+      <a href="../../field.html?f=11">セキュリティへ戻る</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // t 秒の時点の図を描く（タイムラインの L[n].s / L[n].e は n 番目のせりふの始まりと終わり）
+  window.Short = window.Short || {};
+  (function () {
+    const $ = (id) => document.getElementById(id);
+    // 便利な関数は short.js が用意する（このあと読み込む）
+    const p = (...a) => window.Short.p(...a), show = (...a) => window.Short.show(...a), draw = (...a) => window.Short.draw(...a);
+    const ids = ["aMsg", "aHash", "aDig", "aKey", "aSig", "bSig", "bKey", "bDig1", "bMsg", "bHash", "bDig2", "eq", "result", "quiz", "packet", "net"];
+    const el = Object.fromEntries(ids.map((k) => [k, $(k)]));
+    const lis = [...document.querySelectorAll("#quiz li")];
+    const pulse = (node, t, a) => {
+      const k = p(t, a, a + 0.6);
+      const s = k > 0 && k < 1 ? 1 + Math.sin(k * Math.PI) * 0.08 : 1;
+      node.style.transform = `scale(${s})`;
+    };
+    const dot = (id, path, k) => {
+      const g = $(id);
+      const c = [...g.children];
+      c.forEach((n) => window.Short.move(n, $(path), k));
+    };
+
+    window.Short.scene = function (t, tl) {
+      const L = tl.lines;
+      const d = (i) => L[i].e - L[i].s;
+
+      // 0. 問題を見せる（最初）→ 消えて図が出る
+      const qIn = p(t, 0.1, 0.6);
+      const qOut = p(t, L[0].e + 0.1, L[0].e + 0.6);
+      const qEnd = p(t, L[8].s - 0.2, L[8].s + 0.4);
+      const qv = qEnd > 0 ? qEnd : qIn * (1 - qOut);
+      show(el.quiz, qv, 40);
+      const ok = p(t, L[8].s + d(8) * 0.55, L[8].s + d(8) * 0.55 + 0.4);
+      lis.forEach((li) => {
+        li.classList.toggle("ok", li.dataset.c === "u" && ok > 0);
+        li.classList.toggle("dim", li.dataset.c !== "u" && ok > 0);
+      });
+
+      const base = p(t, L[0].e, L[0].e + 0.6);
+      $("boxA").style.opacity = base;
+      $("boxB").style.opacity = base;
+      el.net.style.opacity = base;
+      $("note").style.opacity = base;
+      $("cNet").style.opacity = base;
+
+      // 1. メッセージ → ハッシュ関数 → ダイジェスト（L1）
+      const s1 = L[1].s, d1 = d(1);
+      show(el.aMsg, p(t, s1 + d1 * 0.35, s1 + d1 * 0.35 + 0.5));
+      show(el.aHash, p(t, s1 + d1 * 0.5, s1 + d1 * 0.5 + 0.5));
+      draw($("cA1"), p(t, s1 + d1 * 0.55, s1 + d1 * 0.75));
+      dot("dA1", "pA1", p(t, s1 + d1 * 0.6, s1 + d1 * 0.92));
+      pulse(el.aHash, t, s1 + d1 * 0.72);
+      show(el.aDig, p(t, s1 + d1 * 0.88, s1 + d1 * 0.88 + 0.4));
+
+      // 2. ダイジェスト → Aの秘密鍵 → 署名（L2）
+      const s2 = L[2].s, d2 = d(2);
+      show(el.aKey, p(t, s2 + d2 * 0.25, s2 + d2 * 0.25 + 0.5));
+      draw($("cA2"), p(t, s2 + d2 * 0.4, s2 + d2 * 0.7));
+      dot("dA2", "pA2", p(t, s2 + d2 * 0.4, s2 + d2 * 0.85));
+      pulse(el.aKey, t, s2 + d2 * 0.62);
+      show(el.aSig, p(t, s2 + d2 * 0.82, s2 + d2 * 0.82 + 0.4));
+
+      // 3. メッセージと署名をまとめて B へ送る（L3）
+      const s3 = L[3].s, e3 = L[3].e;
+      const pkIn = p(t, s3 + 0.2, s3 + 0.6);
+      const pkMove = window.Short.ease(p(t, s3 + 0.6, e3));
+      const pkOut = p(t, e3 - 0.1, e3 + 0.3);
+      el.packet.style.left = "540px";
+      el.packet.style.top = `${742 + pkMove * (1100 - 742)}px`;
+      el.packet.style.opacity = pkIn * (1 - pkOut);
+      // 流れる点
+      const flowing = t > s3 && t < e3 + 0.2;
+      [...$("netDots").children].forEach((c, i) => {
+        const k = ((t * 0.9 + i / 3) % 1);
+        c.setAttribute("cy", 790 + k * 242);
+        c.style.opacity = flowing ? Math.sin(k * Math.PI) : 0;
+      });
+      show(el.bSig, p(t, e3, e3 + 0.4));
+      show(el.bMsg, p(t, e3 + 0.15, e3 + 0.55));
+
+      // 4. 署名 → Aの公開鍵 → ダイジェストを取り出す（L4）
+      const s4 = L[4].s, d4 = d(4);
+      show(el.bKey, p(t, s4 + d4 * 0.2, s4 + d4 * 0.2 + 0.5));
+      draw($("cB1"), p(t, s4 + d4 * 0.55, s4 + d4 * 0.75));
+      dot("dB1", "pB1", p(t, s4 + d4 * 0.55, s4 + d4 * 0.9));
+      pulse(el.bKey, t, s4 + d4 * 0.7);
+      show(el.bDig1, p(t, s4 + d4 * 0.86, s4 + d4 * 0.86 + 0.4));
+
+      // 5. 届いたメッセージ → ハッシュ関数 → 計算した値（L5）
+      const s5 = L[5].s, d5 = d(5);
+      show(el.bHash, p(t, s5 + d5 * 0.25, s5 + d5 * 0.25 + 0.5));
+      draw($("cB2"), p(t, s5 + d5 * 0.4, s5 + d5 * 0.6));
+      // L7（改ざん）でもう一度流す
+      const s7 = L[7].s, d7 = d(7);
+      const again = p(t, s7 + d7 * 0.25, s7 + d7 * 0.6);
+      dot("dB2", "pB2", again > 0 ? again : p(t, s5 + d5 * 0.45, s5 + d5 * 0.85));
+      pulse(el.bHash, t, s5 + d5 * 0.65);
+      pulse(el.bHash, t, s7 + d7 * 0.42);
+      show(el.bDig2, p(t, s5 + d5 * 0.82, s5 + d5 * 0.82 + 0.4));
+
+      // 6. 比べる：一致（L6）
+      const s6 = L[6].s;
+      const tampered = t >= s7 + 0.2;
+      const recomputed = t >= s7 + d7 * 0.58;
+      $("bMsgVal").innerHTML = tampered ? "30万円を<br>振り込みます" : "3万円を<br>振り込みます";
+      el.bMsg.classList.toggle("bad", tampered);
+      $("bDig2Val").textContent = recomputed ? "da47d0b9" : "b56bc40c";
+      el.bDig2.classList.toggle("bad", recomputed);
+      show(el.eq, p(t, s6 + 0.2, s6 + 0.6), 0);
+      el.eq.textContent = recomputed ? "≠" : "＝";
+      el.eq.style.color = recomputed ? "var(--theme-bad)" : t > s6 + 0.2 ? "var(--theme-good)" : "";
+      const res = p(t, s6 + 0.5, s6 + 1.0);
+      el.result.className = `sh-result ${recomputed ? "bad" : "good"}`;
+      el.result.textContent = recomputed ? "不一致 → 途中で改ざんされたと分かる" : "一致 → 改ざんなし・送り主はA";
+      show(el.result, recomputed ? 1 : res);
+    };
+  })();
+</script>
+<script src="../../../assets/js/short.js"></script>
+</body>
+</html>
