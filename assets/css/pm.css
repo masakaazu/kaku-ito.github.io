@@ -378,6 +378,24 @@ ol.pm-list.is-num > li::before {
   content: none;
 }
 
+/* ①〜⑳ で始まる箇条書き：2行目以降を番号の後ろにそろえる */
+.pm-list.is-circled {
+  padding-left: 0;
+}
+
+.pm-list.is-circled > li {
+  padding-left: 2em;
+  text-indent: -2em;
+}
+
+.pm-list.is-circled > li > * {
+  text-indent: 0;
+}
+
+.pm-list.is-circled > li > .pm-li-p {
+  text-indent: 1em;
+}
+
 .pm-list.is-sub {
   margin: 0.2em 0 0.4em;
 }
@@ -473,6 +491,7 @@ button.pm-blank {
 
 /* 用語の点線（押すと意味が開く） */
 .pm-term {
+  /* 本文の用語は span（role="button"）。行の途中・表の欄の中でも折り返す */
   padding: 0;
   border: 0;
   border-bottom: 1.5px dotted var(--theme-leaf-deep);
@@ -574,7 +593,6 @@ tr.pm-g.is-lit td {
 .pm-table th,
 .pm-table td {
   padding: 6px 8px;
-  white-space: nowrap; /* 「T 中」などの短い欄が折り返して行が高くならないように */
   border: 1px solid var(--theme-line);
   text-align: left;
   vertical-align: top;
@@ -591,6 +609,34 @@ tr.pm-g.is-lit td {
   font-size: 0.7rem; /* 64字のハッシュ値が PC の左の列に収まる大きさ */
   overflow-wrap: normal;
   white-space: nowrap;
+}
+
+/* 10字以内の短い欄（項番・「T 中」「貸与 PC」など）は折り返さない */
+.pm-table .is-short {
+  white-space: nowrap;
+}
+
+/* 文章の欄は折り返す。細くなりすぎないよう最小幅を持たせる（スマホで入りきらない表は、表だけ横に動く） */
+.pm-table .is-wrap {
+  min-width: 8em;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .pm-table .is-wrap {
+    min-width: 7em;
+  }
+}
+
+/* 欄の中の改行（JSON の "\n"）。「・」で始まる行はぶら下げ */
+.pm-cell-line {
+  display: block;
+}
+
+.pm-cell-line.is-bullet {
+  padding-left: 1em;
+  text-indent: -1em;
 }
 
 .pm-table-note {
@@ -932,6 +978,15 @@ tr.pm-g.is-lit td {
   color: var(--theme-on-accent);
 }
 
+.pm-choice-hint {
+  color: var(--theme-muted);
+  font-size: var(--theme-size-caption);
+}
+
+.pm-part > .pm-choices {
+  margin: 4px 0 10px;
+}
+
 .pm-choice:disabled {
   cursor: default;
 }
@@ -1032,6 +1087,13 @@ tr.pm-g.is-lit td {
 .pm-ipa-answer {
   color: var(--theme-heading);
   font-weight: 600;
+}
+
+.pm-ipa-marks {
+  display: block;
+  color: var(--theme-muted);
+  font-size: var(--theme-size-small);
+  font-weight: 400;
 }
 
 .pm-ipa-alt span {

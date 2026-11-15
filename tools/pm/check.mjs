@@ -52,6 +52,12 @@ for (const b of q.body || []) {
   if (b.fig && !figIds.has(b.fig)) err(`${b.id}：図 ${b.fig} が figures に無い`);
   if (b.table && !tblIds.has(b.table)) err(`${b.id}：表 ${b.table} が tables に無い`);
 }
+// 表の中の文字（表の欄に下線・空欄がある問もある。pm.js は表の欄も本文と同じ飾りで表示する。欄の中の改行は "\n"）
+for (const t of q.tables || []) {
+  [t.caption, ...(t.head || []), ...(t.rows || []).flat(), t.note]
+    .filter((s) => typeof s === "string")
+    .forEach((s, i) => strings.push({ where: `${t.id}[${i}]`, s }));
+}
 
 // 飾りを外した文字（根拠の引用を探すため）
 const plain = (s) =>
@@ -91,6 +97,7 @@ for (const { where, s } of strings) {
 }
 
 /* ---------- 設問 ---------- */
+const splitMarks = (s) => String(s || "").split(/[，,、・\s]+/).filter(Boolean);
 const parts = [];
 const textsToCheck = [];
 for (const qu of q.questions || []) {
@@ -100,18 +107,24 @@ for (const qu of q.questions || []) {
     if (p.text) textsToCheck.push({ where: p.id, s: p.text });
     if (!p.id) err(`設問${qu.no}：id の無い part`);
     if (!Array.isArray(p.answers) || !p.answers.length) err(`${p.id}：answers が無い`);
-    if (!["text", "short", "choice"].includes(p.kind)) err(`${p.id}：kind が text/short/choice でない`);
-    if (p.kind === "choice") {
-      if (!qu.choices) err(`${p.id}：choice なのに設問${qu.no}に choices が無い`);
-      else p.answers.forEach((a) => qu.choices[a] === undefined && err(`${p.id}：答え ${a} が choices に無い`));
-      if (p.think?.others && qu.choices) {
-        for (const k of Object.keys(qu.choices)) if (!p.answers.includes(k) && !p.think.others[k]) err(`${p.id}：選択肢 ${k} の説明（think.others）が無い`);
+    if (!["text", "short", "choice", "multi"].includes(p.kind)) err(`${p.id}：kind が text/short/choice/multi でない`);
+    // 記号の part（choice は1つ、multi は全て選ぶ。答えは "ア，ウ"）。解答群は part の choices か設問の choices
+    if (p.kind === "choice" || p.kind === "multi") {
+      const choices = p.choices || qu.choices;
+      const marks = Array.isArray(p.answers) ? (p.kind === "multi" ? p.answers.flatMap(splitMarks) : p.answers) : [];
+      if (!choices) err(`${p.id}：${p.kind} なのに part にも設問${qu.no}にも choices が無い`);
+      else marks.forEach((a) => choices[a] === undefined && err(`${p.id}：答え ${a} が choices に無い`));
+      if (p.kind === "multi") (p.answers || []).forEach((a) => splitMarks(a).length < 1 && err(`${p.id}：multi の答え "${a}" に記号が無い`));
+      if (p.think?.others && choices) {
+        for (const k of Object.keys(choices)) if (!marks.includes(k) && !p.think.others[k]) err(`${p.id}：選択肢 ${k} の説明（think.others）が無い`);
       }
-    }
+    } else if (p.choices) err(`${p.id}：記号の part でないのに choices がある`);
     if (p.limit) p.answers.forEach((a) => [...plain(a)].length > p.limit && err(`${p.id}：解答例が ${[...plain(a)].length} 字で ${p.limit} 字を超える`));
     if (p.chars) p.answers.forEach((a) => [...plain(a)].length !== p.chars && err(`${p.id}：解答例が ${p.chars} 字でない`));
     if (p.blank && !blanks.has(p.blank)) err(`${p.id}：空欄 ${p.blank} が本文に無い`);
-    if (p.label && qu.choices && p.kind === "choice" && !blanks.has(p.label)) err(`${p.id}：空欄 ${p.label} が本文に無い`);
+    if (/^\s*[（(][0-9０-９]+[)）]/.test(p.text || "")) err(`${p.id}：小問の番号（(1) など）は text ではなく label に書く`);
+    // 記号の part が空欄を埋めるときは blank で示す（label は "(1)" などの見出し）。古い形の label "a" だけのものも空欄として確かめる
+    if (!p.blank && (p.kind === "choice" || p.kind === "multi") && /^[a-z]$/.test(p.label || "") && !blanks.has(p.label)) err(`${p.id}：空欄 ${p.label} が本文に無い`);
   }
 }
 for (const { where, s } of textsToCheck) {
