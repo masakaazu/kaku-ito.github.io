@@ -97,6 +97,7 @@ for (const { where, s } of strings) {
 }
 
 /* ---------- 設問 ---------- */
+const isPickKind = (p) => p.kind === "choice" || p.kind === "multi";
 const splitMarks = (s) => String(s || "").split(/[，,、・\s]+/).filter(Boolean);
 const parts = [];
 const textsToCheck = [];
@@ -125,7 +126,34 @@ for (const qu of q.questions || []) {
     if (/^\s*[（(][0-9０-９]+[)）]/.test(p.text || "")) err(`${p.id}：小問の番号（(1) など）は text ではなく label に書く`);
     // 記号の part が空欄を埋めるときは blank で示す（label は "(1)" などの見出し）。古い形の label "a" だけのものも空欄として確かめる
     if (!p.blank && (p.kind === "choice" || p.kind === "multi") && /^[a-z]$/.test(p.label || "") && !blanks.has(p.label)) err(`${p.id}：空欄 ${p.label} が本文に無い`);
+    // 入力欄の前の空欄の印は blank（記号の part は古い形の label "a" も）から出す。印が出ない形を見つける
+    const pb = p.blank || ((p.kind === "choice" || p.kind === "multi") && /^[a-z]$/.test(p.label || "") ? p.label : "");
+    const lm = String(p.label || "").match(/(?:^|\s)([a-z])$/);
+    if (lm && !pb) err(`${p.id}：label "${p.label}" は空欄 ${lm[1]} を指すのに blank が無い（入力欄の前に空欄の印が出ない）`);
+    if (lm && pb && lm[1] !== pb) err(`${p.id}：label "${p.label}" と blank "${pb}" が食い違う`);
+    if (p.blank && !/^[a-z]$/.test(p.blank)) err(`${p.id}：blank "${p.blank}" が英小文字1字でない（印と本文の空欄が結び付かない）`);
   }
+  // 順不同の組（unordered）：同じ設問の中に2つ以上、記述の part（short/text）だけ。組の解答例が重ならない
+  const groups = {};
+  for (const p of qu.parts || []) {
+    if (p.unordered === undefined) continue;
+    if (typeof p.unordered !== "string" || !p.unordered) err(`${p.id}：unordered が文字列でない`);
+    else if (isPickKind(p)) err(`${p.id}：unordered は記号の part には使えない`);
+    else (groups[p.unordered] ||= []).push(p);
+  }
+  for (const [g, ps] of Object.entries(groups)) {
+    if (ps.length < 2) err(`設問${qu.no}：unordered "${g}" の part が1つしかない`);
+    const all = ps.flatMap((p) => p.answers || []);
+    if (new Set(all).size !== all.length) err(`設問${qu.no}：unordered "${g}" の解答例が重なっている`);
+  }
+  for (const p of parts) if (p.unordered && !(qu.parts || []).includes(p) && groups[p.unordered]) err(`${p.id}：unordered "${p.unordered}" が別の設問にもある`);
+  // 設問・小問の文に出てくる空欄は、その設問のどれかの part が blank で埋める（印が出ない空欄を残さない）
+  const filled = new Set(
+    (qu.parts || []).map((p) => p.blank || ((p.kind === "choice" || p.kind === "multi") && /^[a-z]$/.test(p.label || "") ? p.label : "")).filter(Boolean)
+  );
+  for (const s of [qu.text, ...(qu.parts || []).map((p) => p.text)])
+    for (const m of String(s || "").matchAll(/\[blank:([a-z0-9]+)\]/g))
+      if (!filled.has(m[1])) err(`設問${qu.no}：文中の空欄 ${m[1]} を埋める part が無い（blank の指定が抜けている）`);
 }
 for (const { where, s } of textsToCheck) {
   for (const m of s.matchAll(/\[ref:(u\d+)\]/g)) if (!underlines.has(m[1].slice(1))) err(`${where}：${m[0]} の下線が本文に無い`);

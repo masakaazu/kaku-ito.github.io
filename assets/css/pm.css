@@ -396,6 +396,45 @@ ol.pm-list.is-num > li::before {
   text-indent: 1em;
 }
 
+/* 「(1)」「(ⅰ)」などの番号で始まる箇条書き：番号を別の箱にして、2行目以降を番号の後ろにそろえる */
+.pm-list > li.has-no {
+  display: flex;
+}
+
+.pm-li-no {
+  flex: none;
+  margin-right: 1em;
+  white-space: nowrap;
+}
+
+.pm-li-body {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 同じ箇条書きの中で番号の幅がちがう（(i) と (iii) など）ときも、本文の頭をそろえる */
+@supports (grid-template-columns: subgrid) {
+  .pm-list.is-hang {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    column-gap: 1em;
+  }
+
+  .pm-list.is-hang > li.has-no {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+  }
+
+  .pm-list.is-hang .pm-li-no {
+    margin-right: 0;
+  }
+}
+
+.pm-li-body > .pm-li-p:first-child {
+  margin-top: 0;
+}
+
 .pm-list.is-sub {
   margin: 0.2em 0 0.4em;
 }
@@ -632,6 +671,14 @@ tr.pm-g.is-lit td {
   min-width: 8em;
   white-space: normal;
   overflow-wrap: anywhere;
+}
+
+/* PC 幅では、欄の中を文節で折り返す（「調達実績デ／ータ」のように語の途中で切れない）。
+   スマホ幅の狭い欄では行が細切れになるので、今までどおり字の間で折り返す。対応しないブラウザも今までどおり */
+@media (min-width: 900px) {
+  .pm-table .is-wrap {
+    word-break: auto-phrase;
+  }
 }
 
 @media (max-width: 640px) {
@@ -955,16 +1002,37 @@ tr.pm-g.is-lit td {
   gap: 6px;
 }
 
-.pm-choice-label {
-  display: inline-grid;
-  place-items: center;
-  min-width: 2em;
-  height: 2em;
-  margin-right: 4px;
-  border: 1.5px solid var(--theme-heading);
-  border-radius: 4px;
-  color: var(--theme-heading);
-  font-weight: 700;
+/* 空欄を埋める part の入力欄の前の印（本文の空欄 .pm-blank と同じ見た目。押すと本文のその空欄へ） */
+.pm-blank-mark {
+  justify-content: center;
+  align-items: center;
+  align-self: start;
+  min-width: 2.6em;
+  min-height: 40px;
+  margin: 0 4px 0 0;
+  padding: 0 10px;
+}
+
+.pm-blank-mark:hover {
+  background: var(--theme-bg-deep);
+}
+
+.pm-blank-mark:focus-visible {
+  outline: 2px solid var(--theme-accent);
+  outline-offset: 1px;
+}
+
+.pm-field.has-blank {
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 8px;
+}
+
+.pm-field.has-blank .pm-blank-mark {
+  margin: 0;
+}
+
+.pm-field.has-blank .pm-count {
+  grid-column: 2;
 }
 
 .pm-choice {
