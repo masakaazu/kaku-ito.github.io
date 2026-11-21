@@ -49,6 +49,7 @@ for (const b of q.body || []) {
   if (b.note !== undefined) strings.push({ where: b.id, s: b.note });
   if (b.list) listStrings(b.list, b.id);
   if (b.code) b.code.forEach((s, i) => strings.push({ where: `${b.id}[${i}]`, s }));
+  if (typeof b.caption === "string") strings.push({ where: b.id, s: b.caption });
   if (b.fig && !figIds.has(b.fig)) err(`${b.id}：図 ${b.fig} が figures に無い`);
   if (b.table && !tblIds.has(b.table)) err(`${b.id}：表 ${b.table} が tables に無い`);
 }
@@ -64,7 +65,7 @@ const plain = (s) =>
   s
     .replace(/\[ruby:([^|\]]*)\|[^\]]*\]/g, "$1")
     .replace(/\[sup:([^\]]*)\]/g, "$1")
-    .replace(/\[blank:([a-z0-9]+)\]/g, "〔$1〕")
+    .replace(/\[blank:([a-z0-9ア-ン]+)\]/g, "〔$1〕")
     .replace(/\[ref:u(\d+)\]/g, "下線$1")
     .replace(/\[\/?(u|g)(:[^\]]*)?\]/g, "")
     .replace(/\*\*/g, "");
@@ -74,7 +75,8 @@ const underlines = new Set();
 const blanks = new Set();
 const groundMarks = new Set();
 for (const { where, s } of strings) {
-  const tags = s.match(/\[\/?[a-z]+(:[^\]]*)?\]/g) || [];
+  // 「isPrime[t]」のような配列の添字は飾りではない。飾りは「:」のある開き（[u:1] など）と閉じ [/u]・[/g] だけ
+  const tags = (s.match(/\[\/?[a-z]+(:[^\]]*)?\]/g) || []).filter((t) => /:|^\[\/[a-z]+\]$/.test(t));
   const stack = [];
   for (const t of tags) {
     const m = t.match(/^\[(\/?)([a-z]+)(?::([^\]]*))?\]$/);
@@ -131,7 +133,7 @@ for (const qu of q.questions || []) {
     const lm = String(p.label || "").match(/(?:^|\s)([a-z])$/);
     if (lm && !pb) err(`${p.id}：label "${p.label}" は空欄 ${lm[1]} を指すのに blank が無い（入力欄の前に空欄の印が出ない）`);
     if (lm && pb && lm[1] !== pb) err(`${p.id}：label "${p.label}" と blank "${pb}" が食い違う`);
-    if (p.blank && !/^[a-z]$/.test(p.blank)) err(`${p.id}：blank "${p.blank}" が英小文字1字でない（印と本文の空欄が結び付かない）`);
+    if (p.blank && !/^[a-zア-ン]$/.test(p.blank)) err(`${p.id}：blank "${p.blank}" が英小文字・カタカナ1字でない（印と本文の空欄が結び付かない）`);
   }
   // 順不同の組（unordered）：同じ設問の中に2つ以上、記述の part（short/text）だけ。組の解答例が重ならない
   const groups = {};
@@ -152,12 +154,12 @@ for (const qu of q.questions || []) {
     (qu.parts || []).map((p) => p.blank || ((p.kind === "choice" || p.kind === "multi") && /^[a-z]$/.test(p.label || "") ? p.label : "")).filter(Boolean)
   );
   for (const s of [qu.text, ...(qu.parts || []).map((p) => p.text)])
-    for (const m of String(s || "").matchAll(/\[blank:([a-z0-9]+)\]/g))
+    for (const m of String(s || "").matchAll(/\[blank:([a-z0-9ア-ン]+)\]/g))
       if (!filled.has(m[1])) err(`設問${qu.no}：文中の空欄 ${m[1]} を埋める part が無い（blank の指定が抜けている）`);
 }
 for (const { where, s } of textsToCheck) {
   for (const m of s.matchAll(/\[ref:(u\d+)\]/g)) if (!underlines.has(m[1].slice(1))) err(`${where}：${m[0]} の下線が本文に無い`);
-  for (const m of s.matchAll(/\[blank:([a-z0-9]+)\]/g)) if (!blanks.has(m[1])) err(`${where}：空欄 ${m[1]} が本文に無い`);
+  for (const m of s.matchAll(/\[blank:([a-z0-9ア-ン]+)\]/g)) if (!blanks.has(m[1])) err(`${where}：空欄 ${m[1]} が本文に無い`);
 }
 
 // 問題 ID が全部違う

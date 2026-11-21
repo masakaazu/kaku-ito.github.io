@@ -25,6 +25,9 @@
   同じ空欄が本文に2回以上出てもよい（id は pm-blank-a・pm-blank-a-2…。光らせる・飛ぶ・自分の答えの表示は全部に）。
   表の欄の中は "\n" で改行（「・」で始まる行はぶら下げ）。等幅（mono）でない欄は折り返す。10字以内の短い欄は折り返さない。
   箇条書きの項目が「①」「(1)」などの番号で始まるときは、その番号をそのまま使い、2行目以降を番号の後ろにそろえる。
+  空欄の記号は英小文字（a）のほか、擬似言語の問のカタカナ（[blank:ア]）も使える。
+  code（擬似言語・SQL の行の配列）の行にも空欄などの飾りを書ける。caption を書くと下に図の題を出す。
+  考え方の think.trace（{ caption, head, rows } かその配列）は「トレース表」として表で出す。
 
   設問の part（questions[].parts[]）
     kind: "text"（字数つき記述）／"short"（語句・数値）／"choice"（記号を1つ）／"multi"（記号を全て選ぶ。答えは "ア，ウ"）
@@ -373,7 +376,9 @@
     const partById = new Map(allParts.map((p) => [p.id, p]));
     const figById = new Map((Q.figures || []).map((f) => [f.id, f]));
     const tblById = new Map((Q.tables || []).map((t) => [t.id, t]));
-    const short = `${examShort(topic, Q.exam)} 問${Q.no}`;
+    // 擬似言語・SQL のブロック（code）に図の題（caption）があれば、根拠の「本文で見る」に「図1」と出す
+    const codeCaption = new Map((Q.body || []).filter((b) => b.code && b.caption).map((b) => [b.id, b.caption]));
+    const short =`${examShort(topic, Q.exam)} 問${Q.no}`;
     const category = `午後 問${Q.no} ${Q.area || ""}`.trim();
     const qid = (pid) => `appm-${key}-${pid}`;
     const pages = Q.pages || [];
@@ -404,13 +409,14 @@
       if (u) return `下線${CIRCLED[Number(u[1]) - 1] || u[1]}`;
       if (figById.has(r)) return shortCaption(figById.get(r).caption) || "図";
       if (tblById.has(r)) return shortCaption(tblById.get(r).caption) || "表";
-      if (/^[a-z]$/.test(r)) return `空欄 ${r}`;
+      if (codeCaption.has(r)) return shortCaption(codeCaption.get(r));
+      if (/^[a-zア-ン]$/.test(r)) return `空欄 ${r}`;
       return "本文";
     };
     const targetId = (r) => {
       if (/^u\d+$/.test(r)) return `pm-u${r.slice(1)}`;
-      if (/^[a-z]$/.test(r)) return `pm-blank-${r}`;
-      if (/^blank-[a-z]$/.test(r)) return `pm-${r}`;
+      if (/^[a-zア-ン]$/.test(r)) return `pm-blank-${r}`;
+      if (/^blank-[a-zア-ン]$/.test(r)) return `pm-${r}`;
       if (figById.has(r) || tblById.has(r)) return `pm-x-${r}`;
       return `pm-${r}`;
     };
@@ -432,7 +438,7 @@
         ctx === "body" ? `<span class="pm-g" data-g="${ids.split(",").map((x) => x.trim()).join(" ")}">` : "<span>"
       );
       h = h.replace(/\[\/g\]/g, "</span>");
-      h = h.replace(/\[blank:([a-z]+)\]/g, (_, b) =>
+      h = h.replace(/\[blank:([a-zア-ン]+)\]/g, (_, b) =>
         ctx === "body"
           ? `<span class="pm-blank" id="pm-blank-${b}${(blankSeen[b] = (blankSeen[b] || 0) + 1) > 1 ? `-${blankSeen[b]}` : ""}" data-blank="${b}"><span class="pm-blank-label">${b}</span><span class="pm-blank-fill" data-blank-fill="${b}"></span></span>`
           : `<button type="button" class="pm-blank is-q" data-goto="${b}" aria-label="空欄 ${b} を本文で見る"><span class="pm-blank-label">${b}</span></button>`
@@ -453,11 +459,12 @@
 
     // 表の欄：等幅（is-mono）は折り返さない。10字以内の短い欄（項番・「T 中」など）も折り返さない。
     // ほかは折り返し、最小幅を持たせる（is-wrap）。"\n" で改行し、「・」で始まる行はぶら下げにする
-    const cellHtml = (tag, c, isMono) => {
+    // shortMax：折り返さない欄の字数の上限。列の多い表（compact）は 8 字にして、長めの欄は折り返す
+    const cellHtml = (tag, c, isMono, shortMax = 10) => {
       const text = String(c == null ? "" : c);
       const lines = text.split("\n");
       const plainLen = [...text.replace(/\[(?:\/?[a-z]+)(?::[^\]]*)?\]/g, "")].length;
-      const cls = isMono ? "is-mono" : lines.length === 1 && plainLen <= 10 ? "is-short" : "is-wrap";
+      const cls = isMono ? "is-mono" : lines.length === 1 && plainLen <= shortMax ? "is-short" : "is-wrap";
       // 1行だけの欄でも「・」で始まればぶら下げにする
       const inner =
         lines.length === 1 && !/^・/.test(text)
@@ -467,16 +474,17 @@
     };
     const tableHtml = (t) => {
       const mono = new Set(t.mono || []);
+      const shortMax = t.compact ? 8 : 10;
       return `
       <div class="pm-table-block" id="pm-x-${escapeHtml(t.id)}">
         ${t.caption ? `<p class="pm-table-caption">${deco(t.caption, "body")}</p>` : ""}
-        <div class="pm-table">
+        <div class="pm-table${t.compact ? " is-compact" : ""}">
           <table>
-            ${t.head ? `<thead><tr>${t.head.map((c, i) => cellHtml("th", c, mono.has(i))).join("")}</tr></thead>` : ""}
+            ${t.head ? `<thead><tr>${t.head.map((c, i) => cellHtml("th", c, mono.has(i), shortMax)).join("")}</tr></thead>` : ""}
             <tbody>${(t.rows || [])
               .map((r, ri) => {
                 const g = Object.entries(t.ground || {}).filter(([, rows]) => (rows || []).includes(ri)).map(([pid]) => pid);
-                return `<tr${g.length ? ` class="pm-g" data-g="${escapeHtml(g.join(" "))}"` : ""}>${r.map((c, i) => cellHtml("td", c, mono.has(i))).join("")}</tr>`;
+                return `<tr${g.length ? ` class="pm-g" data-g="${escapeHtml(g.join(" "))}"` : ""}>${r.map((c, i) => cellHtml("td", c, mono.has(i), shortMax)).join("")}</tr>`;
               })
               .join("")}</tbody>
           </table>
@@ -523,9 +531,11 @@
         return `<div class="pm-block" id="pm-${id}">${t ? tableHtml(t) : ""}</div>`;
       }
       if (b.code) {
-        return `<pre class="pm-block pm-code" id="pm-${id}"><code>${b.code
-          .map((line, i) => `<span class="pm-code-line"><span class="pm-code-no" aria-hidden="true">${i + 1}</span>${escapeHtml(line)}</span>`)
-          .join("\n")}</code></pre>`;
+        // 行の中の空欄 [blank:ア]・下線・根拠 [g:…] も本文と同じ飾りにする（「isPrime[t]」のような角かっこはそのまま）。caption は図の題（下に出す）
+        const pre = `<pre class="pm-code"><code>${b.code
+          .map((line, i) => `<span class="pm-code-line"><span class="pm-code-no" aria-hidden="true">${i + 1}</span>${deco(line, "body")}</span>`)
+          .join("")}</code></pre>`; // 行は display:block の span なので、間に改行を入れない（pre の中で空行になる）
+        return `<div class="pm-block" id="pm-${id}">${pre}${b.caption ? `<p class="pm-table-caption">${deco(b.caption, "body")}</p>` : ""}</div>`;
       }
       return "";
     };
@@ -618,6 +628,17 @@
             ${row("問われていること", t.ask ? `<p>${deco(t.ask, "q")}</p>` : "")}
             ${row("根拠（本文の原文）", ground ? `<ul class="pm-ground">${ground}</ul>` : "")}
             ${row("つなぎ", t.steps && t.steps.length ? `<ol class="pm-steps">${t.steps.map((s) => `<li>${deco(s, "q")}</li>`).join("")}</ol>` : "")}
+            ${row(
+              "トレース表",
+              // プログラムの問の変数の移り変わり。think.trace は { caption, head, rows, mono } か、その配列
+              [].concat(t.trace || [])
+                .map(
+                  (tr) => `${tr.caption ? `<p class="pm-table-caption">${deco(tr.caption, "q")}</p>` : ""}<div class="pm-table"><table>${
+                    tr.head ? `<thead><tr>${tr.head.map((c, i) => cellHtml("th", c, (tr.mono || []).includes(i))).join("")}</tr></thead>` : ""
+                  }<tbody>${(tr.rows || []).map((r) => `<tr>${r.map((c, i) => cellHtml("td", c, (tr.mono || []).includes(i))).join("")}</tr>`).join("")}</tbody></table></div>`
+                )
+                .join("")
+            )}
             ${row("答えの組み立て", t.build ? `<p>${deco(t.build, "q")}</p>` : "")}
             ${row("つまずき", t.trap ? `<p>${deco(t.trap, "q")}</p>` : "")}
             ${row(
@@ -704,11 +725,12 @@
       const l = String(p.label || "");
       return b ? l.replace(new RegExp(`(^|\\s+)${b}$`), "") : l;
     };
-    const partHtml = (p) => `
+    // sameChoices：同じ設問の1つ前の小問と同じ解答群なら、解答群を2回出さない（R6秋 問8 設問2(2) の e・f）
+    const partHtml = (p, sameChoices) => `
       <div class="pm-part" id="pm-part-${escapeHtml(p.id)}" data-part="${escapeHtml(p.id)}">
         <p class="pm-review-badge" hidden>今日の見直し</p>
         ${p.text || headOf(p) ? `<p class="pm-part-text">${headOf(p) ? `<span class="pm-part-label">${escapeHtml(headOf(p))}</span>` : ""}${deco(p.text || "", "q")}</p>` : ""}
-        ${p.choices ? choicesBlock(p.choices) : ""}
+        ${p.choices && !sameChoices ? choicesBlock(p.choices) : ""}
         ${inputHtml(p)}
         <p class="pm-locked" data-locked hidden>記録済み。書き直すときは下の「もう一度解く」。</p>
         <details class="pm-prev" data-prev hidden><summary>前回の答え</summary><div data-prev-list></div></details>
@@ -729,7 +751,7 @@
         <p class="pm-q-text">${deco(q.text || "", "q")}</p>
         ${refs.length ? `<p class="pm-q-refs">${refs.map((u) => `<button type="button" class="pm-goto" data-goto="${u}">${escapeHtml(refLabel(u))}を見る</button>`).join("")}</p>` : ""}
         ${choicesBlock(q.choices)}
-        ${(q.parts || []).map((p) => partHtml(partById.get(p.id))).join("")}
+        ${(q.parts || []).map((p, i, a) => partHtml(partById.get(p.id), i > 0 && !!p.choices && JSON.stringify(a[i - 1].choices) === JSON.stringify(p.choices))).join("")}
         <p class="pm-q-foot"><button type="button" class="terms-button" data-reveal="${escapeHtml(q.no)}">この設問の解答例を見る</button></p>
       </article>`;
     };
@@ -1102,7 +1124,7 @@
       if (quote && partId) {
         el = [...doc.querySelectorAll(`.pm-g[data-g~="${CSS.escape(partId)}"]`)].find((g) => g.textContent.includes(quote.replace(/\[[^\]]*\]/g, "").slice(0, 12))) || null;
       }
-      const bm = !el && String(ref || "").match(/^(?:blank-)?([a-z])$/);
+      const bm = !el && String(ref || "").match(/^(?:blank-)?([a-zア-ン])$/);
       const els = bm ? [...doc.querySelectorAll(`[data-blank="${bm[1]}"]`)] : [];
       el = el || els[0] || document.getElementById(targetId(ref));
       if (!el) return;
