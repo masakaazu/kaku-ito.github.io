@@ -31,6 +31,8 @@
     label: 見出し（"(1)" "a" "(2) f"）。blank: その part が埋める本文の空欄（記号の part も同じ。古い形の label "a" だけも読む）
     choices: 解答群。設問（questions[]）に置けば設問の頭に、part に置けばその小問の中に出す
     multi の自己採点は自動：答えと全部同じなら ○、合っている記号が1つでもあれば △、無ければ ×
+    unordered: 順不同の組の名前（例 "s2-bc"）。同じ名前の part どうしは答えを入れ替えてもよい。
+      自分の答えが組のどれかの解答例と同じ（空白・全角半角は無視、組の中で重ならない）なら ○ を自動で付ける。ほかは自己採点
   用語の札は図解を読む画面（reader.js）と同じ作り。用語は ap/terms/NN.md から読む。色は theme.css の値だけを使う。
 */
 (function () {
@@ -381,6 +383,8 @@
     // その part が埋める本文の空欄（blank。古い形の記号の part は label "a" だけで空欄を表していた）
     const blankOf = (p) => p.blank || (isPick(p) && /^[a-z]$/.test(p.label || "") ? p.label : "");
     // multi の答え "ア，ウ" ⇔ ["ア", "ウ"]
+    // 順不同の組（unordered が同じ part どうし）
+    const groupOf = (p) => allParts.filter((x) => x.unordered && x.unordered === p.unordered);
     const choicesOf = (p) => p.choices || p.q.choices || {};
     const splitMarks = (s) => String(s || "").split(/[，,、・\s]+/).filter(Boolean);
     // 下線 → それを問う設問
@@ -454,8 +458,9 @@
       const lines = text.split("\n");
       const plainLen = [...text.replace(/\[(?:\/?[a-z]+)(?::[^\]]*)?\]/g, "")].length;
       const cls = isMono ? "is-mono" : lines.length === 1 && plainLen <= 10 ? "is-short" : "is-wrap";
+      // 1行だけの欄でも「・」で始まればぶら下げにする
       const inner =
-        lines.length === 1
+        lines.length === 1 && !/^・/.test(text)
           ? deco(text, "body")
           : lines.map((x) => `<span class="pm-cell-line${/^・/.test(x) ? " is-bullet" : ""}">${deco(x, "body")}</span>`).join("");
       return `<${tag} class="${cls}">${inner}</${tag}>`;
@@ -482,19 +487,25 @@
 
     // 箇条書き。項目は文字列か { text, p:[段落…], mark, list:[入れ子の項目…] }
     // 「・」は記号を付ける。番号の箇条書きは、原文の番号を本文に書いてあればそのまま、無ければ 1. 2. と振る
+    // 「(1)」「(ⅰ)」「1.」などの番号で始まる項目は、番号を別の箱にして2行目以降を番号の後ろにそろえる（①〜⑳ は is-circled の字下げ）
+    const OWN_NO = /^\s*((?:[（(][0-9０-９ⅰ-ⅿⅠ-Ⅿ]+[)）]|[0-9０-９]+[.．]))[ 　]*/;
     const listHtml = (items, mark, cls, attrs) => {
       const numbered = (mark || "・") !== "・";
       const textOf = (t) => (typeof t === "string" ? t : (t && t.text) || "");
-      const own = items.every((t) => /^\s*(?:[（(]?[0-9０-９]+[)）.．]|[①-⑳])/.test(textOf(t)));
+      const own = items.every((t) => OWN_NO.test(textOf(t)) || /^\s*[①-⑳]/.test(textOf(t)));
       const circled = own && items.every((t) => /^\s*[①-⑳]/.test(textOf(t)));
+      const hang = own && !circled && items.every((t) => OWN_NO.test(textOf(t)));
       const tag = numbered && !own ? "ol" : "ul";
       const item = (t) => {
-        if (typeof t === "string") return `<li>${deco(t, "body")}</li>`;
-        return `<li>${deco(t.text || "", "body")}${(t.p || []).map((x) => `<p class="pm-li-p">${deco(x, "body")}</p>`).join("")}${
+        const text = textOf(t);
+        const rest = typeof t === "string" ? "" : `${(t.p || []).map((x) => `<p class="pm-li-p">${deco(x, "body")}</p>`).join("")}${
           t.list && t.list.length ? listHtml(t.list, t.mark, "pm-list is-sub", "") : ""
-        }</li>`;
+        }`;
+        const m = hang && text.match(OWN_NO);
+        if (m) return `<li class="has-no"><span class="pm-li-no">${escapeHtml(m[1])}</span><div class="pm-li-body">${deco(text.slice(m[0].length), "body")}${rest}</div></li>`;
+        return `<li>${deco(text, "body")}${rest}</li>`;
       };
-      return `<${tag} class="${cls}${numbered ? (own ? " is-own" : " is-num") : ""}${numbered && circled ? " is-circled" : ""}"${attrs}>${items.map(item).join("")}</${tag}>`;
+      return `<${tag} class="${cls}${numbered ? (own ? " is-own" : " is-num") : ""}${numbered && circled ? " is-circled" : ""}${hang ? " is-hang" : ""}"${attrs}>${items.map(item).join("")}</${tag}>`;
     };
 
     const blockHtml = (b) => {
@@ -557,12 +568,16 @@
             .join("")}</dl></div>`
         : "";
 
-    // 記号のボタン。空欄を埋める part は空欄の名前を前に出す。multi は何個でも押せる
+    // 空欄を埋める part の入力欄の前に置く印（本文の空欄と同じ見た目。押すと本文のその空欄へ飛んで光る）
+    const blankMark = (b) =>
+      b ? `<button type="button" class="pm-blank is-q pm-blank-mark" data-goto="${escapeHtml(b)}" aria-label="空欄 ${escapeHtml(b)}（押すと本文のこの空欄を見る）"><span class="pm-blank-label">${escapeHtml(b)}</span></button>` : "";
+
+    // 記号のボタン。空欄を埋める part は空欄の印を前に出す。multi は何個でも押せる
     const choiceButtons = (p, choices) => {
       const b = blankOf(p);
       const multi = p.kind === "multi";
       return `<div class="pm-choice-row${multi ? " is-multi" : ""}" role="${multi ? "group" : "radiogroup"}" aria-label="${escapeHtml(b ? `空欄 ${b}` : partName(p.id))}">
-        ${b ? `<span class="pm-choice-label">${escapeHtml(b)}</span>` : ""}
+        ${blankMark(b)}
         ${Object.keys(choices || {})
           .map((k) => `<button type="button" class="pm-choice" role="${multi ? "checkbox" : "radio"}" aria-checked="false" data-choice="${escapeHtml(k)}" title="${escapeHtml(choices[k])}">${escapeHtml(k)}</button>`)
           .join("")}
@@ -572,13 +587,15 @@
 
     const inputHtml = (p) => {
       if (isPick(p)) return choiceButtons(p, choicesOf(p));
-      const label = escapeHtml(`${partName(p.id)} の答え`);
+      const b = blankOf(p);
+      const label = escapeHtml(b ? `空欄 ${b} の答え（${partName(p.id)}）` : `${partName(p.id)} の答え`);
+      const field = b ? `pm-field has-blank` : "pm-field";
       if (p.kind === "short")
-        return `<div class="pm-field"><input type="text" class="pm-input is-short" data-input="${escapeHtml(p.id)}" aria-label="${label}" autocomplete="off" spellcheck="false"${/\[sup:/.test(p.text || "") ? ' placeholder="指数は ^ で（例：2^3）"' : ""}>${
+        return `<div class="${field}">${blankMark(b)}<input type="text" class="pm-input is-short" data-input="${escapeHtml(p.id)}" aria-label="${label}" autocomplete="off" spellcheck="false"${/\[sup:/.test(p.text || "") ? ' placeholder="指数は ^ で（例：2^3）"' : ""}>${
           p.chars || p.limit ? `<span class="pm-count" data-count="${escapeHtml(p.id)}"></span>` : ""
         }</div>`;
       const rows = Math.max(2, Math.ceil((p.limit || 40) / 22));
-      return `<div class="pm-field"><textarea class="pm-input" rows="${rows}" data-input="${escapeHtml(p.id)}" aria-label="${label}" spellcheck="false"></textarea><span class="pm-count" data-count="${escapeHtml(p.id)}"></span></div>`;
+      return `<div class="${field}">${blankMark(b)}<textarea class="pm-input" rows="${rows}" data-input="${escapeHtml(p.id)}" aria-label="${label}" spellcheck="false"></textarea><span class="pm-count" data-count="${escapeHtml(p.id)}"></span></div>`;
     };
 
     const thinkHtml = (p) => {
@@ -662,7 +679,11 @@
               .map((g) => `<button type="button" class="pm-grade-btn is-${g}" data-grade="${g}" aria-pressed="false" title="${GRADE_NAMES[g]}">${GRADES[g]}</button>`)
               .join("")}
             <span class="pm-grade-state" data-grade-state></span>
-          </div>`;
+          </div>${
+            p.unordered
+              ? `<p class="pm-hint">順不同：${groupOf(p).map((x) => escapeHtml(blankOf(x) || x.label || x.id)).join("・")} は入れ替えてもよい。解答例と同じ語なら ○ が自動で付く（ほかの書き方は自分で採点する）。</p>`
+              : ""
+          }`;
       const commentText = p.comment || (p.q.parts.length === 1 && p.q.comment) || "";
       const comment = `<div class="pm-ipa is-comment">
           <p class="pm-ipa-label">IPA 採点講評${p.rate ? `<small>正答率 ${escapeHtml(p.rate)}</small>` : ""}</p>
@@ -677,10 +698,16 @@
         </div>`;
     };
 
+    // 見出し（"(1) a" の末尾の a は入力欄の前の印と重なるので外す。"b" だけなら見出しは出さない）
+    const headOf = (p) => {
+      const b = blankOf(p);
+      const l = String(p.label || "");
+      return b ? l.replace(new RegExp(`(^|\\s+)${b}$`), "") : l;
+    };
     const partHtml = (p) => `
       <div class="pm-part" id="pm-part-${escapeHtml(p.id)}" data-part="${escapeHtml(p.id)}">
         <p class="pm-review-badge" hidden>今日の見直し</p>
-        ${p.text || (p.label && p.label !== blankOf(p)) ? `<p class="pm-part-text">${p.label ? `<span class="pm-part-label">${escapeHtml(p.label)}</span>` : ""}${deco(p.text || "", "q")}</p>` : ""}
+        ${p.text || headOf(p) ? `<p class="pm-part-text">${headOf(p) ? `<span class="pm-part-label">${escapeHtml(headOf(p))}</span>` : ""}${deco(p.text || "", "q")}</p>` : ""}
         ${p.choices ? choicesBlock(p.choices) : ""}
         ${inputHtml(p)}
         <p class="pm-locked" data-locked hidden>記録済み。書き直すときは下の「もう一度解く」。</p>
@@ -963,6 +990,11 @@
     const saveAnswer = (pid, value) => {
       if (rec(pid).ga) return; // 記録済みは書き換えない
       Store.set(key, pid, { a: String(value).slice(0, 2000) });
+      const p = partById.get(pid);
+      if (p && p.unordered && revealed.has(pid)) {
+        gradeUnordered(p);
+        groupOf(p).forEach(renderPart);
+      }
       renderRecord();
     };
     qs.addEventListener("input", (e) => {
@@ -999,8 +1031,30 @@
       });
       return best;
     };
+    // 順不同の組（unordered）：解答例のどれかと同じ語で、組の中で重ならなければ ○ を自動で付ける。
+    // 合わないときは付けない（自己採点のまま）。自動で付けた ○ だけは、答えを変えて合わなくなったら外す
+    const normAns = (s) => String(s || "").normalize("NFKC").replace(/\s+/g, "");
+    const autoGood = new Set();
+    const gradeUnordered = (p) => {
+      const group = groupOf(p);
+      const right = new Set(group.flatMap((x) => (x.answers || []).map(normAns)));
+      const mine = group.map((x) => normAns(rec(x.id).a));
+      group.forEach((x, i) => {
+        const r = rec(x.id);
+        if (r.ga) return;
+        const ok = Boolean(mine[i]) && right.has(mine[i]) && mine.filter((m) => m === mine[i]).length === 1;
+        if (ok && !r.g) {
+          Store.set(key, x.id, { g: "good" });
+          autoGood.add(x.id);
+        } else if (!ok && autoGood.has(x.id) && r.g === "good") {
+          Store.set(key, x.id, { g: null });
+          autoGood.delete(x.id);
+        }
+      });
+    };
     const autoGrade = (p) => {
       const r = rec(p.id);
+      if (p.unordered) return gradeUnordered(p);
       if (!isPick(p) || r.ga) return;
       // 選んでいない記号の設問は採点しない（記録にも送らない）
       const g = !r.a ? null : p.kind === "multi" ? gradeMulti(p, r.a) : (p.answers || []).includes(r.a) ? "good" : "bad";
@@ -1206,6 +1260,7 @@
         // 書きかけの答えを先に保存する
         const input = qs.querySelector(`[data-input="${pid}"]`);
         const change = { g: rec(pid).g === grade.dataset.grade ? null : grade.dataset.grade };
+        autoGood.delete(pid); // 自分で付け直した採点は、自動では外さない
         if (input && input.value !== rec(pid).a) change.a = input.value;
         Store.set(key, pid, change);
         renderPart(partById.get(pid));

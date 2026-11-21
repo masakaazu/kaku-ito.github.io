@@ -31,7 +31,10 @@ for (const fig of q.figures || []) {
 }
 for (const n of q.pages || []) {
   const out = join(outDir, `${q.exam}-p${String(n).padStart(2, "0")}.webp`);
-  execFileSync("convert", [page(n), ...webp, "-quality", "70", out]);
+  // この版の convert は -quality を変えても大きさが変わらない。400KB に収まらない問だけ、
+  // JSON の pageTargetKB（1ページの目安の KB）で webp:target-size を指定して小さくする（無ければ今までどおり）
+  const target = q.pageTargetKB ? ["-define", `webp:target-size=${q.pageTargetKB * 1024}`] : [];
+  execFileSync("convert", [page(n), ...webp, ...target, "-quality", "70", out]);
   made.push(out);
 }
 let total = 0;
