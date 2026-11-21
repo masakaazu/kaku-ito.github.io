@@ -27,6 +27,7 @@
   箇条書きの項目が「①」「(1)」などの番号で始まるときは、その番号をそのまま使い、2行目以降を番号の後ろにそろえる。
   空欄の記号は英小文字（a）のほか、擬似言語の問のカタカナ（[blank:ア]）も使える。
   code（擬似言語・SQL の行の配列）の行にも空欄などの飾りを書ける。caption を書くと下に図の題を出す。
+  行番号はふだん 1 から振る。nos（行ごとの番号の配列。"" は番号なし）を書くと、その番号を出す（原本の行番号と続きの行に合わせるとき）。
   考え方の think.trace（{ caption, head, rows } かその配列）は「トレース表」として表で出す。
 
   設問の part（questions[].parts[]）
@@ -533,7 +534,8 @@
       if (b.code) {
         // 行の中の空欄 [blank:ア]・下線・根拠 [g:…] も本文と同じ飾りにする（「isPrime[t]」のような角かっこはそのまま）。caption は図の題（下に出す）
         const pre = `<pre class="pm-code"><code>${b.code
-          .map((line, i) => `<span class="pm-code-line"><span class="pm-code-no" aria-hidden="true">${i + 1}</span>${deco(line, "body")}</span>`)
+          // nos（任意）：行ごとの番号の配列。原本に行番号があり、続きの行（番号なし）があるときに使う。"" は番号を出さない
+          .map((line, i) => `<span class="pm-code-line"><span class="pm-code-no" aria-hidden="true">${Array.isArray(b.nos) ? escapeHtml(b.nos[i] ?? "") : i + 1}</span>${deco(line, "body")}</span>`)
           .join("")}</code></pre>`; // 行は display:block の span なので、間に改行を入れない（pre の中で空行になる）
         return `<div class="pm-block" id="pm-${id}">${pre}${b.caption ? `<p class="pm-table-caption">${deco(b.caption, "body")}</p>` : ""}</div>`;
       }
