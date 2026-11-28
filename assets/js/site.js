@@ -146,6 +146,7 @@
       add(`${topic}/notes/index.html`, "ノート一覧", `${topic}/index.html`);
       add(`${topic}/read.html`, "図解を読む", `${topic}/index.html`);
       if (topic === "ap") add(`${topic}/exam.html`, "午前の模擬試験", `${topic}/index.html`);
+      if (topic === "ap") add(`${topic}/termmap.html`, "用語マップ", `${topic}/index.html`);
       if (info.pm) add(`${topic}/pm/index.html`, "午後の演習", `${topic}/index.html`);
 
       if (info.days) {

@@ -8,7 +8,7 @@
 
   中身を大きく変えたときは VERSION を上げると、古い保存分が消える。
 */
-const VERSION = "v38";
+const VERSION = "v39";
 const CACHE = `site-${VERSION}`;
 const CORE = [
   "./",
@@ -27,6 +27,8 @@ const CORE = [
   "assets/js/study-sync.js",
   "assets/js/reader.js",
   "assets/css/reader.css",
+  "assets/js/termmap.js",
+  "assets/css/termmap.css",
   "assets/icons/icon-192.png",
 ];
 const SHARED_HOSTS = ["fonts.googleapis.com", "fonts.gstatic.com", "cdn.jsdelivr.net"];

@@ -420,6 +420,12 @@
       .join("")}</${tag}>
     ${sub && (term.reading || term.english) ? `<p class="term-sub">${escapeHtml([term.reading, term.english].filter(Boolean).join(" ／ "))}</p>` : ""}`;
 
+  // 応用情報の用語は「マップで見る」から用語マップ（ap/termmap.html）へ。その用語が中心で開く
+  const mapLink = (term) =>
+    topic === "ap" && term.meaning && !term.flags.includes("重複") && /\/ap\/terms\//.test(location.pathname)
+      ? `<p class="term-maplink"><a href="../termmap.html?t=${encodeURIComponent(term.name)}">マップで見る</a></p>`
+      : "";
+
   const renderList = (doc) =>
     doc.sections
       .map(
@@ -434,7 +440,7 @@
           ${
             g.terms.every((t) => t.nameOnly)
               ? `<ul class="term-chips">${g.terms.map((t) => `<li>${escapeHtml(t.name)}</li>`).join("")}</ul>`
-              : `<div class="term-list">${g.terms.map((t) => `<article class="term-card">${termHead(t)}${termBody(t)}</article>`).join("")}</div>`
+              : `<div class="term-list">${g.terms.map((t) => `<article class="term-card">${termHead(t)}${termBody(t)}${mapLink(t)}</article>`).join("")}</div>`
           }
           ${(g.notes || []).map((n) => `<p class="terms-note">${inline(n)}</p>`).join("")}`
           )
