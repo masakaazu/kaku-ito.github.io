@@ -176,13 +176,117 @@ body.termmap-page {
   flex: 1 1 auto;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+  grid-template-columns: minmax(0, 1fr) clamp(280px, 30vw, 380px);
 }
 
 .termmap-stage {
-  position: relative;
   min-width: 0;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.termmap-canvas {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.termmap-caption {
+  position: absolute;
+  top: 10px;
+  left: max(12px, env(safe-area-inset-left));
+  right: 12px;
+  margin: 0;
+  color: var(--theme-muted);
+  font-family: var(--theme-font-ui);
+  font-size: var(--theme-size-caption);
+  pointer-events: none;
+  width: fit-content;
+  max-width: calc(100% - 24px);
+  padding: 2px 10px;
+  border-radius: var(--theme-radius-small);
+  background: color-mix(in srgb, var(--theme-bg) 85%, transparent);
+}
+
+/* マップの下の帯（たどった道・線の見方）。マップの上には重ねない */
+.termmap-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 16px;
+  padding: 8px max(12px, env(safe-area-inset-left)) 8px 12px;
+  border-top: 1px solid var(--theme-line-soft);
+}
+
+.termmap-foot:has(.termmap-trail:empty) {
+  justify-content: flex-end;
+}
+
+/* 表示の切り替え（つながり／分野の全体） */
+.termmap-mode {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: var(--theme-radius-pill);
+  background: var(--theme-bg-alt);
+}
+
+.termmap-mode button {
+  padding: 5px 14px;
+  border: 0;
+  border-radius: var(--theme-radius-pill);
+  background: transparent;
+  color: var(--theme-muted);
+  font: inherit;
+  font-family: var(--theme-font-ui);
+  font-size: var(--theme-size-small);
+  cursor: pointer;
+  transition: background var(--theme-transition), color var(--theme-transition);
+}
+
+.termmap-mode button[aria-pressed="true"] {
+  background: var(--theme-bg);
+  color: var(--theme-heading);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.termmap-mode button:focus-visible {
+  outline: 2px solid var(--theme-accent);
+  outline-offset: 2px;
+}
+
+.termmap[data-view="field"] [data-only="focus"] {
+  display: none;
+}
+
+/* 分野の全体：選んだ用語とつながる用語以外は薄くする */
+.termmap-svg.has-pick .node:not(.is-near) {
+  opacity: 0.18;
+}
+
+.termmap-svg.has-pick line:not(.is-near) {
+  opacity: 0.08;
+}
+
+.termmap-svg .node.is-picked circle {
+  stroke: var(--theme-leaf-pale);
+  stroke-width: 5px;
+}
+
+.termmap-svg .node.is-picked text {
+  fill: var(--theme-heading);
+  font-weight: 600;
+}
+
+.termmap-svg .node text.is-quiet {
+  display: none;
+}
+
+.termmap-svg.is-zoomed .node text.is-quiet,
+.termmap-svg .node.is-near text.is-quiet {
+  display: inline;
 }
 
 .termmap-svg {
@@ -242,6 +346,7 @@ body.termmap-page {
 
 .termmap-svg line {
   stroke: var(--theme-faint);
+  vector-effect: non-scaling-stroke;
 }
 
 .termmap-svg line.is-mention {
@@ -264,9 +369,6 @@ body.termmap-page {
 }
 
 .termmap-legend {
-  position: absolute;
-  top: 10px;
-  left: max(12px, env(safe-area-inset-left));
   display: flex;
   flex-wrap: wrap;
   gap: 4px 14px;
@@ -296,10 +398,7 @@ body.termmap-page {
 }
 
 .termmap-trail {
-  position: absolute;
-  left: max(12px, env(safe-area-inset-left));
-  right: 12px;
-  bottom: 10px;
+  min-width: 0;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -307,7 +406,6 @@ body.termmap-page {
   color: var(--theme-muted);
   font-family: var(--theme-font-ui);
   font-size: var(--theme-size-caption);
-  pointer-events: none;
 }
 
 .termmap-trail button {
@@ -322,7 +420,6 @@ body.termmap-page {
   text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
-  pointer-events: auto;
 }
 
 .termmap-trail button:hover {
@@ -520,7 +617,7 @@ body.termmap-page {
 @media (max-width: 760px) {
   .termmap-body {
     grid-template-columns: 1fr;
-    grid-template-rows: minmax(0, 52%) minmax(0, 48%);
+    grid-template-rows: minmax(0, 62%) minmax(0, 38%);
   }
 
   .termmap-bar h1 {
@@ -533,6 +630,28 @@ body.termmap-page {
 
   .termmap-legend {
     display: none;
+  }
+
+  .termmap-bar {
+    gap: 8px 10px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .termmap-bar h1 small {
+    display: none;
+  }
+
+  .termmap-search {
+    flex-basis: 100%;
+    max-width: none;
+    order: 5;
+  }
+
+  .termmap-trail {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
 
   .termmap-panel {
