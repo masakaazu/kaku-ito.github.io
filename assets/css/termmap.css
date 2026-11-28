@@ -1,0 +1,548 @@
+/*
+  用語マップのデザイン（termmap.js と組み合わせて使う）
+  1画面の道具：PC は左にマップ・右に説明、スマホは上にマップ・下に説明。
+  色・書体などの値は theme.css で決める。色を使うのは中心の用語（アクセント色）と、⚠要確認（注意の色）だけ。
+  系（テクノロジ／マネジメント／ストラテジ）は灰色の濃さで分ける。
+*/
+@import url("components.css");
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body.termmap-page {
+  height: 100%;
+}
+
+body.termmap-page {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--theme-bg);
+  color: var(--theme-text);
+  font-family: var(--theme-font-body);
+  font-size: var(--theme-size-body);
+  line-height: var(--theme-line-height);
+}
+
+.termmap {
+  --tm-tech: var(--theme-heading);
+  --tm-mgmt: var(--theme-muted);
+  --tm-strat: var(--theme-faint);
+  --tm-center: var(--theme-accent);
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- 上の帯（題名・検索・分野・ランダム） ---------- */
+
+.termmap-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  padding: 10px max(var(--theme-gutter), env(safe-area-inset-right)) 12px max(var(--theme-gutter), env(safe-area-inset-left));
+  border-bottom: 1px solid var(--theme-line-soft);
+}
+
+.termmap-bar h1 {
+  margin: 0;
+  color: var(--theme-heading);
+  font-family: var(--theme-font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: var(--theme-heading-tracking);
+  white-space: nowrap;
+}
+
+.termmap-bar h1 small {
+  margin-left: 6px;
+  color: var(--theme-muted);
+  font-family: var(--theme-font-ui);
+  font-size: var(--theme-size-caption);
+  font-weight: 400;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.termmap-search {
+  position: relative;
+  flex: 1 1 240px;
+  min-width: 0;
+  max-width: 460px;
+}
+
+.termmap-search input,
+.termmap-field select {
+  width: 100%;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: var(--theme-radius-pill);
+  background: var(--theme-bg-deep);
+  color: var(--theme-text);
+  font: inherit;
+  font-family: var(--theme-font-ui);
+  font-size: var(--theme-size-small);
+}
+
+.termmap-field select {
+  width: auto;
+  max-width: 14em;
+  padding-right: 10px;
+}
+
+.termmap-search input:focus-visible,
+.termmap-field select:focus-visible,
+.termmap-button:focus-visible,
+.termmap-panel button:focus-visible,
+.termmap-panel a:focus-visible,
+.termmap-trail button:focus-visible {
+  outline: 2px solid var(--theme-accent);
+  outline-offset: 2px;
+}
+
+#termmap-results {
+  position: absolute;
+  z-index: 50;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  max-height: min(60vh, 420px);
+  margin: 0;
+  padding: 6px;
+  overflow: auto;
+  list-style: none;
+  border-radius: var(--theme-radius);
+  background: var(--theme-bg);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
+}
+
+#termmap-results li {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: var(--theme-radius-small);
+  cursor: pointer;
+}
+
+#termmap-results li[aria-selected="true"],
+#termmap-results li:hover {
+  background: var(--theme-bg-alt);
+}
+
+#termmap-results .sub {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--theme-muted);
+  font-size: var(--theme-size-caption);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.termmap-button {
+  padding: 7px 16px;
+  border: 0;
+  border-radius: var(--theme-radius-pill);
+  background: var(--theme-bg-alt);
+  color: var(--theme-heading);
+  font: inherit;
+  font-family: var(--theme-font-ui);
+  font-size: var(--theme-size-small);
+  cursor: pointer;
+  transition: background var(--theme-transition);
+}
+
+.termmap-button:hover {
+  background: var(--theme-surface-hover);
+}
+
+/* ---------- マップと説明 ---------- */
+
+.termmap-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+}
+
+.termmap-stage {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+
+.termmap-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.termmap-svg text {
+  fill: var(--theme-text);
+  font-family: var(--theme-font-ui);
+  font-size: 12px;
+  paint-order: stroke;
+  stroke: var(--theme-bg);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.termmap-svg .node {
+  cursor: pointer;
+}
+
+.termmap-svg .node:focus {
+  outline: none;
+}
+
+.termmap-svg .node circle {
+  stroke: var(--theme-bg);
+  stroke-width: 2px;
+  transition: stroke var(--theme-transition);
+}
+
+.termmap-svg .node:hover circle,
+.termmap-svg .node:focus-visible circle {
+  stroke: var(--theme-accent);
+  stroke-width: 3px;
+}
+
+.termmap-svg .node.is-center circle {
+  stroke: var(--theme-leaf-pale);
+  stroke-width: 6px;
+}
+
+.termmap-svg .node.is-center text {
+  fill: var(--theme-heading);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.termmap-svg .node.is-other {
+  opacity: 0.35;
+}
+
+.termmap-svg line {
+  stroke: var(--theme-faint);
+}
+
+.termmap-svg line.is-mention {
+  stroke: var(--theme-muted);
+  stroke-width: 2.2px;
+}
+
+.termmap-svg line.is-group {
+  stroke-width: 1.2px;
+}
+
+.termmap-svg line.is-back {
+  stroke-width: 1.2px;
+  stroke-dasharray: 4 4;
+}
+
+.termmap-svg line.is-cross {
+  stroke: var(--theme-line);
+  stroke-width: 1px;
+}
+
+.termmap-legend {
+  position: absolute;
+  top: 10px;
+  left: max(12px, env(safe-area-inset-left));
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--theme-muted);
+  font-family: var(--theme-font-ui);
+  font-size: var(--theme-size-caption);
+  pointer-events: none;
+}
+
+.termmap-legend span {
+  display: inline-block;
+  width: 22px;
+  margin-right: 6px;
+  vertical-align: middle;
+  border-top: 2px solid var(--theme-muted);
+}
+
+.termmap-legend .is-group {
+  border-top: 1px solid var(--theme-faint);
+}
+
+.termmap-legend .is-back {
+  border-top: 1px dashed var(--theme-faint);
+}
+
+.termmap-trail {
+  position: absolute;
+  left: max(12px, env(safe-area-inset-left));
+  right: 12px;
+  bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  color: var(--theme-muted);
+  font-family: var(--theme-font-ui);
+  font-size: var(--theme-size-caption);
+  pointer-events: none;
+}
+
+.termmap-trail button {
+  max-width: 12em;
+  overflow: hidden;
+  padding: 3px 11px;
+  border: 0;
+  border-radius: var(--theme-radius-pill);
+  background: var(--theme-bg-alt);
+  color: var(--theme-heading);
+  font: inherit;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.termmap-trail button:hover {
+  background: var(--theme-surface-hover);
+}
+
+/* ---------- 説明パネル ---------- */
+
+.termmap-panel {
+  min-width: 0;
+  overflow: auto;
+  padding: 20px max(22px, env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) 24px;
+  background: var(--theme-bg-alt);
+  overflow-wrap: anywhere;
+  font-feature-settings: "palt";
+}
+
+.termmap-loading,
+.termmap-error {
+  color: var(--theme-muted);
+}
+
+.termmap-kicker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.termmap-kicker li {
+  padding: 1px 10px;
+  border-radius: var(--theme-radius-pill);
+  background: var(--theme-bg);
+  color: var(--theme-muted);
+  font-family: var(--theme-font-ui);
+  font-size: var(--theme-size-caption);
+}
+
+.termmap-kicker a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.termmap-kicker a:hover {
+  color: var(--theme-link);
+}
+
+.termmap-panel h2 {
+  margin: 12px 0 2px;
+  color: var(--theme-heading);
+  font-family: var(--theme-font-display);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: var(--theme-heading-tracking);
+  text-wrap: balance;
+}
+
+.termmap-sub {
+  margin: 0 0 14px;
+  color: var(--theme-muted);
+  font-size: var(--theme-size-small);
+}
+
+.termmap-flag {
+  margin-left: 8px;
+  color: var(--theme-warn);
+  font-family: var(--theme-font-ui);
+  font-size: var(--theme-size-caption);
+  font-weight: 400;
+  vertical-align: middle;
+}
+
+.termmap-sec h3 {
+  margin: 20px 0 6px;
+  color: var(--theme-muted);
+  font-family: var(--theme-font-ui);
+  font-size: var(--theme-size-small);
+  font-weight: 600;
+}
+
+.termmap-sec dl {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.termmap-sec dt {
+  color: var(--theme-muted);
+  font-family: var(--theme-font-ui);
+  font-size: var(--theme-size-caption);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.termmap-sec dd {
+  margin: 0;
+}
+
+.termmap-sec dd.is-meaning {
+  color: var(--theme-heading);
+}
+
+.termmap-sec dd.is-caution {
+  color: var(--theme-warn);
+}
+
+.termmap-sec code {
+  padding: 0 4px;
+  border-radius: 4px;
+  background: var(--theme-bg-deep);
+  font-family: var(--theme-font-mono);
+  font-size: 0.9em;
+}
+
+.termmap-panel a.term-link {
+  color: var(--theme-link);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--theme-link) 40%, transparent);
+  cursor: pointer;
+}
+
+.termmap-panel a.term-link:hover {
+  text-decoration-color: currentColor;
+}
+
+.termmap-rel {
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid var(--theme-line-soft);
+}
+
+.termmap-rel h3 {
+  margin: 0 0 4px;
+  color: var(--theme-heading);
+  font-family: var(--theme-font-ui);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.termmap-rel h4 {
+  margin: 14px 0 6px;
+  color: var(--theme-muted);
+  font-family: var(--theme-font-ui);
+  font-size: var(--theme-size-caption);
+  font-weight: 400;
+}
+
+.termmap-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.termmap-chips button {
+  padding: 3px 11px;
+  border: 0;
+  border-radius: var(--theme-radius-pill);
+  background: var(--theme-bg);
+  color: var(--theme-text);
+  font: inherit;
+  font-family: var(--theme-font-ui);
+  font-size: var(--theme-size-small);
+  cursor: pointer;
+  transition: background var(--theme-transition);
+}
+
+.termmap-chips button:hover {
+  background: var(--theme-surface-hover);
+}
+
+.termmap-chips button::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--c);
+  vertical-align: 1px;
+}
+
+.termmap-more {
+  margin: 8px 0 0;
+  color: var(--theme-faint);
+  font-size: var(--theme-size-caption);
+}
+
+/* ---------- スマホ：上にマップ、下に説明 ---------- */
+
+@media (max-width: 760px) {
+  .termmap-body {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 52%) minmax(0, 48%);
+  }
+
+  .termmap-bar h1 {
+    font-size: 1.15rem;
+  }
+
+  .termmap-field select {
+    max-width: 9em;
+  }
+
+  .termmap-legend {
+    display: none;
+  }
+
+  .termmap-panel {
+    padding-left: max(var(--theme-gutter), env(safe-area-inset-left));
+    padding-right: max(var(--theme-gutter), env(safe-area-inset-right));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .termmap * {
+    transition: none !important;
+  }
+}

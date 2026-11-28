@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#faf7ee">
+  <title>用語マップ｜応用情報</title>
+  <link rel="stylesheet" href="../assets/css/termmap.css">
+</head>
+<body class="termmap-page">
+  <!--
+    用語マップ。termmap.html?t=DNS のように用語名を付けて開くと、その用語が中心になる。
+    中身は termmap.json（tools/termmap/build.mjs が ap/terms/01〜23.md から作る）。動きは assets/js/termmap.js
+  -->
+  <main class="termmap" data-src="termmap.json">
+    <header class="termmap-bar">
+      <h1>用語マップ <small data-count></small></h1>
+      <div class="termmap-search">
+        <input id="termmap-q" type="search" placeholder="用語・読み・英語で探す（例：DNS、せいきか、firewall）" autocomplete="off" aria-label="用語を探す" aria-controls="termmap-results" aria-expanded="false" role="combobox">
+        <ul id="termmap-results" role="listbox" hidden></ul>
+      </div>
+      <label class="termmap-field">
+        <span class="visually-hidden">分野で絞る</span>
+        <select id="termmap-field" aria-label="分野で絞る"><option value="">全分野</option></select>
+      </label>
+      <button type="button" class="termmap-button" data-random>ランダム</button>
+    </header>
+
+    <div class="termmap-body">
+      <div class="termmap-stage">
+        <svg class="termmap-svg" role="img" aria-label="選んだ用語と関連用語のつながり"></svg>
+        <ul class="termmap-legend" aria-label="線の見方">
+          <li><span class="is-mention"></span>説明に出てくる</li>
+          <li><span class="is-group"></span>同じグループ</li>
+          <li><span class="is-back"></span>この用語を使っている</li>
+        </ul>
+        <nav class="termmap-trail" aria-label="たどった用語"></nav>
+      </div>
+      <article class="termmap-panel" aria-live="polite">
+        <p class="termmap-loading">用語を読み込んでいます…</p>
+      </article>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.8.5/dist/d3.min.js"></script>
+  <script src="../assets/js/catalog.js"></script>
+  <script src="../assets/js/termmap.js"></script>
+  <script src="../assets/js/site.js"></script>
+</body>
+</html>
