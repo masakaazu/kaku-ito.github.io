@@ -2,16 +2,18 @@
   用語マップ（ap/termmap.html）
 
   - termmap.json（tools/termmap/build.mjs が用語集 md から作る）を1回だけ読む
-  - 選んだ用語を真ん中に置き、関連用語を周りに最大26個並べる。点をタップするとその用語が新しい中心になる
+  - 表示は2種類
+    つながり    … 選んだ用語を真ん中に置き、関連用語を周りに最大26個並べる。点をタップするとその用語が新しい中心になる
+    分野の全体  … 1分野の用語をすべて1枚に並べる。点をタップすると、その用語とつながる用語だけが浮かび上がる
   - 関連は3種類：説明に出てくる用語（太線）／同じグループの用語（細線）／この用語を説明に使っている用語（点線）
-  - termmap.html?t=用語名 で、その用語を中心に開く（用語集の「マップで見る」から来るときの形）
+  - termmap.html?t=用語名 で、その用語を中心に開く（用語集の「マップで見る」から来るときの形）。?f=分野番号 を付けると分野の全体で開く
   - 見た目は assets/css/termmap.css、グラフの動きは d3（d3-force）
 */
 (() => {
   const main = document.querySelector(".termmap");
   if (!main) return;
 
-  const MAX = 26; // 周りに出す用語の数
+  const MAX = 26; // つながり表示で周りに出す用語の数
   const KEI = ["テクノロジ系", "マネジメント系", "ストラテジ系"];
   const KEI_COLOR = ["var(--tm-tech)", "var(--tm-mgmt)", "var(--tm-strat)"];
   const LABEL = [
@@ -27,6 +29,7 @@
 
   const $ = (sel) => main.querySelector(sel);
   const panel = $(".termmap-panel");
+  const caption = $(".termmap-caption");
   const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
   let T = [];
@@ -34,8 +37,9 @@
   let F = {};
   let byName = new Map();
   let back = [];
-  let center = -1;
-  let onlyField = "";
+  let center = -1; // いま説明を出している用語
+  let onlyField = ""; // 分野で絞る（"" は全分野）
+  let view = "focus"; // "focus"（つながり）／"field"（分野の全体）
 
   /* ---------- 文字の整形 ---------- */
 
@@ -52,7 +56,9 @@
 
   const toHira = (s) => s.replace(/[ァ-ヶ]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0x60));
   const norm = (s) => toHira((s || "").normalize("NFKC").toLowerCase());
-  const inField = (i) => !onlyField || T[i].s.some((s) => String(s.f) === onlyField);
+  const fieldsOf = (i) => [...new Set(T[i].s.map((s) => String(s.f)))];
+  const inField = (i, f = onlyField) => !f || fieldsOf(i).includes(f);
+  const labelOf = (i) => (T[i].n.length > 14 ? `${T[i].n.slice(0, 13)}…` : T[i].n);
 
   /* ---------- 関連用語 ---------- */
 
@@ -65,38 +71,47 @@
     return [...rel.entries()].sort((a, b) => order[a[1]] - order[b[1]]).slice(0, MAX);
   };
 
-  /* ---------- マップ ---------- */
+  /* ---------- マップの土台 ---------- */
 
-  const stage = $(".termmap-stage");
-  const svg = d3.select($(".termmap-svg"));
+  const canvas = $(".termmap-canvas");
+  const svgEl = $(".termmap-svg");
+  const svg = d3.select(svgEl);
   const root = svg.append("g");
   const gLinks = root.append("g");
   const gNodes = root.append("g");
   let W = 0;
   let H = 0;
   const measure = () => {
-    W = stage.clientWidth;
-    H = stage.clientHeight;
+    W = canvas.clientWidth;
+    H = canvas.clientHeight;
     svg.attr("viewBox", [0, 0, W, H]);
   };
   measure();
 
-  const zoom = d3.zoom().scaleExtent([0.4, 3]).on("zoom", (e) => root.attr("transform", e.transform));
+  // 拡大しても点と文字の大きさは変えない（間だけが広がるので、混んだところも読める）
+  let zk = 1;
+  const placeNodes = () => gNodes.selectAll("g.node").attr("transform", (d) => `translate(${d.x},${d.y}) scale(${1 / zk})`);
+  const zoom = d3
+    .zoom()
+    .scaleExtent([0.2, 4])
+    .on("zoom", (e) => {
+      root.attr("transform", e.transform);
+      zk = e.transform.k;
+      placeNodes();
+      svgEl.classList.toggle("is-zoomed", e.transform.k >= 1.6);
+    });
   svg.call(zoom).on("dblclick.zoom", null);
 
-  const nodeOf = new Map(); // 番号 → 点（位置を覚えておき、組み替えても残る点はそのまま動かす）
-  let shown = new Set();
-  // 狭い画面（スマホ）では点どうしの間を詰める（PC の広さで 1）
-  const spread = () => Math.max(0.6, Math.min(1, Math.min(W, H) / 440));
-  const labelOf = (i) => (T[i].n.length > 14 ? `${T[i].n.slice(0, 13)}…` : T[i].n);
+  // 画面の広さに合わせて点どうしの間を変える（スマホで詰め、広い画面では広げてマップ全体を使う）
+  const spread = () => Math.max(0.6, Math.min(1.5, Math.min(W, H) / 440));
 
   const sim = d3
     .forceSimulation()
-    .force("charge", d3.forceManyBody().strength(() => -260 * spread()))
-    .force("link", d3.forceLink().id((d) => d.id).distance((l) => (l.kind === "cross" ? 150 : 110) * spread()).strength((l) => (l.kind === "cross" ? 0.05 : 0.5)))
-    .force("collide", d3.forceCollide().radius((d) => d.r + Math.min(60, labelOf(d.id).length * 7) / 2).strength(0.7))
-    .force("x", d3.forceX().strength(0.04))
-    .force("y", d3.forceY().strength(0.06))
+    .force("charge", d3.forceManyBody())
+    .force("link", d3.forceLink().id((d) => d.id))
+    .force("collide", d3.forceCollide())
+    .force("x", d3.forceX())
+    .force("y", d3.forceY())
     .on("tick", () => {
       gLinks
         .selectAll("line")
@@ -104,10 +119,71 @@
         .attr("y1", (d) => d.source.y)
         .attr("x2", (d) => d.target.x)
         .attr("y2", (d) => d.target.y);
-      gNodes.selectAll("g.node").attr("transform", (d) => `translate(${d.x},${d.y})`);
+      placeNodes();
     });
 
-  const draw = (c, from) => {
+  const nodeOf = new Map(); // 番号 → 点（位置を覚えておき、組み替えても残る点はそのまま動かす）
+  let shown = new Set();
+
+  // 点と線を描く（両方の表示で共通）。nodes/links は d3 の形
+  const paint = (nodes, links) => {
+    const linkKey = (d) => `${d.source.id ?? d.source}-${d.target.id ?? d.target}`;
+    const L = gLinks.selectAll("line").data(links, linkKey);
+    L.exit().remove();
+    L.enter().append("line");
+    gLinks.selectAll("line").attr("class", (d) => `is-${d.kind}`);
+
+    const N = gNodes.selectAll("g.node").data(nodes, (d) => d.id);
+    N.exit().remove();
+    const enter = N.enter()
+      .append("g")
+      .attr("class", "node")
+      .attr("tabindex", 0)
+      .attr("role", "button")
+      .on("click", (e, d) => tap(d.id))
+      .on("keydown", (e, d) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          tap(d.id);
+        }
+      })
+      .call(
+        d3
+          .drag()
+          .on("start", (e, d) => {
+            if (!e.active) sim.alphaTarget(0.2).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+          })
+          .on("drag", (e, d) => {
+            d.fx = e.x;
+            d.fy = e.y;
+          })
+          .on("end", (e, d) => {
+            if (!e.active) sim.alphaTarget(0);
+            if (!(view === "focus" && d.id === center)) d.fx = d.fy = null;
+          })
+      );
+    enter.append("circle");
+    enter.append("text").attr("text-anchor", "middle");
+    return gNodes.selectAll("g.node");
+  };
+
+  const settle = (alpha) => {
+    if (reduceMotion) {
+      sim.alpha(1).stop();
+      for (let k = 0; k < 300; k += 1) sim.tick();
+      sim.on("tick")();
+    } else {
+      sim.alpha(alpha).restart();
+    }
+  };
+
+  /* ---------- つながり表示 ---------- */
+
+  const drawFocus = (c, from) => {
+    svgEl.classList.remove("has-pick");
+    caption.hidden = true;
     const nb = neighbours(c);
     const ids = [c, ...nb.map(([j]) => j)];
     const origin = (from != null && nodeOf.get(from)) || { x: W / 2, y: H / 2 };
@@ -131,71 +207,153 @@
     const links = nb.map(([j, kind]) => ({ source: c, target: j, kind }));
     nb.forEach(([a]) => T[a].m.forEach((b) => b !== c && set.has(b) && links.push({ source: a, target: b, kind: "cross" })));
 
-    const linkKey = (d) => `${d.source.id ?? d.source}-${d.target.id ?? d.target}`;
-    const L = gLinks.selectAll("line").data(links, linkKey);
-    L.exit().remove();
-    L.enter().append("line");
-    gLinks.selectAll("line").attr("class", (d) => `is-${d.kind}`);
-
-    const N = gNodes.selectAll("g.node").data(nodes, (d) => d.id);
-    N.exit().remove();
-    const enter = N.enter()
-      .append("g")
-      .attr("class", "node")
-      .attr("tabindex", 0)
-      .attr("role", "button")
-      .on("click", (e, d) => go(d.id))
-      .on("keydown", (e, d) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          go(d.id);
-        }
-      })
-      .call(
-        d3
-          .drag()
-          .on("start", (e, d) => {
-            if (!e.active) sim.alphaTarget(0.2).restart();
-            d.fx = d.x;
-            d.fy = d.y;
-          })
-          .on("drag", (e, d) => {
-            d.fx = e.x;
-            d.fy = e.y;
-          })
-          .on("end", (e, d) => {
-            if (!e.active) sim.alphaTarget(0);
-            if (d.id !== center) d.fx = d.fy = null;
-          })
-      );
-    enter.append("circle");
-    enter.append("text").attr("text-anchor", "middle");
-
-    const all = gNodes.selectAll("g.node");
+    const all = paint(nodes, links);
     all
       .classed("is-center", (d) => d.id === c)
+      .classed("is-picked", false)
+      .classed("is-near", false)
       .classed("is-other", (d) => d.id !== c && !inField(d.id))
       .attr("aria-label", (d) => T[d.id].n);
     all.select("circle").attr("r", (d) => d.r).attr("fill", (d) => (d.id === c ? "var(--tm-center)" : KEI_COLOR[T[d.id].k]));
     all
       .select("text")
+      .classed("is-quiet", false)
       .text((d) => (d.id === c ? T[d.id].n : labelOf(d.id)))
       .attr("dy", (d) => (d.id === c ? "2.2em" : "1.8em"));
     all.filter((d) => d.id === c).raise();
 
-    sim.force("x").x(W / 2);
-    sim.force("y").y(H / 2);
-    sim.force("charge").strength(-260 * spread());
+    const k = spread();
+    sim.force("charge").strength(-260 * k).distanceMax(Infinity);
+    sim.force("link").distance((l) => (l.kind === "cross" ? 150 : 110) * k).strength((l) => (l.kind === "cross" ? 0.05 : 0.5));
+    sim.force("collide").radius((d) => d.r + Math.min(60, labelOf(d.id).length * 7) / 2).strength(0.7);
+    sim.force("x").x(W / 2).strength(0.04);
+    sim.force("y").y(H / 2).strength(0.06);
     sim.nodes(nodes);
     sim.force("link").links(links);
-    if (reduceMotion) {
-      sim.alpha(1).stop();
-      for (let k = 0; k < 300; k += 1) sim.tick();
-      sim.on("tick")();
-    } else {
-      sim.alpha(0.9).restart();
-    }
+    settle(0.9);
     svg.call(zoom.transform, d3.zoomIdentity);
+  };
+
+  /* ---------- 分野の全体 ---------- */
+
+  let fieldShown = ""; // いま全体を出している分野
+  let fieldLinks = [];
+
+  const drawField = (f) => {
+    const ids = T.map((t, i) => i).filter((i) => inField(i, f));
+    const set = new Set(ids);
+    // 線：説明に出てくる用語（同じ分野どうし）＋同じグループ（グループの先頭の用語から放射状に）
+    const seen = new Set();
+    const links = [];
+    const add = (a, b, kind) => {
+      const key = a < b ? `${a}-${b}` : `${b}-${a}`;
+      if (a === b || seen.has(key)) return;
+      seen.add(key);
+      links.push({ source: a, target: b, kind });
+    };
+    ids.forEach((a) => T[a].m.forEach((b) => set.has(b) && add(a, b, "mention")));
+    G.forEach(([, gf, members]) => {
+      if (String(gf) !== f) return;
+      const inside = members.filter((j) => set.has(j));
+      inside.slice(1).forEach((j) => add(inside[0], j, "group"));
+    });
+    fieldLinks = links;
+
+    const degree = new Map(ids.map((i) => [i, 0]));
+    links.forEach((l) => {
+      degree.set(l.source, degree.get(l.source) + 1);
+      degree.set(l.target, degree.get(l.target) + 1);
+    });
+    // 名前を出すのは、つながりの多い上位の用語だけ（拡大するか、選ぶと全部出る）
+    const ranked = [...ids].sort((a, b) => degree.get(b) - degree.get(a));
+    const loud = new Set(ranked.slice(0, Math.max(25, Math.round(ids.length * 0.15))));
+
+    const fresh = fieldShown !== f;
+    const nodes = ids.map((id) => {
+      let n = nodeOf.get(id);
+      if (!n) nodeOf.set(id, (n = { id }));
+      if (fresh || n.x == null) {
+        const a = Math.random() * Math.PI * 2;
+        const r = Math.random() * Math.min(W, H) * 0.4;
+        n.x = W / 2 + Math.cos(a) * r;
+        n.y = H / 2 + Math.sin(a) * r;
+      }
+      n.fx = n.fy = null;
+      n.r = 4 + Math.min(8, Math.sqrt(degree.get(id)) * 1.6);
+      return n;
+    });
+    shown = new Set(ids);
+    fieldShown = f;
+
+    const all = paint(nodes, links);
+    all
+      .classed("is-center", false)
+      .classed("is-other", false)
+      .attr("aria-label", (d) => T[d.id].n);
+    all.select("circle").attr("r", (d) => d.r).attr("fill", (d) => KEI_COLOR[T[d.id].k]);
+    all
+      .select("text")
+      .text((d) => labelOf(d.id))
+      .attr("dy", (d) => `${(d.r + 11) / 12}em`)
+      .classed("is-quiet", (d) => !loud.has(d.id));
+
+    sim.force("charge").strength(-40).distanceMax(260);
+    sim.force("link").distance((l) => (l.kind === "group" ? 30 : 55)).strength((l) => (l.kind === "group" ? 0.4 : 0.15));
+    sim.force("collide").radius((d) => d.r + 3).strength(0.8);
+    sim.force("x").x(W / 2).strength(0.05);
+    sim.force("y").y(H / 2).strength(0.05);
+    sim.nodes(nodes);
+    sim.force("link").links(links);
+
+    // 一度落ち着かせてから全体が入る大きさにする（数百語あるので、動かしながらだと重い）
+    if (fresh) {
+      sim.alpha(1).stop();
+      for (let k = 0; k < 220; k += 1) sim.tick();
+      sim.on("tick")();
+      fit(nodes);
+    }
+    caption.textContent = `#${f} ${F[f][0]}：${ids.length}語・線${links.length}本。点をタップすると、つながる用語に寄って浮かび上がる。何もないところをタップすると全体に戻る`;
+    caption.hidden = false;
+    highlight(center);
+  };
+
+  const fit = (nodes, { animate = false, maxScale = 2 } = {}) => {
+    if (!nodes.length) return;
+    const xs = nodes.map((n) => n.x);
+    const ys = nodes.map((n) => n.y);
+    const x0 = Math.min(...xs);
+    const x1 = Math.max(...xs);
+    const y0 = Math.min(...ys);
+    const y1 = Math.max(...ys);
+    const pad = 40;
+    const k = Math.min(maxScale, (W - pad * 2) / Math.max(1, x1 - x0), (H - pad * 2 - 24) / Math.max(1, y1 - y0));
+    const t = d3.zoomIdentity.translate(W / 2 - (k * (x0 + x1)) / 2, H / 2 + 12 - (k * (y0 + y1)) / 2).scale(k);
+    if (animate && !reduceMotion) svg.transition().duration(600).call(zoom.transform, t);
+    else svg.call(zoom.transform, t);
+  };
+
+  // 分野の全体で、選んだ用語とつながる用語だけを浮かび上がらせる
+  // zoomIn のときは、その用語とつながる用語が画面いっぱいに入るまで寄る
+  const highlight = (c, zoomIn = false) => {
+    const all = gNodes.selectAll("g.node");
+    if (view !== "field" || c < 0 || !shown.has(c)) {
+      svgEl.classList.remove("has-pick");
+      all.classed("is-picked", false).classed("is-near", false);
+      gLinks.selectAll("line").classed("is-near", false);
+      return;
+    }
+    const near = new Set([c]);
+    fieldLinks.forEach((l) => {
+      const a = l.source.id ?? l.source;
+      const b = l.target.id ?? l.target;
+      if (a === c) near.add(b);
+      if (b === c) near.add(a);
+    });
+    svgEl.classList.add("has-pick");
+    if (zoomIn) fit([...near].map((i) => nodeOf.get(i)), { animate: true, maxScale: 2.4 });
+    all.classed("is-picked", (d) => d.id === c).classed("is-near", (d) => near.has(d.id));
+    all.filter((d) => near.has(d.id)).raise();
+    gLinks.selectAll("line").classed("is-near", (d) => (d.source.id ?? d.source) === c || (d.target.id ?? d.target) === c);
   };
 
   new ResizeObserver(() => {
@@ -203,11 +361,13 @@
     if (center < 0) return;
     sim.force("x").x(W / 2);
     sim.force("y").y(H / 2);
-    const cn = nodeOf.get(center);
-    cn.fx = W / 2;
-    cn.fy = H / 2;
-    sim.alpha(0.4).restart();
-  }).observe(stage);
+    if (view === "focus") {
+      const cn = nodeOf.get(center);
+      cn.fx = W / 2;
+      cn.fy = H / 2;
+      sim.alpha(0.4).restart();
+    }
+  }).observe(canvas);
 
   /* ---------- 説明パネル ---------- */
 
@@ -255,7 +415,7 @@
     const el = e.target.closest("[data-id]");
     if (!el) return;
     e.preventDefault();
-    go(Number(el.dataset.id));
+    tap(Number(el.dataset.id));
   });
 
   /* ---------- たどった道・URL ---------- */
@@ -270,28 +430,74 @@
   };
   trailBox.addEventListener("click", (e) => {
     const b = e.target.closest("[data-id]");
-    if (b) go(Number(b.dataset.id));
+    if (b) tap(Number(b.dataset.id));
   });
 
-  const go = (id) => {
-    if (id === center || !T[id]) return;
-    const from = center;
-    center = id;
-    const k = trail.indexOf(id);
-    if (k >= 0) trail.splice(k, 1);
-    trail.push(id);
-    if (trail.length > 9) trail.shift();
-    draw(id, from);
-    showPanel(id);
-    showTrail();
+  const remember = () => {
     try {
       const url = new URL(location.href);
-      url.searchParams.set("t", T[id].n);
+      url.searchParams.set("t", T[center].n);
+      if (view === "field" && fieldShown) url.searchParams.set("f", fieldShown);
+      else url.searchParams.delete("f");
       history.replaceState(null, "", url);
     } catch (e) {
       /* URL を書き換えられなくても使える */
     }
   };
+
+  // 用語を選ぶ（点・関連用語・検索・たどった道から）。分野の全体では、その分野の用語ならそのまま浮かび上がらせる
+  const tap = (id) => {
+    if (!T[id]) return;
+    if (view === "field" && !shown.has(id)) setView("focus", false);
+    const same = id === center;
+    const from = center;
+    center = id;
+    if (!same) {
+      const k = trail.indexOf(id);
+      if (k >= 0) trail.splice(k, 1);
+      trail.push(id);
+      if (trail.length > 9) trail.shift();
+      showPanel(id);
+      showTrail();
+    }
+    if (view === "focus") {
+      if (!same || !shown.has(id) || shown.size <= 1) drawFocus(id, from);
+    } else {
+      highlight(id, true);
+    }
+    remember();
+  };
+
+  // 分野の全体で何もないところをタップすると、選択を外して全体に戻る
+  svg.on("click", (e) => {
+    if (view !== "field" || e.target !== svgEl) return;
+    highlight(-1);
+    fit(sim.nodes(), { animate: true });
+  });
+
+  /* ---------- 表示の切り替え ---------- */
+
+  const modeButtons = [...main.querySelectorAll("[data-mode]")];
+  const setView = (next, redraw = true) => {
+    view = next;
+    main.dataset.view = next;
+    modeButtons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === next)));
+    if (!redraw || center < 0) return;
+    if (next === "field") {
+      // 分野を選んでいなければ、いまの用語の最初の分野
+      const f = onlyField || fieldsOf(center)[0];
+      if (!onlyField) {
+        onlyField = f;
+        fieldSelect.value = f;
+      }
+      drawField(f);
+    } else {
+      shown = new Set();
+      drawFocus(center, null);
+    }
+    remember();
+  };
+  modeButtons.forEach((b) => b.addEventListener("click", () => setView(b.dataset.mode)));
 
   /* ---------- 検索・分野・ランダム ---------- */
 
@@ -340,7 +546,7 @@
     close();
     q.value = "";
     q.blur();
-    go(i);
+    tap(i);
   };
   q.addEventListener("input", search);
   q.addEventListener("keydown", (e) => {
@@ -366,13 +572,27 @@
   const fieldSelect = $("#termmap-field");
   fieldSelect.addEventListener("change", () => {
     onlyField = fieldSelect.value;
-    if (center >= 0) draw(center, center);
-    if (onlyField && center >= 0 && !inField(center)) random();
+    if (center < 0) return;
+    if (view === "field") {
+      if (!onlyField) return setView("focus");
+      drawField(onlyField);
+      // いまの用語がその分野にないときは、その分野でつながりの多い用語を選んでおく
+      if (!inField(center)) {
+        const p = pool().sort((a, b) => T[b].m.length + back[b].length - (T[a].m.length + back[a].length));
+        if (p.length) tap(p[0]);
+      }
+      remember();
+    } else {
+      drawFocus(center, center);
+      if (onlyField && !inField(center)) random();
+    }
   });
 
+  // その分野で、つながりの多い用語から（ランダムや分野の切り替えで使う）
+  const pool = () => T.map((t, i) => i).filter((i) => inField(i) && T[i].m.length + back[i].length >= 3);
   const random = () => {
-    const pool = T.map((t, i) => i).filter((i) => inField(i) && T[i].m.length + back[i].length >= 3);
-    if (pool.length) go(pool[Math.floor(Math.random() * pool.length)]);
+    const p = pool();
+    if (p.length) tap(p[Math.floor(Math.random() * p.length)]);
   };
   main.querySelector("[data-random]").addEventListener("click", random);
 
@@ -396,9 +616,21 @@
         .sort((a, b) => Number(a[0]) - Number(b[0]))
         .forEach(([no, [name]]) => fieldSelect.insertAdjacentHTML("beforeend", `<option value="${no}">#${no} ${escapeHtml(name)}</option>`));
 
-      const want = new URLSearchParams(location.search).get("t");
+      const params = new URLSearchParams(location.search);
+      const want = params.get("t");
+      const f = params.get("f");
       const start = (want && byName.get(want)) ?? byName.get("DNS") ?? 0;
-      go(start);
+      if (f && F[f]) {
+        onlyField = f;
+        fieldSelect.value = f;
+        center = inField(start) ? start : pool()[0] ?? start;
+        trail.push(center);
+        showPanel(center);
+        setView("field");
+      } else {
+        main.dataset.view = "focus";
+        tap(start);
+      }
     })
     .catch((error) => {
       console.warn("[termmap]", error);
